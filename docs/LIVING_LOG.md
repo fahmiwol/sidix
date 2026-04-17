@@ -1057,3 +1057,54 @@ Auto-trigger:
 - TEST: `list_apps()` → 18 apps. `get_app_categories()` → 7 kategori. `call_app("calculator", expression="sqrt(144) + 2**8")` → 268.0. `call_app("zakat_calculator", asset_type="maal", total_assets=100_000_000, gold_price_per_gram=1_200_000)` → "Belum wajib zakat" (nisab 102jt, benar secara fikih). `call_app("qiblat", latitude=-6.2088, longitude=106.8456)` → arah kiblat, jarak ke Mekkah.
 - DECISION: **`builtin_apps.py` adalah stdlib-only** — tidak ada import `openai`, `anthropic`, atau third-party library. Dapat dijalankan di lingkungan offline manapun selama Python 3.9+ tersedia. Wikipedia adalah satu-satunya tool yang butuh internet.
 - NOTE: `D:\claude skill and plugin` folder kosong saat di-scan — kemungkinan folder placeholder. Tidak ada konten yang bisa diekstrak.
+
+[2026-04-18] IMPL — Track I: multi_folder_processor.py — D:\Mighan dan D:\OPIX diproses, 5150 training pairs, 5006 corpus items
+- IMPL: pps/brain_qa/brain_qa/multi_folder_processor.py — modul Python dengan 8 fungsi: scan_folder, extract_capabilities, _extract_from_markdown, _extract_from_json, _extract_from_js_ts, _extract_from_python, convert_to_training_pairs, enrich_corpus, process_mighan, process_opix, process_all
+- IMPL: D:\Mighan (Mighantect 3D) — 2768 file (setelah skip node_modules), 4867 capabilities diekstrak: 3380 knowledge, 954 pattern, 389 logic, 144 skill (NPC profiles)
+- IMPL: D:\OPIX (SocioStudio) — 40 file relevan, 139 capabilities: 102 knowledge (PRD/ERD/docs), 26 logic (TypeScript), 11 pattern (configs)
+- IMPL: Training pairs disimpan ke .data/harvest/mighan_opix_pairs.jsonl (format Alpaca: instruction/input/output)
+- IMPL: Corpus items disimpan ke rain/public/sources/mighan_opix/ (5006 .txt files untuk BM25 RAG)
+- DOC: rain/public/research_notes/94_mighan_folder_kapabilitas.md — analisis D:\Mighan: agent taxonomy (AGENT_MODULE_MAP 40+ skills), NPC profile schema, multi-provider LLM routing, microstock pipeline, Innovation Engine (Iris)
+- DOC: rain/public/research_notes/95_opix_folder_kapabilitas.md — analisis D:\OPIX: AI caption dengan brand context, 5 publisher strategies (Playwright/HTTP/Ayrshare/Direct/Browser), multi-tenant ERD 17 entitas, BullMQ queue architecture, sinergi OPIX+SIDIX
+- DECISION: node_modules (96K+ .js files) di-skip otomatis via SKIP_FOLDERS set — fokus pada source code dan docs yang relevan
+
+### 2026-04-18 — Track N + Track O: Knowledge Foundations + Core AI Capabilities
+
+- IMPL: **Track N** — `apps/brain_qa/brain_qa/knowledge_foundations.py` — Encode hukum-hukum fundamental sebagai structured mental models untuk SIDIX. Isi:
+  - `PHYSICS_LAWS` (9 hukum): Newton I/II/III, Termodinamika 0/1/2/3, Persamaan Maxwell, Relativitas Khusus. Setiap hukum punya field: name, statement, formula, principle, analogies (cross-domain), domains, islamic_connection, sidix_application.
+  - `CHEMISTRY_PRINCIPLES` (7 prinsip): Katalisator, Le Chatelier, Arrhenius, Redoks, Entropi Kimia, Asam-Basa, Tabel Periodik. Sama format.
+  - `LEARNING_METHODS` (11 metode): Feynman Technique, Spaced Repetition, Active Recall, Pomodoro, Mind Mapping, SQ3R, Elaborative Interrogation + 5 metode Islami (Talaqqi, Musyafahah, Muraqabah, Halaqah, Tasmi').
+  - Fungsi: `get_law()`, `find_analogy()`, `get_learning_method()`, `apply_feynman()`, `suggest_learning_path()`, `list_all_laws()`, `cross_domain_apply()`.
+
+- IMPL: **Track O Part 1** — `apps/brain_qa/brain_qa/problem_solver.py` — Multi-domain problem solver. Fitur:
+  - Klasifikasi 9 tipe masalah (technical/conceptual/social/planning/research/financial/spiritual/health/learning) via keyword matching.
+  - Maqashid check 5 sumbu (din/nafs/aql/nasl/mal) — evaluasi setiap solusi terhadap Maqashid al-Syariah.
+  - Epistemic level: Ilm al-Yaqin / Ayn al-Yaqin / Haqq al-Yaqin.
+  - Approaches: First Principles, Cross-Domain Analogy, PDCA + domain-specific (Debugging, Backwards Planning, NVC, Istishara).
+  - Method: `analyze()`, `solve_step_by_step()`, `find_similar_problems()`, `generate_hypotheses()`.
+  - Integrasi opsional dengan `knowledge_foundations.find_analogy()`.
+
+- IMPL: **Track O Part 2** — `apps/brain_qa/brain_qa/permanent_learning.py` — Sistem pembelajaran permanen. Konsep "jalan → lari → menari":
+  - Skill tidak pernah dihapus (min_strength=0.1, tidak bisa 0).
+  - Reinforcement: +0.10 success, -0.02 failure. Time decay 0.99^n (sangat lambat).
+  - SPIN Self-Play: 6 challenge template (explain_simple → cross_domain), difficulty bertingkat per level.
+  - Meta-skill: `combine_skills()` via geometric mean strength.
+  - Analytics: `get_learning_trajectory()`, `consolidate()`.
+  - Storage: `.data/permanent_learning/skills.json` (content-addressable via SHA256 hash).
+
+- IMPL: **Track O Part 3** — `apps/brain_qa/brain_qa/decentralized_data.py` — Decentralized data store dengan recall memory. Terinspirasi Hafidz Framework + DIKW + Merkle:
+  - Fragment storage: satu JSON per fragment, content-addressable (`frag_` + SHA256[:16]).
+  - DIKW classification: data/information/knowledge/wisdom.
+  - Recall: keyword scoring BM25-simplified + tag bonus + DIKW weight.
+  - Assembly: rekonstruksi dari list fragment_ids.
+  - Integrity check: re-compute SHA256, deteksi corruption.
+  - `store_text_chunked()`: chunk teks panjang dengan overlap.
+  - Storage: `.data/decentralized/index.json` + `fragments/*.json`.
+
+- DOC: **Research note 107** — `brain/public/research_notes/107_hukum_fisika_fondasi_berfikir.md` — Newton, Termodinamika, Maxwell, Relativitas sebagai mental models + koneksi Islam + aplikasi SIDIX.
+- DOC: **Research note 108** — `brain/public/research_notes/108_kimia_katalisator_thinking.md` — Katalis, Le Chatelier, Arrhenius, Redoks, Entropi sebagai framework analisis + tabel cross-domain.
+- DOC: **Research note 109** — `brain/public/research_notes/109_metode_belajar_efektif.md` — Feynman, Spaced Rep, Active Recall, Pomodoro + 5 metode Islami (Talaqqi, Musyafahah, Muraqabah, Halaqah, Tasmi') + tabel perbandingan efektivitas.
+- DOC: **Research note 110** — `brain/public/research_notes/110_knowledge_foundations_sidix.md` — Desain keputusan knowledge_foundations.py, bagaimana SIDIX menggunakan fisika+kimia+belajar sebagai mental models, contoh nyata analisis startup.
+- DOC: **Research note 111** — `brain/public/research_notes/111_problem_solver_framework.md` — Multi-domain problem solving: pipeline klasifikasi, Maqashid check 5 sumbu, epistemic levels, approach generation.
+- DOC: **Research note 112** — `brain/public/research_notes/112_permanent_learning_sidix.md` — SPIN self-play (AlphaGo Zero + SPIN paper), skill reinforcement, meta-skills, trajectory, "jalan → lari → menari" analogy.
+- DOC: **Research note 113** — `brain/public/research_notes/113_decentralized_data_recall.md` — Fragment storage, DIKW pyramid, recall BM25-simplified, assembly, integrity check Merkle-inspired, Hafidz Framework connection.
