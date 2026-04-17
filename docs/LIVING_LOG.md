@@ -824,3 +824,13 @@ Auto-trigger:
   - Wire epistemologi ke `/ask/stream` SSE endpoint
   - Fine-tune v2 merge: `finetune_sft.jsonl` (713) + `finetune_coding_sft.jsonl` (~150) → upload Kaggle
   - `SessionIntelligence` belum di-wire ke `agent_serve.py` — saat ini hanya `analyze_user()` satu giliran per request
+
+### 2026-04-17 (orkestrasi deterministik — modul + tool + API; handoff Claude)
+
+- IMPL: **`apps/brain_qa/brain_qa/orchestration.py`** (sudah ada / dipakai sebagai inti): `agent_build_intent`, `score_archetypes`, `satellite_weights`, `build_orchestration_plan`, `OrchestrationPlan`, `format_plan_text` / `format_plan_json` — deterministik; integrasi `persona.route_persona`.
+- IMPL: **`apps/brain_qa/brain_qa/agent_tools.py`** — tool **`orchestration_plan`** (`_tool_orchestration_plan` + entri `TOOL_REGISTRY`); params `question`, `persona`.
+- UPDATE: **`apps/brain_qa/brain_qa/agent_react.py`** — import `agent_build_intent` dari `orchestration` (sumber tunggal intent build); field `AgentSession.orchestration_digest`; `_ORCH_META_RE` + cabang `_rule_based_plan` step 0 → `orchestration_plan`, step 1+ setelah tool tersebut → final; (sesi sebelumnya) `_attach_orchestration_digest` + `format_trace` menampilkan cuplikan digest bila ada.
+- UPDATE: **`apps/brain_qa/brain_qa/agent_serve.py`** — `ChatResponse.orchestration_digest` + diisi di `POST /agent/chat`; **`GET /agent/orchestration`** (`q`, `persona`) mengembalikan `plan_text` + `plan` (dict); `POST /ask` menambah key `orchestration_digest`; `POST /ask/stream` event `meta` dan `done` menyertakan `orchestration_digest`; docstring file — endpoint baru dicatat.
+- IMPL: **`tests/test_orchestration.py`** — uji skor/plan, tool, `_rule_based_plan` step 0/1.
+- TEST: **`python -m pytest tests/test_orchestration.py -q`** dari root `D:\MIGHAN Model` → **6 passed** (lingkungan: Python 3.14, pytest di-install ke user site bila belum ada).
+- NOTE: PowerShell — gunakan **`;`** bukan `&&` untuk rangkai perintah.
