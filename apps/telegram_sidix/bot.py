@@ -173,8 +173,12 @@ def sidix_query(question: str) -> str:
     try:
         r = requests.post(
             f"{SIDIX_URL}/agent/chat",
-            json={"message": question, "session_id": "telegram"},
-            timeout=30,
+            json={
+                "question": question,          # field name sesuai ChatRequest schema
+                "allow_web_fallback": True,
+                "simple_mode": True,           # lebih cepat di Telegram
+            },
+            timeout=90,                        # Ollama butuh waktu lebih
         )
         data = r.json()
         return (
@@ -359,26 +363,38 @@ async def cmd_post(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
 
 
 def _is_question(text: str) -> bool:
-    """Deteksi apakah teks adalah pertanyaan yang butuh jawaban."""
+    """
+    Deteksi apakah teks adalah pertanyaan yang butuh jawaban.
+
+    Fix v2: kata tanya di akhir kalimat sekarang terdeteksi
+    (pakai startswith + ' {w}' — tidak butuh spasi setelah kata).
+    """
+    import re as _re
     t = text.lower().strip()
-    # Tanda tanya
+
+    # Tanda tanya — paling pasti
     if "?" in t:
         return True
-    # Kata tanya Indonesia/Inggris
+
+    # Kata tanya Indonesia/Inggris — cek pakai word-boundary regex
     question_words = (
         "apa", "siapa", "berapa", "kenapa", "mengapa", "bagaimana",
         "kapan", "dimana", "di mana", "kemana", "bisakah", "apakah",
         "bolehkah", "tolong", "jelaskan", "ceritakan", "sebutkan",
-        "what", "who", "how", "why", "when", "where", "which", "can you",
-        "tell me", "explain", "describe",
+        "gimana", "emang", "emangnya", "maksudnya",
+        "what", "who", "how", "why", "when", "where", "which",
+        "can you", "tell me", "explain", "describe",
     )
     for w in question_words:
-        if t.startswith(w) or f" {w} " in t:
+        # Cek dengan word boundary supaya "apa" tidak match "kapan" dll
+        if _re.search(r'\b' + _re.escape(w) + r'\b', t):
             return True
-    # Kalimat pendek (<= 5 kata) yang tidak punya subyek jelas → tanya
+
+    # Kalimat pendek (<= 6 kata) tanpa tanda baca pernyataan → tanya
     words = t.split()
-    if len(words) <= 5 and not any(c in t for c in [".", "!", ","]):
+    if len(words) <= 6 and not any(c in t for c in [".", "!", ","]):
         return True
+
     return False
 
 
