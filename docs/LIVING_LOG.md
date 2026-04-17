@@ -861,6 +861,7 @@ Auto-trigger:
 
 - DOC: **`AGENTS.md`** — pointer repo publik **https://github.com/fahmiwol/sidix** dan ringkasan **L0 ↔ planner** (`planner_step0_suggestion`, `implement_frame_matches`, `praxis_matched_frame_ids`) supaya agen berikutnya tidak kehilangan konteks.
 - NOTE: Permintaan pemilik: setelah fitur Praxis/L0, **catat di log + commit ke Git**; batch ini menyertakan modul Praxis, runtime, tes, `brain/public/praxis/`, dan aset logo SVG yang di-track.
+- DOC: **`brain/public/research_notes/72_praxis_l0_case_frames_planner_intent_reasoning.md`** — ringkasan untuk RAG: L0 case frames + API trace + jembatan planner + horizon L2; instruksi **`python -m brain_qa index`**; status commit **`907e679`**; **`apps/sidix-mcp/`** skeleton belum di-track (hanya `package.json` + `src/`; `node_modules` di-ignore).
 
 ### 2026-04-17 — Deploy VPS + Supabase Setup (Sesi Claude)
 
