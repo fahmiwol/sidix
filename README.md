@@ -17,11 +17,13 @@
 
 ## Apa itu SIDIX?
 
-SIDIX adalah platform AI agent yang berjalan **sepenuhnya di lokal / server kamu sendiri** — tanpa bergantung pada API vendor (OpenAI, Claude, Gemini). Dibangun di atas prinsip:
+SIDIX adalah platform AI agent yang berjalan **sepenuhnya di lokal / server kamu sendiri** — tanpa bergantung pada API vendor (OpenAI, Claude, Gemini). Dibangun di atas **Epistemic Triad**:
 
-- **Sidq (صدق)** — Kejujuran: jawaban selalu berlabel (fakta / opini / spekulasi), mengakui ketidaktahuan
-- **Sanad (سند)** — Sitasi: setiap klaim ada sumbernya, bisa ditelusuri
-- **Tabayyun (تبيّن)** — Verifikasi: jawaban melewati filter epistemologi sebelum sampai ke pengguna
+- **Calibrate** — setiap jawaban berlabel jelas: `[FACT]` / `[OPINION]` / `[SPECULATION]` / `[UNKNOWN]`
+- **Trace** — setiap klaim ada jejak sumbernya, bisa ditelusuri dan diaudit
+- **Scrutinize** — jawaban melewati filter epistemologi sebelum sampai ke pengguna
+
+> Mengapa tiga prinsip ini? Baca: [The Story Behind SIDIX's Epistemic Framework](docs/EPISTEMIC_FRAMEWORK.md)
 
 ### Kemampuan utama
 
