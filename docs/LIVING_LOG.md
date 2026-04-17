@@ -862,6 +862,17 @@ Auto-trigger:
 - IMPL: **`apps/brain_qa/brain_qa/praxis_runtime.py`** — `match_case_frames`, `format_case_frames_for_user`, `has_substantive_corpus_observations`, **`planner_step0_suggestion`** (L0 → `orchestration_plan` bila frame `orchestration_meta` ≥ 0.42), **`implement_frame_matches`** (memperluas jalur `workspace_list` setelah corpus).
 - UPDATE: **`agent_react.run_react`** — setelah `session_start`, isi **`session.praxis_matched_frame_ids`**; step 0 dapat memilih aksi dari `planner_step0_suggestion`; planner rule-based memakai `implement_frame_matches` bersama intent build.
 - UPDATE: **`agent_react._compose_final_answer`** — menyematkan blok **Kerangka situasi** + comment mesin `SIDIX_CASE_FRAMES`; parameter `session` untuk mengisi `case_frame_ids` / `case_frame_hints_rendered`.
+
+### 2026-04-18 — Track J: Channel Adapters — WA/Telegram/Bot adapters untuk SIDIX
+
+- IMPL: **`apps/brain_qa/brain_qa/channel_adapters.py`** — modul bridge channel komunikasi ke SIDIX brain_qa. Kelas: `WAAdapter` (Meta Cloud API v21.0 + Baileys dual-engine), `TelegramAdapter` (Bot API webhook + callback_query), `GenericWebhookAdapter` (fallback JSON webhook), `GatewayRouter` (dispatcher multi-channel, singleton, route log). Data types: `InboundMessage`, `OutboundMessage`, `SendResult`. Public functions: `get_router()`, `get_channel_stats()`. Semua dependency (`httpx`, `requests`) opsional dengan try/except — bisa diimport tanpa error.
+- DECISION: **Channel adapter tidak mengandung logika AI** — semua inference tetap via `brain_qa` lokal, sesuai aturan no-vendor-API. Adapter hanya normalisasi format payload.
+- DECISION: **DRY-RUN mode** (`engine="none"`) untuk WAAdapter — memudahkan testing tanpa kredensial Meta/Baileys.
+- DOC: **`brain/public/research_notes/96_wa_api_gateway_pattern.md`** — analisis WA API Gateway: dual engine Meta+Baileys, format payload Meta Cloud API v21.0, normalisasi nomor E.164, webhook verification.
+- DOC: **`brain/public/research_notes/97_bot_gateway_architecture.md`** — arsitektur Python FastAPI+RQ multi-agent (Navigator/Publisher/Harvester/Sentinel/Librarian), pola enqueue→worker→result, LLM router abstraction.
+- DOC: **`brain/public/research_notes/98_chatbot_agent_pattern.md`** — pipeline intent detection: rule engine dulu, AI fallback, session/conversation tracking, slot extraction, error handling pattern.
+- DOC: **`brain/public/research_notes/99_artifact_processing.md`** — artifact (file/gambar/dokumen/audio) dalam messaging: format Meta media object, Telegram file_id system, TTS processing pattern, pipeline artifact processing untuk SIDIX.
+- DOC: **`brain/public/research_notes/100_channel_adapters_sidix.md`** — sintesis integrasi: cara pakai WAAdapter/TelegramAdapter/GatewayRouter, contoh integrasi FastAPI endpoint, keputusan desain, roadmap ekstensi (media processing, session context, Slack/Discord adapter).
 - UPDATE: **`brain_qa/praxis.finalize_session_teaching`** — seksi **Kerangka kasus (runtime)** di lesson Markdown.
 - UPDATE: **`agent_serve`** — `ChatResponse.case_frame_ids` + **`praxis_matched_frame_ids`**, `/ask`, SSE `meta`/`done`; dokumen kerangka di **`brain/public/praxis/00_sidix_praxis_framework.md`** (tabel L0/L1/L2).
 - IMPL: **`tests/test_praxis_runtime.py`** — pencocokan orkestrasi / implement / format + planner step0 + rule-based workspace dengan frame saja.
