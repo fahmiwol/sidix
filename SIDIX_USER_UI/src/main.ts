@@ -663,6 +663,7 @@ function getSettingsNavItems(): Array<{ id: string; icon: string; label: string 
   return [
     { id: 'model',      icon: 'cpu',          label: 'Model' },
     { id: 'corpus-cfg', icon: 'folder-tree',  label: 'Corpus' },
+    { id: 'threads',    icon: 'message-square', label: 'Threads' },
     { id: 'privacy',    icon: 'shield-check', label: 'Privasi' },
     ...base,
   ];
@@ -775,6 +776,92 @@ const settingsTabs: Record<string, string> = {
             <span class="status-badge" style="color:#7A6B58;background:rgba(122,107,88,0.1);border-color:rgba(122,107,88,0.2)">Coming Soon</span>
           </div>
         </div>
+      </div>
+    </div>`,
+
+  threads: `
+    <div class="space-y-6 animate-fsu">
+      <div>
+        <h3 class="font-display text-2xl font-bold glow-gold">Threads Connect</h3>
+        <p class="text-parchment-400 text-sm mt-1">Hubungkan akun Threads SIDIX untuk auto-posting dari admin.</p>
+      </div>
+
+      <div id="threads-status-card" class="academic-card space-y-3">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl bg-warm-700 flex items-center justify-center border border-warm-600">
+              <i data-lucide="message-square" class="w-4 h-4 text-gold-400"></i>
+            </div>
+            <div>
+              <p class="text-sm font-medium text-parchment-100">Status Koneksi</p>
+              <p id="threads-username-label" class="text-xs text-parchment-500 font-mono">—</p>
+            </div>
+          </div>
+          <span id="threads-status-badge" class="status-badge status-queued">Memuat…</span>
+        </div>
+        <div class="flex gap-4 text-xs text-parchment-400 pt-2 border-t border-warm-600/30">
+          <div>Posts hari ini: <span id="threads-posts-today" class="text-parchment-200 font-mono">—</span></div>
+          <div>Tersisa: <span id="threads-posts-remaining" class="text-parchment-200 font-mono">—</span></div>
+          <div>Last post: <span id="threads-last-post" class="text-parchment-200 font-mono">—</span></div>
+        </div>
+      </div>
+
+      <div class="academic-card space-y-4">
+        <h4 class="text-xs font-bold text-parchment-500 uppercase tracking-widest">Connect akun</h4>
+        <div class="space-y-2">
+          <label class="text-xs text-parchment-400">THREADS_ACCESS_TOKEN (long-lived)</label>
+          <input id="threads-token-input" type="password" autocomplete="off" spellcheck="false"
+            placeholder="EAAB..."
+            class="w-full px-3 py-2 rounded-lg bg-warm-900/60 border border-warm-600/50 text-xs font-mono
+                   text-parchment-100 focus:border-gold-500/50 focus:outline-none" />
+        </div>
+        <div class="space-y-2">
+          <label class="text-xs text-parchment-400">THREADS_USER_ID</label>
+          <input id="threads-userid-input" type="text" autocomplete="off" spellcheck="false"
+            placeholder="17841412..."
+            class="w-full px-3 py-2 rounded-lg bg-warm-900/60 border border-warm-600/50 text-xs font-mono
+                   text-parchment-100 focus:border-gold-500/50 focus:outline-none" />
+        </div>
+        <div class="flex gap-2">
+          <button id="threads-connect-btn" type="button"
+            class="flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold bg-gold-500/15 border border-gold-500/40
+                   text-gold-200 hover:bg-gold-500/25 transition-all flex items-center justify-center gap-2
+                   disabled:opacity-50 disabled:cursor-not-allowed">
+            <i data-lucide="lock-open" class="w-4 h-4"></i> Connect
+          </button>
+          <button id="threads-disconnect-btn" type="button"
+            class="px-4 py-2.5 rounded-xl text-sm font-medium bg-warm-700 border border-warm-600
+                   text-parchment-300 hover:bg-warm-600 transition-all">
+            Disconnect
+          </button>
+        </div>
+        <p id="threads-connect-status" class="hidden text-xs"></p>
+      </div>
+
+      <div class="academic-card space-y-3">
+        <h4 class="text-xs font-bold text-parchment-500 uppercase tracking-widest">Auto-content</h4>
+        <p class="text-xs text-parchment-500">
+          Generate 1 post via persona MIGHAN + posting langsung. Rate limit: 3/hari.
+        </p>
+        <div class="flex gap-2">
+          <select id="threads-persona-select"
+            class="px-3 py-2 rounded-lg bg-warm-900/60 border border-warm-600/50 text-xs
+                   text-parchment-100 focus:outline-none">
+            <option value="mighan">MIGHAN (reflektif)</option>
+            <option value="inan">INAN (ringkas)</option>
+          </select>
+          <input id="threads-topic-input" type="text" placeholder="Topic seed (opsional)"
+            class="flex-1 px-3 py-2 rounded-lg bg-warm-900/60 border border-warm-600/50 text-xs
+                   text-parchment-100 focus:outline-none" />
+        </div>
+        <button id="threads-autopost-btn" type="button"
+          class="w-full px-4 py-2.5 rounded-xl text-sm font-semibold bg-warm-700 border border-warm-600
+                 text-parchment-100 hover:bg-warm-600 hover:border-gold-500/30 transition-all
+                 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+          <i data-lucide="zap" class="w-4 h-4"></i> Generate &amp; Post Sekarang
+        </button>
+        <pre id="threads-autopost-output" class="hidden text-xs font-mono text-parchment-200 whitespace-pre-wrap
+          break-words max-h-56 overflow-y-auto bg-warm-900/60 p-3 rounded-lg border border-warm-600/30"></pre>
       </div>
     </div>`,
 
@@ -1002,6 +1089,142 @@ function switchSettingsTab(tabId: string) {
 
   if (resolvedTab === 'model') void refreshModelTabPanel();
   if (resolvedTab === 'saran') initSaranTab();
+  if (resolvedTab === 'threads') initThreadsTab();
+}
+
+// ── Tab Threads — admin integration ────────────────────────────────────────
+async function fetchThreadsStatus(): Promise<void> {
+  const badge  = document.getElementById('threads-status-badge');
+  const user   = document.getElementById('threads-username-label');
+  const today  = document.getElementById('threads-posts-today');
+  const rem    = document.getElementById('threads-posts-remaining');
+  const last   = document.getElementById('threads-last-post');
+  if (!badge) return;
+
+  try {
+    const res = await fetch(`${BRAIN_QA_BASE}/admin/threads/status`);
+    const data = await res.json();
+    const connected = !!data.connected;
+    badge.textContent = connected ? 'Connected' : 'Disconnected';
+    badge.className = `status-badge ${connected ? 'status-ready' : 'status-queued'}`;
+    if (user) user.textContent = connected
+      ? `@${data.username || '—'} · id ${data.user_id || '—'}`
+      : 'Belum terhubung';
+    if (today) today.textContent = String(data.posts_today ?? 0);
+    if (rem)   rem.textContent   = String(data.posts_remaining ?? 0);
+    if (last)  last.textContent  = data.last_post_at
+      ? new Date(data.last_post_at * 1000).toLocaleString('id-ID')
+      : '—';
+  } catch (err) {
+    badge.textContent = 'Offline';
+    badge.className = 'status-badge status-error';
+    if (user) user.textContent = 'Backend tidak merespons';
+  }
+}
+
+function initThreadsTab() {
+  const connectBtn    = document.getElementById('threads-connect-btn') as HTMLButtonElement | null;
+  const disconnectBtn = document.getElementById('threads-disconnect-btn') as HTMLButtonElement | null;
+  const autopostBtn   = document.getElementById('threads-autopost-btn') as HTMLButtonElement | null;
+  const tokenInput    = document.getElementById('threads-token-input') as HTMLInputElement | null;
+  const userIdInput   = document.getElementById('threads-userid-input') as HTMLInputElement | null;
+  const personaSel    = document.getElementById('threads-persona-select') as HTMLSelectElement | null;
+  const topicInput    = document.getElementById('threads-topic-input') as HTMLInputElement | null;
+  const connStatus    = document.getElementById('threads-connect-status');
+  const autopostOut   = document.getElementById('threads-autopost-output');
+
+  void fetchThreadsStatus();
+
+  connectBtn?.addEventListener('click', async () => {
+    const token  = tokenInput?.value.trim() ?? '';
+    const userId = userIdInput?.value.trim() ?? '';
+    if (!token || !userId) {
+      if (connStatus) {
+        connStatus.textContent = 'Token dan User ID wajib diisi.';
+        connStatus.className = 'text-xs text-status-error';
+      }
+      return;
+    }
+    connectBtn.disabled = true;
+    connectBtn.textContent = 'Menghubungkan…';
+    try {
+      const res = await fetch(`${BRAIN_QA_BASE}/admin/threads/connect`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ access_token: token, user_id: userId }),
+      });
+      const data = await res.json();
+      if (connStatus) {
+        if (data.ok) {
+          connStatus.textContent = `✓ Terhubung sebagai @${data.username || userId}`;
+          connStatus.className = 'text-xs text-status-ready';
+          if (tokenInput) tokenInput.value = '';
+        } else {
+          connStatus.textContent = `Gagal: ${data.error || 'unknown'}`;
+          connStatus.className = 'text-xs text-status-error';
+        }
+      }
+      void fetchThreadsStatus();
+    } catch (err) {
+      if (connStatus) {
+        connStatus.textContent = `Error: ${(err as Error).message}`;
+        connStatus.className = 'text-xs text-status-error';
+      }
+    } finally {
+      connectBtn.disabled = false;
+      connectBtn.innerHTML = '<i data-lucide="lock-open" class="w-4 h-4"></i> Connect';
+      initIcons();
+    }
+  });
+
+  disconnectBtn?.addEventListener('click', async () => {
+    if (!confirm('Yakin hapus token Threads dari .env?')) return;
+    disconnectBtn.disabled = true;
+    try {
+      await fetch(`${BRAIN_QA_BASE}/admin/threads/disconnect`, { method: 'POST' });
+      if (connStatus) {
+        connStatus.textContent = 'Token dihapus dari .env.';
+        connStatus.className = 'text-xs text-parchment-400';
+      }
+      void fetchThreadsStatus();
+    } finally {
+      disconnectBtn.disabled = false;
+    }
+  });
+
+  autopostBtn?.addEventListener('click', async () => {
+    autopostBtn.disabled = true;
+    autopostBtn.textContent = 'Generating & posting…';
+    if (autopostOut) {
+      autopostOut.classList.remove('hidden');
+      autopostOut.textContent = '⏳ Sedang membuat konten dan posting…';
+    }
+    try {
+      const res = await fetch(`${BRAIN_QA_BASE}/admin/threads/auto-content`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          persona: personaSel?.value || 'mighan',
+          topic_seed: topicInput?.value.trim() || undefined,
+        }),
+      });
+      const data = await res.json();
+      if (autopostOut) {
+        if (data.ok) {
+          autopostOut.textContent = `✓ Posted (id: ${data.id || '—'})\n\n${data.content || ''}`;
+        } else {
+          autopostOut.textContent = `✗ Gagal: ${data.error || 'unknown'}\n\n${data.content || ''}`;
+        }
+      }
+      void fetchThreadsStatus();
+    } catch (err) {
+      if (autopostOut) autopostOut.textContent = `Error: ${(err as Error).message}`;
+    } finally {
+      autopostBtn.disabled = false;
+      autopostBtn.innerHTML = '<i data-lucide="zap" class="w-4 h-4"></i> Generate &amp; Post Sekarang';
+      initIcons();
+    }
+  });
 }
 
 // ── Tab Saran — feedback & newsletter via Supabase ───────────────────────────

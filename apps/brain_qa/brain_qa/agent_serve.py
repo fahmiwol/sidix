@@ -1334,6 +1334,40 @@ def create_app() -> "FastAPI":
         except Exception as e:
             return {"ok": False, "error": str(e)}
 
+    # ── Programming Learner Endpoints ─────────────────────────────────────────
+
+    @app.post("/learn/programming/run")
+    def learn_programming_run(body: dict[str, Any] = {}):
+        """
+        Jalankan satu siklus belajar programming: roadmap.sh + GitHub Trending
+        + Reddit → tambah task + skill + harvest problem ke corpus.
+        Body opsional: {roadmap_tracks, trending_languages, reddit_subs}.
+        """
+        try:
+            from .programming_learner import (
+                run_learning_cycle, seed_programming_basics,
+            )
+            # Seed programming_basics sekali (idempoten)
+            seeded = seed_programming_basics()
+            result = run_learning_cycle(
+                roadmap_tracks=body.get("roadmap_tracks"),
+                trending_languages=body.get("trending_languages"),
+                reddit_subs=body.get("reddit_subs"),
+            )
+            result["programming_basics_seeded"] = seeded
+            return result
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    @app.get("/learn/programming/status")
+    def learn_programming_status():
+        """Counts: tasks added, skills added, problems harvested."""
+        try:
+            from .programming_learner import get_status
+            return {"ok": True, **get_status()}
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
     # ── Identity Endpoints ────────────────────────────────────────────────────
 
     @app.get("/identity/describe")
@@ -1456,6 +1490,45 @@ def create_app() -> "FastAPI":
             from .social_agent import get_social_agent
             result = get_social_agent().autonomous_learning_cycle(dry_run=dry_run)
             return {"ok": True, "result": result}
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    # ── Admin Threads (connect/status/disconnect/auto-content) ───────────────
+    try:
+        from .admin_threads import build_router as _build_threads_router
+        app.include_router(_build_threads_router())
+    except Exception as _e:  # pragma: no cover
+        # Jangan gagalkan startup kalau module admin_threads error
+        import logging
+        logging.getLogger(__name__).warning("admin_threads router gagal dimuat: %s", _e)
+
+    # ── /sidix-folder/* ─ konversi D:\\SIDIX → kapabilitas SIDIX ──────────────
+    @app.post("/sidix-folder/process")
+    def sidix_folder_process():
+        try:
+            from .sidix_folder_processor import process_all
+            return {"ok": True, "report": process_all()}
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    @app.get("/sidix-folder/audit")
+    def sidix_folder_audit():
+        try:
+            from .sidix_folder_processor import latest_audit
+            return {"ok": True, "audit": latest_audit()}
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    @app.get("/sidix-folder/stats")
+    def sidix_folder_stats():
+        try:
+            from .sidix_folder_processor import stats
+            from .sidix_folder_tools import list_sidix_folder_tools
+            return {
+                "ok": True,
+                "stats": stats(),
+                "callable_tools": list_sidix_folder_tools(),
+            }
         except Exception as e:
             return {"ok": False, "error": str(e)}
 

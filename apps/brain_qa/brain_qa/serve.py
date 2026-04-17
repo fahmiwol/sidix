@@ -499,6 +499,40 @@ async def reindex_status() -> JSONResponse:
     })
 
 
+# ── Reply Harvester endpoints ────────────────────────────────────────────────
+
+class ReplyHarvestRequest(BaseModel):
+    hours: int = Field(default=24, ge=1, le=24 * 14)
+    threads_token: str = Field(default="", description="Threads Graph API access token; optional")
+    extra_reddit_urls: list[str] = Field(default_factory=list)
+    min_length: int = Field(default=20, ge=5, le=500)
+    write_qa: bool = True
+
+
+@app.post("/harvest/replies/run", tags=["Harvest"])
+async def run_reply_harvest(req: ReplyHarvestRequest) -> JSONResponse:
+    """Jalankan harvest reply dari Threads + Reddit untuk semua post terakhir."""
+    from .reply_harvester import harvest_all_recent
+    try:
+        report = harvest_all_recent(
+            hours=req.hours,
+            threads_token=req.threads_token,
+            extra_reddit_urls=req.extra_reddit_urls,
+            min_length=req.min_length,
+            write_qa=req.write_qa,
+        )
+        return JSONResponse(content={"ok": True, "report": report})
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=f"Reply harvest gagal: {exc}") from exc
+
+
+@app.get("/harvest/replies/stats", tags=["Harvest"])
+async def get_reply_harvest_stats() -> JSONResponse:
+    """Statistik reply yang telah di-harvest (total, by_platform, qa_pairs)."""
+    from .reply_harvester import reply_stats
+    return JSONResponse(content={"ok": True, "stats": reply_stats()})
+
+
 @app.delete("/corpus/{doc_id}", tags=["Corpus"])
 async def delete_document(doc_id: str) -> JSONResponse:
     """Hapus dokumen dari upload registry (dan file jika ada)."""
@@ -521,6 +555,108 @@ async def delete_document(doc_id: str) -> JSONResponse:
 
     _write_uploads_meta(remaining)
     return JSONResponse(content={"ok": True, "deleted_id": doc_id})
+
+
+# ── Notes → Modules conversion ───────────────────────────────────────────────
+
+@app.post("/notes/convert/run", tags=["Notes"])
+async def notes_convert_run(dry_run: bool = False) -> JSONResponse:
+    """
+    Convert research notes jadi skills/experiences/curriculum tasks.
+    Idempoten — dedup by hash. Pass `?dry_run=true` untuk preview tanpa menulis.
+    """
+    from .notes_to_modules import convert_all
+    try:
+        report = convert_all(dry_run=dry_run)
+        return JSONResponse(content={"ok": True, "report": report})
+    except Exception as exc:  # noqa: BLE001
+        raise HTTPException(status_code=500, detail=f"convert_all gagal: {exc}") from exc
+
+
+@app.get("/notes/convert/status", tags=["Notes"])
+async def notes_convert_status() -> JSONResponse:
+    """Laporan konversi terakhir."""
+    from .notes_to_modules import get_last_status
+    return JSONResponse(content=get_last_status())
+
+
+# ── Brain synthesizer / vision tracker / meta reflection / kg query ─────────
+
+@app.post("/synthesize/run", tags=["Synthesize"])
+async def synthesize_run(force: bool = False) -> JSONResponse:
+    """Jalankan sintesis brain + docs. Idempoten kecuali `force=true`."""
+    from .brain_synthesizer import synthesize
+    try:
+        out = synthesize(force=force)
+        return JSONResponse(content={"ok": True, "result": out})
+    except Exception as exc:  # noqa: BLE001
+        raise HTTPException(status_code=500, detail=f"synthesize gagal: {exc}") from exc
+
+
+@app.get("/synthesize/gaps", tags=["Synthesize"])
+async def synthesize_gaps(min_mentions: int = 2) -> JSONResponse:
+    """Return gap: ide di dokumen tapi belum ada modul Python."""
+    from .brain_synthesizer import find_gaps
+    try:
+        gaps = find_gaps(min_mentions=min_mentions)
+        return JSONResponse(content={"ok": True, "count": len(gaps), "gaps": gaps})
+    except Exception as exc:  # noqa: BLE001
+        raise HTTPException(status_code=500, detail=f"find_gaps gagal: {exc}") from exc
+
+
+@app.get("/synthesize/proposals", tags=["Synthesize"])
+async def synthesize_proposals() -> JSONResponse:
+    """Proposal integrasi antar modul yang belum saling terhubung."""
+    from .brain_synthesizer import generate_integration_proposals
+    try:
+        props = generate_integration_proposals()
+        return JSONResponse(content={"ok": True, "count": len(props), "proposals": props})
+    except Exception as exc:  # noqa: BLE001
+        raise HTTPException(status_code=500, detail=f"generate_integration_proposals gagal: {exc}") from exc
+
+
+@app.get("/knowledge-graph/query", tags=["KnowledgeGraph"])
+async def knowledge_graph_query(concept: str, top_k: int = 10) -> JSONResponse:
+    """Query concept: related, source files, impl status."""
+    from .knowledge_graph_query import query as kg_query
+    try:
+        result = kg_query(concept, top_k=top_k)
+        return JSONResponse(content=result)
+    except Exception as exc:  # noqa: BLE001
+        raise HTTPException(status_code=500, detail=f"kg_query gagal: {exc}") from exc
+
+
+@app.get("/knowledge-graph/concepts", tags=["KnowledgeGraph"])
+async def knowledge_graph_concepts() -> JSONResponse:
+    """List semua canonical concept."""
+    from .knowledge_graph_query import list_concepts
+    return JSONResponse(content={"concepts": list_concepts()})
+
+
+@app.get("/vision/track", tags=["Vision"])
+async def vision_track() -> JSONResponse:
+    """Coverage SIDIX vs visi awal, per pilar."""
+    from .vision_tracker import track
+    try:
+        return JSONResponse(content=track())
+    except Exception as exc:  # noqa: BLE001
+        raise HTTPException(status_code=500, detail=f"vision_track gagal: {exc}") from exc
+
+
+@app.post("/reflection/weekly", tags=["Reflection"])
+async def reflection_weekly(days: int = 7) -> JSONResponse:
+    """Generate laporan refleksi mingguan berdasarkan LIVING_LOG + note baru."""
+    from .meta_reflection import generate_weekly
+    try:
+        return JSONResponse(content=generate_weekly(days=days))
+    except Exception as exc:  # noqa: BLE001
+        raise HTTPException(status_code=500, detail=f"reflection gagal: {exc}") from exc
+
+
+@app.get("/reflection/latest", tags=["Reflection"])
+async def reflection_latest() -> JSONResponse:
+    from .meta_reflection import get_latest
+    return JSONResponse(content=get_latest())
 
 
 # ── Entry point (called from __main__.py) ────────────────────────────────────
