@@ -1108,3 +1108,15 @@ Auto-trigger:
 - DOC: **Research note 111** — `brain/public/research_notes/111_problem_solver_framework.md` — Multi-domain problem solving: pipeline klasifikasi, Maqashid check 5 sumbu, epistemic levels, approach generation.
 - DOC: **Research note 112** — `brain/public/research_notes/112_permanent_learning_sidix.md` — SPIN self-play (AlphaGo Zero + SPIN paper), skill reinforcement, meta-skills, trajectory, "jalan → lari → menari" analogy.
 - DOC: **Research note 113** — `brain/public/research_notes/113_decentralized_data_recall.md` — Fragment storage, DIKW pyramid, recall BM25-simplified, assembly, integrity check Merkle-inspired, Hafidz Framework connection.
+
+## 2026-04-18 — Git History Cleanup + Research Notes 115-117
+
+- FIX: **Git push blocked** — GitHub Push Protection mendeteksi Anthropic API key nyata di .data/harvest/mighan_opix_pairs.jsonl (commit a64b3ec). Key berasal dari settings.json Omnyx yang ter-harvest ke dalam training data JSONL. Diselesaikan dengan git-filter-repo --path .data/harvest/ --invert-paths --force — menghapus seluruh folder .data/harvest/ dari git history. Remote di-add ulang setelah filter-repo.
+
+- NOTE: **Lesson learned** — file harvest output (.data/harvest/) tidak boleh di-commit. Sudah ditambahkan ke .gitignore tapi belum di filter dari history lama. Filter-repo berhasil membersihkan 57 commits dalam 25 detik.
+
+- DOC: **Research note 115** — rain/public/research_notes/115_p2p_smart_ledger_hafidz.md — Arsitektur Hafidz: CAS (SHA-256) + Merkle Ledger (append-only JSONL) + Erasure Coding (XOR N/K). Analogi Islam: Mutawatir=erasure redundancy, Sanad=Merkle chain, Ijazah=CAS hash. Skenario distribusi 10 node, verifikasi kriptografis, smart valuation kontribusi.
+
+- DOC: **Research note 116** — rain/public/research_notes/116_sidix_self_learning_loop.md — SIDIX Self-Learning Loop: World Sensor → Conceptual Generalizer → Experience Engine → SPIN self-play → LoRA fine-tuning → Deploy → Feedback → loop. Pemetaan Pipeline Fahmi (Informasi→Inspirasi→Motivasi→Inisiasi→Improvisasi→Adopsi→Aksi) ke komponen teknis. Analogi Ijtihad vs Taqlid digital.
+
+- DOC: **Research note 117** — rain/public/research_notes/117_community_contribution_guide.md — 5 jalur kontribusi: research note, Q&A, problem-solution, paper/riset, beta testing. Sistem nilai kontribusi (uniqueness 40%, verifiability 30%, utilization 20%, feedback 10%). Visi jangka panjang 3 tahun. Konsep amal jariyah ilmu.
