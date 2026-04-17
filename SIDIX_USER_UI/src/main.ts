@@ -823,8 +823,9 @@ const settingsTabs: Record<string, string> = {
   about: `
     <div class="space-y-8 animate-fsu">
       <div class="flex flex-col items-center text-center space-y-4 py-8">
-        <div class="w-20 h-20 btn-gold rounded-3xl flex items-center justify-center shadow-2xl select-none">
-          <span class="font-display font-bold text-warm-950 text-4xl leading-none">S</span>
+        <div class="w-20 h-20 rounded-3xl flex items-center justify-center shadow-2xl select-none overflow-hidden"
+             style="background:rgba(20,15,8,0.95);border:1px solid rgba(204,152,49,0.35)">
+          <img src="/sidix-logo.svg" alt="SIDIX" class="w-14 h-14 object-contain" draggable="false" />
         </div>
         <div>
           <h3 class="font-display text-3xl font-bold glow-gold">SIDIX</h3>
