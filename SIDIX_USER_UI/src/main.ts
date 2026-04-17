@@ -38,8 +38,12 @@ function initIcons() {
 initIcons();
 
 // ── Admin mode ───────────────────────────────────────────────────────────────
-const ADMIN_PIN = 'sidix';
-const ADMIN_KEY = 'sidix_admin';
+// Kredensial disimpan di sini — untuk keamanan lebih tinggi gunakan Nginx Basic Auth.
+const ADMIN_USER = 'admin';
+const ADMIN_PASS = 'sidix@ctrl2025';
+const ADMIN_KEY  = 'sidix_admin';
+const IS_CTRL    = window.location.hostname === 'ctrl.sidixlab.com'
+                || window.location.hostname === 'localhost'; // localhost = dev mode
 
 function isAdmin(): boolean {
   return sessionStorage.getItem(ADMIN_KEY) === '1';
@@ -55,46 +59,57 @@ function setAdminMode(active: boolean) {
 }
 
 function applyAdminUI() {
-  const admin = isAdmin();
+  const admin     = isAdmin();
   const corpusBtn = document.getElementById('nav-corpus');
   const lockBtn   = document.getElementById('nav-admin-lock');
 
   if (corpusBtn) corpusBtn.classList.toggle('hidden', !admin);
 
+  // Lock button hanya muncul di ctrl subdomain
   if (lockBtn) {
-    lockBtn.title = admin ? 'Keluar dari mode admin' : 'Mode admin';
-    lockBtn.innerHTML = admin
-      ? '<i data-lucide="lock-open" class="w-4 h-4 text-gold-400"></i>'
-      : '<i data-lucide="lock" class="w-4 h-4"></i>';
-    initIcons();
+    if (IS_CTRL) {
+      lockBtn.classList.remove('hidden');
+      lockBtn.title = admin ? 'Logout dari admin' : 'Login admin';
+      lockBtn.innerHTML = admin
+        ? '<i data-lucide="lock-open" class="w-4 h-4 text-gold-400"></i>'
+        : '<i data-lucide="lock" class="w-4 h-4"></i>';
+      initIcons();
+    } else {
+      // app.sidixlab.com — sembunyikan sepenuhnya
+      lockBtn.classList.add('hidden');
+    }
   }
 
-  // If leaving admin mode while on corpus/admin-settings, go back to chat
+  // Jika keluar dari admin mode saat di corpus screen, kembali ke chat
   if (!admin) {
     const corpusVisible = !document.getElementById('screen-corpus')?.classList.contains('hidden');
     if (corpusVisible) switchScreen('chat');
   }
 }
 
-// Admin PIN modal wiring
-const pinModal   = document.getElementById('admin-pin-modal');
-const pinInput   = document.getElementById('admin-pin-input') as HTMLInputElement;
-const pinError   = document.getElementById('admin-pin-error');
-const pinConfirm = document.getElementById('admin-pin-confirm');
-const pinCancel  = document.getElementById('admin-pin-cancel');
+// Admin login modal wiring
+const pinModal    = document.getElementById('admin-pin-modal');
+const userInput   = document.getElementById('admin-username-input') as HTMLInputElement;
+const pinInput    = document.getElementById('admin-pin-input') as HTMLInputElement;
+const pinError    = document.getElementById('admin-pin-error');
+const pinConfirm  = document.getElementById('admin-pin-confirm');
+const pinCancel   = document.getElementById('admin-pin-cancel');
 
 function openPinModal() {
   if (pinModal) pinModal.classList.remove('hidden');
-  if (pinInput) { pinInput.value = ''; pinInput.focus(); }
-  if (pinError) pinError.classList.add('hidden');
+  if (userInput) { userInput.value = ''; userInput.focus(); }
+  if (pinInput)  { pinInput.value = ''; }
+  if (pinError)  pinError.classList.add('hidden');
 }
 
 function closePinModal() {
   if (pinModal) pinModal.classList.add('hidden');
 }
 
-function confirmPin() {
-  if (pinInput?.value === ADMIN_PIN) {
+function confirmLogin() {
+  const u = userInput?.value.trim();
+  const p = pinInput?.value;
+  if (u === ADMIN_USER && p === ADMIN_PASS) {
     setAdminMode(true);
     closePinModal();
   } else {
@@ -103,9 +118,13 @@ function confirmPin() {
   }
 }
 
-pinConfirm?.addEventListener('click', confirmPin);
-pinCancel?.addEventListener('click', closePinModal);
-pinInput?.addEventListener('keydown', (e) => { if (e.key === 'Enter') confirmPin(); });
+pinConfirm?.addEventListener('click', confirmLogin);
+pinCancel?.addEventListener('click', () => {
+  closePinModal();
+  // Di ctrl subdomain, batalkan login → tetap di halaman tapi tanpa admin
+});
+pinInput?.addEventListener('keydown', (e) => { if (e.key === 'Enter') confirmLogin(); });
+userInput?.addEventListener('keydown', (e) => { if (e.key === 'Enter') pinInput?.focus(); });
 
 document.getElementById('nav-admin-lock')?.addEventListener('click', () => {
   if (isAdmin()) {
@@ -117,6 +136,11 @@ document.getElementById('nav-admin-lock')?.addEventListener('click', () => {
 
 // Apply on load
 applyAdminUI();
+
+// ctrl subdomain: tampilkan login jika belum auth
+if (IS_CTRL && !isAdmin()) {
+  openPinModal();
+}
 
 // ── Elements ─────────────────────────────────────────────────────────────────
 const $  = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;

@@ -50,10 +50,10 @@
 
       <!-- Settings + Admin lock at bottom -->
       <div class="mt-auto flex flex-col gap-3">
-        <!-- Admin toggle key -->
+        <!-- Admin lock — hanya muncul di ctrl subdomain -->
         <button
           id="nav-admin-lock"
-          class="nav-item w-10 h-10 rounded-xl flex items-center justify-center text-parchment-500
+          class="hidden nav-item w-10 h-10 rounded-xl flex items-center justify-center text-parchment-500
                  hover:bg-warm-700 hover:text-parchment-100 transition-all duration-150"
           title="Mode admin"
           aria-label="Admin"
@@ -355,32 +355,43 @@
 
     </main>
 
-    <!-- ════════ ADMIN PIN MODAL ════════ -->
-    <div id="admin-pin-modal" class="hidden fixed inset-0 z-[999] flex items-center justify-center bg-warm-950/80 backdrop-blur-sm">
+    <!-- ════════ ADMIN LOGIN MODAL ════════ -->
+    <div id="admin-pin-modal" class="hidden fixed inset-0 z-[999] flex items-center justify-center bg-warm-950/90 backdrop-blur-sm">
       <div class="glass rounded-2xl p-8 w-full max-w-xs shadow-2xl border border-gold-500/20 text-center space-y-5">
         <div class="w-12 h-12 rounded-2xl flex items-center justify-center mx-auto overflow-hidden"
              style="background:rgba(30,22,14,0.9);border:1px solid rgba(204,152,49,0.3)">
           <img src="/sidix-logo.svg" alt="SIDIX" class="w-9 h-9 object-contain" draggable="false" />
         </div>
         <div>
-          <h3 class="font-display font-bold text-parchment-100 text-lg">Mode Admin</h3>
-          <p class="text-xs text-parchment-500 mt-1">Masukkan PIN untuk melanjutkan</p>
+          <h3 class="font-display font-bold text-parchment-100 text-lg">SIDIX Control</h3>
+          <p class="text-xs text-parchment-500 mt-1">Login diperlukan untuk mengakses panel admin</p>
         </div>
-        <input
-          id="admin-pin-input"
-          type="password"
-          placeholder="PIN"
-          maxlength="12"
-          class="w-full bg-warm-800 border border-warm-600 text-parchment-100 rounded-xl px-4 py-3
-                 text-sm text-center tracking-[0.3em] font-mono focus:outline-none focus:ring-1
-                 focus:ring-gold-500/50 placeholder:tracking-normal placeholder:text-parchment-500"
-        />
-        <p id="admin-pin-error" class="hidden text-xs text-status-failed">PIN salah. Coba lagi.</p>
+        <div class="space-y-3 text-left">
+          <input
+            id="admin-username-input"
+            type="text"
+            placeholder="Username"
+            autocomplete="username"
+            class="w-full bg-warm-800 border border-warm-600 text-parchment-100 rounded-xl px-4 py-3
+                   text-sm font-mono focus:outline-none focus:ring-1
+                   focus:ring-gold-500/50 placeholder:text-parchment-500"
+          />
+          <input
+            id="admin-pin-input"
+            type="password"
+            placeholder="Password"
+            autocomplete="current-password"
+            class="w-full bg-warm-800 border border-warm-600 text-parchment-100 rounded-xl px-4 py-3
+                   text-sm font-mono focus:outline-none focus:ring-1
+                   focus:ring-gold-500/50 placeholder:text-parchment-500"
+          />
+        </div>
+        <p id="admin-pin-error" class="hidden text-xs text-status-failed">Username atau password salah.</p>
         <div class="flex gap-3">
           <button id="admin-pin-cancel" class="flex-1 px-4 py-2.5 rounded-xl text-sm text-parchment-400
                   hover:bg-warm-700 transition-all border border-warm-600">Batal</button>
           <button id="admin-pin-confirm" class="flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold
-                  btn-gold">Masuk</button>
+                  btn-gold">Login</button>
         </div>
       </div>
     </div>
