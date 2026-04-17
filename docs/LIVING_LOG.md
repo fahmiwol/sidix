@@ -916,3 +916,27 @@ Auto-trigger:
 - DECISION: Semua tools (Claude, Cursor, dll) wajib tulis research note → corpus SIDIX tumbuh organik
 - NOTE: Corpus SIDIX naik dari 520 → 523+ docs; bundle Vite naik 49→247kB (supabase-js)
 - NOTE: Cursor sedang kerjakan case_frames.json + intent classification + L0 planner untuk SIDIX
+
+### 2026-04-18 — Sesi Konversi Dokumen → 7 Modul Aktif + Social Learning
+
+- DECISION: **"Jika kau pelajari dari filosofinya, kau dapat semuanya"** — semua research notes & manifesto dikonversi ke modul Python aktif
+- IMPL: **`experience_engine.py`** — CSDOR Framework (Context-Situation-Decision-Outcome-Reflection); ExperienceStore JSONL, CSDORParser narasi bebas, 4 lapisan validasi; 166 records dari corpus langsung teringest
+- IMPL: **`self_healing.py`** — 14 error patterns (RLS, port conflict, import error, OOM, SSL, PM2, 502); ErrorClassifier regex, SelfHealingEngine dengan confidence scoring; semua fix sebagai SARAN bukan auto-execute
+- IMPL: **`world_sensor.py`** — ArxivSensor (cs.AI/cs.LG/cs.CL RSS), GitHubSensor (trending repos), MCPKnowledgeBridge; MCPBridge export 47 items dari D:\SIDIX\knowledge ke brain/public/sources/web_clips
+- IMPL: **`skill_library.py`** — Voyager-style; 8 default skills: search_wikipedia, kaggle_path_autodetect, maqashid_evaluate, react_chain_of_thought, pm2_restart_with_env, bm25_search_pattern, qlora_training_config, supabase_rls_fix
+- IMPL: **`curriculum.py`** — L0→L4 learning path (21 tasks); prerequisite tracking; 5 persona: MIGHAN/HAYFAR/TOARD/FACH/INAN; next tasks: ai_basics + python_basics
+- IMPL: **`identity.py`** — SIDIX Constitutional Framework; 12 aturan C01-C12 (Sidq/Amanah/Tabligh/Fathanah); PERSONA_MATRIX 5 persona; `route_persona()`, `get_system_prompt()`, `check_constitutional()`
+- IMPL: **`social_agent.py`** — ThreadsClient (post/replies/feed via Meta API), RedditRSSClient (7 subreddits, no auth), ContentQualityFilter (spam + quality score 0.0-1.0), 4 POST_TEMPLATES; rate limit: 3 post/day, 20 replies/day; `autonomous_learning_cycle()`
+- IMPL: **24 endpoint baru di `agent_serve.py`** — /sensor/*, /skills/*, /experience/*, /healing/*, /curriculum/*, /identity/*, /social/*
+- IMPL: **`run_init.py`** — test script validasi semua 7 modul (temp, belum dihapus)
+- DOC: **Research note 76** — `76_dokumen_ke_kode_konversi_lengkap.md` mendokumentasikan semua modul, endpoint, filosofi, pipeline otomatis
+- FIX: SyntaxWarning `\S` invalid escape di world_sensor.py — path Windows dalam docstring → escaped properly
+- FIX: PowerShell git commit dengan here-string Indonesian text → gunakan `$msg = "..."` variable
+- NOTE: MCPKnowledgeBridge sukses export 47 items dari D:\SIDIX\knowledge → corpus lokal
+- NOTE: Reddit learning: 0 posts (network lokal — akan normal di VPS)
+- NOTE: Estimasi knowledge otomatis: ~88-100 items/hari (arXiv + GitHub + Reddit + Wikipedia + MCP bridge)
+- NOTE: Commit: `36c6811 feat: konversi dokumen ke 7 modul Python aktif`
+- DECISION: Prioritas deploy: push ke VPS → pm2 restart → /sensor/bridge-mcp → setup THREADS_ACCESS_TOKEN
+- TODO: Wire experience_engine + skill_library ke agent_react.py untuk richer answers
+- TODO: Build harvest.py — capture Q&A pairs dari conversation langsung ke training data
+- TODO: Setup Threads API credentials di VPS .env untuk social posting otomatis
