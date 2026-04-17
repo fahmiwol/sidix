@@ -235,6 +235,23 @@ def main(argv: list[str]) -> int:
     ledger_sub.add_parser("snapshot", help="Create a new Merkle snapshot entry")
     ledger_sub.add_parser("verify", help="Verify snapshot chain + compare latest snapshot to current corpus")
 
+    p_praxis = sub.add_parser(
+        "praxis",
+        help="Pelajaran agen (Praxis): jejak JSONL + lesson Markdown untuk RAG — 'mengajar SIDIX' dari eksekusi",
+    )
+    praxis_sub = p_praxis.add_subparsers(dest="praxis_cmd", required=True)
+    praxis_sub.add_parser("list", help="Daftar lesson Markdown terbaru di brain/public/praxis/lessons/")
+    p_praxis_note = praxis_sub.add_parser("note", help="Simpan catatan agen luar sebagai lesson (Markdown terindeks)")
+    p_praxis_note.add_argument("title", help="Judul singkat")
+    p_praxis_note.add_argument("--summary", default="", help="Ringkasan apa yang dilakukan")
+    p_praxis_note.add_argument(
+        "--step",
+        action="append",
+        default=[],
+        dest="steps",
+        help="Satu langkah (boleh diulang). Contoh: --step 'Baca agent_react.py' --step 'Tambah hook praxis'",
+    )
+
     p_serve = sub.add_parser("serve", help="Start HTTP API server for SIDIX UI (FastAPI + Uvicorn)")
     p_serve.add_argument("--host", default="0.0.0.0", help="Bind host (default: 0.0.0.0)")
     p_serve.add_argument("--port", type=int, default=8765, help="Port (default: 8765)")
@@ -604,6 +621,30 @@ def main(argv: list[str]) -> int:
             )
             return 0 if r.ok else 2
         raise RuntimeError(f"Unknown ledger command: {args.ledger_cmd}")
+
+    if args.cmd == "praxis":
+        from .praxis import ExternalPraxisNote, ingest_external_note, list_recent_lessons
+
+        if args.praxis_cmd == "list":
+            print(json.dumps(list_recent_lessons(limit=40), ensure_ascii=False, indent=2))
+            return 0
+        if args.praxis_cmd == "note":
+            note = ExternalPraxisNote(
+                title=args.title,
+                summary=args.summary or "",
+                steps=list(args.steps or []),
+                tags=["praxis", "external", "sidix"],
+            )
+            p = ingest_external_note(note)
+            print(
+                json.dumps(
+                    {"ok": p is not None, "path": str(p) if p else None},
+                    ensure_ascii=False,
+                    indent=2,
+                )
+            )
+            return 0 if p else 1
+        raise RuntimeError(f"Unknown praxis command: {args.praxis_cmd}")
 
     if args.cmd == "serve":
         try:

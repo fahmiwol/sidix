@@ -6,6 +6,7 @@ Endpoint utama:
   POST /agent/generate  — Direct generate (mock → swap real model nanti)
   GET  /agent/tools     — List tools yang tersedia
   GET  /agent/orchestration — Rencana orkestrasi deterministik (query q, persona)
+  GET  /agent/praxis/lessons — Daftar lesson Praxis (Markdown) untuk meta-pembelajaran
   GET  /agent/trace/:id — Ambil trace session
   GET  /health          — Status inference engine
 
@@ -136,6 +137,8 @@ class ChatResponse(BaseModel):
     constitutional_passes: bool = True
     nafs_stage: str = ""           # alignment trajectory
     orchestration_digest: str = ""  # ringkasan OrchestrationPlan (modul orchestration.py)
+    case_frame_ids: str = ""  # id kerangka Praxis runtime (case_frames.json), dipisah koma
+    praxis_matched_frame_ids: str = ""  # urutan match awal sesi (planner L0)
 
 
 class GenerateRequest(BaseModel):
@@ -355,6 +358,8 @@ def create_app() -> "FastAPI":
             constitutional_passes=getattr(session, "constitutional_passes", True),
             nafs_stage=getattr(session, "nafs_stage", ""),
             orchestration_digest=getattr(session, "orchestration_digest", ""),
+            case_frame_ids=getattr(session, "case_frame_ids", ""),
+            praxis_matched_frame_ids=getattr(session, "praxis_matched_frame_ids", ""),
         )
 
     # ── GET /agent/orchestration ───────────────────────────────────────────────
@@ -408,6 +413,15 @@ def create_app() -> "FastAPI":
             "tools": list_available_tools(),
             "total": len(list_available_tools()),
         }
+
+    @app.get("/agent/praxis/lessons")
+    def agent_praxis_lessons(limit: int = 30):
+        """Daftar file pelajaran Praxis (Markdown) — hasil jejak agen + catatan luar."""
+        _bump_metric("praxis_lessons_list")
+        from .praxis import list_recent_lessons
+
+        lim = max(1, min(100, int(limit)))
+        return {"lessons": list_recent_lessons(limit=lim)}
 
     # ── Curriculum helpers (roadmap.sh snapshot) ───────────────────────────────
     @app.get("/curriculum/roadmaps")
@@ -604,6 +618,8 @@ def create_app() -> "FastAPI":
             "constitutional_passes": getattr(session, "constitutional_passes", True),
             "nafs_stage":          getattr(session, "nafs_stage", ""),
             "orchestration_digest": getattr(session, "orchestration_digest", ""),
+            "case_frame_ids": getattr(session, "case_frame_ids", ""),
+            "praxis_matched_frame_ids": getattr(session, "praxis_matched_frame_ids", ""),
         }
 
     # ── POST /ask/stream ──────────────────────────────────────────────────────
@@ -643,6 +659,8 @@ def create_app() -> "FastAPI":
                 "session_id": session.session_id,
                 "confidence": session.confidence,
                 "orchestration_digest": getattr(session, "orchestration_digest", ""),
+                "case_frame_ids": getattr(session, "case_frame_ids", ""),
+                "praxis_matched_frame_ids": getattr(session, "praxis_matched_frame_ids", ""),
             })
             yield f"data: {meta}\n\n"
 
@@ -671,6 +689,8 @@ def create_app() -> "FastAPI":
                 "session_id": session.session_id,
                 "confidence": session.confidence,
                 "orchestration_digest": getattr(session, "orchestration_digest", ""),
+                "case_frame_ids": getattr(session, "case_frame_ids", ""),
+                "praxis_matched_frame_ids": getattr(session, "praxis_matched_frame_ids", ""),
             })
             yield f"data: {event}\n\n"
 

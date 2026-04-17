@@ -835,6 +835,33 @@ Auto-trigger:
 - TEST: **`python -m pytest tests/test_orchestration.py -q`** dari root `D:\MIGHAN Model` → **6 passed** (lingkungan: Python 3.14, pytest di-install ke user site bila belum ada).
 - NOTE: PowerShell — gunakan **`;`** bukan `&&` untuk rangkai perintah.
 
+### 2026-04-17 (Praxis — SIDIX belajar dari jejak eksekusi agen)
+
+- IMPL: **`apps/brain_qa/brain_qa/praxis.py`** — `record_praxis_event`, `record_react_step`, `finalize_session_teaching` (Markdown lesson ke `brain/public/praxis/lessons/`), JSONL sesi di `.data/praxis/sessions/`; `ExternalPraxisNote` + `ingest_external_note` untuk catatan agen luar; redaksi ringan secret; potong observasi panjang.
+- UPDATE: **`apps/brain_qa/brain_qa/agent_react.py`** — setiap `run_react`: `session_start`; cabang blokir/cache + setiap langkah tool + final memanggil Praxis; `finalize_session_teaching` di akhir sukses / max-steps / early exit (non-fatal try/except).
+- UPDATE: **`apps/brain_qa/brain_qa/__main__.py`** — subcommand **`praxis list`** dan **`praxis note`** (judul, `--summary`, `--step` berulang).
+- UPDATE: **`apps/brain_qa/brain_qa/agent_serve.py`** — **`GET /agent/praxis/lessons`**.
+- DOC: **`brain/public/praxis/00_sidix_praxis_framework.md`**, **`brain/public/praxis/README.md`** — cara indeks + CLI catat tugas luar.
+- IMPL: **`tests/test_praxis.py`** — record/finalize, external note, list lessons (dengan monkeypatch path).
+- TEST: **`python -m pytest tests/test_praxis.py tests/test_orchestration.py -q`** → **9 passed**.
+- NOTE: Agar SIDIX menemukan lesson baru lewat RAG, jalankan **`python -m brain_qa index`** dari `apps/brain_qa/` setelah lesson bertambah.
+
+### 2026-04-17 (Praxis L0 — kerangka kasus runtime, bukan sekadar direktori)
+
+- IMPL: **`brain/public/praxis/patterns/case_frames.json`** — pola kurasi: niat, inisiasi (langkah), cabang `if_data` / `if_no_data` per kasus (faktual, implement, orkestrasi, index lemah, keamanan, meta-praxis).
+- IMPL: **`apps/brain_qa/brain_qa/praxis_runtime.py`** — `match_case_frames`, `format_case_frames_for_user`, `has_substantive_corpus_observations`, **`planner_step0_suggestion`** (L0 → `orchestration_plan` bila frame `orchestration_meta` ≥ 0.42), **`implement_frame_matches`** (memperluas jalur `workspace_list` setelah corpus).
+- UPDATE: **`agent_react.run_react`** — setelah `session_start`, isi **`session.praxis_matched_frame_ids`**; step 0 dapat memilih aksi dari `planner_step0_suggestion`; planner rule-based memakai `implement_frame_matches` bersama intent build.
+- UPDATE: **`agent_react._compose_final_answer`** — menyematkan blok **Kerangka situasi** + comment mesin `SIDIX_CASE_FRAMES`; parameter `session` untuk mengisi `case_frame_ids` / `case_frame_hints_rendered`.
+- UPDATE: **`brain_qa/praxis.finalize_session_teaching`** — seksi **Kerangka kasus (runtime)** di lesson Markdown.
+- UPDATE: **`agent_serve`** — `ChatResponse.case_frame_ids` + **`praxis_matched_frame_ids`**, `/ask`, SSE `meta`/`done`; dokumen kerangka di **`brain/public/praxis/00_sidix_praxis_framework.md`** (tabel L0/L1/L2).
+- IMPL: **`tests/test_praxis_runtime.py`** — pencocokan orkestrasi / implement / format + planner step0 + rule-based workspace dengan frame saja.
+- TEST: **`python -m pytest tests/test_praxis_runtime.py tests/test_praxis.py tests/test_orchestration.py -q`** → **15 passed**.
+
+### 2026-04-17 (Kontinuitas agen + SIDIX — catatan & commit)
+
+- DOC: **`AGENTS.md`** — pointer repo publik **https://github.com/fahmiwol/sidix** dan ringkasan **L0 ↔ planner** (`planner_step0_suggestion`, `implement_frame_matches`, `praxis_matched_frame_ids`) supaya agen berikutnya tidak kehilangan konteks.
+- NOTE: Permintaan pemilik: setelah fitur Praxis/L0, **catat di log + commit ke Git**; batch ini menyertakan modul Praxis, runtime, tes, `brain/public/praxis/`, dan aset logo SVG yang di-track.
+
 ### 2026-04-17 — Deploy VPS + Supabase Setup (Sesi Claude)
 
 - IMPL: **Landing page** `SIDIX_LANDING/index.html` — hero, epistemic triad, features, roadmap, contribute, feedback (Formspree), newsletter, donate, community (Instagram/Threads/GitHub), footer.
@@ -859,3 +886,32 @@ Auto-trigger:
 - DOC: `brain/public/research_notes/60_vps_deployment_sidix_aapanel.md` — panduan deploy lengkap (DNS, aaPanel, Python backend, Node.js frontend, port check, Nginx proxy, SSL, update workflow, PM2, troubleshooting).
 - IMPL: **Supabase project `sidix`** dibuat — org: mighan, region: ap-southeast-1 (Singapore), plan: Free. Project URL: `https://fkgnmrnckcnqvjsyunla.supabase.co`. Schema belum dibuat (coming up...).
 - DECISION: Supabase sebagai backend-as-a-service untuk user management, plugin marketplace, newsletter, feedback. Dipilih karena: PostgreSQL standard (mudah migrasi), Auth bawaan, GitHub OAuth, RLS, free tier cukup untuk tahap awal.
+
+### 2026-04-17 — Sesi Supabase + Knowledge System (Sesi Claude lanjutan)
+
+- IMPL: **Admin login** — lock button hidden di app subdomain, ctrl subdomain auto-prompt login form (username+password, bukan PIN)
+- IMPL: **Supabase project `sidix`** — Singapore ap-southeast-1, schema: profiles/newsletter/feedback/plugins + RLS + trigger handle_new_user
+- FIX: **RLS policy** — `feedback` dan `newsletter` INSERT tidak include role `anon` → fix: `TO anon, authenticated`
+- IMPL: **`src/lib/supabase.ts`** — client, subscribeNewsletter(), submitFeedbackDB()
+- IMPL: **Tab "Saran"** di settings UI — feedback (bug/saran/fitur) + newsletter, live konek ke Supabase
+- FIX: **tsconfig.json** — tambah `types: ["vite/client"]` agar import.meta.env dikenali TypeScript
+- IMPL: **`CLAUDE.md`** — instruksi permanen: setiap task → tulis research note
+- IMPL: **`tools/sidix-learn.ps1`** — script cepat buat template research note dari terminal
+- IMPL: **`tools/export_feedback.py`** — fetch feedback dari Supabase → konversi ke corpus MD files
+- IMPL: **`brain/public/feedback_learning/`** — direktori untuk feedback yang dikonversi ke corpus
+- DOC: Research notes 60–71 (12 notes baru):
+  - 60: VPS deployment + aaPanel
+  - 61: Supabase database backend
+  - 62: API keys, env vars, keamanan
+  - 63: Supabase schema setup + RLS
+  - 64: Vision AI membaca gambar
+  - 65: Sistem knowledge capture otomatis
+  - 66: Cara AI berpikir — intake, parsing, analisis, keputusan, eksekusi
+  - 67: Vite build-time env vars (jebakan deploy)
+  - 68: Membaca output server + diagnosis terminal
+  - 69: Closed-loop feedback learning
+  - 70: Self-healing AI system
+  - 71: Cara mendiagnosis error (anatomi error message)
+- DECISION: Semua tools (Claude, Cursor, dll) wajib tulis research note → corpus SIDIX tumbuh organik
+- NOTE: Corpus SIDIX naik dari 520 → 523+ docs; bundle Vite naik 49→247kB (supabase-js)
+- NOTE: Cursor sedang kerjakan case_frames.json + intent classification + L0 planner untuk SIDIX

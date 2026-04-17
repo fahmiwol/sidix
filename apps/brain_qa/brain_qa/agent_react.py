@@ -86,6 +86,10 @@ class AgentSession:
     user_profile: UserProfile | None = None  # full profile object
     # ── Orkestrasi multi-aspek (modul orchestration.py) ─────────────────────────
     orchestration_digest: str = ""  # ringkasan OrchestrationPlan untuk API/trace
+    # ── Praxis runtime: kerangka kasus (niat / inisiasi) ─────────────────────────
+    case_frame_ids: str = ""  # id kerangka terpilih, dipisah koma
+    case_frame_hints_rendered: str = ""  # teks yang disematkan ke jawaban (ringkas)
+    praxis_matched_frame_ids: str = ""  # urutan id dari match awal sesi (untuk planner / API)
 
 
 # ── Rule-based "LLM" (offline planner) ───────────────────────────────────────
@@ -170,6 +174,16 @@ def _rule_based_plan(
                 {},
             )
 
+        # Praxis L0 → planner: orkestrasi dulu bila kerangka cocok (sebelum regex lama)
+        try:
+            from .praxis_runtime import planner_step0_suggestion
+
+            _ps0 = planner_step0_suggestion(question, persona)
+            if _ps0 is not None:
+                return _ps0
+        except Exception:
+            pass
+
         if _ORCH_META_RE.search(question):
             return (
                 "User minta rencana orkestrasi / multi-aspek. Bangun OrchestrationPlan.",
@@ -223,13 +237,26 @@ def _rule_based_plan(
         obs_lower = last.observation.lower()
 
         # Mode agen: setelah corpus, orientasi sandbox workspace (implement / app / game)
+        # Praxis: frame implement_or_automate memperluas ke workspace walau regex build belum picu.
+        try:
+            from .praxis_runtime import implement_frame_matches
+
+            _impl_frame = implement_frame_matches(question)
+        except Exception:
+            _impl_frame = False
+
         if (
             last.action_name == "search_corpus"
-            and agent_build_intent(question)
+            and (agent_build_intent(question) or _impl_frame)
             and not any(s.action_name == "workspace_list" for s in history)
         ):
+            thought_ws = (
+                "Kerangka Praxis (implementasi): setelah corpus, tinjau sandbox."
+                if _impl_frame and not agent_build_intent(question)
+                else "User minta implementasi; setelah corpus, lihat isi sandbox agent_workspace."
+            )
             return (
-                "User minta implementasi; setelah corpus, lihat isi sandbox agent_workspace.",
+                thought_ws,
                 "workspace_list",
                 {"path": ""},
             )
@@ -328,6 +355,7 @@ def _compose_final_answer(
     *,
     simple_mode: bool = False,
     user_profile: "UserProfile | None" = None,
+    session: "AgentSession | None" = None,
 ) -> tuple[str, list[dict], float, str]:
     """
     Compose jawaban final dari semua observation yang sudah dikumpulkan.
@@ -355,12 +383,31 @@ def _compose_final_answer(
         )
 
     if not obs_blocks:
+        try:
+            from .praxis_runtime import (
+                format_case_frames_for_user,
+                format_case_frames_machine_comment,
+                has_substantive_corpus_observations,
+                match_case_frames,
+            )
+
+            matched = match_case_frames(question)
+            cf = format_case_frames_for_user(matched, has_corpus_observations=False)
+            cf_c = format_case_frames_machine_comment(matched)
+            if session is not None:
+                session.case_frame_ids = ",".join(m.frame_id for m in matched)
+                session.case_frame_hints_rendered = cf
+            extra = f"\n\n{cf}" if cf else ""
+            extra += f"\n{cf_c}" if cf_c else ""
+        except Exception:
+            extra = ""
         return (
             "🔍 Spekulasi/Belum pasti\n\n"
             "**Saya tidak tahu pasti** berdasarkan korpus saat ini.\n\n"
             f"Pertanyaan: «{question}»\n\n"
             "Perluas indeks (unggah sumber) atau aktifkan fallback web di pengaturan jika tersedia. "
-            "Lihat juga chip sumber bila ada kutipan parsial.",
+            "Lihat juga chip sumber bila ada kutipan parsial."
+            + extra,
             [],
             0.0,
             "spekulasi",
@@ -422,6 +469,29 @@ def _compose_final_answer(
     atype = label_answer_type(best_obs)
     badge = answer_type_badge(atype)
     body = f"{badge}\n\n{body}"
+
+    # ── Praxis: kerangka kasus (konsep / niat / inisiasi / cabang data) ────────
+    try:
+        from .praxis_runtime import (
+            format_case_frames_for_user,
+            format_case_frames_machine_comment,
+            has_substantive_corpus_observations,
+            match_case_frames,
+        )
+
+        matched = match_case_frames(question)
+        has_obs = has_substantive_corpus_observations(steps)
+        cf_block = format_case_frames_for_user(matched, has_corpus_observations=has_obs)
+        cf_comment = format_case_frames_machine_comment(matched)
+        if session is not None:
+            session.case_frame_ids = ",".join(m.frame_id for m in matched)
+            session.case_frame_hints_rendered = cf_block
+        if cf_block:
+            body += "\n\n" + cf_block
+        if cf_comment:
+            body += "\n" + cf_comment
+    except Exception:
+        pass
 
     # Task 27: skor kepercayaan numerik
     conf_score = aggregate_confidence_score(
@@ -568,16 +638,42 @@ def run_react(
         persona=persona,
     )
 
+    from . import praxis as _praxis
+
+    _praxis.record_praxis_event(
+        session_id,
+        "session_start",
+        {"question": question[:4000], "persona": persona},
+    )
+
+    try:
+        from .praxis_runtime import match_case_frames
+
+        _mf0 = match_case_frames(question, limit=8)
+        session.praxis_matched_frame_ids = ",".join(m.frame_id for m in _mf0)
+    except Exception:
+        pass
+
     if g1_policy.detect_prompt_injection(question):
         session.final_answer = g1_policy.safe_injection_response()
         session.finished = True
         session.confidence = "diblokir (keamanan)"
+        _praxis.record_praxis_event(session_id, "blocked", {"reason": "prompt_injection"})
+        try:
+            _praxis.finalize_session_teaching(session)
+        except Exception:
+            pass
         return session
 
     if g1_policy.detect_toxic_user_message(question):
         session.final_answer = g1_policy.safe_toxic_response()
         session.finished = True
         session.confidence = "diblokir (ujaran)"
+        _praxis.record_praxis_event(session_id, "blocked", {"reason": "toxic"})
+        try:
+            _praxis.finalize_session_teaching(session)
+        except Exception:
+            pass
         return session
 
     cached = answer_dedup.get_cached_answer(persona, question)
@@ -585,6 +681,11 @@ def run_react(
         session.final_answer = cached
         session.finished = True
         session.confidence = "cache singkat"
+        _praxis.record_praxis_event(session_id, "cache_hit", {"persona": persona})
+        try:
+            _praxis.finalize_session_teaching(session)
+        except Exception:
+            pass
         return session
 
     # ── User Intelligence: analisis frekuensi pengguna ────────────────────────
@@ -637,6 +738,7 @@ def run_react(
                 steps=session.steps,
                 simple_mode=simple_mode,
                 user_profile=session.user_profile,
+                session=session,
             )
             step = ReActStep(
                 step=step_num,
@@ -669,6 +771,12 @@ def run_react(
             answer_dedup.set_cached_answer(persona, question, final_answer)
             session.finished = True
             _attach_orchestration_digest(session, question, persona)
+
+            _praxis.record_react_step(session_id, step)
+            try:
+                _praxis.finalize_session_teaching(session)
+            except Exception:
+                pass
 
             if verbose:
                 print(f"[Final Answer]\n{final_answer[:400]}")
@@ -706,6 +814,7 @@ def run_react(
             react_step.action_args["_citations"] = result.citations
 
         session.steps.append(react_step)
+        _praxis.record_react_step(session_id, react_step)
 
     else:
         # Loop habis tanpa final answer
@@ -715,6 +824,7 @@ def run_react(
             steps=session.steps,
             simple_mode=simple_mode,
             user_profile=session.user_profile,
+            session=session,
         )
         session.citations = citations
         session.finished = True
@@ -735,6 +845,10 @@ def run_react(
         # ─────────────────────────────────────────────────────────────────────
         answer_dedup.set_cached_answer(persona, question, final_answer)
         _attach_orchestration_digest(session, question, persona)
+        try:
+            _praxis.finalize_session_teaching(session)
+        except Exception:
+            pass
 
     return session
 
