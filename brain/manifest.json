@@ -4,11 +4,11 @@
   "description": "Brain pack (pemikiran, riset dasar, portofolio, glossary) untuk jadi landasan RAG + memory.",
   "created_at": "2026-04-15",
   "data_roots": {
-    "public_markdown_root": "D:\\\\MIGHAN Model\\\\brain\\\\public",
-    "datasets_root": "D:\\\\MIGHAN Model\\\\brain\\\\datasets"
+    "public_markdown_root": "brain/public",
+    "datasets_root": "brain/datasets"
   },
   "privacy": {
-    "private_root_hint": "D:\\\\MIGHAN Model\\\\brain\\\\private (ignored by git)",
+    "private_root_hint": "brain/private (ignored by git)",
     "do_not_commit": [
       "brain/private/**"
     ]

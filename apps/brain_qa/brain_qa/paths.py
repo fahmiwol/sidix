@@ -34,5 +34,8 @@ def load_manifest_paths() -> ManifestPaths:
     if not isinstance(public_root, str) or not public_root.strip():
         raise ValueError("brain/manifest.json missing data_roots.public_markdown_root")
 
-    return ManifestPaths(public_markdown_root=Path(public_root))
+    p = Path(public_root)
+    if not p.is_absolute():
+        p = workspace_root() / p
+    return ManifestPaths(public_markdown_root=p)
 
