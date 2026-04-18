@@ -318,6 +318,16 @@ def create_app() -> "FastAPI":
 
         effective_mode = "ollama" if ollama_info.get("available") else ("local_lora" if model_ready else "mock")
 
+        # Threads token alert
+        threads_alert = None
+        try:
+            from .threads_oauth import get_token_info
+            t_info = get_token_info()
+            if t_info.get("alert") in ("warning", "expired"):
+                threads_alert = t_info.get("alert_message")
+        except Exception:
+            pass
+
         return {
             # Format baru (agent)
             "status": "ok",
@@ -335,6 +345,8 @@ def create_app() -> "FastAPI":
             "sessions_cached": len(_sessions),
             "anon_daily_quota_cap": rate_limit.daily_quota_cap(),
             "engine_build": os.environ.get("BRAIN_QA_ENGINE_BUILD", "0.1.0").strip() or "0.1.0",
+            # Threads status + alert
+            "threads_alert": threads_alert,
             # Format lama (kompatibel UI)
             "ok": True,
             "version": "0.1.0",
@@ -1591,6 +1603,260 @@ h1{{color:#0af}}p{{color:#aaa}}a{{color:#0af}}</style></head>
             return {"ok": True, "posts": get_recent_posts(limit=limit)}
         except HTTPException:
             raise
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    # ── Threads: Token Alert ───────────────────────────────────────────────────
+    @app.get("/threads/token-alert", tags=["Threads"])
+    def threads_token_alert():
+        """Cek status expiry token. Alert jika sisa < 7 hari."""
+        from .threads_oauth import get_token_info
+        info = get_token_info()
+        return {
+            "ok": True,
+            "alert": info.get("alert", "ok"),
+            "remaining_days": info.get("remaining_days"),
+            "has_expired": info.get("has_expired", False),
+            "message": info.get("alert_message"),
+            "reconnect_url": info.get("reconnect_url"),
+            "username": info.get("username"),
+        }
+
+    # ── Threads: Profile ──────────────────────────────────────────────────────
+    @app.get("/threads/profile", tags=["Threads"])
+    def threads_profile():
+        """Ambil info profil Threads @sidixlab (threads_basic + threads_profile_discovery)."""
+        try:
+            from .threads_oauth import get_profile, get_token
+            if not get_token():
+                raise HTTPException(status_code=401, detail="Threads belum terhubung.")
+            return get_profile()
+        except HTTPException:
+            raise
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    # ── Threads: Insights ─────────────────────────────────────────────────────
+    @app.get("/threads/insights", tags=["Threads"])
+    def threads_insights(period: str = "day"):
+        """Ambil account-level insights (threads_manage_insights). Period: day, week, days_28."""
+        try:
+            from .threads_oauth import get_account_insights, get_token
+            if not get_token():
+                raise HTTPException(status_code=401, detail="Threads belum terhubung.")
+            return get_account_insights(period=period)
+        except HTTPException:
+            raise
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    @app.get("/threads/insights/{post_id}", tags=["Threads"])
+    def threads_post_insights(post_id: str):
+        """Ambil insights per post (threads_manage_insights)."""
+        try:
+            from .threads_oauth import get_post_insights, get_token
+            if not get_token():
+                raise HTTPException(status_code=401, detail="Threads belum terhubung.")
+            return get_post_insights(post_id=post_id)
+        except HTTPException:
+            raise
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    # ── Threads: Mentions ─────────────────────────────────────────────────────
+    @app.get("/threads/mentions", tags=["Threads"])
+    def threads_mentions(limit: int = 20):
+        """Ambil mentions @sidixlab (threads_manage_mentions)."""
+        try:
+            from .threads_oauth import get_mentions, get_token
+            if not get_token():
+                raise HTTPException(status_code=401, detail="Threads belum terhubung.")
+            return {"ok": True, "mentions": get_mentions(limit=limit)}
+        except HTTPException:
+            raise
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    # ── Threads: Replies ──────────────────────────────────────────────────────
+    @app.get("/threads/replies/{post_id}", tags=["Threads"])
+    def threads_get_replies(post_id: str, limit: int = 20):
+        """Ambil replies ke sebuah post (threads_read_replies)."""
+        try:
+            from .threads_oauth import get_replies, get_token
+            if not get_token():
+                raise HTTPException(status_code=401, detail="Threads belum terhubung.")
+            return {"ok": True, "replies": get_replies(post_id=post_id, limit=limit)}
+        except HTTPException:
+            raise
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    @app.post("/threads/reply", tags=["Threads"])
+    def threads_reply_post(body: dict[str, Any] = {}):
+        """Reply ke sebuah post (threads_manage_replies). Body: {post_id, text}"""
+        try:
+            from .threads_oauth import reply_to_post, get_token
+            if not get_token():
+                raise HTTPException(status_code=401, detail="Threads belum terhubung.")
+            post_id = (body or {}).get("post_id", "").strip()
+            text = (body or {}).get("text", "").strip()
+            if not post_id or not text:
+                raise HTTPException(status_code=400, detail="Isi 'post_id' dan 'text'")
+            result = reply_to_post(post_id=post_id, text=text)
+            return {"ok": True, "result": result}
+        except HTTPException:
+            raise
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    @app.post("/threads/replies/{reply_id}/hide", tags=["Threads"])
+    def threads_hide_reply(reply_id: str, body: dict[str, Any] = {}):
+        """Hide/unhide reply (threads_manage_replies). Body: {hide: true/false}"""
+        try:
+            from .threads_oauth import hide_reply, get_token
+            if not get_token():
+                raise HTTPException(status_code=401, detail="Threads belum terhubung.")
+            hide = bool((body or {}).get("hide", True))
+            return hide_reply(reply_id=reply_id, hide=hide)
+        except HTTPException:
+            raise
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    # ── Threads: Search ───────────────────────────────────────────────────────
+    @app.get("/threads/search", tags=["Threads"])
+    def threads_keyword_search(q: str, limit: int = 25):
+        """Search Threads berdasarkan keyword (threads_keyword_search)."""
+        try:
+            from .threads_oauth import keyword_search, get_token
+            if not get_token():
+                raise HTTPException(status_code=401, detail="Threads belum terhubung.")
+            if not q.strip():
+                raise HTTPException(status_code=400, detail="Parameter 'q' tidak boleh kosong")
+            return {"ok": True, "query": q, "results": keyword_search(q, limit=limit)}
+        except HTTPException:
+            raise
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    @app.get("/threads/hashtag/{tag}", tags=["Threads"])
+    def threads_hashtag(tag: str, limit: int = 25):
+        """Cari post dengan hashtag (threads_keyword_search). tag tanpa '#'."""
+        try:
+            from .threads_oauth import hashtag_search, get_token
+            if not get_token():
+                raise HTTPException(status_code=401, detail="Threads belum terhubung.")
+            return {"ok": True, "hashtag": f"#{tag}", "results": hashtag_search(tag, limit=limit)}
+        except HTTPException:
+            raise
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    @app.get("/threads/discover", tags=["Threads"])
+    def threads_discover(keywords: str = ""):
+        """Discover trending konten di topik SIDIX (threads_keyword_search)."""
+        try:
+            from .threads_oauth import discover_trending, get_token
+            if not get_token():
+                raise HTTPException(status_code=401, detail="Threads belum terhubung.")
+            kw_list = [k.strip() for k in keywords.split(",") if k.strip()] if keywords else None
+            return discover_trending(keywords=kw_list)
+        except HTTPException:
+            raise
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    # ── Threads: Learning Harvest ─────────────────────────────────────────────
+    @app.post("/threads/harvest-learning", tags=["Threads"])
+    def threads_harvest_learning(body: dict[str, Any] = {}):
+        """
+        Harvest konten Threads untuk learning data SIDIX.
+        Body: {keywords: ["AI Indonesia", ...], save: true}
+        """
+        try:
+            from .threads_oauth import harvest_for_learning, get_token
+            if not get_token():
+                raise HTTPException(status_code=401, detail="Threads belum terhubung.")
+            keywords = (body or {}).get("keywords", None)
+            save = bool((body or {}).get("save", True))
+            return harvest_for_learning(keywords=keywords, save_to_corpus=save)
+        except HTTPException:
+            raise
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    # ── Threads: Scheduler ────────────────────────────────────────────────────
+    @app.get("/threads/scheduler/stats", tags=["Threads"])
+    def threads_scheduler_stats():
+        """Status auto-poster scheduler SIDIX."""
+        try:
+            from .threads_scheduler import get_scheduler_stats
+            return {"ok": True, "scheduler": get_scheduler_stats()}
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    @app.post("/threads/scheduler/run", tags=["Threads"])
+    def threads_scheduler_run(body: dict[str, Any] = {}):
+        """
+        Trigger siklus lengkap scheduler manual.
+        Body: {dry_run: true} untuk preview, {dry_run: false} untuk aksi nyata.
+        """
+        try:
+            from .threads_scheduler import run_daily_cycle
+            dry_run = bool((body or {}).get("dry_run", True))
+            return run_daily_cycle(dry_run=dry_run)
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    @app.post("/threads/scheduler/post-now", tags=["Threads"])
+    def threads_scheduler_post_now(body: dict[str, Any] = {}):
+        """
+        Force post sekarang (bypass cek sudah posting hari ini).
+        Body: {force: true, dry_run: false}
+        """
+        try:
+            from .threads_scheduler import run_daily_post
+            force = bool((body or {}).get("force", False))
+            dry_run = bool((body or {}).get("dry_run", True))
+            return run_daily_post(force=force, dry_run=dry_run)
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    @app.post("/threads/scheduler/config", tags=["Threads"])
+    def threads_scheduler_config(body: dict[str, Any] = {}):
+        """
+        Update konfigurasi scheduler.
+        Body: {keywords: ["AI Indonesia", "LLM lokal", ...]}
+        """
+        try:
+            from .threads_scheduler import update_config
+            keywords = (body or {}).get("keywords", None)
+            config = update_config(keywords=keywords)
+            return {"ok": True, "config": config}
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    @app.post("/threads/scheduler/harvest", tags=["Threads"])
+    def threads_scheduler_harvest(body: dict[str, Any] = {}):
+        """Jalankan harvest cycle saja (tanpa posting)."""
+        try:
+            from .threads_scheduler import run_harvest_cycle
+            keywords = (body or {}).get("keywords", None)
+            return run_harvest_cycle(keywords=keywords)
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    @app.post("/threads/scheduler/mentions", tags=["Threads"])
+    def threads_scheduler_mentions(body: dict[str, Any] = {}):
+        """
+        Cek & proses mentions baru.
+        Body: {auto_reply: false, dry_run: true}
+        """
+        try:
+            from .threads_scheduler import run_mention_monitor
+            auto_reply = bool((body or {}).get("auto_reply", False))
+            dry_run = bool((body or {}).get("dry_run", True))
+            return run_mention_monitor(auto_reply=auto_reply, dry_run=dry_run)
         except Exception as e:
             return {"ok": False, "error": str(e)}
 

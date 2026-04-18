@@ -1127,3 +1127,54 @@ Auto-trigger:
 - NOTE: Nomor 100 dipilih karena file terakhir di research_notes/ adalah 99_artifact_processing.md sebelum sesi ini. Survey ini lintas sumber, bukan hasil track tertentu.
 - DECISION: Dari survey ini, 3 prioritas implementasi teridentifikasi: (1) MCP Protocol untuk SIDIX agent tools, (2) PEFT+SFT untuk fine-tuning Mighan dengan data Islam Indonesia, (3) LLM-as-judge untuk evaluasi otomatis kualitas SIDIX.
 - NOTE: Self-evolution pattern (MiniMax-M2.7) dan sparse activation MoT (HY-Embodied) adalah architectural ideas relevan untuk roadmap SIDIX jangka panjang.
+
+### 2026-04-18 — Threads Full API Integration + Autonomous Social Agent
+
+- IMPL: **`threads_oauth.py` — ekspansi penuh** semua 8 Threads permissions digunakan:
+  - `get_account_insights()` — threads_manage_insights: metrics views/likes/reach/followers per periode
+  - `get_post_insights()` — threads_manage_insights: per-post metrics
+  - `get_mentions()` — threads_manage_mentions: fetch @sidixlab mentions
+  - `get_replies()` + `get_conversation()` — threads_read_replies
+  - `hide_reply()` — threads_manage_replies: moderasi
+  - `reply_to_post()` — threads_manage_replies: auto-reply
+  - `keyword_search()` + `hashtag_search()` — threads_keyword_search
+  - `discover_trending()` — multi-keyword discovery
+  - `harvest_for_learning()` — harvest Threads content ke corpus SIDIX
+  - `get_profile()` — threads_profile_discovery + threads_basic
+  - `get_token_info()` diperluas: field `alert` ("ok"/"warning"/"expired") + `alert_message` + `reconnect_url`
+
+- IMPL: **`threads_scheduler.py`** — SIDIX Autonomous Threads Agent baru:
+  - `run_daily_post()` — 1x/hari, cek sudah posting, idempoten
+  - `run_harvest_cycle()` — harvest keyword+mentions → simpan ke `.data/threads_harvest/`
+  - `run_mention_monitor()` — cek mentions baru, opsional auto-reply (default dry_run=True)
+  - `run_daily_cycle()` — orchestrator: harvest → mentions → post
+  - State tracking via `.data/threads_scheduler_state.json`
+  - Config via `.data/threads_scheduler_config.json` (keywords yang dimonitor)
+  - `get_scheduler_stats()` — statistik lengkap + jadwal aman
+
+- IMPL: **Content strategy bilingual** — 12 story templates (6 Indonesia, 6 English):
+  - Setiap post wajib: `#FreeAIAgent`, `#AIOpenSource`, `#FreeAIGenerative`, `#LearningAI`
+  - Wajib ada link `sidixlab.com` + ajakan "Follow @sidixlab"
+  - Topik rotasi 22 entry: 10 Indonesia + 12 English
+  - `generate_daily_post()` — pilih template sesuai bahasa topik secara otomatis
+
+- IMPL: **17 endpoint Threads baru** di `agent_serve.py`:
+  - `GET /threads/token-alert` — alert level + remaining days + reconnect URL
+  - `GET /threads/profile` — profil @sidixlab lengkap
+  - `GET /threads/insights` + `GET /threads/insights/{post_id}` — analytics
+  - `GET /threads/mentions` — monitor @sidixlab mentions
+  - `GET /threads/replies/{post_id}` + `POST /threads/reply` — conversations
+  - `POST /threads/replies/{id}/hide` — moderasi reply
+  - `GET /threads/search?q=` + `GET /threads/hashtag/{tag}` + `GET /threads/discover` — discovery
+  - `POST /threads/harvest-learning` — harvest ke corpus
+  - `GET /threads/scheduler/stats` + `POST /threads/scheduler/run` + `POST /threads/scheduler/post-now` + `POST /threads/scheduler/config` + `POST /threads/scheduler/harvest` + `POST /threads/scheduler/mentions` — scheduler management
+
+- UPDATE: **`GET /health`** — ditambah field `threads_alert` yang muncul saat token < 7 hari atau expired. UI bisa tampilkan banner warning.
+
+- DOC: **Research note 120** — `brain/public/research_notes/120_threads_full_api_autonomous_agent.md` — arsitektur SIDIX Threads Agent, semua permissions, content strategy bilingual, token alert system, jadwal aman, learning pipeline.
+
+- DECISION: **Content strategy SIDIX di Threads** — bilingual (ID+EN) untuk target internasional + komunitas Indonesia; wajib #FreeAIAgent #AIOpenSource #LearningAI di setiap post; ajakan follow + link website mandatory.
+
+- NOTE: Token expiry saat ini: 59 hari (expires ~Juni 2026). Alert muncul otomatis di `/health` dan `/threads/token-alert` saat sisa < 7 hari.
+
+- NOTE: Jadwal aman post: 1x/hari (08:00 WIB = 01:00 UTC); harvest: 4x/hari; mentions check: 3x/hari. Total ~40-60 API calls/hari — jauh di bawah limit Meta.
