@@ -243,9 +243,12 @@ def draft_from_bundle(bundle: ResearchBundle) -> DraftRecord:
         markdown   = markdown,
     )
 
-    # Simpan JSON + MD terpisah (MD untuk preview cepat)
+    # Snapshot bundle → bisa direkonstruksi saat approve untuk bangun sanad
+    rec_dict = rec.to_dict()
+    rec_dict["bundle_snapshot"] = bundle.to_dict()
+
     (_DRAFTS_DIR / f"{draft_id}.json").write_text(
-        json.dumps(rec.to_dict(), ensure_ascii=False, indent=2),
+        json.dumps(rec_dict, ensure_ascii=False, indent=2),
         encoding="utf-8",
     )
     (_DRAFTS_DIR / f"{draft_id}.md").write_text(markdown, encoding="utf-8")
@@ -295,10 +298,18 @@ def _save_draft(data: dict) -> None:
     )
 
 
-def approve_draft(draft_id: str, resolve_gap_note: bool = True) -> dict:
+def approve_draft(
+    draft_id: str,
+    resolve_gap_note: bool = True,
+    register_hafidz:  bool = True,
+) -> dict:
     """
     Approve draft → publish sebagai research note numbered + resolve gap terkait.
     Tidak menimpa file existing bila slug bentrok — auto increment nomor.
+
+    Jika `register_hafidz=True` (default): konten final diregistrasikan ke
+    Hafidz (CAS + Merkle + Erasure), dapat sanad metadata eksplisit, dan
+    sanad di-embed ke bagian akhir markdown note.
     """
     data = get_draft(draft_id)
     if not data:
@@ -316,10 +327,63 @@ def approve_draft(draft_id: str, resolve_gap_note: bool = True) -> dict:
     # Tulis markdown — tapi update heading nomor dulu biar sinkron
     md = data.get("markdown", "")
     md = re.sub(r"^# \d+\.\s*", f"# {note_n}. ", md, count=1, flags=re.MULTILINE)
+
+    # ── Sanad + Hafidz Integration ─────────────────────────────────────────────
+    sanad_info: dict = {}
+    if register_hafidz:
+        try:
+            from .sanad_builder import build_sanad_from_bundle, register_note_with_sanad, persist_sanad
+            from .autonomous_researcher import ResearchBundle, ResearchFinding
+
+            # Rekonstruksi bundle minimal dari draft data untuk bangun sanad
+            # (draft tidak menyimpan full findings; kita bangun lightweight bundle)
+            bundle_dict = data.get("bundle_snapshot") or {}
+            findings_list = [
+                ResearchFinding(
+                    angle      = f.get("angle", ""),
+                    content    = f.get("content", ""),
+                    source     = f.get("source", ""),
+                    confidence = float(f.get("confidence", 0.5)),
+                )
+                for f in bundle_dict.get("findings", [])
+            ]
+            bundle = ResearchBundle(
+                topic_hash      = data.get("topic_hash", ""),
+                domain          = data.get("domain", "umum"),
+                main_question   = bundle_dict.get("main_question", ""),
+                angles          = bundle_dict.get("angles", []),
+                findings        = findings_list,
+                urls_used       = bundle_dict.get("urls_used", []),
+                search_metadata = bundle_dict.get("search_metadata", []),
+                narrative       = bundle_dict.get("narrative", ""),
+            )
+
+            sanad = build_sanad_from_bundle(bundle, note_filename=filename)
+
+            # Register ke Hafidz — store MD final (dengan heading yg sudah benar)
+            register_note_with_sanad(md, sanad)
+
+            # Embed section Sanad ke akhir markdown
+            md = md.rstrip() + "\n\n---\n\n" + sanad.to_markdown_section()
+
+            # Simpan sanad JSON terpisah
+            persist_sanad(sanad, out_dir=str(default_data_dir() / "sidix_sanad"))
+
+            sanad_info = {
+                "cas_hash":     sanad.hafidz_proof.get("cas_hash", ""),
+                "merkle_root":  sanad.hafidz_proof.get("merkle_root", ""),
+                "isnad_length": len(sanad.isnad),
+            }
+        except Exception as e:
+            print(f"[note_drafter] hafidz/sanad integration failed: {e}")
+            sanad_info = {"error": str(e)}
+
     out_path.write_text(md, encoding="utf-8")
 
     data["status"]       = "approved"
     data["published_as"] = str(filename)
+    if sanad_info:
+        data["sanad"] = sanad_info
     _save_draft(data)
 
     # Resolve gap terkait
@@ -330,8 +394,13 @@ def approve_draft(draft_id: str, resolve_gap_note: bool = True) -> dict:
         except Exception as e:
             print(f"[note_drafter] resolve_gap failed: {e}")
 
-    print(f"[note_drafter] approved & published: {filename}")
-    return {"ok": True, "published_as": filename, "path": str(out_path)}
+    print(f"[note_drafter] approved & published: {filename} (sanad cas={sanad_info.get('cas_hash','')[:16]}...)")
+    return {
+        "ok":             True,
+        "published_as":   filename,
+        "path":           str(out_path),
+        "sanad":          sanad_info,
+    }
 
 
 def reject_draft(draft_id: str, reason: str = "") -> dict:

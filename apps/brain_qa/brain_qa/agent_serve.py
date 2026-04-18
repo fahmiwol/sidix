@@ -2539,6 +2539,52 @@ h1{{color:#0af}}p{{color:#aaa}}a{{color:#0af}}</style></head>
         except Exception as e:
             return {"ok": False, "error": str(e)}
 
+    # ── /hafidz/* ─ Sanad & Distributed Verification ──────────────────────────
+
+    @app.get("/hafidz/stats", tags=["Hafidz"])
+    def hafidz_stats():
+        """Statistik node Hafidz lokal (CAS items, ledger items, merkle root)."""
+        try:
+            from .hafidz_mvp import handle_stats
+            return {"ok": True, **handle_stats()}
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    @app.get("/hafidz/verify", tags=["Hafidz"])
+    def hafidz_verify():
+        """Verifikasi integritas semua item di ledger (hash konten cocok dengan CAS)."""
+        try:
+            from .hafidz_mvp import handle_verify
+            return {"ok": True, **handle_verify()}
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    @app.get("/hafidz/sanad/{stem}", tags=["Hafidz"])
+    def hafidz_sanad(stem: str):
+        """
+        Ambil sanad metadata untuk note tertentu.
+        `stem` = filename note tanpa ekstensi (mis. '138_kerja_zero_knowledge_proof')
+        atau topic_hash.
+        """
+        try:
+            from .sanad_builder import load_sanad
+            from .paths import default_data_dir
+            data = load_sanad(stem, base_dir=str(default_data_dir() / "sidix_sanad"))
+            if not data:
+                return {"ok": False, "error": "sanad not found for: " + stem}
+            return {"ok": True, "sanad": data}
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    @app.get("/hafidz/retrieve/{cas_hash}", tags=["Hafidz"])
+    def hafidz_retrieve(cas_hash: str):
+        """Ambil konten note berdasarkan CAS hash (verifiability test)."""
+        try:
+            from .hafidz_mvp import handle_retrieve
+            return handle_retrieve(cas_hash)
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
     # ── /sidix/grow ─ Fase 4 Daily Continual Learning ─────────────────────────
 
     @app.post("/sidix/grow", tags=["SelfLearning"])
