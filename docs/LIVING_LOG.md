@@ -1252,3 +1252,47 @@ Auto-trigger:
 - DOC: Research note 121 — `brain/public/research_notes/121_qna_self_learning_pipeline.md` — pipeline self-learning, kalkulasi hemat Haiku, format JSONL, training pairs.
 
 - NOTE: API key tersimpan di `/opt/sidix/apps/.env` saja. Tidak di-commit ke git. Tidak diexpose ke user (mode_mode di health hanya tampilkan "ollama"/"anthropic_haiku"/"mock" — tanpa detail key).
+
+### 2026-04-18 — Mobile-First UI Redesign: Bottom Nav + i18n + Auth + Contributor Modal
+
+- IMPL: **`index.html` rewrite** — mobile-first native app feel:
+  - `<meta name="apple-mobile-web-app-capable">` → installable PWA-like di iOS
+  - `env(safe-area-inset-*)` → support iPhone notch
+  - **Bottom nav** pada mobile: Chat | Tentang | Kontributor | Setting | Sign In (4 tabs native app style)
+  - Desktop: sidebar kiri tetap ada
+  - **Header baru**: Auth pill (kuning) di tengah, About + Contrib pill (netral) di kiri
+  - Empty state condensed untuk layar kecil (16×16 logo mobile vs 20×20 desktop)
+
+- IMPL: **About SIDIX modal** (slide-up sheet):
+  - Trigger: tombol "Tentang SIDIX" di header (desktop) + tab Tentang (mobile)
+  - Konten: deskripsi SIDIX bilingual + 2 quick stats cards
+  - CTA: "Kunjungi sidixlab.com" → sidixlab.com (new tab)
+  - GitHub/source code link
+
+- IMPL: **Contributor modal** (slide-up sheet):
+  - Form: nama, email, role (Developer/Researcher/Akademisi), minat kontribusi
+  - **Checkbox newsletter**: "Mau dapat update & newsletter SIDIX?"
+  - Submit → simpan ke Supabase `contributors` table
+  - Redirect ke `sidixlab.com#contributor` setelah daftar
+  - Trigger: header button (desktop) + tab Kontributor (mobile)
+
+- IMPL: **i18n bilingual** (Indonesia vs English):
+  - `detectLang()` via timezone (WIB/WITA/WIT → `id`, lainnya → `en`) — instant, no API call
+  - 20+ string pairs ID/EN: label, placeholder, tagline, badge, modal teks
+  - `applyI18n()` dipanggil saat boot → semua label diupdate sesuai bahasa
+  - User Indonesia: UI Bahasa Indonesia | User luar: English UI
+
+- IMPL: **Auth pill** di header (kuning) + mobile nav:
+  - Guest: "Sign In" → buka login modal
+  - Signed in: hijau + nama pertama user (mis. "Fahmi ✓")
+  - `updateAuthButton()` dipanggil dari `onAuthChange` listener
+
+- IMPL: **`supabase_migration_contributors.sql`** — schema lengkap:
+  - `contributors` (name, email, role, interest, wants_newsletter, lang)
+  - `user_profiles`, `user_onboarding`, `beta_testers`, `developer_profiles`
+  - Semua table punya RLS policy yang sesuai
+
+- TEST: Build berhasil `✓ built in 1.95s` di VPS. PM2 sidix-ui restart OK.
+  - Deployed ke `app.sidixlab.com`
+
+- DECISION: Login tetap hanya di `app.sidixlab.com` (bukan landing). Mobile bottom nav = native tab bar pattern untuk UX yang familiar di HP.
