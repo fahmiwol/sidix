@@ -122,7 +122,7 @@ def groq_generate(
 # ── Google Gemini Flash (Free Tier) ──────────────────────────────────────────
 
 def gemini_available() -> bool:
-    """Cek apakah Gemini API tersedia."""
+    """Cek apakah Gemini API tersedia (google-genai SDK baru)."""
     global _gemini_available
     if _gemini_available is not None:
         return _gemini_available
@@ -131,10 +131,15 @@ def gemini_available() -> bool:
         _gemini_available = False
         return False
     try:
-        import google.generativeai  # type: ignore
+        from google import genai as google_genai  # type: ignore  # noqa: F401
         _gemini_available = True
     except ImportError:
-        _gemini_available = False
+        # Fallback: coba SDK lama (deprecated tapi masih jalan)
+        try:
+            import google.generativeai  # type: ignore  # noqa: F401
+            _gemini_available = True
+        except ImportError:
+            _gemini_available = False
     return _gemini_available
 
 
@@ -160,17 +165,30 @@ def gemini_generate(
 
     t0 = time.time()
     try:
-        import google.generativeai as genai  # type: ignore
-        genai.configure(api_key=api_key)
+        # Coba SDK baru dulu: google-genai (pip install google-genai)
+        try:
+            from google import genai as google_genai  # type: ignore
 
-        model = genai.GenerativeModel(
-            model_name=GEMINI_MODEL,
-            system_instruction=sys_instr,
-            generation_config={"max_output_tokens": min(max_tokens, GEMINI_MAX_TOKENS),
-                               "temperature": temperature},
-        )
-        response = model.generate_content(user_content[:4000])
-        text = response.text or ""
+            client = google_genai.Client(api_key=api_key)
+            full_prompt = f"{sys_instr}\n\n{user_content[:4000]}"
+            response = client.models.generate_content(
+                model=GEMINI_MODEL,
+                contents=full_prompt,
+            )
+            text = response.text or ""
+        except ImportError:
+            # Fallback ke SDK lama (deprecated) kalau google-genai belum terinstall
+            import google.generativeai as genai_old  # type: ignore
+            genai_old.configure(api_key=api_key)
+            model_old = genai_old.GenerativeModel(
+                model_name=GEMINI_MODEL,
+                system_instruction=sys_instr,
+                generation_config={"max_output_tokens": min(max_tokens, GEMINI_MAX_TOKENS),
+                                   "temperature": temperature},
+            )
+            response_old = model_old.generate_content(user_content[:4000])
+            text = response_old.text or ""
+
         elapsed = int((time.time() - t0) * 1000)
         print(f"[gemini_flash] {len(user_content.split())} words in | {elapsed}ms | FREE")
         return text, "gemini_flash"
