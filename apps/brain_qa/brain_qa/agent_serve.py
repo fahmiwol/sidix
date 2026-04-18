@@ -2539,6 +2539,56 @@ h1{{color:#0af}}p{{color:#aaa}}a{{color:#0af}}</style></head>
         except Exception as e:
             return {"ok": False, "error": str(e)}
 
+    # ── /sidix/grow ─ Fase 4 Daily Continual Learning ─────────────────────────
+
+    @app.post("/sidix/grow", tags=["SelfLearning"])
+    def sidix_grow(
+        top_n_gaps: int = 3,
+        min_frequency: int = 1,
+        auto_approve: bool = True,
+        queue_threads: bool = True,
+        generate_pairs: bool = True,
+        dry_run: bool = False,
+    ):
+        """
+        SIDIX Tumbuh Tiap Hari — Fase 4 Continual Learning.
+
+        Eksekusi 1 siklus pertumbuhan:
+          SCAN → RISET → APPROVE → TRAIN → SHARE → REMEMBER → LOG
+
+        Kalau tidak ada gap detected, SIDIX tetap belajar dari topic eksplorasi
+        rotasi (tidak pernah idle).
+
+        Cocok dipanggil via cron harian: 0 3 * * * curl -X POST .../sidix/grow
+        """
+        try:
+            from .daily_growth import run_daily_growth
+            report = run_daily_growth(
+                top_n_gaps=top_n_gaps,
+                min_frequency=min_frequency,
+                auto_approve=auto_approve,
+                queue_threads=queue_threads,
+                generate_pairs=generate_pairs,
+                dry_run=dry_run,
+            )
+            return {"ok": True, "report": report.to_dict()}
+        except Exception as e:
+            import traceback
+            return {"ok": False, "error": str(e), "trace": traceback.format_exc()[-800:]}
+
+    @app.get("/sidix/growth-stats", tags=["SelfLearning"])
+    def sidix_growth_stats():
+        """Statistik kumulatif pertumbuhan SIDIX."""
+        try:
+            from .daily_growth import get_growth_stats, get_growth_history
+            return {
+                "ok": True,
+                "stats":   get_growth_stats(),
+                "history": get_growth_history(days=7),
+            }
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
     @app.get("/memory/recall", tags=["SelfLearning"])
     def memory_recall(topic_hash: str = "", domain: str = "", limit: int = 20):
         """
