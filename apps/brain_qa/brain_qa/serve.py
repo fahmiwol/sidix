@@ -60,7 +60,7 @@ app = FastAPI(
     redoc_url=None,
 )
 
-# CORS: izinkan localhost:3000 (SIDIX dev) dan localhost:4173 (vite preview)
+# CORS: izinkan localhost dev + production domains
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
@@ -68,6 +68,11 @@ app.add_middleware(
         "http://127.0.0.1:3000",
         "http://localhost:4173",
         "http://127.0.0.1:4173",
+        "http://localhost:4000",
+        "http://127.0.0.1:4000",
+        "https://app.sidixlab.com",
+        "https://ctrl.sidixlab.com",
+        "https://sidixlab.com",
     ],
     allow_credentials=True,
     allow_methods=["*"],
@@ -657,6 +662,118 @@ async def reflection_weekly(days: int = 7) -> JSONResponse:
 async def reflection_latest() -> JSONResponse:
     from .meta_reflection import get_latest
     return JSONResponse(content=get_latest())
+
+
+# ── Threads OAuth + Auto-posting ─────────────────────────────────────────────
+
+class ThreadsPostRequest(BaseModel):
+    text: str = Field(..., min_length=1, max_length=500, description="Konten post Threads (maks 500 karakter)")
+    template_topic: str | None = Field(None, description="Kalau diisi, generate post dari template SIDIX")
+    template_idx: int = Field(default=0, ge=0, le=4)
+
+
+@app.get("/threads/auth", tags=["Threads"])
+async def threads_auth_url(state: str = "sidix_oauth"):
+    """
+    Generate OAuth URL untuk menghubungkan akun Threads ke SIDIX.
+    Frontend redirect user ke URL ini.
+    """
+    from .threads_oauth import build_auth_url, APP_ID
+    if not APP_ID:
+        raise HTTPException(
+            status_code=503,
+            detail="THREADS_APP_ID belum dikonfigurasi di environment. Set di .env atau PM2.",
+        )
+    url = build_auth_url(state=state)
+    return JSONResponse(content={"ok": True, "auth_url": url, "message": "Redirect user ke auth_url ini"})
+
+
+@app.get("/threads/callback", tags=["Threads"])
+async def threads_callback(code: str = "", error: str = "", error_description: str = ""):
+    """
+    OAuth callback dari Meta. Meta redirect ke URL ini setelah user authorize.
+    Endpoint ini diakses oleh browser user setelah OAuth.
+    """
+    if error:
+        return JSONResponse(
+            status_code=400,
+            content={
+                "ok": False,
+                "error": error,
+                "description": error_description,
+                "message": "User menolak akses atau terjadi error OAuth.",
+            },
+        )
+    if not code:
+        raise HTTPException(status_code=400, detail="Parameter 'code' tidak ada dalam callback.")
+
+    from .threads_oauth import exchange_code
+    try:
+        token_data = exchange_code(code)
+        username = token_data.get("username", "unknown")
+        days = int(token_data.get("expires_in", 60 * 86400) / 86400)
+        # Return HTML response (user melihat ini di browser)
+        html = f"""<!DOCTYPE html>
+<html lang="id">
+<head><meta charset="UTF-8"><title>SIDIX — Threads Terhubung</title>
+<style>body{{font-family:sans-serif;display:flex;justify-content:center;align-items:center;min-height:100vh;margin:0;background:#0f0f0f;color:#fff}}
+.card{{background:#1a1a1a;border-radius:16px;padding:40px;text-align:center;max-width:400px}}
+h1{{color:#0af;margin-bottom:8px}}p{{color:#aaa}}a{{color:#0af;text-decoration:none}}</style>
+</head>
+<body><div class="card">
+<h1>✅ Threads Terhubung!</h1>
+<p>Akun <strong>@{username}</strong> berhasil dihubungkan ke SIDIX.</p>
+<p>Token berlaku <strong>{days} hari</strong>.</p>
+<p>Kembali ke <a href="https://app.sidixlab.com">app.sidixlab.com</a></p>
+</div></body></html>"""
+        from fastapi.responses import HTMLResponse
+        return HTMLResponse(content=html)
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=f"Gagal tukar OAuth code: {exc}") from exc
+
+
+@app.get("/threads/status", tags=["Threads"])
+async def threads_status():
+    """Status koneksi Threads — apakah sudah authorize dan token masih valid."""
+    from .threads_oauth import get_token_info
+    return JSONResponse(content={"ok": True, "threads": get_token_info()})
+
+
+@app.post("/threads/post", tags=["Threads"])
+async def threads_post(req: ThreadsPostRequest):
+    """
+    Buat post di Threads menggunakan token yang sudah tersimpan.
+    Kalau template_topic diisi, text otomatis digenerate dari template SIDIX.
+    """
+    from .threads_oauth import create_text_post, generate_sidix_post, get_token
+
+    if not get_token():
+        raise HTTPException(
+            status_code=401,
+            detail="Threads belum terhubung. Buka /threads/auth dan authorize dulu.",
+        )
+
+    # Generate text dari template jika diminta
+    if req.template_topic:
+        text = generate_sidix_post(req.template_topic, req.template_idx)
+    else:
+        text = req.text
+
+    try:
+        result = create_text_post(text)
+        return JSONResponse(content={"ok": True, "result": result, "text_posted": text})
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=f"Gagal post ke Threads: {exc}") from exc
+
+
+@app.get("/threads/recent", tags=["Threads"])
+async def threads_recent(limit: int = 5):
+    """Ambil posts terbaru dari akun Threads yang terhubung."""
+    from .threads_oauth import get_recent_posts, get_token
+    if not get_token():
+        raise HTTPException(status_code=401, detail="Threads belum terhubung.")
+    posts = get_recent_posts(limit=limit)
+    return JSONResponse(content={"ok": True, "posts": posts})
 
 
 # ── Entry point (called from __main__.py) ────────────────────────────────────
