@@ -2539,6 +2539,104 @@ h1{{color:#0af}}p{{color:#aaa}}a{{color:#0af}}</style></head>
         except Exception as e:
             return {"ok": False, "error": str(e)}
 
+    # ── /sidix/multimodal/* ─ Image + Audio (vision, OCR, gen, ASR, TTS) ──────
+
+    @app.get("/sidix/multimodal/status", tags=["MultiModal"])
+    def mm_status():
+        """Report modality apa yang siap — untuk UI enable/disable features."""
+        try:
+            from .multi_modal_router import get_modality_availability
+            return {"ok": True, "availability": get_modality_availability()}
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    @app.post("/sidix/image/analyze", tags=["MultiModal"])
+    def image_analyze(image_url: str = "", image_b64: str = "", prompt: str = "Deskripsikan gambar ini dalam Bahasa Indonesia."):
+        """Vision analysis — image → text description."""
+        try:
+            from .multi_modal_router import analyze_image
+            src = image_url or image_b64
+            if not src:
+                return {"ok": False, "error": "provide image_url or image_b64"}
+            return analyze_image(src, prompt=prompt)
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    @app.post("/sidix/image/ocr", tags=["MultiModal"])
+    def image_ocr(image_url: str = "", image_b64: str = ""):
+        """OCR — ekstrak teks verbatim dari gambar."""
+        try:
+            from .multi_modal_router import ocr_image
+            src = image_url or image_b64
+            if not src:
+                return {"ok": False, "error": "provide image_url or image_b64"}
+            return ocr_image(src)
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    @app.post("/sidix/image/generate", tags=["MultiModal"])
+    def image_generate(prompt: str, size: str = "1024x1024", style: str = ""):
+        """Generate image dari text prompt."""
+        try:
+            from .multi_modal_router import generate_image
+            return generate_image(prompt, size=size, style=style or None)
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    @app.post("/sidix/audio/listen", tags=["MultiModal"])
+    def audio_listen(audio_url: str = "", audio_b64: str = "", language: str = "id"):
+        """ASR — audio → transcript (Indonesian default)."""
+        try:
+            from .multi_modal_router import transcribe_audio
+            src = audio_url or audio_b64
+            if not src:
+                return {"ok": False, "error": "provide audio_url or audio_b64"}
+            return transcribe_audio(src, language=language)
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    @app.post("/sidix/audio/speak", tags=["MultiModal"])
+    def audio_speak(text: str, language: str = "id"):
+        """TTS — text → audio (mp3 base64)."""
+        try:
+            from .multi_modal_router import synthesize_speech
+            return synthesize_speech(text, language=language)
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    # ── /sidix/mode/* ─ Skill Mode Switcher ───────────────────────────────────
+
+    @app.get("/sidix/modes", tags=["SkillModes"])
+    def list_modes():
+        """List semua mode spesialisasi yang tersedia."""
+        try:
+            from .skill_modes import available_modes
+            return {"ok": True, "modes": available_modes()}
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    @app.post("/sidix/mode/{mode_id}", tags=["SkillModes"])
+    def run_mode(mode_id: str, prompt: str):
+        """Jalankan SIDIX dalam mode tertentu: fullstack_dev, game_dev, problem_solver, decision_maker, data_scientist."""
+        try:
+            from .skill_modes import run_in_mode
+            r = run_in_mode(mode_id, prompt)
+            return {"ok": True, **r.to_dict()}
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    @app.post("/sidix/decide", tags=["SkillModes"])
+    def decide(question: str, options_csv: str, voters: int = 3):
+        """Multi-perspective voting decision. options_csv = 'opt1|opt2|opt3' (pipe-separated)."""
+        try:
+            from .skill_modes import decide_with_consensus
+            opts = [o.strip() for o in options_csv.split("|") if o.strip()]
+            if len(opts) < 2:
+                return {"ok": False, "error": "need >= 2 options (pipe-separated)"}
+            return {"ok": True, **decide_with_consensus(question, opts, voters=voters)}
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
     # ── /hafidz/* ─ Sanad & Distributed Verification ──────────────────────────
 
     @app.get("/hafidz/stats", tags=["Hafidz"])
