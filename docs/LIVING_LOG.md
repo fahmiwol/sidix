@@ -1296,3 +1296,49 @@ Auto-trigger:
   - Deployed ke `app.sidixlab.com`
 
 - DECISION: Login tetap hanya di `app.sidixlab.com` (bukan landing). Mobile bottom nav = native tab bar pattern untuk UX yang familiar di HP.
+
+### 2026-04-18 — Token Quota System + Multi-LLM Routing (Mentor Mode)
+
+- IMPL: **`token_quota.py`** — sistem pembatasan per user per hari:
+  - Tier: `guest` (3/hari, IP), `free` (10/hari, Supabase), `sponsored` (100/hari, Sonnet), `admin` (unlimited)
+  - Storage: `.data/quota/quota_YYYY-MM-DD.json` (key = `user:{id}` atau `ip:{hash}`)
+  - `check_quota()` → return `{ok, tier, used, limit, remaining, model, reset_at, topup_url}`
+  - `record_usage()` → catat token_in/out setelah chat selesai
+  - `add_sponsored_user()` / `remove_sponsored_user()` untuk admin manual
+
+- IMPL: **`multi_llm_router.py`** — Multi-LLM routing dengan "Mentor Mode":
+  - Route hierarchy: Ollama → LoRA → Groq (free) → Gemini Flash (free) → Anthropic → Mock
+  - **Groq Llama 3.1 8b Instant**: GRATIS, ~350 tok/s, 14,400 req/hari
+  - **Google Gemini 1.5 Flash**: GRATIS, 1M token/hari
+  - SIDIX belajar dari setiap jawaban mentor via `_schedule_learning()` → `qna_recorder`
+  - `compare_and_learn()`: jika mentor answer >20% lebih panjang → quality=4 di training data
+  - Setup: `GROQ_API_KEY`, `GEMINI_API_KEY` di `.env` + `pip install groq google-generativeai`
+
+- UPDATE: **`anthropic_llm.py`** — tambah `model_override` param:
+  - Sponsored tier → bisa gunakan `claude-3-5-sonnet-20241022` (lebih pintar)
+  - Cost tracking per model (Haiku vs Sonnet berbeda rate)
+
+- UPDATE: **`agent_serve.py`** — wire quota ke `/ask/stream`:
+  - Cek quota sebelum proses (return `quota_limit` SSE event jika habis)
+  - `record_usage()` setelah generate (dengan estimasi token)
+  - Meta event menyertakan `{used, limit, remaining, tier}` untuk frontend badge
+  - Endpoint baru: `GET /quota/status`, `GET /quota/stats`, `POST /quota/sponsor/{user_id}`, `DELETE /quota/sponsor/{user_id}`
+  - Endpoint baru: `GET /llm/status`, `POST /llm/test`
+  - `_llm_generate()` didelegasikan ke `multi_llm_router.route_generate()`
+
+- UPDATE: **`api.ts`** — tambah `QuotaInfo` interface + `onQuotaLimit` callback:
+  - Header `x-user-id` otomatis dikirim jika user login (dari `localStorage.sidix_user_id`)
+  - `quota_limit` SSE event → trigger `onQuotaLimit` callback
+
+- IMPL: **Quota UI** di `index.html` + `main.ts`:
+  - Badge di header: `3/10` (sisa/limit), warna: hijau → kuning → merah
+  - `quota-overlay` modal: Tunggu / Login (+10/hari) / Top Up (100/hari + Sonnet)
+  - CTA: Top Up via Trakteer + Hubungi Admin WA
+  - `updateQuotaBadge()` dipanggil dari `onMeta` + `onDone` SSE events
+  - `localStorage.sidix_user_id` disimpan saat login, dihapus saat logout
+
+- TEST: `npm run build` berhasil, `✓ built in 6.71s`
+
+- DOC: Research notes `122_token_quota_system.md` + `123_multi_llm_routing_mentor_mode.md`
+
+- DECISION: "Mentor Mode" — SIDIX tidak pernah bilang "tidak bisa jawab". Routing invisible ke provider lain, SIDIX belajar dari semua jawaban. Groq gratis jadi prioritas cloud fallback pertama (lebih hemat dari Anthropic).

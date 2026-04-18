@@ -268,6 +268,17 @@ export async function getReindexStatus(): Promise<ReindexStatus> {
  * POST /ask/stream — SSE streaming jawaban token per token.
  * onToken dipanggil per token, onCitation per citation, onDone saat selesai.
  */
+export interface QuotaInfo {
+  tier: string;
+  used: number;
+  limit: number;
+  remaining: number;
+  reset_at?: string;
+  topup_url?: string;
+  topup_wa?: string;
+  message?: string;
+}
+
 export async function askStream(
   question: string,
   persona: Persona = 'MIGHAN',
@@ -277,17 +288,25 @@ export async function askStream(
     onCitation: (c: Citation) => void;
     onDone: (persona: string, meta?: StreamDoneMeta) => void;
     onError: (msg: string) => void;
-    onMeta?: (meta: StreamDoneMeta) => void;
+    onMeta?: (meta: StreamDoneMeta & { quota?: QuotaInfo }) => void;
+    onQuotaLimit?: (info: QuotaInfo) => void;
   },
   opts?: AskInferenceOpts,
 ): Promise<void> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), 60_000);
 
+  // Kirim user-id jika sudah login (untuk quota tracking & tier model)
+  const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+  try {
+    const uid = localStorage.getItem('sidix_user_id') ?? '';
+    if (uid) headers['x-user-id'] = uid;
+  } catch { /* ignore */ }
+
   try {
     const res = await fetch(`${BRAIN_QA_BASE}/ask/stream`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers,
       body: JSON.stringify({
         question,
         persona,
@@ -325,11 +344,15 @@ export async function askStream(
           else if (event.type === 'citation') callbacks.onCitation({ filename: event.filename, snippet: event.snippet, score: 0 });
           else if (event.type === 'meta') {
             const sid = String(event.session_id ?? '');
-            callbacks.onMeta?.({ session_id: sid, confidence: String(event.confidence ?? '') });
+            callbacks.onMeta?.({ session_id: sid, confidence: String(event.confidence ?? ''), quota: event.quota });
           } else if (event.type === 'done') {
             const sid = String(event.session_id ?? '');
-            callbacks.onDone(event.persona, { session_id: sid, confidence: String(event.confidence ?? '') });
+            callbacks.onDone(event.persona, { session_id: sid, confidence: String(event.confidence ?? ''), quota: event.quota });
           } else if (event.type === 'error') callbacks.onError(event.message);
+          else if (event.type === 'quota_limit') {
+            if (callbacks.onQuotaLimit) callbacks.onQuotaLimit(event as QuotaInfo);
+            else callbacks.onError(event.message ?? 'Quota habis. Silakan top up atau tunggu reset besok.');
+          }
         } catch { /* skip malformed */ }
       }
     }

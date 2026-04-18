@@ -82,6 +82,7 @@ def anthropic_generate(
     max_tokens: int = ANTHROPIC_MAX_TOKENS,
     temperature: float = 0.7,
     context_snippets: Optional[list[str]] = None,
+    model_override: Optional[str] = None,
 ) -> tuple[str, str]:
     """
     Generate teks via Anthropic API (hemat mode).
@@ -110,13 +111,16 @@ def anthropic_generate(
 
     sys_prompt = (system or SIDIX_SYSTEM_COMPACT)[:500]  # system prompt ringkas
 
-    # Batasi max_tokens agar hemat
-    actual_max = min(max_tokens, ANTHROPIC_MAX_TOKENS)
+    # Model override untuk sponsored tier (Sonnet)
+    effective_model = model_override or ANTHROPIC_MODEL
+    # Batasi max_tokens agar hemat (Sonnet tier bisa lebih banyak)
+    max_cap = 1200 if "sonnet" in effective_model else ANTHROPIC_MAX_TOKENS
+    actual_max = min(max_tokens, max_cap)
 
     t0 = time.time()
     try:
         message = client.messages.create(
-            model=ANTHROPIC_MODEL,
+            model=effective_model,
             max_tokens=actual_max,
             temperature=temperature,
             system=sys_prompt,
@@ -129,14 +133,18 @@ def anthropic_generate(
         usage = message.usage
         inp = getattr(usage, "input_tokens", 0)
         out = getattr(usage, "output_tokens", 0)
-        # Estimasi biaya: $0.25/1M input + $1.25/1M output (haiku)
-        cost_usd = (inp * 0.00000025) + (out * 0.00000125)
+        # Estimasi biaya per model
+        if "sonnet" in effective_model:
+            cost_usd = (inp * 0.000003) + (out * 0.000015)  # Sonnet-3.5
+        else:
+            cost_usd = (inp * 0.00000025) + (out * 0.00000125)  # Haiku
+        mode_label = "anthropic_sonnet" if "sonnet" in effective_model else "anthropic_haiku"
         print(
-            f"[anthropic_haiku] {inp}in+{out}out tokens "
+            f"[{mode_label}] {inp}in+{out}out tokens "
             f"≈ ${cost_usd:.6f} | {elapsed}ms"
         )
 
-        return text, "anthropic_haiku"
+        return text, mode_label
 
     except Exception as e:
         err_msg = str(e)

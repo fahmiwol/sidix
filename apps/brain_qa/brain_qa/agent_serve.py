@@ -177,7 +177,8 @@ class AskRequest(BaseModel):
 
 
 # ── LLM generate function ─────────────────────────────────────────────────────
-# Priority: 1) Ollama (local)  2) LoRA adapter (GPU)  3) Anthropic Haiku (cloud, hemat)  4) Mock
+# Priority: 1) Ollama (local)  2) LoRA (GPU)  3) Groq (free)  4) Gemini (free)
+#           5) Anthropic Haiku/Sonnet (cheap/paid)  6) Mock
 
 def _llm_generate(
     prompt: str,
@@ -185,66 +186,37 @@ def _llm_generate(
     max_tokens: int = 256,
     temperature: float = 0.7,
     context_snippets: list[str] | None = None,
+    preferred_model: str | None = None,
 ) -> tuple[str, str]:
     """
     Returns (generated_text, mode).
-    mode = "ollama" | "local_lora" | "anthropic_haiku" | "mock"
+    mode = "ollama" | "local_lora" | "groq_llama3" | "gemini_flash"
+           | "anthropic_haiku" | "anthropic_sonnet" | "mock"
 
-    Chain prioritas:
-    1. Ollama — local LLM, gratis, tercepat
-    2. LoRA adapter — fine-tuned Qwen2.5-7B (butuh GPU)
-    3. Anthropic Haiku — cloud fallback, hemat ($0.25/1M input)
-    4. Mock — info cara setup
-
-    context_snippets: hasil RAG, diteruskan ke Anthropic agar bisa jawab
-    berdasarkan knowledge base tanpa re-search.
+    Delegasikan ke multi_llm_router — satu routing engine untuk semua.
+    preferred_model: override model (misal dari quota tier untuk sponsored user).
+    context_snippets: hasil RAG, diteruskan agar model bisa cite sumber.
     """
-    # ── 1. Ollama (prioritas utama) ───────────────────────────────────────────
     try:
-        from .ollama_llm import ollama_available, ollama_generate
-        if ollama_available():
-            text, mode = ollama_generate(
-                prompt=prompt,
-                system=system,
-                max_tokens=max_tokens,
-                temperature=temperature,
-            )
-            if mode == "ollama":
-                return text, "ollama"
-    except Exception:
-        pass
+        from .multi_llm_router import route_generate
+        result = route_generate(
+            prompt=prompt,
+            system=system,
+            max_tokens=max_tokens,
+            temperature=temperature,
+            context_snippets=context_snippets,
+            preferred_model=preferred_model,
+        )
+        if result.text:
+            return result.text, result.mode
+    except Exception as e:
+        print(f"[agent_serve] multi_llm_router error: {e}")
 
-    # ── 2. LoRA adapter (GPU path) ────────────────────────────────────────────
-    text, mode = generate_sidix(
-        prompt,
-        system,
-        max_tokens=max_tokens,
-        temperature=temperature,
-    )
-    if mode == "local_lora":
-        return text, mode
-
-    # ── 3. Anthropic Haiku (cloud fallback, hemat) ────────────────────────────
-    try:
-        from .anthropic_llm import anthropic_available, anthropic_generate
-        if anthropic_available():
-            text, mode = anthropic_generate(
-                prompt=prompt,
-                system=system,
-                max_tokens=min(max_tokens, 600),  # hemat token
-                temperature=temperature,
-                context_snippets=context_snippets,
-            )
-            if mode == "anthropic_haiku" and text:
-                return text, mode
-    except Exception:
-        pass
-
-    # ── 4. Mock fallback ──────────────────────────────────────────────────────
+    # ── Fallback mock ──────────────────────────────────────────────────────────
     return (
         "⚠ SIDIX sedang dalam mode setup. Sabar ya!\n\n"
-        "Tim kami sedang menyiapkan inference engine lokal. "
-        "Sementara itu, kamu bisa coba lagi beberapa saat lagi.",
+        "Tim kami sedang menyiapkan inference engine. "
+        "Coba lagi beberapa saat lagi.",
         "mock",
     )
 
@@ -344,17 +316,30 @@ def create_app() -> "FastAPI":
         except Exception:
             pass
 
-        # Anthropic status (internal, tidak expose ke user)
+        # Multi-LLM router status
         anthropic_ready = False
+        groq_ready = False
+        gemini_ready = False
         try:
             from .anthropic_llm import anthropic_available
             anthropic_ready = anthropic_available()
         except Exception:
             pass
+        try:
+            from .multi_llm_router import groq_available, gemini_available
+            groq_ready = groq_available()
+            gemini_ready = gemini_available()
+        except Exception:
+            pass
 
-        # Update effective_mode jika Anthropic tersedia sebagai fallback
-        if not ollama_info.get("available") and not model_ready and anthropic_ready:
-            effective_mode = "anthropic_haiku"
+        # Update effective_mode berdasarkan provider yang tersedia
+        if not ollama_info.get("available") and not model_ready:
+            if groq_ready:
+                effective_mode = "groq_llama3"
+            elif gemini_ready:
+                effective_mode = "gemini_flash"
+            elif anthropic_ready:
+                effective_mode = "anthropic_haiku"
 
         # QnA stats
         qna_today = 0
@@ -384,6 +369,12 @@ def create_app() -> "FastAPI":
             "engine_build": os.environ.get("BRAIN_QA_ENGINE_BUILD", "0.1.0").strip() or "0.1.0",
             # Threads status + alert
             "threads_alert": threads_alert,
+            # Multi-LLM status
+            "llm_providers": {
+                "groq": groq_ready,
+                "gemini": gemini_ready,
+                "anthropic": anthropic_ready,
+            },
             # Learning stats
             "qna_recorded_today": qna_today,
             # Format lama (kompatibel UI)
@@ -721,10 +712,40 @@ def create_app() -> "FastAPI":
         _bump_metric("ask_stream")
         dq_key = _daily_client_key(request)
 
+        # ── Quota check ────────────────────────────────────────────────────────
+        user_id  = request.headers.get("x-user-id", "").strip() or None
+        is_admin = _admin_ok(request)
+        client_ip = _client_ip(request)
+
         async def generate():
-            # Jalankan ReAct (sync) lalu stream hasilnya token per token
             import json as _json
 
+            # ── 1. Cek quota sebelum proses ────────────────────────────────────
+            try:
+                from .token_quota import check_quota, record_usage
+                quota = check_quota(user_id=user_id, ip=client_ip, is_admin=is_admin)
+                if not quota["ok"]:
+                    event = _json.dumps({
+                        "type": "quota_limit",
+                        "tier": quota["tier"],
+                        "used": quota["used"],
+                        "limit": quota["limit"],
+                        "remaining": 0,
+                        "reset_at": quota["reset_at"],
+                        "topup_url": quota["topup_url"],
+                        "topup_wa": quota.get("topup_wa", ""),
+                        "message": quota["message"],
+                    })
+                    yield f"data: {event}\n\n"
+                    return
+                # Ambil model yang direkomendasikan untuk tier ini
+                tier_model = quota.get("model")
+            except Exception:
+                quota = None
+                tier_model = None
+
+            # ── 2. Jalankan ReAct ──────────────────────────────────────────────
+            t_start = time.time()
             try:
                 session = run_react(
                     question=req.question,
@@ -737,10 +758,31 @@ def create_app() -> "FastAPI":
                 err = _json.dumps({"type": "error", "message": str(e)})
                 yield f"data: {err}\n\n"
                 return
+
             rate_limit.record_daily_use(dq_key)
             _store_session(session)
             answer = session.final_answer
 
+            # ── 3. Hitung perkiraan token untuk record_usage ───────────────────
+            tokens_in_est  = len(req.question.split()) * 1          # rough estimate
+            tokens_out_est = len(answer.split()) * 1
+
+            # ── 4. Record usage segera setelah generate ────────────────────────
+            quota_after: dict = {}
+            try:
+                from .token_quota import record_usage
+                quota_after = record_usage(
+                    user_id=user_id,
+                    ip=client_ip,
+                    tokens_in=tokens_in_est,
+                    tokens_out=tokens_out_est,
+                    model=getattr(session, "model_mode", tier_model or "unknown"),
+                    session_id=session.session_id,
+                )
+            except Exception:
+                pass
+
+            # ── 5. Kirim meta + quota info ─────────────────────────────────────
             meta = _json.dumps({
                 "type": "meta",
                 "session_id": session.session_id,
@@ -748,10 +790,16 @@ def create_app() -> "FastAPI":
                 "orchestration_digest": getattr(session, "orchestration_digest", ""),
                 "case_frame_ids": getattr(session, "case_frame_ids", ""),
                 "praxis_matched_frame_ids": getattr(session, "praxis_matched_frame_ids", ""),
+                "quota": {
+                    "used":      quota_after.get("used", 0),
+                    "limit":     quota_after.get("limit", 9999),
+                    "remaining": quota_after.get("remaining", 9999),
+                    "tier":      quota_after.get("tier", "guest"),
+                },
             })
             yield f"data: {meta}\n\n"
 
-            # Kirim token per kata (simulasi streaming)
+            # ── 6. Stream token per kata ───────────────────────────────────────
             words = answer.split(" ")
             for i, word in enumerate(words):
                 text = word + (" " if i < len(words) - 1 else "")
@@ -759,7 +807,7 @@ def create_app() -> "FastAPI":
                 yield f"data: {event}\n\n"
                 await asyncio.sleep(0.02)
 
-            # Kirim citations
+            # ── 7. Kirim citations ─────────────────────────────────────────────
             for step in session.steps:
                 for cit in step.action_args.get("_citations", []):
                     event = _json.dumps({
@@ -769,7 +817,7 @@ def create_app() -> "FastAPI":
                     })
                     yield f"data: {event}\n\n"
 
-            # ── Record QnA untuk self-learning ───────────────────────────────
+            # ── 8. Record QnA untuk self-learning ─────────────────────────────
             try:
                 from .qna_recorder import record_qna
                 citations_list = []
@@ -786,7 +834,7 @@ def create_app() -> "FastAPI":
             except Exception:
                 pass  # jangan ganggu stream jika recorder error
 
-            # Done
+            # ── 9. Done event ──────────────────────────────────────────────────
             event = _json.dumps({
                 "type": "done",
                 "persona": session.persona,
@@ -795,6 +843,12 @@ def create_app() -> "FastAPI":
                 "orchestration_digest": getattr(session, "orchestration_digest", ""),
                 "case_frame_ids": getattr(session, "case_frame_ids", ""),
                 "praxis_matched_frame_ids": getattr(session, "praxis_matched_frame_ids", ""),
+                "quota": {
+                    "used":      quota_after.get("used", 0),
+                    "limit":     quota_after.get("limit", 9999),
+                    "remaining": quota_after.get("remaining", 9999),
+                    "tier":      quota_after.get("tier", "guest"),
+                },
             })
             yield f"data: {event}\n\n"
 
@@ -2027,6 +2081,107 @@ h1{{color:#0af}}p{{color:#aaa}}a{{color:#0af}}</style></head>
         try:
             from .threads_series import get_series_stats
             return {"ok": True, "stats": get_series_stats()}
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    # ══════════════════════════════════════════════════════════════════════════
+    # QUOTA ENDPOINTS — Token Quota System
+    # ══════════════════════════════════════════════════════════════════════════
+
+    @app.get("/quota/status", tags=["Quota"])
+    def quota_status(request: Request):
+        """
+        Cek quota user saat ini.
+        Header: x-user-id (optional, jika sudah login).
+        Dipakai frontend untuk tampilkan counter quota.
+        """
+        try:
+            from .token_quota import check_quota
+            uid  = request.headers.get("x-user-id", "").strip() or None
+            ip   = _client_ip(request)
+            adm  = _admin_ok(request)
+            return check_quota(user_id=uid, ip=ip, is_admin=adm)
+        except Exception as e:
+            return {"ok": True, "tier": "guest", "used": 0, "limit": 3,
+                    "remaining": 3, "error": str(e)}
+
+    @app.get("/quota/stats", tags=["Quota"])
+    def quota_stats(request: Request, date: str = ""):
+        """Statistik penggunaan quota hari ini / tanggal tertentu. Admin-only."""
+        if not _admin_ok(request):
+            raise HTTPException(status_code=403, detail="Admin token diperlukan")
+        try:
+            from .token_quota import get_quota_stats
+            return get_quota_stats(date=date or None)
+        except Exception as e:
+            return {"error": str(e)}
+
+    @app.post("/quota/sponsor/{user_id}", tags=["Quota"])
+    def quota_sponsor_add(user_id: str, request: Request):
+        """
+        Tambahkan user ke sponsored tier (sudah top up).
+        Admin-only. Dipanggil manual setelah konfirmasi pembayaran.
+        """
+        if not _admin_ok(request):
+            raise HTTPException(status_code=403, detail="Admin token diperlukan")
+        try:
+            from .token_quota import add_sponsored_user
+            ok = add_sponsored_user(user_id)
+            return {"ok": ok, "user_id": user_id, "tier": "sponsored",
+                    "message": f"User {user_id} sekarang menjadi sponsored (100 pesan/hari + Sonnet)."}
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    @app.delete("/quota/sponsor/{user_id}", tags=["Quota"])
+    def quota_sponsor_remove(user_id: str, request: Request):
+        """Hapus user dari sponsored tier. Admin-only."""
+        if not _admin_ok(request):
+            raise HTTPException(status_code=403, detail="Admin token diperlukan")
+        try:
+            from .token_quota import remove_sponsored_user
+            ok = remove_sponsored_user(user_id)
+            return {"ok": ok, "user_id": user_id, "tier": "free",
+                    "message": f"User {user_id} kembali ke tier free."}
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    # ══════════════════════════════════════════════════════════════════════════
+    # MULTI-LLM ROUTER ENDPOINTS
+    # ══════════════════════════════════════════════════════════════════════════
+
+    @app.get("/llm/status", tags=["LLM"])
+    def llm_router_status(request: Request):
+        """
+        Status semua LLM provider yang terdaftar di multi-LLM router.
+        Menampilkan mana yang aktif, gratis, atau berbayar.
+        """
+        try:
+            from .multi_llm_router import get_router_status
+            return {"ok": True, "providers": get_router_status()}
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    @app.post("/llm/test", tags=["LLM"])
+    def llm_test(body: dict[str, Any] = {}, request: Request = None):
+        """
+        Test quick-generate lewat multi-LLM router.
+        Body: {prompt: str, provider: "groq"|"gemini"|"anthropic"|"auto"}
+        Admin-only.
+        """
+        if request and not _admin_ok(request):
+            raise HTTPException(status_code=403, detail="Admin token diperlukan")
+        prompt = str((body or {}).get("prompt", "Siapa kamu?")).strip()
+        provider = str((body or {}).get("provider", "auto")).lower()
+        try:
+            from .multi_llm_router import route_generate, groq_generate, gemini_generate
+            if provider == "groq":
+                text, mode = groq_generate(prompt=prompt)
+            elif provider == "gemini":
+                text, mode = gemini_generate(prompt=prompt)
+            else:
+                result = route_generate(prompt=prompt)
+                text, mode = result.text, result.mode
+            return {"ok": True, "mode": mode, "answer": text, "char_count": len(text)}
         except Exception as e:
             return {"ok": False, "error": str(e)}
 

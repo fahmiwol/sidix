@@ -21,7 +21,7 @@ import {
   triggerReindex, getReindexStatus, agentGenerate, submitFeedback, forgetAgentSession,
   BrainQAError, BRAIN_QA_BASE,
   type Persona, type CorpusDocument, type Citation, type HealthResponse,
-  type AskInferenceOpts,
+  type AskInferenceOpts, type QuotaInfo,
 } from './api';
 
 import {
@@ -305,6 +305,106 @@ document.getElementById('contrib-submit')?.addEventListener('click', async () =>
     submitBtn.disabled = false;
     submitBtn.textContent = t('contribSubmit');
   }
+});
+
+// ── Quota Counter + Limit Overlay ────────────────────────────────────────────
+
+function updateQuotaBadge(used: number, limit: number, tier: string) {
+  const badge = document.getElementById('quota-badge');
+  const badgeText = document.getElementById('quota-badge-text');
+  if (!badge || !badgeText) return;
+
+  const remaining = Math.max(0, limit - used);
+  badgeText.textContent = `${remaining}/${limit}`;
+
+  // Tampilkan badge hanya untuk guest/free (sponsored & admin tidak perlu lihat ini)
+  const showBadge = tier === 'guest' || tier === 'free';
+  badge.classList.toggle('hidden', !showBadge);
+  badge.style.display = showBadge ? 'flex' : 'none';
+
+  // Warna badge berubah saat hampir habis
+  if (remaining === 0) {
+    badge.style.color = '#f87171';       // merah
+    badge.style.borderColor = 'rgba(248,113,113,0.3)';
+  } else if (remaining <= 2) {
+    badge.style.color = '#fbbf24';       // kuning
+    badge.style.borderColor = 'rgba(251,191,36,0.3)';
+  } else {
+    badge.style.color = '#a89b82';       // default
+    badge.style.borderColor = 'rgba(255,255,255,0.1)';
+  }
+}
+
+function showQuotaOverlay(info: { tier: string; used: number; limit: number; remaining: number; reset_at?: string; topup_url?: string; topup_wa?: string; message?: string }) {
+  const overlay = document.getElementById('quota-overlay');
+  const title   = document.getElementById('quota-overlay-title');
+  const msg     = document.getElementById('quota-overlay-msg');
+  const reset   = document.getElementById('quota-overlay-reset');
+  const topupLink = document.getElementById('quota-topup-link') as HTMLAnchorElement | null;
+  const waLink    = document.getElementById('quota-wa-link') as HTMLAnchorElement | null;
+
+  if (!overlay) return;
+
+  // Update teks
+  if (title) {
+    title.textContent = LANG === 'id' ? 'Quota Hari Ini Habis' : 'Daily Quota Reached';
+  }
+  if (msg && info.message) {
+    msg.textContent = info.message;
+  } else if (msg) {
+    msg.textContent = LANG === 'id'
+      ? `Kamu sudah pakai ${info.used} dari ${info.limit} pesan gratis hari ini.`
+      : `You've used ${info.used} of ${info.limit} free messages today.`;
+  }
+
+  // Hitung waktu reset
+  if (reset && info.reset_at) {
+    try {
+      const resetDate = new Date(info.reset_at);
+      const now = new Date();
+      const diffMs = resetDate.getTime() - now.getTime();
+      const diffHrs = Math.ceil(diffMs / (1000 * 60 * 60));
+      reset.textContent = LANG === 'id' ? `~${diffHrs} jam lagi` : `~${diffHrs} hours`;
+    } catch {
+      reset.textContent = LANG === 'id' ? 'besok pagi' : 'tomorrow';
+    }
+  }
+
+  // Update links
+  if (topupLink && info.topup_url) topupLink.href = info.topup_url;
+  if (waLink && info.topup_wa) waLink.href = info.topup_wa;
+
+  overlay.classList.remove('hidden');
+  initIcons();
+
+  // Update badge
+  updateQuotaBadge(info.used, info.limit, info.tier);
+}
+
+function closeQuotaOverlay() {
+  document.getElementById('quota-overlay')?.classList.add('hidden');
+}
+
+// Wire quota overlay buttons
+document.getElementById('quota-close-btn')?.addEventListener('click', closeQuotaOverlay);
+document.getElementById('quota-badge')?.addEventListener('click', () => {
+  // Klik badge → fetch quota status dan tampilkan overlay jika habis
+  void fetch(`${BRAIN_QA_BASE}/quota/status`, {
+    headers: (() => {
+      const uid = localStorage.getItem('sidix_user_id') ?? '';
+      return uid ? { 'x-user-id': uid } : {};
+    })(),
+  }).then(r => r.json()).then((q: any) => {
+    if (q && !q.ok && q.remaining === 0) showQuotaOverlay(q);
+    else if (q) updateQuotaBadge(q.used ?? 0, q.limit ?? 3, q.tier ?? 'guest');
+  }).catch(() => {});
+});
+document.getElementById('quota-btn-login')?.addEventListener('click', () => {
+  closeQuotaOverlay();
+  openLoginModal();
+});
+document.getElementById('quota-btn-topup')?.addEventListener('click', () => {
+  window.open('https://trakteer.id/sidixlab', '_blank', 'noopener');
 });
 
 // ── Auth Button (Header + Mobile) ────────────────────────────────────────────
@@ -719,9 +819,19 @@ onAuthChange(async (user) => {
   currentAuthUser = user;
 
   if (user) {
+    // Simpan user_id ke localStorage untuk quota tracking
+    localStorage.setItem('sidix_user_id', user.id);
+
     // Update auth button
     const name = user.user_metadata?.full_name ?? user.email ?? '';
     updateAuthButton(true, name);
+
+    // Refresh quota status setelah login (mungkin upgrade tier)
+    void fetch(`${BRAIN_QA_BASE}/quota/status`, {
+      headers: { 'x-user-id': user.id },
+    }).then(r => r.json()).then((q: any) => {
+      if (q) updateQuotaBadge(q.used ?? 0, q.limit ?? 10, q.tier ?? 'free');
+    }).catch(() => {});
 
     // User baru login
     closeLoginModal();
@@ -740,7 +850,11 @@ onAuthChange(async (user) => {
     // Start onboarding jika belum
     await startOnboardingIfNeeded();
   } else {
+    // Logout — hapus user_id dari localStorage
+    localStorage.removeItem('sidix_user_id');
     updateAuthButton(false);
+    // Reset quota badge ke guest state
+    updateQuotaBadge(0, 3, 'guest');
   }
 });
 
@@ -1044,6 +1158,11 @@ async function handleSend() {
   await askStream(question, persona, 5, {
     onMeta: (meta) => {
       if (meta.session_id) setLastSessionId(meta.session_id);
+      // Update quota badge dari meta event
+      if (meta.quota) {
+        const q = meta.quota as unknown as QuotaInfo & { used: number; limit: number; remaining: number; tier: string };
+        updateQuotaBadge(q.used ?? 0, q.limit ?? 3, q.tier ?? 'guest');
+      }
     },
     onToken: (text) => {
       fullText += text;
@@ -1053,8 +1172,20 @@ async function handleSend() {
     onCitation: (c) => {
       citations.push(c);
     },
+    onQuotaLimit: (info) => {
+      // Hapus thinking indicator + stream bubble
+      thinking.remove();
+      streamWrap.remove();
+      // Tampilkan overlay quota
+      showQuotaOverlay(info);
+    },
     onDone: (_persona, meta) => {
       if (meta?.session_id) setLastSessionId(meta.session_id);
+      // Update quota badge dari done event
+      if ((meta as any)?.quota) {
+        const q = (meta as any).quota as { used: number; limit: number; remaining: number; tier: string };
+        updateQuotaBadge(q.used ?? 0, q.limit ?? 3, q.tier ?? 'guest');
+      }
       // Tambah citation chips jika ada
       if (citations.length > 0) {
         const citeRow = document.createElement('div');
