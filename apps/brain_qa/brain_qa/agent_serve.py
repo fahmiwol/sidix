@@ -2185,6 +2185,114 @@ h1{{color:#0af}}p{{color:#aaa}}a{{color:#0af}}</style></head>
         except Exception as e:
             return {"ok": False, "error": str(e)}
 
+    # ══════════════════════════════════════════════════════════════════════════
+    # WAITING ROOM ENDPOINTS — zero-API, semua jadi training data SIDIX
+    # ══════════════════════════════════════════════════════════════════════════
+
+    @app.get("/waiting-room/quiz", tags=["WaitingRoom"])
+    def wr_quiz(n: int = 10, category: str = ""):
+        """Random quiz questions. Zero API, langsung dari bank lokal."""
+        try:
+            from .waiting_room import get_quiz_questions, get_quiz_categories
+            questions = get_quiz_questions(n=min(n, 20), category=category or None)
+            return {
+                "ok": True,
+                "questions": questions,
+                "total_bank": 300,
+                "categories": get_quiz_categories(),
+            }
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    @app.get("/waiting-room/quote", tags=["WaitingRoom"])
+    def wr_quote(lang: str = "id"):
+        """Random motivational quote / wisdom."""
+        try:
+            from .waiting_room import get_random_quote
+            return {"ok": True, "quote": get_random_quote(lang=lang)}
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    @app.get("/waiting-room/image", tags=["WaitingRoom"])
+    def wr_image():
+        """Random image describe prompt."""
+        try:
+            from .waiting_room import get_image_prompt
+            return {"ok": True, "prompt": get_image_prompt()}
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    @app.get("/waiting-room/gacha/spin", tags=["WaitingRoom"])
+    def wr_gacha_spin():
+        """Spin gacha — return badge/reward. Semua rarity level."""
+        try:
+            from .waiting_room import spin_gacha, record_wr_stat
+            result = spin_gacha()
+            record_wr_stat("global", "gacha_spins")
+            return {"ok": True, **result}
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    @app.get("/waiting-room/sidix-message", tags=["WaitingRoom"])
+    def wr_sidix_message(lang: str = "id"):
+        """Pesan typewriter dari SIDIX untuk waiting room."""
+        try:
+            from .waiting_room import get_sidix_messages
+            return {"ok": True, "messages": get_sidix_messages(lang=lang)}
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    @app.get("/waiting-room/tools", tags=["WaitingRoom"])
+    def wr_tools():
+        """List tools yang bisa dicoba tanpa quota."""
+        try:
+            from .waiting_room import get_tools_list
+            return {"ok": True, "tools": get_tools_list()}
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    @app.post("/waiting-room/learn", tags=["WaitingRoom"])
+    def wr_learn(body: dict[str, Any] = {}):
+        """
+        Rekam interaksi waiting room sebagai training data SIDIX.
+        Body: {type, question, user_answer, correct_answer?, session_id?, lang?}
+        """
+        try:
+            from .waiting_room import record_waiting_interaction, record_wr_stat
+            interaction_type = str((body or {}).get("type", "quiz"))
+            question         = str((body or {}).get("question", ""))
+            user_answer      = str((body or {}).get("user_answer", ""))
+            correct_answer   = (body or {}).get("correct_answer")
+            session_id       = str((body or {}).get("session_id", ""))
+            lang             = str((body or {}).get("lang", "id"))
+
+            if not question or not user_answer:
+                return {"ok": False, "error": "question dan user_answer wajib diisi"}
+
+            result = record_waiting_interaction(
+                interaction_type=interaction_type,
+                question=question,
+                user_answer=user_answer,
+                correct_answer=correct_answer,
+                session_id=session_id,
+                lang=lang,
+            )
+            # Update stats
+            stat_map = {"quiz": "quiz_answered", "image_describe": "images_described", "quote": "quotes_seen"}
+            record_wr_stat("global", stat_map.get(interaction_type, "quiz_answered"))
+            return result
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    @app.get("/waiting-room/stats", tags=["WaitingRoom"])
+    def wr_stats():
+        """Statistik global waiting room."""
+        try:
+            from .waiting_room import get_waiting_room_stats
+            return {"ok": True, "stats": get_waiting_room_stats("global")}
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
     # ── /sidix-folder/* ─ konversi D:\\SIDIX → kapabilitas SIDIX ──────────────
     @app.post("/sidix-folder/process")
     def sidix_folder_process():

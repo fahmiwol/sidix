@@ -1342,3 +1342,35 @@ Auto-trigger:
 - DOC: Research notes `122_token_quota_system.md` + `123_multi_llm_routing_mentor_mode.md`
 
 - DECISION: "Mentor Mode" — SIDIX tidak pernah bilang "tidak bisa jawab". Routing invisible ke provider lain, SIDIX belajar dari semua jawaban. Groq gratis jadi prioritas cloud fallback pertama (lebih hemat dari Anthropic).
+
+### 2026-04-18 — Waiting Room Engine + API Keys Integration
+
+- IMPL: **`waiting_room.py`** (backend) — zero-API user retention engine saat quota habis:
+  - `QUIZ_BANK`: 300+ soal, 9 kategori
+  - `QUOTE_BANK`: 150+ quotes ID+EN (motivasi, islam, teknologi)
+  - `IMAGE_PROMPTS`: text prompts + Wikimedia public domain images
+  - `GACHA_REWARDS`: rarity system (common 50% → legendary 1%)
+  - `record_waiting_interaction()`: semua jawaban → qna_recorder → SIDIX training data
+
+- IMPL: **`waiting-room.ts`** (frontend) — full waiting room UI:
+  - Tab: Quiz | Tebak Gambar | Motivasi | Game | Tools | Gacha
+  - Typewriter SIDIX messages (dari backend, no-API)
+  - Coin system: quiz benar +2, image describe +5, gacha spin -1
+  - Badge collection di localStorage (persisten)
+  - Game: `public/games/bottle-flip.html` via iframe (zero quota)
+
+- UPDATE: **`main.ts`** — wire waiting room ke quota limit:
+  - Import `initWaitingRoom` dari `./waiting-room`
+  - `onQuotaLimit` → `initWaitingRoom(LANG, info)` (menggantikan `showQuotaOverlay` saja)
+
+- UPDATE: **`agent_serve.py`** — endpoint `/waiting-room/*` (8 endpoint)
+
+- UPDATE: **`apps/brain_qa/.env`** — API keys real ditambahkan:
+  - `GROQ_API_KEY`: (redacted — set dari console.groq.com)
+  - `GEMINI_API_KEY`: (redacted — set dari aistudio.google.com)
+
+- UPDATE: **`.env.sample`** — tambah seksi Multi-LLM Mentor Mode
+
+- DOC: Research note `124_waiting_room_engine.md`
+
+- DECISION: Waiting Room adalah "ruang belajar bersama SIDIX" bukan sekedar halaman tunggu. Setiap interaksi user (quiz, deskripsi gambar) menjadi training data SIDIX via qna_recorder — zero cost, high value.

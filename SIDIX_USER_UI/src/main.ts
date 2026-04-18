@@ -24,6 +24,8 @@ import {
   type AskInferenceOpts, type QuotaInfo,
 } from './api';
 
+import { initWaitingRoom } from './waiting-room';
+
 import {
   subscribeNewsletter, submitFeedbackDB, type FeedbackType,
   signInWithGoogle, signInWithEmail, getCurrentUser, signOut, onAuthChange,
@@ -1176,8 +1178,8 @@ async function handleSend() {
       // Hapus thinking indicator + stream bubble
       thinking.remove();
       streamWrap.remove();
-      // Tampilkan overlay quota
-      showQuotaOverlay(info);
+      // Tampilkan Waiting Room interaktif (quiz, gacha, motivasi, tools)
+      initWaitingRoom(LANG, info);
     },
     onDone: (_persona, meta) => {
       if (meta?.session_id) setLastSessionId(meta.session_id);
