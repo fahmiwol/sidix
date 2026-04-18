@@ -1120,3 +1120,10 @@ Auto-trigger:
 - DOC: **Research note 116** — rain/public/research_notes/116_sidix_self_learning_loop.md — SIDIX Self-Learning Loop: World Sensor → Conceptual Generalizer → Experience Engine → SPIN self-play → LoRA fine-tuning → Deploy → Feedback → loop. Pemetaan Pipeline Fahmi (Informasi→Inspirasi→Motivasi→Inisiasi→Improvisasi→Adopsi→Aksi) ke komponen teknis. Analogi Ijtihad vs Taqlid digital.
 
 - DOC: **Research note 117** — rain/public/research_notes/117_community_contribution_guide.md — 5 jalur kontribusi: research note, Q&A, problem-solution, paper/riset, beta testing. Sistem nilai kontribusi (uniqueness 40%, verifiability 30%, utilization 20%, feedback 10%). Visi jangka panjang 3 tahun. Konsep amal jariyah ilmu.
+
+### 2026-04-18 — Survey 9 URL AI Terbaru -> Research Note 100
+
+- DOC: Research note 100 -- brain/public/research_notes/100_hf_courses_and_frontier_models_survey.md -- Survey terstruktur 9 sumber AI terkini (April 2026). Sumber: HF LLM Course ch1.1-1.2, HF MCP Course, HF Agents Course, HF Deep RL Course, HF Smol Course (fine-tuning), MiniMax-M2.7 (229B MoE, self-evolution), Tencent HY-Embodied-0.5 (MoT, embodied AI), NVIDIA QCalEval (quantum VLM benchmark).
+- NOTE: Nomor 100 dipilih karena file terakhir di research_notes/ adalah 99_artifact_processing.md sebelum sesi ini. Survey ini lintas sumber, bukan hasil track tertentu.
+- DECISION: Dari survey ini, 3 prioritas implementasi teridentifikasi: (1) MCP Protocol untuk SIDIX agent tools, (2) PEFT+SFT untuk fine-tuning Mighan dengan data Islam Indonesia, (3) LLM-as-judge untuk evaluasi otomatis kualitas SIDIX.
+- NOTE: Self-evolution pattern (MiniMax-M2.7) dan sparse activation MoT (HY-Embodied) adalah architectural ideas relevan untuk roadmap SIDIX jangka panjang.
