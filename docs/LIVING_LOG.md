@@ -3090,3 +3090,12 @@ Konteks: Budget Rp 300-600k approved. Laptop ASUS TUF Gaming A15 FA506QM ada RTX
   * [ ] Rate limit anonymous users untuk image gen (existing rate limit sudah cover /agent/chat global)
   * [ ] UI deploy VPS frontend (sudah build+deploy pas commit terakhir)
 - NEXT untuk public launch: (1) test via app.sidixlab.com UI langsung, (2) tambah loading indicator UI saat tunggu 65s (biar UX ga silent), (3) add Nusantara prompt enhancer prefix untuk quality boost, (4) monitor ngrok free tier usage limit.
+
+## 2026-04-20 (clarify arsitektur VPS + Laptop role)
+
+- CLARIFY arsitektur hybrid untuk user (penting untuk handoff):
+  * VPS 90%+ beban kerja: host UI static (port 4000), brain LLM Qwen+LoRA (port 8765), ReAct agent, 19 tools, RAG corpus 1182 doc, image intent detector, storage + serving image hasil di /generated/{hash}.png.
+  * Laptop RTX 3060 cuma 'tangan' GPU worker: dipanggil ~5-10% traffic saat user minta image. Input prompt -> output base64 PNG. Tidak tahu konteks chat, tidak punya persona/LoRA.
+  * Tunnel ngrok = jembatan VPS -> laptop HANYA saat image gen. Sisa waktu laptop idle.
+- EXIT strategy: kalau budget Rp 300-400k/bulan tersedia, deploy SDXL di RunPod Docker dengan Dockerfile di docs/workstation_scripts/, ganti SIDIX_IMAGE_GEN_URL env var -> RunPod endpoint, laptop bisa dimatikan. Scaling otomatis via serverless worker.
+- Fase beta sekarang: laptop + ngrok = Rp 0 = perfect untuk validasi demand sebelum commit budget cloud.
