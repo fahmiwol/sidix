@@ -780,6 +780,7 @@ def run_react(
                 step=1,
                 allow_restricted=False,
             )
+            _log_fp.getLogger(__name__).warning(f"[ImageFastPath] tool result success={_result.success} err={_result.error!r} out_len={len(_result.output or '')}")
             if _result.success:
                 session.final_answer = _result.output
                 session.citations = list(_result.citations or [])
