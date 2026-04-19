@@ -3038,3 +3038,11 @@ Konteks: Budget Rp 300-600k approved. Laptop ASUS TUF Gaming A15 FA506QM ada RTX
 
 - TEST [F] SDXL 1.0 base download 7GB (4:12 menit) + generate 1024x1024 masjid prompt 25 steps = 82 detik. VRAM peak 5.8 GB (fit 6 GB RTX 3060 via enable_model_cpu_offload + attention_slicing). Output D:\sidix-local\output\test.png 1440 KB.
 - SPRINT 3 MILESTONE: Image gen local workstation OPERATIONAL. Zero-cost infra untuk dev+test. Next: Tahap G ngrok tunnel untuk expose ke SIDIX brain (ctrl.sidixlab.com).
+
+## 2026-04-19 (Tahap G partial - SDXL FastAPI server + brain_qa tool)
+
+- IMPL [G.1] D:\sidix-local\scripts\sdxl_server.py - FastAPI server wrap SDXL pipeline. Endpoints: GET /health, POST /generate (prompt, steps, width, height -> base64 PNG). Load 5s, generate 1024x1024 20 steps = 66s via API. VRAM peak 5.77 GB.
+- IMPL [G.2] brain_qa/agent_tools.py - tool 'text_to_image' registered (permission 'open'). Call external SDXL via urllib.request ke SIDIX_IMAGE_GEN_URL env var. Save result ke .data/generated_images/<hash>.png + return citation metadata.
+- BLOCKER [G.3] ngrok/tunnel setup - butuh user sign up ngrok.com gratis + authtoken. Alternative: cloudflared (no account). Server lokal laptop belum exposed ke VPS ctrl.sidixlab.com.
+- STATE: SDXL local OPERATIONAL standalone. Brain_qa tool SIAP tapi butuh SIDIX_IMAGE_GEN_URL di VPS environment setelah tunnel setup.
+- NEXT: User sign up ngrok (2 menit) -> jalankan ngrok http 8000 di laptop -> copy public URL -> set env var di VPS .env -> restart sidix-brain -> tools_available=18->19.

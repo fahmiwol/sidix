@@ -1111,6 +1111,44 @@ def _tool_concept_graph(args: dict) -> ToolResult:
     return ToolResult(success=True, output="\n".join(lines), citations=citations)
 
 
+# ── Text-to-image tool (via SDXL server atau RunPod) ─────────────────────────
+def _tool_text_to_image(args: dict) -> ToolResult:
+    """Call external SDXL server (local atau RunPod). Env: SIDIX_IMAGE_GEN_URL."""
+    prompt = str(args.get("prompt", "")).strip()
+    if not prompt:
+        return ToolResult(success=False, output="", error="prompt kosong")
+    endpoint = os.environ.get("SIDIX_IMAGE_GEN_URL", "").rstrip("/")
+    if not endpoint:
+        return ToolResult(success=False, output="",
+                          error="SIDIX_IMAGE_GEN_URL belum di-set (env var). Set ke URL SDXL server (ngrok/RunPod).")
+    steps = max(10, min(int(args.get("steps", 25)), 50))
+    width = max(512, min(int(args.get("width", 1024)), 1536))
+    height = max(512, min(int(args.get("height", 1024)), 1536))
+    payload = json.dumps({"prompt": prompt, "steps": steps, "width": width, "height": height}).encode()
+    req = urllib.request.Request(f"{endpoint}/generate", data=payload,
+                                 headers={"Content-Type": "application/json"}, method="POST")
+    try:
+        with urllib.request.urlopen(req, timeout=180) as resp:
+            data = json.loads(resp.read().decode())
+    except Exception as e:
+        return ToolResult(success=False, output="", error=f"image_gen request failed: {e}")
+    if not data.get("ok"):
+        return ToolResult(success=False, output="", error=str(data.get("error", "unknown")))
+    # Save to workspace so user bisa download
+    out_dir = default_index_dir().parent / "generated_images"
+    out_dir.mkdir(parents=True, exist_ok=True)
+    import base64
+    h = hashlib.sha256(prompt.encode()).hexdigest()[:12]
+    fname = f"{h}.png"
+    fpath = out_dir / fname
+    fpath.write_bytes(base64.b64decode(data["image_b64"]))
+    return ToolResult(
+        success=True,
+        output=f"Image generated: /generated/{fname} (took {data.get('took_s')}s, VRAM peak {data.get('vram_peak_gb')} GB)",
+        citations=[{"type": "text_to_image", "prompt": prompt, "file": str(fpath), "steps": steps}],
+    )
+
+
 # ── Registry ──────────────────────────────────────────────────────────────────
 
 TOOL_REGISTRY: dict[str, ToolSpec] = {
@@ -1306,6 +1344,18 @@ TOOL_REGISTRY: dict[str, ToolSpec] = {
         params=["concept", "depth", "max_related"],
         permission="open",
         fn=_tool_concept_graph,
+    ),
+    "text_to_image": ToolSpec(
+        name="text_to_image",
+        description=(
+            "Generate gambar dari prompt teks via external SDXL server (local laptop atau RunPod). "
+            "Butuh SIDIX_IMAGE_GEN_URL env var. Output disimpan di /generated/<hash>.png. "
+            "Params: prompt (str wajib), steps (int 10-50 default 25), "
+            "width/height (int 512-1536 default 1024)."
+        ),
+        params=["prompt", "steps", "width", "height"],
+        permission="open",
+        fn=_tool_text_to_image,
     ),
 }
 
