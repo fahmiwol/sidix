@@ -2857,3 +2857,13 @@ promosi dirinya sendiri.
 - INTEGRATE: `docs/SIDIX_ROADMAP_2026.md` — tambah section "Framework arsitektural Brain+Hands+Memory" di atas 4-stage overview, jelaskan prinsip modular orkestrasi.
 - MITOS dibongkar: GPT/Claude/Gemini bukan satu model — mereka orkestrator panggil tool/model spesialis (DALL-E, Python, search, dll.). Implikasi untuk SIDIX: tidak perlu kejar skala parameter, kejar karakter + integrity.
 - DIFFERENSIATOR konkret: image prompt enhancer Nusantara (brain enrich prompt dengan konteks kultural sebelum SDXL) — tidak bisa ditiru GPT/Claude karena knowledge base Nusantara + sanad tidak mereka punya.
+
+## 2026-04-19 (north star) — LOCK tujuan akhir + release strategy + pilih jalur A
+
+- DECISION: Jalur A (prioritisasi 3 kapabilitas Baby) dipilih, bukan Jalur B (deep dive). Alasan: solo founder butuh momentum + wow factor + launch incremental, bukan sprint teoretis.
+- DOC: `docs/NORTH_STAR.md` (BARU) — tujuan akhir SIDIX v1.0 (Q4 2026 multimodal parity Nusantara Islam native). 3 keunggulan struktural lock: transparansi epistemologis + kedaulatan data + spesialisasi kultural. Release strategy v0.1→v3.0 dengan timeline + wow factor per versi. Panduan cepat jawab pertanyaan "kerjakan apa sekarang".
+- NOTE: `brain/public/research_notes/163_rekomendasi_jalur_a_baby_sprint_detail.md` — detail 3 sprint Baby: Sprint 1 GraphRAG+Sanad Ranking (no GPU, 2mgg), Sprint 2 Python Wrap math+data (2mgg), Sprint 3 Image Gen + Nusantara Prompt Enhancer (4mgg GPU). Total 2 bulan → v0.2 launch ready.
+- URUTAN SPRINT FINAL (lock): GraphRAG → Python wrap → Image gen. Tidak boleh diubah tanpa ADR.
+- POINTER: `CLAUDE.md` update urutan baca — NORTH_STAR.md jadi #2 wajib.
+- LAUNCH STRATEGY: v0.2 (Juni 2026) internal+early users, v0.3–v0.8 rilis bulanan, v1.0 public beta Desember 2026, v2.0 self-evolving 2027Q2, v3.0 hafidz network 2028Q1.
+- KRITERIA lock: tidak boleh ubah North Star / 3 keunggulan / standing-alone / urutan sprint 1-3 / UI chatboard / arsitektur Brain+Hands+Memory tanpa ADR + approval user.

@@ -9,8 +9,9 @@ Proyek: **SIDIX / Mighan Model**
 Urutan wajib sebelum kerja apapun:
 
 1. **`CLAUDE.md`** (file ini) — aturan permanen + UI LOCK + IDENTITAS SIDIX.
-2. **`docs/DEVELOPMENT_RULES.md`** — aturan mengikat untuk agent eksternal + protocol self-development SIDIX. **Ini harus dipatuhi, bukan sekadar dibaca.**
-3. **`docs/SIDIX_ROADMAP_2026.md`** — roadmap 4 stage (Baby/Child/Adolescent/Adult) + sprint plan.
+2. **`docs/NORTH_STAR.md`** — tujuan akhir SIDIX + release strategy v0.1→v3.0 + lock apa yang tidak berubah. **Baca jika ragu pilih plan.**
+3. **`docs/DEVELOPMENT_RULES.md`** — aturan mengikat untuk agent eksternal + protocol self-development SIDIX. **Ini harus dipatuhi, bukan sekadar dibaca.**
+4. **`docs/SIDIX_ROADMAP_2026.md`** — roadmap 4 stage (Baby/Child/Adolescent/Adult) + sprint plan.
 4. **`docs/SIDIX_CAPABILITY_MAP.md`** — SSoT kapabilitas (apa yang ada, belum wired, belum ada).
 5. **`docs/HANDOFF_<terbaru>.md`** — strategic handoff.
 6. **`docs/INVENTORY_<terbaru>.md`** — teknis detail + path.
