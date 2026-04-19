@@ -3033,3 +3033,8 @@ Konteks: Budget Rp 300-600k approved. Laptop ASUS TUF Gaming A15 FA506QM ada RTX
 - NOTE: exFAT D: - symlink test gagal (butuh admin privilege, bukan FS limitation) tapi Python + pip + ML stack jalan normal. HF cache akan pakai copy instead of symlink dedup = ~2x space tapi D: ada 795 GB free.
 - STATE: C: 15.56 GB free, D: 795.46 GB free (turun 10 GB dari ML stack install). Infrastructure siap untuk SDXL download + image gen test (tahap F).
 - NEXT: Tahap F download SDXL 1.0 base (~7 GB ke D:\sidix-local\hf_cache\) + generate test image 1024x1024 dengan CPU offload (fit 6GB VRAM).
+
+## 2026-04-19 (Tahap F DONE - SDXL local works)
+
+- TEST [F] SDXL 1.0 base download 7GB (4:12 menit) + generate 1024x1024 masjid prompt 25 steps = 82 detik. VRAM peak 5.8 GB (fit 6 GB RTX 3060 via enable_model_cpu_offload + attention_slicing). Output D:\sidix-local\output\test.png 1440 KB.
+- SPRINT 3 MILESTONE: Image gen local workstation OPERATIONAL. Zero-cost infra untuk dev+test. Next: Tahap G ngrok tunnel untuk expose ke SIDIX brain (ctrl.sidixlab.com).
