@@ -111,6 +111,18 @@ Detail teknis identitas ini di `CLAUDE.md` section "IDENTITAS SIDIX".
 
 ## 🗺️ ROADMAP IMPLEMENTASI (per prioritas standing-alone)
 
+**Roadmap 2026 lengkap (4 stage × sprint 2 minggu):** `docs/SIDIX_ROADMAP_2026.md`
+- Baby (Q1–Q2): solidkan 3-layer, tutup gap no-GPU
+- Child (Q3): multimodal parity (image/vision/audio/skill)
+- Adolescent (Q4–Q1'27): self-evolving (SPIN + merging + self-reward)
+- Adult (Q2'27+): distributed hafidz (DiLoCo + BFT + IPFS)
+
+Foundation konsep: `brain/public/research_notes/161_*.md`.
+
+---
+
+**P1 quick wins (dipecah dari Baby sprint 1):**
+
 ### P1 — Quick wins (bisa hari ini, tanpa GPU) — SEMUA SELESAI 2026-04-19
 1. ✅ **Enable `web_fetch`** — tool fetch URL → markdown untuk chat
 2. ✅ **Add `code_sandbox`** — Python subprocess dengan timeout 10s + no network + import allowlist

@@ -10,11 +10,13 @@ Urutan wajib sebelum kerja apapun:
 
 1. **`CLAUDE.md`** (file ini) — aturan permanen + UI LOCK + IDENTITAS SIDIX.
 2. **`docs/DEVELOPMENT_RULES.md`** — aturan mengikat untuk agent eksternal + protocol self-development SIDIX. **Ini harus dipatuhi, bukan sekadar dibaca.**
-3. **`docs/SIDIX_CAPABILITY_MAP.md`** — SSoT kapabilitas (apa yang ada, belum wired, belum ada).
-4. **`docs/HANDOFF_<terbaru>.md`** — strategic handoff.
-5. **`docs/INVENTORY_<terbaru>.md`** — teknis detail + path.
-6. **`docs/SIDIX_BIBLE.md`** — konstitusi 4 pilar.
-7. **`tail -100 docs/LIVING_LOG.md`** — update terbaru.
+3. **`docs/SIDIX_ROADMAP_2026.md`** — roadmap 4 stage (Baby/Child/Adolescent/Adult) + sprint plan.
+4. **`docs/SIDIX_CAPABILITY_MAP.md`** — SSoT kapabilitas (apa yang ada, belum wired, belum ada).
+5. **`docs/HANDOFF_<terbaru>.md`** — strategic handoff.
+6. **`docs/INVENTORY_<terbaru>.md`** — teknis detail + path.
+7. **`docs/SIDIX_BIBLE.md`** — konstitusi 4 pilar.
+8. **`brain/public/research_notes/161_*.md`** — konsep AI/LLM + differentiator SIDIX (jika belum paham foundational).
+9. **`tail -100 docs/LIVING_LOG.md`** — update terbaru.
 
 Kalau mau bikin research note baru, cek dulu nomor terakhir di
 `brain/public/research_notes/`. Topik mirip note existing (overlap ≥0.55) →

@@ -2840,3 +2840,11 @@ promosi dirinya sendiri.
 - MEMORY: Update `partner_rules.md` — tambah pointer ke `docs/DEVELOPMENT_RULES.md` sebagai SSoT + ringkas identitas SIDIX 3-layer.
 - COVERAGE: Rules mencakup — baca konteks, standing-alone, UI LOCK, anti-duplicate, catat wajib, output epistemic, security audit, delegasi subagent, verifikasi klaim, commit etiquette, decision log. Untuk SIDIX sendiri: daily growth cycle, whitelist/blacklist domain, validasi konten, self-evaluation loop, auto-retrain pipeline, self-evolving roadmap, guardrails self-modify, escalation criteria, identity preservation.
 - IMPLIKASI: Backlog protocol yang belum terimplementasi di kode (B4-B9) dicatat eksplisit di note 160 untuk plan sprint berikut.
+
+## 2026-04-19 (konsep + roadmap) — differensiasi SIDIX + SIDIX_ROADMAP_2026
+
+- CONCEPT: Note 161 `brain/public/research_notes/161_ai_llm_generative_claude_dan_differensiasi_sidix.md` — jawab pertanyaan user tentang AI/LLM/generative/Claude + 8 differensiator SIDIX (epistemologi Islam core, standing-alone, growth loop, hafidz distributed, multi-persona native, praxis frames, Nusantara/Islam context, skill library à la Voyager).
+- ROADMAP: `docs/SIDIX_ROADMAP_2026.md` (BARU) — 4 stage × sprint 2 minggu. Baby (Q1-Q2: tutup gap no-GPU), Child (Q3: multimodal), Adolescent (Q4-Q1'27: self-evolving SPIN+merging), Adult (Q2'27+: DiLoCo+BFT+IPFS). Tiap stage: target kapabilitas, DoD, file perubahan, referensi paper.
+- POINTER: Update `CLAUDE.md` urutan baca (9 file, roadmap jadi #3). Update `docs/SIDIX_CAPABILITY_MAP.md` tambah ringkasan roadmap 4 stage. Update `docs/HANDOFF_2026-04-19.md` tambah Plan F (default eksekusi Baby Sprint 1).
+- PREKONSEPSI dihindari: user mungkin berpikir SIDIX mirip GPT/Claude — dijawab bahwa foundation sama (Transformer, next-token, ReAct, RAG) tapi 8 aspek berbeda struktural (bukan sekadar prompt). Dokumen 161 + roadmap jadi referensi authoritative.
+- NEXT: Baby Sprint 1 (Plan F) — wire audio_capability + concept_graph + cron LearnAgent + index corpus. Target 2 minggu, tools 17 -> 19, corpus > 100 doc.
