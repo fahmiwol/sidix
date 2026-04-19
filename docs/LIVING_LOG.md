@@ -3236,3 +3236,25 @@ Breadth dulu (killer offer atraksi user) -> Depth autonomy (self-train retain + 
 - Image gen per user per week target >5
 - Retention 7-day target >30%
 - Threads viral coefficient
+
+## 2026-04-20 (next tasks directive - launch push)
+
+User directive: setelah killer offer + auto-enhance live, fokus ke visibility + launch:
+1. Optimasi halaman GitHub (README, badges, topics, demo screenshots, social preview, contributor guide)
+2. Update landing page sidixlab.com (hero baru, killer offer section, demo live dengan contoh output, SEO + OG image, pindah contributor flow dari app)
+3. Posting Threads: launch announcement + 4 gambar contoh hasil SIDIX + series 5 post (hook/BTS/demo/differensiator/roadmap)
+
+### DOC: docs/NEXT_TASKS_2026-04-20.md (BARU)
+Handoff lengkap untuk sesi berikut. Include:
+- Task 1: GitHub repo optimization detail (README rewrite, metadata, SECURITY/CONTRIBUTING, Issues templates, Releases v0.1.0-beta)
+- Task 2: Landing sidixlab.com update (hero, 3 use case card, demo live embed, killer diff list, progress counter, contributor section, SEO)
+- Task 3: Threads launch post + series 5 daily + asset prepare (sample images, screen recording, GIF before/after)
+- Success metrics target 1 minggu vs 1 bulan (impression, stars, signup, DAU, retention)
+- Pre-launch checklist (server stable 24h, ngrok URL, rate limit, power plan never sleep)
+- Urutan eksekusi saran: landing page dulu (traffic gate), baru GitHub, baru Threads
+
+### Rationale urutan
+Landing page = pintu masuk (kalau broken, Threads traffic nyasar ke UX jelek = burn momentum). Fix dulu baru promote.
+
+### Pre-launch WAJIB
+Laptop jangan sleep, WiFi stabil, ngrok URL persisted dengan authtoken (sekarang persistent https://scribble-trimness-alike.ngrok-free.dev), power plan laptop set 'never sleep' saat live.
