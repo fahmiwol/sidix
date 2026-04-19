@@ -989,6 +989,127 @@ def _tool_pdf_extract(args: dict) -> ToolResult:
     )
 
 
+# ── concept_graph — knowledge graph traversal over CONCEPT_LEXICON ─────────────
+_CONCEPT_GRAPH_MAX_HOP = 2
+_CONCEPT_GRAPH_MAX_RELATED = 8
+
+
+def _tool_concept_graph(args: dict) -> ToolResult:
+    """
+    Traversal knowledge graph SIDIX (CONCEPT_LEXICON + co-occurrence dari research notes).
+    Differensiator epistemologis: bisa multi-hop reasoning antar konsep IHOS/Maqasid/
+    Sanad/dll. — bukan cuma BM25 polos.
+
+    Params:
+      concept (str, opsional) — nama konsep atau alias (case-insensitive). Kalau None,
+        return top-mentioned concepts + graph stats.
+      depth (int, default 1, max 2) — berapa hop traversal.
+      max_related (int, default 5, max 8) — batas tetangga per konsep.
+
+    Output: markdown dengan konsep target, related (per hop), sumber notes, status impl.
+    """
+    try:
+        from .brain_synthesizer import build_knowledge_graph, _ALIAS_TO_CONCEPT, CONCEPT_LEXICON
+    except Exception as e:
+        return ToolResult(success=False, output="", error=f"synthesizer tidak tersedia: {e}")
+
+    concept_raw = str(args.get("concept", "")).strip()
+    depth = max(1, min(int(args.get("depth", 1)), _CONCEPT_GRAPH_MAX_HOP))
+    max_related = max(1, min(int(args.get("max_related", 5)), _CONCEPT_GRAPH_MAX_RELATED))
+
+    try:
+        graph = build_knowledge_graph()
+    except Exception as e:
+        return ToolResult(success=False, output="", error=f"gagal build graph: {e}")
+
+    nodes = graph.get("nodes", {})
+
+    # Mode A: no concept → summary graph
+    if not concept_raw:
+        total_nodes = graph.get("node_count", 0)
+        total_edges = graph.get("edge_count", 0)
+        implemented = sum(1 for n in nodes.values() if n["impl_status"] == "implemented")
+        missing = sum(1 for n in nodes.values() if n["impl_status"] == "missing")
+        top_mentioned = sorted(nodes.values(), key=lambda n: -n.get("mention_count", 0))[:10]
+        lines = [
+            f"# SIDIX Knowledge Graph",
+            f"- Total konsep: {total_nodes}",
+            f"- Total edge (co-occurrence): {total_edges}",
+            f"- Implemented: {implemented} · Missing: {missing}",
+            "",
+            "## Top 10 konsep paling disebut",
+        ]
+        for n in top_mentioned:
+            status_emoji = {"implemented": "✅", "missing": "❌", "partial": "⚠️"}.get(n["impl_status"], "?")
+            lines.append(f"- {status_emoji} **{n['concept']}** — {n['mention_count']} mention, {len(n['source_notes'])} sumber")
+        return ToolResult(
+            success=True,
+            output="\n".join(lines),
+            citations=[{"type": "concept_graph", "mode": "summary", "total_nodes": total_nodes}],
+        )
+
+    # Mode B: concept query — resolve alias
+    canonical = _ALIAS_TO_CONCEPT.get(concept_raw.lower())
+    if canonical is None:
+        # Coba fuzzy — startswith
+        candidates = [c for c in CONCEPT_LEXICON.keys() if c.lower().startswith(concept_raw.lower())]
+        if candidates:
+            canonical = candidates[0]
+    if canonical is None or canonical not in nodes:
+        available = sorted(CONCEPT_LEXICON.keys())[:20]
+        return ToolResult(
+            success=False, output="",
+            error=f"Konsep '{concept_raw}' tidak ditemukan. Contoh tersedia: {', '.join(available)} ...",
+        )
+
+    # BFS multi-hop
+    visited: set[str] = set()
+    layers: list[list[str]] = [[canonical]]
+    visited.add(canonical)
+    for _ in range(depth):
+        next_layer: list[str] = []
+        for c in layers[-1]:
+            node = nodes.get(c, {})
+            for related in node.get("related", [])[:max_related]:
+                if related not in visited:
+                    visited.add(related)
+                    next_layer.append(related)
+        if not next_layer:
+            break
+        layers.append(next_layer)
+
+    # Build markdown
+    root = nodes[canonical]
+    lines = [f"# Konsep: {canonical}"]
+    status_emoji = {"implemented": "✅", "missing": "❌", "partial": "⚠️"}.get(root["impl_status"], "?")
+    lines.append(f"- Status implementasi: {status_emoji} {root['impl_status']}")
+    lines.append(f"- Mention: {root['mention_count']} di {len(root['source_notes'])} sumber")
+    if root["impl_files"]:
+        lines.append(f"- File impl: {', '.join(root['impl_files'][:3])}")
+    if root["source_notes"]:
+        sources = [Path(p).name for p in root["source_notes"][:5]]
+        lines.append(f"- Notes: {', '.join(sources)}")
+
+    citations = [{
+        "type": "concept_graph", "concept": canonical,
+        "sources": root["source_notes"][:5],
+    }]
+
+    # Hops
+    for i, layer in enumerate(layers[1:], start=1):
+        if not layer:
+            break
+        lines.append(f"\n## Hop {i} (related)")
+        for c in layer[:max_related * 2]:
+            node = nodes.get(c, {})
+            emoji = {"implemented": "✅", "missing": "❌", "partial": "⚠️"}.get(node.get("impl_status"), "?")
+            mention = node.get("mention_count", 0)
+            lines.append(f"- {emoji} **{c}** ({mention} mention)")
+            citations.append({"type": "concept_graph_hop", "concept": c, "depth": i})
+
+    return ToolResult(success=True, output="\n".join(lines), citations=citations)
+
+
 # ── Registry ──────────────────────────────────────────────────────────────────
 
 TOOL_REGISTRY: dict[str, ToolSpec] = {
@@ -1171,6 +1292,19 @@ TOOL_REGISTRY: dict[str, ToolSpec] = {
         params=["path", "pages"],
         permission="open",
         fn=_tool_pdf_extract,
+    ),
+    "concept_graph": ToolSpec(
+        name="concept_graph",
+        description=(
+            "Traversal knowledge graph SIDIX (IHOS/Sanad/Maqasid/dll.) — multi-hop reasoning "
+            "lintas konsep berdasar CONCEPT_LEXICON + co-occurrence di research notes. "
+            "Gunakan untuk: relasi antar konsep, status implementasi, sumber note terkait. "
+            "Params: concept (str opsional — nama/alias), depth (int 1-2, default 1), "
+            "max_related (int 1-8, default 5). Kosong = summary graph."
+        ),
+        params=["concept", "depth", "max_related"],
+        permission="open",
+        fn=_tool_concept_graph,
     ),
 }
 
