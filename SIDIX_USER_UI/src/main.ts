@@ -578,7 +578,11 @@ if (IS_CTRL && !isAdmin()) {
 
 const CHAT_COUNT_KEY = 'sidix_chat_count';
 const USER_ONBOARDED_KEY = 'sidix_onboarded';
-const FREE_CHAT_LIMIT = 1;
+// Limit chat anonim: 5 pesan gratis sebelum login modal muncul.
+// Sebelumnya 1 — terlalu agresif (user terkesan dipaksa daftar dari awal).
+// Sekarang user bisa coba ngobrol beberapa pesan dulu, baru disuruh login
+// kalau ingin lanjut.
+const FREE_CHAT_LIMIT = 5;
 
 /** State current user (null = belum login) */
 let currentAuthUser: import('@supabase/supabase-js').User | null = null;
@@ -798,10 +802,10 @@ async function handleOnboardingReply(userText: string): Promise<boolean> {
         appendMessage('ai',
           `🛠 Karena kamu memilih sebagai **${onboardingAnswers.role}**, SIDIX senang sekali!\n\n` +
           `**Cara berkontribusi:**\n` +
-          `• GitHub: github.com/fahmiwol/sidix\n` +
-          `• Baca AGENTS.md untuk panduan arsitektur\n` +
+          `• Repo opensource SIDIX (lihat tombol GitHub di header)\n` +
+          `• Baca CONTRIBUTING.md untuk panduan arsitektur\n` +
           `• Buka Issue atau PR — semua kontribusi diterima!\n` +
-          `• Hubungi Fahmi: @fahmiwol di Threads\n\n` +
+          `• Hubungi tim SIDIX: @sidixlab di Threads / Issues GitHub\n\n` +
           `Terima kasih sudah bergabung! 🙏`
         );
       }, 800);

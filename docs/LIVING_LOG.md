@@ -1903,3 +1903,77 @@ juga akan auto-trigger /sidix/grow yang load modul baru.
 - Run /sidix/skills/discover (akan dapat ~48 skill auto-registered)
 - Run scripts/harvest_drive_d_datasets.py untuk adopt 4 dataset Drive D
 - Monitor cron jam 3 pagi → note baru pakai curriculum lesson
+
+## 2026-04-19 — BUG REPORT: Flow App SIDIX + Placeholder Bocor Identitas
+
+### Issue 1: Flow salah
+Sekarang di app.sidixlab.com → muncul form "Gabung Kontributor".
+Seharusnya:
+  sidixlab.com (landing) -> click "Coba SIDIX" / app -> app.sidixlab.com -> CHAT BOARD langsung
+  Limit-based: kalau kena rate limit baru tampil login/signup.
+
+### Issue 2: Placeholder bocor identitas
+Form Gabung Kontributor punya placeholder "Fahmi Wolhuter" di field nama lengkap.
+Harus generic — jangan ada nama Fahmi, Gahni/Ghani, Mighan, atau apapun yang
+mengidentifikasi owner. User mau tetap anonymous di public-facing.
+
+### Action
+1. Cari file frontend yang punya placeholder "Fahmi Wolhuter"
+2. Cari spec/dokumen flow yang benar (chat board first, login on limit)
+3. Fix flow + ganti semua placeholder sensitive jadi generic
+4. Audit semua file frontend untuk placeholder/copy lain yang menyebut nama owner
+
+## 2026-04-19 — Fix: Anonymity Audit Frontend + Flow Adjust
+
+### Issue
+User report: form "Gabung Kontributor" muncul di app.sidixlab.com dengan
+placeholder "Fahmi Wolhuter". User mau:
+1. Flow chat-first (chat board langsung, login modal hanya saat kena limit)
+2. Tetap anonymous - tidak ada nama Fahmi/Wolhuter/Mighan owner identifying
+
+### Root cause
+- FREE_CHAT_LIMIT = 1 terlalu agresif (user terkesan dipaksa daftar dari awal)
+- Placeholder "Fahmi Wolhuter" hardcoded di SIDIX_USER_UI/index.html line 629
+- Schema author + twitter:creator + privacy.html semua sebut nama owner
+- IP VPS 72.62.125.6 BOCOR di privacy.html publik
+
+### Fix
+[FIX] SIDIX_USER_UI/index.html line 629: placeholder "Fahmi Wolhuter" -> "Nama kamu"
+[FIX] SIDIX_USER_UI/src/main.ts:
+  - FREE_CHAT_LIMIT 1 -> 5 (chat board lebih ramah, user coba 5x sebelum login modal)
+  - Pesan onboarding: "Hubungi Fahmi: @fahmiwol" -> "Hubungi tim SIDIX: @sidixlab"
+  - GitHub URL di pesan: "github.com/fahmiwol/sidix" -> "Repo opensource SIDIX"
+[FIX] SIDIX_LANDING/index.html:
+  - meta author "Fahmi Wolhuter" -> "Mighan Lab"
+  - twitter:creator "@fahmiwol" -> "@sidixlab"
+  - schema.org author Person "Fahmi Wolhuter" -> Organization "Mighan Lab"
+[FIX] SIDIX_LANDING/privacy.html:
+  - "operated by Fahmi Wolhuter" -> "operated by Mighan Lab"
+  - 3x fahmiwol@gmail.com -> contact@sidixlab.com
+  - Threads @fahmiwol -> @sidixlab
+  - Footer "Fahmi Wolhuter" -> "Mighan Lab"
+  - IP 72.62.125.6 hapus, ganti "private infrastructure (Linux server, encrypted at rest)"
+  - "Ollama / Qwen2.5" -> "SIDIX Local Engine" (sesuai opsec note 143)
+
+### Verifikasi clean
+[OK] grep "Fahmi Wolhuter|fahmiwol@gmail|threads.net/@fahmiwol" di SIDIX_USER_UI: 0 hit
+[OK] grep sama di SIDIX_LANDING: 0 hit
+[OK] grep "72.62.125.6" di SIDIX_USER_UI/SIDIX_LANDING: 0 hit
+
+### Yang masih perlu user keputusan (tidak di-touch)
+- github.com/fahmiwol/sidix (URL repo) - perlu rename repo atau bikin org
+  Sementara biarkan, tapi bisa ditampilkan sebagai "github.com/sidix-ai" kalau
+  user mau create org SIDIX-AI di GitHub
+- Research notes lama (8 file) yang menyebut IP 72.62.125.6 - history GitHub
+  sudah committed, sulit dirubah tanpa force-push
+- CLAUDE.md + LIVING_LOG.md - dev docs publik di repo, tetap menyebut IP
+  Saran: rename CLAUDE.md jadi private, atau mask IP forward going
+
+### Flow yang sekarang berjalan
+1. user landing sidixlab.com
+2. klik "Coba SIDIX" -> app.sidixlab.com
+3. CHAT BOARD langsung tampil
+4. user bisa chat 5x gratis tanpa login (anonim)
+5. setelah 5 chat, openLoginModal() trigger -> user diminta sign-in
+6. setelah sign-in -> 5+2 onboarding question -> chat lanjut tanpa limit
+7. button "Gabung Kontributor" di header tetap ada untuk yang mau (manual click)
