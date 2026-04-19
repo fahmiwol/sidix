@@ -2633,3 +2633,48 @@ Total: 9 post/hari otomatis di Threads, 3-4 harvest cycle, 1 lesson research.
 Server autopilot total. Threads, curriculum, security, audit semua jalan
 otomatis tanpa intervensi user. SIDIX akan terus tumbuh + posting + belajar
 saat owner tidur.
+
+
+## 2026-04-19 - GA4 Tags + OG-Image FIX (Pre-Limit Snapshot)
+
+### Issue 1: og-image 404 di Threads preview
+Diagnose: meta og:image reference https://sidixlab.com/og-image.png tapi
+file tidak ada di /www/wwwroot/sidixlab.com -> Threads preview kosong
+[FIX] Build apps/brain_qa/scripts/generate_og_image.py - PIL render
+  1200x630 branded image (gradient warm-dark, gold accent, SIDIX logo,
+  tagline 'Self-Hosted AI Agent with Epistemic Integrity')
+[DEPLOY] Run di server -> /www/wwwroot/sidixlab.com/og-image.png 42606 bytes
+[VERIFY] curl -sI https://sidixlab.com/og-image.png -> HTTP 200 OK
+
+### Issue 2: GA4 belum terpasang di kedua domain
+User berikan 2 tag:
+- G-04JKCGDEY4 -> sidixlab.com (Web Sidix)
+- G-EK6L5SJGY3 -> app.sidixlab.com (Web aplikasi, awalnya typo 'app.sixlab.com'
+  di GA console - perlu user edit manual)
+
+[IMPL] SIDIX_LANDING/index.html - inject gtag G-04JKCGDEY4 di head
+  dengan privacy-friendly config (anonymize_ip + SameSite=None;Secure cookie)
+[IMPL] SIDIX_USER_UI/index.html - inject gtag G-EK6L5SJGY3 di head
+  config sama
+[DEPLOY] Sync landing /opt/sidix/SIDIX_LANDING -> /www/wwwroot/sidixlab.com
+  Rebuild SIDIX_USER_UI (npm run build) -> dist/
+  pm2 restart sidix-ui
+  Clear nginx proxy_cache_dir
+[VERIFY] Landing: G-04JKCGDEY4 + googletagmanager tampil di curl HTML
+  App: PERLU VERIFY ULANG (output kosong di test terakhir, kemungkinan
+  Vite build optimization menghilangkan inline script - CHECK SOON)
+
+### Status GA4 'Pengumpulan data tidak aktif'
+Normal kondisi: GA4 butuh 24-48 jam detect data masuk pertama kali.
+Setelah tag terpasang valid, akan auto-aktivate saat ada user visit.
+
+### Commit
+- 0e7c2b2 feat: GA4 tags + og-image generator
+- (next) optimasi SEO + verify GA app
+
+### Pending
+1. Verify gtag G-EK6L5SJGY3 benar terinject di app.sidixlab.com setelah
+   Vite build (mungkin perlu pasang via index.html public/ atau plugin)
+2. SEO optimization lanjut: sitemap.xml, robots.txt, JSON-LD structured
+   data, Open Graph lengkap, lighthouse audit prep
+3. Re-post Threads untuk refresh OG preview cache (Threads cache OG ~24h)
