@@ -3065,3 +3065,11 @@ Konteks: Budget Rp 300-600k approved. Laptop ASUS TUF Gaming A15 FA506QM ada RTX
 - BUILD frontend: 1753 modules, 100.68 kB JS (gzip 25.98), 42.35 kB CSS, 11.21s.
 - NEXT: deploy VPS - git pull + pm2 restart sidix-brain + sidix-ui, smoke test end-to-end laptop GPU via tunnel.
 
+
+## 2026-04-19 (Beta push v2 - e2e debugging + fixes)
+
+- FIX sdxl_server.py: ganti enable_model_cpu_offload -> enable_sequential_cpu_offload + enable_vae_tiling. Alasan: model_cpu_offload meninggalkan tensor cross-device setelah request pertama -> RuntimeError device mismatch di cuda:0 vs cpu saat group_norm di request kedua. Sequential offload lebih stabil lintas-request walau sedikit lebih lambat.
+- FIX brain_qa/agent_tools.py _tool_text_to_image: tambah fallback load .env file (python-dotenv + manual parse) karena PM2 tidak auto-load dotenv.
+- PERSIST scripts laptop ke repo docs/workstation_scripts/ (sdxl_server.py, test_sdxl.py) supaya tidak hilang.
+- DEBUG trace: [ImageFastPath] triggered correctly, tool call success, env var loaded OK, tapi server local sedang re-fetch 19 files (exFAT cache tidak preserve ETag metadata -> redownload). Butuh 6-8 menit lagi.
+- NEXT: tunggu server ready, retest end-to-end via /agent/chat. Kalau masih error, debug lebih lanjut.
