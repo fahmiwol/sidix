@@ -1,7 +1,22 @@
 # CLAUDE.md — Instruksi Permanen untuk Semua Claude Agent
 
 Proyek: **SIDIX / Mighan Model**
-Owner: Fahmi Wolhuter (@fahmiwol)
+
+---
+
+## 📖 BACA DULU SEBELUM MULAI (SSOT)
+
+Sebelum kerja apapun, baca 3 file ini berurutan (cegah amnesia + repeat work):
+
+1. **`docs/SIDIX_BIBLE.md`** — konstitusi hidup (4 pilar identitas, IHOS,
+   4-label epistemik, Maqashid filter, sanad-required, trajectory mandiri,
+   parity target GPT/Claude/ByteDance/Gemini)
+2. **`docs/SIDIX_CHECKPOINT_<latest>.md`** — snapshot state + queue
+3. **`docs/LIVING_LOG.md`** (tail 50 lines) — apa yang baru dikerjakan
+
+Kalau mau bikin research note baru, cek dulu nomor terakhir di
+`brain/public/research_notes/`. Topik mirip note existing (overlap ≥0.55) →
+update yang lama, jangan bikin baru.
 
 ---
 

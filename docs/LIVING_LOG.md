@@ -2038,3 +2038,50 @@ catatan valid, tidak ambigu.'
 4. Beri 5-7 keputusan growth-hack untuk akselerasi
 5. Update CLAUDE.md sebagai SSOT pointer
 6. Commit + push semua
+
+
+## 2026-04-19 - SIDIX_BIBLE v1.0 + Note 145 Alignment Audit
+
+### Yang dikerjakan
+[DOC] docs/SIDIX_BIBLE.md - konstitusi hidup
+  - 4 pilar identitas: Shiddiq, Al-Amin, Mandiri, Tumbuh
+  - IHOS arsitektur cognitive (Ruh-Qalb-Akal-Nafs-Jasad)
+  - 4-label epistemik wajib
+  - Matrix kapabilitas target parity dengan GPT/Claude/ByteDance/Gemini + 5 USP unik
+  - Sanad+Hafidz wajib + Maqashid 5-pilar filter
+  - 7 aturan catatan anti-amnesia
+  - Trajectory 3-fase kemandirian (Guru-Transisi-Mandiri)
+  - Identity Shield opsec
+  - Disclaimer: HIDUP, BUKAN BAKU - bisa di-update via riset baru
+
+[DOC] brain/public/research_notes/145_alignment_visi_awal_vs_sekarang_growth_hack.md
+  - Matrix 24-row alignment Visi awal vs Sekarang
+  - Score: 38% perfect + 29% drift kecil = 67% on-track
+  - 7 growth-hack konkret dengan effort+impact:
+    1. Epistemic Label Injector (2h, fix gap #8)
+    2. Maqashid Filter Pre-Approve (4h, fix gap #11)
+    3. IHOS Reasoning Pipeline multi-layer (6h)
+    4. Speed Run ke 1000 training pairs (3h, trigger LoRA v1)
+    5. Long Context 1M target (8h, match Gemini)
+    6. Multi-Modal Native unified (5h, match GPT-4o/Gemini Live)
+    7. Auto-Sync Deploy + Status Dashboard (4h)
+  - Skip list eksplisit (anti scope creep)
+  - Status validasi per section (FACT/OPINION)
+
+[DOC] CLAUDE.md updated - tambah section 'BACA DULU SEBELUM MULAI (SSOT)':
+  pointer ke BIBLE + CHECKPOINT + LIVING_LOG
+  + remove owner name dari header
+
+### Filosofi penting
+SIDIX tidak kompetisi head-on di benchmark frontier (kalah resource).
+Kompetisi di niche unik: Indonesian + Islamic + standing-alone + audit trail.
+USP: sanad/hafidz + opensource + self-hosted + continual learning + IHOS.
+
+### Prioritas eksekusi (suggested)
+Minggu ini: #4 (LoRA speedrun) + #1 (epistemic label) + #7 (auto-sync deploy) ~ 9 jam
+Minggu depan: #2 (Maqashid filter) + #3 (IHOS pipeline) ~ 10 jam
+Bulan depan: #5 (long context) + #6 (multi-modal native) ~ 13 jam
+
+### Commit pointer
+- 44b2bd9 doc: SIDIX_CHECKPOINT 2026-04-19 + adopsi metodologi validasi hadith_validate
+- (next) doc: SIDIX_BIBLE v1.0 + note 145 alignment + CLAUDE.md SSOT pointer
