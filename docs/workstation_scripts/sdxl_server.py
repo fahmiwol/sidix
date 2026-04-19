@@ -12,9 +12,9 @@ pipe = StableDiffusionXLPipeline.from_pretrained(
 # Scheduler cepat: DPM++ 2M karya konvergen di 15 steps (vs 25-50 default)
 from diffusers import DPMSolverMultistepScheduler
 pipe.scheduler = DPMSolverMultistepScheduler.from_config(pipe.scheduler.config, use_karras_sigmas=True, algorithm_type="dpmsolver++")
-# Pindah full ke GPU + attention slicing untuk fit VRAM 6GB di 512x512
+# Full GPU + attention_slicing (trade speed for VRAM stability)
 pipe = pipe.to("cuda")
-pipe.enable_attention_slicing("max")
+pipe.enable_attention_slicing()
 pipe.vae.enable_tiling()
 print("Ready.")
 

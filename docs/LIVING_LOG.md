@@ -3141,3 +3141,19 @@ Konteks: Budget Rp 300-600k approved. Laptop ASUS TUF Gaming A15 FA506QM ada RTX
 - VPS env SIDIX_IMAGE_GEN_URL re-confirmed setelah laptop restart
 - tools_available=19, corpus=1182, model_ready=true
 - Laptop SDXL + ngrok di-restart setelah user shutdown/suspend sebelumnya
+
+## 2026-04-20 (Beta launch state final)
+
+- FIX image gen di RTX 3060 6GB: full GPU + enable_attention_slicing() + vae.enable_tiling() + DPM++ 2M scheduler. Default 512x512 15 steps.
+- BENCHMARK live per 2026-04-20 01:02:
+  * Direct SDXL server: 105s first, 98s subsequent (VRAM peak 8.3 GB - spill ke shared memory PCIe = bottleneck, tapi stabil lintas-request)
+  * E2E via VPS+tunnel: 97.5s total
+  * Image download dari https://ctrl.sidixlab.com/generated/{hash}.png: 298 KB OK
+- UI: frontend main.ts thinking indicator detect image intent (regex ID+EN) -> tampilkan '🎨 Menggambar... (~90 detik di SIDIX local GPU)' supaya user ga pikir hang. Build 101 KB gzip 26 KB.
+- VPS brain: tools_available=19, text_to_image tool registered, fast-path triggered sesuai design.
+- LIVE URLs:
+  * App: https://app.sidixlab.com (frontend)
+  * API: https://ctrl.sidixlab.com (brain_qa)
+  * GPU: https://scribble-trimness-alike.ngrok-free.dev (tunnel ke laptop)
+- KNOWN LIMIT: 97s per image = slow UX tapi acceptable untuk beta validate demand. Optimize setelah ada 10+ user feedback.
+- TODO future: replace laptop ngrok dengan RunPod serverless (-40/bulan) kalau demand >10 image/hari, cut latency ke ~20s.

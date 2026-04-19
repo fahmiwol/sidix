@@ -1154,15 +1154,23 @@ async function handleSend() {
 
   appendMessage('user', question);
 
-  // Thinking indicator
+  // Thinking indicator — dengan hint khusus kalau minta gambar
+  const q_lower = question.toLowerCase();
+  const isImageIntent = /(bikin|buat|generate|create|gambarkan|render|lukiskan).*?(gambar|foto|ilustrasi|image|picture|visual|artwork|poster|lukisan|desain)|(gambar|foto|ilustrasi|image|artwork).*?(bikin|buat|generate|create)/i.test(q_lower);
   const thinking = document.createElement('div');
   thinking.className = 'flex justify-start';
-  thinking.innerHTML = `
-    <div class="msg-ai px-5 py-4 flex items-center gap-2">
-      <div class="thinking-dot"></div>
-      <div class="thinking-dot"></div>
-      <div class="thinking-dot"></div>
-    </div>`;
+  thinking.innerHTML = isImageIntent
+    ? `<div class="msg-ai px-5 py-4 flex items-center gap-3">
+        <div class="thinking-dot"></div>
+        <div class="thinking-dot"></div>
+        <div class="thinking-dot"></div>
+        <span class="text-xs text-parchment-400">🎨 Menggambar... (~90 detik di SIDIX local GPU)</span>
+      </div>`
+    : `<div class="msg-ai px-5 py-4 flex items-center gap-2">
+        <div class="thinking-dot"></div>
+        <div class="thinking-dot"></div>
+        <div class="thinking-dot"></div>
+      </div>`;
   chatMessages.appendChild(thinking);
   chatMessages.scrollTop = chatMessages.scrollHeight;
 
