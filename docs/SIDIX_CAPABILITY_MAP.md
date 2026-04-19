@@ -41,6 +41,7 @@ Detail teknis identitas ini di `CLAUDE.md` section "IDENTITAS SIDIX".
 ## ✅ KAPABILITAS TERPASANG & AKTIF
 
 ### Backend inference
+- **Corpus retrieval (`search_corpus`)** — BM25 (`rank_bm25`) + **sanad-tier rerank** (`sanad_ranking.apply_sanad_weight`): frontmatter `sanad_tier` di markdown (`primer`/`ulama`/`peer_review`/`aggregator`/`unknown`) mempengaruhi urutan hasil setelah skor BM25.
 - **Own model stack** via `brain_qa/local_llm.py` — adapter (LoRA) + base model lokal. No vendor AI API.
 - **ReAct agent loop** via `brain_qa/agent_react.py` — thought→tool→observation sampai terjawab
 - **Persona router** — MIGHAN (kreatif), TOARD (strategy), FACH (riset/ML), HAYFAR (coding), INAN (general)
@@ -50,7 +51,7 @@ Detail teknis identitas ini di `CLAUDE.md` section "IDENTITAS SIDIX".
 ### Tools terdaftar di `agent_tools.py` TOOL_REGISTRY (9 aktif + 1 disabled)
 | Tool | Permission | Status |
 |---|---|---|
-| `search_corpus` | open | ✅ aktif (BM25 corpus lokal) |
+| `search_corpus` | open | ✅ aktif (BM25 + sanad-tier weighted rerank) |
 | `read_chunk` | open | ✅ aktif |
 | `list_sources` | open | ✅ aktif |
 | `calculator` | open | ✅ aktif |
