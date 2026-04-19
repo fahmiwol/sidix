@@ -758,6 +758,42 @@ def run_react(
             pass
         return session
 
+    # ── FAST PATH: Image generation intent detection ─────────────────────────
+    # Deteksi user minta gambar → langsung panggil text_to_image, skip ReAct.
+    # Keywords ID+EN, cover variasi umum: "bikin/buat/generate/create image/gambar/foto/ilustrasi"
+    _q_lower = question.lower()
+    _image_verbs = ("bikin", "buat", "buatkan", "generate", "create", "gambarkan", "gambarin", "render", "visualisasikan", "lukiskan")
+    _image_nouns = ("gambar", "foto", "ilustrasi", "image", "picture", "visual", "artwork", "poster", "lukisan", "desain")
+    _has_verb = any(v in _q_lower for v in _image_verbs)
+    _has_noun = any(n in _q_lower for n in _image_nouns)
+    if _has_verb and _has_noun:
+        try:
+            from .agent_tools import call_tool as _call_tool
+            # Prompt untuk SDXL: question asli user (SDXL pakai English best tapi juga paham ID sederhana)
+            _result = _call_tool(
+                tool_name="text_to_image",
+                args={"prompt": question, "steps": 25, "width": 1024, "height": 1024},
+                session_id=session_id,
+                step=1,
+                allow_restricted=False,
+            )
+            if _result.success:
+                session.final_answer = _result.output
+                session.citations = list(_result.citations or [])
+                session.finished = True
+                session.confidence = "image gen fast-path"
+                _praxis.record_praxis_event(session_id, "image_gen_fast_path", {"prompt": question[:200]})
+                try:
+                    _praxis.finalize_session_teaching(session)
+                except Exception:
+                    pass
+                return session
+            # Kalau tool gagal (server offline, dll), lanjut ke ReAct normal — jangan block user
+        except Exception as _img_err:
+            import logging as _log
+            _log.getLogger(__name__).warning(f"[ImageFastPath] fallback ke ReAct — {_img_err}")
+    # ─────────────────────────────────────────────────────────────────────────
+
     # ── User Intelligence: analisis frekuensi pengguna ────────────────────────
     try:
         u_profile = analyze_user(question)

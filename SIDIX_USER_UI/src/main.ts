@@ -1039,6 +1039,31 @@ function appendMessage(
   text.textContent = content;
   bubble.appendChild(text);
 
+  // ── Image rendering untuk text_to_image tool ───────────────────────────
+  // Cek citations type=text_to_image → render <img> di bubble.
+  if (role === 'ai') {
+    const imgCitations = citations.filter(c => c.type === 'text_to_image' && c.url);
+    imgCitations.forEach(c => {
+      const imgWrap = document.createElement('div');
+      imgWrap.className = 'mt-3 rounded-lg overflow-hidden border border-gold-500/20 bg-ink-950';
+      const img = document.createElement('img');
+      // url dari backend = "/generated/<hash>.png" (relatif ke brain_qa host)
+      img.src = `${BRAIN_QA_BASE}${c.url}`;
+      img.alt = c.prompt ?? 'Generated image';
+      img.className = 'max-w-full h-auto block';
+      img.loading = 'lazy';
+      imgWrap.appendChild(img);
+      // Caption kecil di bawah: prompt + waktu
+      if (c.prompt || c.took_s) {
+        const cap = document.createElement('div');
+        cap.className = 'text-xs text-parchment-400 px-3 py-2 bg-ink-900/50 border-t border-gold-500/10';
+        cap.textContent = `${c.prompt ?? ''}${c.took_s ? ` · ${c.took_s}s di SIDIX GPU` : ''}`;
+        imgWrap.appendChild(cap);
+      }
+      bubble.appendChild(imgWrap);
+    });
+  }
+
   // Copy button (AI only)
   if (role === 'ai') {
     const copyBtn = document.createElement('button');
@@ -1059,15 +1084,16 @@ function appendMessage(
     wrap.appendChild(copyBtn);
   }
 
-  // Citations
-  if (citations.length > 0) {
+  // Citations (skip text_to_image — sudah di-render sebagai <img> di atas)
+  const textCitations = citations.filter(c => c.type !== 'text_to_image' && c.filename);
+  if (textCitations.length > 0) {
     const citeRow = document.createElement('div');
     citeRow.className = 'mt-3 pt-3 border-t border-gold-500/10 flex flex-wrap gap-2';
 
-    citations.forEach(c => {
+    textCitations.forEach(c => {
       const chip = document.createElement('span');
       chip.className = 'citation-chip';
-      chip.title = c.snippet;
+      chip.title = c.snippet ?? '';
       chip.innerHTML = `<i data-lucide="book-open" class="w-3 h-3"></i><span>${c.filename}</span>`;
       citeRow.appendChild(chip);
     });

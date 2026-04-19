@@ -1142,10 +1142,18 @@ def _tool_text_to_image(args: dict) -> ToolResult:
     fname = f"{h}.png"
     fpath = out_dir / fname
     fpath.write_bytes(base64.b64decode(data["image_b64"]))
+    # URL publik via endpoint /generated/{fname} di brain_qa
+    image_url = f"/generated/{fname}"
     return ToolResult(
         success=True,
-        output=f"Image generated: /generated/{fname} (took {data.get('took_s')}s, VRAM peak {data.get('vram_peak_gb')} GB)",
-        citations=[{"type": "text_to_image", "prompt": prompt, "file": str(fpath), "steps": steps}],
+        output=f"![Generated image]({image_url})\n\n*Prompt: {prompt}*\n*Generated in {data.get('took_s')}s on SIDIX local GPU (RTX 3060)*",
+        citations=[{
+            "type": "text_to_image",
+            "url": image_url,
+            "prompt": prompt,
+            "steps": steps,
+            "took_s": data.get("took_s"),
+        }],
     )
 
 

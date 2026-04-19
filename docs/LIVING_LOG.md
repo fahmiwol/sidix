@@ -3055,3 +3055,13 @@ Konteks: Budget Rp 300-600k approved. Laptop ASUS TUF Gaming A15 FA506QM ada RTX
 - MILESTONE Sprint 3 tahap A-G DONE. Laptop local image gen operational + terhubung ke SIDIX brain VPS via tunnel. Total biaya saat ini: Rp 0 (ngrok free tier).
 - CAVEAT ngrok free: URL berubah setiap restart ngrok. Untuk permanent URL butuh paid tier (\/mo) atau alternatif cloudflared (free static).
 - NEXT: (a) prompt tuning persona MIGHAN supaya auto-pick text_to_image, (b) UI SIDIX render image di chat bubble, (c) optional cloudflared untuk URL permanent.
+
+## 2026-04-19 (Beta release push - image gen end-to-end)
+
+- IMPL endpoint GET /generated/{filename} di agent_serve.py - serve image hasil text_to_image dengan path-traversal guard (regex alfanumerik + ext png/jpg/webp).
+- IMPL fast-path image intent di agent_react.run_react() - deteksi keyword ID+EN (bikin/buat/generate/create + gambar/foto/ilustrasi) -> langsung panggil text_to_image bypass ReAct 10-step loop. Fallback ke ReAct normal kalau tool gagal.
+- IMPL UI SIDIX_USER_UI - render <img> dari citation type=text_to_image dengan BRAIN_QA_BASE + caption prompt + durasi. TextCitations filter skip type text_to_image.
+- IMPL Citation interface diperluas: type, sanad_tier, url, prompt, steps, took_s, concept, depth, sources (optional untuk accommodate multi-tool citation).
+- BUILD frontend: 1753 modules, 100.68 kB JS (gzip 25.98), 42.35 kB CSS, 11.21s.
+- NEXT: deploy VPS - git pull + pm2 restart sidix-brain + sidix-ui, smoke test end-to-end laptop GPU via tunnel.
+
