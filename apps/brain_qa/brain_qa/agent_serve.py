@@ -2688,6 +2688,36 @@ h1{{color:#0af}}p{{color:#aaa}}a{{color:#0af}}</style></head>
         except Exception as e:
             return {"ok": False, "error": str(e)}
 
+    # ── /sidix/epistemic/* ─ 4-Label Validator ────────────────────────────────
+
+    @app.post("/sidix/epistemic/validate", tags=["Epistemic"])
+    def epistemic_validate(text: str, strict: bool = False):
+        """Validasi output: cek apakah ada 4-label [FACT/OPINION/SPECULATION/UNKNOWN]."""
+        try:
+            from .epistemic_validator import validate_output
+            return {"ok": True, "report": validate_output(text, strict=strict).to_dict()}
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    @app.post("/sidix/epistemic/inject", tags=["Epistemic"])
+    def epistemic_inject(text: str, default: str = "OPINION"):
+        """Auto-tag paragraf tanpa label dengan heuristik atau default."""
+        try:
+            from .epistemic_validator import inject_default_labels
+            tagged, modified = inject_default_labels(text, default=default)
+            return {"ok": True, "modified": modified, "text": tagged}
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    @app.post("/sidix/epistemic/extract", tags=["Epistemic"])
+    def epistemic_extract(text: str):
+        """Ekstrak claim per paragraf + label-nya untuk audit."""
+        try:
+            from .epistemic_validator import extract_claims
+            return {"ok": True, "claims": extract_claims(text)}
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
     # ── /sidix/curriculum/* ─ Daily Skill Rotator ─────────────────────────────
 
     @app.get("/sidix/curriculum/status", tags=["Curriculum"])

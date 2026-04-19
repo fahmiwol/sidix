@@ -378,12 +378,31 @@ def approve_draft(
             print(f"[note_drafter] hafidz/sanad integration failed: {e}")
             sanad_info = {"error": str(e)}
 
+    # ── Epistemic Label Auto-Inject (Bible Pasal "4-Label Epistemic") ─────────
+    # Pastikan setiap note publik punya minimal label epistemik di tiap claim.
+    # Kalau LLM lupa pakai label, inject default berdasarkan heuristik.
+    epistemic_info: dict = {}
+    try:
+        from .epistemic_validator import validate_output, inject_default_labels
+        report_pre = validate_output(md, strict=False)
+        if not report_pre.has_any_label or report_pre.coverage_ratio < 0.3:
+            md, _modified = inject_default_labels(md, default="OPINION")
+            epistemic_info["auto_tagged"] = True
+        report_post = validate_output(md, strict=False)
+        epistemic_info["label_counts"] = report_post.label_counts
+        epistemic_info["coverage_ratio"] = report_post.coverage_ratio
+        epistemic_info["score"] = report_post.score
+    except Exception as e:
+        print(f"[note_drafter] epistemic validation failed: {e}")
+
     out_path.write_text(md, encoding="utf-8")
 
     data["status"]       = "approved"
     data["published_as"] = str(filename)
     if sanad_info:
         data["sanad"] = sanad_info
+    if epistemic_info:
+        data["epistemic"] = epistemic_info
     _save_draft(data)
 
     # Resolve gap terkait

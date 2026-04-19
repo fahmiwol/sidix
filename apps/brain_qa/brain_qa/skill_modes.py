@@ -38,7 +38,8 @@ _MODES: dict[str, dict] = {
             "3. Tulis kode yang bisa langsung dijalankan — bukan pseudocode.\n"
             "4. Sebut edge case dan limitasi secara eksplisit.\n"
             "5. Kalau ada alternatif lebih ringan/murah, sarankan.\n"
-            "Bahasa Indonesia. Format: penjelasan singkat + code block + catatan."
+            "Bahasa Indonesia. Format: penjelasan singkat + code block + catatan. "
+            "WAJIB pakai label 4-epistemik di awal tiap klaim: [FACT]/[OPINION]/[SPECULATION]/[UNKNOWN]."
         ),
         "temperature": 0.4,
         "max_tokens":  900,
@@ -57,7 +58,8 @@ _MODES: dict[str, dict] = {
             "3. Balance selalu berbasis angka konkret (DPS, spawn rate, XP curve).\n"
             "4. Hindari saran yang bikin scope creep — mulai dari MVP playable.\n"
             "5. Kalau bicara game mechanic, beri contoh dari game real yang pakai teknik sama.\n"
-            "Bahasa Indonesia. Format: design/implementasi + contoh game referensi."
+            "Bahasa Indonesia. Format: design/implementasi + contoh game referensi. "
+            "WAJIB pakai label 4-epistemik [FACT]/[OPINION]/[SPECULATION]/[UNKNOWN]."
         ),
         "temperature": 0.6,
         "max_tokens":  800,
@@ -75,7 +77,8 @@ _MODES: dict[str, dict] = {
             "4. Pilih satu dengan alasan: kenapa itu, kenapa bukan yang lain.\n"
             "5. Akui kalau ada asumsi yang tidak kamu tahu — minta data spesifik.\n"
             "6. Tutup dengan 'langkah pertama hari ini': tindakan kecil konkret yang bisa dieksekusi.\n"
-            "Bahasa Indonesia. Output terstruktur: Masalah -> Urai -> Opsi -> Pilihan -> Langkah."
+            "Bahasa Indonesia. Output terstruktur: Masalah -> Urai -> Opsi -> Pilihan -> Langkah. "
+            "WAJIB pakai label 4-epistemik [FACT]/[OPINION]/[SPECULATION]/[UNKNOWN]."
         ),
         "temperature": 0.5,
         "max_tokens":  800,
@@ -91,7 +94,8 @@ _MODES: dict[str, dict] = {
             "3. Score tiap opsi di tiap kriteria (skala 1-5), jelaskan angkanya.\n"
             "4. Beri rekomendasi final dengan satu kalimat alasan utama.\n"
             "5. Sebut kondisi di mana rekomendasimu salah — kapan harus revisi.\n"
-            "Bahasa Indonesia. Format: tabel skor + rekomendasi + kondisi revisi."
+            "Bahasa Indonesia. Format: tabel skor + rekomendasi + kondisi revisi. "
+            "WAJIB pakai label 4-epistemik [FACT]/[OPINION]/[SPECULATION]/[UNKNOWN]."
         ),
         "temperature": 0.35,
         "max_tokens":  900,
@@ -108,7 +112,8 @@ _MODES: dict[str, dict] = {
             "3. Sebut metrik evaluasi yang cocok (bukan selalu accuracy).\n"
             "4. Warning tentang data leakage, overfitting, bias sample.\n"
             "5. Kasih contoh kode pandas/sklearn yang bisa dijalankan.\n"
-            "Bahasa Indonesia. Format: metodologi + kode + metrik + caveat."
+            "Bahasa Indonesia. Format: metodologi + kode + metrik + caveat. "
+            "WAJIB pakai label 4-epistemik [FACT]/[OPINION]/[SPECULATION]/[UNKNOWN]."
         ),
         "temperature": 0.4,
         "max_tokens":  800,
