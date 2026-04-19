@@ -3009,3 +3009,17 @@ berikutnya tinggal:
 - DOC: docs/decisions/ADR_001_sprint3_image_gen_stack.md (BARU) - lock keputusan Sprint 3: RunPod 4090 + FLUX.1-schnell + Diffusers + Nusantara KB. Awaiting user approval.
 - UPDATE: DELEGATION_REGISTRY - R1-R4 status -> done (Claude takeover), ADR-001 added.
 - NEXT: user approve ADR -> Sprint 3 kickoff (week 1-4). Sprint 2 T2.1-T2.4 (math/data/plot/upload) bisa paralel via Cursor kapan saja.
+
+## 2026-04-19 (local workstation setup — hemat C:)
+
+Konteks: Budget Rp 300-600k approved. Laptop ASUS TUF Gaming A15 FA506QM ada RTX 3060 Laptop 6GB dGPU. Strategi hybrid: laptop untuk dev+test SDXL, RunPod untuk demo 24/7. Karena C: drive critical (8.7 GB free dari 475 GB), setup semua di D:.
+
+- AUDIT: C: free 8.7 GB, AppData 168 GB (Chrome 26.5, npm 3.3, Adobe 3.4 biang kerok). Python existing = 3.14.3 (terlalu baru untuk PyTorch). RTX 3060 Laptop 6GB + 7.8 GB shared (total 13.8 GB). Driver 32.0.15.7270 (3/2025). RAM 15.6 GB.
+
+- FIX [A.1-A.4] Safe cleanup C: tanpa hapus user content. Cleaned: Windows Temp ~3 GB, npm cache 3.3 GB, pip cache 410 MB (570 files), HuggingFace cache 1.25 GB dipindah ke D:\sidix-local\hf_cache via robocopy (+Copy-Item untuk sisa log). TIDAK disentuh: Chrome, Adobe, Downloads, OneDrive, VS Code, .cursor, .claude, .gemini. Hasil: C: 8.7 GB -> 15.57 GB (+6.87 GB).
+
+- IMPL [B.1-B.3] Setup workspace D:\sidix-local\ dengan 8 subfolder (hf_cache, torch_cache, pip_cache, models, output, tmp, logs, scripts). 6 env var User-level di-set: HF_HOME, TRANSFORMERS_CACHE, HF_HUB_CACHE, TORCH_HOME, PIP_CACHE_DIR, SIDIX_LOCAL_ROOT -> semua point ke D:\sidix-local. Verifikasi: semua env var ter-set successfully.
+
+- DOC: docs/SIDIX_LOCAL_WORKSTATION_SETUP.md (BARU) - handoff lengkap: spec hardware, struktur folder D:, env vars, progress tahap A-G, safety rules, rollback plan, referensi. Tahap C-G (install Python 3.12, venv, PyTorch, SDXL, ngrok) BELUM eksekusi.
+
+- STATE AKHIR SESI: C: 15.57 GB free, D: 806.19 GB free, D:\sidix-local\ ready dengan env vars aktif, HF cache 1247 MB sudah di D:. Next session: Tahap C install Python 3.12 ke D:\sidix-local\python312\.
