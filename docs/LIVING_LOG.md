@@ -2881,6 +2881,12 @@ Server autopilot total. Mulai jam 8 pagi besok 9 post Threads + 4 harvest
 [OK] Aturan #7 Security: tidak ada IP server / credential di doc
 [OK] Anti-amnesia: 11 section terstruktur untuk navigasi cepat
 
+### 2026-04-19 — Sprint 1 T1.2 sanad-based ranker (cursor branch)
+
+- IMPL: BM25 + bobot `sanad_tier` (`primer`/`ulama`/`peer_review`/`aggregator`/`unknown`) di `brain_qa/sanad_ranking.py`, parse frontmatter di `indexer.py`, rerank di `answer_query_and_citations` (`query.py`), field `Chunk.sanad_tier`, citation meta + `read_chunk` menyertakan tier.
+- TEST: `cd apps/brain_qa; python -m pytest tests/test_sanad_ranker.py -v` → 4 passed.
+- DOC: `brain/public/research_notes/164_sprint1_t1_2_sanad_ranker.md`, `docs/SIDIX_CAPABILITY_MAP.md` (sanad rerank), frontmatter `sanad_tier` pada 5 note sampel (03, 41, 157, 161, 162).
+
 ### Closure final sesi
 Server autopilot, dokumen handoff + inventory live di GitHub. Sesi
 berikutnya tinggal:

@@ -134,6 +134,7 @@ def _tool_read_chunk(args: dict) -> ToolResult:
                     "chunk_id": chunk_id,
                     "source_path": obj.get("source_path", ""),
                     "source_title": obj.get("source_title", ""),
+                    "sanad_tier": str(obj.get("sanad_tier", "unknown")),
                 }],
             )
 

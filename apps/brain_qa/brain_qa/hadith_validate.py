@@ -8,6 +8,7 @@ from pathlib import Path
 from rank_bm25 import BM25Okapi
 
 from .paths import default_index_dir
+from .sanad_ranking import normalize_sanad_tier
 from .text import Chunk, tokenize, normalize_text_for_search
 
 
@@ -31,6 +32,7 @@ def _load_chunks(index_dir: Path) -> list[Chunk]:
         if not line.strip():
             continue
         obj = json.loads(line)
+        obj["sanad_tier"] = normalize_sanad_tier(obj.get("sanad_tier"))
         chunks.append(Chunk(**obj))
     return chunks
 
