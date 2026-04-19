@@ -13,6 +13,7 @@ from .text import Chunk, tokenize
 from .record import RecordEntry, append_record, now_utc_iso
 from .persona import PersonaDecision, normalize_persona, route_persona
 from .memory import retrieve_relevant_cards, format_memory_context
+from .sanad_ranking import apply_sanad_weight, normalize_sanad_tier
 
 
 @dataclass(frozen=True)
@@ -21,6 +22,7 @@ class Citation:
     source_title: str
     chunk_id: str
     snippet: str
+    sanad_tier: str = "unknown"
 
 
 _SENTENCE_SPLIT_RE = re.compile(r"(?<=[.!?])\s+")
@@ -79,6 +81,7 @@ def _load_chunks(index_dir: Path) -> list[Chunk]:
         if not line.strip():
             continue
         obj = json.loads(line)
+        obj["sanad_tier"] = normalize_sanad_tier(obj.get("sanad_tier"))
         chunks.append(Chunk(**obj))
     return chunks
 
@@ -282,9 +285,13 @@ def answer_query_and_citations(
     q_tokens = tokenize(question)
     scores = bm25.get_scores(q_tokens)
 
-    # Take top-k indices
-    ranked = sorted(range(len(scores)), key=lambda i: scores[i], reverse=True)
-    top = [i for i in ranked[: max(1, k)] if scores[i] > 0] or ranked[: max(1, k)]
+    # Rerank by BM25 * sanad tier weight (primer > ulama > peer_review > unknown > aggregator)
+    weighted = [apply_sanad_weight(chunks[i].sanad_tier, scores[i]) for i in range(len(scores))]
+    ranked = sorted(
+        range(len(scores)),
+        key=lambda i: (-weighted[i], -scores[i]),
+    )
+    top = [i for i in ranked[: max(1, k)] if weighted[i] > 0] or ranked[: max(1, k)]
 
     citations: list[Citation] = []
     for i in top:
@@ -295,6 +302,7 @@ def answer_query_and_citations(
                 source_title=c.source_title,
                 chunk_id=c.chunk_id,
                 snippet=_make_snippet(c.text, max_snippet_chars),
+                sanad_tier=c.sanad_tier,
             )
         )
 
@@ -320,7 +328,9 @@ def answer_query_and_citations(
     lines.append("")
     lines.append("Sumber (citations):")
     for idx, cit in enumerate(citations, start=1):
-        lines.append(f"- [{idx}] {cit.source_title} — `{cit.source_path}` ({cit.chunk_id})")
+        lines.append(
+            f"- [{idx}] {cit.source_title} — `{cit.source_path}` ({cit.chunk_id}) [sanad_tier={cit.sanad_tier}]"
+        )
 
     citation_meta: list[dict[str, str]] = []
     for idx, cit in enumerate(citations, start=1):
@@ -330,6 +340,7 @@ def answer_query_and_citations(
                 "source_path": cit.source_path,
                 "source_title": cit.source_title,
                 "chunk_id": cit.chunk_id,
+                "sanad_tier": cit.sanad_tier,
             }
         )
 

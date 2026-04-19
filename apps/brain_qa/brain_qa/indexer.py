@@ -7,6 +7,7 @@ from pathlib import Path
 from rank_bm25 import BM25Okapi
 
 from .paths import default_index_dir, load_manifest_paths
+from .sanad_ranking import extract_sanad_tier_from_markdown
 from .text import Chunk, chunk_text, normalize_text_for_search, tokenize
 
 
@@ -41,6 +42,7 @@ def build_index(
 
     for path in files:
         raw = path.read_text(encoding="utf-8", errors="ignore")
+        sanad_tier = extract_sanad_tier_from_markdown(raw)
         title = _title_from_markdown(raw, fallback=path.stem)
         cleaned = normalize_text_for_search(raw)
         for start, end, part in chunk_text(cleaned, chunk_chars=chunk_chars, chunk_overlap=chunk_overlap):
@@ -56,6 +58,7 @@ def build_index(
                     start_char=start,
                     end_char=end,
                     text=part,
+                    sanad_tier=sanad_tier,
                 )
             )
 

@@ -1,3 +1,7 @@
+---
+sanad_tier: peer_review
+---
+
 # SIDIX: Arsitektur AI yang Tumbuh Sendiri — dari VPS Tunggal ke Jaringan Terdesentralisasi
 *Diadopsi dari: riset teknis komprehensif April 2026*
 *Diproses: 2026-04-17 — bukan sekadar disimpan, tapi jadi logika sistem*

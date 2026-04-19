@@ -35,6 +35,7 @@ class Chunk:
     start_char: int
     end_char: int
     text: str
+    sanad_tier: str = "unknown"
 
 
 def chunk_text(text: str, *, chunk_chars: int, chunk_overlap: int) -> list[tuple[int, int, str]]:
