@@ -1,3 +1,7 @@
+---
+sanad_tier: primer
+---
+
 # 161 — AI, LLM, Generative AI, Claude — dan Di Mana SIDIX Berbeda
 
 Tanggal: 2026-04-19

@@ -1,3 +1,7 @@
+---
+sanad_tier: primer
+---
+
 # 162 — Framework Brain/Hands/Memory + Peta Kemampuan SIDIX
 
 Tanggal: 2026-04-19

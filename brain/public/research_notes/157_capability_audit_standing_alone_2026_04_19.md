@@ -1,3 +1,7 @@
+---
+sanad_tier: primer
+---
+
 # 157 — SIDIX Capability Audit & Standing-Alone Roadmap
 
 Tanggal: 2026-04-19

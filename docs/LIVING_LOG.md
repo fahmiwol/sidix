@@ -2885,3 +2885,113 @@ promosi dirinya sendiri.
 - DOC: docs/CREATIVE_CAPABILITY_ROADMAP.md (BARU) — mapping 30+ kapabilitas dari direktif user ke 4-stage roadmap. Domain: akademik, programming, image gen, audio, video, 3D/WebGL, content marketing, gaming. Semua open-source self-host (standing-alone). Decision gates per domain.
 - DOC: brain/public/research_notes/165_sidix_creative_capability_expansion.md (BARU, sanad_tier=primer) — rationale direktif user + pendekatan standing-alone per domain + trade-off GPU dependency + implikasi roadmap.
 - NEXT: user buka PR T1.2 via link Cursor. Setelah merge: re-index corpus di VPS (python -m brain_qa index). Claude kerjain C-03 (endpoint /workspace/upload) dan C-04 (weekly audit).
+
+## 2026-04-19 - HANDOFF DOCUMENT BUILT (Closure Sesi Panjang)
+
+### Context
+User minta rangkum semua + buat handoff supaya sesi berikutnya bisa
+continue tanpa kehilangan konteks. Plus klarifikasi:
+- GA4 verifikasi 'gagal' sebelumnya = FALSE ALARM (PowerShell quote conflict)
+  Tag G-EK6L5SJGY3 di app.sidixlab.com SUDAH LIVE (verified 2/2/2 occurrences)
+- User minta lanjut ke: social media marketing global + API opensource
+  learning sources + sub-agent internal SIDIX
+
+### Yang dikerjakan
+[VERIFY] Cek GA tag app live: 2 occurrences di source + dist + live HTML.
+  False alarm sebelumnya. SEMUA DEPLOY GA4 SUKSES.
+[DOC] docs/HANDOFF_2026-04-19.md - 350+ baris handoff komprehensif:
+  - Situasi 1-paragraf
+  - Statistik final hari ini
+  - Yang sudah live (Fase 1-6 + Security 7-layer + Marketing + Constitution)
+  - Open issues (4 critical, 4 medium, 3 low)
+  - Strategic roadmap 4 plan:
+    A. Multi-channel social media (8 platform: Threads/X/LinkedIn/Reddit/
+       Discord/Telegram/YouTube/Medium)
+    B. Learning sources package (image: Pinterest/Adobe/Figma/Spline/Blender/
+       Unity/Behance/Canva/microstock/GoogleLens; audio: Suno/Spotify/Joox/
+       Bandcamp/Soundcloud/Audius; coding: roadmap.sh/GitHub/HuggingFace/
+       StackExchange/arXiv/PapersWithCode)
+    C. Sub-agent internal (8 agent: Learning/Promo/Dev/Research/QA/Curator/
+       Outreach/Insight)
+    D. Self-promotion lanjutan (viral gen, referral, SEO sitemap+JSON-LD+RSS)
+  - Quick start step (baca SSOT - pilih sprint - eksekusi - closure)
+  - Mandate user yang masih berlaku (11 item)
+  - Cron schedule yang berjalan otomatis (20 events/hari)
+  - File pointer lengkap (CLAUDE.md, BIBLE, CHECKPOINT, security, modul,
+    scripts, server paths)
+
+[UPDATE] CLAUDE.md - tambah HANDOFF_<latest>.md sebagai file #1 yang harus
+  dibaca sesi berikutnya (sebelum BIBLE)
+
+### Statistik final sesi
+- 24+ commits push
+- 18 research notes (132-149)
+- 15 modul Python baru
+- ~62 endpoint live
+- 9 cron Threads + 1 cron daily growth
+- 21 post Threads queued (~3.5 hari otomasi)
+- 1268 training pair siap LoRA
+- 39 skill auto-registered
+- 130 curriculum topik aktif
+- GA4 dual-domain tracking (G-04JKCGDEY4 + G-EK6L5SJGY3)
+- og-image branded 1200x630 live
+
+### Compliance Aturan #6 + #7
+[OK] Semua progress dicatat di LIVING_LOG (24+ entries)
+[OK] Setiap fitur ada research note (132-149)
+[OK] Identity masking + IP leak audit tetap berlaku
+[OK] HANDOFF document untuk continuity
+
+### Pending sesi berikutnya (lihat HANDOFF Plan A-D)
+PRIORITAS rekomendasi mentor:
+- Punya 2-3 jam: Plan D (SEO sitemap + JSON-LD + RSS)
+- Punya 4-5 jam: Plan B (Learning sources 5-source dulu)
+- Punya 6+ jam: Plan C (Sub-agent architecture)
+
+### Closure
+Server autopilot total. Mulai jam 8 pagi besok 9 post Threads + 4 harvest
++ 1 lesson curriculum + audit log security. SIDIX tumbuh tanpa intervensi.
+
+
+## 2026-04-19 - INVENTORY_2026-04-19.md (Companion HANDOFF)
+
+### Yang dibuat
+[DOC] docs/INVENTORY_2026-04-19.md - 11 section komprehensif:
+  1. Sprint Timeline (15 sprint hari ini + commit hash)
+  2. Modul Python baru (15 dengan public API + tugas)
+  3. Endpoint API baru (62+ dengan path lengkap)
+  4. Cron jobs aktif (10 cron, 20 events/hari)
+  5. Framework & Metode adopted (8: IHOS/Sanad/Tabayyun/Maqashid/Hafidz/
+     PaulElder/4-Label/DIKW)
+  6. Tools/Skills registered (39: vision 22 + image_gen 17)
+  7. Roadmap (Trajectory 3-fase + 7 Growth-Hack + 4 Strategic Plan +
+     compliance milestone)
+  8. Auto-Learn Pipeline (diagram lengkap + file output per siklus +
+     compounding effect 365 lesson + 3650 training pair/tahun)
+  9. File penting quick reference (docs + research notes + scripts +
+     config + frontend + data storage paths)
+  10. Status register (8 endpoint health check)
+  11. Signature
+
+### Bedanya dengan HANDOFF
+- HANDOFF: visi + strategic + plan + mandate + quick start
+- INVENTORY: detail teknis + path lengkap + endpoint + skill + roadmap
+  per item + diagram pipeline
+
+### Compliance
+[OK] Aturan #6 Mandatory Catat: SEMUA dicatat eksplisit dengan path
+[OK] Aturan #7 Security: tidak ada IP server / credential di doc
+[OK] Anti-amnesia: 11 section terstruktur untuk navigasi cepat
+
+### 2026-04-19 — Sprint 1 T1.2 sanad-based ranker (cursor branch)
+
+- IMPL: BM25 + bobot `sanad_tier` (`primer`/`ulama`/`peer_review`/`aggregator`/`unknown`) di `brain_qa/sanad_ranking.py`, parse frontmatter di `indexer.py`, rerank di `answer_query_and_citations` (`query.py`), field `Chunk.sanad_tier`, citation meta + `read_chunk` menyertakan tier.
+- TEST: `cd apps/brain_qa; python -m pytest tests/test_sanad_ranker.py -v` → 4 passed.
+- DOC: `brain/public/research_notes/164_sprint1_t1_2_sanad_ranker.md`, `docs/SIDIX_CAPABILITY_MAP.md` (sanad rerank), frontmatter `sanad_tier` pada 5 note sampel (03, 41, 157, 161, 162).
+
+### Closure final sesi
+Server autopilot, dokumen handoff + inventory live di GitHub. Sesi
+berikutnya tinggal:
+  cat docs/HANDOFF_2026-04-19.md  # visi + strategic
+  cat docs/INVENTORY_2026-04-19.md  # detail teknis
+  pilih Plan A/B/C/D, eksekusi, catat

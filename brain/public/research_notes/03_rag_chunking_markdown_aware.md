@@ -1,3 +1,7 @@
+---
+sanad_tier: peer_review
+---
+
 # RAG Chunking (Markdown-aware) — research note
 
 ## Ringkasan 10 baris

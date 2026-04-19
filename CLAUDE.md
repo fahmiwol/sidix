@@ -12,12 +12,12 @@ Urutan wajib sebelum kerja apapun:
 2. **`docs/NORTH_STAR.md`** — tujuan akhir SIDIX + release strategy v0.1→v3.0 + lock apa yang tidak berubah. **Baca jika ragu pilih plan.**
 3. **`docs/DEVELOPMENT_RULES.md`** — aturan mengikat untuk agent eksternal + protocol self-development SIDIX. **Ini harus dipatuhi, bukan sekadar dibaca.**
 4. **`docs/SIDIX_ROADMAP_2026.md`** — roadmap 4 stage (Baby/Child/Adolescent/Adult) + sprint plan.
-4. **`docs/SIDIX_CAPABILITY_MAP.md`** — SSoT kapabilitas (apa yang ada, belum wired, belum ada).
-5. **`docs/HANDOFF_<terbaru>.md`** — strategic handoff.
-6. **`docs/INVENTORY_<terbaru>.md`** — teknis detail + path.
-7. **`docs/SIDIX_BIBLE.md`** — konstitusi 4 pilar.
-8. **`brain/public/research_notes/161_*.md`** — konsep AI/LLM + differentiator SIDIX (jika belum paham foundational).
-9. **`tail -100 docs/LIVING_LOG.md`** — update terbaru.
+5. **`docs/SIDIX_CAPABILITY_MAP.md`** — SSoT kapabilitas (apa yang ada, belum wired, belum ada).
+6. **`docs/HANDOFF_<terbaru>.md`** — strategic handoff.
+7. **`docs/INVENTORY_<terbaru>.md`** — teknis detail + path.
+8. **`docs/SIDIX_BIBLE.md`** — konstitusi 4 pilar.
+9. **`brain/public/research_notes/161_*.md`** — konsep AI/LLM + differentiator SIDIX (jika belum paham foundational).
+10. **`tail -100 docs/LIVING_LOG.md`** — update terbaru.
 
 Kalau mau bikin research note baru, cek dulu nomor terakhir di
 `brain/public/research_notes/`. Topik mirip note existing (overlap ≥0.55) →
