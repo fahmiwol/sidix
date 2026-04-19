@@ -28,14 +28,38 @@ def analyze_image(
     image_data:  bytes | str,        # bytes OR path OR base64 str
     prompt:      str = "Describe this image in Indonesian.",
     max_tokens:  int = 500,
+    prefer_local: bool = True,        # PRINSIP MANDIRI: lokal dulu
 ) -> dict:
     """
-    Analisis gambar → teks. Fallback: Gemini → Groq Vision → Anthropic.
+    Analisis gambar → teks.
+
+    Prioritas (sesuai mandate note 142 - "SIDIX entitas mandiri"):
+      1. Ollama Vision LOKAL (llava / moondream / bakllava)  ← prefer
+      2. Gemini Vision (cloud)
+      3. Groq Llama Vision (cloud)
+      4. Anthropic Claude (cloud)
+
     Returns: {ok, text, mode, elapsed_ms}
     """
     img_bytes = _normalize_image(image_data)
     if not img_bytes:
         return {"ok": False, "error": "empty image data"}
+
+    # ── LOKAL DULU (mandate mandiri) ──
+    if prefer_local and _ollama_vision_ready():
+        try:
+            t0 = time.time()
+            text = _ollama_vision(img_bytes, prompt, max_tokens)
+            if text:
+                return {
+                    "ok":         True,
+                    "text":       text,
+                    "mode":       "ollama_vision_local",
+                    "elapsed_ms": int((time.time() - t0) * 1000),
+                    "is_local":   True,
+                }
+        except Exception as e:
+            print(f"[multi_modal] ollama vision error: {e}")
 
     # Try Gemini first (multimodal + vision, free tier)
     if _gemini_ready():
@@ -223,6 +247,46 @@ def synthesize_speech(
 
 # ── Provider Implementations ──────────────────────────────────────────────────
 
+# ── OLLAMA VISION LOKAL (prioritas mandiri) ───────────────────────────────────
+
+OLLAMA_BASE_URL    = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
+OLLAMA_VISION_MODEL = os.getenv("OLLAMA_VISION_MODEL", "moondream")  # ringan ~2GB
+
+
+def _ollama_vision_ready() -> bool:
+    """Cek Ollama running + ada model vision tersedia."""
+    try:
+        import httpx
+        with httpx.Client(timeout=3.0) as client:
+            r = client.get(f"{OLLAMA_BASE_URL}/api/tags")
+            if r.status_code != 200:
+                return False
+            models = r.json().get("models", [])
+            names = [m.get("name", "").split(":")[0] for m in models]
+            # Vision-capable models di Ollama
+            vision_models = {"llava", "bakllava", "moondream", "llava-llama3", "minicpm-v"}
+            return any(n in vision_models for n in names)
+    except Exception:
+        return False
+
+
+def _ollama_vision(image_bytes: bytes, prompt: str, max_tokens: int) -> str:
+    """Panggil Ollama generate dengan images=[base64]."""
+    import httpx
+    b64 = base64.b64encode(image_bytes).decode("ascii")
+    payload = {
+        "model": OLLAMA_VISION_MODEL,
+        "prompt": prompt,
+        "images": [b64],
+        "stream": False,
+        "options": {"num_predict": max_tokens},
+    }
+    with httpx.Client(timeout=120.0) as client:
+        r = client.post(f"{OLLAMA_BASE_URL}/api/generate", json=payload)
+        r.raise_for_status()
+        return (r.json().get("response", "") or "").strip()
+
+
 def _gemini_ready() -> bool:
     if not os.getenv("GEMINI_API_KEY", "").strip():
         return False
@@ -386,17 +450,38 @@ def get_modality_availability() -> dict:
     except ImportError:
         gtts_ok = False
 
+    ollama_vision = _ollama_vision_ready()
     return {
         "vision": {
-            "gemini":    _gemini_ready(),
-            "groq":      _groq_ready(),
-            "anthropic": _anthropic_ready(),
+            "ollama_local": ollama_vision,   # PRIORITAS (mandate mandiri)
+            "gemini":       _gemini_ready(),
+            "groq":         _groq_ready(),
+            "anthropic":    _anthropic_ready(),
         },
-        "ocr":   _gemini_ready() or _groq_ready(),
+        "ocr":   ollama_vision or _gemini_ready() or _groq_ready(),
         "image_gen": {
             "pollinations": True,
             "gemini":       _gemini_ready(),
         },
         "asr":   _groq_ready(),
         "tts":   {"gtts": gtts_ok},
+        "mandiri_score": _calculate_mandiri_score(ollama_vision, gtts_ok),
+    }
+
+
+def _calculate_mandiri_score(ollama_vision: bool, gtts_ok: bool) -> dict:
+    """Skor seberapa SIDIX bisa berjalan tanpa cloud (0-100%)."""
+    capabilities = {
+        "vision_local":     ollama_vision,
+        "ocr_local":        ollama_vision,
+        "image_gen_free":   True,         # pollinations tidak butuh API key
+        "tts_local":        gtts_ok,      # gtts butuh internet google translate
+        "llm_local":        True,         # ollama
+        "asr_local":        False,        # belum ada whisper.cpp lokal
+    }
+    score = sum(1 for v in capabilities.values() if v) / len(capabilities) * 100
+    return {
+        "score_percent":  round(score, 1),
+        "capabilities":   capabilities,
+        "next_to_local":  [k for k, v in capabilities.items() if not v],
     }

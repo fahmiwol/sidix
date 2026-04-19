@@ -1732,3 +1732,28 @@ Tiga fase: GURU (sekarang) -> TRANSISI (2026-2027) -> MANDIRI (2027+, 95% query 
 5. Web UI upgrade: tombol multi-modal & mode selector
 
 Prioritas berdasar filosofi mandiri (note 142): #2 dan #3 paling tinggi impact.
+
+## 2026-04-18 — Snapshot Pre-Sprint 20 Menit
+
+### State sekarang (selesai sebelum sprint ini)
+- Note corpus: 142 (.md) + 142 mandate mandiri tercatat
+- Endpoints live: 125+ (multimodal, skill_modes, sanad/hafidz, sidix/grow, drafts, research, memory)
+- Daily growth cron jam 3 pagi terpasang di server
+- Sanad+Hafidz: setiap approved note → CAS hash + Merkle root + isnad eksplisit
+- Multi-modal: TTS gTTS aktif, Image gen Pollinations aktif, Vision Anthropic
+- Skill modes: 5 mode (fullstack/game/problem/decision/data), Ollama lokal sudah jawab coding
+- Decision engine: multi-LLM voting bekerja unanimous
+
+### Yang akan dikerjakan sprint ini (20 menit)
+PRIORITAS 1 (sesuai mandate mandiri note 142):
+- Ollama Vision support (llava/moondream) di multi_modal_router → image analyze/OCR LOKAL
+- Auto-LoRA trigger: cek training_generated lines, kalau >500 → siap upload Kaggle
+- Threads queue consumer: pick up growth_queue.jsonl → post via existing /admin/threads/auto-content
+
+PRIORITAS 2 (deferred):
+- Fix env subprocess (groq/gemini empty issue)
+- Web UI multi-modal buttons
+
+### Commit pointer
+- HEAD: 1936c92 (log + test script)
+- Last code change: a394f8c (multi-modal + skill modes + note 142)

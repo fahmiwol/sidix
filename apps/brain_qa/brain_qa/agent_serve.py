@@ -350,8 +350,9 @@ def create_app() -> "FastAPI":
         except Exception:
             pass
 
-        return {
-            # Format baru (agent)
+        # PUBLIC-FACING: identitas backbone di-mask via identity_mask
+        # SIDIX harus terlihat standing-alone dari sudut pandang luar.
+        raw_payload = {
             "status": "ok",
             "engine": "SIDIX Inference Engine v0.1",
             "model_mode": effective_mode,
@@ -367,21 +368,25 @@ def create_app() -> "FastAPI":
             "sessions_cached": len(_sessions),
             "anon_daily_quota_cap": rate_limit.daily_quota_cap(),
             "engine_build": os.environ.get("BRAIN_QA_ENGINE_BUILD", "0.1.0").strip() or "0.1.0",
-            # Threads status + alert
             "threads_alert": threads_alert,
-            # Multi-LLM status
             "llm_providers": {
                 "groq": groq_ready,
                 "gemini": gemini_ready,
                 "anthropic": anthropic_ready,
             },
-            # Learning stats
             "qna_recorded_today": qna_today,
-            # Format lama (kompatibel UI)
             "ok": True,
             "version": "0.1.0",
             "corpus_doc_count": chunk_count,
         }
+        try:
+            from .identity_mask import mask_health_payload
+            return mask_health_payload(raw_payload)
+        except Exception:
+            # Fallback safe: hilangkan field provider-specific
+            raw_payload.pop("llm_providers", None)
+            raw_payload.pop("ollama", None)
+            return raw_payload
 
     # ── POST /agent/chat ──────────────────────────────────────────────────────
     @app.post("/agent/chat", response_model=ChatResponse)
@@ -2680,6 +2685,48 @@ h1{{color:#0af}}p{{color:#aaa}}a{{color:#0af}}</style></head>
         try:
             from .hafidz_mvp import handle_retrieve
             return handle_retrieve(cas_hash)
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    # ── /sidix/lora/* ─ Auto LoRA Pipeline ────────────────────────────────────
+
+    @app.get("/sidix/lora/status", tags=["Mandiri"])
+    def lora_status():
+        """Cek status corpus training: total pairs, threshold, ready or not."""
+        try:
+            from .auto_lora import get_training_corpus_status
+            return {"ok": True, **get_training_corpus_status()}
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    @app.post("/sidix/lora/prepare", tags=["Mandiri"])
+    def lora_prepare(force: bool = False):
+        """Konsolidasi training pairs ke batch siap upload ke Kaggle/Colab."""
+        try:
+            from .auto_lora import prepare_upload_batch
+            return prepare_upload_batch(force=force)
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    # ── /sidix/threads-queue/* ─ Konsumsi Growth Queue ─────────────────────────
+
+    @app.get("/sidix/threads-queue/status", tags=["Threads"])
+    def tq_status():
+        """Hitung berapa post di queue (queued/published/failed)."""
+        try:
+            from .threads_consumer import get_queue_status
+            return {"ok": True, **get_queue_status()}
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    @app.post("/sidix/threads-queue/consume", tags=["Threads"])
+    def tq_consume(max_posts: int = 1, dry_run: bool = False):
+        """Ambil 1 atau N post dari queue, post ke Threads (audit-trail tetap di file)."""
+        try:
+            from .threads_consumer import consume_one, consume_batch
+            if max_posts <= 1:
+                return consume_one(dry_run=dry_run)
+            return consume_batch(max_posts=max_posts)
         except Exception as e:
             return {"ok": False, "error": str(e)}
 

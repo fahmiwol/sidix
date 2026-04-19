@@ -117,7 +117,12 @@ class SanadMetadata:
 def build_sanad_from_bundle(bundle, note_filename: str = "") -> SanadMetadata:
     """
     Bangun SanadMetadata dari ResearchBundle (dari autonomous_researcher).
+
+    PUBLIC-FACING: nama mentor di-mask via identity_mask.mask_identity()
+    agar SIDIX terlihat standing-alone (tidak bocor identitas backbone).
     """
+    from .identity_mask import mask_identity
+
     today = datetime.now().strftime("%Y-%m-%d")
     isnad: list[SanadEntry] = []
 
@@ -125,13 +130,13 @@ def build_sanad_from_bundle(bundle, note_filename: str = "") -> SanadMetadata:
     isnad.append(SanadEntry(
         role="narrator",
         name="SIDIX",
-        via="autonomous_researcher.narrate",
+        via="sidix.synthesis_engine",
         date=today,
         confidence=0.80,
         note="menyintesis & menceritakan ulang dengan gaya Indonesia",
     ))
 
-    # 2. Mentor LLM (sumber bahasa dan reasoning)
+    # 2. Mentor reasoning engine (di-mask untuk publik)
     llm_sources = set()
     for f in bundle.findings:
         src = getattr(f, "source", "") or ""
@@ -142,10 +147,11 @@ def build_sanad_from_bundle(bundle, note_filename: str = "") -> SanadMetadata:
             pass
 
     for llm in sorted(llm_sources):
+        masked = mask_identity(llm)
         isnad.append(SanadEntry(
-            role="mentor_llm",
-            name=llm,
-            via=f"multi_llm_router → {llm}",
+            role="reasoning_engine",
+            name=masked,
+            via=f"sidix.reasoning_pool → {masked}",
             date=today,
             confidence=0.70,
             note="penulis jawaban per-angle dan per-POV",
