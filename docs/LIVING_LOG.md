@@ -3073,3 +3073,20 @@ Konteks: Budget Rp 300-600k approved. Laptop ASUS TUF Gaming A15 FA506QM ada RTX
 - PERSIST scripts laptop ke repo docs/workstation_scripts/ (sdxl_server.py, test_sdxl.py) supaya tidak hilang.
 - DEBUG trace: [ImageFastPath] triggered correctly, tool call success, env var loaded OK, tapi server local sedang re-fetch 19 files (exFAT cache tidak preserve ETag metadata -> redownload). Butuh 6-8 menit lagi.
 - NEXT: tunggu server ready, retest end-to-end via /agent/chat. Kalau masih error, debug lebih lanjut.
+
+## 2026-04-20 (BETA READY - image gen end-to-end live)
+
+- MILESTONE Sprint 3 + image gen beta OPERATIONAL end-to-end:
+  * User prompt 'bikin gambar X' -> fast-path auto-trigger -> tunnel -> laptop RTX 3060 -> SDXL generate -> image URL via /generated/{hash}.png publik.
+  * Confidence 'image gen fast-path', total 65.5s, citation siap di-render UI dengan markdown syntax.
+  * Public test: https://ctrl.sidixlab.com/generated/3c0311596dbe.png download OK 956 KB.
+- TUNE: default size 1024->768, steps 25->20, timeout 180s->360s (sequential offload lebih lambat tapi stabil lintas-request).
+- BETA checklist STATUS:
+  * [✓] Backend infra (Python+PyTorch+SDXL+FastAPI+ngrok)
+  * [✓] Endpoint serve image publik (/generated/{hash}.png)
+  * [✓] Auto-trigger image keywords ID+EN di ReAct fast-path
+  * [✓] UI render <img> dari citation type=text_to_image
+  * [✓] Citation interface extended (url, prompt, took_s)
+  * [ ] Rate limit anonymous users untuk image gen (existing rate limit sudah cover /agent/chat global)
+  * [ ] UI deploy VPS frontend (sudah build+deploy pas commit terakhir)
+- NEXT untuk public launch: (1) test via app.sidixlab.com UI langsung, (2) tambah loading indicator UI saat tunggu 65s (biar UX ga silent), (3) add Nusantara prompt enhancer prefix untuk quality boost, (4) monitor ngrok free tier usage limit.
