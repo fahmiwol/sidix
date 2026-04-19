@@ -1757,3 +1757,57 @@ PRIORITAS 2 (deferred):
 ### Commit pointer
 - HEAD: 1936c92 (log + test script)
 - Last code change: a394f8c (multi-modal + skill modes + note 142)
+
+## 2026-04-18 — Sprint 20 Menit Selesai (dengan Catatan Deploy)
+
+### Hasil sprint
+[IMPL] identity_mask.py — opsec masking nama provider untuk public output
+       (groq->mentor_alpha, gemini->mentor_beta, anthropic->mentor_gamma,
+        openai->mentor_delta, ollama/qwen->sidix_local, pollinations/gtts->generic)
+[IMPL] multi_modal_router.py — tambah Ollama vision support (llava/moondream/bakllava),
+       prefer_local=True, _calculate_mandiri_score() 0-100%
+[IMPL] auto_lora.py — get_training_corpus_status, prepare_upload_batch (threshold 500),
+       konsolidasi semua jsonl jadi batch dir Kaggle-ready
+[IMPL] threads_consumer.py — picked up growth_queue.jsonl, post via threads_oauth,
+       audit trail status, batch consume rate-limit 2s
+[IMPL] sanad_builder.py — apply mask_identity ke isnad name+via
+[IMPL] /health endpoint masked via mask_health_payload (llm_providers->internal_mentor_pool)
+[IMPL] 4 endpoint baru: /sidix/lora/{status,prepare}, /sidix/threads-queue/{status,consume}
+
+### Public-facing assets (kontributor-friendly)
+[DOC] CHANGELOG.md di root repo — v0.1 sampai v0.5, bahasa generik tanpa nama provider
+[UI ] SIDIX_LANDING/index.html roadmap diupdate dengan 4 NEW item
+[DOC] research_note 143 — sprint summary, catat metode opsec masking, keterbatasan jujur
+
+### Insight server
+Ollama di server punya sidix-lora:latest + qwen2.5:7b + qwen2.5:1.5b — SIDIX sudah
+punya backbone lokal aktif. Setiap call dengan skip_local=False default ke sidix-lora.
+
+### Commit
+- e9999d2: feat opsec masking + ollama vision + auto-lora + threads consumer + landing/changelog
+- (next) doc note 143 + log entry
+
+### Catatan deploy
+SSH key auth ke server transient issue setelah beberapa kali pull restart. Kode sudah
+pushed ke GitHub. Deploy bisa user trigger manual: ssh ke server, "cd /opt/sidix &&
+git pull && pm2 restart sidix-brain". Atau tunggu siklus daily_growth jam 3 pagi
+yang akan auto-trigger restart implicit (kalau dia call modul baru).
+
+### Yang masih perlu setelah deploy berhasil
+- Test /health response (verify llm_providers tidak ada lagi di public)
+- Test /sidix/lora/status (lihat berapa pair sekarang)
+- Test /sidix/threads-queue/consume?dry_run=true (verify pick up dari growth_queue)
+- Trigger /sidix/grow lagi untuk dapat note 14X dengan sanad masked (mentor_alpha bukan groq_llama3)
+
+### Rekap kumulatif sesi panjang ini (Sprint 1 - Sprint 4)
+Sprint 1 (Fase 3): autonomous_researcher, web_research, note_drafter — pipeline riset
+Sprint 2 (Fase 4): daily_growth — siklus harian otomatis dengan exploration fallback
+Sprint 3 (Sanad+Hafidz): integrate setiap approve dengan CAS+Merkle+isnad+tabayyun
+Sprint 4 (Multi-modal): vision/OCR/image-gen/TTS/ASR/skill-modes/decision-engine
+Sprint 5 (Opsec+LoRA+Threads consumer): masking + auto-LoRA + queue consumer
+
+Total commits hari ini: 9 (070b29a, c08fcb7, 6bee103, 5ba0876, 4c5372b, a394f8c, 1936c92, e9999d2, +pending doc)
+Notes baru: 132 - 143 (12 notes baru)
+Modul baru: 6 (autonomous_researcher, note_drafter, web_research, daily_growth,
+sanad_builder, identity_mask, auto_lora, threads_consumer, multi_modal_router, skill_modes)
+Endpoints baru: ~25
