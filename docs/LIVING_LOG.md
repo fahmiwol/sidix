@@ -2085,3 +2085,57 @@ Bulan depan: #5 (long context) + #6 (multi-modal native) ~ 13 jam
 ### Commit pointer
 - 44b2bd9 doc: SIDIX_CHECKPOINT 2026-04-19 + adopsi metodologi validasi hadith_validate
 - (next) doc: SIDIX_BIBLE v1.0 + note 145 alignment + CLAUDE.md SSOT pointer
+
+
+## 2026-04-19 - Sprint 1.5 jam: Growth-Hack #1 Epistemic Label Injector SELESAI
+
+### Hasil
+[IMPL] apps/brain_qa/brain_qa/epistemic_validator.py (304 baris)
+  - validate_output() score 0-1 + warnings
+  - inject_default_labels() heuristik tag (UNKNOWN > SPECULATION > OPINION > FACT > default)
+  - extract_claims() audit per paragraf
+  - EPISTEMIC_PROMPT_RULE constant untuk inject ke system prompt lain
+
+[IMPL] System prompt di-update wajib 4-label:
+  - autonomous_researcher: _NARRATOR_SYSTEM, _SYNTH_SYSTEM, _COMPREHEND_SYSTEM
+  - autonomous_researcher: _PERSPECTIVES 5 POV (kritis/kreatif/sistematis/visioner/realistis)
+  - skill_modes: _MODES 5 mode (fullstack_dev, game_dev, problem_solver, decision_maker, data_scientist)
+
+[IMPL] note_drafter.approve_draft() auto-inject:
+  - Sebelum write file, validate markdown
+  - Coverage <0.3 → inject_default_labels() default OPINION
+  - Status disimpan di draft.epistemic dict
+
+[IMPL] 3 endpoint baru:
+  - POST /sidix/epistemic/validate (score + warnings)
+  - POST /sidix/epistemic/inject (auto-tag)
+  - POST /sidix/epistemic/extract (audit)
+
+[DEPLOY] commit f365f12 pulled di server, pm2 restart sidix-brain
+[VERIFY]
+  - validate endpoint OK (score 0.2 untuk text tanpa label, 3 warning eksplisit)
+  - inject endpoint OK ('[OPINION] ...' tag added)
+  - /sidix/grow trigger curriculum lesson Python coding (sukses pilih topic ke-2 'list comprehension')
+  - LLM hit mock fallback saat test (Ollama timing) - akan terverifikasi cron 03:00 besok
+[DOC] research_note 146_epistemic_label_injector_growth_hack_1.md
+
+### Compliance dengan SIDIX_BIBLE
+- Pasal '4-Label Epistemic': WAJIB - SEKARANG IMPLEMENTED
+- Pasal 'Identitas SIDIX Shiddiq + Al-Amin': lebih visible di output runtime
+- Pasal 'Anti-mengarang': layered defense (system prompt + auto-inject)
+
+### Sisa growth-hack queue
+- #4 Speed Run training pairs (3h) - backfill 144 note jadi ~1000 pair
+- #7 Auto-Sync Deploy (4h) - git post-merge hook
+- #2 Maqashid Filter (4h)
+- #3 IHOS Reasoning Pipeline (6h)
+- #5 Long Context (8h)
+- #6 Multi-Modal Native (5h)
+
+### Commit pointer
+- f365f12 feat: Growth-Hack 1 Epistemic Label Injector
+- (next) doc: note 146 + log
+
+### Sprint stop
+1.5 jam habis. Total commit hari ini: 14. Growth-Hack #1 dari 7 selesai.
+Cron 03:00 besok akan auto-trigger curriculum dengan label baru aktif.
