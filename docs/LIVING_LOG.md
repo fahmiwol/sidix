@@ -2250,3 +2250,54 @@ Sisa growth-hack queue:
 - #3 IHOS Reasoning Pipeline (6h)
 - #5 Long Context (8h)
 - #6 Multi-Modal Native (5h)
+
+
+## 2026-04-19 - Mandate Baru: Mandatory Catat + Security Mindset (Closure Sprint)
+
+### User mandate
+'jangan lup catat, jadikan mandatory, untuk selalu mencatat apapun progress,
+hasil, inisiasi, dan lainnya. fikirikan juga keamanan sistem, privasy
+dan lainnya.'
+
+### Aksi
+[DOC] CLAUDE.md - Tambah Aturan Keras #6 (Mandatory Catat) + #7 (Security Mindset):
+  - Aturan #6: WAJIB CATAT progress/hasil/inisiasi/keputusan/error/TODO
+    di salah satu (LIVING_LOG / research_note / CHECKPOINT)
+    Anti-pattern: 'catat nanti' / 'ini kecil' / 'sudah obvious' SEMUA SALAH
+  - Aturan #7: Security & Privacy mindset 5-kategori (Data User, Server,
+    Identitas Owner, Output SIDIX, Code & Repo, Public-Facing)
+    + Quick audit grep sebelum commit
+
+[DOC] CLAUDE.md - Hapus IP server (72.62.125.6) + Supabase URL spesifik
+  yang bocor di repo public. Ganti placeholder generic.
+
+[DOC] docs/SECURITY.md - File baru komprehensif (8 section):
+  1. Filosofi (privacy = amanah, Hifdz al-Nafs)
+  2. Data User (anonim, encryption, opt-out default)
+  3. Server & Infrastructure (firewall, no IP leak, no admin port public)
+  4. Identitas Owner & Backbone (Mighan Lab, identity_mask provider alias)
+  5. Output SIDIX (4-label, sanad, no system prompt leak)
+  6. Code & Repo (.gitignore, audit grep, file allowlist/blocklist)
+  7. Public-Facing Assets (audit checklist landing/UI/GitHub)
+  8. Incident Response (rotate, post-mortem, security@sidixlab.com)
+  + Audit routine mingguan/bulanan
+
+[DOC] docs/SIDIX_BIBLE.md - Tambah pasal 'Security & Privacy Mandate Wajib'
+  pointer ke SECURITY.md + checklist 7-item
+
+### Compliance status
+- CLAUDE.md sudah jadi SSOT entry point dengan 7 aturan keras
+- SECURITY.md jadi reference detail security/privacy
+- BIBLE pasal Security pointer ke SECURITY.md
+- LIVING_LOG (file ini) audit trail mandatory catat
+
+### TODO followup
+- Apply audit checklist ke existing files (research notes lama mungkin
+  punya IP leak juga, perlu cleanup batch)
+- Setup security@sidixlab.com email alias (Cloudflare email routing)
+- Scan corpus sanad files untuk PII (mingguan automated)
+- TruffleHog di CI/CD untuk credential leak detection (next sprint)
+
+### Commit pointer
+- 8eeb25b doc: note 147 Speed Run + log Growth-Hack 4 selesai (LoRA v1 unlocked)
+- (next) doc: mandatory catat + security mandate + SECURITY.md

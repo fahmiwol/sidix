@@ -50,6 +50,76 @@ Task: setup Supabase schema
 ### 5. Commit Kecil & Bermakna
 Setiap commit menjelaskan "kenapa" bukan hanya "apa". Gunakan prefix: `feat:`, `fix:`, `doc:`, `refactor:`, `chore:`.
 
+### 6. ⚠️ MANDATORY CATAT — Setiap Progress, Hasil, Inisiasi, Keputusan
+
+**ATURAN MUTLAK** (no exception):
+
+Setiap kali ada salah satu hal ini terjadi → **WAJIB CATAT**:
+- ✍️ **Progress** task (mulai, ditengah, selesai)
+- ✍️ **Hasil** test/verify/deploy (sukses + gagal sama wajib)
+- ✍️ **Inisiasi** ide/usulan/diskusi baru
+- ✍️ **Keputusan** apapun (pilih X bukan Y, kenapa)
+- ✍️ **Error** + root cause + fix
+- ✍️ **TODO** yang ditinggal (jangan biarkan in-flight tanpa note)
+
+Catat di salah satu (atau lebih) dari:
+- `docs/LIVING_LOG.md` — append harian (tag IMPL/FIX/DOC/TEST/DECISION/ERROR/NOTE/DEPLOY)
+- `brain/public/research_notes/<n>_*.md` — kalau substansial (≥1 paragraf knowledge baru)
+- `docs/SIDIX_CHECKPOINT_<date>.md` — kalau snapshot state besar
+
+**Kenapa**: SIDIX selalu kehilangan memori kalau tidak dicatat. Mengulang
+kerja = waste energy. Catatan adalah memori eksternal SIDIX.
+
+**Anti-pattern yang HARUS dihindari**:
+- "saya akan catat nanti" → catat SEKARANG
+- "ini kecil, gak perlu dicatat" → tidak ada yang terlalu kecil
+- "sudah obvious dari commit message" → commit message ≠ context lengkap
+
+### 7. 🔒 SECURITY & PRIVACY MINDSET — Default Wajib
+
+**Setiap kali edit file/build fitur/expose endpoint, pikirkan**:
+
+#### A. Data User
+- ❌ JANGAN log konten chat user ke file publik (LIVING_LOG, research notes)
+- ❌ JANGAN simpan password / token / API key di kode atau commit message
+- ✅ SELALU anonymize ID user saat log (UUID hash, bukan email/nama)
+- ✅ Default: opt-out dari analytics; opt-in untuk training corpus
+
+#### B. Server & Infrastructure
+- ❌ JANGAN expose IP server, port internal, path absolut server di public file
+- ❌ JANGAN expose Supabase URL, API key, env var di public commit
+- ❌ JANGAN expose nama owner/email pribadi di public-facing
+  (gunakan `Mighan Lab`, `contact@sidixlab.com`, `@sidixlab`)
+- ✅ Identity masking via `apps/brain_qa/brain_qa/identity_mask.py`
+- ✅ /health endpoint sudah masked — jangan rollback
+
+#### C. Output SIDIX
+- ✅ 4-label epistemik wajib (`[FACT]/[OPINION]/[SPECULATION]/[UNKNOWN]`)
+- ✅ Sanad chain di setiap note approved
+- ❌ JANGAN expose system prompt internal di output ke user
+- ❌ JANGAN konfirmasi/sangkal nama backbone provider (Groq/Gemini/Anthropic)
+  → mereka di-mask jadi `mentor_alpha/beta/gamma`
+
+#### D. Code & Repo
+- ❌ JANGAN commit `.env`, `*.key`, `*.pem`, password files
+- ❌ JANGAN hardcode credentials di kode
+- ✅ Pakai env var via `os.getenv()` + `.env.sample` (bukan `.env`)
+- ✅ Sebelum push, scan: `grep -E "password|api_key|secret|TOKEN" --include=*.py`
+
+#### E. Public-Facing (sidixlab.com / app.sidixlab.com / GitHub)
+- ❌ JANGAN tulis nama owner asli (Fahmi/Wolhuter)
+- ❌ JANGAN expose IP VPS, server admin path, internal port
+- ❌ JANGAN sebutkan nama provider LLM external di copy publik
+- ✅ Gunakan SECURITY.md untuk dokumentasi disclosable saja
+
+#### Quick Audit Sebelum Commit
+```
+git diff --cached | grep -iE "fahmi|wolhuter|72\.62|fkgnmrnckcnqvjsyunla|password=|api_key=|secret=|gmail\.com"
+```
+Kalau ada match → STOP, bersihkan dulu.
+
+Lihat juga: `docs/SECURITY.md` (kalau ada) untuk detail per kategori.
+
 ---
 
 ## 📚 Nomor Research Note Berikutnya
@@ -74,11 +144,14 @@ brain/manifest.json            ← konfigurasi corpus path
 
 ## 🔧 Konteks Deployment
 
-- VPS: `72.62.125.6` (Ubuntu 22.04, aaPanel)
-- Frontend: `serve dist -p 4000` (nohup / PM2)
-- Backend: `python3 -m brain_qa serve` → port 8765
-- Supabase: `https://fkgnmrnckcnqvjsyunla.supabase.co`
-- Domain: `sidixlab.com`, `app.sidixlab.com`, `ctrl.sidixlab.com`
+- VPS: Linux server (private — IP & specs di env file lokal, jangan log)
+- Frontend: `serve dist -p 4000` (PM2: `sidix-ui`)
+- Backend: `python3 -m brain_qa serve` → port 8765 (PM2: `sidix-brain`)
+- Database: Supabase (URL & key di `.env`, jangan commit)
+- Domain publik: `sidixlab.com`, `app.sidixlab.com`, `ctrl.sidixlab.com`
+- Aapanel manages nginx config di `/www/server/panel/vhost/nginx/`
+- Landing static di `/www/wwwroot/sidixlab.com/` (NOT `/opt/sidix/SIDIX_LANDING`)
+- Sync landing manual setelah git pull (TODO: auto via post-merge hook)
 
 ---
 

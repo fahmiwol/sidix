@@ -184,6 +184,23 @@ build `maqashid_filter.py` yang dipanggil sebelum approve_draft.
 
 ---
 
+## 🔒 Security & Privacy — Mandate Wajib
+
+**Detail penuh**: lihat `docs/SECURITY.md`.
+
+Ringkasan checklist setiap kali edit/build/deploy:
+- 🔐 Data user: anonim, no PII di log publik
+- 🖥️ Server: IP/path/admin URL bukan public
+- 🆔 Owner identity: Mighan Lab (bukan nama pribadi)
+- 🤖 Backbone provider: di-mask via `identity_mask.py`
+- 📤 Output: 4-label epistemik + sanad chain wajib
+- 💻 Code: `.env` jangan commit, audit `git diff` sebelum push
+- 🌐 Public assets: tidak ada nama pribadi/IP/email pribadi
+
+Mandate: **privasi user adalah amanah** (Hifdz al-Nafs).
+
+---
+
 ## 📚 Aturan Catatan (Anti-Amnesia)
 
 Adopsi dari `apps/brain_qa/brain_qa/hadith_validate.py`:
