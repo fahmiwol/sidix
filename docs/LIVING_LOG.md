@@ -2193,3 +2193,60 @@ Cron 03:00 besok akan auto-trigger curriculum dengan label baru aktif.
 ### Closure
 Sesi panjang, hasil compound besar. Server jalan autopilot.
 Selamat istirahat. Lanjut besok dengan kepala segar.
+
+
+## 2026-04-19 - BONUS SPRINT 1 jam: Growth-Hack #4 SELESAI - LoRA v1 UNLOCKED
+
+### Hasil
+[IMPL] apps/brain_qa/scripts/harvest_all_research_notes.py (140 baris)
+  - Loop semua note di brain/public/research_notes/
+  - Per note: panggil extract_lessons_from_note() -> ChatML pair
+  - Heuristik infer domain dari filename
+  - System prompt include 4-label epistemic instruction (compliance Bible)
+
+[RUN] Eksekusi di server:
+  - 143 notes processed
+  - 1218 training pairs generated
+  - Output: harvest_research_notes_2026-04-19.jsonl (1744.5 KB)
+  - 0 errors
+
+[VERIFY] /sidix/lora/status:
+  - Total pairs: 1268 (sebelumnya ~50)
+  - Threshold: 500 -> LULUS 2.5x lipat
+  - ready_for_upload: TRUE
+
+[TRIGGER] /sidix/lora/prepare:
+  - Batch ID: sidix_lora_batch_20260419_0545
+  - 1258 pair dalam batch
+  - 4 sources merged (dedupe by pair_id)
+  - Batch dir: /opt/sidix/apps/brain_qa/.data/lora_upload/sidix_lora_batch_20260419_0545
+  - Berisi: training.jsonl + dataset-metadata.json + README.md (siap kaggle CLI)
+
+[DOC] research_note 147_speed_run_training_pairs_lora_v1_unlocked.md
+
+### Dampak Compound (Fase Mandiri)
+- Sebelum: Fase Guru -> Fase Transisi butuh 1000 pair (~95 hari)
+- Sesudah: Fase Transisi UNLOCKED HARI INI
+
+### Step Berikutnya (manual user action)
+1. Upload batch ke Kaggle (kaggle datasets create -p <batch_dir>)
+2. Edit dataset-metadata.json: ganti placeholder USERNAME
+3. Train LoRA di Kaggle T4 (Qwen2.5-7B + QLoRA, ~4-6 jam)
+4. Download adapter -> server -> Ollama Modelfile update
+5. Benchmark vs sidix-lora:latest existing
+
+### Commit pointer
+- 9d5d1c0 feat: harvest_all_research_notes.py - Growth-Hack 4 mini
+- (next) doc: note 147 + log
+
+### Sprint stop (3rd of the day)
+Total commit hari ini: 16 (sebelum 14, +2 dari sprint ini)
+Total notes: 16 (132-147)
+Growth-Hack progress: 2/7 selesai (#1 Epistemic Label + #4 Speed Run)
+
+Sisa growth-hack queue:
+- #7 Auto-Sync Deploy hook (4h)
+- #2 Maqashid Filter (4h)
+- #3 IHOS Reasoning Pipeline (6h)
+- #5 Long Context (8h)
+- #6 Multi-Modal Native (5h)
