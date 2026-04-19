@@ -2799,3 +2799,14 @@ promosi dirinya sendiri.
 - DISCOVERY: Nginx config `app.sidixlab.com.conf` ternyata `proxy_pass http://127.0.0.1:4000` (bukan serve static dari /www/wwwroot). PM2 `sidix-ui` jalan `serve dist -p 4000` dari `/opt/sidix/SIDIX_USER_UI/`. Jadi deploy app = `git pull + npm run build + pm2 restart sidix-ui` (rsync ke /www/wwwroot tidak perlu). Memory deploy_nginx_sync.md SALAH — perlu dikoreksi.
 - CORS sudah OK: backend pakai `allow_origins=["*"]` + OPTIONS preflight 200.
 - Sequence fix hari ini: hapus Gabung Kontributor dari nav → hapus modal HTML → fix CSS `.hidden` vs `.contrib-modal-backdrop` → fix backend URL via .env.
+
+## 2026-04-19 (lanjutan) — CAPABILITY AUDIT + web_fetch/code_sandbox AKTIF + MODEL ONLINE
+
+- AUDIT: 3 sub-agent paralel audit konstitusi + backend + research notes. Hasil di `docs/SIDIX_CAPABILITY_MAP.md` (SSoT anti-amnesia).
+- DECISION: Prinsip "standing alone" dari user. SIDIX tidak pakai vendor AI API apapun. Open data API publik OK. Self-host model OK. Subprocess own OK.
+- IMPL: `apps/brain_qa/brain_qa/agent_tools.py` — `_tool_web_fetch` (httpx + BeautifulSoup, strip HTML → teks bersih, max 20KB) dan `_tool_code_sandbox` (Python subprocess `-I -B`, timeout 10s, tempdir cwd, pattern block os.system/socket). Keduanya permission `open`. TOOL_REGISTRY: 13 → 15 tools.
+- FIX: Symlink `/opt/sidix/apps/brain_qa/models/sidix-lora-adapter -> /opt/sidix/sidix-lora-adapter` karena `find_adapter_dir()` hanya cek path `apps/brain_qa/models/`. Setelah symlink + restart: `model_ready=true`, `models_loaded=3`. Chat LIVE (smoke test: INAN perkenalkan diri dengan sidq/sanad/tabayyun, epistemic_tier=ahad_dhaif, duration 8.9s).
+- LOCK: `CLAUDE.md` tambah section "UI LOCK app.sidixlab.com" — struktur header/empty-state/4 cards/mobile nav/deploy topology dikunci per 2026-04-19.
+- FIX: Layout empty-state proportional (logo w-16/20 → w-12/16, space-y 6/8 → 4/5, h-full → min-h-full) supaya tidak kepotong di 100% zoom.
+- NOTE: `brain/public/research_notes/157_capability_audit_standing_alone_2026_04_19.md` — catatan lengkap audit + implementasi + roadmap.
+- Commits: 2fb16f0 (layout) → 952a586 (tools+docs).

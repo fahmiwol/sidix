@@ -43,7 +43,8 @@ Update file ini SETIAP kali ada tool/kapabilitas baru dipasang atau di-enable. J
 | `workspace_read` | open | ✅ aktif |
 | `workspace_write` | restricted | ✅ aktif (butuh allow_restricted) |
 | `roadmap_list/next_items/mark_done/item_references` | open | ✅ aktif (4 tool) |
-| `web_fetch` | restricted | ❌ DISABLED (stub `_tool_disabled`) — kode `webfetch.py` ada, tinggal wire |
+| `web_fetch` | open | ✅ **aktif 2026-04-19** (httpx + BeautifulSoup, strip HTML → teks bersih) |
+| `code_sandbox` | open | ✅ **aktif 2026-04-19** (Python subprocess `-I -B`, timeout 10s, tempdir cwd, pattern block os.system/socket) |
 
 ### Autonomous learning (backend-only, tidak di-trigger dari chat UI)
 - `learn_agent.py` — fetch→dedup→queue→index→auto-note. Sudah tested: arXiv 15, MusicBrainz 10, GitHub 15 (lihat notes 154-156).
