@@ -45,6 +45,8 @@ Update file ini SETIAP kali ada tool/kapabilitas baru dipasang atau di-enable. J
 | `roadmap_list/next_items/mark_done/item_references` | open | ✅ aktif (4 tool) |
 | `web_fetch` | open | ✅ **aktif 2026-04-19** (httpx + BeautifulSoup, strip HTML → teks bersih) |
 | `code_sandbox` | open | ✅ **aktif 2026-04-19** (Python subprocess `-I -B`, timeout 10s, tempdir cwd, pattern block os.system/socket) |
+| `web_search` | open | ✅ **aktif 2026-04-19** (DuckDuckGo HTML + own parser, no vendor search API) |
+| `pdf_extract` | open | ✅ **aktif 2026-04-19** (pdfplumber own-stack, workspace path-traversal guard) |
 
 ### Autonomous learning (backend-only, tidak di-trigger dari chat UI)
 - `learn_agent.py` — fetch→dedup→queue→index→auto-note. Sudah tested: arXiv 15, MusicBrainz 10, GitHub 15 (lihat notes 154-156).
@@ -92,11 +94,11 @@ Update file ini SETIAP kali ada tool/kapabilitas baru dipasang atau di-enable. J
 
 ## 🗺️ ROADMAP IMPLEMENTASI (per prioritas standing-alone)
 
-### P1 — Quick wins (bisa hari ini, tanpa GPU)
+### P1 — Quick wins (bisa hari ini, tanpa GPU) — SEMUA SELESAI 2026-04-19
 1. ✅ **Enable `web_fetch`** — tool fetch URL → markdown untuk chat
 2. ✅ **Add `code_sandbox`** — Python subprocess dengan timeout 10s + no network + import allowlist
-3. **Add `pdf_extract`** — upload PDF → text via `pdfplumber`
-4. **Extend `web_search`** — own wrapper DuckDuckGo HTML → list hasil (no API)
+3. ✅ **Add `pdf_extract`** — upload PDF → text via `pdfplumber`
+4. ✅ **Add `web_search`** — own wrapper DuckDuckGo HTML → list hasil (no API)
 
 ### P2 — Need infra (minggu depan)
 5. **Self-host Whisper** untuk ASR (`whisper.cpp` CPU-only)

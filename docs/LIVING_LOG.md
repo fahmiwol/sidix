@@ -2810,3 +2810,14 @@ promosi dirinya sendiri.
 - FIX: Layout empty-state proportional (logo w-16/20 → w-12/16, space-y 6/8 → 4/5, h-full → min-h-full) supaya tidak kepotong di 100% zoom.
 - NOTE: `brain/public/research_notes/157_capability_audit_standing_alone_2026_04_19.md` — catatan lengkap audit + implementasi + roadmap.
 - Commits: 2fb16f0 (layout) → 952a586 (tools+docs).
+
+## 2026-04-19 (closure) — 4 tool baru standing-alone + 2 handoff doc + lock UI
+
+- IMPL: `apps/brain_qa/brain_qa/agent_tools.py` — tambah `web_search` (DuckDuckGo HTML + own BS4 parser, resolve uddg redirect) dan `pdf_extract` (pdfplumber, workspace path guard, page range). TOOL_REGISTRY: 15 → 17.
+- DEPLOY: git pull server, pip install pdfplumber, pm2 restart sidix-brain. `/health` verify: `tools_available=17`, `model_ready=true`, `models_loaded=3`.
+- DOC: `docs/HANDOFF_2026-04-19.md` — strategic handoff dengan visi, 5 plans (A multi-channel social, B learning sources Phase 2, C sub-agent arch, D SEO, E capability parity), mandate user verbatim. Data REAL dari live server.
+- DOC: `docs/INVENTORY_2026-04-19.md` — teknis detail: 171 endpoint by namespace, 89 modul Python grouped, 17 tool, 10 cron, 8 framework, path lengkap tiap komponen + data storage paths server.
+- DOC: update `docs/SIDIX_CAPABILITY_MAP.md` — tandai 4 P1 tool selesai.
+- NOTE: `brain/public/research_notes/158_closure_sprint_2026_04_19_handoff_inventory.md` — closure + next-step default.
+- Commits hari ini (terakhir): 2897582 → fddf66d.
+- Next sprint (agent sesi berikut): baca `HANDOFF_2026-04-19.md` → pilih Plan A/B/C/D/E → eksekusi. Default: Plan E P1 concept_graph.
