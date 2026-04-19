@@ -1977,3 +1977,33 @@ placeholder "Fahmi Wolhuter". User mau:
 5. setelah 5 chat, openLoginModal() trigger -> user diminta sign-in
 6. setelah sign-in -> 5+2 onboarding question -> chat lanjut tanpa limit
 7. button "Gabung Kontributor" di header tetap ada untuk yang mau (manual click)
+
+
+## 2026-04-19 - Deploy Sukses + Verifikasi Live (Closure)
+
+### Yang baru ditemukan saat deploy
+Landing page di-serve dari /www/wwwroot/sidixlab.com BUKAN /opt/sidix/SIDIX_LANDING.
+git pull saja TIDAK update landing live - perlu copy manual ke wwwroot setelah pull.
+
+### Action di server
+1. cp /opt/sidix/SIDIX_LANDING/index.html ke /www/wwwroot/sidixlab.com/index.html
+2. cp /opt/sidix/SIDIX_LANDING/privacy.html ke /www/wwwroot/sidixlab.com/privacy.html
+3. clear nginx proxy cache untuk app.sidixlab.com
+4. nginx reload
+
+### Verifikasi LIVE (curl)
+- privacy.html: Mighan Lab OK, IP 72.62.125.6 HILANG, footer Mighan Lab OK
+- landing meta author: Mighan Lab OK
+- twitter:creator: @sidixlab OK (sebelumnya @fahmiwol)
+
+### TODO Forward (deploy automation)
+1. Auto-sync /opt/sidix/SIDIX_LANDING ke /www/wwwroot/sidixlab.com (post-merge hook atau cron)
+2. Email alias contact@sidixlab.com setup (DNS + Cloudflare email routing)
+3. Claim handle @sidixlab di Threads (kalau belum)
+4. Pertimbangkan rename GitHub repo atau bikin org Mighan Lab
+
+### Status Live
+- 400fa98 fix(opsec): anonymize frontend + raise chat limit to 5
+- sidixlab.com: bersih (no owner identifying)
+- privacy.html: bersih
+- app.sidixlab.com: chat board langsung, 5 chat gratis sebelum login modal
