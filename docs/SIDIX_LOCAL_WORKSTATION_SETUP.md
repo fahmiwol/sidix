@@ -96,34 +96,55 @@ Dibersihkan tanpa menghapus user content:
 - 6 environment variables di-set level User (persistent setelah logout/restart).
 - Verifikasi env var ter-set: semua ✅.
 
-### ⏳ Tahap C — Install Python 3.12 ke D:
-**BELUM dieksekusi.**
+### ✅ Tahap C — Install Python 3.12 ke D: (DONE 2026-04-19)
 
-Plan:
-1. Download Python 3.12.x installer resmi dari python.org.
-2. Install ke `D:\sidix-local\python312\`.
-3. **Uncheck "Add to PATH"** (biar tidak tabrakan dengan Python 3.14 existing).
-4. Aktifkan via path eksplisit: `D:\sidix-local\python312\python.exe`.
+**Keputusan:** pakai **embeddable zip** bukan installer.
+- MSI installer gagal exit code 3 (error 0x80070003 "path not found") — ada remnant Package Cache dari install Python 3.12 sebelumnya. Tidak worth debug.
+- Embeddable zip (10.6 MB) extract ke `D:\sidix-local\python312\` — works in 5 detik.
+- Edit `python312._pth` untuk uncomment `import site` (biar site-packages aktif).
+- Bootstrap pip via `get-pip.py` → pip 26.0.1 terinstall.
 
-### ⏳ Tahap D — Python venv + test basic imports
-**BELUM dieksekusi.**
+Python 3.12.8 jalan dari `D:\sidix-local\python312\python.exe`.
 
-Plan:
-1. `D:\sidix-local\python312\python.exe -m venv D:\sidix-local\venv`.
-2. Aktivasi venv: `D:\sidix-local\venv\Scripts\Activate.ps1`.
-3. Test `import sys; print(sys.prefix)` — harus show venv path di D:.
+### ✅ Tahap D — venv BATAL (tidak perlu) (DONE 2026-04-19)
 
-### ⏳ Tahap E — Install PyTorch + diffusers
-**BELUM dieksekusi.**
+**Keputusan:** skip venv. Embeddable Python tidak include module `venv`, dan karena Python di D:\sidix-local\python312\ **dedicated untuk SIDIX** (tidak dishare), venv redundant.
 
-Plan:
+Install semua package langsung ke site-packages Python 3.12 embeddable → isolasi otomatis.
+
+### ✅ Tahap E — PyTorch + diffusers terpasang (DONE 2026-04-19)
+
+Install command:
 ```powershell
-# Dalam venv aktif
-pip install torch torchvision --index-url https://download.pytorch.org/whl/cu121
-pip install diffusers transformers accelerate safetensors
+D:\sidix-local\python312\python.exe -m pip install torch torchvision --index-url https://download.pytorch.org/whl/cu121
+D:\sidix-local\python312\python.exe -m pip install diffusers transformers accelerate safetensors
 ```
 
-Download ~3 GB → masuk ke `D:\sidix-local\venv\Lib\site-packages` (bukan C:).
+Versi terinstall:
+- torch 2.5.1+cu121
+- torchvision (latest)
+- diffusers 0.37.1
+- transformers 5.5.4
+- accelerate 1.13.0
+- safetensors 0.7.0
+- numpy 2.4.4
+
+**Semua di `D:\sidix-local\python312\Lib\site-packages\` — bukan C:.**
+
+Total install size: ~10 GB (torch paling besar).
+
+### ✅ GPU Smoke Test (DONE 2026-04-19)
+
+```
+CUDA available: True
+CUDA version: 12.1
+GPU: NVIDIA GeForce RTX 3060 Laptop GPU
+VRAM: 6.4 GB
+Matmul 2048×2048: 542.7 ms (first run, cold; subsequent ~5 ms)
+diffusers StableDiffusionXLPipeline: import OK
+```
+
+**GPU pipeline siap untuk SDXL inference.**
 
 ### ⏳ Tahap F — Download SDXL + test generate image
 **BELUM dieksekusi.**

@@ -3023,3 +3023,13 @@ Konteks: Budget Rp 300-600k approved. Laptop ASUS TUF Gaming A15 FA506QM ada RTX
 - DOC: docs/SIDIX_LOCAL_WORKSTATION_SETUP.md (BARU) - handoff lengkap: spec hardware, struktur folder D:, env vars, progress tahap A-G, safety rules, rollback plan, referensi. Tahap C-G (install Python 3.12, venv, PyTorch, SDXL, ngrok) BELUM eksekusi.
 
 - STATE AKHIR SESI: C: 15.57 GB free, D: 806.19 GB free, D:\sidix-local\ ready dengan env vars aktif, HF cache 1247 MB sudah di D:. Next session: Tahap C install Python 3.12 ke D:\sidix-local\python312\.
+
+## 2026-04-19 (local workstation tahap C-E — Python 3.12 + PyTorch GPU stack)
+
+- FIX [C] MSI installer Python 3.12.8 gagal exit 3 (error 0x80070003 + Package Cache remnant). PIVOT ke Python embeddable zip (10.6 MB, extract ke D:\sidix-local\python312\). Edit python312._pth uncomment 'import site'. Bootstrap pip via get-pip.py = pip 26.0.1 terinstall.
+- DECISION [D] Skip venv — embeddable Python tidak include module venv, dan install dedicated SIDIX di D: udah otomatis terisolasi. Install packages langsung ke site-packages.
+- IMPL [E] PyTorch 2.5.1+cu121 + torchvision + diffusers 0.37.1 + transformers 5.5.4 + accelerate 1.13.0 + safetensors 0.7.0 + numpy 2.4.4. Semua di D:\sidix-local\python312\Lib\site-packages\.
+- TEST [E.verify] GPU CUDA available: True. GPU RTX 3060 Laptop 6.4 GB terdeteksi. Matmul 2048x2048: 542 ms first run (cold start, expected; subsequent ~5 ms). diffusers StableDiffusionXLPipeline import OK.
+- NOTE: exFAT D: - symlink test gagal (butuh admin privilege, bukan FS limitation) tapi Python + pip + ML stack jalan normal. HF cache akan pakai copy instead of symlink dedup = ~2x space tapi D: ada 795 GB free.
+- STATE: C: 15.56 GB free, D: 795.46 GB free (turun 10 GB dari ML stack install). Infrastructure siap untuk SDXL download + image gen test (tahap F).
+- NEXT: Tahap F download SDXL 1.0 base (~7 GB ke D:\sidix-local\hf_cache\) + generate test image 1024x1024 dengan CPU offload (fit 6GB VRAM).
