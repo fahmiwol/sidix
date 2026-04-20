@@ -3441,3 +3441,38 @@ Hari 8-14: brand_builder + thumbnail + campaign + ads + YAML skill migration + T
 
 ### Prinsip merge yang dipakai (tabayyun)
 Rolling 3-5 adoption per sprint, bukan semua sekaligus. Tiap adopt wajib baca source utuh + verify IHOS alignment + attribution.
+
+## 2026-04-21 (Sprint 4 day 1 - sprint 10-menit: CQF foundation module)
+
+IMPL creative_quality.py (BARU, 220 lines) - Creative Quality Framework scorer.
+Adopsi dari D:\RiSet SIDIX\sidix_framework_methods_modules.md Framework 3 CQF.
+
+### Module content:
+- 5 Universal Dimensions weighted (Relevance 25% + Quality 25% + Creativity 20% + Brand 15% + Actionability 15%)
+- 3 thresholds: MVP 5.0, DELIVERY 7.0, PREMIUM 8.5
+- 6 domain-specific rubrics: content (hook/clarity/cta/platform/seo), design (hierarchy/color/typo/composition/brand), video (hook/pacing/clarity/av_sync/cta), marketing (strategic/segment/measurable/budget/creative), writing (arc/voice/pacing/emotion/accuracy), ecommerce (seo/benefit/scan/conversion/compliance)
+- CQFScore dataclass: universal_weighted + domain_avg + total (70/30 blend) + tier + passed + weaknesses list
+- heuristic_score() - fallback scorer tanpa LLM (untuk test + baseline Sprint 4)
+- llm_judge_score() - placeholder untuk Sprint 5 wire ke Qwen ReAct dengan structured JSON
+- quality_gate() - main API return {passed, total, tier, score, needs_refinement, refinement_hints}
+- rank_variants() - Round 2 Iteration Protocol EVALUATE phase, pilih top_k
+
+### Smoke test PASS:
+- Test 1 content quality gate: passed=True tier=delivery total=7.56, weakness=quality=6.8
+- Test 2 rank_variants top 2 dari 3 kandidat: variant 2 (longest) total 7.67, variant 1 total 7.27
+
+### Next Sprint 4 day 1-3:
+- Upgrade SIDIX_BIBLE + 7 Principles (besok)
+- muhasabah_loop.py wrapper yang panggil quality_gate di akhir tiap agent
+- Wire CQF ke image gen fast-path untuk skor output
+
+### Foundation untuk:
+- Iteration Protocol (Sprint 5) - CQF hasil jadi input Round 2 Evaluate
+- Debate Ring (Sprint 5) - CQF dimensi jadi argumen critic agent
+- Self-train Fase 1 (Sprint 5) - curator_agent pakai CQF untuk filter draft corpus
+- LLM-as-Judge (Sprint 5) - replace heuristic_score() dengan real LLM call
+
+### Prinsip implementasi
+- heuristic fallback biar Sprint 4 agent baru bisa langsung pakai tanpa LLM dependency
+- Zod-like validation planned Sprint 5 (llm_judge parse JSON structured output + retry)
+- 70/30 universal+domain blend selaras BG Maker 'slots not essays' - universal pasti ada, domain optional
