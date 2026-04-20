@@ -3258,3 +3258,45 @@ Landing page = pintu masuk (kalau broken, Threads traffic nyasar ke UX jelek = b
 
 ### Pre-launch WAJIB
 Laptop jangan sleep, WiFi stabil, ngrok URL persisted dengan authtoken (sekarang persistent https://scribble-trimness-alike.ngrok-free.dev), power plan laptop set 'never sleep' saat live.
+
+## 2026-04-20 (sprint 15-min: Creative Agent Framework dari BG Maker + Mighan)
+
+User directive: ambil hal-hal, modul, function, principle, tools, framework dari D:\BG maker dan D:\Mighan yang bisa bikin SIDIX the best Creative AI Agent.
+
+### Temuan besar
+BG Maker 06_Prompt-Engineering.md (34KB) gold mine:
+- 5 Prompt Philosophy (slots/one-component/divergence-enforced/cached/structured-output)
+- 5 Frameworks (Aaker + Sinek + Neumeier + Jungian 12-archetype + Keller CBBE)
+- 13-call generation flow dengan orthogonal archetype seeding
+- Indonesian cultural defaults (Plus Jakarta Sans, Merah Putih, halal-aware)
+
+Mighantect 3D punya:
+- agency-pipeline.js full brief->strategy->copy->image->backlog orchestrator
+- 16 agent ledger dengan voicePersona + portraitImagePrompt
+- microstock-metadata.js + uploader (Adobe Stock + Shutterstock)
+- innovation-agent.js Iris AI engine (research/ideation/sandbox/review)
+
+### IMPL commit ini
+- MODULE: apps/brain_qa/brain_qa/creative_framework.py (BARU)
+  * ARCHETYPES registry 12 Jungian + quadrant + voice tone
+  * 7 CreativeTemplate (IG feed/story, YT thumbnail, poster event, product shot, food shot, web banner)
+  * detect_context() 10 kategori Nusantara (lebih kaya dari 5 sebelumnya)
+  * enhance_prompt_creative() main API framework-aware
+  * suggest_divergent_archetypes() untuk future 3-variant divergence pattern
+- UPGRADE agent_react.py fast-path: inline enhancer -> creative_framework import. Template auto-detect + archetype-aware + width/height adaptive (clamped 768 max untuk 6GB VRAM).
+- NOTE 167 research: dokumentasi lengkap adopsi.
+
+### Transformasi contoh
+'bikin thumbnail youtube tutorial masjid demak subuh' ->
+- template: yt_thumbnail (ratio 16:9)
+- archetype: hero (MASTERY, bold courageous direct voice)
+- context: islam_masjid (golden hour + islamic detail)
+- enhanced: prompt lengkap dengan negative prompt spesifik 'subtle, muted colors'
+- size: 768x576
+
+### Roadmap adopsi (future)
+- Divergence-3 endpoint /generate_variants
+- Aaker/Sinek/Neumeier untuk brand strategy (not just image)
+- Port agency-pipeline flow jadi SIDIX tool
+- Port microstock-metadata jadi SIDIX tool
+- Upgrade 5 persona SIDIX dengan voicePersona + portraitImagePrompt

@@ -773,41 +773,30 @@ def run_react(
         try:
             from .agent_tools import call_tool as _call_tool
 
-            # ── Auto-enhance prompt pendek -> SDXL-friendly detail ──────────
-            # User tinggal tulis intent pendek ('konten ramadhan masjid'),
-            # SIDIX enrich dengan style + lighting + quality keywords.
-            def _enhance_prompt(user_q: str) -> str:
-                q = user_q.strip()
-                # Strip leading verbs biar prompt fokus ke subject
-                for verb in ("bikin gambar ", "buat gambar ", "buatkan gambar ", "generate gambar ",
-                             "gambarkan ", "render gambar ", "lukiskan ", "bikin foto ", "buat foto ",
-                             "bikin ilustrasi ", "buat ilustrasi ", "generate image ", "create image ",
-                             "bikin ", "buat ", "gambar ", "foto ", "ilustrasi "):
-                    if q.lower().startswith(verb):
-                        q = q[len(verb):].strip()
-                        break
-                # Deteksi kata kunci konteks untuk style hint
-                ql = q.lower()
-                style_hints = []
-                if any(k in ql for k in ("masjid", "islam", "quran", "ramadhan", "idul", "kaligrafi")):
-                    style_hints.append("warm golden hour light, serene spiritual atmosphere, Islamic architectural details")
-                if any(k in ql for k in ("batik", "tenun", "songket", "ulos")):
-                    style_hints.append("traditional Indonesian textile detail, rich cultural pattern, vibrant natural dye colors")
-                if any(k in ql for k in ("candi", "borobudur", "prambanan", "stupa")):
-                    style_hints.append("ancient stone carving, volcanic landscape backdrop, misty morning, 9th century temple")
-                if any(k in ql for k in ("pantai", "laut", "sunset", "sunrise")):
-                    style_hints.append("golden hour, dramatic sky, cinematic seascape")
-                if any(k in ql for k in ("makanan", "kuliner", "rendang", "nasi", "sate", "soto")):
-                    style_hints.append("food photography, overhead shot, natural lighting, appetizing detail")
-                # Quality baseline (selalu)
-                style_hints.append("professional photography, 4k high detail, cinematic composition, sharp focus")
-                return f"{q}, {', '.join(style_hints)}"
+            # ── Auto-enhance v2 pakai creative_framework.py ──────────────────
+            # Framework-aware: Jungian archetype + 7 template + Nusantara hints.
+            # Inspired by BG Maker Prompt Engineering (Aaker/Sinek/Neumeier/Jungian/CBBE).
+            try:
+                from .creative_framework import enhance_prompt_creative
+                enh = enhance_prompt_creative(question)
+                enhanced = enh["enhanced_prompt"]
+                width = enh["width"]
+                height = enh["height"]
+                _log_fp.getLogger(__name__).warning(
+                    f"[ImageFastPath] template={enh['template_used']} archetype={enh['applied_archetype']} "
+                    f"ctx={enh['detected_contexts']} size={width}x{height}"
+                )
+                # Safety clamp untuk fit 6GB VRAM: max 768 side
+                if width > 768: width = 768
+                if height > 768: height = 768
+            except Exception as _enh_err:
+                _log_fp.getLogger(__name__).warning(f"[ImageFastPath] enhance_creative fallback: {_enh_err}")
+                enhanced = question
+                width = height = 512
 
-            enhanced = _enhance_prompt(question)
-            _log_fp.getLogger(__name__).warning(f"[ImageFastPath] enhanced prompt: {enhanced[:150]!r}")
             _result = _call_tool(
                 tool_name="text_to_image",
-                args={"prompt": enhanced, "steps": 15, "width": 512, "height": 512},
+                args={"prompt": enhanced, "steps": 15, "width": width, "height": height},
                 session_id=session_id,
                 step=1,
                 allow_restricted=False,
