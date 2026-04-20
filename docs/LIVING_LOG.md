@@ -3476,3 +3476,33 @@ Adopsi dari D:\RiSet SIDIX\sidix_framework_methods_modules.md Framework 3 CQF.
 - heuristic fallback biar Sprint 4 agent baru bisa langsung pakai tanpa LLM dependency
 - Zod-like validation planned Sprint 5 (llm_judge parse JSON structured output + retry)
 - 70/30 universal+domain blend selaras BG Maker 'slots not essays' - universal pasti ada, domain optional
+
+---
+
+## 2026-04-21
+
+### [IMPL] Code Intelligence Module — Sprint SIDIX Bisa Ngoding
+
+**Konteks**: User minta SIDIX bisa ngoding, memahami program, menyusun untuk dirinya sendiri.
+Branch: claude/determined-chaum-f21c81 (worktree dari sesi Codex sebelumnya, 45 commit).
+
+**Yang dikerjakan**:
+- Tulis pps/brain_qa/brain_qa/code_intelligence.py (287 baris)
+  - nalyze_code(): AST parse → FunctionInfo + ClassInfo + imports + complexity
+  - alidate_python(): compile check tanpa run
+  - get_project_map(): tree view rekursif
+  - get_self_modules(): list 102 modul brain_qa
+  - get_self_tools_summary(): proxy ke list_available_tools()
+- Upgrade code_sandbox di agent_tools.py: timeout 10s→30s, max_output 4KB→8KB, forbidden list diperketat
+- Tambah 4 tool baru ke TOOL_REGISTRY (sekarang 30 tools total):
+  - code_analyze: statik AST analysis
+  - code_validate: syntax check sebelum write
+  - project_map: tree structure folder
+  - self_inspect: SIDIX lihat diri sendiri (tools + modules)
+- Tulis research note: rain/public/research_notes/174_sidix_code_intelligence_module.md
+
+**Test smoke**: semua 4 tool baru passed, project_map path resolution fixed (workspace→repo→cwd fallback).
+
+**Tool count**: 17 (pre-sprint series) → 30 (post hari ini)
+
+**Next**: math_solve (SymPy), data_analyze (pandas), routing ke Qwen2.5-Coder-7B specialist

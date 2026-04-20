@@ -83,6 +83,340 @@ class ToolSpec:
     fn: Callable          # fungsi implementasi
 
 
+def _tool_generate_copy(args: dict) -> ToolResult:
+    try:
+        from .copywriter import generate_copy
+
+        result = generate_copy(
+            topic=str(args.get("topic", "")).strip(),
+            channel=str(args.get("channel", "instagram")).strip() or "instagram",
+            formula=str(args.get("formula", "AIDA")).strip().upper(),  # type: ignore[arg-type]
+            audience=str(args.get("audience", "audiens Indonesia")).strip(),
+            cta=str(args.get("cta", "Komentar 'MAU' kalau ingin templatenya.")).strip(),
+            tone=str(args.get("tone", "friendly")).strip(),
+            variant_count=int(args.get("variant_count", 3)),
+            min_score=float(args.get("min_score", 7.0)),
+        )
+    except Exception as e:
+        return ToolResult(success=False, output="", error=f"generate_copy gagal: {e}")
+
+    if not result.get("ok"):
+        return ToolResult(success=False, output="", error=str(result.get("error", "unknown")))
+
+    best = result.get("best_text", "")
+    variants = result.get("variants", [])
+    lines = [
+        "# Copywriter (Sprint 4 P0)",
+        f"- Formula: {result.get('best_formula')}",
+        f"- Channel: {result.get('channel')}",
+        f"- Score CQF: {result.get('score_total')}",
+        "",
+        "## Best Variant",
+        best,
+        "",
+        "## Variants",
+    ]
+    for i, item in enumerate(variants[:3], start=1):
+        lines.append(f"{i}. [{item.get('formula')}] {item.get('text')}")
+
+    return ToolResult(
+        success=True,
+        output="\n".join(lines),
+        citations=[{
+            "type": "generate_copy",
+            "formula": result.get("best_formula"),
+            "cqf_total": result.get("score_total"),
+        }],
+    )
+
+
+def _tool_generate_content_plan(args: dict) -> ToolResult:
+    try:
+        from .content_planner import generate_content_plan
+
+        result = generate_content_plan(
+            niche=str(args.get("niche", "")).strip(),
+            duration_days=int(args.get("duration_days", 30)),
+            channel=str(args.get("channel", "instagram")).strip() or "instagram",
+            cadence_per_week=int(args.get("cadence_per_week", 5)),
+            objective=str(args.get("objective", "awareness")).strip() or "awareness",
+        )
+    except Exception as e:
+        return ToolResult(success=False, output="", error=f"generate_content_plan gagal: {e}")
+
+    if not result.get("ok"):
+        return ToolResult(success=False, output="", error=str(result.get("error", "unknown")))
+
+    plan = result.get("plan", [])
+    lines = [
+        "# Content Plan (Sprint 4 P0)",
+        f"- Niche: {result.get('niche')}",
+        f"- Channel: {result.get('channel')}",
+        f"- Durasi: {result.get('duration_days')} hari",
+        f"- Total Slot: {result.get('posts_target')}",
+        f"- Score CQF: {result.get('cqf', {}).get('total')}",
+        "",
+        "## Preview",
+    ]
+    for item in plan[:8]:
+        lines.append(
+            f"- Day {item.get('day')} ({item.get('date_iso')}): {item.get('content_type')} | "
+            f"{item.get('topic')} | CTA: {item.get('cta')}"
+        )
+
+    return ToolResult(
+        success=True,
+        output="\n".join(lines),
+        citations=[{
+            "type": "generate_content_plan",
+            "slots": len(plan),
+            "cqf_total": result.get("cqf", {}).get("total"),
+        }],
+    )
+
+
+def _tool_generate_brand_kit(args: dict) -> ToolResult:
+    try:
+        from .brand_builder import generate_brand_kit
+
+        result = generate_brand_kit(
+            business_name=str(args.get("business_name", "")).strip(),
+            niche=str(args.get("niche", "")).strip(),
+            vibe=str(args.get("vibe", "modern, warm, trustworthy")).strip(),
+            archetype=str(args.get("archetype", "")).strip() or None,
+        )
+    except Exception as e:
+        return ToolResult(success=False, output="", error=f"generate_brand_kit gagal: {e}")
+
+    if not result.get("ok"):
+        return ToolResult(success=False, output="", error=str(result.get("error", "unknown")))
+
+    circle = result.get("golden_circle", {})
+    lines = [
+        "# Brand Kit (Sprint 4 P0)",
+        f"- Brand: {result.get('business_name')}",
+        f"- Niche: {result.get('niche')}",
+        f"- Archetype: {result.get('archetype')}",
+        f"- Tone: {result.get('tone_of_voice')}",
+        f"- Palette: {', '.join(result.get('palette', []))}",
+        "",
+        f"Onlyness: {result.get('onlyness_statement')}",
+        "",
+        "## Golden Circle",
+        f"- Why: {circle.get('why', '')}",
+        f"- How: {circle.get('how', '')}",
+        f"- What: {circle.get('what', '')}",
+        "",
+        "## Logo Prompts",
+    ]
+    for prompt in result.get("logo_prompts", []):
+        lines.append(f"- {prompt}")
+
+    return ToolResult(
+        success=True,
+        output="\n".join(lines),
+        citations=[{
+            "type": "generate_brand_kit",
+            "archetype": result.get("archetype"),
+            "cqf_total": result.get("cqf", {}).get("total"),
+        }],
+    )
+
+
+def _tool_generate_thumbnail(args: dict) -> ToolResult:
+    try:
+        from .thumbnail_generator import generate_thumbnail
+
+        plan = generate_thumbnail(
+            title=str(args.get("title", "")).strip(),
+            style=str(args.get("style", "bold")).strip(),
+            platform=str(args.get("platform", "youtube")).strip(),
+            brand_hint=str(args.get("brand_hint", "")).strip(),
+        )
+    except Exception as e:
+        return ToolResult(success=False, output="", error=f"generate_thumbnail gagal: {e}")
+
+    if not plan.get("ok"):
+        return ToolResult(success=False, output="", error=str(plan.get("error", "unknown")))
+
+    do_render = bool(args.get("render", False))
+    render_result: ToolResult | None = None
+    if do_render:
+        render_result = _tool_text_to_image(
+            {
+                "prompt": plan.get("enhanced_prompt", ""),
+                "width": int(plan.get("width", 1024)),
+                "height": int(plan.get("height", 576)),
+                "steps": int(args.get("steps", 22)),
+            }
+        )
+
+    lines = [
+        "# Thumbnail Plan (Sprint 4 P0)",
+        f"- Title: {plan.get('title')}",
+        f"- Platform: {plan.get('platform')}",
+        f"- Overlay: {plan.get('overlay_text')}",
+        f"- Score CQF: {plan.get('cqf', {}).get('total')}",
+        "",
+        f"Prompt: {plan.get('enhanced_prompt')}",
+        f"Negative: {plan.get('negative_prompt')}",
+    ]
+    if render_result and render_result.success:
+        lines.extend(["", "## Render", render_result.output])
+    elif render_result and not render_result.success:
+        lines.extend(["", f"Render gagal: {render_result.error}"])
+
+    return ToolResult(
+        success=True,
+        output="\n".join(lines),
+        citations=[{
+            "type": "generate_thumbnail",
+            "cqf_total": plan.get("cqf", {}).get("total"),
+            "rendered": bool(render_result and render_result.success),
+        }],
+    )
+
+
+def _tool_plan_campaign(args: dict) -> ToolResult:
+    try:
+        from .campaign_strategist import plan_campaign
+
+        result = plan_campaign(
+            product=str(args.get("product", "")).strip(),
+            audience=str(args.get("audience", "")).strip(),
+            goal=str(args.get("goal", "conversion")).strip(),
+            budget_idr=int(args.get("budget_idr", 1500000)),
+            duration_days=int(args.get("duration_days", 30)),
+            platform_focus=str(args.get("platform_focus", "instagram")).strip(),
+        )
+    except Exception as e:
+        return ToolResult(success=False, output="", error=f"plan_campaign gagal: {e}")
+
+    if not result.get("ok"):
+        return ToolResult(success=False, output="", error=str(result.get("error", "unknown")))
+
+    lines = [
+        "# Campaign Strategy (Sprint 4 P0)",
+        f"- Product: {result.get('product')}",
+        f"- Audience: {result.get('audience')}",
+        f"- Goal: {result.get('goal')}",
+        f"- Budget: Rp {result.get('budget_idr'):,}".replace(",", "."),
+        f"- Durasi: {result.get('duration_days')} hari",
+        "",
+        "## Funnel",
+    ]
+    for item in result.get("funnel", []):
+        lines.append(
+            f"- {item.get('stage')}: {item.get('objective')} | KPI: {item.get('kpi')} | Action: {item.get('action')}"
+        )
+
+    return ToolResult(
+        success=True,
+        output="\n".join(lines),
+        citations=[{
+            "type": "plan_campaign",
+            "cqf_total": result.get("cqf", {}).get("total"),
+        }],
+    )
+
+
+def _tool_generate_ads(args: dict) -> ToolResult:
+    try:
+        from .ads_generator import generate_ads
+
+        result = generate_ads(
+            product=str(args.get("product", "")).strip(),
+            audience=str(args.get("audience", "")).strip(),
+            platform=str(args.get("platform", "facebook")).strip(),
+            objective=str(args.get("objective", "conversion")).strip(),
+            n_variants=int(args.get("n_variants", 3)),
+        )
+    except Exception as e:
+        return ToolResult(success=False, output="", error=f"generate_ads gagal: {e}")
+
+    if not result.get("ok"):
+        return ToolResult(success=False, output="", error=str(result.get("error", "unknown")))
+
+    best = result.get("best_variant", {})
+    lines = [
+        "# Ads Generator (Sprint 4 P0)",
+        f"- Product: {result.get('product')}",
+        f"- Audience: {result.get('audience')}",
+        f"- Platform: {result.get('platform')}",
+        f"- Objective: {result.get('objective')}",
+        f"- Score CQF: {result.get('cqf', {}).get('total')}",
+        "",
+        "## Best Variant",
+        f"- Headline: {best.get('headline')}",
+        f"- Description: {best.get('description')}",
+        f"- CTA: {best.get('cta')}",
+        f"- Image Prompt: {best.get('image_prompt')}",
+    ]
+
+    return ToolResult(
+        success=True,
+        output="\n".join(lines),
+        citations=[{
+            "type": "generate_ads",
+            "platform": result.get("platform"),
+            "cqf_total": result.get("cqf", {}).get("total"),
+        }],
+    )
+
+
+def _tool_muhasabah_refine(args: dict) -> ToolResult:
+    brief = str(args.get("brief", "")).strip()
+    initial = str(args.get("initial_output", "")).strip()
+    domain = str(args.get("domain", "content")).strip() or "content"
+    if not brief:
+        return ToolResult(success=False, output="", error="brief wajib diisi")
+    if not initial:
+        return ToolResult(success=False, output="", error="initial_output wajib diisi")
+
+    try:
+        from .muhasabah_loop import run_muhasabah_loop
+    except Exception as e:
+        return ToolResult(success=False, output="", error=f"muhasabah module gagal dimuat: {e}")
+
+    def _generate(_: str) -> str:
+        return initial
+
+    def _refine(current: str, hints: list[str]) -> str:
+        hint_text = "; ".join(hints[:3]) if hints else "improve clarity"
+        return f"{current}\n\nPerbaikan: {hint_text}."
+
+    result = run_muhasabah_loop(
+        brief=brief,
+        domain=domain,
+        generate_fn=_generate,
+        refine_fn=_refine,
+        max_rounds=int(args.get("max_rounds", 3)),
+        min_score=float(args.get("min_score", 7.0)),
+    )
+    if not result.get("ok"):
+        return ToolResult(success=False, output="", error=str(result.get("error", "unknown")))
+
+    lines = [
+        "# Muhasabah Loop",
+        f"- Passed: {result.get('passed')}",
+        f"- Final Score: {result.get('final_score')}",
+        f"- State: {result.get('loop_state')}",
+        "",
+        "## Final Output",
+        str(result.get("final_text", "")),
+    ]
+    return ToolResult(
+        success=True,
+        output="\n".join(lines),
+        citations=[{
+            "type": "muhasabah_refine",
+            "passed": result.get("passed"),
+            "final_score": result.get("final_score"),
+            "rounds": len(result.get("history", [])),
+        }],
+    )
+
+
 # ── Implementasi tools ────────────────────────────────────────────────────────
 
 def _tool_search_corpus(args: dict) -> ToolResult:
@@ -770,16 +1104,17 @@ def _tool_web_fetch(args: dict) -> ToolResult:
 
 
 # ── code_sandbox — Python subprocess own-stack, timeout + output cap ───────────
-_CODE_SANDBOX_TIMEOUT = 10     # detik
-_CODE_SANDBOX_MAX_OUTPUT = 4000  # karakter stdout+stderr
+_CODE_SANDBOX_TIMEOUT = 30     # detik (ditingkatkan dari 10 → 30 untuk analisis data)
+_CODE_SANDBOX_MAX_OUTPUT = 8000  # karakter stdout+stderr
 
 
 def _tool_code_sandbox(args: dict) -> ToolResult:
     """
     Jalankan snippet Python di subprocess terisolasi.
     Standing-alone: pakai subprocess + tempfile sendiri, no external service.
-    Safety: timeout 10s, cwd sementara, stdin kosong, output dipotong.
-    Params: code (str, wajib Python). Return: stdout + stderr.
+    Safety: timeout 30s, cwd sementara, stdin kosong, output dipotong.
+    Params: code (str, wajib Python), timeout (int opsional, max 60).
+    Return: stdout + stderr.
     """
     import subprocess
     import sys
@@ -788,16 +1123,21 @@ def _tool_code_sandbox(args: dict) -> ToolResult:
     code = str(args.get("code", ""))
     if not code.strip():
         return ToolResult(success=False, output="", error="code wajib diisi")
-    if len(code) > 20000:
-        return ToolResult(success=False, output="", error="code terlalu panjang (max 20KB)")
+    if len(code) > 50000:
+        return ToolResult(success=False, output="", error="code terlalu panjang (max 50KB)")
 
-    # Heuristik keamanan ringan (bukan sandbox penuh — user internal)
-    forbidden = ["os.system", "subprocess.", "socket.", "__import__('os')"]
+    timeout = int(args.get("timeout", _CODE_SANDBOX_TIMEOUT))
+    timeout = max(5, min(timeout, 60))  # clamp 5–60 detik
+
+    # Heuristik keamanan (bukan sandbox penuh — user internal)
+    # Biarkan os.path, os.getcwd, os.environ — yang diblokir hanya command exec
+    forbidden = ["os.system(", "subprocess.run(", "subprocess.Popen(",
+                 "socket.socket(", "__import__('subprocess')", "eval(compile("]
     for pat in forbidden:
         if pat in code:
             return ToolResult(
                 success=False, output="",
-                error=f"pola terlarang terdeteksi: {pat}. Code sandbox hanya untuk komputasi, bukan IO sistem.",
+                error=f"pola terlarang: {pat}. Gunakan code_sandbox hanya untuk komputasi.",
             )
 
     try:
@@ -810,13 +1150,14 @@ def _tool_code_sandbox(args: dict) -> ToolResult:
                 input="",
                 capture_output=True,
                 text=True,
-                timeout=_CODE_SANDBOX_TIMEOUT,
-                env={"PATH": os.environ.get("PATH", ""), "LANG": "C.UTF-8"},
+                timeout=timeout,
+                env={"PATH": os.environ.get("PATH", ""), "LANG": "C.UTF-8",
+                     "PYTHONDONTWRITEBYTECODE": "1"},
             )
     except subprocess.TimeoutExpired:
         return ToolResult(
             success=False, output="",
-            error=f"code sandbox timeout ({_CODE_SANDBOX_TIMEOUT}s). Hindari loop tak berujung / IO lambat.",
+            error=f"code sandbox timeout ({timeout}s). Hindari loop tak berujung / IO lambat.",
         )
     except Exception as e:
         return ToolResult(success=False, output="", error=f"sandbox gagal: {type(e).__name__}: {e}")
@@ -1181,6 +1522,128 @@ def _tool_text_to_image(args: dict) -> ToolResult:
 
 # ── Registry ──────────────────────────────────────────────────────────────────
 
+# ── code_analyze — static AST analysis ───────────────────────────────────────
+
+def _tool_code_analyze(args: dict) -> ToolResult:
+    """Analisis statik kode Python via AST (fungsi, kelas, import, kompleksitas)."""
+    code = str(args.get("code", "")).strip()
+    if not code:
+        return ToolResult(success=False, output="", error="code wajib diisi")
+    if len(code) > 200_000:
+        return ToolResult(success=False, output="", error="code terlalu panjang (max 200KB)")
+
+    filename = str(args.get("filename", "<string>")).strip() or "<string>"
+    verbose = bool(args.get("verbose", False))
+
+    try:
+        from .code_intelligence import analyze_code, format_analysis_text
+        analysis = analyze_code(code, filename=filename)
+        text = format_analysis_text(analysis, verbose=verbose)
+        return ToolResult(
+            success=analysis.syntax_ok,
+            output=text,
+            error=analysis.syntax_error if not analysis.syntax_ok else "",
+            citations=[{"type": "code_analyze", "filename": filename,
+                        "line_count": analysis.line_count,
+                        "fn_count": len(analysis.functions),
+                        "class_count": len(analysis.classes)}],
+        )
+    except Exception as e:
+        return ToolResult(success=False, output="", error=f"code_analyze gagal: {e}")
+
+
+def _tool_code_validate(args: dict) -> ToolResult:
+    """Validasi sintaks Python tanpa menjalankan. Safe dan cepat."""
+    code = str(args.get("code", "")).strip()
+    if not code:
+        return ToolResult(success=False, output="", error="code wajib diisi")
+
+    try:
+        from .code_intelligence import validate_python
+        result = validate_python(code)
+        if result["ok"]:
+            return ToolResult(
+                success=True,
+                output="Syntax OK — kode bisa dijalankan / disimpan.",
+                citations=[{"type": "code_validate", "ok": True}],
+            )
+        else:
+            return ToolResult(
+                success=False,
+                output=f"Syntax ERROR baris {result['line']}: {result['error']}",
+                error=f"SyntaxError: {result['error']} (baris {result['line']})",
+            )
+    except Exception as e:
+        return ToolResult(success=False, output="", error=f"code_validate gagal: {e}")
+
+
+def _tool_project_map(args: dict) -> ToolResult:
+    """Tampilkan struktur folder sebagai tree (default: workspace root)."""
+    from .code_intelligence import get_project_map
+
+    path_str = str(args.get("path", "")).strip()
+    depth = int(args.get("depth", 3))
+    depth = max(1, min(depth, 5))
+
+    if path_str:
+        root = Path(path_str)
+        if not root.is_absolute():
+            # Coba: workspace-relative → repo-relative → cwd-relative
+            candidates = [
+                _agent_workspace_root() / path_str,
+                _repo_root() / path_str,
+                Path.cwd() / path_str,
+            ]
+            root = next((c for c in candidates if c.exists()), candidates[0])
+    else:
+        root = _agent_workspace_root()
+
+    try:
+        tree = get_project_map(root, max_depth=depth, max_files=150)
+        return ToolResult(
+            success=True,
+            output=f"# Project Map: {root}\n\n```\n{tree}\n```",
+            citations=[{"type": "project_map", "root": str(root), "depth": depth}],
+        )
+    except Exception as e:
+        return ToolResult(success=False, output="", error=f"project_map gagal: {e}")
+
+
+def _tool_self_inspect(args: dict) -> ToolResult:
+    """Introspeksi diri: list tool registry dan/atau modul brain_qa."""
+    target = str(args.get("target", "all")).strip().lower()
+
+    lines: list[str] = ["# SIDIX Self-Inspect\n"]
+
+    if target in ("tools", "all"):
+        tools = list_available_tools()
+        lines.append(f"## Tool Registry ({len(tools)} tools)\n")
+        for t in tools:
+            perm_mark = "" if t["permission"] == "open" else f" [{t['permission']}]"
+            params_str = ", ".join(t["params"]) if t["params"] else "(no params)"
+            lines.append(f"### {t['name']}{perm_mark}")
+            desc_short = t["description"][:120].replace("\n", " ")
+            lines.append(f"  Params: {params_str}")
+            lines.append(f"  {desc_short}")
+            lines.append("")
+
+    if target in ("modules", "all"):
+        try:
+            from .code_intelligence import get_self_modules
+            modules = get_self_modules()
+            lines.append(f"\n## Modul brain_qa ({len(modules)} modul)\n")
+            for m in modules:
+                lines.append(f"- {m['name']}  ({m['size_lines']} baris)")
+        except Exception as e:
+            lines.append(f"\n[WARN] gagal load modul list: {e}")
+
+    return ToolResult(
+        success=True,
+        output="\n".join(lines),
+        citations=[{"type": "self_inspect", "target": target}],
+    )
+
+
 TOOL_REGISTRY: dict[str, ToolSpec] = {
     "search_corpus": ToolSpec(
         name="search_corpus",
@@ -1386,6 +1849,120 @@ TOOL_REGISTRY: dict[str, ToolSpec] = {
         params=["prompt", "steps", "width", "height"],
         permission="open",
         fn=_tool_text_to_image,
+    ),
+    "generate_copy": ToolSpec(
+        name="generate_copy",
+        description=(
+            "Generate copy/caption kreatif siap pakai (3 varian) dengan formula AIDA/PAS/FAB "
+            "dan quality gate CQF. Params: topic (wajib), channel, formula, audience, cta, tone."
+        ),
+        params=["topic", "channel", "formula", "audience", "cta", "tone", "variant_count", "min_score"],
+        permission="open",
+        fn=_tool_generate_copy,
+    ),
+    "generate_content_plan": ToolSpec(
+        name="generate_content_plan",
+        description=(
+            "Generate kalender konten (JSON) sesuai niche + channel + durasi. "
+            "Params: niche (wajib), duration_days, channel, cadence_per_week, objective."
+        ),
+        params=["niche", "duration_days", "channel", "cadence_per_week", "objective"],
+        permission="open",
+        fn=_tool_generate_content_plan,
+    ),
+    "generate_brand_kit": ToolSpec(
+        name="generate_brand_kit",
+        description=(
+            "Generate brand kit: archetype, palette, tone, onlyness, golden circle, logo prompts. "
+            "Params: business_name (wajib), niche (wajib), vibe, archetype."
+        ),
+        params=["business_name", "niche", "vibe", "archetype"],
+        permission="open",
+        fn=_tool_generate_brand_kit,
+    ),
+    "generate_thumbnail": ToolSpec(
+        name="generate_thumbnail",
+        description=(
+            "Generate rencana thumbnail (prompt + overlay + visual notes), opsional render image. "
+            "Params: title (wajib), style, platform, brand_hint, render(bool), steps."
+        ),
+        params=["title", "style", "platform", "brand_hint", "render", "steps"],
+        permission="open",
+        fn=_tool_generate_thumbnail,
+    ),
+    "plan_campaign": ToolSpec(
+        name="plan_campaign",
+        description=(
+            "Buat strategi campaign AARRR lengkap timeline + KPI. "
+            "Params: product (wajib), audience (wajib), goal, budget_idr, duration_days, platform_focus."
+        ),
+        params=["product", "audience", "goal", "budget_idr", "duration_days", "platform_focus"],
+        permission="open",
+        fn=_tool_plan_campaign,
+    ),
+    "generate_ads": ToolSpec(
+        name="generate_ads",
+        description=(
+            "Generate 3-5 varian ad copy + image prompt untuk FB/Google/TikTok dengan CQF ranking. "
+            "Params: product (wajib), audience (wajib), platform, objective, n_variants."
+        ),
+        params=["product", "audience", "platform", "objective", "n_variants"],
+        permission="open",
+        fn=_tool_generate_ads,
+    ),
+    "muhasabah_refine": ToolSpec(
+        name="muhasabah_refine",
+        description=(
+            "Jalankan loop Niyah-Amal-Muhasabah untuk refine output sampai score CQF minimum. "
+            "Params: brief, initial_output, domain, max_rounds, min_score."
+        ),
+        params=["brief", "initial_output", "domain", "max_rounds", "min_score"],
+        permission="open",
+        fn=_tool_muhasabah_refine,
+    ),
+    "code_analyze": ToolSpec(
+        name="code_analyze",
+        description=(
+            "Analisis kode Python secara statik (AST): list fungsi, kelas, import, kompleksitas. "
+            "TIDAK menjalankan kode — aman dan cepat. "
+            "Params: code (str Python wajib), filename (str opsional), verbose (bool opsional)."
+        ),
+        params=["code", "filename", "verbose"],
+        permission="open",
+        fn=_tool_code_analyze,
+    ),
+    "code_validate": ToolSpec(
+        name="code_validate",
+        description=(
+            "Validasi sintaks Python tanpa menjalankan. "
+            "Gunakan sebelum workspace_write untuk pastikan kode tidak ada syntax error. "
+            "Params: code (str Python wajib). Return: ok/error + baris error."
+        ),
+        params=["code"],
+        permission="open",
+        fn=_tool_code_validate,
+    ),
+    "project_map": ToolSpec(
+        name="project_map",
+        description=(
+            "Tampilkan struktur folder proyek sebagai tree (seperti `tree` command). "
+            "Gunakan untuk orientasi sebelum baca/tulis file. "
+            "Params: path (str opsional, default workspace root), depth (int 1-5, default 3)."
+        ),
+        params=["path", "depth"],
+        permission="open",
+        fn=_tool_project_map,
+    ),
+    "self_inspect": ToolSpec(
+        name="self_inspect",
+        description=(
+            "Introspeksi diri SIDIX: list semua tool yang tersedia + list modul brain_qa. "
+            "Gunakan untuk meta-reasoning: 'tool apa yang ada?', 'modul apa yang SIDIX punya?'. "
+            "Params: target (str: 'tools'|'modules'|'all', default 'all')."
+        ),
+        params=["target"],
+        permission="open",
+        fn=_tool_self_inspect,
     ),
 }
 
