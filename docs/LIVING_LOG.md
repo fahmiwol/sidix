@@ -3300,3 +3300,41 @@ Mighantect 3D punya:
 - Port agency-pipeline flow jadi SIDIX tool
 - Port microstock-metadata jadi SIDIX tool
 - Upgrade 5 persona SIDIX dengan voicePersona + portraitImagePrompt
+
+## 2026-04-20 (strategic directive: 8 creative vertical domains + 28 agent targets)
+
+User directive (verbatim): SIDIX harus jago di advertising, creative, seni, design, video, digital marketing, sosial media marketing, content marketing, content creation, automatic content creation, logo, foto, 3D maker, all about 3D.
+
+KRITIKAL principle (user stressed): 'SIDIX bukan directory atau search engine, SIDIX AI AGENT. Jangan nampilin dari corpus.' - SIDIX WAJIB bertindak (generate/execute), corpus/RAG cuma context enrichment internal.
+
+### 8 Creative Vertical Domains (user-defined)
+1. Konten & Media Production (copy, sosmed, script video, desain simple)
+2. Desain Grafis & Branding (logo, feed, brand guide, thumbnail)
+3. Video & Editing (video ads, reels, subtitle, storyboard)
+4. Marketing & Campaign Strategy (campaign, funnel, ads) - user note 'ini core product'
+5. Produk & E-commerce Creative (foto produk, deskripsi, packaging)
+6. Entertainment & Character Creation (maskot, karakter, IP) - nyambung Gather Town style
+7. Voice & Audio Creative (voice over, podcast, jingle)
+8. Creative Writing & Storytelling (artikel, novel, brand story)
+
+### Framework konversi universal (dari user)
+skill kreatif -> breakdown step (riset/ide/copy/visual/posting) -> automate tiap step = AI Agent
+
+### DOCs tercatat
+- brain/public/research_notes/168_sidix_creative_verticals_8_domains.md (BARU, sanad_tier=primer)
+  * Detail per vertical: skills, AI agent targets, current state, gap
+  * Priority matrix impact vs effort per domain
+  * Anti-pattern list (WAJIB dihindari)
+  * Arsitektur tool: apps/brain_qa/brain_qa/creative/ dengan 12 submodule
+  * Next concrete actions Sprint 4-5
+  * Prinsip desain tool kreatif (slots/one-component/divergence-3/Nusantara/framework-explicit)
+- docs/CREATIVE_AGENT_TAXONOMY.md (BARU, SSoT tracker)
+  * 28 agent target dengan input/output/status per-row
+  * Agency Kit one-click bundle (target Sprint 5): brand+logo+konten+campaign+visual 1 klik
+  * Status dashboard: 1 live, 6 P0 Sprint 4, 8 P1 Sprint 5, 9 P2 Sprint 6, 4 P3 Sprint 7+
+
+### Next concrete (Sprint 4 Week 1-2)
+P0 agents to build: generate_copy, plan_content_calendar, generate_brand_kit, generate_thumbnail, plan_campaign, generate_ads. Semua LLM-based + image_gen integration, tanpa infra baru.
+
+### Research feeding queue
+User ready to feed riset tambahan kalau dibutuhkan. Request saat butuh data/framework baru per vertical.
