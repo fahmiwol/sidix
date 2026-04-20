@@ -6,15 +6,20 @@ Proyek: **SIDIX / Mighan Model**
 
 ## 📖 BACA DULU SEBELUM MULAI (SSOT)
 
-Sebelum kerja apapun, baca 4 file ini berurutan (cegah amnesia + repeat work):
+Urutan wajib sebelum kerja apapun:
 
-1. **`docs/HANDOFF_<latest>.md`** — handoff sesi terakhir (TOP PRIORITY!)
-   Berisi: state lengkap + open issues + strategic roadmap + quick start.
-2. **`docs/SIDIX_BIBLE.md`** — konstitusi hidup (4 pilar identitas, IHOS,
-   4-label epistemik, Maqashid filter, sanad-required, trajectory mandiri,
-   parity target GPT/Claude/ByteDance/Gemini)
-3. **`docs/SIDIX_CHECKPOINT_<latest>.md`** — snapshot state + queue
-4. **`docs/LIVING_LOG.md`** (tail 100 lines) — apa yang baru dikerjakan
+1. **`CLAUDE.md`** (file ini) — aturan permanen + UI LOCK + IDENTITAS SIDIX.
+2. **`docs/NORTH_STAR.md`** — tujuan akhir SIDIX + release strategy v0.1→v3.0 + lock apa yang tidak berubah. **Baca jika ragu pilih plan.**
+3. **`docs/MASTER_ROADMAP_2026-2027.md`** — **NEW (2026-04-21)**. SSoT unified sprint + agent + self-train + killer offer + decision gates. Merge 3 sumber (ours + riset + ADR). **Kalau konflik dengan dokumen lain, yang ini menang.**
+4. **`docs/DEVELOPMENT_RULES.md`** — aturan mengikat untuk agent eksternal + protocol self-development SIDIX. **Ini harus dipatuhi, bukan sekadar dibaca.**
+5. **`docs/SIDIX_ROADMAP_2026.md`** — roadmap 4 stage original (Baby/Child/Adolescent/Adult). Reference detail, MASTER_ROADMAP yang canonical.
+6. **`docs/CREATIVE_AGENT_TAXONOMY.md`** — 10 domain × 37 agent + CQF + Iteration + Debate pairings.
+7. **`docs/SIDIX_CAPABILITY_MAP.md`** — SSoT kapabilitas teknis (apa yang ada, belum wired, belum ada).
+6. **`docs/HANDOFF_<terbaru>.md`** — strategic handoff.
+7. **`docs/INVENTORY_<terbaru>.md`** — teknis detail + path.
+8. **`docs/SIDIX_BIBLE.md`** — konstitusi 4 pilar.
+9. **`brain/public/research_notes/161_*.md`** — konsep AI/LLM + differentiator SIDIX (jika belum paham foundational).
+10. **`tail -100 docs/LIVING_LOG.md`** — update terbaru.
 
 Kalau mau bikin research note baru, cek dulu nomor terakhir di
 `brain/public/research_notes/`. Topik mirip note existing (overlap ≥0.55) →
@@ -154,6 +159,66 @@ brain/manifest.json            ← konfigurasi corpus path
 - Aapanel manages nginx config di `/www/server/panel/vhost/nginx/`
 - Landing static di `/www/wwwroot/sidixlab.com/` (NOT `/opt/sidix/SIDIX_LANDING`)
 - Sync landing manual setelah git pull (TODO: auto via post-merge hook)
+
+---
+
+## 🧬 IDENTITAS SIDIX (LOCK — 2026-04-19)
+
+SIDIX **BUKAN** sekadar RAG/retrieval dari corpus. SIDIX adalah **LLM generative yang tumbuh dan menjadi AI agent**. Tiga layer arsitektur yang semua dijalankan OWN STACK (standing alone):
+
+### Layer 1 — LLM Generative (core, otak)
+- **Model**: Qwen2.5-7B-Instruct base + LoRA adapter SIDIX (fine-tuned own).
+- **Lokasi**: `/opt/sidix/sidix-lora-adapter/` (symlinked ke `apps/brain_qa/models/`).
+- **Cara kerja**: generate jawaban token-by-token via `local_llm.generate_sidix()`. Jawaban hasil PREDIKSI model, bukan copy-paste corpus.
+- **Penting**: kalau corpus kosong, SIDIX tetap bisa menjawab dari bobot LoRA + base Qwen — karena ini **LLM generatif**, bukan search engine.
+
+### Layer 2 — RAG + Agent Tools (sensory + reasoning)
+- **RAG**: `search_corpus` (BM25), `read_chunk`, `list_sources` — memberi konteks faktual ke LLM untuk mengurangi halusinasi, menjamin sanad.
+- **Agent tools** (17 aktif 2026-04-19): `web_fetch`, `web_search`, `code_sandbox`, `pdf_extract`, `calculator`, `workspace_*`, `roadmap_*`, `orchestration_plan`, dll.
+- **ReAct loop** (`agent_react.py`): LLM memilih tool → eksekusi → observation → refine jawaban. Loop ini yang bikin SIDIX jadi **AI AGENT**, bukan chatbot statis.
+- Tools TIDAK menggantikan generative capability — mereka memperkaya konteks supaya generative output akurat + terverifikasi.
+
+### Layer 3 — Growth Loop (tumbuh mandiri)
+- **LearnAgent** — fetch 50+ open data source harian (arXiv/Wikipedia/MusicBrainz/GitHub/Quran) → corpus queue.
+- **daily_growth** 7-fase (SCAN→RISET→APPROVE→TRAIN→SHARE→REMEMBER→LOG).
+- **knowledge_gap_detector** — deteksi low-confidence, trigger autonomous_researcher.
+- **corpus_to_training + auto_lora** — pair baru → JSONL → LoRA retrain (Kaggle/GPU) → adapter baru deploy.
+- **Hasil**: tiap kuartal model SIDIX lebih pintar dari kuartal sebelumnya. Bukan snapshot, tapi makhluk hidup yang belajar.
+
+### Salah kaprah yang HARUS dihindari
+- ❌ "SIDIX cuma RAG" — SALAH. RAG layer 2, bukan inti.
+- ❌ "Kalau corpus kosong SIDIX tidak bisa jawab" — SALAH. LoRA+base model generate sendiri.
+- ❌ "Tools menggantikan LLM" — SALAH. Tools memberi data, LLM tetap yang reasoning + generate.
+- ❌ "SIDIX chatbot biasa" — SALAH. ReAct loop = agent, bukan chatbot.
+- ❌ "Modelnya statis" — SALAH. Growth loop retrain LoRA periodik.
+
+### Implikasi aturan
+- Frontend/UX boleh fokus chat, tapi backend WAJIB pertahankan ReAct + generative + growth loop.
+- Tambah tool = augment agent, bukan ganti LLM.
+- Audit kualitas jawaban SIDIX = evaluasi generative output, bukan precision RAG.
+- Setiap improvement LoRA → note di `research_notes/` + update `vision_tracker.py`.
+
+---
+
+## 🔒 UI LOCK — `app.sidixlab.com` (2026-04-19)
+
+Tampilan chatboard app.sidixlab.com **DIKUNCI** versi 2026-04-19. Jangan ubah struktur kecuali user meminta eksplisit.
+
+**Struktur final (lock):**
+- **Header chat** (`index.html` ~200-286): Status dot + SIDIX title, tombol "Tentang SIDIX", tombol **Sign In** di center, persona selector kanan, TIDAK ADA "Gabung Kontributor" di header.
+- **Empty state** (`index.html` ~288-343): Logo SIDIX kecil (w-12 md:w-16) + title "SIDIX" + tagline "Diskusi dan tanya apa saja — jujur, bersumber, bisa diverifikasi" + 4 quick-prompt cards (**Partner / Coding / Creative / Chill**) + free badge.
+- **Footer input**: textarea "Tanya SIDIX…" + paperclip + send button + opsi (Korpus saja / Fallback web / Mode ringkas) + "SIDIX v1.0 · Self-hosted · Free · [Gabung Kontributor](https://sidixlab.com#contributor)".
+- **Mobile bottom nav**: 4 item (Chat / Tentang / Setting / Sign In) — BUKAN 5, TIDAK ADA Kontributor.
+- **Tidak ada modal yang auto-muncul**: `.contrib-modal-backdrop` sudah pakai `:not(.hidden)` + `!important` agar About modal tidak muncul otomatis.
+
+**Deploy topology** (PENTING — jangan salah lagi):
+- `app.sidixlab.com` → nginx `proxy_pass :4000` → PM2 `sidix-ui` (`serve dist -p 4000` dari `/opt/sidix/SIDIX_USER_UI/`)
+- `ctrl.sidixlab.com` → nginx `proxy_pass :8765` → PM2 `sidix-brain` (FastAPI)
+- `sidixlab.com` (landing) → static `/www/wwwroot/sidixlab.com/`
+- Deploy app: `git pull && npm run build && pm2 restart sidix-ui` (RSYNC ke `/www/wwwroot/app.sidixlab.com/` TIDAK PERLU — itu hanya fallback root nginx)
+- **Kritikal**: `.env` di `/opt/sidix/SIDIX_USER_UI/.env` harus isi `VITE_BRAIN_QA_URL=https://ctrl.sidixlab.com`. Tanpa ini, build default `localhost:8765` → "Backend tidak terhubung".
+
+**Kapabilitas tool yang terpasang di chat** (per 2026-04-19): lihat `docs/SIDIX_CAPABILITY_MAP.md`.
 
 ---
 

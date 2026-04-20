@@ -505,6 +505,22 @@ def create_app() -> "FastAPI":
             "total": len(list_available_tools()),
         }
 
+    # ── GET /generated/{filename} ─ serve image hasil text_to_image ──────────
+    @app.get("/generated/{filename}")
+    def get_generated_image(filename: str):
+        """Serve image file hasil text_to_image tool."""
+        from fastapi.responses import FileResponse
+        from fastapi import HTTPException
+        import re
+        # Path traversal guard: hanya alphanumeric + hyphen + underscore + .png/.jpg
+        if not re.match(r"^[a-zA-Z0-9_\-]+\.(png|jpg|jpeg|webp)$", filename):
+            raise HTTPException(status_code=400, detail="invalid filename")
+        from .paths import default_index_dir
+        fpath = default_index_dir().parent / "generated_images" / filename
+        if not fpath.exists() or not fpath.is_file():
+            raise HTTPException(status_code=404, detail="not found")
+        return FileResponse(fpath, media_type="image/png")
+
     @app.get("/agent/praxis/lessons")
     def agent_praxis_lessons(limit: int = 30):
         """Daftar file pelajaran Praxis (Markdown) — hasil jejak agen + catatan luar."""
@@ -3111,6 +3127,28 @@ h1{{color:#0af}}p{{color:#aaa}}a{{color:#0af}}</style></head>
             return {"ok": True, "processed": count}
         except Exception as e:
             return {"ok": False, "error": str(e)}
+
+    # ── Concept graph endpoint (Sprint 1 T1.4) ───────────────────────────────
+    @app.get("/concept_graph/query")
+    def concept_graph_query(request: Request, concept: str = "", depth: int = 1, max_related: int = 5):
+        """
+        Query knowledge graph SIDIX. Public (read-only).
+        concept='' → summary graph. concept=<name/alias> → node + n-hop related.
+        """
+        from .agent_tools import call_tool
+        result = call_tool(
+            tool_name="concept_graph",
+            args={"concept": concept, "depth": depth, "max_related": max_related},
+            session_id="api_concept_graph",
+            step=0,
+            allow_restricted=False,
+        )
+        return {
+            "ok": result.success,
+            "output": result.output,
+            "error": result.error,
+            "citations": result.citations,
+        }
 
     return app
 

@@ -15,9 +15,25 @@ export const BRAIN_QA_BASE =
 // ── Types ────────────────────────────────────────────────────────────────────
 
 export interface Citation {
-  filename: string;
-  snippet: string;
-  score: number;
+  // Shared fields
+  type?: string;
+  sanad_tier?: string;
+  // RAG corpus citation fields
+  filename?: string;
+  snippet?: string;
+  score?: number;
+  source_path?: string;
+  source_title?: string;
+  chunk_id?: string;
+  // text_to_image citation fields
+  url?: string;         // path relatif ke endpoint /generated/<hash>.png
+  prompt?: string;
+  steps?: number;
+  took_s?: number;
+  // concept_graph citation fields
+  concept?: string;
+  depth?: number;
+  sources?: string[];
 }
 
 export interface AskResponse {

@@ -95,9 +95,11 @@
         background: rgba(10,8,5,0.88);
         backdrop-filter: blur(14px);
         -webkit-backdrop-filter: blur(14px);
-        display: flex; align-items: flex-end;
+        align-items: flex-end;
         justify-content: center;
       }
+      .contrib-modal-backdrop:not(.hidden) { display: flex; }
+      .contrib-modal-backdrop.hidden { display: none !important; }
       @media (min-width: 768px) {
         .contrib-modal-backdrop { align-items: center; }
       }
@@ -229,12 +231,6 @@
               <i data-lucide="info" class="w-3 h-3"></i>
               <span id="label-about">Tentang SIDIX</span>
             </button>
-
-            <!-- Gabung Kontributor -->
-            <button id="btn-contributor" class="contrib-pill hidden md:flex" title="Gabung sebagai kontributor">
-              <i data-lucide="users" class="w-3 h-3"></i>
-              <span id="label-contrib">Gabung Kontributor</span>
-            </button>
           </div>
 
           <!-- CENTER: Sign In / Sign Up pill + quota badge -->
@@ -290,16 +286,16 @@
           aria-live="polite" aria-label="Percakapan">
 
           <!-- Empty state -->
-          <div id="chat-empty" class="flex flex-col items-center justify-center h-full text-center space-y-6 md:space-y-8 select-none">
+          <div id="chat-empty" class="flex flex-col items-center justify-center min-h-full text-center space-y-4 md:space-y-5 select-none py-4">
             <div class="relative">
               <div class="absolute inset-0 blur-3xl opacity-20 bg-amber-600 rounded-full"></div>
-              <div class="w-16 h-16 md:w-20 md:h-20 rounded-2xl md:rounded-3xl glass flex items-center justify-center relative z-10 overflow-hidden">
-                <img src="/sidix-logo.svg" alt="SIDIX" class="w-12 h-12 md:w-14 md:h-14 object-contain" draggable="false" />
+              <div class="w-12 h-12 md:w-16 md:h-16 rounded-2xl glass flex items-center justify-center relative z-10 overflow-hidden">
+                <img src="/sidix-logo.svg" alt="SIDIX" class="w-9 h-9 md:w-12 md:h-12 object-contain" draggable="false" />
               </div>
             </div>
-            <div class="space-y-2 px-4">
-              <p class="font-display text-2xl md:text-3xl font-bold glow-gold tracking-wide">SIDIX</p>
-              <p id="empty-tagline" class="text-sm text-parchment-400 max-w-xs mx-auto leading-relaxed">
+            <div class="space-y-1.5 px-4">
+              <p class="font-display text-xl md:text-2xl font-bold glow-gold tracking-wide">SIDIX</p>
+              <p id="empty-tagline" class="text-xs md:text-sm text-parchment-400 max-w-xs mx-auto leading-relaxed">
                 Diskusi dan tanya apa saja — jujur, bersumber, bisa diverifikasi.
               </p>
             </div>
@@ -391,7 +387,8 @@
             </div>
 
             <p class="text-[10px] text-center text-parchment-600 mt-1.5 uppercase tracking-widest font-medium select-none">
-              SIDIX v1.0 · Self-hosted · Free
+              SIDIX v1.0 · Self-hosted · Free ·
+              <a href="https://sidixlab.com#contributor" target="_blank" rel="noopener" class="underline underline-offset-2 hover:text-parchment-400 transition-colors"><span id="label-contrib">Gabung Kontributor</span></a>
             </p>
           </div>
         </footer>
@@ -479,13 +476,6 @@
           aria-label="Tentang SIDIX">
           <i data-lucide="info" class="w-5 h-5"></i>
           <span class="text-[10px] font-medium" id="mob-label-about">Tentang</span>
-        </button>
-
-        <button id="mob-nav-contrib"
-          class="flex flex-col items-center gap-0.5 px-4 py-1.5 rounded-xl transition-all text-parchment-500 hover:text-parchment-300"
-          aria-label="Gabung Kontributor">
-          <i data-lucide="users" class="w-5 h-5"></i>
-          <span class="text-[10px] font-medium" id="mob-label-contrib">Kontributor</span>
         </button>
 
         <button id="mob-nav-settings"
@@ -621,89 +611,7 @@
       </div>
     </div>
 
-    <!-- ════════════════════════════════════════════════════
-         CONTRIBUTOR MODAL
-    ════════════════════════════════════════════════════ -->
-    <div id="contrib-modal" class="hidden fixed inset-0 z-[150] contrib-modal-backdrop">
-      <div class="contrib-modal-card">
-        <!-- Handle -->
-        <div class="w-10 h-1 rounded-full bg-warm-600 mx-auto mb-5"></div>
-
-        <div class="mb-5">
-          <h2 class="font-display text-xl font-bold glow-gold" id="contrib-title">Gabung Kontributor</h2>
-          <p class="text-xs text-parchment-400 mt-1" id="contrib-subtitle">Developer, researcher, akademisi — semua welcome!</p>
-        </div>
-
-        <div class="space-y-3">
-          <div>
-            <label class="text-[11px] text-parchment-500 uppercase tracking-wider font-semibold" id="label-fullname">Nama Lengkap</label>
-            <input id="contrib-name" type="text" autocomplete="name"
-              placeholder="Nama kamu"
-              class="mt-1.5 w-full px-3 py-2.5 rounded-xl bg-warm-900/60 border border-warm-600/50 text-sm
-                     text-parchment-100 focus:border-gold-500/50 focus:outline-none placeholder:text-parchment-600" />
-          </div>
-          <div>
-            <label class="text-[11px] text-parchment-500 uppercase tracking-wider font-semibold">Email</label>
-            <input id="contrib-email" type="email" autocomplete="email"
-              placeholder="kamu@email.com"
-              class="mt-1.5 w-full px-3 py-2.5 rounded-xl bg-warm-900/60 border border-warm-600/50 text-sm
-                     text-parchment-100 focus:border-gold-500/50 focus:outline-none placeholder:text-parchment-600" />
-          </div>
-          <div>
-            <label class="text-[11px] text-parchment-500 uppercase tracking-wider font-semibold" id="label-role">Peran Kamu</label>
-            <div class="mt-1.5 grid grid-cols-3 gap-2">
-              <button class="role-btn py-2 rounded-xl text-xs font-semibold border border-warm-600
-                             text-parchment-400 hover:border-gold-500/50 transition-all" data-role="developer">
-                💻 Developer
-              </button>
-              <button class="role-btn py-2 rounded-xl text-xs font-semibold border border-warm-600
-                             text-parchment-400 hover:border-gold-500/50 transition-all" data-role="researcher">
-                🔬 Researcher
-              </button>
-              <button class="role-btn py-2 rounded-xl text-xs font-semibold border border-warm-600
-                             text-parchment-400 hover:border-gold-500/50 transition-all" data-role="academic">
-                🎓 Akademisi
-              </button>
-            </div>
-          </div>
-          <div>
-            <label class="text-[11px] text-parchment-500 uppercase tracking-wider font-semibold" id="label-interest">Mau berkontribusi ke?</label>
-            <textarea id="contrib-interest" rows="2"
-              placeholder="Contoh: bikin fitur TTS, riset epistemologi Islam, dsb"
-              class="mt-1.5 w-full px-3 py-2.5 rounded-xl bg-warm-900/60 border border-warm-600/50 text-sm
-                     text-parchment-100 focus:border-gold-500/50 focus:outline-none placeholder:text-parchment-600 resize-none"></textarea>
-          </div>
-
-          <!-- Newsletter checkbox -->
-          <label class="flex items-start gap-3 cursor-pointer pt-1 group">
-            <div class="relative flex-shrink-0 mt-0.5">
-              <input type="checkbox" id="contrib-newsletter" class="sr-only peer" checked />
-              <div class="w-5 h-5 rounded-md border border-warm-600 bg-warm-900/60 peer-checked:bg-gold-500
-                          peer-checked:border-gold-500 transition-all flex items-center justify-center">
-                <i data-lucide="check" class="w-3 h-3 text-warm-950 hidden peer-checked:block"></i>
-              </div>
-            </div>
-            <span class="text-xs text-parchment-400 leading-relaxed group-hover:text-parchment-200 transition-colors" id="label-newsletter">
-              Saya mau dapat newsletter & update terbaru SIDIX via email
-            </span>
-          </label>
-        </div>
-
-        <p id="contrib-status" class="hidden text-xs text-center mt-3"></p>
-
-        <div class="flex gap-3 mt-5">
-          <button id="contrib-cancel"
-            class="flex-1 py-2.5 rounded-xl text-sm text-parchment-400 border border-warm-600
-                   hover:bg-warm-700 transition-all">
-            <span id="label-cancel">Batal</span>
-          </button>
-          <button id="contrib-submit"
-            class="flex-2 flex-1 py-2.5 rounded-xl text-sm font-semibold btn-gold disabled:opacity-40">
-            <span id="label-submit">Daftar Sekarang</span>
-          </button>
-        </div>
-      </div>
-    </div>
+    <!-- CONTRIBUTOR flow moved to sidixlab.com#contributor — no modal here -->
 
     <!-- ════════════════════════════════════════════════════
          ADMIN LOGIN MODAL

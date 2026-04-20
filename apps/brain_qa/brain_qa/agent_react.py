@@ -120,6 +120,30 @@ _ORCH_META_RE = re.compile(
     r"fase\s+agen|rencana\s+orkestrasi|orchestration\s+plan)\b",
     re.IGNORECASE,
 )
+_COPY_RE = re.compile(
+    r"\b(copy|caption|iklan|ads copy|sales copy|aida|pas|fab)\b",
+    re.IGNORECASE,
+)
+_CONTENT_PLAN_CREATIVE_RE = re.compile(
+    r"\b(content plan|kalender konten|content planner|rencana konten)\b",
+    re.IGNORECASE,
+)
+_BRAND_KIT_RE = re.compile(
+    r"\b(brand kit|branding|brand identity|archetype brand|logo prompt)\b",
+    re.IGNORECASE,
+)
+_THUMBNAIL_RE = re.compile(
+    r"\b(thumbnail|yt cover|youtube cover|judul thumbnail)\b",
+    re.IGNORECASE,
+)
+_CAMPAIGN_RE = re.compile(
+    r"\b(campaign strategy|strategi campaign|rencana campaign|aarrr)\b",
+    re.IGNORECASE,
+)
+_ADS_GEN_RE = re.compile(
+    r"\b(generate ads|buat ads|iklan fb|iklan tiktok|iklan google)\b",
+    re.IGNORECASE,
+)
 
 
 def _effective_max_steps(question: str, max_steps: int | None) -> int:
@@ -145,6 +169,12 @@ def _observation_is_weak_corpus(obs: str) -> bool:
     if len(o) < 1600 and "ringkasan" not in o:
         return True
     return False
+
+
+def _extract_topic(question: str) -> str:
+    q = question.strip()
+    q = re.sub(r"^(tolong|please|bantu|buatkan|buat|generate|bikin)\s+", "", q, flags=re.IGNORECASE).strip()
+    return q or question.strip()
 
 
 def _rule_based_plan(
@@ -189,6 +219,88 @@ def _rule_based_plan(
                 "User minta rencana orkestrasi / multi-aspek. Bangun OrchestrationPlan.",
                 "orchestration_plan",
                 {"question": question, "persona": persona},
+            )
+
+        if _CONTENT_PLAN_CREATIVE_RE.search(question):
+            channel = "instagram"
+            ql = question.lower()
+            if "threads" in ql:
+                channel = "threads"
+            elif "tiktok" in ql:
+                channel = "tiktok"
+            return (
+                "User minta konten planner. Generate kalender konten langsung.",
+                "generate_content_plan",
+                {
+                    "niche": _extract_topic(question),
+                    "duration_days": 30,
+                    "channel": channel,
+                    "cadence_per_week": 5,
+                    "objective": "awareness",
+                },
+            )
+
+        if _BRAND_KIT_RE.search(question):
+            return (
+                "User minta brand kit. Generate identity kit (archetype, palette, tone, logo prompts).",
+                "generate_brand_kit",
+                {
+                    "business_name": "Brand SIDIX User",
+                    "niche": _extract_topic(question),
+                    "vibe": "modern, warm, trustworthy",
+                },
+            )
+
+        if _THUMBNAIL_RE.search(question):
+            return (
+                "User minta thumbnail generator. Buat prompt + overlay siap render.",
+                "generate_thumbnail",
+                {
+                    "title": _extract_topic(question),
+                    "style": "bold",
+                    "platform": "youtube",
+                    "render": False,
+                },
+            )
+
+        if _CAMPAIGN_RE.search(question):
+            return (
+                "User minta strategi campaign. Susun AARRR funnel + timeline.",
+                "plan_campaign",
+                {
+                    "product": _extract_topic(question),
+                    "audience": "audiens Indonesia",
+                    "goal": "conversion",
+                    "budget_idr": 1500000,
+                    "duration_days": 30,
+                    "platform_focus": "instagram",
+                },
+            )
+
+        if _ADS_GEN_RE.search(question):
+            return (
+                "User minta ad generator. Buat beberapa variasi ad copy dan pilih terbaik.",
+                "generate_ads",
+                {
+                    "product": _extract_topic(question),
+                    "audience": "audiens Indonesia",
+                    "platform": "facebook",
+                    "objective": "conversion",
+                    "n_variants": 3,
+                },
+            )
+
+        if _COPY_RE.search(question):
+            return (
+                "User minta copy/caption. Generate beberapa varian copy dengan CQF.",
+                "generate_copy",
+                {
+                    "topic": _extract_topic(question),
+                    "channel": "instagram",
+                    "formula": "AIDA",
+                    "audience": "audiens Indonesia",
+                    "tone": "friendly",
+                },
             )
 
         # Math expression di pertanyaan
@@ -757,6 +869,68 @@ def run_react(
         except Exception:
             pass
         return session
+
+    # ── FAST PATH: Image generation intent detection ─────────────────────────
+    # Deteksi user minta gambar → langsung panggil text_to_image, skip ReAct.
+    # Keywords ID+EN, cover variasi umum: "bikin/buat/generate/create image/gambar/foto/ilustrasi"
+    _q_lower = question.lower()
+    _image_verbs = ("bikin", "buat", "buatkan", "generate", "create", "gambarkan", "gambarin", "render", "visualisasikan", "lukiskan", "desainkan")
+    _image_nouns = ("gambar", "foto", "ilustrasi", "image", "picture", "visual", "artwork", "poster", "lukisan", "desain",
+                    "thumbnail", "konten", "banner", "feed", "story", "reels", "cover", "wallpaper", "logo", "sticker")
+    _has_verb = any(v in _q_lower for v in _image_verbs)
+    _has_noun = any(n in _q_lower for n in _image_nouns)
+    import logging as _log_fp
+    _log_fp.getLogger(__name__).warning(f"[ImageFastPath] check q={_q_lower[:80]!r} has_verb={_has_verb} has_noun={_has_noun}")
+    if _has_verb and _has_noun:
+        _log_fp.getLogger(__name__).warning("[ImageFastPath] TRIGGERED, calling text_to_image")
+        try:
+            from .agent_tools import call_tool as _call_tool
+
+            # ── Auto-enhance v2 pakai creative_framework.py ──────────────────
+            # Framework-aware: Jungian archetype + 7 template + Nusantara hints.
+            # Inspired by BG Maker Prompt Engineering (Aaker/Sinek/Neumeier/Jungian/CBBE).
+            try:
+                from .creative_framework import enhance_prompt_creative
+                enh = enhance_prompt_creative(question)
+                enhanced = enh["enhanced_prompt"]
+                width = enh["width"]
+                height = enh["height"]
+                _log_fp.getLogger(__name__).warning(
+                    f"[ImageFastPath] template={enh['template_used']} archetype={enh['applied_archetype']} "
+                    f"ctx={enh['detected_contexts']} size={width}x{height}"
+                )
+                # Safety clamp untuk fit 6GB VRAM: max 768 side
+                if width > 768: width = 768
+                if height > 768: height = 768
+            except Exception as _enh_err:
+                _log_fp.getLogger(__name__).warning(f"[ImageFastPath] enhance_creative fallback: {_enh_err}")
+                enhanced = question
+                width = height = 512
+
+            _result = _call_tool(
+                tool_name="text_to_image",
+                args={"prompt": enhanced, "steps": 15, "width": width, "height": height},
+                session_id=session_id,
+                step=1,
+                allow_restricted=False,
+            )
+            _log_fp.getLogger(__name__).warning(f"[ImageFastPath] tool result success={_result.success} err={_result.error!r} out_len={len(_result.output or '')}")
+            if _result.success:
+                session.final_answer = _result.output
+                session.citations = list(_result.citations or [])
+                session.finished = True
+                session.confidence = "image gen fast-path"
+                _praxis.record_praxis_event(session_id, "image_gen_fast_path", {"prompt": question[:200]})
+                try:
+                    _praxis.finalize_session_teaching(session)
+                except Exception:
+                    pass
+                return session
+            # Kalau tool gagal (server offline, dll), lanjut ke ReAct normal — jangan block user
+        except Exception as _img_err:
+            import logging as _log
+            _log.getLogger(__name__).warning(f"[ImageFastPath] fallback ke ReAct — {_img_err}")
+    # ─────────────────────────────────────────────────────────────────────────
 
     # ── User Intelligence: analisis frekuensi pengguna ────────────────────────
     try:

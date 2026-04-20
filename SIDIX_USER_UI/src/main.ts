@@ -159,12 +159,10 @@ function applyI18n(): void {
   // Mobile nav
   const mobChat = document.getElementById('mob-label-chat');
   const mobSettings = document.getElementById('mob-label-settings');
-  const mobContrib = document.getElementById('mob-label-contrib');
   const mobAbout = document.getElementById('mob-label-about');
   const mobAuth = document.getElementById('mob-label-auth');
   if (mobChat) mobChat.textContent = t('chat');
   if (mobSettings) mobSettings.textContent = t('settings');
-  if (mobContrib) mobContrib.textContent = t('mobContrib');
   if (mobAbout) mobAbout.textContent = t('mobAbout');
   if (mobAuth) mobAuth.textContent = t('signIn');
 
@@ -442,7 +440,7 @@ document.getElementById('mob-nav-auth')?.addEventListener('click', () => {
 const mobNavItems = ['mob-nav-chat', 'mob-nav-settings'] as const;
 
 function setMobileActive(activeId: string) {
-  ['mob-nav-chat', 'mob-nav-about', 'mob-nav-contrib', 'mob-nav-settings', 'mob-nav-auth'].forEach(id => {
+  ['mob-nav-chat', 'mob-nav-about', 'mob-nav-settings', 'mob-nav-auth'].forEach(id => {
     const btn = document.getElementById(id);
     if (!btn) return;
     if (id === activeId) {
@@ -1041,6 +1039,31 @@ function appendMessage(
   text.textContent = content;
   bubble.appendChild(text);
 
+  // ── Image rendering untuk text_to_image tool ───────────────────────────
+  // Cek citations type=text_to_image → render <img> di bubble.
+  if (role === 'ai') {
+    const imgCitations = citations.filter(c => c.type === 'text_to_image' && c.url);
+    imgCitations.forEach(c => {
+      const imgWrap = document.createElement('div');
+      imgWrap.className = 'mt-3 rounded-lg overflow-hidden border border-gold-500/20 bg-ink-950';
+      const img = document.createElement('img');
+      // url dari backend = "/generated/<hash>.png" (relatif ke brain_qa host)
+      img.src = `${BRAIN_QA_BASE}${c.url}`;
+      img.alt = c.prompt ?? 'Generated image';
+      img.className = 'max-w-full h-auto block';
+      img.loading = 'lazy';
+      imgWrap.appendChild(img);
+      // Caption kecil di bawah: prompt + waktu
+      if (c.prompt || c.took_s) {
+        const cap = document.createElement('div');
+        cap.className = 'text-xs text-parchment-400 px-3 py-2 bg-ink-900/50 border-t border-gold-500/10';
+        cap.textContent = `${c.prompt ?? ''}${c.took_s ? ` · ${c.took_s}s di SIDIX GPU` : ''}`;
+        imgWrap.appendChild(cap);
+      }
+      bubble.appendChild(imgWrap);
+    });
+  }
+
   // Copy button (AI only)
   if (role === 'ai') {
     const copyBtn = document.createElement('button');
@@ -1061,15 +1084,16 @@ function appendMessage(
     wrap.appendChild(copyBtn);
   }
 
-  // Citations
-  if (citations.length > 0) {
+  // Citations (skip text_to_image — sudah di-render sebagai <img> di atas)
+  const textCitations = citations.filter(c => c.type !== 'text_to_image' && c.filename);
+  if (textCitations.length > 0) {
     const citeRow = document.createElement('div');
     citeRow.className = 'mt-3 pt-3 border-t border-gold-500/10 flex flex-wrap gap-2';
 
-    citations.forEach(c => {
+    textCitations.forEach(c => {
       const chip = document.createElement('span');
       chip.className = 'citation-chip';
-      chip.title = c.snippet;
+      chip.title = c.snippet ?? '';
       chip.innerHTML = `<i data-lucide="book-open" class="w-3 h-3"></i><span>${c.filename}</span>`;
       citeRow.appendChild(chip);
     });
@@ -1130,15 +1154,23 @@ async function handleSend() {
 
   appendMessage('user', question);
 
-  // Thinking indicator
+  // Thinking indicator — dengan hint khusus kalau minta gambar
+  const q_lower = question.toLowerCase();
+  const isImageIntent = /(bikin|buat|generate|create|gambarkan|render|lukiskan).*?(gambar|foto|ilustrasi|image|picture|visual|artwork|poster|lukisan|desain)|(gambar|foto|ilustrasi|image|artwork).*?(bikin|buat|generate|create)/i.test(q_lower);
   const thinking = document.createElement('div');
   thinking.className = 'flex justify-start';
-  thinking.innerHTML = `
-    <div class="msg-ai px-5 py-4 flex items-center gap-2">
-      <div class="thinking-dot"></div>
-      <div class="thinking-dot"></div>
-      <div class="thinking-dot"></div>
-    </div>`;
+  thinking.innerHTML = isImageIntent
+    ? `<div class="msg-ai px-5 py-4 flex items-center gap-3">
+        <div class="thinking-dot"></div>
+        <div class="thinking-dot"></div>
+        <div class="thinking-dot"></div>
+        <span class="text-xs text-parchment-400">🎨 Menggambar... (~90 detik di SIDIX local GPU)</span>
+      </div>`
+    : `<div class="msg-ai px-5 py-4 flex items-center gap-2">
+        <div class="thinking-dot"></div>
+        <div class="thinking-dot"></div>
+        <div class="thinking-dot"></div>
+      </div>`;
   chatMessages.appendChild(thinking);
   chatMessages.scrollTop = chatMessages.scrollHeight;
 
