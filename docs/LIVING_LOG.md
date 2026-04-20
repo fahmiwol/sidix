@@ -3338,3 +3338,58 @@ P0 agents to build: generate_copy, plan_content_calendar, generate_brand_kit, ge
 
 ### Research feeding queue
 User ready to feed riset tambahan kalau dibutuhkan. Request saat butuh data/framework baru per vertical.
+
+## 2026-04-21 (tabayyun & adopsi riset D:\RiSet SIDIX)
+
+User mandat: baca riset folder D:\RiSet SIDIX dengan tabayyun, cermat, hati-hati, bijaksana. Olah apapun yang bisa diadopsi demi visi SIDIX.
+
+### Inventory (~80 file)
+- Full Python microservice skeleton sidix-creative-agent/ (gateway/brain/memory/evolution/pipeline/skills/monitoring + 10 domain agents)
+- 17 research blueprints (meta_vision, sloyd_meshy, blender_mcp, vibe_coding, npc_cognitive, continuous_learning, agentic_ux, audio_music, video_orchestration, swe_agents, parametric_design, rgb_calibration, mlops_tracking, canvas_ux, quranic_epistemology)
+- 8 corpus philosophy docs (01-08)
+- 6 IHOS Reference HTML + markdown
+- Strategic docs: framework_methods_modules, PRD antigravity, ERD, architecture_ref, implementation_roadmap, cost_analysis
+- LoRA seed training dataset + system prompt
+- 4 academic PDF
+
+### 10 Asset TOP DIADOPSI (ranked by impact+alignment)
+
+1. **7 Principles of SIDIX** (Agent-First, Own-Stack IHOS, Evolve-or-Die, Strategy-before-Aesthetics, Cross-Domain Synergy, Quality-through-Iteration, Cultural Intelligence). 7/7 aligned. ADOPT: upgrade CLAUDE.md + SIDIX_BIBLE.
+2. **ASPEC methodology** (Analyze-Specialize-Pipeline-Evolve-Connect). Template wajib tiap agent baru.
+3. **SEM 5-level maturity** (Reactive/Systematic/Automated/Adaptive/Creative). Current L1, target L2 Sprint 5, L3 Sprint 8.
+4. **CQF Creative Quality Framework** (Relevance 25/Quality 25/Creativity 20/Brand 15/Actionability 15, min 7.0). Quality gate wajib.
+5. **Iteration Protocol 4-round** (Generate->Evaluate->Refine->Enhance, threshold 5.0/7.0/8.5). Killer UX "jangan kasih output pertama".
+6. **Debate Ring** multi-agent consensus (Creator vs Critic 3 rounds). Pair: Copywriter-Strategist, BrandBuilder-Designer, dll.
+7. **Voyager Protocol** dynamic tool creator (SIDIX tulis Python sendiri saat lack tool). AST security scan. Sprint 6+ karena risk.
+8. **Muhasabah Loop** (Niyah-Amal-Muhasabah) + Synaptic Memory Routing 4-layer (Primary->Hadith->Ijma->Fatwa). Aligned 100% dengan IHOS SIDIX.
+9. **Skill Library YAML format** (replace Python dict registration). Setiap tool punya .yaml spec.
+10. **Extend taxonomy 8->10 domain** tambah 3D Modeling + Gaming AI. 28->37 agent target.
+
+### FLAG (tidak langsung adopt, perlu review)
+- Docker-compose full (postgres/redis/minio/celery) - complexity creep. Adopt bertahap saat scale butuh.
+- 'Weekly LoRA mandatory' - ideal tapi infra belum autonomous, target monthly dulu.
+- Mock implementation di debate_ring.py + dynamic_tool_creator.py (sim hardcoded) - wajib wire real LLM saat implement.
+- Qwen3 reference - tetap Qwen2.5-7B + LoRA sampai Qwen3 benar-benar rilis.
+- 07_bytedance_seed_architects - flag untuk baca detail sesi nanti.
+
+### DOCs TERCATAT
+- brain/public/research_notes/169_riset_sidix_folder_adopsi_framework.md (BARU, sanad_tier=primer) - detail 10 asset + flag + concrete adoption plan Sprint 4-7+
+- docs/CREATIVE_AGENT_TAXONOMY.md UPDATED:
+  * Domain 8 -> 10 (tambah 3D Modeling 4 agent, Gaming AI 4 agent)
+  * Section Quality + Iteration Protocol (CQF 5 dimension + Iteration 4-round + Debate Pairings table)
+  * Status dashboard 28 -> 37 agent target
+
+### 3 Killer Asset yang jadi moat SIDIX
+Menurut analisis: CQF + Iteration Protocol + Debate Ring. Big tech punya tapi tidak transparan. OSS lain tidak punya. SIDIX bisa jadi 'OSS kualitas setara big tech karena multi-agent + quality gate + iteration'.
+
+### Concrete Sprint Plan (per note 169)
+- Sprint 4 minggu ini: upgrade SIDIX_BIBLE 7 Principles + creative_quality.py (CQF) + muhasabah_loop.py + YAML skill defs migration + 10 domain extension
+- Sprint 5: debate_ring.py real impl + Iteration Protocol + Agency Kit 1-click
+- Sprint 6: voyager_protocol.py + SEM L2 (DSPy auto-prompt) + ASPEC docstring wajib
+- Sprint 7+: scale infra, blueprint detail extraction, LoRA Kaggle auto-submit
+
+### Prinsip kerja tabayyun yang dipakai
+1. Baca source file utuh bukan ringkasan
+2. Verify alignment dengan SIDIX identity (IHOS + standing-alone + UI LOCK)
+3. Implement with attribution + link balik sumber
+4. Rolling adoption 3-5 item per sprint (jangan semua sekaligus)

@@ -1,9 +1,9 @@
 # SIDIX Creative Agent Taxonomy
 
-**SSoT** untuk 8 vertical creative domain + AI agent yang akan dibangun.
-Dokumen ini TIDAK ada detail teknis — itu di research note 168. Ini index + status tracker.
+**SSoT** untuk **10 vertical creative domain** + AI agent yang akan dibangun.
+Dokumen ini TIDAK ada detail teknis — itu di research note 168 + 169. Ini index + status tracker.
 
-**Last update:** 2026-04-20
+**Last update:** 2026-04-21 (extended 8→10 domain per adopsi riset user, note 169)
 
 ---
 
@@ -76,6 +76,57 @@ Dokumen ini TIDAK ada detail teknis — itu di research note 168. Ini index + st
 | `write_article` | topic, angle, length | long-form article with SEO | ⏳ P1 |
 | `write_script_drama` | logline, genre | 3-act script outline | ⏳ P2 |
 
+### 9. 🔮 3D Modeling (extension dari riset user — note 169)
+| Agent | Input | Output | Status |
+|-------|-------|--------|--------|
+| `text_to_3d` | prompt | .glb/.obj mesh (via Hunyuan3D / Sloyd) | ⏳ P2 |
+| `image_to_3d` | reference image | mesh dengan texture | ⏳ P2 |
+| `procedural_3d` | parameters | parametric mesh (Blender Python API) | ⏳ P2 |
+| `asset_3d_manager` | — | registry + tag + search untuk aset 3D | ⏳ P3 |
+
+### 10. 🎮 Gaming AI (extension dari riset user — note 169)
+| Agent | Input | Output | Status |
+|-------|-------|--------|--------|
+| `npc_generator` | personality, role, lore | NPC sheet + dialogue tree | ⏳ P2 |
+| `level_designer` | gameplay goal, genre | map grid + obstacles + objectives | ⏳ P3 |
+| `game_assets` | art style, list items | sprite sheets + icons set | ⏳ P3 |
+| `world_generator` | genre, biome | biome/quest/faction bible | ⏳ P3 |
+
+---
+
+## 🎚️ Quality + Iteration Protocol (dari note 169 adopsi riset user)
+
+### CQF Quality Gate (Creative Quality Framework)
+
+Setiap agent output wajib lewat quality scoring:
+
+| Dimension | Weight | Min for delivery |
+|-----------|--------|------------------|
+| Relevance | 25% | 7.0 |
+| Quality | 25% | 7.0 |
+| Creativity | 20% | 6.5 |
+| Brand Alignment | 15% | 6.5 |
+| Actionability | 15% | 7.0 |
+| **Total weighted** | 100% | **≥ 7.0** |
+
+### Iteration Protocol (4-round)
+
+Agent yang flag `needs_iteration = true` wajib:
+1. **Round 1 GENERATE** — 3-5 variants, fast model, threshold 5.0
+2. **Round 2 EVALUATE** — LLM-as-Judge pilih top 2, identify weakness
+3. **Round 3 REFINE** — polish, heavy model, threshold 7.0
+4. **Round 4 ENHANCE** (premium) — threshold 8.5
+
+### Debate Ring Pairings (multi-agent consensus)
+
+| Creator | Critic | Konteks |
+|---------|--------|---------|
+| Copywriter | Campaign Strategist | Tone fit audience? |
+| Brand Builder | Design Assistant | Palette fit archetype? |
+| Script Generator | Hook Finder | Opening cukup catchy? |
+| Product Description | Marketing Ads | Copy converts? |
+| Character Builder | Story Writer | Persona konsisten dengan lore? |
+
 ---
 
 ## 🎁 Agency Kit (one-click bundle) — TARGET SPRINT 5
@@ -93,16 +144,16 @@ SIDIX output (1 click):
 
 ---
 
-## 📊 Status Dashboard
+## 📊 Status Dashboard (updated 2026-04-21)
 
 | Status | Count |
 |--------|-------|
 | ✅ LIVE | 1 (text_to_image) |
 | ⏳ P0 (Sprint 4) | 6 |
 | ⏳ P1 (Sprint 5) | 8 |
-| ⏳ P2 (Sprint 6) | 9 |
-| ⏳ P3 (Sprint 7+) | 4 |
-| **Total target** | **28 agent** |
+| ⏳ P2 (Sprint 6) | 14 (9 + 5 dari 3D/Gaming) |
+| ⏳ P3 (Sprint 7+) | 8 (4 + 4 dari 3D/Gaming/video) |
+| **Total target** | **37 agent** (naik dari 28 setelah adopsi riset user) |
 
 ---
 
