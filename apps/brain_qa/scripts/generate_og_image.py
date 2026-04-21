@@ -73,35 +73,46 @@ def generate_og_image(output_path: str = "/www/wwwroot/sidixlab.com/og-image.png
         sub_font = ImageFont.load_default()
         small_font = ImageFont.load_default()
 
-    # Logo / brand mark (top-left)
-    draw.text((60, 60), "SIDIX", fill=GOLD, font=title_font)
-    draw.text((60, 155), "by Mighan Lab", fill=(200, 195, 178), font=small_font)
+    # Free Open Source badge (top-right area)
+    BADGE_BG = (30, 90, 40)  # dark green
+    draw.rounded_rectangle([(W - 360, 50), (W - 60, 110)], radius=8, fill=BADGE_BG)
+    draw.text((W - 340, 63), "FREE  OPEN SOURCE", fill=(120, 230, 130), font=small_font)
 
-    # Tagline tengah
+    # Logo / brand mark (top-left)
+    draw.text((60, 50), "SIDIX", fill=GOLD, font=title_font)
+    draw.text((60, 148), "by Mighan Lab", fill=(200, 195, 178), font=small_font)
+
+    # Tagline tengah — main pitch
     PARCH = (245, 240, 220)   # parchment-100
     draw.text(
-        (60, 280),
-        "Self-Hosted AI Agent",
+        (60, 240),
+        "Free & Open Source",
+        fill=GOLD,
+        font=title_font,
+    )
+    draw.text(
+        (60, 340),
+        "AI Agent",
         fill=PARCH,
         font=title_font,
     )
     draw.text(
-        (60, 380),
-        "with Epistemic Integrity",
+        (60, 435),
+        "Self-Hosted · Self-Learning · No Vendor API",
         fill=PARCH,
         font=sub_font,
     )
 
     # Subtitle bawah
     draw.text(
-        (60, 460),
-        "Open-source · Indonesian · Islamic Epistemology",
+        (60, 490),
+        "Qwen2.5-7B + LoRA · 35 tools · 100% Local Inference",
         fill=(180, 175, 158),
         font=small_font,
     )
     draw.text(
-        (60, 500),
-        "Sanad-verified · 100% Local Inference",
+        (60, 530),
+        "Built on Islamic Epistemology (IHOS) · MIT License",
         fill=(180, 175, 158),
         font=small_font,
     )
