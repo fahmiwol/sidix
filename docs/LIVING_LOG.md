@@ -3568,4 +3568,12 @@ Fokus pada "what architecture of knowledge means, not volume of knowledge."
 
 [DECISION] prompt_optimizer permission=restricted (bukan open) karena modifikasi template bisa mempengaruhi output semua users. Perlu explicit allow_restricted=True di agent pipeline.
 
+## 2026-04-21 — Sprint 5 DONE & LIVE
+
+[DEPLOY] PR #4 feat/sprint5-agency-kit → main merged. VPS git pull: Already up to date. pm2 restart sidix-brain: online (pid 142308).
+
+[NOTE] Sprint 5 selesai dalam satu sesi. Semua T5.1–T5.5 live di VPS. Context window ~59% terpakai saat penutupan sesi. Sesi berikutnya mulai dari Sprint 6 quick wins (lihat SPRINT5_ADOPTION_PLAN.md §5).
+
+[NOTE] Kredensial SSH tidak dicatat — hanya dipakai sekali untuk deploy, tidak masuk ke file apapun.
+
 [NOTE] Sprint 5 worktree: D:\MIGHAN Model\sprint5\ — branch feat/sprint5-agency-kit. File baru: llm_judge.py, agent_tools.py (copy+extend dari main), agent_serve.py (copy+extend).
