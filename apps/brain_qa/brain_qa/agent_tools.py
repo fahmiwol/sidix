@@ -1044,6 +1044,253 @@ def _tool_disabled(args: dict) -> ToolResult:
     return ToolResult(success=False, output="", error="Tool ini disabled oleh permission gate")
 
 
+# ── Sprint 5 Tools ─────────────────────────────────────────────────────────────
+
+def _tool_curator_run(args: dict) -> ToolResult:
+    """Jalankan self-train curation pipeline dari corpus."""
+    min_score = float(args.get("min_score", 0.45))
+    dry_run = bool(args.get("dry_run", False))
+
+    try:
+        from .curator_agent import run_curation
+        result = run_curation(min_score=min_score, dry_run=dry_run)
+    except Exception as e:
+        return ToolResult(success=False, output="", error=f"curator_run gagal: {e}")
+
+    if not result.get("ok"):
+        return ToolResult(success=False, output="", error=str(result.get("error", "unknown")))
+
+    lines = [
+        "# Curator Agent — Self-Train Curation",
+        f"- Scanned: {result.get('scanned')} dokumen",
+        f"- Scored (pass threshold): {result.get('scored')}",
+        f"- Exported pairs: {result.get('exported')}",
+        f"- Output file: {result.get('output_file') or '(dry-run, tidak disimpan)'}",
+        f"- Elapsed: {result.get('elapsed_s')}s",
+    ]
+    warnings = result.get("warnings", [])
+    if warnings:
+        lines.append("\n## Warnings")
+        for w in warnings[:5]:
+            lines.append(f"- {w}")
+
+    return ToolResult(
+        success=True,
+        output="\n".join(lines),
+        citations=[{
+            "type": "curator_run",
+            "exported": result.get("exported"),
+            "dry_run": dry_run,
+        }],
+    )
+
+
+def _tool_debate_ring(args: dict) -> ToolResult:
+    """Jalankan multi-agent debate Creator ↔ Critic."""
+    pair_type = str(args.get("pair_type", "copy_vs_strategy")).strip()
+    content = str(args.get("content", "")).strip()
+    context = str(args.get("context", "")).strip()
+
+    if not content:
+        return ToolResult(success=False, output="", error="content wajib diisi")
+
+    try:
+        from .debate_ring import (
+            debate_copy_vs_strategy,
+            debate_brand_vs_design,
+            debate_hook_vs_audience,
+            run_debate_as_dict,
+        )
+
+        pair_map = {
+            "copy_vs_strategy": debate_copy_vs_strategy,
+            "brand_vs_design": debate_brand_vs_design,
+            "hook_vs_audience": debate_hook_vs_audience,
+        }
+
+        fn = pair_map.get(pair_type)
+        if fn is None:
+            return ToolResult(
+                success=False, output="",
+                error=f"pair_type '{pair_type}' tidak valid. Pilih: {list(pair_map.keys())}",
+            )
+
+        result = fn(content, context)
+        d = run_debate_as_dict(result)
+
+    except Exception as e:
+        return ToolResult(success=False, output="", error=f"debate_ring gagal: {e}")
+
+    lines = [
+        f"# Debate Ring — {d['pair_id']}",
+        f"- Konsensus: {'Ya' if d['consensus'] else 'Tidak (max round tercapai)'}",
+        f"- Rounds: {d['rounds_taken']}",
+        f"- Final CQF: {d['final_cqf']}",
+        f"- Elapsed: {d['elapsed_s']}s",
+        "",
+        "## Final Output",
+        d["final_prototype"],
+    ]
+
+    return ToolResult(
+        success=True,
+        output="\n".join(lines),
+        citations=[{
+            "type": "debate_ring",
+            "pair_id": d["pair_id"],
+            "consensus": d["consensus"],
+            "final_cqf": d["final_cqf"],
+        }],
+    )
+
+
+def _tool_agency_kit(args: dict) -> ToolResult:
+    """Build Agency Kit lengkap dalam 1 panggilan."""
+    business_name = str(args.get("business_name", "")).strip()
+    niche = str(args.get("niche", "")).strip()
+    target_audience = str(args.get("target_audience", "")).strip()
+    budget = str(args.get("budget", "1.5jt")).strip() or "1.5jt"
+
+    if not business_name:
+        return ToolResult(success=False, output="", error="business_name wajib diisi")
+    if not niche:
+        return ToolResult(success=False, output="", error="niche wajib diisi")
+
+    try:
+        from .agency_kit import build_agency_kit
+        result = build_agency_kit(
+            business_name=business_name,
+            niche=niche,
+            target_audience=target_audience or "audiens Indonesia umum",
+            budget=budget,
+        )
+    except Exception as e:
+        return ToolResult(success=False, output="", error=f"agency_kit gagal: {e}")
+
+    if not result.get("ok"):
+        return ToolResult(success=False, output="", error=str(result.get("error", "unknown")))
+
+    lines = [
+        "# Agency Kit — 1-Click Brand Package",
+        f"- Bisnis: {result.get('business_name')}",
+        f"- Niche: {result.get('niche')}",
+        f"- Target: {result.get('target_audience')}",
+        f"- Budget: Rp {result.get('budget_idr', 0):,}".replace(",", "."),
+        f"- CQF Composite: {result.get('cqf_composite')} ({result.get('cqf_tier')})",
+        f"- Captions: {result.get('caption_count')} caption",
+        f"- Content Plan: {result.get('content_plan_slots')} slots",
+        f"- Elapsed: {result.get('elapsed_s')}s",
+        "",
+        "## Summary",
+        result.get("summary", ""),
+    ]
+    warnings = result.get("warnings", [])
+    if warnings:
+        lines.append("\n## Warnings")
+        for w in warnings[:5]:
+            lines.append(f"- {w}")
+
+    return ToolResult(
+        success=True,
+        output="\n".join(lines),
+        citations=[{
+            "type": "agency_kit",
+            "business_name": business_name,
+            "cqf_composite": result.get("cqf_composite"),
+            "caption_count": result.get("caption_count"),
+        }],
+    )
+
+
+def _tool_llm_judge(args: dict) -> ToolResult:
+    """Evaluasi kualitas konten menggunakan LLM-as-Judge."""
+    content = str(args.get("content", "")).strip()
+    brief = str(args.get("brief", "")).strip()
+    domain = str(args.get("domain", "content")).strip() or "content"
+
+    if not content:
+        return ToolResult(success=False, output="", error="content wajib diisi")
+
+    try:
+        from .llm_judge import judge_content
+        result = judge_content(content=content, brief=brief, domain=domain)
+    except Exception as e:
+        return ToolResult(success=False, output="", error=f"llm_judge gagal: {e}")
+
+    if not result.get("ok"):
+        return ToolResult(success=False, output="", error=str(result.get("error", "unknown")))
+
+    scores = result.get("scores", {})
+    lines = [
+        "# LLM Judge — Content Evaluation",
+        f"- Domain: {result.get('domain')}",
+        f"- Mode: {result.get('mode')} (llm / heuristic)",
+        f"- Total Score: {result.get('total')} → Tier: {result.get('tier')}",
+        f"- Elapsed: {result.get('elapsed_s')}s",
+        "",
+        "## Scores per Criterion",
+    ]
+    for criterion, score in scores.items():
+        lines.append(f"- {criterion}: {score:.1f}/10")
+
+    if result.get("rationale"):
+        lines.extend(["", "## Rationale", result["rationale"]])
+    if result.get("recommendation"):
+        lines.extend(["", "## Recommendation", result["recommendation"]])
+
+    return ToolResult(
+        success=True,
+        output="\n".join(lines),
+        citations=[{
+            "type": "llm_judge",
+            "domain": result.get("domain"),
+            "total": result.get("total"),
+            "tier": result.get("tier"),
+        }],
+    )
+
+
+def _tool_prompt_optimizer(args: dict) -> ToolResult:
+    """Optimalkan prompt template agent berdasarkan accepted outputs (L1 Self-Evolution)."""
+    agent = str(args.get("agent", "")).strip()
+    domain = str(args.get("domain", "content")).strip() or "content"
+    force = bool(args.get("force", False))
+    dry_run = bool(args.get("dry_run", False))
+
+    if not agent:
+        return ToolResult(success=False, output="", error="agent wajib diisi (copywriter/brand_builder/campaign_strategist/...)")
+
+    try:
+        from .prompt_optimizer import optimize_prompt
+        result = optimize_prompt(agent=agent, domain=domain, force=force, dry_run=dry_run)
+    except Exception as e:
+        return ToolResult(success=False, output="", error=f"prompt_optimizer gagal: {e}")
+
+    lines = [
+        "# Prompt Optimizer — Hasil",
+        f"- Agent: {result.agent}",
+        f"- Version: v{result.version}",
+        f"- Baseline Score: {result.baseline_score:.2f}",
+        f"- Optimized Score: {result.optimized_score:.2f}",
+        f"- Improvement: {result.improvement:+.2f}",
+        f"- Accepted: {'✅ Ya' if result.accepted else '❌ Tidak (rollback ke versi lama)'}",
+        f"- Demos Used: {result.demos_used}",
+        f"- Status: {result.notes}",
+        f"- Elapsed: {result.elapsed_s}s",
+    ]
+    return ToolResult(
+        success=result.ok,
+        output="\n".join(lines),
+        citations=[{
+            "type": "prompt_optimizer",
+            "agent": result.agent,
+            "version": result.version,
+            "improvement": result.improvement,
+            "accepted": result.accepted,
+        }],
+    )
+
+
 # ── web_fetch — own stack, fetch HTML publik, strip ke markdown/plain ─────────
 _WEB_FETCH_MAX_BYTES = 800_000  # ~800 KB HTML mentah
 _WEB_FETCH_TEXT_LIMIT = 6000    # karakter teks yang dikembalikan ke agent
@@ -1963,6 +2210,67 @@ TOOL_REGISTRY: dict[str, ToolSpec] = {
         params=["target"],
         permission="open",
         fn=_tool_self_inspect,
+    ),
+    # ── Sprint 5 Tools ─────────────────────────────────────────────────────────
+    "curator_run": ToolSpec(
+        name="curator_run",
+        description=(
+            "Jalankan curation pipeline untuk export JSONL training pairs dari corpus. "
+            "Scoring: relevance×sanad×maqashid×dedupe. "
+            "Params: min_score (float, default 0.45), dry_run (bool, default false)."
+        ),
+        params=["min_score", "dry_run"],
+        permission="open",
+        fn=_tool_curator_run,
+    ),
+    "debate_ring": ToolSpec(
+        name="debate_ring",
+        description=(
+            "Jalankan multi-agent debate antara Creator dan Critic untuk memperbaiki konten. "
+            "Pair tersedia: copy_vs_strategy, brand_vs_design, hook_vs_audience. "
+            "Params: pair_type (str), content (str, wajib), context (str opsional)."
+        ),
+        params=["pair_type", "content", "context"],
+        permission="open",
+        fn=_tool_debate_ring,
+    ),
+    "agency_kit": ToolSpec(
+        name="agency_kit",
+        description=(
+            "Build Agency Kit lengkap dalam 1 panggilan: brand kit + 10 captions + "
+            "30-day plan + campaign + ads + thumbnails. "
+            "Params: business_name (str, wajib), niche (str, wajib), "
+            "target_audience (str, opsional), budget (str opsional, default '1.5jt')."
+        ),
+        params=["business_name", "niche", "target_audience", "budget"],
+        permission="open",
+        fn=_tool_agency_kit,
+    ),
+    "llm_judge": ToolSpec(
+        name="llm_judge",
+        description=(
+            "Evaluasi kualitas konten menggunakan LLM-as-Judge. Lebih eksplisit dan "
+            "dapat-diaudit daripada CQF heuristic saja. "
+            "Params: content (str, wajib), brief (str opsional), "
+            "domain (str: content|brand|campaign|design, default 'content')."
+        ),
+        params=["content", "brief", "domain"],
+        permission="open",
+        fn=_tool_llm_judge,
+    ),
+    "prompt_optimizer": ToolSpec(
+        name="prompt_optimizer",
+        description=(
+            "Optimalkan prompt template agent secara otomatis berdasarkan accepted outputs "
+            "(Self-Evolution Level 1). Analisis pola output terbaik → ekstrak few-shot demos "
+            "→ inject ke template → evaluasi improvement. "
+            "Parameter: agent (str: copywriter/brand_builder/campaign_strategist/content_planner/ads_generator), "
+            "domain (str: content|brand|campaign, default content), "
+            "force (bool, override min-sample check), dry_run (bool, simulasi tanpa simpan)."
+        ),
+        params=["agent", "domain", "force", "dry_run"],
+        permission="restricted",
+        fn=_tool_prompt_optimizer,
     ),
 }
 

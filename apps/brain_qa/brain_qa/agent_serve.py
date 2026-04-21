@@ -3128,6 +3128,46 @@ h1{{color:#0af}}p{{color:#aaa}}a{{color:#0af}}</style></head>
         except Exception as e:
             return {"ok": False, "error": str(e)}
 
+    # ── Sprint 5: Creative Agency Kit endpoint ───────────────────────────────
+    @app.post("/creative/agency_kit", tags=["Creative"])
+    def creative_agency_kit(body: dict[str, Any] = {}):
+        """
+        Build Agency Kit lengkap dalam 1 panggilan.
+
+        Body:
+          business_name   (str, wajib) — nama bisnis/brand
+          niche           (str, wajib) — bidang usaha (kuliner, fashion, jasa, dll)
+          target_audience (str)        — deskripsi audiens target
+          budget          (str)        — budget iklan (contoh: '1.5jt', '500rb', default '1.5jt')
+
+        Returns:
+          {ok, brand_kit, captions, content_plan, campaign, ads, thumbnails,
+           cqf_composite, cqf_tier, elapsed_s, warnings}
+        """
+        try:
+            from .agency_kit import build_agency_kit
+            business_name = str((body or {}).get("business_name", "")).strip()
+            niche = str((body or {}).get("niche", "")).strip()
+            target_audience = str((body or {}).get("target_audience", "")).strip()
+            budget = str((body or {}).get("budget", "1.5jt")).strip() or "1.5jt"
+
+            if not business_name:
+                raise HTTPException(status_code=400, detail="business_name wajib diisi")
+            if not niche:
+                raise HTTPException(status_code=400, detail="niche wajib diisi")
+
+            result = build_agency_kit(
+                business_name=business_name,
+                niche=niche,
+                target_audience=target_audience or "audiens Indonesia umum",
+                budget=budget,
+            )
+            return result
+        except HTTPException:
+            raise
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
     # ── Concept graph endpoint (Sprint 1 T1.4) ───────────────────────────────
     @app.get("/concept_graph/query")
     def concept_graph_query(request: Request, concept: str = "", depth: int = 1, max_related: int = 5):
