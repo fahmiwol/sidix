@@ -3599,3 +3599,9 @@ Fokus pada "what architecture of knowledge means, not volume of knowledge."
 [DOC] `brain/public/research_notes/181_sprint6_flywheel_fixes_cron.md` — dokumentasi lengkap: arsitektur flywheel, tabel signature fix, cron setup, keterbatasan.
 
 [DECISION] Cron `/creative/prompt_optimize/all` diset Senin 04:00 UTC (bukan harian) karena `MIN_SAMPLES_TO_OPTIMIZE=20` perlu waktu terkumpul dari production traffic. Weekly cukup untuk iterasi L1.
+
+[DEPLOY] VPS: `git pull origin main` → 7 file Sprint 6 masuk. `pm2 restart sidix-brain` → online pid=142922. `/health` → ok, tools_available=35. Semua service live (sidix-brain, sidix-ui, revolusitani, shopee-gateway, abra-website, galantara-mp, tiranyx).
+
+[NOTE] Sesi ditutup karena context 68% + rate limit 70%. Handoff dicatat di `docs/HANDOFF_2026-04-21_SPRINT6.md`. Sesi berikutnya: curator_agent score_gte_85 (S) → test coverage → Sprint 6 full (3D/Voyager).
+
+[NOTE] Cron VPS belum dipasang — masih TODO manual: `crontab -e` → tambah `0 4 * * MON curl POST /creative/prompt_optimize/all`.
