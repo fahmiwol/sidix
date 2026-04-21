@@ -3577,3 +3577,25 @@ Fokus pada "what architecture of knowledge means, not volume of knowledge."
 [NOTE] Kredensial SSH tidak dicatat — hanya dipakai sekali untuk deploy, tidak masuk ke file apapun.
 
 [NOTE] Sprint 5 worktree: D:\MIGHAN Model\sprint5\ — branch feat/sprint5-agency-kit. File baru: llm_judge.py, agent_tools.py (copy+extend dari main), agent_serve.py (copy+extend).
+
+## 2026-04-21 — Sprint 6 Quick Wins
+
+### T6.1 — Flywheel L1 Aktif
+[IMPL] `muhasabah_loop.py` — patch `run_muhasabah_loop()`: saat `gate["total"] >= min_score`, otomatis memanggil `log_accepted_output(agent=domain, ...)` sebelum return. Non-blocking (try/except pass). Ini mengaktifkan data flywheel L1 yang sudah disiapkan Sprint 5 — accepted outputs kini otomatis masuk ke `.data/accepted_outputs.jsonl` tanpa intervensi manual.
+
+### T6.2 — Signature Fix Sprint 4
+[FIX] `brand_builder.py` — tambah parameter `target_audience: str = ""` ke `generate_brand_kit()`. Default: `audiens {niche} Indonesia`. Output dict juga menyertakan field `target_audience`. Root cause: Sprint 4 tidak implementasikan param ini meski `prompt_optimizer._BASE_PROMPTS["brand_builder"]` sudah menyertakan `{target_audience}` di template — menyebabkan `KeyError` saat optimizer mencoba evaluasi template baru.
+
+[FIX] `content_planner.py` — tambah parameter `target_audience: str = ""` ke `generate_content_plan()`. Default: `audiens {niche} Indonesia`. Output dict juga menyertakan field `target_audience`.
+
+[FIX] `agent_tools.py` — `_tool_generate_brand_kit` dan `_tool_generate_content_plan` kini mem-pass `target_audience` dari args ke function. ToolSpec `params` list diupdate untuk kedua tool. Backward compatible — caller lama tetap berfungsi.
+
+### T6.3 — Cron Weekly Optimizer
+[IMPL] `agent_serve.py` — tambah 3 endpoint baru tag `Creative`:
+- `POST /creative/prompt_optimize/all` — jalankan `optimize_all_agents()`, admin-only. Dilengkapi docstring cron example: `0 4 * * MON curl -s -X POST https://ctrl.sidixlab.com/creative/prompt_optimize/all -H "X-Admin-Token: $BRAIN_QA_ADMIN_TOKEN"`.
+- `POST /creative/prompt_optimize/{agent}` — optimalkan satu agent spesifik, admin-only.
+- `GET /creative/prompt_optimize/stats` — baca stats run terakhir, public.
+
+[DOC] `brain/public/research_notes/181_sprint6_flywheel_fixes_cron.md` — dokumentasi lengkap: arsitektur flywheel, tabel signature fix, cron setup, keterbatasan.
+
+[DECISION] Cron `/creative/prompt_optimize/all` diset Senin 04:00 UTC (bukan harian) karena `MIN_SAMPLES_TO_OPTIMIZE=20` perlu waktu terkumpul dari production traffic. Weekly cukup untuk iterasi L1.

@@ -3168,6 +3168,71 @@ h1{{color:#0af}}p{{color:#aaa}}a{{color:#0af}}</style></head>
         except Exception as e:
             return {"ok": False, "error": str(e)}
 
+    # ── Sprint 6: Prompt Optimizer endpoints ────────────────────────────────
+    @app.post("/creative/prompt_optimize/all", tags=["Creative"])
+    async def creative_prompt_optimize_all(request: Request):
+        """
+        Jalankan optimize_all_agents() untuk semua domain creative.
+        Admin-only. Cocok dipanggil via cron: Senin 04:00 UTC.
+
+        Cron example (crontab VPS):
+          0 4 * * MON curl -s -X POST https://ctrl.sidixlab.com/creative/prompt_optimize/all \\
+            -H "X-Admin-Token: $BRAIN_QA_ADMIN_TOKEN"
+
+        Body (opsional):
+          dry_run (bool, default false) — simulasi tanpa tulis file
+          force   (bool, default false) — paksa meski sample kurang dari minimum
+        """
+        if not _admin_ok(request):
+            raise HTTPException(status_code=403, detail="admin token diperlukan")
+        body: dict = {}
+        try:
+            body = await request.json()
+        except Exception:
+            pass
+        dry_run = bool((body or {}).get("dry_run", False))
+        force = bool((body or {}).get("force", False))
+        try:
+            from .prompt_optimizer import optimize_all_agents
+            result = optimize_all_agents(dry_run=dry_run, force=force)
+            return result
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    @app.post("/creative/prompt_optimize/{agent}", tags=["Creative"])
+    async def creative_prompt_optimize_one(agent: str, request: Request):
+        """
+        Optimalkan prompt untuk satu agent. Admin-only.
+        agent: copywriter | brand_builder | campaign_strategist | content_planner | ads_generator
+
+        Body (opsional): dry_run (bool), force (bool)
+        """
+        if not _admin_ok(request):
+            raise HTTPException(status_code=403, detail="admin token diperlukan")
+        body: dict = {}
+        try:
+            body = await request.json()
+        except Exception:
+            pass
+        dry_run = bool((body or {}).get("dry_run", False))
+        force = bool((body or {}).get("force", False))
+        try:
+            from .prompt_optimizer import optimize_prompt, get_optimizer_stats
+            result = optimize_prompt(agent=agent, force=force, dry_run=dry_run)
+            from dataclasses import asdict
+            return asdict(result)
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    @app.get("/creative/prompt_optimize/stats", tags=["Creative"])
+    def creative_prompt_optimize_stats():
+        """Statistik run optimize terakhir. Public read-only."""
+        try:
+            from .prompt_optimizer import get_optimizer_stats
+            return get_optimizer_stats()
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
     # ── Concept graph endpoint (Sprint 1 T1.4) ───────────────────────────────
     @app.get("/concept_graph/query")
     def concept_graph_query(request: Request, concept: str = "", depth: int = 1, max_related: int = 5):

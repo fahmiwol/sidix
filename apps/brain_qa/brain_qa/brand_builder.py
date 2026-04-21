@@ -45,11 +45,13 @@ def generate_brand_kit(
     *,
     business_name: str,
     niche: str,
+    target_audience: str = "",
     vibe: str = "modern, warm, trustworthy",
     archetype: str | None = None,
 ) -> dict:
     name = (business_name or "").strip()
     domain = (niche or "").strip()
+    audience = (target_audience or "").strip() or f"audiens {domain} Indonesia"
     if not name:
         return {"ok": False, "error": "business_name wajib diisi"}
     if not domain:
@@ -85,6 +87,7 @@ def generate_brand_kit(
         "ok": True,
         "business_name": name,
         "niche": domain,
+        "target_audience": audience,
         "vibe": vibe,
         "archetype": selected_arch,
         "archetype_meta": meta,

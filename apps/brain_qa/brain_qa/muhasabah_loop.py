@@ -46,6 +46,18 @@ def run_muhasabah_loop(
             }
         )
         if gate["total"] >= float(min_score):
+            # Flywheel L1: catat accepted output agar prompt_optimizer bisa belajar
+            try:
+                from .prompt_optimizer import log_accepted_output
+                log_accepted_output(
+                    agent=domain,
+                    prompt_params={"brief": brief},
+                    output_text=current,
+                    score=gate["total"],
+                    domain=domain,
+                )
+            except Exception:
+                pass  # non-blocking
             return {
                 "ok": True,
                 "passed": True,

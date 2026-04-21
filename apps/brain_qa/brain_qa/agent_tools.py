@@ -136,6 +136,7 @@ def _tool_generate_content_plan(args: dict) -> ToolResult:
 
         result = generate_content_plan(
             niche=str(args.get("niche", "")).strip(),
+            target_audience=str(args.get("target_audience", "")).strip(),
             duration_days=int(args.get("duration_days", 30)),
             channel=str(args.get("channel", "instagram")).strip() or "instagram",
             cadence_per_week=int(args.get("cadence_per_week", 5)),
@@ -182,6 +183,7 @@ def _tool_generate_brand_kit(args: dict) -> ToolResult:
         result = generate_brand_kit(
             business_name=str(args.get("business_name", "")).strip(),
             niche=str(args.get("niche", "")).strip(),
+            target_audience=str(args.get("target_audience", "")).strip(),
             vibe=str(args.get("vibe", "modern, warm, trustworthy")).strip(),
             archetype=str(args.get("archetype", "")).strip() or None,
         )
@@ -2111,9 +2113,9 @@ TOOL_REGISTRY: dict[str, ToolSpec] = {
         name="generate_content_plan",
         description=(
             "Generate kalender konten (JSON) sesuai niche + channel + durasi. "
-            "Params: niche (wajib), duration_days, channel, cadence_per_week, objective."
+            "Params: niche (wajib), target_audience, duration_days, channel, cadence_per_week, objective."
         ),
-        params=["niche", "duration_days", "channel", "cadence_per_week", "objective"],
+        params=["niche", "target_audience", "duration_days", "channel", "cadence_per_week", "objective"],
         permission="open",
         fn=_tool_generate_content_plan,
     ),
@@ -2121,9 +2123,9 @@ TOOL_REGISTRY: dict[str, ToolSpec] = {
         name="generate_brand_kit",
         description=(
             "Generate brand kit: archetype, palette, tone, onlyness, golden circle, logo prompts. "
-            "Params: business_name (wajib), niche (wajib), vibe, archetype."
+            "Params: business_name (wajib), niche (wajib), target_audience, vibe, archetype."
         ),
-        params=["business_name", "niche", "vibe", "archetype"],
+        params=["business_name", "niche", "target_audience", "vibe", "archetype"],
         permission="open",
         fn=_tool_generate_brand_kit,
     ),
