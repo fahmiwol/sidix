@@ -178,11 +178,11 @@ Growth:    prompt_optimizer · roadmap_* · workspace_*
   title={SIDIX: Free & Open Source AI Agent Built on Islamic Epistemology},
   author={Mighan Lab},
   year={2026},
-  url={https://github.com/fahmiwol/sidix},
+  url={https://github.com/tiranyx/sidix},
   license={MIT}
 }
 ```
 
 ---
 
-*Built by [Mighan Lab](https://sidixlab.com) · "We don't build AI that replaces human judgment. We build AI that makes human judgment more informed."*
+*Built by [Tiranyx](https://tiranyx.co.id) · [sidixlab.com](https://sidixlab.com) · "We don't build AI that replaces human judgment. We build AI that makes human judgment more informed."*
