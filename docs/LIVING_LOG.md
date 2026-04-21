@@ -3605,3 +3605,8 @@ Fokus pada "what architecture of knowledge means, not volume of knowledge."
 [NOTE] Sesi ditutup karena context 68% + rate limit 70%. Handoff dicatat di `docs/HANDOFF_2026-04-21_SPRINT6.md`. Sesi berikutnya: curator_agent score_gte_85 (S) → test coverage → Sprint 6 full (3D/Voyager).
 
 [NOTE] Cron VPS belum dipasang — masih TODO manual: `crontab -e` → tambah `0 4 * * MON curl POST /creative/prompt_optimize/all`.
+
+[IMPL] Cron VPS dipasang via SSH (paramiko): `30 5 * * MON curl POST http://localhost:8765/creative/prompt_optimize/all`. Log ke `/var/log/sidix_optimizer.log`. Tidak bentrok dengan LearnAgent (04:00-04:30 UTC).
+
+[DOC] Fungsi cron prompt_optimizer — Self-Evolution L1:
+  Setiap Senin 05:30 UTC, sistem membaca `.data/accepted_outputs.jsonl` (diisi otomatis oleh muhasabah_loop saat output CQF ≥ 7.0), memilih top-4 output terbaik sebagai few-shot examples, meng-inject ke prompt template agent (copywriter/brand_builder/content_planner/campaign_strategist/ads_generator), lalu mengevaluasi apakah template baru lebih baik. Kalau ya → simpan versi baru di `.data/optimized_prompts/`. Kalau tidak → rollback otomatis. Ini Data Flywheel L1: makin banyak user → makin banyak accepted output → prompt makin pintar → output makin bagus → loop. L2 (auto-generate skill baru) target Sprint 7, L3 (retrain LoRA) target bulanan.
