@@ -380,7 +380,7 @@ MIT License — see [LICENSE](LICENSE).
 
 <div align="center">
 
-**Built by [Mighan Lab](https://sidixlab.com)**
+**Built by [Tiranyx](https://tiranyx.co.id) · [sidixlab.com](https://sidixlab.com)**
 
 *"We don't build AI that replaces human judgment.*
 *We build AI that makes human judgment more informed."*
