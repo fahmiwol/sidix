@@ -3599,3 +3599,26 @@ Fokus pada "what architecture of knowledge means, not volume of knowledge."
 [DOC] `brain/public/research_notes/181_sprint6_flywheel_fixes_cron.md` — dokumentasi lengkap: arsitektur flywheel, tabel signature fix, cron setup, keterbatasan.
 
 [DECISION] Cron `/creative/prompt_optimize/all` diset Senin 04:00 UTC (bukan harian) karena `MIN_SAMPLES_TO_OPTIMIZE=20` perlu waktu terkumpul dari production traffic. Weekly cukup untuk iterasi L1.
+
+[DEPLOY] VPS: `git pull origin main` → 7 file Sprint 6 masuk. `pm2 restart sidix-brain` → online pid=142922. `/health` → ok, tools_available=35. Semua service live (sidix-brain, sidix-ui, revolusitani, shopee-gateway, abra-website, galantara-mp, tiranyx).
+
+[NOTE] Sesi ditutup karena context 68% + rate limit 70%. Handoff dicatat di `docs/HANDOFF_2026-04-21_SPRINT6.md`. Sesi berikutnya: curator_agent score_gte_85 (S) → test coverage → Sprint 6 full (3D/Voyager).
+
+[NOTE] Cron VPS belum dipasang — masih TODO manual: `crontab -e` → tambah `0 4 * * MON curl POST /creative/prompt_optimize/all`.
+
+[IMPL] Cron VPS dipasang via SSH (paramiko): `30 5 * * MON curl POST http://localhost:8765/creative/prompt_optimize/all`. Log ke `/var/log/sidix_optimizer.log`. Tidak bentrok dengan LearnAgent (04:00-04:30 UTC).
+
+[DOC] Fungsi cron prompt_optimizer — Self-Evolution L1:
+  Setiap Senin 05:30 UTC, sistem membaca `.data/accepted_outputs.jsonl` (diisi otomatis oleh muhasabah_loop saat output CQF ≥ 7.0), memilih top-4 output terbaik sebagai few-shot examples, meng-inject ke prompt template agent (copywriter/brand_builder/content_planner/campaign_strategist/ads_generator), lalu mengevaluasi apakah template baru lebih baik. Kalau ya → simpan versi baru di `.data/optimized_prompts/`. Kalau tidak → rollback otomatis. Ini Data Flywheel L1: makin banyak user → makin banyak accepted output → prompt makin pintar → output makin bagus → loop. L2 (auto-generate skill baru) target Sprint 7, L3 (retrain LoRA) target bulanan.
+
+## 2026-04-21 — Standing Alone Fix + OOM Prevention
+
+[DECISION] **Standing Alone Principle ditegakkan**: GROQ_API_KEY dan GEMINI_API_KEY dinonaktifkan di VPS `.env` (diprefix `# DISABLED_STANDALONE:`). Root cause: `multi_llm_router.py` punya hierarki fallback Local→Groq→Gemini→Anthropic→Mock. Dengan keys aktif, setiap kali Ollama crash (OOM) SIDIX diam-diam pakai LLM eksternal tanpa sepengetahuan user — melanggar prinsip fundamental SIDIX. Fix: keys dikomentari, sekarang fallback chain = Local→Mock (jujur bilang tidak bisa daripada pakai LLM orang lain).
+
+[IMPL] **Swap 4GB ditambah ke VPS** via `fallocate -l 4G /swapfile && mkswap && swapon`. Persist di `/etc/fstab`. Tujuan: Ollama butuh 4.7GB untuk `sidix-lora:latest` (GGUF Q4_K_M), VPS 7.8GB RAM tanpa swap → OOM → Ollama crash → fallback trigger. Dengan swap, Ollama bisa survive memory pressure. State setelah: RAM 5.0GB free + 4.0GB swap free.
+
+[DELETE] **`qwen2.5:7b` dihapus dari Ollama** (`ollama rm qwen2.5:7b`). Alasan: duplikat dari `sidix-lora:latest` (yang sudah include base Qwen2.5-7B + LoRA SIDIX). Menyimpan keduanya = buang 4.7GB disk + RAM percuma. Sekarang Ollama hanya punya: `sidix-lora:latest` (4.7GB, own model) + `qwen2.5:1.5b` (986MB, lightweight).
+
+[TEST] Setelah semua fix: `/health` → `model_mode: sidix_local`, `model_ready: true`, `tools_available: 35`, `ok: true`. sidix-brain online (pid 144146, uptime stabil). sidix-ui online.
+
+[DOC] Research note `182_standing_alone_principle.md` — dokumentasi lengkap prinsip, masalah yang ditemukan, solusi, batas apa yang boleh/tidak boleh di router, analogi Ollama vs Groq/Gemini.

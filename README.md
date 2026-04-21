@@ -2,8 +2,15 @@
   <img src="SIDIX_LANDING/sidix-logo.svg" alt="SIDIX Logo" width="120" height="120" />
 
   <h1>SIDIX</h1>
-  <p><strong>An AI Agent Built on Epistemic Integrity</strong></p>
-  <p><em>Self-Hosted · Self-Learning · Self-Evolving · Own Stack</em></p>
+  <p><strong>Free & Open Source AI Agent</strong></p>
+  <p><em>Self-Hosted · Self-Learning · Self-Evolving · Own Stack · No Vendor API</em></p>
+
+  <p>
+    <img src="https://img.shields.io/badge/Free-100%25-brightgreen?style=flat-square" alt="Free" />
+    <img src="https://img.shields.io/badge/Open%20Source-MIT-gold?style=flat-square" alt="Open Source MIT" />
+    <img src="https://img.shields.io/badge/Self--Hosted-Own%20Stack-blue?style=flat-square" alt="Self-Hosted" />
+    <img src="https://img.shields.io/badge/No%20Vendor%20API-Local%20Inference-success?style=flat-square" alt="No Vendor API" />
+  </p>
 
   <p>
     <a href="https://github.com/fahmiwol/sidix/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-MIT-gold.svg" alt="MIT License" /></a>
@@ -11,7 +18,8 @@
     <a href="https://github.com/fahmiwol/sidix/stargazers"><img src="https://img.shields.io/github/stars/fahmiwol/sidix?color=gold" alt="Stars" /></a>
     <a href="https://github.com/fahmiwol/sidix/issues"><img src="https://img.shields.io/github/issues/fahmiwol/sidix" alt="Issues" /></a>
     <img src="https://img.shields.io/badge/Model-Qwen2.5--7B + QLoRA-blue" alt="Model" />
-    <img src="https://img.shields.io/badge/Tools-30 active-orange" alt="Tools" />
+    <img src="https://img.shields.io/badge/Tools-35 active-orange" alt="Tools" />
+    <a href="https://huggingface.co/sidixlab"><img src="https://img.shields.io/badge/HuggingFace-sidixlab-FFD21E?logo=huggingface&logoColor=000" alt="HuggingFace" /></a>
     <a href="./sidix-hafidz-ledger-whitepaper.pdf"><img src="https://img.shields.io/badge/Whitepaper-Proof--of--Hifdz-darkblue" alt="Whitepaper" /></a>
     <a href="https://t.me/sidixlab_bot"><img src="https://img.shields.io/badge/Telegram-Train%20SIDIX-2AABEE?logo=telegram" alt="Telegram Bot" /></a>
   <hr/>
@@ -37,15 +45,19 @@
 
   <p>
     <a href="https://sidixlab.com">🌐 Website</a> ·
-    <a href="https://app.sidixlab.com">🚀 Try SIDIX</a> ·
+    <a href="https://app.sidixlab.com">🚀 Try SIDIX Free</a> ·
     <a href="#-quick-start">⚡ Quick Start</a> ·
     <a href="#-the-ihos-foundation">🧠 The Foundation</a> ·
     <a href="#-architecture">🏗️ Architecture</a> ·
+    <a href="https://huggingface.co/sidixlab">🤗 HuggingFace</a> ·
     <a href="#-contribute--train-sidix">🤝 Contribute</a>
   </p>
 </div>
 
 ---
+
+> **SIDIX is a free, open-source AI agent you can run entirely on your own server.**
+> No OpenAI. No Anthropic. No Gemini. No monthly subscription. Your data stays with you.
 
 > *"The measure of intelligence is not how much you know,*
 > *but how precisely you know what you don't know — and how honestly you say so."*
@@ -54,9 +66,14 @@
 
 ## 🌱 Why SIDIX Exists
 
-Most AI research is converging toward one hypothesis: **scale is the answer.** Bigger models, more data, more compute.
+Most AI tools are black boxes controlled by corporations. You pay per token. Your data trains their model. You have no idea what they do with it.
 
-SIDIX is built on a different hypothesis.
+SIDIX is built on a different premise:
+
+- **Free** — run it without paying anyone per-query
+- **Open source** — every line of code is auditable
+- **Self-hosted** — your server, your data, your model
+- **Self-learning** — improves from real usage, structured, every quarter
 
 Inspired by a 1,400-year-old knowledge system, SIDIX asks: *what if the architecture of knowledge matters more than its volume?*
 
@@ -123,19 +140,19 @@ The classical Islamic scholars identified it precisely:
 
 ## 🏗️ Architecture
 
-SIDIX is not a chatbot with a nice UI. It's a **three-layer cognitive agent**:
+SIDIX is not a chatbot with a nice UI. It's a **three-layer cognitive agent** running 100% on your own stack:
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                    LAYER 1 — BRAIN (LLM)                    │
 │  Qwen2.5-7B-Instruct + QLoRA SIDIX adapter                  │
 │  Generative inference — token by token, own stack           │
-│  No OpenAI. No Anthropic. No Gemini API. Ever.              │
+│  No OpenAI. No Anthropic. No Gemini. No API fees. Ever.     │
 └─────────────────────────┬───────────────────────────────────┘
                           │ ReAct loop
 ┌─────────────────────────▼───────────────────────────────────┐
 │              LAYER 2 — HANDS (Tools + RAG)                  │
-│  30 active tools:                                           │
+│  35 active tools:                                           │
 │  ├── Knowledge: search_corpus · read_chunk · concept_graph  │
 │  ├── Web:       web_fetch · web_search · pdf_extract        │
 │  ├── Code:      code_sandbox · code_analyze · code_validate │
@@ -153,7 +170,7 @@ SIDIX is not a chatbot with a nice UI. It's a **three-layer cognitive agent**:
 └─────────────────────────────────────────────────────────────┘
 ```
 
-### Current Capabilities (Sprint 4 — 2026-04-21)
+### Current Capabilities (Sprint 6 — 2026-04-21)
 
 | Domain | Agent / Tool | Status |
 |---|---|---|
@@ -166,6 +183,7 @@ SIDIX is not a chatbot with a nice UI. It's a **three-layer cognitive agent**:
 | **Campaign** | `plan_campaign` (AARRR funnel + KPI) | ✅ Live |
 | **Ads** | `generate_ads` (FB/Google/TikTok copy) | ✅ Live |
 | **Quality Gate** | `muhasabah_refine` (CQF ≥ 7.0 loop) | ✅ Live |
+| **Self-Evolution** | `prompt_optimizer` — L1 flywheel, learns from accepted outputs weekly | ✅ Live |
 | **Knowledge** | BM25 corpus · Wikipedia · web_search · web_fetch | ✅ Live |
 | **Image** | SDXL self-hosted (RTX 3060 / RunPod fallback) | ✅ Live |
 | **Voice / Video** | Whisper + TTS + FFmpeg | 🗓 Sprint 7 |
@@ -190,7 +208,7 @@ SIDIX adapts its voice, depth, and framing based on who it's talking to:
 
 ## ⚡ Quick Start
 
-> **Requirements:** Python 3.11+ · Node 18+ · 4 GB RAM minimum
+> **Requirements:** Python 3.11+ · Node 18+ · 8 GB RAM recommended (4 GB minimum with swap)
 
 ```bash
 # Clone
@@ -214,7 +232,26 @@ python -m brain_qa ask "What is the IHOS framework?"
 # Or open: http://localhost:3000
 ```
 
-**Live demo:** [app.sidixlab.com](https://app.sidixlab.com)
+**Live demo (free):** [app.sidixlab.com](https://app.sidixlab.com)
+
+> No account required. No rate limit for self-hosted instances.
+
+---
+
+## 🤗 HuggingFace
+
+The SIDIX LoRA adapter (fine-tuned on top of Qwen2.5-7B-Instruct) is available on HuggingFace:
+
+```python
+from peft import PeftModel
+from transformers import AutoModelForCausalLM, AutoTokenizer
+
+base = AutoModelForCausalLM.from_pretrained("Qwen/Qwen2.5-7B-Instruct")
+model = PeftModel.from_pretrained(base, "sidixlab/sidix-lora")
+tokenizer = AutoTokenizer.from_pretrained("Qwen/Qwen2.5-7B-Instruct")
+```
+
+👉 [huggingface.co/sidixlab](https://huggingface.co/sidixlab)
 
 ---
 
@@ -277,11 +314,13 @@ BABY (now)        CHILD (Q3 '26)    ADOLESCENT (Q4)   ADULT (Q2 '27)
 ──────────────    ──────────────    ───────────────    ──────────────
 ✅ RAG + ReAct    🗓 Voice/ASR      🗓 Video pipeline  🗓 Distributed
 ✅ Fine-tune v1   🗓 TTS/Piper      🗓 LoRA auto-      🗓 Hafidz (IPFS
-✅ 30 tools       🗓 Skill library    retrain weekly     + BFT ledger)
+✅ 35 tools       🗓 Skill library    retrain weekly     + BFT ledger)
 ✅ 6 creative     🗓 Multi-agent    🗓 Self-authoring  🗓 Multi-node
    agents           debate ring       (Voyager)          federation
 ✅ Image gen      🗓 Agency Kit     🗓 SEM L2→L3       🗓 SEM L4→L5
 ✅ Code intel     🗓 3D / NPC gen
+✅ Self-evolution  
+   (L1 flywheel)
 ```
 
 **v0.2 beta target:** June 2026 — Agency Kit 1-click + multimodal parity
@@ -327,6 +366,7 @@ def muhasabah_loop(output, brief):
 - ✅ Audit log (append-only, hash-chained) for every tool call
 - ✅ Identity masking for public-facing endpoints
 - ✅ 4-label epistemic tagging — hallucinations are labeled, not hidden
+- ✅ GROQ/Gemini/Anthropic keys disabled — fallback chain ends at Mock, never external AI
 
 ---
 
@@ -347,7 +387,8 @@ MIT License — see [LICENSE](LICENSE).
 
 <br/>
 
-[![Try SIDIX](https://img.shields.io/badge/Try%20SIDIX-app.sidixlab.com-brightgreen?style=for-the-badge)](https://app.sidixlab.com)
+[![Try SIDIX Free](https://img.shields.io/badge/Try%20SIDIX-Free%20%7C%20app.sidixlab.com-brightgreen?style=for-the-badge)](https://app.sidixlab.com)
 [![Star this repo](https://img.shields.io/github/stars/fahmiwol/sidix?style=for-the-badge&color=gold)](https://github.com/fahmiwol/sidix/stargazers)
+[![HuggingFace](https://img.shields.io/badge/HuggingFace-sidixlab-FFD21E?style=for-the-badge&logo=huggingface&logoColor=000)](https://huggingface.co/sidixlab)
 
 </div>
