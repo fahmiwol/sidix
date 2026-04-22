@@ -1,6 +1,6 @@
 # SIDIX — Status Teknis Lengkap (Audit 2026-04-23)
 
-> Dokumen ini dibuat oleh Antigravity setelah audit penuh terhadap **server produksi**, **codebase**, dan **live app**.
+> Dokumen ini merangkum audit penuh terhadap **server produksi**, **codebase**, dan **live app** (baseline 2026-04-23).
 > Tujuan: referensi bagi semua agen (dan manusia) yang bekerja di repo ini.
 
 ---
@@ -245,7 +245,7 @@ Berdasarkan `TOOL_REGISTRY` di `agent_tools.py` (~2350 baris):
 
 | Item | Status | Sprint |
 |------|--------|--------|
-| `evaluate_maqashid()` belum wired ke `run_react()` | ❌ Code exists tapi belum connected | 6.5 |
+| Maqashid mode gate (`evaluate_maqashid` / `maqashid_profiles`) ter-wire ke `run_react()` | ✅ Middleware `_apply_maqashid_mode_gate` — semua jalur jawaban (cache, image fast-path, ReAct, blokir) + field API `maqashid_profile_*` | 6.5 |
 | Benchmark test (50+20 queries) | ❌ Belum dibuat | 6.5 |
 | MinHash dedup (`datasketch`) | ❌ Belum diinstal/integrate | 6.5 |
 | Raudah v0.2 TaskGraph DAG | ❌ Placeholder, bukan custom lightweight | 6.5 |
@@ -253,7 +253,7 @@ Berdasarkan `TOOL_REGISTRY` di `agent_tools.py` (~2350 baris):
 | Intent classifier few-shot | ❌ Belum | 6.5 |
 | Social Radar Chrome Extension | ❌ Belum mulai | 7 |
 | `/metrics` endpoint ringan | ⚠️ Endpoint ada, content minimal | 6.5 |
-| Naskh Handler wire ke `learn_agent.py` | ❌ Module exists, not wired | 6.5 |
+| Naskh Handler wire ke `learn_agent.py` | ✅ `process_corpus_queue` — resolve per topik (`auto_learn/{slug}.md`), tier dari frontmatter `Sanad-Tier` | 6.5 |
 | `test_sprint6.py` | ❌ Belum dibuat | 6.5 |
 
 ---
@@ -270,5 +270,5 @@ Berdasarkan `TOOL_REGISTRY` di `agent_tools.py` (~2350 baris):
 
 ---
 
-_Audit oleh Antigravity, 2026-04-23T02:43 WIB._
-_Sumber: SSH audit server + browser inspection app.sidixlab.com + codebase analysis._
+_Audit baseline: 2026-04-23 (sesi audit eksternal + SSH + browser + codebase)._
+_Update wiring Maqashid/Naskh ke kode: 2026-04-23 — lihat `agent_react.py`, `learn_agent.py`, `agent_serve.py` pada branch `sociometer-sprint7`._

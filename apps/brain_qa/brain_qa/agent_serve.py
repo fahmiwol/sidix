@@ -132,6 +132,8 @@ class ChatResponse(BaseModel):
     yaqin_level: str = ""          # ilm | ain | haqq
     maqashid_score: float = 0.0    # weighted maqashid 5-axis [0.0–1.0]
     maqashid_passes: bool = True
+    maqashid_profile_status: str = ""   # pass | warn | block (mode gate)
+    maqashid_profile_reasons: str = ""
     audience_register: str = ""    # burhan | jadal | khitabah
     cognitive_mode: str = ""       # taaqul | tafakkur | tadabbur | tadzakkur
     constitutional_passes: bool = True
@@ -444,6 +446,8 @@ def create_app() -> "FastAPI":
             yaqin_level=getattr(session, "yaqin_level", ""),
             maqashid_score=getattr(session, "maqashid_score", 0.0),
             maqashid_passes=getattr(session, "maqashid_passes", True),
+            maqashid_profile_status=getattr(session, "maqashid_profile_status", ""),
+            maqashid_profile_reasons=getattr(session, "maqashid_profile_reasons", ""),
             audience_register=getattr(session, "audience_register", ""),
             cognitive_mode=getattr(session, "cognitive_mode", ""),
             constitutional_passes=getattr(session, "constitutional_passes", True),
@@ -569,6 +573,8 @@ def create_app() -> "FastAPI":
             "persona": session.persona,
             "finished": session.finished,
             "confidence": session.confidence,
+            "maqashid_profile_status": getattr(session, "maqashid_profile_status", ""),
+            "maqashid_profile_reasons": getattr(session, "maqashid_profile_reasons", ""),
             "final_answer": session.final_answer,
             "trace": format_trace(session),
             "steps": [
@@ -720,6 +726,8 @@ def create_app() -> "FastAPI":
             "yaqin_level":         getattr(session, "yaqin_level", ""),
             "maqashid_score":      getattr(session, "maqashid_score", 0.0),
             "maqashid_passes":     getattr(session, "maqashid_passes", True),
+            "maqashid_profile_status": getattr(session, "maqashid_profile_status", ""),
+            "maqashid_profile_reasons": getattr(session, "maqashid_profile_reasons", ""),
             "audience_register":   getattr(session, "audience_register", ""),
             "cognitive_mode":      getattr(session, "cognitive_mode", ""),
             "constitutional_passes": getattr(session, "constitutional_passes", True),

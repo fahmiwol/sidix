@@ -41,7 +41,7 @@ MAX_STEPS = 6           # max ReAct loop iterations (default)
 MAX_STEPS_BUILD = 12    # lebih panjang bila intent implementasi / app / game
 MAX_TOKENS_PER_OBS = 600  # potong observation supaya tidak bloat context
 
-# Anti-loop (dari Kimi recommendation 2026-04-23)
+# Anti-loop (Sprint hardening 2026-04)
 MAX_ACTION_REPEAT = 2   # berapa kali action yang sama boleh terulang sebelum fallback
 MAX_TOOL_ERRORS   = 3   # berapa kali tool error berturut-turut sebelum fallback
 
@@ -94,6 +94,9 @@ class AgentSession:
     case_frame_ids: str = ""  # id kerangka terpilih, dipisah koma
     case_frame_hints_rendered: str = ""  # teks yang disematkan ke jawaban (ringkas)
     praxis_matched_frame_ids: str = ""  # urutan id dari match awal sesi (untuk planner / API)
+    # ── Maqashid mode gate (maqashid_profiles.py — IHOS-aligned) ────────────────
+    maqashid_profile_status: str = ""   # pass | warn | block
+    maqashid_profile_reasons: str = ""  # ringkasan alasan (API / trace)
 
 
 # ── Rule-based "LLM" (offline planner) ───────────────────────────────────────
@@ -785,6 +788,38 @@ def _apply_epistemology(
         return final_answer
 
 
+def _apply_maqashid_mode_gate(
+    session: AgentSession,
+    question: str,
+    persona: str,
+    final_answer: str,
+) -> str:
+    """
+    Middleware Maqashid v2 (mode-by-persona): dangerous-intent hard block,
+    creative/academic/ijtihad rules — setelah epistemologi bila dipakai.
+    """
+    try:
+        from .maqashid_profiles import evaluate_maqashid
+
+        result = evaluate_maqashid(
+            user_query=question,
+            generated_output=final_answer,
+            persona_name=persona,
+        )
+        session.maqashid_profile_status = str(result.get("status", "pass"))
+        reasons = result.get("reasons") or []
+        session.maqashid_profile_reasons = "; ".join(str(x) for x in reasons)[:800]
+        if result.get("status") == "block":
+            session.maqashid_passes = False
+        out = result.get("tagged_output")
+        return str(out if out else final_answer)
+    except Exception as _mq_err:
+        import logging as _log
+
+        _log.getLogger(__name__).debug("[MaqashidMode] skip — %s", _mq_err)
+        return final_answer
+
+
 # ── Main ReAct runner ─────────────────────────────────────────────────────────
 
 def _attach_orchestration_digest(session: AgentSession, question: str, persona: str) -> None:
@@ -841,7 +876,9 @@ def run_react(
         pass
 
     if g1_policy.detect_prompt_injection(question):
-        session.final_answer = g1_policy.safe_injection_response()
+        session.final_answer = _apply_maqashid_mode_gate(
+            session, question, persona, g1_policy.safe_injection_response()
+        )
         session.finished = True
         session.confidence = "diblokir (keamanan)"
         _praxis.record_praxis_event(session_id, "blocked", {"reason": "prompt_injection"})
@@ -852,7 +889,9 @@ def run_react(
         return session
 
     if g1_policy.detect_toxic_user_message(question):
-        session.final_answer = g1_policy.safe_toxic_response()
+        session.final_answer = _apply_maqashid_mode_gate(
+            session, question, persona, g1_policy.safe_toxic_response()
+        )
         session.finished = True
         session.confidence = "diblokir (ujaran)"
         _praxis.record_praxis_event(session_id, "blocked", {"reason": "toxic"})
@@ -864,7 +903,7 @@ def run_react(
 
     cached = answer_dedup.get_cached_answer(persona, question)
     if cached is not None:
-        session.final_answer = cached
+        session.final_answer = _apply_maqashid_mode_gate(session, question, persona, cached)
         session.finished = True
         session.confidence = "cache singkat"
         _praxis.record_praxis_event(session_id, "cache_hit", {"persona": persona})
@@ -920,7 +959,9 @@ def run_react(
             )
             _log_fp.getLogger(__name__).warning(f"[ImageFastPath] tool result success={_result.success} err={_result.error!r} out_len={len(_result.output or '')}")
             if _result.success:
-                session.final_answer = _result.output
+                session.final_answer = _apply_maqashid_mode_gate(
+                    session, question, persona, _result.output or ""
+                )
                 session.citations = list(_result.citations or [])
                 session.finished = True
                 session.confidence = "image gen fast-path"
@@ -1056,6 +1097,7 @@ def run_react(
                 citations=citations,
                 persona=persona,
             )
+            final_answer = _apply_maqashid_mode_gate(session, question, persona, final_answer)
             session.final_answer = final_answer
             # ─────────────────────────────────────────────────────────────────
 
@@ -1132,6 +1174,7 @@ def run_react(
             citations=citations,
             persona=persona,
         )
+        final_answer = _apply_maqashid_mode_gate(session, question, persona, final_answer)
         session.final_answer = final_answer
         # ─────────────────────────────────────────────────────────────────────
         answer_dedup.set_cached_answer(persona, question, final_answer)

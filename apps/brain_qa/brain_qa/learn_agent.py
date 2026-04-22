@@ -28,6 +28,7 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
+import re
 import time
 from datetime import datetime, timezone
 from pathlib import Path
@@ -66,6 +67,29 @@ def _save_state(state: dict):
 
 def _content_hash(content: str) -> str:
     return hashlib.sha256(content[:500].encode()).hexdigest()[:16]
+
+
+def _topic_slug(title: str) -> str:
+    s = (title or "untitled").lower()
+    s = re.sub(r"[^a-z0-9]+", "-", s).strip("-")
+    return s[:80] or "untitled"
+
+
+_VALID_SANAD = frozenset({"primer", "ulama", "peer_review", "aggregator"})
+
+
+def _normalize_sanad_tier(raw: str | None) -> str:
+    v = (raw or "aggregator").lower().replace(" ", "_").replace("-", "_")
+    if v in ("peerreviewed", "peer_reviewed", "peerreview"):
+        v = "peer_review"
+    return v if v in _VALID_SANAD else "aggregator"
+
+
+def _extract_sanad_tier_from_md(text: str) -> str:
+    for line in (text or "").splitlines()[:40]:
+        if line.lower().startswith("sanad-tier:"):
+            return _normalize_sanad_tier(line.split(":", 1)[1].strip())
+    return "aggregator"
 
 
 # ── Deduplication ──────────────────────────────────────────────────────────────
@@ -318,28 +342,55 @@ class LearnAgent:
 
         try:
             from .indexer import build_index
-            # Write items sebagai markdown ke brain/public/auto_learn/
+            from .naskh_handler import NaskhHandler, note_to_knowledge_item
+
             auto_dir = workspace_root() / "brain" / "public" / "auto_learn"
             auto_dir.mkdir(parents=True, exist_ok=True)
+            handler = NaskhHandler()
             for line in lines:
                 try:
                     item = json.loads(line)
-                    h = _content_hash(item.get("content", ""))
-                    md_path = auto_dir / f"{h}.md"
-                    if not md_path.exists():
-                        md_path.write_text(
-                            f"# {item.get('title', 'Untitled')}\n\n"
-                            f"Source: {item.get('url', '')}\n"
-                            f"Domain: {item.get('domain', '')}\n"
-                            f"License: {item.get('license', '')}\n\n"
-                            f"{item.get('content', '')}",
-                            encoding="utf-8"
+                    title = item.get("title", "Untitled")
+                    topic = _topic_slug(title)
+                    sanad = _normalize_sanad_tier(item.get("sanad_tier"))
+                    content_body = item.get("content", "") or ""
+                    full_md_body = (
+                        f"# {title}\n\n"
+                        f"Source: {item.get('url', '')}\n"
+                        f"Domain: {item.get('domain', '')}\n"
+                        f"License: {item.get('license', '')}\n"
+                        f"Sanad-Tier: {sanad}\n\n"
+                        f"{content_body}"
+                    )
+                    md_path = auto_dir / f"{topic}.md"
+                    src_new = item.get("url") or item.get("_source_id", "learn_queue")
+                    new_ki = note_to_knowledge_item(
+                        full_md_body,
+                        str(src_new),
+                        topic,
+                        sanad_tier=sanad,
+                        confidence=float(item.get("confidence", 0.75)),
+                    )
+                    if md_path.exists():
+                        old_text = md_path.read_text(encoding="utf-8")
+                        old_stat = md_path.stat()
+                        old_ki = note_to_knowledge_item(
+                            old_text,
+                            str(md_path),
+                            topic,
+                            sanad_tier=_extract_sanad_tier_from_md(old_text),
+                            confidence=0.72,
+                            date_added=datetime.fromtimestamp(old_stat.st_mtime, tz=timezone.utc),
                         )
+                        winner, status, _reason = handler.resolve(old_ki, new_ki)
+                        if status == "retained":
+                            continue
+                        md_path.write_text(winner.content, encoding="utf-8")
+                    else:
+                        md_path.write_text(full_md_body, encoding="utf-8")
                 except Exception:
                     pass
-            # Trigger re-index
             build_index()
-            # Clear queue after successful processing
             queue_file.write_text("", encoding="utf-8")
             return len(lines)
         except ImportError:

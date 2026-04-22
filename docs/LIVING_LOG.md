@@ -3926,3 +3926,9 @@ Fokus pada "what architecture of knowledge means, not volume of knowledge."
 - DOC: **SIDIX-SocioMeter** — suite dokumentasi Sprint 7 di `docs/sociometer/` (strategi, PRD, ERD, dokumentasi arsitektur, fitur specs, rencana implementasi 24 minggu, riset, referensi modul + `CATATAN_PROGRES.md`). Redaksi mengikuti terminologi SIDIX (Maqashid, Naskh, Raudah, Sanad, Jariyah, Tafsir) dan menghindari footprint merek host AI/IDE di narasi. Branch `sociometer-sprint7`, commit dokumentasi utama `4f2a397`, push ke `origin/sociometer-sprint7`.
 
 - DOC: **SocioMeter** — tambah prinsip **Muhasabah** (`01_STRATEGI_SOCIOMETER.md`, `04_DOKUMENTASI_SOCIOMETER.md`) dan `docs/sociometer/dokumentasi/09_VISI_SOCIAL_RADAR.md` (pivot Social Radar disanitasi; arsip kerja lokal tidak di-commit). Terminologi lengkap: Maqashid, Naskh, Raudah, Sanad, Muhasabah, Jariyah, Tafsir.
+
+- IMPL: **Maqashid mode gate ter-wire ke `run_react()`** — `brain_qa/agent_react.py`: `_apply_maqashid_mode_gate()` memanggil `evaluate_maqashid()` untuk semua jalur keluar (blokir keamanan, cache, image fast-path, jawaban ReAct setelah `_apply_epistemology`). Session + `ChatResponse` / `POST /ask` mengekspor `maqashid_profile_status`, `maqashid_profile_reasons`; trace GET menyertakan field yang sama.
+
+- IMPL: **Naskh ter-wire ke LearnAgent** — `brain_qa/learn_agent.py` `process_corpus_queue()`: penulisan `brain/public/auto_learn/{topic_slug}.md` dengan resolusi `NaskhHandler.resolve()` bila file topik sudah ada; tier dari `Sanad-Tier` di frontmatter + normalisasi `peer-reviewed` → `peer_review`.
+
+- UPDATE: `docs/STATUS_TODAY.md` — baris TODO Maqashid/Naskh ditandai selesai; header audit netral; catatan update kode pada branch `sociometer-sprint7`.
