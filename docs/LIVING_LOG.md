@@ -44,6 +44,23 @@ Contoh:
 
 ## Log
 
+### 2026-04-23 (sprint 6.5 batch — Raudah DAG, MinHash, CQF, intent, metrics)
+
+- IMPL: `brain/raudah/taskgraph.py` — gelombang eksekusi per peran; `urai_task` memecah paralel bertingkat + verifikator opsional.
+- IMPL: `learn_agent.deduplicate` — MinHash + `seen_minhash.json`; dependensi `datasketch` di `requirements.txt`.
+- IMPL: `brain_qa/cqf_rubrik.py`, `brain_qa/intent_classifier.py`, `brain_qa/runtime_metrics.py`.
+- UPDATE: `agent_react` — bump `maqashid_profile_block` / `warn`; `agent_serve` `/agent/metrics` — uptime, merge counter, `intent_probe` via `SIDIX_METRICS_SAMPLE_QUERY`.
+- IMPL: `apps/brain_qa/tests/test_sprint6.py`, `scripts/benchmark_sprint6.py`, scaffold `browser/social-radar-extension/`.
+- DOC: `docs/STATUS_TODAY.md` — baris TODO sprint 6.5 diselaraskan.
+- TEST: dari `apps/brain_qa`, `python -m pytest tests/ -q` → 12 passed.
+
+### 2026-04-23 (closure — catat, handoff, lanjut)
+
+- DOC: `docs/HANDOFF_2026-04-23.md` — handoff agen: branch `sociometer-sprint7`, sprint 6.5 di-commit `99aadf0` + push `origin/sociometer-sprint7`, daftar path, verifikasi, backlog (PR/main, deploy, Social Radar penuh, rapikan untracked).
+- UPDATE: `docs/STATUS_TODAY.md` — footer tautan ke handoff + SHA `99aadf0`.
+- DECISION: untracked zip/scraping/vendor-heavy **tidak** masuk commit default; rapikan terpisah atau `.gitignore`.
+- NOTE: Lanjut operasional — `git add` selektif → commit → `git push`; PR ke `main`; VPS `pip install -r requirements.txt` bila perlu lalu restart PM2 brain.
+
 ### 2026-04-15 (batch Cursor â€” brain_qa inference + UI)
 
 - FIX: `POST /corpus/reindex` memanggil `build_index()` tanpa argumen keyword wajib (`indexer.build_index`) â†’ kini memanggil dengan `root_override=None`, `out_dir_override=None`, `chunk_chars=1200`, `chunk_overlap=150`.
@@ -3920,4 +3937,55 @@ Fokus pada "what architecture of knowledge means, not volume of knowledge."
 - DOC: docs/STATUS_TODAY.md di-rewrite setelah audit penuh server + app:
   59 API endpoints, 35 tools, UI features lengkap, server infra,
   10 item TODO Sprint 6.5.
+
+### 2026-04-23
+
+- DOC: **SIDIX-SocioMeter** — suite dokumentasi Sprint 7 di `docs/sociometer/` (strategi, PRD, ERD, dokumentasi arsitektur, fitur specs, rencana implementasi 24 minggu, riset, referensi modul + `CATATAN_PROGRES.md`). Redaksi mengikuti terminologi SIDIX (Maqashid, Naskh, Raudah, Sanad, Jariyah, Tafsir) dan menghindari footprint merek host AI/IDE di narasi. Branch `sociometer-sprint7`, commit dokumentasi utama `4f2a397`, push ke `origin/sociometer-sprint7`.
+
+- DOC: **SocioMeter** — tambah prinsip **Muhasabah** (`01_STRATEGI_SOCIOMETER.md`, `04_DOKUMENTASI_SOCIOMETER.md`) dan `docs/sociometer/dokumentasi/09_VISI_SOCIAL_RADAR.md` (pivot Social Radar disanitasi; arsip kerja lokal tidak di-commit). Terminologi lengkap: Maqashid, Naskh, Raudah, Sanad, Muhasabah, Jariyah, Tafsir.
+
+- IMPL: **Maqashid mode gate ter-wire ke `run_react()`** — `brain_qa/agent_react.py`: `_apply_maqashid_mode_gate()` memanggil `evaluate_maqashid()` untuk semua jalur keluar (blokir keamanan, cache, image fast-path, jawaban ReAct setelah `_apply_epistemology`). Session + `ChatResponse` / `POST /ask` mengekspor `maqashid_profile_status`, `maqashid_profile_reasons`; trace GET menyertakan field yang sama.
+
+- IMPL: **Naskh ter-wire ke LearnAgent** — `brain_qa/learn_agent.py` `process_corpus_queue()`: penulisan `brain/public/auto_learn/{topic_slug}.md` dengan resolusi `NaskhHandler.resolve()` bila file topik sudah ada; tier dari `Sanad-Tier` di frontmatter + normalisasi `peer-reviewed` → `peer_review`.
+
+- UPDATE: `docs/STATUS_TODAY.md` — baris TODO Maqashid/Naskh ditandai selesai; header audit netral; catatan update kode pada branch `sociometer-sprint7`.
+
+## 2026-04-23 — Sesi 5: Validasi Cursor + Merge + Deploy Sprint 6.5
+
+> Agent: Antigravity — validasi pekerjaan Cursor di `sociometer-sprint7`.
+
+- TEST: **12/12 PASSED** (0.08s) — `python -m pytest tests/ -v`:
+  - 4 test sanad ranker (existing) ✅
+  - 8 test sprint6 (Cursor baru):
+    - test_maqashid_blocks_dangerous_query ✅
+    - test_cqf_ten_criteria_and_aggregate ✅
+    - test_intent_classifier_code_and_safety ✅
+    - test_naskh_peer_review_supersedes_aggregator ✅
+    - test_raudah_taskgraph_multi_wave ✅
+    - test_raudah_ihos_blocks_before_dag ✅
+    - test_deduplicate_sha_identical ✅
+    - test_taskgraph_unit_partition ✅
+
+- TEST: **Benchmark 70 queries** (0.001s) — `python scripts/benchmark_sprint6.py`:
+  - 64 pass, 0 warn, 6 block (6 harmful correctly blocked)
+  - Intent distribution: factual=58, research=4, creative=3, code=2, safety_probe=2, social=1
+  - Target tercapai: 0% false negative pada harmful queries.
+
+- NOTE: **Validasi kode Cursor (7 commits, 28 files, +1851/-153):**
+  Modul baru:
+  - `cqf_rubrik.py` ✅ — 10 kriteria heuristik, rata-rata terbobot, tanpa LLM
+  - `intent_classifier.py` ✅ — regex rules, 7 intents, deterministic
+  - `runtime_metrics.py` ✅ — thread-safe ring counter
+  - `brain/raudah/taskgraph.py` ✅ — wave partition by role (4 level)
+  Wiring:
+  - `agent_react.py` — `_apply_maqashid_mode_gate()` di 6 exit paths ✅
+  - `agent_serve.py` — maqashid_profile_status/reasons di ChatResponse + trace + /ask ✅
+  - `/agent/metrics` diperkaya (runtime_metrics + intent probe + uptime) ✅
+  - `learn_agent.py` — MinHash dedup + Naskh resolve di process_corpus_queue ✅
+  Scaffold:
+  - `browser/social-radar-extension/` — Manifest V3, popup.html (scaffold only)
+  Docs:
+  - `docs/sociometer/` — 9 dokumen (strategi, PRD, ERD, fitur, riset, modul, visi)
+  Semua kode bersih: no vendor names, no import vendor API.
+
 

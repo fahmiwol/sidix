@@ -43,6 +43,8 @@ from .agent_tools import list_available_tools, call_tool, get_agent_workspace_ro
 from .local_llm import adapter_fingerprint, adapter_weights_exist, find_adapter_dir, generate_sidix
 from . import rate_limit
 
+_PROCESS_STARTED = time.time()
+
 # ── In-memory session store (ganti Redis nanti kalau scale) ──────────────────
 _sessions: dict[str, AgentSession] = {}
 _MAX_SESSIONS = 500
@@ -132,6 +134,8 @@ class ChatResponse(BaseModel):
     yaqin_level: str = ""          # ilm | ain | haqq
     maqashid_score: float = 0.0    # weighted maqashid 5-axis [0.0–1.0]
     maqashid_passes: bool = True
+    maqashid_profile_status: str = ""   # pass | warn | block (mode gate)
+    maqashid_profile_reasons: str = ""
     audience_register: str = ""    # burhan | jadal | khitabah
     cognitive_mode: str = ""       # taaqul | tafakkur | tadabbur | tadzakkur
     constitutional_passes: bool = True
@@ -444,6 +448,8 @@ def create_app() -> "FastAPI":
             yaqin_level=getattr(session, "yaqin_level", ""),
             maqashid_score=getattr(session, "maqashid_score", 0.0),
             maqashid_passes=getattr(session, "maqashid_passes", True),
+            maqashid_profile_status=getattr(session, "maqashid_profile_status", ""),
+            maqashid_profile_reasons=getattr(session, "maqashid_profile_reasons", ""),
             audience_register=getattr(session, "audience_register", ""),
             cognitive_mode=getattr(session, "cognitive_mode", ""),
             constitutional_passes=getattr(session, "constitutional_passes", True),
@@ -569,6 +575,8 @@ def create_app() -> "FastAPI":
             "persona": session.persona,
             "finished": session.finished,
             "confidence": session.confidence,
+            "maqashid_profile_status": getattr(session, "maqashid_profile_status", ""),
+            "maqashid_profile_reasons": getattr(session, "maqashid_profile_reasons", ""),
             "final_answer": session.final_answer,
             "trace": format_trace(session),
             "steps": [
@@ -602,7 +610,22 @@ def create_app() -> "FastAPI":
 
     @app.get("/agent/metrics")
     def agent_metrics():
-        return {"counters": dict(_METRICS), "sessions_cached": len(_sessions)}
+        from . import runtime_metrics
+        from .intent_classifier import classify_intent
+
+        merged = {**dict(_METRICS), **runtime_metrics.snapshot()}
+        sample_q = os.environ.get("SIDIX_METRICS_SAMPLE_QUERY", "").strip()
+        intent_preview = None
+        if sample_q:
+            ir = classify_intent(sample_q)
+            intent_preview = {"intent": ir.intent.value, "confidence": ir.confidence}
+        return {
+            "counters": merged,
+            "sessions_cached": len(_sessions),
+            "session_cap": _MAX_SESSIONS,
+            "process": {"uptime_s": round(time.time() - _PROCESS_STARTED, 2)},
+            "intent_probe": intent_preview,
+        }
 
     @app.post("/agent/feedback")
     def agent_feedback(req: FeedbackRequest, request: Request):
@@ -720,6 +743,8 @@ def create_app() -> "FastAPI":
             "yaqin_level":         getattr(session, "yaqin_level", ""),
             "maqashid_score":      getattr(session, "maqashid_score", 0.0),
             "maqashid_passes":     getattr(session, "maqashid_passes", True),
+            "maqashid_profile_status": getattr(session, "maqashid_profile_status", ""),
+            "maqashid_profile_reasons": getattr(session, "maqashid_profile_reasons", ""),
             "audience_register":   getattr(session, "audience_register", ""),
             "cognitive_mode":      getattr(session, "cognitive_mode", ""),
             "constitutional_passes": getattr(session, "constitutional_passes", True),

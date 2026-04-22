@@ -28,6 +28,7 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
+import re
 import time
 from datetime import datetime, timezone
 from pathlib import Path
@@ -68,6 +69,87 @@ def _content_hash(content: str) -> str:
     return hashlib.sha256(content[:500].encode()).hexdigest()[:16]
 
 
+def _shingles(text: str, k: int = 5) -> list[str]:
+    t = re.sub(r"\s+", " ", (text or "").lower())
+    if len(t) < k:
+        return [t] if t else []
+    return [t[i : i + k] for i in range(len(t) - k + 1)]
+
+
+def _minhash_for_content(content: str):
+    """MinHash dari konten; None jika datasketch tidak terpasang."""
+    try:
+        from datasketch import MinHash
+    except ImportError:
+        return None
+    m = MinHash(num_perm=64)
+    for sh in _shingles(content[:15000], 5):
+        m.update(sh.encode("utf-8"))
+    return m
+
+
+def _load_minhash_store() -> list[list[int]]:
+    path = _STATE_FILE.parent / "seen_minhash.json"
+    if not path.exists():
+        return []
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+        rows = data.get("signatures", [])
+        return rows[-2000:] if isinstance(rows, list) else []
+    except Exception:
+        return []
+
+
+def _save_minhash_store(rows: list[list[int]]) -> None:
+    path = _STATE_FILE.parent / "seen_minhash.json"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(
+        json.dumps({"signatures": rows[-2000:], "max_keep": 2000}, ensure_ascii=False),
+        encoding="utf-8",
+    )
+
+
+def _minhash_near_duplicate(m, stored_rows: list[list[int]], threshold: float = 0.86) -> bool:
+    if m is None or not stored_rows:
+        return False
+    try:
+        import numpy as np
+        from datasketch import MinHash
+    except ImportError:
+        return False
+    for row in stored_rows:
+        try:
+            other = MinHash(num_perm=64, hashvalues=np.asarray(row, dtype=np.uint64))
+            if m.jaccard(other) >= threshold:
+                return True
+        except Exception:
+            continue
+    return False
+
+
+def _topic_slug(title: str) -> str:
+    s = (title or "untitled").lower()
+    s = re.sub(r"[^a-z0-9]+", "-", s).strip("-")
+    return s[:80] or "untitled"
+
+
+_VALID_SANAD = frozenset({"primer", "ulama", "peer_review", "aggregator"})
+
+
+def _normalize_sanad_tier(raw: str | None) -> str:
+    v = (raw or "aggregator").lower().replace(" ", "_").replace("-", "_")
+    if v in ("peerreviewed", "peer_reviewed", "peerreview"):
+        v = "peer_review"
+    return v if v in _VALID_SANAD else "aggregator"
+
+
+def _extract_sanad_tier_from_md(text: str) -> str:
+    for line in (text or "").splitlines()[:40]:
+        if line.lower().startswith("sanad-tier:"):
+            return _normalize_sanad_tier(line.split(":", 1)[1].strip())
+    return "aggregator"
+
+
 # ── Deduplication ──────────────────────────────────────────────────────────────
 
 def _load_seen_hashes() -> set[str]:
@@ -87,15 +169,37 @@ def _save_seen_hashes(hashes: set[str]):
 
 
 def deduplicate(items: list[dict]) -> list[dict]:
-    """Remove items whose content hash already exists in corpus."""
+    """Remove items whose SHA prefix or MinHash near-duplicate already exists."""
     seen = _load_seen_hashes()
+    mh_stored = _load_minhash_store()
+    active_mh: list[list[int]] = list(mh_stored)
+    mh_dirty = False
     new_items = []
     for item in items:
-        h = _content_hash(item.get("content", ""))
-        if h not in seen:
-            seen.add(h)
-            new_items.append(item)
+        body = item.get("content", "") or ""
+        h = _content_hash(body)
+        if h in seen:
+            continue
+        m = _minhash_for_content(body)
+        if _minhash_near_duplicate(m, active_mh):
+            try:
+                from . import runtime_metrics
+
+                runtime_metrics.bump("learn_minhash_near_dup")
+            except Exception:
+                pass
+            continue
+        seen.add(h)
+        new_items.append(item)
+        if m is not None:
+            try:
+                active_mh.append(m.hashvalues.tolist())
+                mh_dirty = True
+            except Exception:
+                pass
     _save_seen_hashes(seen)
+    if mh_dirty:
+        _save_minhash_store(active_mh)
     return new_items
 
 
@@ -318,28 +422,55 @@ class LearnAgent:
 
         try:
             from .indexer import build_index
-            # Write items sebagai markdown ke brain/public/auto_learn/
+            from .naskh_handler import NaskhHandler, note_to_knowledge_item
+
             auto_dir = workspace_root() / "brain" / "public" / "auto_learn"
             auto_dir.mkdir(parents=True, exist_ok=True)
+            handler = NaskhHandler()
             for line in lines:
                 try:
                     item = json.loads(line)
-                    h = _content_hash(item.get("content", ""))
-                    md_path = auto_dir / f"{h}.md"
-                    if not md_path.exists():
-                        md_path.write_text(
-                            f"# {item.get('title', 'Untitled')}\n\n"
-                            f"Source: {item.get('url', '')}\n"
-                            f"Domain: {item.get('domain', '')}\n"
-                            f"License: {item.get('license', '')}\n\n"
-                            f"{item.get('content', '')}",
-                            encoding="utf-8"
+                    title = item.get("title", "Untitled")
+                    topic = _topic_slug(title)
+                    sanad = _normalize_sanad_tier(item.get("sanad_tier"))
+                    content_body = item.get("content", "") or ""
+                    full_md_body = (
+                        f"# {title}\n\n"
+                        f"Source: {item.get('url', '')}\n"
+                        f"Domain: {item.get('domain', '')}\n"
+                        f"License: {item.get('license', '')}\n"
+                        f"Sanad-Tier: {sanad}\n\n"
+                        f"{content_body}"
+                    )
+                    md_path = auto_dir / f"{topic}.md"
+                    src_new = item.get("url") or item.get("_source_id", "learn_queue")
+                    new_ki = note_to_knowledge_item(
+                        full_md_body,
+                        str(src_new),
+                        topic,
+                        sanad_tier=sanad,
+                        confidence=float(item.get("confidence", 0.75)),
+                    )
+                    if md_path.exists():
+                        old_text = md_path.read_text(encoding="utf-8")
+                        old_stat = md_path.stat()
+                        old_ki = note_to_knowledge_item(
+                            old_text,
+                            str(md_path),
+                            topic,
+                            sanad_tier=_extract_sanad_tier_from_md(old_text),
+                            confidence=0.72,
+                            date_added=datetime.fromtimestamp(old_stat.st_mtime, tz=timezone.utc),
                         )
+                        winner, status, _reason = handler.resolve(old_ki, new_ki)
+                        if status == "retained":
+                            continue
+                        md_path.write_text(winner.content, encoding="utf-8")
+                    else:
+                        md_path.write_text(full_md_body, encoding="utf-8")
                 except Exception:
                     pass
-            # Trigger re-index
             build_index()
-            # Clear queue after successful processing
             queue_file.write_text("", encoding="utf-8")
             return len(lines)
         except ImportError:
