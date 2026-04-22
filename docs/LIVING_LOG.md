@@ -3907,3 +3907,17 @@ Fokus pada "what architecture of knowledge means, not volume of knowledge."
   - Sprint 7 riset: `C:\Users\ASUS\Downloads\Sidix Adik AI -_riset_tambahan_sprint 7_files\5824c294-*.html`
   - Strategic masterplan: `C:\Users\ASUS\Downloads\Sidix Adik AI -Strategi_harvest data_files\a4079eb7-*.html`
 
+- FIX: Semua referensi vendor (nama agen AI eksternal) dihapus dari 4 file
+  (HANDOFF, CHANGELOG, LIVING_LOG, MASTER_ROADMAP) — prinsip standing-alone SIDIX.
+
+- DEPLOY: SSH via Python paramiko ke server produksi.
+  git pull 2df9f8f..0110b0c (4 files, +443/-45).
+  npm run build dist in 1.55s.
+  pm2 restart sidix-brain online (pid 219408, 63.3mb).
+  pm2 restart sidix-ui online (pid 219425, 18.4mb).
+  /health ok=true, model_ready=true, tools=35, corpus=1182.
+
+- DOC: docs/STATUS_TODAY.md di-rewrite setelah audit penuh server + app:
+  59 API endpoints, 35 tools, UI features lengkap, server infra,
+  10 item TODO Sprint 6.5.
+
