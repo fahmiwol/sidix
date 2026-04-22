@@ -251,7 +251,7 @@ Berdasarkan `TOOL_REGISTRY` di `agent_tools.py` (~2350 baris):
 | Raudah v0.2 TaskGraph DAG | ✅ `brain/raudah/taskgraph.py` — gelombang per peran + verifikator opsional | 6.5 |
 | CQF Rubrik v2 (10 kriteria) | ✅ `brain_qa/cqf_rubrik.py` — skor heuristik + aggregate | 6.5 |
 | Intent classifier few-shot | ✅ `brain_qa/intent_classifier.py` — pola regex deterministik | 6.5 |
-| Social Radar Chrome Extension | ⚠️ Scaffold MV3 `browser/social-radar-extension/` (popup placeholder) | 7 |
+| Social Radar Chrome Extension MVP | ✅ UI `popup.html`, Logic `popup.js`, Backend `social_radar.py`, Endpoint `/social/radar/scan` | 7 |
 | `/metrics` endpoint ringan | ✅ Gabungan `_METRICS` + `runtime_metrics`, uptime, `intent_probe` opsional env | 6.5 |
 | Naskh Handler wire ke `learn_agent.py` | ✅ `process_corpus_queue` — resolve per topik (`auto_learn/{slug}.md`), tier dari frontmatter `Sanad-Tier` | 6.5 |
 | `test_sprint6.py` | ✅ `apps/brain_qa/tests/test_sprint6.py` (8 tes) | 6.5 |

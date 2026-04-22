@@ -3988,4 +3988,11 @@ Fokus pada "what architecture of knowledge means, not volume of knowledge."
   - `docs/sociometer/` — 9 dokumen (strategi, PRD, ERD, fitur, riset, modul, visi)
   Semua kode bersih: no vendor names, no import vendor API.
 
+- IMPL: **Social Radar MVP** — `browser/social-radar-extension/`:
+  - `popup.html`: UI bertema SIDIX (gold/dark), status koneksi backend, scan kompetitor.
+  - `popup.js`: Deteksi tab aktif, simulasi scan sinyal sosial, komunikasi API.
+  - `apps/brain_qa/brain_qa/social_radar.py`: Analisis sinyal (ER, sentiment, tier) + advice strategis UMKM.
+  - `agent_serve.py`: Endpoint `POST /social/radar/scan` ter-wire ke modul radar.
+  - `tests/test_sprint7_logic.py`: 3 unit test (High ER, Neg Sentiment, Leader Tier) — PASSED.
+
 

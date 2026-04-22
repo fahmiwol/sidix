@@ -1,17 +1,128 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="utf-8" />
-  <title>Social Radar</title>
+  <meta charset="UTF-8">
+  <title>SIDIX Social Radar</title>
   <style>
-    body { font-family: system-ui, sans-serif; margin: 12px; width: 280px; }
-    h1 { font-size: 14px; margin: 0 0 8px; }
-    p { font-size: 12px; color: #444; line-height: 1.4; }
-    code { font-size: 11px; background: #f4f4f4; padding: 2px 4px; }
+    :root {
+      --gold: #d4af37;
+      --bg: #0f0f0f;
+      --card: #1a1a1a;
+      --text: #ffffff;
+      --text-dim: #aaaaaa;
+    }
+    body {
+      width: 320px;
+      margin: 0;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+    .container {
+      padding: 16px;
+    }
+    header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+      border-bottom: 1px solid #333;
+      padding-bottom: 12px;
+    }
+    .logo {
+      width: 24px;
+      height: 24px;
+      background: var(--gold);
+      border-radius: 4px;
+    }
+    h1 {
+      font-size: 16px;
+      margin: 0;
+      color: var(--gold);
+      letter-spacing: 1px;
+    }
+    .status {
+      font-size: 10px;
+      color: var(--text-dim);
+      background: #333;
+      padding: 2px 6px;
+      border-radius: 10px;
+      margin-left: auto;
+    }
+    .card {
+      background: var(--card);
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 12px;
+      border: 1px solid #333;
+    }
+    .label {
+      font-size: 11px;
+      color: var(--gold);
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+    .value {
+      font-size: 14px;
+      font-weight: 500;
+    }
+    .btn {
+      width: 100%;
+      background: var(--gold);
+      color: black;
+      border: none;
+      padding: 10px;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: opacity 0.2s;
+    }
+    .btn:hover {
+      opacity: 0.9;
+    }
+    .footer {
+      font-size: 10px;
+      color: var(--text-dim);
+      text-align: center;
+      margin-top: 16px;
+    }
+    .hidden { display: none; }
+    #radar-results {
+      max-height: 200px;
+      overflow-y: auto;
+      font-size: 12px;
+      line-height: 1.4;
+    }
   </style>
 </head>
 <body>
-  <h1>SIDIX Social Radar</h1>
-  <p>Scaffold MV3. Langkah berikutnya: kirim cuplikan halaman ke <code>/agent/chat</code> dengan konteks kanal, dan tampilkan ringkasan intent + sanad.</p>
+  <div class="container">
+    <header>
+      <div class="logo"></div>
+      <h1>SIDIX RADAR</h1>
+      <span class="status" id="conn-status">Checking...</span>
+    </header>
+
+    <div id="main-view">
+      <div class="card">
+        <div class="label">Halaman Aktif</div>
+        <div class="value" id="page-url">Mendeteksi...</div>
+      </div>
+
+      <div class="card" id="radar-summary">
+        <div class="label">Sinyal Sosial</div>
+        <div id="radar-placeholder">Buka Instagram/TikTok untuk scan kompetitor.</div>
+        <div id="radar-results" class="hidden"></div>
+      </div>
+
+      <button class="btn" id="btn-scan">Scan Kompetitor</button>
+    </div>
+
+    <div class="footer">
+      SIDIX Social Radar v0.1.0 · Self-hosted AI
+    </div>
+  </div>
+  <script src="popup.js"></script>
 </body>
 </html>

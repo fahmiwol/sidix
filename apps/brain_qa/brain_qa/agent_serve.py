@@ -42,6 +42,7 @@ from .agent_react import run_react, format_trace, AgentSession
 from .agent_tools import list_available_tools, call_tool, get_agent_workspace_root
 from .local_llm import adapter_fingerprint, adapter_weights_exist, find_adapter_dir, generate_sidix
 from . import rate_limit
+from . import social_radar
 
 _PROCESS_STARTED = time.time()
 
@@ -1679,6 +1680,17 @@ def create_app() -> "FastAPI":
             from .social_agent import get_social_agent
             result = get_social_agent().autonomous_learning_cycle(dry_run=dry_run)
             return {"ok": True, "result": result}
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    @app.post("/social/radar/scan")
+    def social_radar_scan(body: dict[str, Any]):
+        """Scan kompetitor via Social Radar (OpHarvest)."""
+        url = body.get("url", "")
+        metadata = body.get("metadata", {})
+        try:
+            result = social_radar.analyze_social_context(url, metadata)
+            return result
         except Exception as e:
             return {"ok": False, "error": str(e)}
 
