@@ -272,4 +272,4 @@ Berdasarkan `TOOL_REGISTRY` di `agent_tools.py` (~2350 baris):
 
 _Audit baseline: 2026-04-23 (sesi audit eksternal + SSH + browser + codebase)._
 _Update wiring Maqashid/Naskh ke kode: 2026-04-23 — lihat `agent_react.py`, `learn_agent.py`, `agent_serve.py` pada branch `sociometer-sprint7`._
-_Sprint 6.5 (Raudah DAG, MinHash, CQF, intent, metrics, tes, benchmark, scaffold Social Radar): 2026-04-23 — detail & handoff agen: [`docs/HANDOFF_2026-04-23.md`](HANDOFF_2026-04-23.md). **Working tree lokal masih berisi perubahan belum commit** sampai di-push._
+_Sprint 6.5 (Raudah DAG, MinHash, CQF, intent, metrics, tes, benchmark, scaffold Social Radar): 2026-04-23 — commit `99aadf0` di branch `sociometer-sprint7`; handoff: [`docs/HANDOFF_2026-04-23.md`](HANDOFF_2026-04-23.md)._
