@@ -36,5 +36,13 @@
 - **Standing-alone**: Tidak ada API vendor eksternal. Semua analisis (sentimen/radar) menggunakan logika lokal/heuristik.
 - **Data Privacy**: OpHarvest dilarang mengambil PII (nama user, DM, data privat). Fokus hanya pada sinyal publik agregat.
 
+## Checklist Validasi untuk Partner Agent (Claude)
+
+Mohon bantu validasi aspek teknis berikut:
+1. **Keamanan Middleware**: Periksa `_apply_maqashid_mode_gate` di `agent_react.py`. Apakah ada jalur keluar (exit paths) yang terlewat?
+2. **Logika Radar**: Review formula Engagement Rate dan sentimen di `social_radar.py`. Apakah pembobotan keyword sudah optimal untuk konteks UMKM Indonesia?
+3. **Integritas Naskh**: Pastikan wiring `NaskhHandler` di `learn_agent.py` sudah benar dalam mereplace dokumen lama vs baru berdasarkan tier.
+4. **Keamanan API**: Cek endpoint `/social/radar/scan`. Pastikan tidak ada potensi kebocoran data atau injeksi via metadata.
+
 ---
-*Antigravity, 2026-04-23 03:54 WIB*
+*Antigravity, 2026-04-23 03:56 WIB*
