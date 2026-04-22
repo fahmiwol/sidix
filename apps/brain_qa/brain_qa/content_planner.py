@@ -33,12 +33,14 @@ def _default_types(channel: str) -> list[str]:
 def generate_content_plan(
     *,
     niche: str,
+    target_audience: str = "",
     duration_days: int = 30,
     channel: str = "instagram",
     cadence_per_week: int = 5,
     objective: str = "awareness",
 ) -> dict:
     clean_niche = (niche or "").strip()
+    clean_audience = (target_audience or "").strip() or f"audiens {clean_niche} Indonesia"
     if not clean_niche:
         return {"ok": False, "error": "niche wajib diisi"}
 
@@ -87,6 +89,7 @@ def generate_content_plan(
     return {
         "ok": True,
         "niche": clean_niche,
+        "target_audience": clean_audience,
         "channel": channel,
         "duration_days": days,
         "cadence_per_week": cadence,

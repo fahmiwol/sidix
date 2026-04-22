@@ -3591,3 +3591,88 @@ Fokus pada "what architecture of knowledge means, not volume of knowledge."
 [DOC] `AGENTS.md` — tambah heading `#` + tabel **urutan baca wajib** (00_START_HERE → AGENTS → LIVING_LOG → CLAUDE → North Star / MASTER_ROADMAP / CAPABILITY_MAP) + pointer transcript Cursor + pengingat tanpa secret.
 
 [DOC] `docs/00_START_HERE.md` §4 — perluas "Untuk agen AI" dengan inti vs lanjutan vs kewajiban LIVING_LOG, selaras dengan `AGENTS.md`.
+
+## 2026-04-21 — Sprint 6 Quick Wins
+
+### T6.1 — Flywheel L1 Aktif
+[IMPL] `muhasabah_loop.py` — patch `run_muhasabah_loop()`: saat `gate["total"] >= min_score`, otomatis memanggil `log_accepted_output(agent=domain, ...)` sebelum return. Non-blocking (try/except pass). Ini mengaktifkan data flywheel L1 yang sudah disiapkan Sprint 5 — accepted outputs kini otomatis masuk ke `.data/accepted_outputs.jsonl` tanpa intervensi manual.
+
+### T6.2 — Signature Fix Sprint 4
+[FIX] `brand_builder.py` — tambah parameter `target_audience: str = ""` ke `generate_brand_kit()`. Default: `audiens {niche} Indonesia`. Output dict juga menyertakan field `target_audience`. Root cause: Sprint 4 tidak implementasikan param ini meski `prompt_optimizer._BASE_PROMPTS["brand_builder"]` sudah menyertakan `{target_audience}` di template — menyebabkan `KeyError` saat optimizer mencoba evaluasi template baru.
+
+[FIX] `content_planner.py` — tambah parameter `target_audience: str = ""` ke `generate_content_plan()`. Default: `audiens {niche} Indonesia`. Output dict juga menyertakan field `target_audience`.
+
+[FIX] `agent_tools.py` — `_tool_generate_brand_kit` dan `_tool_generate_content_plan` kini mem-pass `target_audience` dari args ke function. ToolSpec `params` list diupdate untuk kedua tool. Backward compatible — caller lama tetap berfungsi.
+
+### T6.3 — Cron Weekly Optimizer
+[IMPL] `agent_serve.py` — tambah 3 endpoint baru tag `Creative`:
+- `POST /creative/prompt_optimize/all` — jalankan `optimize_all_agents()`, admin-only. Dilengkapi docstring cron example: `0 4 * * MON curl -s -X POST https://ctrl.sidixlab.com/creative/prompt_optimize/all -H "X-Admin-Token: $BRAIN_QA_ADMIN_TOKEN"`.
+- `POST /creative/prompt_optimize/{agent}` — optimalkan satu agent spesifik, admin-only.
+- `GET /creative/prompt_optimize/stats` — baca stats run terakhir, public.
+
+[DOC] `brain/public/research_notes/181_sprint6_flywheel_fixes_cron.md` — dokumentasi lengkap: arsitektur flywheel, tabel signature fix, cron setup, keterbatasan.
+
+[DECISION] Cron `/creative/prompt_optimize/all` diset Senin 04:00 UTC (bukan harian) karena `MIN_SAMPLES_TO_OPTIMIZE=20` perlu waktu terkumpul dari production traffic. Weekly cukup untuk iterasi L1.
+
+[DEPLOY] VPS: `git pull origin main` → 7 file Sprint 6 masuk. `pm2 restart sidix-brain` → online pid=142922. `/health` → ok, tools_available=35. Semua service live (sidix-brain, sidix-ui, revolusitani, shopee-gateway, abra-website, galantara-mp, tiranyx).
+
+[NOTE] Sesi ditutup karena context 68% + rate limit 70%. Handoff dicatat di `docs/HANDOFF_2026-04-21_SPRINT6.md`. Sesi berikutnya: curator_agent score_gte_85 (S) → test coverage → Sprint 6 full (3D/Voyager).
+
+[NOTE] Cron VPS belum dipasang — masih TODO manual: `crontab -e` → tambah `0 4 * * MON curl POST /creative/prompt_optimize/all`.
+
+[IMPL] Cron VPS dipasang via SSH (paramiko): `30 5 * * MON curl POST http://localhost:8765/creative/prompt_optimize/all`. Log ke `/var/log/sidix_optimizer.log`. Tidak bentrok dengan LearnAgent (04:00-04:30 UTC).
+
+[DOC] Fungsi cron prompt_optimizer — Self-Evolution L1:
+  Setiap Senin 05:30 UTC, sistem membaca `.data/accepted_outputs.jsonl` (diisi otomatis oleh muhasabah_loop saat output CQF ≥ 7.0), memilih top-4 output terbaik sebagai few-shot examples, meng-inject ke prompt template agent (copywriter/brand_builder/content_planner/campaign_strategist/ads_generator), lalu mengevaluasi apakah template baru lebih baik. Kalau ya → simpan versi baru di `.data/optimized_prompts/`. Kalau tidak → rollback otomatis. Ini Data Flywheel L1: makin banyak user → makin banyak accepted output → prompt makin pintar → output makin bagus → loop. L2 (auto-generate skill baru) target Sprint 7, L3 (retrain LoRA) target bulanan.
+
+## 2026-04-21 — Standing Alone Fix + OOM Prevention
+
+[DECISION] **Standing Alone Principle ditegakkan**: GROQ_API_KEY dan GEMINI_API_KEY dinonaktifkan di VPS `.env` (diprefix `# DISABLED_STANDALONE:`). Root cause: `multi_llm_router.py` punya hierarki fallback Local→Groq→Gemini→Anthropic→Mock. Dengan keys aktif, setiap kali Ollama crash (OOM) SIDIX diam-diam pakai LLM eksternal tanpa sepengetahuan user — melanggar prinsip fundamental SIDIX. Fix: keys dikomentari, sekarang fallback chain = Local→Mock (jujur bilang tidak bisa daripada pakai LLM orang lain).
+
+[IMPL] **Swap 4GB ditambah ke VPS** via `fallocate -l 4G /swapfile && mkswap && swapon`. Persist di `/etc/fstab`. Tujuan: Ollama butuh 4.7GB untuk `sidix-lora:latest` (GGUF Q4_K_M), VPS 7.8GB RAM tanpa swap → OOM → Ollama crash → fallback trigger. Dengan swap, Ollama bisa survive memory pressure. State setelah: RAM 5.0GB free + 4.0GB swap free.
+
+[DELETE] **`qwen2.5:7b` dihapus dari Ollama** (`ollama rm qwen2.5:7b`). Alasan: duplikat dari `sidix-lora:latest` (yang sudah include base Qwen2.5-7B + LoRA SIDIX). Menyimpan keduanya = buang 4.7GB disk + RAM percuma. Sekarang Ollama hanya punya: `sidix-lora:latest` (4.7GB, own model) + `qwen2.5:1.5b` (986MB, lightweight).
+
+[TEST] Setelah semua fix: `/health` → `model_mode: sidix_local`, `model_ready: true`, `tools_available: 35`, `ok: true`. sidix-brain online (pid 144146, uptime stabil). sidix-ui online.
+
+[DOC] Research note `182_standing_alone_principle.md` — dokumentasi lengkap prinsip, masalah yang ditemukan, solusi, batas apa yang boleh/tidak boleh di router, analogi Ollama vs Groq/Gemini.
+
+## 2026-04-21 — GitHub SEO + Branding + HuggingFace + Dual Remote
+
+[IMPL] **Dual remote setup**: setiap `git push` otomatis ke `fahmiwol/sidix` (dev) DAN `tiranyx/sidix` (company public). Setup via `git remote set-url --add --push origin`.
+
+[UPDATE] **README overhaul**: hero headline "Free & Open Source AI Agent", badge row baru (Free/Open Source MIT/Self-Hosted/No Vendor API), HuggingFace badge, tools 30→35, Sprint 4→Sprint 6, standing-alone note di security section.
+
+[UPDATE] **GitHub repo description** (kedua repo): "Free & Open Source AI Agent — Self-Hosted, Self-Learning, No Vendor API. Qwen2.5-7B + LoRA. 35 tools. Built on Islamic Epistemology (IHOS)."
+
+[UPDATE] **GitHub topics** (kedua repo): 20 topics — ai-agent, free, local-ai, qwen, lora, ollama, open-source-ai, self-hosted, epistemology, dll.
+
+[IMPL] **og-image diperbarui di VPS**: layout baru — badge hijau "FREE OPEN SOURCE" pojok kanan, headline emas "Free & Open Source AI Agent". Live di sidixlab.com/og-image.png (57KB, HTTP 200).
+
+[IMPL] **Social preview** diupload manual ke `fahmiwol/sidix` dan `tiranyx/sidix` di GitHub Settings.
+
+[IMPL] **GitHub org Tiranyx dibuat**: `github.com/tiranyx` — PT Tiranyx Digital, email tiranyx.id@gmail.com. Repo `tiranyx/sidix` jadi public-facing company repo.
+
+[IMPL] **HuggingFace account Tiranyx dibuat**: `huggingface.co/Tiranyx`. Model repo `Tiranyx/sidix-lora` dibuat dan model card diupload (`huggingface/README.md`). Full metadata: base_model Qwen2.5-7B-Instruct, tags, license MIT, quick usage Python+Ollama, training details, personas, 35 tools, citation.
+
+[DECISION] Platform identity final: GitHub=`tiranyx`, HuggingFace=`Tiranyx`, domain=`sidixlab.com`, sosmed=`@sidixlab`. User-facing semua lewat tiranyx/Tiranyx, dev tetap di fahmiwol.
+
+## 2026-04-21 — HuggingFace Model Live + Footer Fix
+
+[IMPL] **HuggingFace Tiranyx/sidix-lora LIVE**: semua file LoRA adapter berhasil diupload dari VPS langsung ke HF. Files: `adapter_model.safetensors` (78MB), `adapter_config.json`, `tokenizer.json` (11MB), `tokenizer_config.json`, `chat_template.jinja`, `README.md` (model card). URL: https://huggingface.co/Tiranyx/sidix-lora
+
+[NOTE] 88MB adalah ukuran yang benar untuk LoRA adapter — ini hanya delta weights (perubahan dari base model), bukan full model. Base model Qwen2.5-7B (~15GB) sudah tersedia terpisah di HuggingFace resmi Qwen. User load keduanya via `PeftModel.from_pretrained("Tiranyx/sidix-lora")`.
+
+[FIX] README footer: "Built by Mighan Lab" → "Built by Tiranyx · sidixlab.com". Mighan Lab adalah nama internal/dev, Tiranyx adalah nama perusahaan publik.
+
+[UPDATE] Semua platform SIDIX sekarang konsisten: GitHub=tiranyx, HuggingFace=Tiranyx, domain=sidixlab.com, sosmed=@sidixlab.
+
+## 2026-04-22 — Session Brief + LIVING_LOG conflict fix
+
+[FIX] Merge conflict di `docs/LIVING_LOG.md` baris ~3581 (`<<<<<<< HEAD` / `>>>>>>> 7a67e6a`) — diselesaikan manual. Kedua blok (2026-04-22 continual-learning entries + 2026-04-21 Sprint 6 Quick Wins) digabung tanpa menghapus konten dari sisi manapun.
+
+[DOC] `C:\Users\ASUS\Documents\SIDIX_SESSION_2026-04-22.md` — session brief dibuat untuk sesi hari ini. Berisi: status VPS live, prioritas (curator_agent score_gte_85 + test coverage + Sprint 6 full), known issues, file kunci, quick start commands, dan kanban Sprint 4 sisa.
+
+[DOC] `docs/HANDOFF_2026-04-22.md` — handoff komprehensif sesi ini. 9 section: situasi 1 paragraf, VPS state, cron aktif, prioritas (quick wins A-B + sprint 6 full C-D + sprint 4 sisa), manual TODO untuk Fahmi, file kunci, nomor research note berikutnya (183+), mandat user, quick commands.
+
+[DOC] `C:\Users\ASUS\Documents\SIDIX_PROMPT_SESI_BARU.md` — prompt siap tempel 5 varian (pendek/lengkap/minimalis + 5 task cards A-E) untuk Claude Code / Cursor sesi berikutnya.
