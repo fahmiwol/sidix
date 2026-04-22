@@ -58,7 +58,7 @@ Identitas proyek di sisi publik disapa **Mighan**; detail identitas pribadi pemi
 
 **Inti (jangan lompat):** [STATUS_TODAY.md](STATUS_TODAY.md) → [AGENTS.md](../AGENTS.md) (preferensi + fakta workspace + aturan log) → cuplikan terbaru [LIVING_LOG.md](LIVING_LOG.md).
 
-**Handoff sesi terbaru (kontinuitas multi-agen):** [HANDOFF_2026-04-23.md](HANDOFF_2026-04-23.md) — sprint 6.5, branch, verifikasi, backlog.
+**Handoff sesi terbaru (kontinuitas multi-agen):** [HANDOFF_2026-04-23_FINAL.md](HANDOFF_2026-04-23_FINAL.md) — sprint 6.5 (DONE), sprint 7 (MVP Radar), branch, verifikasi, backlog.
 
 **Lanjutan sesuai tugas:** [CLAUDE.md](../CLAUDE.md) (SSOT Claude: North Star, MASTER_ROADMAP, DEVELOPMENT_RULES, keamanan); [NORTH_STAR.md](NORTH_STAR.md), [MASTER_ROADMAP_2026-2027.md](MASTER_ROADMAP_2026-2027.md), [SIDIX_CAPABILITY_MAP.md](SIDIX_CAPABILITY_MAP.md).
 
