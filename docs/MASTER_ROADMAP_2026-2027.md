@@ -1,8 +1,8 @@
 # SIDIX Master Roadmap 2026-2027 — Unified SSoT (v2)
 
 **Status:** LIVING SSoT setelah tabayyun + reconciliation.
-**Last update:** 2026-04-23 (v3 — +Kimi K2.6 Social Radar strategy + OpHarvest + Sprint 6.5-10 update)
-**Prinsip merge:** existing kita jadi base timeline, riset user jadi detail task + framework, ADR-002 jadi killer offer sequencing, Kimi K2.6 jadi Social Radar pivot + data harvesting strategy.
+**Last update:** 2026-04-23 (v3 — +Riset Eksternal R2.6 Social Radar strategy + OpHarvest + Sprint 6.5-10 update)
+**Prinsip merge:** existing kita jadi base timeline, riset user jadi detail task + framework, ADR-002 jadi killer offer sequencing, Riset Eksternal R2.6 jadi Social Radar pivot + data harvesting strategy.
 
 ---
 
@@ -41,7 +41,7 @@ ADR-002: Offer #1-2 LIVE        Offer #3-5           Offer #6-8              Ent
 
 ## 🧬 Identity + Framework (LOCK, non-negotiable)
 
-### Dari CLAUDE.md (existing):
+### Dari SIDIX core config (existing):
 - **3 Layer:** LLM Generative (Qwen+LoRA) + RAG/Tools/ReAct + Growth Loop
 - **Brain+Hands+Memory** framework arsitektural
 - **IHOS** (Islamic epistemology): sanad chain + 4-label + maqashid filter
@@ -157,7 +157,7 @@ Belum eksekusi karena Cursor tidak available + prioritas shift ke image gen beta
 
 ### ✅ Sprint 5.5 — IHOS Deepening + Raudah Protocol (DONE 2026-04-23)
 
-> **Catatan:** Sprint ini tidak ada di roadmap awal — diinsertkan karena analisis eksternal (Kimi K2.6)
+> **Catatan:** Sprint ini tidak ada di roadmap awal — diinsertkan karena analisis eksternal (Riset R2.6)
 > mengidentifikasi 3 critical gap yang harus diselesaikan sebelum lanjut ke 3D/Voyager.
 > Menghasilkan v0.6.0 + v0.6.1. Semua item done + deployed.
 
@@ -179,7 +179,7 @@ Belum eksekusi karena Cursor tidak available + prioritas shift ke image gen beta
 **Open Source:**
 - ✅ **README.md** diperbarui (v0.6.1 badge, Raudah section, Naskh, Maqashid v2, persona baru)
 - ✅ **CONTRIBUTING.md** ditulis ulang — panduan kolaborasi open source lengkap
-- ✅ **docs/FEEDBACK_KIMI_2026-04-23.md** — jawaban teknis 10 pertanyaan Kimi
+- ✅ **docs/FEEDBACK_KIMI_2026-04-23.md** — jawaban teknis 10 pertanyaan riset
 
 **Research notes baru:** 183, 184, 185, 186
 **Commits:** 347f803 → 60acde4 (5 commits, semua di production)
@@ -228,18 +228,18 @@ Belum eksekusi karena Cursor tidak available + prioritas shift ke image gen beta
 ## 🧒 STAGE 2 — CHILD (Q3 2026, Sprint 6.5-10)
 
 **Goal:** Social Radar MVP + multimodal parity + data flywheel + plugin ecosystem.
-**Merging:** Ours Sprint 5-10 + Kimi K2.6 research (Social Radar strategy + OpHarvest) + Riset Phase 2.
+**Merging:** Ours Sprint 5-10 + Riset Eksternal R2.6 (Social Radar strategy + OpHarvest) + Riset Phase 2.
 
 ### 🎯 Sprint 6.5 (NOW) — Maqashid Wire + Benchmark + MinHash + Raudah v0.2
 > Carry-over teknis dari Sprint 5.5 yang harus diselesaikan sebelum Social Radar.
 
 - [ ] **Wire `evaluate_maqashid()` ke `run_react()`** — middleware output (~20 baris, 1 file)
-- [ ] **`test_maqashid_benchmark.py`** — 50 creative PASS + 20 harmful BLOCK (Kimi A1)
+- [ ] **`test_maqashid_benchmark.py`** — 50 creative PASS + 20 harmful BLOCK (Riset A1)
 - [ ] **`test_sprint6.py`** — coverage Maqashid benchmark + curator premium filter
-- [ ] **MinHash dedup** — `pip install datasketch`, integrate `CorpusDeduplicator` ke `curator_agent.py` (Kimi A2)
-- [ ] **Raudah v0.2** — TaskGraph DAG (Kimi A3, custom lightweight async-native) + `/raudah/run` endpoint
-- [ ] **CQF Rubrik v2** — 10 kriteria scoring, total bobot 10.0 (Kimi A5)
-- [ ] **Intent classifier few-shot** — `classify_intent()` ke persona router (Kimi A4)
+- [ ] **MinHash dedup** — `pip install datasketch`, integrate `CorpusDeduplicator` ke `curator_agent.py` (Riset A2)
+- [ ] **Raudah v0.2** — TaskGraph DAG (Riset A3, custom lightweight async-native) + `/raudah/run` endpoint
+- [ ] **CQF Rubrik v2** — 10 kriteria scoring, total bobot 10.0 (Riset A5)
+- [ ] **Intent classifier few-shot** — `classify_intent()` ke persona router (Riset A4)
 - [ ] Wire Naskh Handler ke `learn_agent.py`
 - [ ] `/metrics` endpoint ringan
 
@@ -252,7 +252,7 @@ Belum eksekusi karena Cursor tidak available + prioritas shift ke image gen beta
 ---
 
 ### 🎯 Sprint 7 (3-4 hari) — Social Radar MVP + Chrome Extension
-> **Strategic Pivot (Kimi K2.6 DECISION):** SIDIX Social Radar — competitor intelligence untuk UMKM/creator Indonesia.
+> **Strategic Pivot (Riset R2.6 DECISION):** SIDIX Social Radar — competitor intelligence untuk UMKM/creator Indonesia.
 > Blue ocean: existing tools $300-1000/bulan = enterprise-only. SIDIX = $9/mo Pro.
 
 **Chrome Extension (Manifest V3):**
@@ -282,7 +282,7 @@ Belum eksekusi karena Cursor tidak available + prioritas shift ke image gen beta
 ---
 
 ### Sprint 8 (2 minggu) — Expand Platform + Polish
-**Dari Kimi Sprint 8 + Ours Vision/Skill:**
+**Dari Riset Eksternal Sprint 8 + Ours Vision/Skill:**
 
 **Multi-Platform Scraping:**
 - [ ] TikTok scraper (public profile + videos)
@@ -308,7 +308,7 @@ Belum eksekusi karena Cursor tidak available + prioritas shift ke image gen beta
 ---
 
 ### Sprint 9 (2 minggu) — Plugin Ecosystem + Voice
-**Dari Kimi Sprint 9 + Ours Voice/Video:**
+**Dari Riset Eksternal Sprint 9 + Ours Voice/Video:**
 
 **Plugin Ecosystem:**
 - [ ] Figma plugin (image gen harvest)
@@ -329,7 +329,7 @@ Belum eksekusi karena Cursor tidak available + prioritas shift ke image gen beta
 ---
 
 ### Sprint 10 (2 minggu) — Monetization + Scale + Evolution L2
-**Dari Kimi Sprint 10 + Ours Self-Train:**
+**Dari Riset Eksternal Sprint 10 + Ours Self-Train:**
 
 **Monetization (Freemium):**
 - [ ] Pricing tier aktif: Free (1 competitor) → Pro $9/mo (10) → Enterprise $99/mo (unlimited)
@@ -470,8 +470,8 @@ Dari `sidix_implementation_roadmap.md` + walkthrough `Decision Points Needed fro
 | D1 | Phase 1 domain priority | **Content + Design + Marketing** (konfirmed via note 168) | ✅ LOCKED |
 | D2 | Primary LLM | Qwen2.5-7B + LoRA → Qwen3 saat rilis | ✅ LOCKED (tidak upgrade Qwen3 sekarang) |
 | D3 | GPU strategy | Laptop RTX 3060 (now) → RunPod kalau >10 img/day | ✅ LOCKED (laptop cukup beta) |
-| D4 | Hybrid vendor bridge (Claude API fallback?) | **TOLAK** — prinsip standing-alone. OK untuk dev debug, tidak untuk produksi | ✅ LOCKED (standing-alone) |
-| D5 | Team | Solo + Claude + Cursor + Antigravity (saat berfungsi) | ✅ LOCKED |
+| D4 | Hybrid vendor bridge (vendor API fallback?) | **TOLAK** — prinsip standing-alone. OK untuk dev debug, tidak untuk produksi | ✅ LOCKED (standing-alone) |
+| D5 | Team | Solo + multi-agent dev assistants (saat berfungsi) | ✅ LOCKED |
 | D6 | Omnyx/Tiranyx integration | **YA** — dogfood untuk 2-3 client project Sprint 5-6 | ⏳ pending user confirm |
 | D7 | Microservice (postgres/redis/minio) migration | Tunggu >100 DAU + bottleneck nyata | ⏳ Sprint 7 evaluate |
 | D8 | `sidix-creative-agent/` skeleton adoption | Reference saja, **jangan copy langsung** — adopt modul-by-modul | ✅ LOCKED (selective) |
@@ -565,4 +565,4 @@ Dari `sidix_implementation_roadmap.md` + walkthrough `Decision Points Needed fro
 **Dokumen ini adalah MASTER. Konflik dengan doc lama → yang di sini menang.**
 **Prinsip:** rolling 3-5 adoption item per sprint. Tidak semua sekaligus. Tiap adopt wajib baca source + verify alignment + attribution.
 
-**Owner:** Claude (coordinator) + Fahmi (direction).
+**Owner:** SIDIX team (coordinator) + Fahmi (direction).

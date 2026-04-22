@@ -9,7 +9,7 @@ progress + ajakan kontribusi.
 
 ---
 
-## v0.6.2-dev — 2026-04-23 — Social Radar Strategy + Kimi K2.6 Research Intake
+## v0.6.2-dev — 2026-04-23 — Social Radar Strategy + Riset Eksternal R2.6 Intake
 
 ### Strategic Pivot
 
@@ -20,7 +20,7 @@ progress + ajakan kontribusi.
   Setiap report = training pair. Guardrails: public data only, explicit opt-in,
   anonymized, transparency dashboard, UU PDP compliant.
 
-### Research Ready (Kimi K2.6, 5 deliverables)
+### Research Ready (Riset Eksternal R2.6, 5 deliverables)
 
 - **A1** Benchmark Maqashid — 50 creative PASS + 20 harmful BLOCK queries (golden test set)
 - **A2** MinHash dedup — `datasketch`, `num_perm=128`, `threshold=0.85` (class `CorpusDeduplicator`)
@@ -28,7 +28,7 @@ progress + ajakan kontribusi.
 - **A4** Intent classifier — few-shot prompting, 10 examples (bukan full fine-tune)
 - **A5** CQF Rubrik v2 — 10 kriteria, total bobot 10.0 (threshold ≥7.0 pass)
 
-### Roadmap Update (Sprint 7-10 dari Kimi K2.6)
+### Roadmap Update (Sprint 7-10 dari Riset Eksternal R2.6)
 
 - Sprint 7: Social Radar MVP (Chrome Extension + IG scraper, 3-4 hari)
 - Sprint 8: Expand (TikTok + Twitter + Alert + PDF + MinHash)
@@ -68,10 +68,10 @@ terinspirasi tokoh historis, dieja dengan cara yang unik untuk SIDIX.
 - **README.md** — diperbarui ke v0.6.1: Raudah Protocol section, Naskh Handler,
   Maqashid v2, persona table baru, Ollama Quick Start, badge versi
 
-### Kimi Feedback Terdokumentasi
+### Feedback Riset Terdokumentasi
 
-`docs/FEEDBACK_KIMI_2026-04-23.md` — jawaban lengkap 10 pertanyaan Kimi K2.6,
-status implementasi per modul, dan request riset lanjutan ke Kimi.
+`docs/FEEDBACK_KIMI_2026-04-23.md` — jawaban lengkap 10 pertanyaan riset,
+status implementasi per modul, dan request riset lanjutan.
 
 ---
 ## v0.6.0 — 2026-04-23 — Fase 6: IHOS Deepening + Raudah Protocol

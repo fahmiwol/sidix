@@ -1,15 +1,15 @@
 # HANDOFF — 2026-04-23 Sprint 7 Preparation
 
-> **From:** Claude (Sesi 2026-04-23, limit habis) + Kimi K2.6 (Research & Strategy)
-> **To:** Agen berikutnya (Claude/Cursor/Antigravity)
+> **From:** Agen Primer (Sesi 2026-04-23, limit habis) + Riset Eksternal R2.6 (Research & Strategy)
+> **To:** Agen berikutnya
 > **Date:** 2026-04-23T01:55 WIB
 
 ---
 
 ## Konteks
 
-Sesi Claude 2026-04-23 menghasilkan v0.6.0 dan v0.6.1. Sebelum limit Claude habis, user memberikan
-**dua dokumen riset Kimi K2.6** yang berisi riset teknis (A1-A5) dan strategi produk (B1-C4) yang
+Sesi agen primer 2026-04-23 menghasilkan v0.6.0 dan v0.6.1. Sebelum limit habis, user memberikan
+**dua dokumen riset eksternal R2.6** yang berisi riset teknis (A1-A5) dan strategi produk (B1-C4) yang
 harus diintegrasikan ke sprint dan roadmap SIDIX.
 
 ---
@@ -21,12 +21,12 @@ harus diintegrasikan ke sprint dan roadmap SIDIX.
 | `347f803` | baseline v0.5.0 |
 | `9af6173` | feat: v0.6.0 — Maqashid v2 + Naskh + Raudah Protocol |
 | `8485095` | feat: v0.6.1 — Persona rename AYMAN/ABOO/OOMAR/ALEY/UTZ |
-| `60acde4` | doc: README + CONTRIBUTING + Kimi feedback |
+| `60acde4` | doc: README + CONTRIBUTING + riset feedback |
 | `2df9f8f` | doc: HANDOFF FINAL + CHANGELOG + ROADMAP Sprint 5.5 |
 
 ---
 
-## Dokumen Kimi K2.6 yang Diterima
+## Dokumen Riset Eksternal R2.6 yang Diterima
 
 ### Dokumen 1: Sprint 7 Riset (5824c294)
 
@@ -51,7 +51,7 @@ harus diintegrasikan ke sprint dan roadmap SIDIX.
 
 ---
 
-## Keputusan Strategis (dari Kimi K2.6)
+## Keputusan Strategis (dari Riset Eksternal R2.6)
 
 ### DECISION: Fokus 1 fitur — SIDIX Social Radar
 
@@ -67,7 +67,7 @@ harus diintegrasikan ke sprint dan roadmap SIDIX.
 
 ### Strategic Pivot
 
-- **Dari:** "AI Agent Universal" (bersaing head-to-head dgn GPT/Claude/Canva)
+- **Dari:** "AI Agent Universal" (bersaing head-to-head dgn tool-tool komersial besar)
 - **Ke:** "Social Radar Specialist" — niche competitor intelligence untuk UMKM Indonesia
 - **Blue Ocean:** Tool existing (Sprout, Brandwatch) $300-1000/bulan, enterprise-focused
 - **SIDIX:** $9/mo Pro tier, accessible untuk UMKM/creator Indonesia
@@ -76,13 +76,13 @@ harus diintegrasikan ke sprint dan roadmap SIDIX.
 
 ## Priority Queue — Sesi Berikutnya
 
-### 🔴 Top 3 Priority (CARRY OVER dari sesi Claude)
+### 🔴 Top 3 Priority (CARRY OVER dari sesi sebelumnya)
 
 1. **Wire `evaluate_maqashid()` ke `run_react()`** — 1 file, ~20 baris, langsung bisa di-test
 2. **`test_sprint6.py`** — coverage Maqashid benchmark + curator premium filter
-3. **Raudah v0.2** — TaskGraph DAG (code sudah ada dari Kimi A3) + `/raudah/run` endpoint
+3. **Raudah v0.2** — TaskGraph DAG (code sudah ada dari riset A3) + `/raudah/run` endpoint
 
-### 🟡 Sprint 7 Items (dari Kimi research)
+### 🟡 Sprint 7 Items (dari riset eksternal)
 
 4. **`test_maqashid_benchmark.py`** — Copy-paste A1 data (50+20 queries) + pytest parametrize
 5. **MinHash dedup** — `pip install datasketch`, integrate `CorpusDeduplicator` ke `curator_agent.py`
@@ -150,7 +150,7 @@ harus diintegrasikan ke sprint dan roadmap SIDIX.
 
 ---
 
-## CQF Rubrik v2 (dari Kimi A5)
+## CQF Rubrik v2 (dari riset A5)
 
 | # | Kriteria | Bobot | Threshold |
 |---|----------|-------|-----------|
@@ -169,7 +169,7 @@ harus diintegrasikan ke sprint dan roadmap SIDIX.
 
 ---
 
-## Sprint Roadmap Update (Kimi K2.6)
+## Sprint Roadmap Update (Riset Eksternal R2.6)
 
 | Sprint | Focus | Target |
 |--------|-------|--------|
@@ -185,9 +185,9 @@ harus diintegrasikan ke sprint dan roadmap SIDIX.
 
 | File | Lokasi |
 |------|--------|
-| Kimi Sprint 7 Research | `C:\Users\ASUS\Downloads\Sidix Adik AI -_riset_tambahan_sprint 7_files\5824c294-*.html` |
-| Kimi Strategic Masterplan | `C:\Users\ASUS\Downloads\Sidix Adik AI -Strategi_harvest data_files\a4079eb7-*.html` |
+| Sprint 7 Research | `C:\Users\ASUS\Downloads\Sidix Adik AI -_riset_tambahan_sprint 7_files\5824c294-*.html` |
+| Strategic Masterplan | `C:\Users\ASUS\Downloads\Sidix Adik AI -Strategi_harvest data_files\a4079eb7-*.html` |
 
 ---
 
-_Handoff created by Antigravity (Gemini) untuk menjaga kontinuitas multi-agent SIDIX._
+_Handoff created by Antigravity untuk menjaga kontinuitas multi-agent SIDIX._
