@@ -4018,4 +4018,21 @@ Fokus pada "what architecture of knowledge means, not volume of knowledge."
 - UPDATE: **`docs/STATUS_TODAY.md`** — rewrite lengkap: Sprint 6.5 semua ✅, Sprint 7 status per komponen, security status, TODO aktif.
 - DOC: **`brain/public/research_notes/187_sprint7_api_security_radar_hardening.md`** — dokumentasi semua fix.
 
+### 2026-04-23 — Sesi Claude: Privacy audit + branding Tiranyx × Mighan Lab
+
+- FIX (KRITIS): **`identity.py`** — `created_by` ganti dari nama pribadi ke `"Tiranyx × Mighan Lab (contact@sidixlab.com)"`.
+- FIX (KRITIS): **`programming_learner.py`** + **`world_sensor.py`** — `USER_AGENT` HTTP header ganti email pribadi ke `contact@sidixlab.com`. Field ini dikirim ke server eksternal setiap scraping — potensi exposur tinggi.
+- FIX (KRITIS): **`telegram_sidix/bot.py`** — hapus default hardcoded username dari `ADMIN_TELEGRAM_USERS` env var.
+- FIX: **`autonomous_researcher.py`**, **`channel_adapters.py`**, **`conceptual_generalizer.py`**, **`brain_synthesizer.py`**, **`builtin_apps.py`**, **`token_quota.py`** — hapus/ganti semua referensi nama pribadi di komentar dan mock data.
+- IMPL: **`SECURITY.md`** (root) — baru, untuk GitHub security tab (`?tab=security-ov-file`). Isi: vulnerability disclosure policy, supported versions, arsitektur keamanan, responsible disclosure 90 hari, out-of-scope. Branding Tiranyx × Mighan Lab.
+- UPDATE: **`CHANGELOG.md`** — rewrite bersih: tanpa nama vendor eksternal, branding Tiranyx × Mighan Lab, v0.7.0 jadi versi baru.
+- UPDATE: **`SIDIX_LANDING/index.html`**:
+  - Nav: tambah link `#changelog`.
+  - GitHub social card: display text diubah dari "fahmiwol/sidix" ke "sidixlab/sidix".
+  - GitHub Sponsors link diganti dengan "Star on GitHub" (tidak ada nama pribadi di URL display).
+  - Donate desc: tambah "Tiranyx × Mighan Lab" branding eksplisit.
+  - Footer: tambah link `tiranyx.co.id` × `mighan.com`.
+  - Section baru `#changelog`: 5 versi (v0.7.0 / v0.6.x / v0.5.0 / v0.4.0 / Foundation) dengan detail perubahan per versi.
+- DECISION: Branding publik SIDIX = **Tiranyx × Mighan Lab** (bukan solo project, bukan nama pribadi). URL repo tetap `github.com/fahmiwol/sidix` (tidak bisa ubah tanpa transfer org), tapi display text sudah dipersihkan.
+
 

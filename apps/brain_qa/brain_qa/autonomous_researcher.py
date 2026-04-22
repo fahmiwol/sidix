@@ -20,7 +20,7 @@ Pipeline:
   ResearchBundle              — dikirim ke note_drafter untuk diformat
 
 Catatan: modul ini TIDAK langsung menulis ke corpus publik.
-Output berupa draft yang masih harus di-approve manual oleh mentor (Fahmi).
+Output berupa draft yang masih harus di-approve manual oleh maintainer.
 """
 
 from __future__ import annotations

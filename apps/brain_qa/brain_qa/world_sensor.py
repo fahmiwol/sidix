@@ -51,7 +51,7 @@ _CORPUS_WEB = workspace_root() / "brain" / "public" / "sources" / "web_clips"
 _SENSOR_DIR.mkdir(parents=True, exist_ok=True)
 _CORPUS_WEB.mkdir(parents=True, exist_ok=True)
 
-USER_AGENT = "SIDIX-WorldSensor/1.0 (educational; contact:fahmiwol@gmail.com)"
+USER_AGENT = "SIDIX-WorldSensor/1.0 (educational; contact:contact@sidixlab.com)"
 REQUEST_DELAY = 2.0  # seconds between requests
 
 # ── Dataclasses ────────────────────────────────────────────────────────────────

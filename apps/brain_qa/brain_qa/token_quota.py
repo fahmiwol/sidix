@@ -46,7 +46,7 @@ TIER_MODELS: dict[QuotaTier, str] = {
 
 # Trakteer/Saweria link untuk top up
 TOPUP_URL = "https://trakteer.id/sidixlab"  # update ke URL asli
-TOPUP_WA  = "https://wa.me/6281234567890"   # update ke nomor WA Fahmi
+TOPUP_WA  = "https://wa.me/6281234567890"   # update ke nomor WA resmi
 
 _BASE = Path(__file__).parent.parent.parent
 _QUOTA_DIR = _BASE / ".data" / "quota"

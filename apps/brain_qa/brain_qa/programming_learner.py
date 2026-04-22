@@ -49,7 +49,7 @@ from .skill_library import SkillRecord, SkillType, SkillDomain, get_skill_librar
 
 # ── Constants ──────────────────────────────────────────────────────────────────
 
-USER_AGENT = "SIDIX-Learner/1.0 (educational; contact:fahmiwol@gmail.com)"
+USER_AGENT = "SIDIX-Learner/1.0 (educational; contact:contact@sidixlab.com)"
 REQUEST_DELAY = 1.0  # 1 req/sec — hormati rate limit
 
 _LEARNER_DIR = default_data_dir() / "programming_learner"

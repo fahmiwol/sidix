@@ -1364,7 +1364,7 @@ BUILTIN_APPS: dict[str, dict] = {
             "delimiter": "pemisah kolom (default ',')",
             "has_header": "apakah baris pertama header (True/False)",
         },
-        "example": {"csv_text": "nama,usia\nFahmi,25\nSIDIX,1", "delimiter": ","},
+        "example": {"csv_text": "nama,usia\nUser,25\nSIDIX,1", "delimiter": ","},
     },
     "uuid_generator": {
         "description": "Generate UUID v4 (random) atau v1 (timestamp-based)",

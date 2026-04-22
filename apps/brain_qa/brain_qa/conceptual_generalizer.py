@@ -5,7 +5,7 @@ Filosofi:
     "SIDIX cuma tau awalnya 1+1=2, tapi langsung paham KONSEP-nya.
      Oh berarti 2+200=202. Dari sedikit ilmu langsung paham semuanya.
      Bukan dari CARA tapi dari KONSEP dan FILOSOFIS."
-                                                              — Fahmi
+                                                              — Mighan Lab
 
 Tiga primitif kognitif (ilm al-ushul → furu'):
     1. EXTRACT       : examples → principle (istiqra' / induksi)

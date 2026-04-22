@@ -43,7 +43,7 @@ THREADS_USER_ID  = os.getenv("THREADS_USER_ID", "")
 
 # Whitelist admin (username telegram, tanpa @) — pisah koma
 # Kosong = semua bisa akses fitur publik
-_admin_raw = os.getenv("ADMIN_TELEGRAM_USERS", "fahmiwol")
+_admin_raw = os.getenv("ADMIN_TELEGRAM_USERS", "")
 ADMIN_USERS = {u.strip().lower() for u in _admin_raw.split(",") if u.strip()}
 
 # Mode public: siapa saja bisa tanya & ngajarin

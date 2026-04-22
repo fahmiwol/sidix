@@ -471,7 +471,7 @@ _STATIC_PROPOSALS: list[dict] = [
             "notes_to_modules convert → curriculum assign difficulty. Tiap hari "
             "SIDIX punya materi baru untuk dipelajari tanpa intervensi manual."
         ),
-        "impact": "True continual learning. SIDIX tumbuh tanpa perlu Fahmi push manual.",
+        "impact": "True continual learning. SIDIX tumbuh otomatis tanpa intervensi manual.",
     },
     {
         "title": "Hafidz Distributed RAG v1 (BM25 × Ledger × Data Tokens)",

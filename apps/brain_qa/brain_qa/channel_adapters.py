@@ -459,7 +459,7 @@ class TelegramAdapter(BaseAdapter):
           "update_id": 123456,
           "message": {
             "message_id": 1,
-            "from": {"id": 111, "first_name": "Fahmi"},
+            "from": {"id": 111, "first_name": "User"},
             "chat": {"id": 111, "type": "private"},
             "text": "/halo",
             "date": 1700000000
