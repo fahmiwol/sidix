@@ -1,8 +1,8 @@
 # SIDIX Master Roadmap 2026-2027 — Unified SSoT (v2)
 
 **Status:** LIVING SSoT setelah tabayyun + reconciliation.
-**Last update:** 2026-04-21 (v2 — merge existing SIDIX_ROADMAP_2026 + riset user implementation_roadmap + ADR-002 + notes 168/169)
-**Prinsip merge:** existing kita jadi base timeline, riset user jadi detail task + framework, ADR-002 jadi killer offer sequencing.
+**Last update:** 2026-04-23 (v3 — +Kimi K2.6 Social Radar strategy + OpHarvest + Sprint 6.5-10 update)
+**Prinsip merge:** existing kita jadi base timeline, riset user jadi detail task + framework, ADR-002 jadi killer offer sequencing, Kimi K2.6 jadi Social Radar pivot + data harvesting strategy.
 
 ---
 
@@ -225,38 +225,132 @@ Belum eksekusi karena Cursor tidak available + prioritas shift ke image gen beta
 
 ---
 
-## 🧒 STAGE 2 — CHILD (Q3 2026, Sprint 7-10)
+## 🧒 STAGE 2 — CHILD (Q3 2026, Sprint 6.5-10)
 
-**Goal:** Multimodal parity dengan GPT-4V/Claude Sonnet/Gemini. Voice + Video + Vision + Skill Library maturity.
-**Merging:** Ours Sprint 5-10 (image/VLM/ASR/TTS/skill library) + Riset Phase 2 (Video/Ecommerce/Voice/Evolution L1-L2).
+**Goal:** Social Radar MVP + multimodal parity + data flywheel + plugin ecosystem.
+**Merging:** Ours Sprint 5-10 + Kimi K2.6 research (Social Radar strategy + OpHarvest) + Riset Phase 2.
 
-### Sprint 7 (2 minggu) — Voice + Video MVP
-**Dari Riset Sprint 2.1 + 2.3 + Ours Sprint 8+9:**
-- [ ] Voice: `text_to_speech.py` (Piper self-host), `generate_podcast_script.py`
+### 🎯 Sprint 6.5 (NOW) — Maqashid Wire + Benchmark + MinHash + Raudah v0.2
+> Carry-over teknis dari Sprint 5.5 yang harus diselesaikan sebelum Social Radar.
+
+- [ ] **Wire `evaluate_maqashid()` ke `run_react()`** — middleware output (~20 baris, 1 file)
+- [ ] **`test_maqashid_benchmark.py`** — 50 creative PASS + 20 harmful BLOCK (Kimi A1)
+- [ ] **`test_sprint6.py`** — coverage Maqashid benchmark + curator premium filter
+- [ ] **MinHash dedup** — `pip install datasketch`, integrate `CorpusDeduplicator` ke `curator_agent.py` (Kimi A2)
+- [ ] **Raudah v0.2** — TaskGraph DAG (Kimi A3, custom lightweight async-native) + `/raudah/run` endpoint
+- [ ] **CQF Rubrik v2** — 10 kriteria scoring, total bobot 10.0 (Kimi A5)
+- [ ] **Intent classifier few-shot** — `classify_intent()` ke persona router (Kimi A4)
+- [ ] Wire Naskh Handler ke `learn_agent.py`
+- [ ] `/metrics` endpoint ringan
+
+**DoD Sprint 6.5:**
+- ✅ Maqashid filter aktif di output pipeline
+- ✅ 70/70 benchmark test (50 PASS + 20 BLOCK) green
+- ✅ MinHash dedup aktif di corpus pipeline
+- ✅ Raudah v0.2 TaskGraph functional
+
+---
+
+### 🎯 Sprint 7 (3-4 hari) — Social Radar MVP + Chrome Extension
+> **Strategic Pivot (Kimi K2.6 DECISION):** SIDIX Social Radar — competitor intelligence untuk UMKM/creator Indonesia.
+> Blue ocean: existing tools $300-1000/bulan = enterprise-only. SIDIX = $9/mo Pro.
+
+**Chrome Extension (Manifest V3):**
+- [ ] Extension skeleton (manifest v3, popup UI, content script)
+- [ ] Instagram scraper (public profile + posts, no login required)
+- [ ] Data normalizer (unified schema: platform, author_hash, content, metrics, timestamp)
+- [ ] Privacy filter (PII strip, hash username, region-only location)
+
+**AI Analysis + Dashboard:**
+- [ ] Qwen2.5-7B analyzer: caption analysis + engagement summary + opportunity gap
+- [ ] Simple dashboard: competitor list + last post + engagement rate + charts
+- [ ] Report generator (text/JSON export)
+
+**OpHarvest Foundation:**
+- [ ] Consent checkbox + privacy policy (explicit opt-in, default OFF)
+- [ ] Wire harvesting loop: save raw+analysis ke corpus queue
+- [ ] Training pair format (input+output+metadata+sanad+privacy+quality)
+- [ ] Deploy ke sidixlab.com/social-radar
+
+**DoD Sprint 7:**
+- ✅ Chrome Extension monitors 1 competitor Instagram
+- ✅ Report generation (engagement, top posts, hashtags) jalan otomatis
+- ✅ 10 beta users aktif dalam 1 minggu
+- ✅ Zero PII leak (audit pass)
+- ✅ Harvesting loop active (training pairs saved)
+
+---
+
+### Sprint 8 (2 minggu) — Expand Platform + Polish
+**Dari Kimi Sprint 8 + Ours Vision/Skill:**
+
+**Multi-Platform Scraping:**
+- [ ] TikTok scraper (public profile + videos)
+- [ ] Twitter/X scraper (public tweets + engagement)
+- [ ] Alert system: real-time notification ("Competitor X just posted viral content")
+- [ ] Report PDF export
+
+**Corpus Quality:**
+- [ ] MinHash dedup integration ke corpus pipeline (dari Sprint 6.5 jika belum)
+- [ ] Naskh Handler wire ke pipeline
+- [ ] Maqashid benchmark test (50+20 queries)
+
+**Vision (dari ours Sprint 7 original):**
+- [ ] Self-host Qwen2.5-VL, `/agent/chat` terima image upload
+- [ ] Skill Library maturity: 50+ skill YAML, semantic search
+
+**DoD Sprint 8:**
+- ✅ 3 platform (IG + TikTok + Twitter) scrapers jalan
+- ✅ 50 active users
+- ✅ 1000+ training pairs dari Social Radar usage
+- ✅ CQF filter ≥ 7.0 untuk semua harvested data
+
+---
+
+### Sprint 9 (2 minggu) — Plugin Ecosystem + Voice
+**Dari Kimi Sprint 9 + Ours Voice/Video:**
+
+**Plugin Ecosystem:**
+- [ ] Figma plugin (image gen harvest)
+- [ ] VS Code extension (code completion harvest)
+- [ ] YouTube Management module (title, thumbnail, tag optimizer)
+- [ ] Intent classifier few-shot auto-update dari `accepted_outputs.jsonl`
+
+**Voice + Video (dari ours):**
+- [ ] TTS: `text_to_speech.py` (Piper self-host)
 - [ ] ASR: `audio_transcribe.py` (Whisper.cpp CPU)
-- [ ] Video basic: `generate_storyboard.py` (6-12 frame dari script + SDXL), `auto_subtitle.py` (Whisper → SRT → FFmpeg burn)
+- [ ] Video basic: `generate_storyboard.py` (6-12 frame)
 
-### Sprint 8 (2 minggu) — Vision + Skill Library
-**Dari Ours Sprint 7 + 10 + Riset Sprint 2.2:**
-- [ ] Vision: self-host Qwen2.5-VL, endpoint `/agent/chat` terima image upload, multi_modal_router
-- [ ] `packaging_concept.py` (3D mockup produk)
-- [ ] Skill Library maturity: 50+ skill YAML, semantic search, `use_skill` tool
+**DoD Sprint 9:**
+- ✅ 2+ plugin ecosystem aktif
+- ✅ 5000+ training pairs akumulasi
+- ✅ Voice narration functional
 
-### Sprint 9 (2 minggu) — Video Generation + Voice Clone
-**Dari Riset Sprint 2.1 lanjut + ADR-002 offer #6:**
-- [ ] `text_to_video.py` (Stable Video Diffusion atau CogVideoX; butuh GPU lebih besar)
-- [ ] `image_to_video.py`
-- [ ] `voice_clone.py` (Coqui XTTS self-host)
+---
 
-### Sprint 10 (2 minggu) — Evolution L2 Full + Self-Train Fase 3
-**Dari Riset Sprint 2.4 + Ours Sprint 3 self-eval:**
+### Sprint 10 (2 minggu) — Monetization + Scale + Evolution L2
+**Dari Kimi Sprint 10 + Ours Self-Train:**
+
+**Monetization (Freemium):**
+- [ ] Pricing tier aktif: Free (1 competitor) → Pro $9/mo (10) → Enterprise $99/mo (unlimited)
+- [ ] White-label report untuk agency
+- [ ] API access untuk enterprise
+- [ ] Payment integration (Stripe/Midtrans)
+
+**Training Flywheel:**
+- [ ] Quarterly LoRA retrain dari harvested corpus
 - [ ] A/B test routing 10% traffic ke adapter candidate
 - [ ] Eval suite 50 test question fixture
 - [ ] Auto promote/rollback berdasar win rate >60%
-- [ ] `epistemic_validator.py` auto-sample 50 Q&A/minggu → report
+
+**DoD Sprint 10:**
+- ✅ First paid users
+- ✅ $500 MRR target
+- ✅ Full auto train + deploy cycle (SEM L2 → L3)
 
 **DoD Stage 2 (Child):**
-- ✅ Full multimodal (text+image+vision+audio+video basic+3D)
+- ✅ Full multimodal (text+image+vision+audio+video basic)
+- ✅ Social Radar live dengan 3+ platform
 - ✅ SEM = L2 → **L3** (full auto train + deploy cycle)
 - ✅ Agency Kit expanded (tambah video teaser + voice narration)
 - ✅ `tools_available ≥ 55`
@@ -303,16 +397,18 @@ Key themes (tiap sprint 2-3 minggu):
 
 ## 🎯 Agent Growth Timeline
 
-| Sprint | +Agents | Cumulative | Target dari note 168 |
-|--------|---------|------------|-----------------------|
+| Sprint | +Agents | Cumulative | Focus |
+|--------|---------|------------|-------|
 | 3 DONE | +1 (text_to_image) | 1 | — |
 | 4 | +6 (P0: copy/planner/brand/thumb/campaign/ads) | 7 | — |
-| 5 | +8 (P1: product/brand_story/article/feed/funnel/script/hook) | 15 | 28 taxonomy (sebelum extend) |
-| 6 | +6 (3D+Gaming+Voyager-seeded) | 21 | 37 taxonomy (after extend) |
-| 7 | +5 (voice+storyboard+subtitle) | 26 | — |
-| 8 | +5 (vision+packaging+skill YAML registry) | 31 | — |
-| 9 | +3 (video gen+voice clone) | 34 | — |
-| 10 | +6 (evolution tools + advanced writing) | 40+ | — |
+| 5 | +8 (P1: product/brand_story/article/feed/funnel/script/hook) | 15 | — |
+| 5.5 DONE | +0 (Maqashid v2 + Naskh + Raudah, infra only) | 15 | IHOS deepening |
+| 6 | +6 (3D+Gaming+Voyager-seeded) | 21 | 3D + autonomy |
+| 6.5 | +0 (MinHash + CQF v2 + benchmark, infra) | 21 | Quality gate |
+| 7 | +6 (Social Radar: IG scraper/normalizer/privacy/analyzer/dashboard/harvester) | 27 | **Social Radar MVP** |
+| 8 | +5 (TikTok+Twitter scraper, alert, vision, skill library) | 32 | Expand platform |
+| 9 | +5 (Figma+VSCode+YouTube plugins, TTS, ASR) | 37 | Plugin ecosystem |
+| 10 | +3 (monetization tools + evolution) | 40+ | Monetization |
 
 ---
 

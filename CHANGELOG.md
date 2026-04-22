@@ -1,4 +1,4 @@
-﻿# SIDIX / Mighan Model — Changelog Publik
+# SIDIX / Mighan Model — Changelog Publik
 
 Catatan rilis terlihat oleh kontributor & user. Tujuan: transparansi
 progress + ajakan kontribusi.
@@ -6,6 +6,40 @@ progress + ajakan kontribusi.
 > **Filosofi**: SIDIX adalah AI assistant standing-alone dengan fondasi
 > epistemologi Islami. Dibangun untuk berdiri di atas satu VPS murah,
 > opensource, dan tidak bergantung pada vendor manapun.
+
+---
+
+## v0.6.2-dev — 2026-04-23 — Social Radar Strategy + Kimi K2.6 Research Intake
+
+### Strategic Pivot
+
+- **SIDIX Social Radar** ditetapkan sebagai fitur fokus pertama (DECISION).
+  Competitor monitoring + social listening via Chrome Extension.
+  Target: UMKM/creator Indonesia (blue ocean vs Sprout/Brandwatch $300-1000/mo enterprise).
+- **Operation Harvest (OpHarvest)** — framework data harvesting berbasis IHOS.
+  Setiap report = training pair. Guardrails: public data only, explicit opt-in,
+  anonymized, transparency dashboard, UU PDP compliant.
+
+### Research Ready (Kimi K2.6, 5 deliverables)
+
+- **A1** Benchmark Maqashid — 50 creative PASS + 20 harmful BLOCK queries (golden test set)
+- **A2** MinHash dedup — `datasketch`, `num_perm=128`, `threshold=0.85` (class `CorpusDeduplicator`)
+- **A3** Raudah TaskGraph DAG — custom lightweight async-native DAG (replace networkx)
+- **A4** Intent classifier — few-shot prompting, 10 examples (bukan full fine-tune)
+- **A5** CQF Rubrik v2 — 10 kriteria, total bobot 10.0 (threshold ≥7.0 pass)
+
+### Roadmap Update (Sprint 7-10 dari Kimi K2.6)
+
+- Sprint 7: Social Radar MVP (Chrome Extension + IG scraper, 3-4 hari)
+- Sprint 8: Expand (TikTok + Twitter + Alert + PDF + MinHash)
+- Sprint 9: Plugin Ecosystem (Figma + VS Code + YouTube)
+- Sprint 10: Monetization (Freemium + white-label + API + quarterly LoRA)
+
+### Dokumentasi
+
+- `docs/HANDOFF_2026-04-23_SPRINT7.md` — handoff komprehensif (arsitektur, priority queue, CQF rubrik)
+- `docs/LIVING_LOG.md` — 79 baris entri baru (2 DECISION + 7 NOTE + 2 UPDATE + 1 DOC)
+- `docs/MASTER_ROADMAP_2026-2027.md` — Sprint 6.5 + Sprint 7-10 update
 
 ---
 

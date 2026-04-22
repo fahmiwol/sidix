@@ -1,4 +1,4 @@
-﻿# Living log â€” uji, implementasi, error, keputusan
+# Living log â€” uji, implementasi, error, keputusan
 
 Repositori: **Mighan Model** (`D:\MIGHAN Model`).
 
@@ -3832,3 +3832,77 @@ Fokus pada "what architecture of knowledge means, not volume of knowledge."
 
 [DECISION] Deploy frontend wajib setelah persona selector diubah — nama baru
   sudah live di app.sidixlab.com tanpa perlu refresh cache manual.
+
+## 2026-04-23 — Sesi 4: Kimi K2.6 Research Intake + Sprint 7 Strategy + Social Radar
+
+> Agent: Antigravity (Gemini) — meneruskan dari Claude yang limit habis.
+> Sumber: 2 dokumen HTML Kimi K2.6 + ringkasan Claude sesi 2026-04-23.
+
+- DECISION: **Strategic Pivot — SIDIX Social Radar** sebagai fitur fokus pertama.
+  Social Radar = competitor monitoring + social listening via Chrome Extension.
+  Alasan: (1) tidak butuh model AI baru (pakai Qwen2.5-7B), (2) data harvesting alami
+  (setiap report = training pair), (3) plugin-friendly (Chrome extension), (4) blue ocean
+  untuk UMKM/creator Indonesia (existing tools $300-1000/bulan = enterprise-only),
+  (5) flywheel effect (lebih banyak user = lebih banyak data = lebih pintar),
+  (6) sanad-compatible (semua dari public source).
+
+- DECISION: **Operation Harvest (OpHarvest)** — framework data harvesting berbasis IHOS:
+  Zahir (dashboard user), Batin (metadata harvesting), Sanad (provenance chain),
+  Maqashid (public only + opt-in + anonymized), Tafakkur (CQF filter),
+  Tadrij (progressive: Instagram → TikTok → Twitter → YouTube).
+  7 guardrails etis: public data only, explicit opt-in (default OFF),
+  anonymization (hash ID), transparency dashboard, rate limit respect,
+  no resale, UU PDP compliance.
+
+- DOC: `docs/HANDOFF_2026-04-23_SPRINT7.md` — handoff komprehensif dari sesi Claude
+  yang limit habis. Berisi: commit history 5 SHA, 5 riset Kimi (A1-A5),
+  strategi Social Radar (B1-C4), arsitektur 4-layer + OpHarvest,
+  priority queue 12 item, CQF rubrik v2 (10 kriteria), Sprint 7-10 roadmap.
+
+- NOTE: **5 Riset Kimi K2.6 (A1-A5) siap dieksekusi:**
+  - A1: Benchmark Maqashid — 50 creative PASS + 20 harmful BLOCK queries.
+    Golden test set. Target: false positive < 5% creative, false negative = 0% harmful.
+    File: copy-paste ke `test_maqashid_benchmark.py`.
+  - A2: MinHash Dedup — `datasketch` library, `num_perm=128`, `threshold=0.85`, `k=5` shingles.
+    Class `CorpusDeduplicator` siap integrate ke `curator_agent.py`.
+    Install: `pip install datasketch`.
+  - A3: Raudah TaskGraph DAG — custom lightweight (bukan networkx), async-native,
+    JSON-serializable. Class `TaskGraph` + `TaskNode` + `TaskStatus`.
+    Siap replace networkx di `brain/raudah/`.
+  - A4: Intent Classifier — few-shot prompting (bukan full fine-tune).
+    10 examples, `classify_intent()` function. Roadmap: Sprint 7 = static 10 examples,
+    Sprint 8 = auto-update dari `accepted_outputs.jsonl`, Sprint 9+ = LoRA khusus.
+  - A5: CQF Rubrik v2 — 10 kriteria, total bobot 10.0.
+    Threshold: ≥7.0 Pass, 5.0-6.9 Warn + auto-refine, <5.0 Fail + log hallucination.
+
+- NOTE: **Strategi Fitur (Kimi B1 analysis):**
+  - Social Listening + Competitor Spy = **WINNER** (fast MVP, minimal hardware, very high data value)
+  - Image Generator = Runner-up (terlalu kompetitif vs Midjourney/DALL-E)
+  - YouTube Management = Sprint 8 (kompleks tapi very high data value)
+  - Auto-Posting = Medium (risky ToS)
+  - Image-to-Video = Sprint 9+ (butuh RTX 4090/A100)
+
+- NOTE: **Monetization Flywheel (Kimi B5):**
+  Free (1 competitor, daily, basic) → Pro $9/mo (10 competitors, hourly, AI counter-strategy)
+  → Enterprise $99/mo (unlimited, real-time, white-label, API).
+  Revenue adalah side effect. Yang utama: DATA FLYWHEEL.
+
+- NOTE: **Sprint roadmap dari Kimi (C1-C4):**
+  Sprint 7: Social Radar MVP (Chrome Extension + IG scraper + dashboard), estimasi 3-4 hari.
+  Sprint 8: Expand (TikTok + Twitter + Alert + PDF report + MinHash dedup + Naskh wire).
+  Sprint 9: Plugin Ecosystem (Figma + VS Code + YouTube Management).
+  Sprint 10: Monetization & Scale (Freemium + white-label + API + quarterly LoRA retrain).
+
+- UPDATE: `CHANGELOG.md` — tambah entry v0.6.2-dev: Social Radar strategy + Kimi K2.6 research.
+
+- UPDATE: `docs/MASTER_ROADMAP_2026-2027.md` — tambah Sprint 6.5 (Maqashid wire + benchmark + MinHash)
+  dan update Sprint 7 description ke Social Radar MVP. Sprint 8-10 detail dari Kimi roadmap.
+
+- NOTE: **3 item carry-over dari Claude (prioritas tertinggi):**
+  1. Wire `evaluate_maqashid()` ke `run_react()` — 1 file, ~20 baris
+  2. `test_sprint6.py` — coverage Maqashid benchmark + curator premium filter
+  3. Raudah v0.2 — TaskGraph DAG (code dari Kimi A3) + `/raudah/run` endpoint
+
+- NOTE: **Source HTML files disimpan di Downloads user:**
+  - Sprint 7 riset: `C:\Users\ASUS\Downloads\Sidix Adik AI -_riset_tambahan_sprint 7_files\5824c294-*.html`
+  - Strategic masterplan: `C:\Users\ASUS\Downloads\Sidix Adik AI -Strategi_harvest data_files\a4079eb7-*.html`
