@@ -1,6 +1,7 @@
 # `brain_qa` (MVP Brain Q&A)
 
 Tujuan: jalanin Q&A berbasis **Markdown** di `brain/public/` secara lokal, dengan output:
+
 - **Top sumber** (kutipan/rujukan) yang dipakai untuk menjawab
 - Jawaban ringkas berbasis potongan teks tersebut (offline, tanpa API)
 
@@ -80,6 +81,7 @@ python -m brain_qa ask "jelasin perbedaan wahyu akal indera" --no-suggest-switch
 ## Settings (persist defaults untuk UI / CLI)
 
 `brain_qa` bisa menyimpan default settings di:
+
 - `apps/brain_qa/.data/settings.json`
 
 CLI flags tetap **override** settings.json. Buat file settings (sekali):
@@ -111,12 +113,14 @@ python -m brain_qa qa --strict --contradiction-scan
 ```
 
 Exit code:
+
 - `0` = OK
 - `2` = ada duplikat ID atau entry invalid
 
 ## Ledger (Hafidz-style tamper-evident snapshots)
 
 Ledger ini membuat **snapshot Merkle root** dari seluruh `.md` di corpus publik (root diambil dari `brain/manifest.json`), lalu menyimpannya sebagai **append-only chain** di:
+
 - `apps/brain_qa/.data/ledger/snapshots.jsonl`
 
 Cek status:
@@ -132,6 +136,7 @@ python -m brain_qa ledger snapshot
 ```
 
 Verifikasi:
+
 - chain hash antar snapshot valid (tamper-evident)
 - root snapshot terbaru sama dengan corpus saat ini
 
@@ -143,6 +148,7 @@ python -m brain_qa ledger verify
 
 Ini adalah langkah awal menuju “availability layer” (server mati tapi data tetap bisa hidup di banyak node).
 MVP ini belum P2P penuh—baru:
+
 - hitung **CID** (`sha256:...`)
 - simpan ke **manifest** lokal
 - **verify** hash kapan pun
@@ -221,6 +227,7 @@ python -m brain_qa storage audit "sha256:<file_hash>"
 ```
 
 Catatan interpretasi output:
+
 - `ok: true` artinya **semua shard ada** dan hash shard cocok dengan `shard_cid` (audit ketat).
 - `recoverable: true` artinya masih ada **`good_shard_count` ≥ 4** shard yang valid (RS 4+2), sehingga reconstruct masih realistis — meskipun `ok` bisa tetap `false` kalau ada shard yang benar-benar belum tersebar ke semua lokasi yang kamu harapkan.
 
@@ -233,6 +240,7 @@ python -m brain_qa storage rebalance "sha256:<file_hash>" nodeA
 ### DataToken MVP (governance ringan, bukan “coin economy”)
 
 Registry append-only:
+
 - `apps/brain_qa/.data/tokens/data_tokens.jsonl`
 
 Opsional signing (disarankan untuk lingkungan kecil yang sudah punya secret management):
@@ -251,6 +259,7 @@ python -m brain_qa ask "apa itu sanad?" --record
 ```
 
 Output akan ditambah ke:
+
 - `apps/brain_qa/.data/records.jsonl`
 
 ## 4) Fetch web → simpan jadi knowledge clip (private)
@@ -260,6 +269,7 @@ python -m brain_qa fetch "https://plato.stanford.edu/entries/mulla-sadra/"
 ```
 
 File hasilnya disimpan ke:
+
 - `brain/private/web_clips/`
 
 > Setelah fetch, kalau kamu mau itu ikut “dibaca” oleh RAG, kamu bisa **copy/pindahkan versi yang aman** ke `brain/public/` (atau kita bikin mode index yang juga baca private—tapi defaultnya tidak).
@@ -314,21 +324,25 @@ Mode ini **bukan fatwa**. Ini hanya verifikasi (verification only) apakah sebuah
 Label keluaran yang didukung: `matched`, `partial`, `not_found`, `conflict_suspected`, `popular_snippet_suspected`.
 
 **Contoh 1: Validasi konsep umum**
+
 ```powershell
 python -m brain_qa validate text "Artificial intelligence is intelligence demonstrated by machines"
 ```
 
 **Contoh 2: Validasi teks khusus hadits**
+
 ```powershell
 python -m brain_qa validate text "إِنَّمَا الْأَعْمَالُ بِالنِّيَّاتِ" --profile hadith
 ```
 
 **Contoh 3: Menangani alias lama (backwards compatible)**
+
 ```powershell
 python -m brain_qa validate hadith "إِنَّمَا الْأَعْمَالُ بِالنِّيَّاتِ" --k 3
 ```
 
 Arabic “exact-ish” matching (default ON):
+
 - menghapus harakat/diacritics
 - menyamakan varian huruf umum (mis. أ/إ/آ → ا)
 
@@ -339,9 +353,10 @@ python -m brain_qa validate text "..." --profile hadith --no-arabic-normalize
 ```
 
 Deteksi “potongan populer” (kutipan pendek yang match di banyak tempat):
+
 - `--popular-max-tokens` (default 20)
 - `--popular-min-strong` (default 3)
 
 ## Catatan
-- Kalau kamu menambah/mengubah Markdown, jalankan `index` lagi.
 
+- Kalau kamu menambah/mengubah Markdown, jalankan `index` lagi.

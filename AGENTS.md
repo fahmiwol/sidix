@@ -1,3 +1,19 @@
+# AGENTS.md — memori & aturan untuk agen
+
+**Siapa pun yang mengerjakan repo ini** (Cursor, Claude, IDE lain): mulai dari **urutan singkat** ini supaya tidak melewati preferensi user, fakta workspace, dan kewajiban log.
+
+| Urutan | File | Fungsi |
+|--------|------|--------|
+| 1 | [`docs/00_START_HERE.md`](docs/00_START_HERE.md) | Pintu masuk manusia + agen; status & rencana eksekusi. |
+| 2 | **`AGENTS.md` (file ini)** | Preferensi belajar, fakta workspace, Projek Badar, **wajib** `LIVING_LOG` untuk pekerjaan berarti. |
+| 3 | [`docs/LIVING_LOG.md`](docs/LIVING_LOG.md) | Riwayat keputusan/uji/impl terbaru (append-only; baca bagian bawah). |
+| 4 | [`CLAUDE.md`](CLAUDE.md) | SSOT tambahan untuk Claude: **MASTER_ROADMAP**, DEVELOPMENT_RULES, North Star, keamanan, UI lock. |
+| 5 | [`docs/NORTH_STAR.md`](docs/NORTH_STAR.md) · [`docs/MASTER_ROADMAP_2026-2027.md`](docs/MASTER_ROADMAP_2026-2027.md) · [`docs/SIDIX_CAPABILITY_MAP.md`](docs/SIDIX_CAPABILITY_MAP.md) | Arah produk, sprint canonical, kemampuan teknis. |
+
+Transcript Cursor untuk kutipan user: folder `agent-transcripts` di profil Cursor (lihat root [`CLAUDE.md`](CLAUDE.md) / README proyek). **Jangan** commit secret; ikuti bagian keamanan di `CLAUDE.md` bila relevan.
+
+---
+
 ## Learned User Preferences
 
 - Prefers responses in Indonesian when the prompt is Indonesian.
@@ -16,7 +32,7 @@
 - **Fondasi SIDIX / IHOS (referensi singkat):** `docs/SIDIX_FUNDAMENTALS.md` — produk, definisi IHOS vs mnemonik feeding, lapisan AI; pelengkap praktis: `docs/SIDIX_CODING_CURRICULUM_V1.md`.
 - **Mode agen (sandbox file):** tool `workspace_*` di `brain_qa/agent_tools.py`; root `apps/brain_qa/agent_workspace/` atau `BRAIN_QA_AGENT_WORKSPACE`; tulis file butuh `allow_restricted: true` pada `POST /agent/chat`; `/health` mengekspor `agent_workspace_root`.
 - **Nama UI app**: **SIDIX** (diganti dari NEONIX; jangan pakai nama lama).
-- **brain_qa sudah jalan** (`apps/brain_qa/`): RAG index+ask+cite, curation pipeline, Hafidz ledger (Merkle), distributed storage (CID + Reed-Solomon 4+2 via `reedsolo`), data tokens (HMAC), persona router (5: TOARD/FACH/MIGHAN/HAYFAR/INAN), autosuggest, auto-escalate. CLI entry: `python -m brain_qa`.
+- **brain_qa sudah jalan** (`apps/brain_qa/`): RAG index+ask+cite, curation pipeline, Hafidz ledger (Merkle), distributed storage (CID + Reed-Solomon 4+2 via `reedsolo`), data tokens (HMAC), persona router (5: TOARD/FACH/MIGHAN/HAYFAR/INAN), autosuggest, auto-escalate; retrieval reranks BM25 hits by YAML frontmatter `sanad_tier` per note (`brain_qa/sanad_ranking.py`) — re-index dengan `python -m brain_qa index` setelah mengubah tier. CLI entry: `python -m brain_qa`.
 - **Praxis (meta-pembelajaran agen):** setiap `run_react` menulis JSONL + lesson Markdown di `brain/public/praxis/lessons/` (modul `brain_qa/praxis.py`); agen luar bisa `python -m brain_qa praxis note ...`; indeks ulang dengan `python -m brain_qa index` supaya masuk BM25; `GET /agent/praxis/lessons`.
 - **Praxis runtime (L0):** `brain/public/praxis/patterns/case_frames.json` + `brain_qa/praxis_runtime.py` — pilih **niat / inisiasi / cabang if_data vs if_no_data**; **`planner_step0_suggestion`** bisa memilih `orchestration_plan` di step 0 bila frame orkestrasi kuat; **`implement_frame_matches`** memperluas jalur `workspace_list` setelah corpus; **`session.praxis_matched_frame_ids`** + field API sama nama (bersama `case_frame_ids`); disuntik ke jawaban final + lesson (bukan sekadar daftar file).
 - **Canonical GitHub (SIDIX):** https://github.com/fahmiwol/sidix — setelah pekerjaan material (Praxis, planner, API), **commit dan push** ke `main` agar kontinuitas multi-agen terjaga; workspace lokal Windows bisa bernama `MIGHAN Model` namun isi mengikuti repo itu.

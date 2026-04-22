@@ -54,11 +54,15 @@ Identitas proyek di sisi publik disapa **Mighan**; detail identitas pribadi pemi
 
 ---
 
-## 4) Untuk agen AI (Cursor, dll.)
+## 4) Untuk agen AI (Cursor, Claude Code, dll.)
 
-1. Baca [../AGENTS.md](../AGENTS.md) (preferensi + aturan workspace).
-2. Setelah tugas berarti, tambah satu atau lebih baris di [LIVING_LOG.md](LIVING_LOG.md) dengan tag wajib.
-3. Jangan commit isi `brain/private/` atau secret; ikuti CONTRIBUTING untuk tier A vs B.
+**Inti (jangan lompat):** [STATUS_TODAY.md](STATUS_TODAY.md) → [AGENTS.md](../AGENTS.md) (preferensi + fakta workspace + aturan log) → cuplikan terbaru [LIVING_LOG.md](LIVING_LOG.md).
+
+**Lanjutan sesuai tugas:** [CLAUDE.md](../CLAUDE.md) (SSOT Claude: North Star, MASTER_ROADMAP, DEVELOPMENT_RULES, keamanan); [NORTH_STAR.md](NORTH_STAR.md), [MASTER_ROADMAP_2026-2027.md](MASTER_ROADMAP_2026-2027.md), [SIDIX_CAPABILITY_MAP.md](SIDIX_CAPABILITY_MAP.md).
+
+**Setelah tugas berarti:** tambah satu atau lebih baris di [LIVING_LOG.md](LIVING_LOG.md) dengan tag wajib (`TEST:` `FIX:` `IMPL:` `UPDATE:` `DOC:` `DECISION:` `ERROR:` `NOTE:` — lihat header file itu).
+
+**Jangan** commit isi `brain/private/` atau secret; ikuti [CONTRIBUTING.md](CONTRIBUTING.md) untuk tier A vs B.
 
 ---
 
