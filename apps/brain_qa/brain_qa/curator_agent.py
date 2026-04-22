@@ -45,9 +45,11 @@ _CORPUS_DIRS = [
 _OUT_DIR = _BASE.parent / ".data" / "training_curated"
 _SEEN_FILE = _BASE.parent / ".data" / "curator_seen_hashes.json"
 _STATS_FILE = _BASE.parent / ".data" / "curator_stats.json"
+_PREMIUM_FILE = _BASE.parent / ".data" / "lora_premium_pairs.jsonl"  # score ≥ 0.85
 
 # ── Scoring config ─────────────────────────────────────────────────────────────
 MIN_SCORE = 0.45          # terendah masuk export
+PREMIUM_SCORE = 0.85      # threshold masuk lora_premium_pairs.jsonl (score_gte_85)
 MIN_PAIRS_TARGET = 100    # target per run (warning jika kurang)
 MAX_PAIRS_PER_RUN = 600   # cap supaya file tidak membengkak
 
@@ -282,6 +284,11 @@ def run_curation(
         all_pairs.extend(pairs)
         new_hashes.append(doc.content_hash)
 
+    # ── score_gte_85 filter: pisahkan premium pairs ─────────────────────────
+    premium_pairs: list[TrainingPair] = [
+        p for p in all_pairs if p.score >= PREMIUM_SCORE
+    ]
+
     warnings: list[str] = []
     if len(all_pairs) < MIN_PAIRS_TARGET:
         msg = f"Pairs generated ({len(all_pairs)}) < target ({MIN_PAIRS_TARGET}). Tambah corpus atau turunkan min_score."
@@ -289,12 +296,24 @@ def run_curation(
         logger.warning(msg)
 
     output_file = ""
+    premium_file = ""
     if not dry_run and all_pairs:
         date_str = datetime.now(timezone.utc).strftime("%Y-%m-%d")
         output_file = str(_OUT_DIR / f"curated_{date_str}.jsonl")
         with open(output_file, "w", encoding="utf-8") as f:
             for pair in all_pairs:
                 f.write(json.dumps(asdict(pair), ensure_ascii=False) + "\n")
+
+        # tulis premium pairs ke file terpisah (append mode)
+        if premium_pairs:
+            with open(_PREMIUM_FILE, "a", encoding="utf-8") as pf:
+                for pair in premium_pairs:
+                    pf.write(json.dumps(asdict(pair), ensure_ascii=False) + "\n")
+            premium_file = str(_PREMIUM_FILE)
+            logger.info(
+                "Premium pairs (score≥%.2f): %d → %s",
+                PREMIUM_SCORE, len(premium_pairs), premium_file,
+            )
 
         # update seen hashes
         seen.update(new_hashes)
@@ -306,6 +325,8 @@ def run_curation(
         "scanned": scanned,
         "scored": len(scored_docs),
         "exported": len(all_pairs),
+        "premium_pairs": len(premium_pairs),
+        "premium_file": premium_file,
         "output_file": output_file,
         "elapsed_s": round(time.time() - start, 2),
         "warnings": warnings,

@@ -3676,3 +3676,68 @@ Fokus pada "what architecture of knowledge means, not volume of knowledge."
 [DOC] `docs/HANDOFF_2026-04-22.md` — handoff komprehensif sesi ini. 9 section: situasi 1 paragraf, VPS state, cron aktif, prioritas (quick wins A-B + sprint 6 full C-D + sprint 4 sisa), manual TODO untuk Fahmi, file kunci, nomor research note berikutnya (183+), mandat user, quick commands.
 
 [DOC] `C:\Users\ASUS\Documents\SIDIX_PROMPT_SESI_BARU.md` — prompt siap tempel 5 varian (pendek/lengkap/minimalis + 5 task cards A-E) untuk Claude Code / Cursor sesi berikutnya.
+
+## 2026-04-23 — Kimi K2.6 Handoff Adoption: Maqashid v2, Naskh, Swarm Skeleton
+
+[NOTE] Sesi ini mengadopsi rekomendasi dari dua dokumen riset Kimi K2.6:
+  (1) sidix_handoff_kimi_to_claude.html — analisis critical gaps + 3 file kode siap pakai
+  (2) sidix-kimi-agent-research.html — arsitektur swarm 7-hari
+  Path lokal: C:\Users\ASUS\Downloads\ (dokumen riset kolaborator eksternal, dirahasiakan)
+
+[NOTE] Repo sekarang di C:\SIDIX-AI\ (D: drive error, di-clone ulang dari pohon utama GitHub 347f803).
+  Semua path internal tetap relatif — tidak ada breaking change.
+
+[IMPL] maqashid_profiles.py (BARU) — Maqashid Filter v2 mode-based.
+  - 4 mode: CREATIVE / ACADEMIC / IJTIHAD / GENERAL
+  - Di CREATIVE: Maqashid = score multiplier, bukan pemblokir
+  - Hard-block hanya untuk dangerous intents (harm nyata)
+  - Persona → mode mapping: MIGHAN=IJTIHAD, TOARD=ACADEMIC, FACH=IJTIHAD, HAYFAR=GENERAL, INAN=CREATIVE
+  - Menggantikan pendekatan keyword-blacklist yang menyebabkan false positive di creative output
+  - File: apps/brain_qa/brain_qa/maqashid_profiles.py
+
+[IMPL] naskh_handler.py (BARU) — Resolusi konflik knowledge berbasis sanad tier.
+  - Tier ranking: primer(4) > ulama(3) > peer_review(2) > aggregator(1)
+  - Resolution: superseded / updated / conflict / retained
+  - Frozen items tidak pernah digantikan (teks primer / wahyu)
+  - Competitive advantage: AI lain tidak punya mekanisme ini
+  - File: apps/brain_qa/brain_qa/naskh_handler.py
+
+[IMPL] brain/swarm/core.py + __init__.py (BARU) — SIDIX Agent Swarm v0.1 skeleton.
+  - OrchestratorAgent: decompose_task(), aggregate()
+  - SubAgent pool: researcher / analyzer / writer / coder / verifier
+  - asyncio.gather untuk paralel dispatch
+  - IHOS Guardrail: Maqashid check SEBELUM spawn sub-agent
+  - Context sharding: sub-agent kirim max 800 char ke orchestrator (mengurangi bloat)
+  - PENTING: menggunakan Ollama local LLM — BUKAN vendor API
+  - File: brain/swarm/core.py, brain/swarm/__init__.py
+
+[IMPL] curator_agent.py — score_gte_85 filter (PATCH).
+  - Tambah PREMIUM_SCORE = 0.85 constant
+  - Tambah _PREMIUM_FILE path: .data/lora_premium_pairs.jsonl
+  - Setelah curation run, pairs dengan score >= 0.85 di-append ke file premium (terpisah)
+  - Stats sekarang include "premium_pairs" count dan "premium_file" path
+  - File: apps/brain_qa/brain_qa/curator_agent.py
+
+[UPDATE] agent_react.py — tambah konstanta anti-loop:
+  - MAX_ACTION_REPEAT = 2 (berapa kali action sama boleh terulang)
+  - MAX_TOOLS_ERRORS = 3 (berapa kali tool error berturut-turut)
+  - Konstanta ini siap dipakai oleh planner saat Inference Engine live
+  - File: apps/brain_qa/brain_qa/agent_react.py
+
+[DOC] Research notes baru:
+  - 183_maqashid_profiles_mode_based.md
+  - 184_naskh_handler_knowledge_conflict.md
+  - 185_agent_swarm_architecture.md
+
+[DECISION] Swarm backbone menggunakan Ollama local LLM — bukan Claude/Anthropic API
+  (code Kimi menggunakan import anthropic yang melanggar aturan No Vendor API).
+  Setiap inference sub-agent → asyncio.to_thread(_sync_ollama_call).
+
+[DECISION] Adopsi 3 dari 4 modul Kimi: maqashid_profiles + naskh_handler + swarm skeleton.
+  Yang ditunda: agent_react full rewrite (sudah ada MAX_STEPS=6 yang memadai).
+
+[NOTE] Sesi berikutnya prioritas:
+  1. Wire maqashid_profiles ke agent_react (inject evaluate_maqashid sebelum return final answer)
+  2. Swarm v0.2: TaskGraph DAG + dependency tracking
+  3. test_sprint6.py coverage (muhasabah flywheel + brand kit)
+  4. Deploy ke pohon utama (VPS): git pull + pm2 restart

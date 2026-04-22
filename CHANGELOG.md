@@ -9,6 +9,42 @@ progress + ajakan kontribusi.
 
 ---
 
+## v0.6.0 — 2026-04-23 — Fase 6: IHOS Deepening + Raudah Protocol
+
+### Arsitektur Baru
+
+- **Raudah Protocol** — orkestrasi multi-agen paralel berbasis IHOS (موضة المعرفة).
+  Lima peran specialist: Peneliti, Analis, Penulis, Perekayasa, Verifikator.
+  IHOS Guardrail (Maqashid check) dijalankan sebelum spawn agen.
+  Backbone: SIDIX local LLM via Ollama — tanpa vendor API.
+  Path: `brain/raudah/`
+
+- **Maqashid Profiles v2** — filter mode-based menggantikan pendekatan keyword-blacklist.
+  4 mode: CREATIVE / ACADEMIC / IJTIHAD / GENERAL.
+  Di CREATIVE: Maqashid = score multiplier, bukan pemblokir.
+  Path: `apps/brain_qa/brain_qa/maqashid_profiles.py`
+
+- **Naskh Handler** — mekanisme resolusi konflik knowledge berbasis sanad tier.
+  Konsep dari ushul fiqh: sumber mana yang "mengabrogasi" yang lain.
+  Tier: primer > ulama > peer_review > aggregator.
+  Path: `apps/brain_qa/brain_qa/naskh_handler.py`
+
+### Peningkatan
+
+- **curator_agent.py**: filter `score_gte_85` aktif — pairs dengan skor ≥ 0.85
+  otomatis masuk `.data/lora_premium_pairs.jsonl` (feed LoRA tier premium).
+
+- **agent_react.py**: konstanta anti-loop ditambahkan
+  (`MAX_ACTION_REPEAT = 2`, `MAX_TOOL_ERRORS = 3`).
+
+### Research Notes Baru
+
+- `183_maqashid_profiles_mode_based.md`
+- `184_naskh_handler_knowledge_conflict.md`
+- `185_raudah_protocol_parallel_orchestration.md`
+
+---
+
 ## v0.5.0 — 2026-04-18 — Fase 5: Multi-Modal + Kemandirian
 
 ### Capabilities baru

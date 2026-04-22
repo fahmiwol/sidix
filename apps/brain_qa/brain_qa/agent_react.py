@@ -41,6 +41,10 @@ MAX_STEPS = 6           # max ReAct loop iterations (default)
 MAX_STEPS_BUILD = 12    # lebih panjang bila intent implementasi / app / game
 MAX_TOKENS_PER_OBS = 600  # potong observation supaya tidak bloat context
 
+# Anti-loop (dari Kimi recommendation 2026-04-23)
+MAX_ACTION_REPEAT = 2   # berapa kali action yang sama boleh terulang sebelum fallback
+MAX_TOOL_ERRORS   = 3   # berapa kali tool error berturut-turut sebelum fallback
+
 
 # ── Data structures ───────────────────────────────────────────────────────────
 
