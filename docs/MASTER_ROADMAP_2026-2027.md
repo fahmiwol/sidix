@@ -230,24 +230,26 @@ Belum eksekusi karena Cursor tidak available + prioritas shift ke image gen beta
 **Goal:** Social Radar MVP + multimodal parity + data flywheel + plugin ecosystem.
 **Merging:** Ours Sprint 5-10 + Riset Eksternal R2.6 (Social Radar strategy + OpHarvest) + Riset Phase 2.
 
-### 🎯 Sprint 6.5 (NOW) — Maqashid Wire + Benchmark + MinHash + Raudah v0.2
-> Carry-over teknis dari Sprint 5.5 yang harus diselesaikan sebelum Social Radar.
+### ✅ Sprint 6.5 (DONE) — Maqashid Wire + Benchmark + MinHash + Raudah v0.2
+> Carry-over teknis dari Sprint 5.5 — selesai & deployed 2026-04-23.
 
-- [ ] **Wire `evaluate_maqashid()` ke `run_react()`** — middleware output (~20 baris, 1 file)
-- [ ] **`test_maqashid_benchmark.py`** — 50 creative PASS + 20 harmful BLOCK (Riset A1)
-- [ ] **`test_sprint6.py`** — coverage Maqashid benchmark + curator premium filter
-- [ ] **MinHash dedup** — `pip install datasketch`, integrate `CorpusDeduplicator` ke `curator_agent.py` (Riset A2)
-- [ ] **Raudah v0.2** — TaskGraph DAG (Riset A3, custom lightweight async-native) + `/raudah/run` endpoint
-- [ ] **CQF Rubrik v2** — 10 kriteria scoring, total bobot 10.0 (Riset A5)
-- [ ] **Intent classifier few-shot** — `classify_intent()` ke persona router (Riset A4)
-- [ ] Wire Naskh Handler ke `learn_agent.py`
-- [ ] `/metrics` endpoint ringan
+- [x] **Wire `evaluate_maqashid()` ke `run_react()`** — `_apply_maqashid_mode_gate()` di 6 exit paths
+- [x] **`test_maqashid_benchmark.py`** — 64 PASS + 6 BLOCK (benchmark_sprint6.py, 70 queries)
+- [x] **`test_sprint6.py`** — 8 test: Maqashid, CQF, intent, Naskh, Raudah DAG, dedup
+- [x] **MinHash dedup** — `datasketch` integrated di `learn_agent.py` (`deduplicate()`)
+- [x] **Raudah v0.2** — `taskgraph.py` wave partition by role, IHOS gate sebelum DAG
+- [x] **CQF Rubrik v2** — 10 kriteria scoring, rata-rata terbobot (`cqf_rubrik.py`)
+- [x] **Intent classifier few-shot** — `classify_intent()` 7 intents, regex rules (`intent_classifier.py`)
+- [x] Wire Naskh Handler ke `learn_agent.py` — `NaskhHandler.resolve()` di `process_corpus_queue()`
+- [x] `/metrics` endpoint — runtime_metrics snapshot + intent probe + uptime
 
 **DoD Sprint 6.5:**
-- ✅ Maqashid filter aktif di output pipeline
-- ✅ 70/70 benchmark test (50 PASS + 20 BLOCK) green
+- ✅ Maqashid filter aktif di output pipeline (6 exit paths)
+- ✅ 70/70 benchmark test (64 PASS + 6 BLOCK) green
 - ✅ MinHash dedup aktif di corpus pipeline
 - ✅ Raudah v0.2 TaskGraph functional
+- ✅ 12/12 pytest PASSED, deployed ke produksi
+
 
 ---
 
