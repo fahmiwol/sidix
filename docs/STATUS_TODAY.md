@@ -246,15 +246,15 @@ Berdasarkan `TOOL_REGISTRY` di `agent_tools.py` (~2350 baris):
 | Item | Status | Sprint |
 |------|--------|--------|
 | Maqashid mode gate (`evaluate_maqashid` / `maqashid_profiles`) ter-wire ke `run_react()` | ✅ Middleware `_apply_maqashid_mode_gate` — semua jalur jawaban (cache, image fast-path, ReAct, blokir) + field API `maqashid_profile_*` | 6.5 |
-| Benchmark test (50+20 queries) | ❌ Belum dibuat | 6.5 |
-| MinHash dedup (`datasketch`) | ❌ Belum diinstal/integrate | 6.5 |
-| Raudah v0.2 TaskGraph DAG | ❌ Placeholder, bukan custom lightweight | 6.5 |
-| CQF Rubrik v2 (10 kriteria) | ❌ Belum diimplementasi | 6.5 |
-| Intent classifier few-shot | ❌ Belum | 6.5 |
-| Social Radar Chrome Extension | ❌ Belum mulai | 7 |
-| `/metrics` endpoint ringan | ⚠️ Endpoint ada, content minimal | 6.5 |
+| Benchmark test (50+20 queries) | ✅ `apps/brain_qa/scripts/benchmark_sprint6.py` (Maqashid + intent, lokal) | 6.5 |
+| MinHash dedup (`datasketch`) | ✅ `learn_agent.deduplicate` + `seen_minhash.json` (fallback SHA tetap ada) | 6.5 |
+| Raudah v0.2 TaskGraph DAG | ✅ `brain/raudah/taskgraph.py` — gelombang per peran + verifikator opsional | 6.5 |
+| CQF Rubrik v2 (10 kriteria) | ✅ `brain_qa/cqf_rubrik.py` — skor heuristik + aggregate | 6.5 |
+| Intent classifier few-shot | ✅ `brain_qa/intent_classifier.py` — pola regex deterministik | 6.5 |
+| Social Radar Chrome Extension | ⚠️ Scaffold MV3 `browser/social-radar-extension/` (popup placeholder) | 7 |
+| `/metrics` endpoint ringan | ✅ Gabungan `_METRICS` + `runtime_metrics`, uptime, `intent_probe` opsional env | 6.5 |
 | Naskh Handler wire ke `learn_agent.py` | ✅ `process_corpus_queue` — resolve per topik (`auto_learn/{slug}.md`), tier dari frontmatter `Sanad-Tier` | 6.5 |
-| `test_sprint6.py` | ❌ Belum dibuat | 6.5 |
+| `test_sprint6.py` | ✅ `apps/brain_qa/tests/test_sprint6.py` (8 tes) | 6.5 |
 
 ---
 
@@ -272,3 +272,4 @@ Berdasarkan `TOOL_REGISTRY` di `agent_tools.py` (~2350 baris):
 
 _Audit baseline: 2026-04-23 (sesi audit eksternal + SSH + browser + codebase)._
 _Update wiring Maqashid/Naskh ke kode: 2026-04-23 — lihat `agent_react.py`, `learn_agent.py`, `agent_serve.py` pada branch `sociometer-sprint7`._
+_Sprint 6.5 (Raudah DAG, MinHash, CQF, intent, metrics, tes, benchmark, scaffold Social Radar): 2026-04-23 — detail & handoff agen: [`docs/HANDOFF_2026-04-23.md`](HANDOFF_2026-04-23.md). **Working tree lokal masih berisi perubahan belum commit** sampai di-push._

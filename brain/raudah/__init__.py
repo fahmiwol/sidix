@@ -28,5 +28,13 @@ Roadmap:
 """
 
 from .core import RaudahOrchestrator, Specialist, RaudahTask, run_raudah
+from .taskgraph import build_execution_waves, dag_summary
 
-__all__ = ["RaudahOrchestrator", "Specialist", "RaudahTask", "run_raudah"]
+__all__ = [
+    "RaudahOrchestrator",
+    "Specialist",
+    "RaudahTask",
+    "run_raudah",
+    "build_execution_waves",
+    "dag_summary",
+]

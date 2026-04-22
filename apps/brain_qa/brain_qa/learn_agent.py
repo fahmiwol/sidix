@@ -69,6 +69,64 @@ def _content_hash(content: str) -> str:
     return hashlib.sha256(content[:500].encode()).hexdigest()[:16]
 
 
+def _shingles(text: str, k: int = 5) -> list[str]:
+    t = re.sub(r"\s+", " ", (text or "").lower())
+    if len(t) < k:
+        return [t] if t else []
+    return [t[i : i + k] for i in range(len(t) - k + 1)]
+
+
+def _minhash_for_content(content: str):
+    """MinHash dari konten; None jika datasketch tidak terpasang."""
+    try:
+        from datasketch import MinHash
+    except ImportError:
+        return None
+    m = MinHash(num_perm=64)
+    for sh in _shingles(content[:15000], 5):
+        m.update(sh.encode("utf-8"))
+    return m
+
+
+def _load_minhash_store() -> list[list[int]]:
+    path = _STATE_FILE.parent / "seen_minhash.json"
+    if not path.exists():
+        return []
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+        rows = data.get("signatures", [])
+        return rows[-2000:] if isinstance(rows, list) else []
+    except Exception:
+        return []
+
+
+def _save_minhash_store(rows: list[list[int]]) -> None:
+    path = _STATE_FILE.parent / "seen_minhash.json"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(
+        json.dumps({"signatures": rows[-2000:], "max_keep": 2000}, ensure_ascii=False),
+        encoding="utf-8",
+    )
+
+
+def _minhash_near_duplicate(m, stored_rows: list[list[int]], threshold: float = 0.86) -> bool:
+    if m is None or not stored_rows:
+        return False
+    try:
+        import numpy as np
+        from datasketch import MinHash
+    except ImportError:
+        return False
+    for row in stored_rows:
+        try:
+            other = MinHash(num_perm=64, hashvalues=np.asarray(row, dtype=np.uint64))
+            if m.jaccard(other) >= threshold:
+                return True
+        except Exception:
+            continue
+    return False
+
+
 def _topic_slug(title: str) -> str:
     s = (title or "untitled").lower()
     s = re.sub(r"[^a-z0-9]+", "-", s).strip("-")
@@ -111,15 +169,37 @@ def _save_seen_hashes(hashes: set[str]):
 
 
 def deduplicate(items: list[dict]) -> list[dict]:
-    """Remove items whose content hash already exists in corpus."""
+    """Remove items whose SHA prefix or MinHash near-duplicate already exists."""
     seen = _load_seen_hashes()
+    mh_stored = _load_minhash_store()
+    active_mh: list[list[int]] = list(mh_stored)
+    mh_dirty = False
     new_items = []
     for item in items:
-        h = _content_hash(item.get("content", ""))
-        if h not in seen:
-            seen.add(h)
-            new_items.append(item)
+        body = item.get("content", "") or ""
+        h = _content_hash(body)
+        if h in seen:
+            continue
+        m = _minhash_for_content(body)
+        if _minhash_near_duplicate(m, active_mh):
+            try:
+                from . import runtime_metrics
+
+                runtime_metrics.bump("learn_minhash_near_dup")
+            except Exception:
+                pass
+            continue
+        seen.add(h)
+        new_items.append(item)
+        if m is not None:
+            try:
+                active_mh.append(m.hashvalues.tolist())
+                mh_dirty = True
+            except Exception:
+                pass
     _save_seen_hashes(seen)
+    if mh_dirty:
+        _save_minhash_store(active_mh)
     return new_items
 
 

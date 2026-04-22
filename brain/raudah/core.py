@@ -35,6 +35,8 @@ from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from typing import Any, Optional
 
+from .taskgraph import build_execution_waves, dag_summary
+
 logger = logging.getLogger("sidix.raudah")
 
 # ── Config ────────────────────────────────────────────────────────────────────
@@ -285,13 +287,23 @@ class RaudahOrchestrator:
                 tools=["code_sandbox"],
             ))
 
-        # Semua task dalam satu kelompok (paralel datar)
-        # Phase 2: akan ada multi-kelompok berdasarkan dependency graph
+        # Verifikator → cek sumber / fakta
+        if any(w in lower for w in ["verifikasi", "validasi", "fact check", "cek fakta", "sumber data"]):
+            daftar_task.append(RaudahTask(
+                task_id=f"v_{uuid.uuid4().hex[:6]}",
+                instruction=f"Verifikasi sanad dan konsistensi fakta untuk: {task_user}",
+                role="verifikator",
+                tools=["search_corpus"],
+            ))
+
+        waves = build_execution_waves(daftar_task)
+        logger.debug("[Raudah] DAG %s", dag_summary(waves))
+
         return RaudahPlan(
             ringkasan_task=task_user[:120],
             ihos_lulus=True,
             ihos_alasan="OK",
-            kelompok_paralel=[daftar_task],
+            kelompok_paralel=waves,
         )
 
     def agregasi(self, task_asal: str, hasil_spesialis: list[RaudahTask]) -> str:

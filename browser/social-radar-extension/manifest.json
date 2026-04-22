@@ -1,0 +1,12 @@
+{
+  "manifest_version": 3,
+  "name": "SIDIX Social Radar (scaffold)",
+  "version": "0.1.0",
+  "description": "Scaffold untuk ekstensi Social Radar — intent & sinyal sosial menuju orkestrasi SIDIX. UI dan koneksi API ditambahkan di sprint berikutnya.",
+  "action": {
+    "default_title": "Social Radar",
+    "default_popup": "popup.html"
+  },
+  "permissions": ["storage", "activeTab"],
+  "host_permissions": ["https://app.sidixlab.com/*", "http://localhost/*"]
+}

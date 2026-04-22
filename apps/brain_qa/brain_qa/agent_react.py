@@ -809,8 +809,22 @@ def _apply_maqashid_mode_gate(
         session.maqashid_profile_status = str(result.get("status", "pass"))
         reasons = result.get("reasons") or []
         session.maqashid_profile_reasons = "; ".join(str(x) for x in reasons)[:800]
-        if result.get("status") == "block":
+        st = result.get("status")
+        if st == "block":
             session.maqashid_passes = False
+            try:
+                from . import runtime_metrics
+
+                runtime_metrics.bump("maqashid_profile_block")
+            except Exception:
+                pass
+        elif st == "warn":
+            try:
+                from . import runtime_metrics
+
+                runtime_metrics.bump("maqashid_profile_warn")
+            except Exception:
+                pass
         out = result.get("tagged_output")
         return str(out if out else final_answer)
     except Exception as _mq_err:

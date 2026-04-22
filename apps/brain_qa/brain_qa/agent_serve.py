@@ -43,6 +43,8 @@ from .agent_tools import list_available_tools, call_tool, get_agent_workspace_ro
 from .local_llm import adapter_fingerprint, adapter_weights_exist, find_adapter_dir, generate_sidix
 from . import rate_limit
 
+_PROCESS_STARTED = time.time()
+
 # ── In-memory session store (ganti Redis nanti kalau scale) ──────────────────
 _sessions: dict[str, AgentSession] = {}
 _MAX_SESSIONS = 500
@@ -608,7 +610,22 @@ def create_app() -> "FastAPI":
 
     @app.get("/agent/metrics")
     def agent_metrics():
-        return {"counters": dict(_METRICS), "sessions_cached": len(_sessions)}
+        from . import runtime_metrics
+        from .intent_classifier import classify_intent
+
+        merged = {**dict(_METRICS), **runtime_metrics.snapshot()}
+        sample_q = os.environ.get("SIDIX_METRICS_SAMPLE_QUERY", "").strip()
+        intent_preview = None
+        if sample_q:
+            ir = classify_intent(sample_q)
+            intent_preview = {"intent": ir.intent.value, "confidence": ir.confidence}
+        return {
+            "counters": merged,
+            "sessions_cached": len(_sessions),
+            "session_cap": _MAX_SESSIONS,
+            "process": {"uptime_s": round(time.time() - _PROCESS_STARTED, 2)},
+            "intent_probe": intent_preview,
+        }
 
     @app.post("/agent/feedback")
     def agent_feedback(req: FeedbackRequest, request: Request):

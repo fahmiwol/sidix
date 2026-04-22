@@ -44,6 +44,23 @@ Contoh:
 
 ## Log
 
+### 2026-04-23 (sprint 6.5 batch — Raudah DAG, MinHash, CQF, intent, metrics)
+
+- IMPL: `brain/raudah/taskgraph.py` — gelombang eksekusi per peran; `urai_task` memecah paralel bertingkat + verifikator opsional.
+- IMPL: `learn_agent.deduplicate` — MinHash + `seen_minhash.json`; dependensi `datasketch` di `requirements.txt`.
+- IMPL: `brain_qa/cqf_rubrik.py`, `brain_qa/intent_classifier.py`, `brain_qa/runtime_metrics.py`.
+- UPDATE: `agent_react` — bump `maqashid_profile_block` / `warn`; `agent_serve` `/agent/metrics` — uptime, merge counter, `intent_probe` via `SIDIX_METRICS_SAMPLE_QUERY`.
+- IMPL: `apps/brain_qa/tests/test_sprint6.py`, `scripts/benchmark_sprint6.py`, scaffold `browser/social-radar-extension/`.
+- DOC: `docs/STATUS_TODAY.md` — baris TODO sprint 6.5 diselaraskan.
+- TEST: dari `apps/brain_qa`, `python -m pytest tests/ -q` → 12 passed.
+
+### 2026-04-23 (closure — catat, handoff, lanjut)
+
+- DOC: `docs/HANDOFF_2026-04-23.md` — handoff agen: branch `sociometer-sprint7`, commit terakhir `a9718ca`, **perubahan sprint 6.5 belum di-commit**, daftar path, verifikasi, backlog lanjut (push/PR/deploy/Social Radar penuh/rapikan untracked).
+- UPDATE: `docs/STATUS_TODAY.md` — footer tautan ke handoff + catatan working tree.
+- DECISION: untracked zip/scraping/vendor-heavy **tidak** masuk commit default; rapikan terpisah atau `.gitignore`.
+- NOTE: Lanjut operasional — `git add` selektif → commit → `git push`; PR ke `main`; VPS `pip install -r requirements.txt` bila perlu lalu restart PM2 brain.
+
 ### 2026-04-15 (batch Cursor â€” brain_qa inference + UI)
 
 - FIX: `POST /corpus/reindex` memanggil `build_index()` tanpa argumen keyword wajib (`indexer.build_index`) â†’ kini memanggil dengan `root_override=None`, `out_dir_override=None`, `chunk_chars=1200`, `chunk_overlap=150`.
