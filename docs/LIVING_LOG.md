@@ -56,8 +56,8 @@ Contoh:
 
 ### 2026-04-23 (closure — catat, handoff, lanjut)
 
-- DOC: `docs/HANDOFF_2026-04-23.md` — handoff agen: branch `sociometer-sprint7`, commit terakhir `a9718ca`, **perubahan sprint 6.5 belum di-commit**, daftar path, verifikasi, backlog lanjut (push/PR/deploy/Social Radar penuh/rapikan untracked).
-- UPDATE: `docs/STATUS_TODAY.md` — footer tautan ke handoff + catatan working tree.
+- DOC: `docs/HANDOFF_2026-04-23.md` — handoff agen: branch `sociometer-sprint7`, sprint 6.5 di-commit `99aadf0` + push `origin/sociometer-sprint7`, daftar path, verifikasi, backlog (PR/main, deploy, Social Radar penuh, rapikan untracked).
+- UPDATE: `docs/STATUS_TODAY.md` — footer tautan ke handoff + SHA `99aadf0`.
 - DECISION: untracked zip/scraping/vendor-heavy **tidak** masuk commit default; rapikan terpisah atau `.gitignore`.
 - NOTE: Lanjut operasional — `git add` selektif → commit → `git push`; PR ke `main`; VPS `pip install -r requirements.txt` bila perlu lalu restart PM2 brain.
 
