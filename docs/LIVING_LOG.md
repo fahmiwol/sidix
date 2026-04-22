@@ -3921,3 +3921,6 @@ Fokus pada "what architecture of knowledge means, not volume of knowledge."
   59 API endpoints, 35 tools, UI features lengkap, server infra,
   10 item TODO Sprint 6.5.
 
+### 2026-04-23
+
+- DOC: **SIDIX-SocioMeter** — suite dokumentasi Sprint 7 di `docs/sociometer/` (strategi, PRD, ERD, dokumentasi arsitektur, fitur specs, rencana implementasi 24 minggu, riset, referensi modul + `CATATAN_PROGRES.md`). Redaksi mengikuti terminologi SIDIX (Maqashid, Naskh, Raudah, Sanad, Jariyah, Tafsir) dan menghindari footprint merek host AI/IDE di narasi. Branch `sociometer-sprint7`, commit dokumentasi utama `4f2a397`, push ke `origin/sociometer-sprint7`.
