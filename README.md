@@ -6,6 +6,7 @@
   <p><em>Self-Hosted · Self-Learning · Self-Evolving · Own Stack · No Vendor API</em></p>
 
   <p>
+    <img src="https://img.shields.io/badge/version-v0.6.1-blue?style=flat-square" alt="Version" />
     <img src="https://img.shields.io/badge/Free-100%25-brightgreen?style=flat-square" alt="Free" />
     <img src="https://img.shields.io/badge/Open%20Source-MIT-gold?style=flat-square" alt="Open Source MIT" />
     <img src="https://img.shields.io/badge/Self--Hosted-Own%20Stack-blue?style=flat-square" alt="Self-Hosted" />
@@ -50,7 +51,7 @@
     <a href="#-the-ihos-foundation">🧠 The Foundation</a> ·
     <a href="#-architecture">🏗️ Architecture</a> ·
     <a href="https://huggingface.co/Tiranyx/sidix-lora">🤗 HuggingFace</a> ·
-    <a href="#-contribute--train-sidix">🤝 Contribute</a>
+    <a href="CONTRIBUTING.md">🤝 Contribute</a>
   </p>
 </div>
 
@@ -103,8 +104,9 @@ The classical Islamic scholars identified it precisely:
 | **Batin** — the latent meaning | Latent space / embeddings | `BM25 + vector corpus` — contextual retrieval |
 | **Asbabun Nuzul** — grounded context | Grounded Generation | Every output grounded in `brand_brief + user_state + platform_context` |
 | **Sanad** — the chain of transmission | Provenance tracking | `[FACT] / [OPINION] / [UNKNOWN]` labels + citation chain |
-| **Maqashid** — the higher objectives | Objective function | 5 Maqashid filter gates (life, intellect, faith, lineage, wealth) |
+| **Maqashid** — the higher objectives | Objective function | 5-axis filter: life · intellect · faith · lineage · wealth |
 | **Ijtihad** — reasoned interpretation | Agentic reasoning | `agent_react.py` ReAct loop |
+| **Naskh** — abrogation/update | Knowledge conflict resolution | `naskh_handler.py` — sanad-tier based supersession |
 | **Tafakkur** — deliberate reflection | Meta-cognition | `muhasabah_loop.py` — Niyah→Amal→Muhasabah self-refinement |
 | **Tadrij** — progressive revelation | Curriculum learning | `curriculum_engine.py` L0→L4 knowledge ladder |
 
@@ -149,7 +151,7 @@ SIDIX is not a chatbot with a nice UI. It's a **three-layer cognitive agent** ru
 │  Generative inference — token by token, own stack           │
 │  No OpenAI. No Anthropic. No Gemini. No API fees. Ever.     │
 └─────────────────────────┬───────────────────────────────────┘
-                          │ ReAct loop
+                          │ ReAct loop (agent_react.py)
 ┌─────────────────────────▼───────────────────────────────────┐
 │              LAYER 2 — HANDS (Tools + RAG)                  │
 │  35 active tools:                                           │
@@ -158,7 +160,7 @@ SIDIX is not a chatbot with a nice UI. It's a **three-layer cognitive agent** ru
 │  ├── Code:      code_sandbox · code_analyze · code_validate │
 │  ├── Creative:  generate_copy · brand_kit · plan_campaign   │
 │  ├── Image:     text_to_image (SDXL self-hosted)            │
-│  ├── Meta:      self_inspect · project_map · orchestration  │
+│  ├── Multi-Agent: Raudah Protocol (parallel specialists)    │
 │  └── Growth:    roadmap_* · workspace_* · muhasabah_refine  │
 └─────────────────────────┬───────────────────────────────────┘
                           │ daily cycle
@@ -170,7 +172,30 @@ SIDIX is not a chatbot with a nice UI. It's a **three-layer cognitive agent** ru
 └─────────────────────────────────────────────────────────────┘
 ```
 
-### Current Capabilities (Sprint 6 — 2026-04-21)
+### Raudah Protocol — Multi-Agent Parallel Orchestration
+
+New in v0.6: **Raudah** (روضة المعرفة — *Garden of Knowledge*) — a multi-agent parallel system where specialists work concurrently and the Orchestrator synthesizes a consensus answer.
+
+```
+Task → RaudahOrchestrator.urai_task()
+     → IHOS Guardrail (Maqashid check)
+     → asyncio.gather([Researcher, Analyst, Writer, Engineer, Verifier])
+     → RaudahOrchestrator.agregasi()   ← Ijma' (consensus synthesis)
+     → RaudahResult.jawaban_final
+```
+
+Unlike "swarm" architectures: no vendor API, IHOS guardrail before spawn, Sanad Validator per output.
+
+```python
+import asyncio
+from brain.raudah.core import run_raudah
+
+result = asyncio.run(run_raudah("Research 5 productive waqf models in Southeast Asia"))
+print(result.jawaban_final)   # synthesized consensus
+print(result.durasi_s)        # e.g. 45.2s on RTX 3060
+```
+
+### Current Capabilities (v0.6.1 — 2026-04-23)
 
 | Domain | Agent / Tool | Status |
 |---|---|---|
@@ -183,64 +208,97 @@ SIDIX is not a chatbot with a nice UI. It's a **three-layer cognitive agent** ru
 | **Campaign** | `plan_campaign` (AARRR funnel + KPI) | ✅ Live |
 | **Ads** | `generate_ads` (FB/Google/TikTok copy) | ✅ Live |
 | **Quality Gate** | `muhasabah_refine` (CQF ≥ 7.0 loop) | ✅ Live |
-| **Self-Evolution** | `prompt_optimizer` — L1 flywheel, learns from accepted outputs weekly | ✅ Live |
+| **Multi-Agent** | Raudah Protocol v0.1 (parallel specialists, Ollama backbone) | ✅ Live |
+| **Knowledge Conflict** | Naskh Handler (sanad-tier based resolution) | ✅ Live |
+| **Maqashid Filter** | v2 mode-based: CREATIVE/ACADEMIC/IJTIHAD/GENERAL | ✅ Live |
+| **Self-Evolution** | `prompt_optimizer` — L1 flywheel, weekly improvement | ✅ Live |
 | **Knowledge** | BM25 corpus · Wikipedia · web_search · web_fetch | ✅ Live |
 | **Image** | SDXL self-hosted (RTX 3060 / RunPod fallback) | ✅ Live |
 | **Voice / Video** | Whisper + TTS + FFmpeg | 🗓 Sprint 7 |
-| **3D / Gaming** | Hunyuan3D + Blender API | 🗓 Sprint 6 |
-| **Self-authoring** | Voyager protocol (write own tools) | 🗓 Sprint 6 |
+| **3D / Gaming** | Hunyuan3D + Blender API | 🗓 Sprint 8 |
+| **Raudah v0.2** | TaskGraph DAG + POST /raudah/run endpoint | 🗓 Next sprint |
 
 ---
 
-## 🎯 5 Personas
+## 🎭 5 Personas
 
-SIDIX adapts its voice, depth, and framing based on who it's talking to:
+SIDIX adapts its voice, depth, and framing based on who it's talking to. Each persona maps to a **Maqashid mode** — a different lens for evaluating and presenting knowledge.
 
-| Persona | Character | Specialization |
-|---|---|---|
-| **MIGHAN** | الميغان — Strategic Sage | Research synthesis, long-form, Islamic epistemology |
-| **TOARD** | The Analyst | Data, logic, structured argument, code review |
-| **FACH** | The Craftsman | Technical deep-dives, system design, implementation |
-| **HAYFAR** | الحيفر — The Learner | Teaching, curriculum, beginner-friendly explanation |
-| **INAN** | The Generalist | Daily tasks, creative, conversational |
+| Persona | Character | Specialization | Maqashid Mode |
+|---|---|---|---|
+| **AYMAN** | Strategic Sage | Research synthesis, long-form, Islamic epistemology, vision | IJTIHAD |
+| **ABOO** | The Analyst | Data, logic, structured argument, code review, decisions | ACADEMIC |
+| **OOMAR** | The Craftsman | Technical deep-dives, system design, build & implementation | IJTIHAD |
+| **ALEY** | The Learner | Teaching, curriculum, beginner-friendly, patient explanation | GENERAL |
+| **UTZ** | The Generalist | Daily tasks, creative work, conversational, quick answers | CREATIVE |
+
+```python
+# Auto-routing — SIDIX picks the right persona from your question
+from brain_qa.persona import route_persona
+
+result = route_persona("help me design a logo for a tech startup")
+# → PersonaDecision(persona='AYMAN', confidence=0.63, reason='signal=creative/design')
+
+# Or specify explicitly
+from brain_qa.agent_react import run_react
+session = run_react(question="audit this Python function", persona="ABOO")
+```
+
+> **Backward compatible:** Old names (MIGHAN, TOARD, FACH, HAYFAR, INAN) are still accepted
+> and automatically translated to the new names.
 
 ---
 
 ## ⚡ Quick Start
 
-> **Requirements:** Python 3.11+ · Node 18+ · 8 GB RAM recommended (4 GB minimum with swap)
+> **Requirements:** Python 3.11+ · Node 18+ · 8 GB RAM (4 GB minimum with swap) · [Ollama](https://ollama.com) for local inference
 
 ```bash
-# Clone
+# 1. Clone
 git clone https://github.com/fahmiwol/sidix.git
 cd sidix
 
-# Install
+# 2. Install Python deps
 pip install -r apps/brain_qa/requirements.txt
 
-# Build knowledge index
+# 3. Pull the SIDIX model (via Ollama)
+ollama pull qwen2.5:7b          # base model
+# LoRA adapter loads automatically from apps/brain_qa/models/
+
+# 4. Build knowledge index
 python -m brain_qa index
 
-# Start backend (port 8765)
+# 5. Start backend (port 8765)
 python -m brain_qa serve
 
-# Start UI (new terminal)
+# 6. Start UI (new terminal, port 3000)
 cd SIDIX_USER_UI && npm install && npm run dev
-
-# Try it
-python -m brain_qa ask "What is the IHOS framework?"
-# Or open: http://localhost:3000
 ```
 
-**Live demo (free):** [app.sidixlab.com](https://app.sidixlab.com)
+**Try it from CLI:**
+```bash
+# Quick answer
+python -m brain_qa ask "What is the IHOS framework?"
 
-> No account required. No rate limit for self-hosted instances.
+# Specify persona
+python -m brain_qa ask "Buatkan copy iklan kopi lokal" --persona UTZ
+
+# Run Raudah multi-agent
+python -c "
+import asyncio
+from brain.raudah.core import run_raudah
+r = asyncio.run(run_raudah('Research 3 fintech models for Islamic microfinance'))
+print(r.jawaban_final)
+"
+```
+
+**Live demo (free, no signup):** [app.sidixlab.com](https://app.sidixlab.com)
 
 ---
 
 ## 🤗 HuggingFace
 
-The SIDIX LoRA adapter (fine-tuned on top of Qwen2.5-7B-Instruct) is available on HuggingFace:
+The SIDIX LoRA adapter (fine-tuned on Qwen2.5-7B-Instruct) is publicly available:
 
 ```python
 from peft import PeftModel
@@ -255,81 +313,33 @@ tokenizer = AutoTokenizer.from_pretrained("Qwen/Qwen2.5-7B-Instruct")
 
 ---
 
-## 🤝 Contribute & Train SIDIX
-
-SIDIX grows from community knowledge. You can teach it — no coding required.
-
-### Option 1: Telegram Bot (Zero setup)
-
-<div align="center">
-  <a href="https://t.me/sidixlab_bot">
-    <img src="https://img.shields.io/badge/Open%20%40SidixBot-Teach%20SIDIX-2AABEE?style=for-the-badge&logo=telegram" alt="Telegram Bot" />
-  </a>
-</div>
-
-Send any message → it enters the corpus queue → SIDIX learns it.
-
-### Option 2: Research Notes (GitHub PR)
-
-Add a `.md` file to `brain/public/research_notes/` — any topic, any language.
-
-```markdown
----
-sanad_tier: peer_review  # primer | ulama | peer_review | aggregator
----
-
-# [Your Topic]
-
-## What is it
-## Why it matters
-## How it works
-## Real examples
-## Limitations
-## References
-```
-
-```bash
-git checkout -b corpus/your-topic
-# add your note to brain/public/research_notes/NNN_topic.md
-git commit -m "corpus: add [topic]"
-git push && open PR
-```
-
-### Option 3: Code Contribution
-
-| Area | Files | Label |
-|---|---|---|
-| New tool | `agent_tools.py` | `tools` |
-| New agent | `apps/brain_qa/brain_qa/` | `agent` |
-| Bug fix | anywhere | `bug` |
-| UI/UX | `SIDIX_USER_UI/` | `ui` |
-| Docs | `docs/` or `README.md` | `docs` |
-
----
-
 ## 🗺️ Roadmap
 
 ```
-BABY (now)        CHILD (Q3 '26)    ADOLESCENT (Q4)   ADULT (Q2 '27)
-──────────────    ──────────────    ───────────────    ──────────────
-✅ RAG + ReAct    🗓 Voice/ASR      🗓 Video pipeline  🗓 Distributed
-✅ Fine-tune v1   🗓 TTS/Piper      🗓 LoRA auto-      🗓 Hafidz (IPFS
-✅ 35 tools       🗓 Skill library    retrain weekly     + BFT ledger)
-✅ 6 creative     🗓 Multi-agent    🗓 Self-authoring  🗓 Multi-node
-   agents           debate ring       (Voyager)          federation
-✅ Image gen      🗓 Agency Kit     🗓 SEM L2→L3       🗓 SEM L4→L5
-✅ Code intel     🗓 3D / NPC gen
-✅ Self-evolution  
+BABY (now)         CHILD (Q3 '26)    ADOLESCENT (Q4)   ADULT (Q2 '27)
+──────────────     ──────────────    ───────────────    ──────────────
+✅ RAG + ReAct     🗓 Voice/ASR      🗓 Video pipeline  🗓 Distributed
+✅ Fine-tune v1    🗓 TTS/Piper      🗓 LoRA auto-      🗓 Hafidz (IPFS
+✅ 35 tools        🗓 Skill library    retrain weekly     + BFT ledger)
+✅ 6 creative      🗓 Multi-agent    🗓 Self-authoring  🗓 Multi-node
+   agents            debate ring       (Voyager)          federation
+✅ Image gen       🗓 Agency Kit     🗓 SEM L2→L3       🗓 SEM L4→L5
+✅ Code intel      🗓 3D / NPC gen
+✅ Raudah v0.1
+   (multi-agent)
+✅ Naskh Handler
+✅ Maqashid v2
+✅ Self-evolution
    (L1 flywheel)
 ```
 
-**v0.2 beta target:** June 2026 — Agency Kit 1-click + multimodal parity
+**v0.2 beta target:** June 2026 — Agency Kit 1-click + Raudah v0.2 + multimodal parity
 
 ---
 
 ## 📐 The Technical Translation of IHOS
 
-For those who want to go deeper — here's how classical epistemological concepts map to concrete engineering decisions:
+For those who want to go deeper:
 
 ```python
 # Sanad (chain of transmission) → citation chain in every output
@@ -342,6 +352,12 @@ For those who want to go deeper — here's how classical epistemological concept
   "maqashid_filter": "passed" # Maqashid — does this serve human flourishing?
 }
 
+# Naskh (abrogation) → knowledge conflict resolution
+from brain_qa.naskh_handler import NaskhHandler
+handler = NaskhHandler()
+winner, status, reason = handler.resolve(old_item, new_item)
+# → ("superseded", "New source has higher sanad tier (primer > aggregator)")
+
 # Tafakkur (deliberate reflection) → muhasabah loop
 def muhasabah_loop(output, brief):
     niyah  = validate_intent(brief)       # Was the intention clear?
@@ -349,13 +365,27 @@ def muhasabah_loop(output, brief):
     review = reflect_on_gaps(output)      # What can be improved?
     return refine(output) if amal < 7.0 else output
 
-# Tadrij (progressive revelation) → curriculum engine
-# L0 → Memorize facts
-# L1 → Understand concepts
-# L2 → Apply to new cases
-# L3 → Synthesize across domains
-# L4 → Generate novel knowledge (ijtihad)
+# Maqashid v2 — mode-based, not keyword blacklist
+from brain_qa.maqashid_profiles import evaluate_maqashid, MaqashidMode
+result = evaluate_maqashid(
+    user_query="Write copy for our coffee brand",
+    generated_output="Bold flavor, honest origin...",
+    mode=MaqashidMode.CREATIVE       # → BOOST intellect & wealth, no block
+)
+# → {"status": "pass", "tagged_output": "...\n\n[Intellect-Optimized | Value-Creation Mode]"}
 ```
+
+---
+
+## 🤝 Contribute
+
+See **[CONTRIBUTING.md](CONTRIBUTING.md)** for the full guide.
+
+**Short version — 3 ways to help:**
+
+1. **📚 Add knowledge** — open a PR with a `.md` file in `brain/public/research_notes/`. Any topic, any language. No coding required.
+2. **🔧 Build tools** — add new tools/agents to `apps/brain_qa/brain_qa/`. See [CONTRIBUTING.md](CONTRIBUTING.md#code-contribution).
+3. **🤖 Train via Telegram** — send knowledge to [@sidixlab_bot](https://t.me/sidixlab_bot). It enters the corpus queue directly.
 
 ---
 
@@ -363,10 +393,10 @@ def muhasabah_loop(output, brief):
 
 - ✅ No vendor API in inference pipeline — zero data leaves your server
 - ✅ G1 Safety Policy — anti-injection, anti-PII, anti-toxic
+- ✅ Maqashid v2 — intent-based filter, not keyword blacklist (creative-safe)
 - ✅ Audit log (append-only, hash-chained) for every tool call
 - ✅ Identity masking for public-facing endpoints
 - ✅ 4-label epistemic tagging — hallucinations are labeled, not hidden
-- ✅ GROQ/Gemini/Anthropic keys disabled — fallback chain ends at Mock, never external AI
 
 ---
 
