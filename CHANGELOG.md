@@ -1,4 +1,4 @@
-# SIDIX / Mighan Model — Changelog Publik
+﻿# SIDIX / Mighan Model — Changelog Publik
 
 Catatan rilis terlihat oleh kontributor & user. Tujuan: transparansi
 progress + ajakan kontribusi.
@@ -9,6 +9,37 @@ progress + ajakan kontribusi.
 
 ---
 
+## v0.6.1 — 2026-04-23 — Persona Rename + GitHub Update + Open Source Launch
+
+### Identitas Baru: 5 Persona
+
+Nama-nama persona diperbarui dari kode generik ke nama berkarakter —
+terinspirasi tokoh historis, dieja dengan cara yang unik untuk SIDIX.
+
+| Nama Lama | Nama Baru | Karakter | Maqashid Mode |
+|-----------|-----------|----------|---------------|
+| MIGHAN | **AYMAN** | Strategic Sage | IJTIHAD |
+| TOARD | **ABOO** | The Analyst | ACADEMIC |
+| FACH | **OOMAR** | The Craftsman | IJTIHAD |
+| HAYFAR | **ALEY** | The Learner | GENERAL |
+| INAN | **UTZ** | The Generalist | CREATIVE |
+
+**Backward compatible** — nama lama masih diterima via `_PERSONA_ALIAS` dict.
+
+### Open Source Readiness
+
+- **CONTRIBUTING.md** — panduan kolaborasi lengkap: fork & clone workflow,
+  3 jalur kontribusi (knowledge/code/telegram), dev setup, PR process,
+  code standards, corpus standards, "what NOT to contribute"
+- **README.md** — diperbarui ke v0.6.1: Raudah Protocol section, Naskh Handler,
+  Maqashid v2, persona table baru, Ollama Quick Start, badge versi
+
+### Kimi Feedback Terdokumentasi
+
+`docs/FEEDBACK_KIMI_2026-04-23.md` — jawaban lengkap 10 pertanyaan Kimi K2.6,
+status implementasi per modul, dan request riset lanjutan ke Kimi.
+
+---
 ## v0.6.0 — 2026-04-23 — Fase 6: IHOS Deepening + Raudah Protocol
 
 ### Arsitektur Baru

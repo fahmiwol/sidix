@@ -3793,3 +3793,42 @@ Fokus pada "what architecture of knowledge means, not volume of knowledge."
   - Naskh Handler wire ke learn_agent.py
   - /metrics endpoint ringan
   - Progress indicator di UI untuk Raudah Protocol
+
+## 2026-04-23 — Sesi 3: GitHub Update + Open Source + Kimi Feedback + Deploy Final
+
+[DOC] README.md di-rewrite ke v0.6.1:
+  - Badge versi v0.6.1 ditambahkan
+  - Persona table diganti ke nama baru (AYMAN/ABOO/OOMAR/ALEY/UTZ) + Maqashid mode kolom
+  - Section Raudah Protocol ditambahkan (arsitektur + Python example)
+  - Section Naskh Handler + Maqashid v2 masuk di capabilities table
+  - Quick Start diperluas: Ollama setup + Raudah CLI example + backward compat note
+  - IHOS table ditambahkan baris Naskh
+  - Link ke CONTRIBUTING.md diupdate
+
+[DOC] CONTRIBUTING.md ditulis ulang lengkap (open-source collaboration guide):
+  - Fork & clone workflow step-by-step (6 langkah)
+  - 3 jalur kontribusi: knowledge/code/telegram (dengan effort estimate)
+  - Format research note standar + sanad tier table
+  - Project structure map + adding tool workflow
+  - Development setup (Ollama, Python, Node, env vars, test commands)
+  - Pull Request process (7 aturan eksplisit)
+  - Code standards + corpus standards
+  - "What NOT to contribute" section (explicit blocklist)
+  - Community channels + Code of Conduct ringkas
+
+[DOC] docs/FEEDBACK_KIMI_2026-04-23.md dibuat:
+  - Menjawab 10 pertanyaan teknis Kimi dari handoff HTML section 9
+  - Status implementasi per modul (maqashid v2, naskh, raudah, anti-loop)
+  - Delta dari spesifikasi Kimi (Raudah vs Swarm, no vendor API, is_frozen flag)
+  - Request riset lanjutan ke Kimi: benchmark Maqashid, MinHash, TaskGraph, CQF rubrik
+
+[UPDATE] CHANGELOG.md — tambah entry v0.6.1 di atas v0.6.0
+
+[DEPLOY] Push GitHub: 8485095..60acde4 — README + CONTRIBUTING + Kimi feedback
+[DEPLOY] Nodus utama: git pull → 14 files changed, 1101 insertions
+[DEPLOY] npm run build: dist built in 1.63s (persona selector dengan nama baru)
+[DEPLOY] pm2 restart sidix-brain: online, 33.1mb | pm2 restart sidix-ui: online, 50.7mb
+[TEST] /health: ok=true, model_ready=true, tools_available=35, corpus_doc_count=1182
+
+[DECISION] Deploy frontend wajib setelah persona selector diubah — nama baru
+  sudah live di app.sidixlab.com tanpa perlu refresh cache manual.

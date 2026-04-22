@@ -155,6 +155,45 @@ Belum eksekusi karena Cursor tidak available + prioritas shift ke image gen beta
 
 ---
 
+### ✅ Sprint 5.5 — IHOS Deepening + Raudah Protocol (DONE 2026-04-23)
+
+> **Catatan:** Sprint ini tidak ada di roadmap awal — diinsertkan karena analisis eksternal (Kimi K2.6)
+> mengidentifikasi 3 critical gap yang harus diselesaikan sebelum lanjut ke 3D/Voyager.
+> Menghasilkan v0.6.0 + v0.6.1. Semua item done + deployed.
+
+**Arsitektur baru:**
+- ✅ **Maqashid Profiles v2** (`maqashid_profiles.py`) — mode-based filter (CREATIVE/ACADEMIC/IJTIHAD/GENERAL).
+  Menggantikan keyword blacklist. Creative mode = Maqashid jadi score multiplier, bukan pemblokir.
+- ✅ **Naskh Handler v0.1** (`naskh_handler.py`) — resolusi konflik knowledge berbasis sanad tier.
+  Konsep ushul fiqh diterjemahkan ke code: tier + date + confidence + is_frozen flag.
+- ✅ **Raudah Protocol v0.1** (`brain/raudah/core.py`) — multi-agent paralel berbasis IHOS.
+  5 specialist (Peneliti/Analis/Penulis/Perekayasa/Verifikator) + IHOS Guardrail + Ijma' agregasi.
+  Backbone: Ollama local (tanpa vendor API). Nama "Raudah" (روضة المعرفة) vs "Swarm".
+
+**Peningkatan:**
+- ✅ **curator_agent.py** — `PREMIUM_SCORE=0.85` filter aktif → `lora_premium_pairs.jsonl`
+- ✅ **agent_react.py** — `MAX_ACTION_REPEAT=2`, `MAX_TOOL_ERRORS=3` (anti-loop constants)
+- ✅ **Persona rename** (v0.6.1) — MIGHAN→AYMAN, TOARD→ABOO, FACH→OOMAR, HAYFAR→ALEY, INAN→UTZ
+  Backward compat penuh via `_PERSONA_ALIAS` dict. Tests 20/20 PASSED.
+
+**Open Source:**
+- ✅ **README.md** diperbarui (v0.6.1 badge, Raudah section, Naskh, Maqashid v2, persona baru)
+- ✅ **CONTRIBUTING.md** ditulis ulang — panduan kolaborasi open source lengkap
+- ✅ **docs/FEEDBACK_KIMI_2026-04-23.md** — jawaban teknis 10 pertanyaan Kimi
+
+**Research notes baru:** 183, 184, 185, 186
+**Commits:** 347f803 → 60acde4 (5 commits, semua di production)
+
+**Pending dari Sprint 5.5 → lanjut ke Sprint 6:**
+- ⏳ Wire `evaluate_maqashid()` ke `run_react()` (middleware output)
+- ⏳ Wire Naskh Handler ke `learn_agent.py`
+- ⏳ `test_sprint6.py` coverage (muhasabah flywheel + brand kit)
+- ⏳ Raudah Protocol v0.2 (TaskGraph DAG + `/raudah/run` endpoint)
+- ⏳ `/metrics` endpoint ringan
+- ⏳ Maqashid benchmark test (20 creative PASS + 10 harmful BLOCK)
+
+---
+
 ### 🎯 Sprint 6 (2 minggu) — 3D + Voyager + Self-Train Fase 2
 **Merging:** Riset Sprint 3.2 (3D Modeling) + Sprint 3.3 (Gaming, subset) — **dipercepat** dari timeline riset karena user directive "all about 3D" + note 169 Voyager Protocol.
 
