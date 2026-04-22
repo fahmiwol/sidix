@@ -3995,4 +3995,27 @@ Fokus pada "what architecture of knowledge means, not volume of knowledge."
   - `agent_serve.py`: Endpoint `POST /social/radar/scan` ter-wire ke modul radar.
   - `tests/test_sprint7_logic.py`: 3 unit test (High ER, Neg Sentiment, Leader Tier) — PASSED.
 
+### 2026-04-23 — Sesi Claude: Review komprehensif + hardening Sprint 7
+
+- NOTE: **Review validasi teknis menyeluruh** — baca semua handoff (FINAL, SPRINT7, v2), LIVING_LOG tail, kode aktual. Tidak ada kontradiksi antar agen. Semua Sprint 6.5 verified.
+- NOTE: **Maqashid gate** — dikonfirmasi terpasang di 6 jalur keluar `run_react()`: injection block, toxic block, cache hit, image fast-path, ReAct normal (setelah epistemologi), max-steps fallback. Tidak ada jalur terlewat.
+- NOTE: **Naskh wiring** — dikonfirmasi benar: `_normalize_sanad_tier()` menangani `peer-reviewed`→`peer_review`, `_extract_sanad_tier_from_md()` membaca frontmatter, resolve() per topik sudah benar.
+
+- FIX: **`social_radar.py`** — hardening MVP:
+  - Tambah konstanta `_MAX_COMMENTS_SAMPLE = 200` dan `_MAX_METADATA_STR_LEN = 10_000`.
+  - Guard payload oversized: return error jika `len(str(metadata)) > 10_000`.
+  - Cap `recent_comments[:200]` sebelum analisis sentimen.
+  - Perluas keyword sentimen: positif 14 kata, negatif 14 kata (tambah slang UMKM Indonesia: "worth", "sip", "jos", "gacor", "zonk", "nyesel", dll).
+  - Fix advice logic: tambah cabang `er > 5.0 AND sentiment < -0.2` (double signal = peluang langka).
+  - Advice tier "leader" dan "emerging" kini juga punya teks spesifik.
+
+- FIX: **`agent_serve.py`** — endpoint `/social/radar/scan` hardening:
+  - Tambah Pydantic model `RadarScanRequest` dengan method `validated_metadata()`.
+  - `validated_metadata()` cek ukuran payload (>10KB → `ValueError`), cap `recent_comments[:200]`.
+  - Endpoint ganti dari `body: dict[str, Any]` ke `body: RadarScanRequest`.
+  - Error handling: `ValueError` → `HTTPException(413)`, exception lain → `HTTPException(500)` dengan pesan generik (tidak leak internal error).
+
+- UPDATE: **`docs/STATUS_TODAY.md`** — rewrite lengkap: Sprint 6.5 semua ✅, Sprint 7 status per komponen, security status, TODO aktif.
+- DOC: **`brain/public/research_notes/187_sprint7_api_security_radar_hardening.md`** — dokumentasi semua fix.
+
 

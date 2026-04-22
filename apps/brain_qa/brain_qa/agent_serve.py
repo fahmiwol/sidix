@@ -170,6 +170,24 @@ class FeedbackRequest(BaseModel):
     vote: str  # "up" | "down"
 
 
+class RadarScanRequest(BaseModel):
+    url: str = ""
+    metadata: dict = {}
+
+    model_config = {"extra": "ignore"}
+
+    def validated_metadata(self) -> dict:
+        """Kembalikan metadata yang sudah dibersihkan — cegah payload oversized."""
+        raw = self.metadata or {}
+        if len(str(raw)) > 10_000:
+            raise ValueError("Payload metadata melebihi batas 10KB.")
+        comments = raw.get("recent_comments", [])
+        if isinstance(comments, list):
+            raw = dict(raw)
+            raw["recent_comments"] = comments[:200]
+        return raw
+
+
 class AskRequest(BaseModel):
     question: str
     persona: str = "MIGHAN"
@@ -1684,15 +1702,16 @@ def create_app() -> "FastAPI":
             return {"ok": False, "error": str(e)}
 
     @app.post("/social/radar/scan")
-    def social_radar_scan(body: dict[str, Any]):
-        """Scan kompetitor via Social Radar (OpHarvest)."""
-        url = body.get("url", "")
-        metadata = body.get("metadata", {})
+    def social_radar_scan(body: RadarScanRequest):
+        """Scan kompetitor via Social Radar (OpHarvest). Hanya sinyal publik agregat."""
         try:
-            result = social_radar.analyze_social_context(url, metadata)
+            clean_meta = body.validated_metadata()
+            result = social_radar.analyze_social_context(body.url, clean_meta)
             return result
-        except Exception as e:
-            return {"ok": False, "error": str(e)}
+        except ValueError as ve:
+            raise HTTPException(status_code=413, detail=str(ve))
+        except Exception:
+            raise HTTPException(status_code=500, detail="Terjadi kesalahan saat memproses permintaan radar.")
 
     # ── Admin Threads (connect/status/disconnect/auto-content) ───────────────
     try:
