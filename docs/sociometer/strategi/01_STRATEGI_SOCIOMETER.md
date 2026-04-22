@@ -103,6 +103,7 @@ Tafsir Engine — QLoRA retrain (r=16, alpha=32, 3 epochs), A/B test, auto-deplo
 Prinsip yang tidak berubah:
 - **Standing alone** — model sendiri, corpus sendiri, infra sendiri
 - **Transparansi epistemologis** — sanad chain, 4-label, maqashid scoring
+- **Muhasabah** — audit berkala terhadap kualitas keluaran, CQF, dan kepatuhan gatekeeper (bukan sekadar log teknis)
 - **Kedaulatan data** — data user tetap milik user, anonim untuk training
 - **Jariyah ilmu** — setiap interaksi = sedekah ilmu yang terus mengalir
 

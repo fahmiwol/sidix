@@ -13,6 +13,7 @@
 | 3 | **Keadilan Data** | Local-first, opt-in granular, anonymization (hash+bucket), delete anytime. |
 | 4 | **Evolusi Mandiri** | Jariyah loop: every interaction → CQF scoring → corpus → QLoRA retrain. |
 | 5 | **Tawarruq** | Buka pintu ke platform mitra via MCP tanpa kehilangan identitas SIDIX. |
+| 6 | **Muhasabah** | Evaluasi berkala: CQF, benchmark Maqashid, sampling Sanad, rollback **Tafsir** bila metrik buruk. |
 
 ---
 

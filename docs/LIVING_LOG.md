@@ -3924,3 +3924,5 @@ Fokus pada "what architecture of knowledge means, not volume of knowledge."
 ### 2026-04-23
 
 - DOC: **SIDIX-SocioMeter** — suite dokumentasi Sprint 7 di `docs/sociometer/` (strategi, PRD, ERD, dokumentasi arsitektur, fitur specs, rencana implementasi 24 minggu, riset, referensi modul + `CATATAN_PROGRES.md`). Redaksi mengikuti terminologi SIDIX (Maqashid, Naskh, Raudah, Sanad, Jariyah, Tafsir) dan menghindari footprint merek host AI/IDE di narasi. Branch `sociometer-sprint7`, commit dokumentasi utama `4f2a397`, push ke `origin/sociometer-sprint7`.
+
+- DOC: **SocioMeter** — tambah prinsip **Muhasabah** (`01_STRATEGI_SOCIOMETER.md`, `04_DOKUMENTASI_SOCIOMETER.md`) dan `docs/sociometer/dokumentasi/09_VISI_SOCIAL_RADAR.md` (pivot Social Radar disanitasi; arsip kerja lokal tidak di-commit). Terminologi lengkap: Maqashid, Naskh, Raudah, Sanad, Muhasabah, Jariyah, Tafsir.
