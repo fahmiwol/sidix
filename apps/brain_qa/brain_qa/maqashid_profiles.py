@@ -107,12 +107,19 @@ _DANGEROUS_INTENTS: dict[str, list[str]] = {
 # ── Persona → Mode Mapping ─────────────────────────────────────────────────────
 
 _PERSONA_MODE_MAP: dict[str, MaqashidMode] = {
-    "MIGHAN":  MaqashidMode.IJTIHAD,   # strategic sage = deep thinking
-    "TOARD":   MaqashidMode.ACADEMIC,  # analyst = strict + sanad
-    "FACH":    MaqashidMode.IJTIHAD,   # craftsman = technical exploration
-    "HAYFAR":  MaqashidMode.GENERAL,   # learner = general
-    "INAN":    MaqashidMode.CREATIVE,  # generalist = creative default
-    # fallback kalau persona tidak dikenal
+    # Nama persona baru (2026-04-23)
+    "AYMAN":  MaqashidMode.IJTIHAD,   # Strategic Sage — deep thinking, visioner
+    "ABOO":   MaqashidMode.ACADEMIC,  # The Analyst — strict, logis, sanad
+    "OOMAR":  MaqashidMode.IJTIHAD,   # The Craftsman — technical exploration
+    "ALEY":   MaqashidMode.GENERAL,   # The Learner — general, beginner-friendly
+    "UTZ":    MaqashidMode.CREATIVE,  # The Generalist — creative default
+    # Alias nama lama (backward compat — deprecated, pakai nama baru)
+    "MIGHAN": MaqashidMode.IJTIHAD,
+    "TOARD":  MaqashidMode.ACADEMIC,
+    "FACH":   MaqashidMode.IJTIHAD,
+    "HAYFAR": MaqashidMode.GENERAL,
+    "INAN":   MaqashidMode.CREATIVE,
+    # fallback
     "DEFAULT": MaqashidMode.GENERAL,
 }
 
@@ -131,7 +138,7 @@ def evaluate_maqashid(
     user_query: str,
     generated_output: str,
     mode: Optional[MaqashidMode] = None,
-    persona_name: str = "INAN",
+    persona_name: str = "UTZ",
 ) -> dict:
     """
     Evaluasi output berdasarkan mode persona.

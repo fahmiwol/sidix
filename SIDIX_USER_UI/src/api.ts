@@ -102,7 +102,9 @@ export interface UploadResponse {
   status: 'queued';
 }
 
-export type Persona = 'MIGHAN' | 'TOARD' | 'FACH' | 'HAYFAR' | 'INAN';
+// Nama persona baru (2026-04-23): AYMAN / ABOO / OOMAR / ALEY / UTZ
+// Nama lama (deprecated) masih diterima backend untuk backward compat
+export type Persona = 'AYMAN' | 'ABOO' | 'OOMAR' | 'ALEY' | 'UTZ';
 
 export class BrainQAError extends Error {
   constructor(
@@ -190,7 +192,7 @@ export async function agentGenerate(
  */
 export async function ask(
   question: string,
-  persona: Persona = 'MIGHAN',
+  persona: Persona = 'AYMAN',
   k = 5,
   opts?: AskInferenceOpts,
 ): Promise<AskResponse> {
@@ -297,7 +299,7 @@ export interface QuotaInfo {
 
 export async function askStream(
   question: string,
-  persona: Persona = 'MIGHAN',
+  persona: Persona = 'AYMAN',
   k = 5,
   callbacks: {
     onToken: (text: string) => void;

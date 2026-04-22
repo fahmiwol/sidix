@@ -3753,3 +3753,43 @@ Fokus pada "what architecture of knowledge means, not volume of knowledge."
   model_mode=sidix_local, corpus_doc_count=1182. Semua sistem normal.
 [NOTE] Script deploy sementara disimpan di temp lokal (bukan di repo) — tidak mengandung credential.
   Hapus setelah sesi selesai.
+
+## 2026-04-23 — Persona Rename v0.6.1 + Kimi Insight Adoption
+
+[DECISION] Nama 5 persona diperbarui oleh pemilik proyek:
+  MIGHAN -> AYMAN | TOARD -> ABOO | FACH -> OOMAR | HAYFAR -> ALEY | INAN -> UTZ
+  Nama baru punya makna metafora lebih dalam (terinspirasi tokoh historis Islam, dieja unik).
+
+[UPDATE] persona.py — ganti _PERSONA_SET ke nama baru, tambah _PERSONA_ALIAS dict untuk
+  backward compat. normalize_persona("MIGHAN") otomatis return "AYMAN", dst.
+  Regex prefix sekarang mengenali nama lama + baru. Semua scoring function diupdate.
+
+[UPDATE] maqashid_profiles.py — _PERSONA_MODE_MAP ditambah entry nama baru (AYMAN/ABOO/OOMAR/ALEY/UTZ).
+  Entry nama lama dipertahankan sebagai alias. Default persona_name diubah ke "UTZ".
+
+[UPDATE] serve.py — Literal type di AskRequest sekarang include nama baru + nama lama (compat).
+  Default fallback ganti ke "AYMAN".
+
+[UPDATE] agent_react.py — default persona ganti ke "UTZ" di run_react().
+
+[UPDATE] SIDIX_USER_UI/src/api.ts — type Persona diupdate ke nama baru. Default ganti ke 'AYMAN'.
+
+[UPDATE] SIDIX_USER_UI/src/main.ts — default fallback diubah ke 'AYMAN'.
+
+[UPDATE] SIDIX_USER_UI/index.html — option values di persona selector diupdate ke nama baru.
+
+[UPDATE] tests/test_persona.py — semua assertions pakai nama baru + tambah test backward compat.
+
+[TEST] python -m pytest tests/test_persona.py -v -> 20/20 PASSED. Backward compat verified.
+
+[DOC] Research note 186_persona_rename_ayman_aboo_oomar_aley_utz.md dibuat.
+
+[NOTE] Kimi HTML kedua (f12a7c7c...) memuat konten yang sama dengan dokumen pertama (maqashid + naskh + raudah).
+  Tidak ada modul baru yang perlu diadopsi. Insights section 10 (jawaban Claude) sudah match
+  implementasi yang dilakukan di sesi sebelumnya.
+
+[NOTE] Items pending dari Kimi section 10 yang belum dieksekusi:
+  - Wire evaluate_maqashid() ke run_react() sebagai middleware output (HANDOFF prioritas A)
+  - Naskh Handler wire ke learn_agent.py
+  - /metrics endpoint ringan
+  - Progress indicator di UI untuk Raudah Protocol

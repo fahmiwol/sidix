@@ -4,8 +4,17 @@ from dataclasses import dataclass
 import re
 
 
-Persona = str  # "TOARD" | "FACH" | "MIGHAN" | "HAYFAR" | "INAN"
+Persona = str  # "ABOO" | "OOMAR" | "AYMAN" | "ALEY" | "UTZ"
 
+# Pemetaan nama persona lama → baru (untuk backward-compat migration)
+# Lama: MIGHAN/TOARD/FACH/HAYFAR/INAN — diganti 2026-04-23
+_PERSONA_ALIAS: dict[str, str] = {
+    "MIGHAN": "AYMAN",
+    "TOARD":  "ABOO",
+    "FACH":   "OOMAR",
+    "HAYFAR": "ALEY",
+    "INAN":   "UTZ",
+}
 
 @dataclass(frozen=True)
 class PersonaDecision:
@@ -15,13 +24,15 @@ class PersonaDecision:
     scores: dict[str, int]
 
 
-_PERSONA_SET = {"TOARD", "FACH", "MIGHAN", "HAYFAR", "INAN"}
+_PERSONA_SET = {"ABOO", "OOMAR", "AYMAN", "ALEY", "UTZ"}
 
 
 def normalize_persona(p: str | None) -> Persona | None:
     if p is None:
         return None
     s = p.strip().upper()
+    # Terjemahkan nama lama secara otomatis (backward compat)
+    s = _PERSONA_ALIAS.get(s, s)
     if s in _PERSONA_SET:
         return s
     raise ValueError(f"Unknown persona: {p}. Use one of: {', '.join(sorted(_PERSONA_SET))}")
@@ -59,7 +70,7 @@ _PLAN_RE = re.compile(
     re.I,
 )
 
-_EXPLICIT_PREFIX_RE = re.compile(r"^\s*(toard|fach|mighan|hayfar|inan)\s*:\s*", re.I)
+_EXPLICIT_PREFIX_RE = re.compile(r"^\s*(aboo|oomar|ayman|aley|utz|toard|fach|mighan|hayfar|inan)\s*:\s*", re.I)
 
 
 def _score_persona(question: str) -> dict[str, int]:
@@ -68,26 +79,33 @@ def _score_persona(question: str) -> dict[str, int]:
 
     m = _EXPLICIT_PREFIX_RE.match(q)
     if m:
-        forced = m.group(1).upper()
-        scores[forced] += 100
+        raw = m.group(1).upper()
+        # Terjemahkan nama lama ke baru kalau user ketik nama lama
+        forced = _PERSONA_ALIAS.get(raw, raw)
+        if forced in scores:
+            scores[forced] += 100
         return scores
 
+    # ALEY = developer / coding (formerly HAYFAR)
     if _CODING_RE.search(q):
-        scores["HAYFAR"] += 3
+        scores["ALEY"] += 3
+    # AYMAN = creative / design (formerly MIGHAN)
     if _CREATIVE_RE.search(q):
-        scores["MIGHAN"] += 3
+        scores["AYMAN"] += 3
+    # OOMAR = research / analysis (formerly FACH)
     if _RESEARCH_RE.search(q):
-        scores["FACH"] += 3
+        scores["OOMAR"] += 3
+    # ABOO = planning / strategy (formerly TOARD)
     if _PLAN_RE.search(q):
-        scores["TOARD"] += 3
+        scores["ABOO"] += 3
 
-    # If user asks explicitly for "cepet"/"singkat", bias to INAN unless another intent is strong.
+    # If user asks explicitly for "cepet"/"singkat", bias to UTZ unless another intent is strong.
     if re.search(r"\b(cepet|cepat|singkat|ringkas|tl;dr|tldr)\b", q, re.I):
-        scores["INAN"] += 1
+        scores["UTZ"] += 1
 
-    # If nothing matched, default light bias to INAN.
+    # If nothing matched, default light bias to UTZ (formerly INAN).
     if max(scores.values()) == 0:
-        scores["INAN"] = 1
+        scores["UTZ"] = 1
 
     return scores
 
@@ -113,20 +131,20 @@ def _confidence_from_scores(scores: dict[str, int]) -> float:
 # "pembimbing" = orientasi dialog, membantu pengguna berproses (MIGHAN).
 # "faktual"    = jawaban presisi, minimalis, berbasis data (HAYFAR).
 _STYLE_MAP: dict[str, Persona] = {
-    "pembimbing": "MIGHAN",
-    "guide": "MIGHAN",
-    "faktual": "HAYFAR",
-    "factual": "HAYFAR",
-    "teknis": "HAYFAR",
-    "technical": "HAYFAR",
-    "kreatif": "MIGHAN",
-    "creative": "MIGHAN",
-    "akademik": "FACH",
-    "academic": "FACH",
-    "rencana": "TOARD",
-    "plan": "TOARD",
-    "singkat": "INAN",
-    "simple": "INAN",
+    "pembimbing": "AYMAN",   # Strategic Sage — visioner, reflektif
+    "guide":      "AYMAN",
+    "faktual":    "ALEY",    # The Learner — presisi, berbasis data
+    "factual":    "ALEY",
+    "teknis":     "ALEY",
+    "technical":  "ALEY",
+    "kreatif":    "AYMAN",   # AYMAN juga punya mode IJTIHAD yg kreatif
+    "creative":   "AYMAN",
+    "akademik":   "OOMAR",   # The Craftsman — riset + implementasi
+    "academic":   "OOMAR",
+    "rencana":    "ABOO",    # The Analyst — strategis + logis
+    "plan":       "ABOO",
+    "singkat":    "UTZ",     # The Generalist — ringkas, sederhana
+    "simple":     "UTZ",
 }
 
 
@@ -154,15 +172,15 @@ def route_persona(question: str) -> PersonaDecision:
     conf = _confidence_from_scores(scores)
 
     reason_bits: list[str] = []
-    if scores.get("HAYFAR", 0) > 0:
+    if scores.get("ALEY", 0) > 0:
         reason_bits.append("coding/dev")
-    if scores.get("MIGHAN", 0) > 0:
+    if scores.get("AYMAN", 0) > 0:
         reason_bits.append("creative/design")
-    if scores.get("FACH", 0) > 0:
+    if scores.get("OOMAR", 0) > 0:
         reason_bits.append("research/analysis")
-    if scores.get("TOARD", 0) > 0:
+    if scores.get("ABOO", 0) > 0:
         reason_bits.append("planning/strategy")
-    if best == "INAN" and not reason_bits:
+    if best == "UTZ" and not reason_bits:
         reason_bits.append("default")
 
     reason = f"score={scores.get(best, 0)}; signals={','.join(reason_bits) or 'none'}; conf={conf:.2f}"

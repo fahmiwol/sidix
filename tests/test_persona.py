@@ -1,7 +1,11 @@
 # -*- coding: utf-8 -*-
 """
-tests/test_persona.py — Projek Badar Task 57 (G4)
+tests/test_persona.py — SIDIX v0.6.0+
 Unit tests for brain_qa.persona — persona routing for SIDIX.
+
+Nama persona diupdate 2026-04-23:
+  MIGHAN → AYMAN | TOARD → ABOO | FACH → OOMAR | HAYFAR → ALEY | INAN → UTZ
+Nama lama masih backward-compat via _PERSONA_ALIAS.
 """
 from __future__ import annotations
 
@@ -19,17 +23,26 @@ class TestNormalizePersona:
     """Tests for normalize_persona()."""
 
     def test_valid_uppercase(self):
-        assert normalize_persona("HAYFAR") == "HAYFAR"
+        assert normalize_persona("ALEY") == "ALEY"
 
     def test_valid_lowercase_converted(self):
-        assert normalize_persona("hayfar") == "HAYFAR"
+        assert normalize_persona("aley") == "ALEY"
 
     def test_valid_mixedcase(self):
-        assert normalize_persona("Fach") == "FACH"
+        assert normalize_persona("Oomar") == "OOMAR"
 
-    def test_all_valid_personas(self):
-        for p in ["TOARD", "FACH", "MIGHAN", "HAYFAR", "INAN"]:
+    def test_all_valid_new_personas(self):
+        """Nama baru semua valid."""
+        for p in ["ABOO", "OOMAR", "AYMAN", "ALEY", "UTZ"]:
             assert normalize_persona(p) == p
+
+    def test_backward_compat_old_names(self):
+        """Nama lama diterjemahkan ke nama baru secara otomatis."""
+        assert normalize_persona("MIGHAN") == "AYMAN"
+        assert normalize_persona("TOARD")  == "ABOO"
+        assert normalize_persona("FACH")   == "OOMAR"
+        assert normalize_persona("HAYFAR") == "ALEY"
+        assert normalize_persona("INAN")   == "UTZ"
 
     def test_none_returns_none(self):
         assert normalize_persona(None) is None
@@ -39,9 +52,9 @@ class TestNormalizePersona:
             normalize_persona("INVALID_PERSONA")
 
     def test_persona_set_completeness(self):
-        """Ensure SIDIX has exactly 5 personas."""
+        """Ensure SIDIX has exactly 5 personas (nama baru)."""
         assert len(_PERSONA_SET) == 5
-        expected = {"TOARD", "FACH", "MIGHAN", "HAYFAR", "INAN"}
+        expected = {"ABOO", "OOMAR", "AYMAN", "ALEY", "UTZ"}
         assert _PERSONA_SET == expected
 
 
@@ -53,25 +66,40 @@ class TestRoutePersona:
         assert isinstance(result, PersonaDecision)
         assert result.persona in _PERSONA_SET
 
-    def test_coding_question_routes_hayfar(self):
+    def test_coding_question_routes_aley(self):
+        """Coding → ALEY (formerly HAYFAR)."""
         result = route_persona("bagaimana cara debug bug ini di python?")
-        assert result.persona == "HAYFAR"
+        assert result.persona == "ALEY"
 
-    def test_creative_question_routes_mighan(self):
+    def test_creative_question_routes_ayman(self):
+        """Creative → AYMAN (formerly MIGHAN)."""
         result = route_persona("bantu desain poster untuk acara")
-        assert result.persona == "MIGHAN"
+        assert result.persona == "AYMAN"
 
-    def test_research_question_routes_fach(self):
+    def test_research_question_routes_oomar(self):
+        """Research → OOMAR (formerly FACH)."""
         result = route_persona("tolong bantu riset literatur untuk tesis ini")
-        assert result.persona == "FACH"
+        assert result.persona == "OOMAR"
 
-    def test_planning_question_routes_toard(self):
+    def test_planning_question_routes_aboo(self):
+        """Planning → ABOO (formerly TOARD)."""
         result = route_persona("buat roadmap dan strategi untuk proyek")
-        assert result.persona == "TOARD"
+        assert result.persona == "ABOO"
 
-    def test_simple_question_routes_inan(self):
+    def test_simple_question_routes_utz(self):
+        """Default/simple → UTZ (formerly INAN)."""
         result = route_persona("apa kabar?")
-        assert result.persona == "INAN"
+        assert result.persona == "UTZ"
+
+    def test_explicit_prefix_new_name(self):
+        """Explicit prefix dengan nama baru."""
+        result = route_persona("ABOO: analisis pro kontra PostgreSQL vs MySQL")
+        assert result.persona == "ABOO"
+
+    def test_explicit_prefix_old_name_compat(self):
+        """Explicit prefix dengan nama lama — backward compat."""
+        result = route_persona("TOARD: buat roadmap Q3")
+        assert result.persona == "ABOO"
 
     def test_confidence_is_float(self):
         result = route_persona("apa itu kecerdasan buatan?")

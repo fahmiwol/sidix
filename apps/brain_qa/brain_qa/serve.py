@@ -140,7 +140,9 @@ def _write_uploads_meta(records: list[dict]) -> None:
 
 class AskRequest(BaseModel):
     question: str = Field(..., min_length=1, max_length=4096)
-    persona: Literal["MIGHAN", "TOARD", "FACH", "HAYFAR", "INAN"] | None = None
+    persona: Literal["AYMAN", "ABOO", "OOMAR", "ALEY", "UTZ",
+                      # backward compat — nama lama masih diterima
+                      "MIGHAN", "TOARD", "FACH", "HAYFAR", "INAN"] | None = None
     k: int = Field(default=5, ge=1, le=20)
 
 
@@ -264,7 +266,7 @@ async def ask(req: AskRequest) -> AskResponse:
             forced = normalize_persona(req.persona)
         except ValueError as e:
             raise HTTPException(status_code=422, detail=str(e))
-        persona_name = forced or "MIGHAN"
+        persona_name = forced or "AYMAN"
         persona_reason = "forced by API client"
     else:
         decision = route_persona(req.question)
@@ -332,7 +334,7 @@ async def ask_stream(req: AskRequest):
             forced = normalize_persona(req.persona)
         except ValueError as e:
             raise HTTPException(status_code=422, detail=str(e))
-        persona_name = forced or "MIGHAN"
+        persona_name = forced or "AYMAN"
         persona_reason = "forced by API client"
     else:
         decision = route_persona(req.question)

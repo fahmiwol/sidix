@@ -1174,7 +1174,7 @@ async function handleSend() {
   chatMessages.appendChild(thinking);
   chatMessages.scrollTop = chatMessages.scrollHeight;
 
-  const persona = (personaSel?.value ?? 'MIGHAN') as Persona;
+  const persona = (personaSel?.value ?? 'AYMAN') as Persona;
 
   // Streaming bubble
   thinking.remove();

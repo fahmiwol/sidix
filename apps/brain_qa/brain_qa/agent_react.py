@@ -802,7 +802,7 @@ def _attach_orchestration_digest(session: AgentSession, question: str, persona: 
 def run_react(
     *,
     question: str,
-    persona: str = "INAN",
+    persona: str = "UTZ",
     allow_restricted: bool = False,
     max_steps: int | None = None,
     verbose: bool = False,
