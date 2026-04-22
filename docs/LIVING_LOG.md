@@ -3741,3 +3741,15 @@ Fokus pada "what architecture of knowledge means, not volume of knowledge."
   2. Swarm v0.2: TaskGraph DAG + dependency tracking
   3. test_sprint6.py coverage (muhasabah flywheel + brand kit)
   4. Deploy ke pohon utama (VPS): git pull + pm2 restart
+
+## 2026-04-23 — Deploy v0.6.0 ke Nodus Utama
+
+[DEPLOY] Push ke pohon utama GitHub (fahmiwol/sidix): 347f803..17bc738 — OK
+[DEPLOY] Nodus utama: git pull origin main — 12 file berubah (1557 insertions).
+  File baru diterima: maqashid_profiles.py, naskh_handler.py, brain/raudah/,
+  research notes 183/184/185, HANDOFF_2026-04-23, CHANGELOG v0.6.0.
+[DEPLOY] pm2 restart sidix-brain — proses berhasil di-restart.
+[TEST] /health nodus utama: ok=true, model_ready=true, tools_available=35,
+  model_mode=sidix_local, corpus_doc_count=1182. Semua sistem normal.
+[NOTE] Script deploy sementara disimpan di temp lokal (bukan di repo) — tidak mengandung credential.
+  Hapus setelah sesi selesai.
