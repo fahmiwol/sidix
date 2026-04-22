@@ -3949,3 +3949,43 @@ Fokus pada "what architecture of knowledge means, not volume of knowledge."
 - IMPL: **Naskh ter-wire ke LearnAgent** — `brain_qa/learn_agent.py` `process_corpus_queue()`: penulisan `brain/public/auto_learn/{topic_slug}.md` dengan resolusi `NaskhHandler.resolve()` bila file topik sudah ada; tier dari `Sanad-Tier` di frontmatter + normalisasi `peer-reviewed` → `peer_review`.
 
 - UPDATE: `docs/STATUS_TODAY.md` — baris TODO Maqashid/Naskh ditandai selesai; header audit netral; catatan update kode pada branch `sociometer-sprint7`.
+
+## 2026-04-23 — Sesi 5: Validasi Cursor + Merge + Deploy Sprint 6.5
+
+> Agent: Antigravity — validasi pekerjaan Cursor di `sociometer-sprint7`.
+
+- TEST: **12/12 PASSED** (0.08s) — `python -m pytest tests/ -v`:
+  - 4 test sanad ranker (existing) ✅
+  - 8 test sprint6 (Cursor baru):
+    - test_maqashid_blocks_dangerous_query ✅
+    - test_cqf_ten_criteria_and_aggregate ✅
+    - test_intent_classifier_code_and_safety ✅
+    - test_naskh_peer_review_supersedes_aggregator ✅
+    - test_raudah_taskgraph_multi_wave ✅
+    - test_raudah_ihos_blocks_before_dag ✅
+    - test_deduplicate_sha_identical ✅
+    - test_taskgraph_unit_partition ✅
+
+- TEST: **Benchmark 70 queries** (0.001s) — `python scripts/benchmark_sprint6.py`:
+  - 64 pass, 0 warn, 6 block (6 harmful correctly blocked)
+  - Intent distribution: factual=58, research=4, creative=3, code=2, safety_probe=2, social=1
+  - Target tercapai: 0% false negative pada harmful queries.
+
+- NOTE: **Validasi kode Cursor (7 commits, 28 files, +1851/-153):**
+  Modul baru:
+  - `cqf_rubrik.py` ✅ — 10 kriteria heuristik, rata-rata terbobot, tanpa LLM
+  - `intent_classifier.py` ✅ — regex rules, 7 intents, deterministic
+  - `runtime_metrics.py` ✅ — thread-safe ring counter
+  - `brain/raudah/taskgraph.py` ✅ — wave partition by role (4 level)
+  Wiring:
+  - `agent_react.py` — `_apply_maqashid_mode_gate()` di 6 exit paths ✅
+  - `agent_serve.py` — maqashid_profile_status/reasons di ChatResponse + trace + /ask ✅
+  - `/agent/metrics` diperkaya (runtime_metrics + intent probe + uptime) ✅
+  - `learn_agent.py` — MinHash dedup + Naskh resolve di process_corpus_queue ✅
+  Scaffold:
+  - `browser/social-radar-extension/` — Manifest V3, popup.html (scaffold only)
+  Docs:
+  - `docs/sociometer/` — 9 dokumen (strategi, PRD, ERD, fitur, riset, modul, visi)
+  Semua kode bersih: no vendor names, no import vendor API.
+
+
