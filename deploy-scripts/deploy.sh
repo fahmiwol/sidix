@@ -46,7 +46,16 @@ else
     echo "Please install pm2: npm install -g pm2"
 fi
 
-# 6. Health Check
+# 6. Sync Landing Page (Static Site)
+echo "🌐 Syncing Landing Page to web root..."
+if [ -d "/www/wwwroot/sidixlab.com" ]; then
+    cp -r "$REPO_DIR/SIDIX_LANDING/"* /www/wwwroot/sidixlab.com/
+    echo "✅ Landing page synced."
+else
+    echo "⚠️ Target /www/wwwroot/sidixlab.com not found. Skipping sync."
+fi
+
+# 7. Health Check
 echo "🔍 Running health check..."
 sleep 5
 curl -s http://localhost:8765/health | grep -q "ok" && echo "✅ Backend HEALTHY" || echo "❌ Backend UNHEALTHY"
