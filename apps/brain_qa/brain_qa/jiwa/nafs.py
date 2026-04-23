@@ -171,7 +171,10 @@ class NafsRouter:
             return "koding"
         if _KREATIF_RE.search(q):
             return "kreatif"
-        if _NGOBROL_RE.search(q) or len(q) < 30:
+        # Cek ngobrol hanya kalau tidak ada keyword substantif — pendek bisa jadi pertanyaan teknis
+        if _NGOBROL_RE.search(q):
+            return "ngobrol"
+        if len(q) < 25 and not re.search(r"\b(vs|versus|apa|jelaskan|bandingkan|cara|tulis|buat|cek|kenapa|mengapa)\b", q, re.I):
             return "ngobrol"
         return "umum"
 
