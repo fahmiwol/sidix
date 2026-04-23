@@ -21,3 +21,5 @@
 ---
 
 _Pembaruan ini melengkapi sinkronisasi git setelah pemetaan dokumen (`MAPPING_FRAMEWORK_TO_REPO.md`)._
+
+**Catatan lanjutan (2026-04-23):** di `MAPPING_FRAMEWORK_TO_REPO.md`, baris “rilis sinkron” memakai rujukan `git log` pada `main`, bukan SHA tunggal, supaya tetap akurat setelah commit dokumen kecil beruntun.

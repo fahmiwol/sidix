@@ -64,6 +64,11 @@ Contoh:
 - TEST: `python -m pytest tests/` dari `apps/brain_qa` - 18 passed.
 - NOTE: Bundel `Framework_bahasa_plugin_update/`, scraping, skrip VPS ad-hoc tidak di-commit.
 
+### 2026-04-23 (lanjut ? MAPPING rilis, push)
+
+- DOC: `docs/MAPPING_FRAMEWORK_TO_REPO.md` ? catatan rilis sinkron memakai `git log --oneline -5` pada `main`, bukan hash commit statis (menghindari ketidakcocokan setelah commit dokumen lanjutan).
+- UPDATE: Dua commit dokumen kecil setelah sinkron besar; `main` sudah di-push ke `origin/main`.
+
 ### 2026-04-23 (sprint 6.5 batch — Raudah DAG, MinHash, CQF, intent, metrics)
 
 - IMPL: `brain/raudah/taskgraph.py` — gelombang eksekusi per peran; `urai_task` memecah paralel bertingkat + verifikator opsional.
