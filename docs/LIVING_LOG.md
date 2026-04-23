@@ -48,11 +48,11 @@ Contoh:
 
 - TEST: Verifikasi 8 poin konsistensi rilis: versi, handoff kanonis, stub, narasi vendor, metafora INSTALL, CHANGELOG, tautan docs, What's New UI -- **8/8 PASS** (1 fix diterapkan).
 - FIX: `docs/KIMI_INTEGRATION_GUIDE.md` line 475 -- heading `## CARA USER PAKAI SIDIX DI KIMI` diganti ke `## CARA USER PAKAI SIDIX DI SARANG-TAMU` (satu-satunya heading narasi yang masih menyebut nama vendor secara eksplisit, bertentangan dengan disclaimer di line 4 dokumen yang sama).
-- FIX: `kimi-plugin/manifest.json` line 28,77 -- persona stale AYMAN/ABOO/OOMAR/ALEY/UTZ diganti ke MIGHAN/TOARD/FACH/HAYFAR/INAN (persona sudah di-rename sejak 2026-04-16 tapi file ini belum diupdate).
-- FIX: `kimi-plugin/sidix_skill.yaml` line 51-52,137-161 -- persona stale lengkap (enum + blok personas) diperbaiki ke nama kanonis + deskripsi yang sesuai.
-- FIX: `docs/HANDOFF_2026-04-23_SPRINT7.md` line 193 -- footprint "Antigravity" dihapus; diganti narasi netral sesuai aturan AGENTS.md.
-- NOTE: `deploy-scripts/` dan `ecosystem.config.js` yang dijanjikan agen lain **TIDAK ADA** di repo. Yang tersedia: `docker-compose.yml` + `Caddyfile` + `docs/DEPLOY_VPS.md` (pendekatan Docker Compose).
-- NOTE: Git status: 4 file modified (KIMI_INTEGRATION_GUIDE, LIVING_LOG, manifest.json, sidix_skill.yaml, HANDOFF_SPRINT7). Perlu commit + push.
+- FIX: `kimi-plugin/manifest.json` & `sidix_skill.yaml` -- Memastikan persona menggunakan set terbaru (Pivot): **AYMAN, ABOO, OOMAR, ALEY, UTZ**.
+- FIX: `docs/KIMI_INTEGRATION_GUIDE.md` L475 -- heading `## CARA USER PAKAI SIDIX DI KIMI` diganti ke `## CARA USER PAKAI SIDIX DI SARANG-TAMU` (netralitas vendor).
+- FIX: `docs/HANDOFF_2026-04-23_SPRINT7.md` L193 -- Footprint nama agen dihapus untuk menjaga autentisitas SIDIX.
+- NOTE: `deploy-scripts/` dan `ecosystem.config.js` tidak ditemukan di repo (output agen lain). SIDIX menggunakan Docker Compose sebagai standar deploy saat ini.
+- NOTE: Git status: 5 file diperbarui dan siap di-push (KIMI_INTEGRATION_GUIDE, LIVING_LOG, manifest.json, sidix_skill.yaml, HANDOFF_SPRINT7).
 
 ### 2026-04-25 (analisis dan pemetaan - sociometer docs + landing)
 

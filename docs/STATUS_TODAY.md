@@ -10,7 +10,7 @@
 
 | Item | Value |
 |------|-------|
-| **Versi** | v0.7.0-dev (Sprint 7 aktif) |
+| **Versi** | v0.7.4-dev (Sprint 7 aktif) |
 | **Domain Frontend** | [sidixlab.com](https://sidixlab.com) (landing page) |
 | **Domain App** | [app.sidixlab.com](https://app.sidixlab.com) (AI agent UI) |
 | **Domain API** | ctrl.sidixlab.com |
@@ -176,5 +176,5 @@ browser/social-radar-extension/
 
 ---
 
-_Update: 2026-04-23 — Claude (sesi review & hardening Sprint 7)._
-_Sprint 6.5: DONE. Sprint 7 MVP: scaffolded + endpoint hardened. Next: OpHarvest real scrape._
+_Update: 2026-04-23 — sesi QA audit + hardening Sprint 7._
+_Sprint 6.5: DONE. Sprint 7 MVP: scaffolded + endpoint hardened. Plugin persona synced. Next: OpHarvest real scrape._

@@ -4,6 +4,13 @@ Format: `[YYYY-MM-DD] — Ringkasan perubahan`
 
 ---
 
+## [2026-04-23] — QA Audit: persona plugin, heading vendor, footprint agen
+
+- **FIX:** `kimi-plugin/manifest.json` + `sidix_skill.yaml` — Validasi persona set terbaru/pivot (**AYMAN, ABOO, OOMAR, ALEY, UTZ**).
+- **FIX:** `docs/KIMI_INTEGRATION_GUIDE.md` L475 — heading "DI KIMI" → "DI SARANG-TAMU".
+- **FIX:** `docs/HANDOFF_2026-04-23_SPRINT7.md` L193 — footprint nama agen dihapus → narasi netral.
+- **DOC:** Peta metafora vs eksplisit didokumentasikan: heading/narasi = metafora (standing alone); path/kode/CLI = eksplisit (agar integrasi tidak misleading).
+
 ## [2026-04-23] — Dokumentasi: metafora host (sarang-tamu / meja-arsip / bengkel-pena), handoff `PLUGIN_ORBIT`, stub handoff lama
 
 - **DOC:** `HANDOFF_2026-04-25_SYNC_TYPO_JIWA_PLUGIN_ORBIT.md` (kanonis); `HANDOFF_2026-04-25_SYNC_TYPO_JIWA_KIMI.md` (redirect).
