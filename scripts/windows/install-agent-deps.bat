@@ -1,6 +1,7 @@
 @echo off
+set "REPO=%~dp0..\.."
 echo Installing SIDIX Agent Runtime dependencies...
-cd /d "D:\MIGHAN Model\apps\brain_qa"
+cd /d "%REPO%\apps\brain_qa"
 
 if exist ".venv\Scripts\pip.exe" (
     .venv\Scripts\pip.exe install fastapi uvicorn httpx
@@ -10,7 +11,7 @@ if exist ".venv\Scripts\pip.exe" (
 
 echo.
 echo Done! Test server dengan:
-echo   cd "D:\MIGHAN Model\apps\brain_qa"
+echo   cd "%REPO%\apps\brain_qa"
 echo   .venv\Scripts\python -m brain_qa serve --port 8765
 echo.
 pause

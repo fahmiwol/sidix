@@ -1,13 +1,15 @@
 @echo off
+set "REPO=%~dp0..\.."
 echo ============================================
 echo  SIDIX — M4 Evaluation Report
+echo  Repo: %REPO%
 echo ============================================
 echo.
 
-cd /d "D:\MIGHAN Model\apps\brain_qa"
+cd /d "%REPO%\apps\brain_qa"
 
 if not exist ".venv\Scripts\python.exe" (
-    echo ERROR: venv tidak ditemukan. Jalankan install-deps.bat dulu!
+    echo ERROR: venv tidak ditemukan. Jalankan install-brain_qa-full.bat atau install-brain_qa-venv.bat
     pause
     exit /b 1
 )

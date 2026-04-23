@@ -1,16 +1,14 @@
 @echo off
-:: SIDIX Auto-Knowledge Fetcher — dijalankan saat startup Windows
-:: Setup: Task Scheduler → jalankan saat login → target file ini
-
+set "REPO=%~dp0..\.."
 echo.
 echo ================================================
 echo   SIDIX Knowledge Fetcher — Auto Startup
+echo   Repo: %REPO%
 echo ================================================
 echo.
 
-cd /d "D:\MIGHAN Model"
+cd /d "%REPO%"
 
-:: Pakai .venv jika ada
 if exist "apps\brain_qa\.venv\Scripts\python.exe" (
     set PYTHON=apps\brain_qa\.venv\Scripts\python.exe
 ) else (
@@ -20,7 +18,6 @@ if exist "apps\brain_qa\.venv\Scripts\python.exe" (
 echo Python: %PYTHON%
 echo.
 
-:: Fetch semua kategori, max 10 artikel per run (tidak ganggu startup)
 %PYTHON% startup-fetch.py --max 10 --category ALL
 
 echo.

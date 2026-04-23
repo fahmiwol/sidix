@@ -1,14 +1,16 @@
 @echo off
+set "REPO=%~dp0..\.."
 echo ============================================
 echo  SIDIX — M4 Full Run
 echo  (Eval + Generate Corpus QA for M5)
+echo  Repo: %REPO%
 echo ============================================
 echo.
 
-cd /d "D:\MIGHAN Model\apps\brain_qa"
+cd /d "%REPO%\apps\brain_qa"
 
 if not exist ".venv\Scripts\python.exe" (
-    echo ERROR: venv tidak ditemukan. Jalankan install-deps.bat dulu!
+    echo ERROR: venv tidak ditemukan. Jalankan install-brain_qa-venv.bat
     pause
     exit /b 1
 )
@@ -27,8 +29,8 @@ echo.
 
 echo ============================================
 echo  SELESAI. File output:
-echo  brain\datasets\corpus_qa.jsonl     (auto-generated QA)
-echo  brain\datasets\finetune_sft.jsonl  (SFT ChatML format)
+echo  brain\datasets\corpus_qa.jsonl
+echo  brain\datasets\finetune_sft.jsonl
 echo  apps\brain_qa\.data\qa_eval_result.json
 echo ============================================
 pause

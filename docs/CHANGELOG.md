@@ -4,6 +4,13 @@ Format: `[YYYY-MM-DD] — Ringkasan perubahan`
 
 ---
 
+## [2026-04-23] — Eksekusi QA review: `scripts/windows/`, CI brain_qa, legacy sprint5
+
+- **UPDATE:** Root `*.bat` → `scripts/windows/`; path dinamis `REPO=%~dp0..\..`; install → `install-brain_qa-full.bat` / `install-brain_qa-venv.bat`; README skrip Windows.
+- **CI:** `.github/workflows/brain_qa-ci.yml` — pytest `apps/brain_qa/tests` pada push/PR `main`.
+- **DELETE+IMPL:** `test_sprint5.py` (root) dihapus; **`scripts/legacy/test_sprint5_smoke.py`** (path relatif).
+- **DOC:** `docs/QA_REVIEW_EXTERNAL_2026-04-25.md` — bagian *Dieksekusi*, checklist tercentang, catatan ekspor PDF/DOCX.
+
 ## [2026-04-23] — QA Audit: persona plugin, heading vendor, footprint agen
 
 - **FIX:** `kimi-plugin/manifest.json` + `sidix_skill.yaml` — Validasi persona set terbaru/pivot (**AYMAN, ABOO, OOMAR, ALEY, UTZ**).

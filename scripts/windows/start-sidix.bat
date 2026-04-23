@@ -1,24 +1,24 @@
 @echo off
+set "REPO=%~dp0..\.."
 echo ============================================
 echo  SIDIX — Start All Services
+echo  Repo: %REPO%
 echo ============================================
 echo.
 
-:: Check venv
-if not exist "D:\MIGHAN Model\apps\brain_qa\.venv\Scripts\python.exe" (
+if not exist "%REPO%\apps\brain_qa\.venv\Scripts\python.exe" (
     echo ERROR: venv tidak ditemukan.
-    echo Jalankan install-deps.bat dulu!
+    echo Jalankan scripts\windows\install-brain_qa-venv.bat atau install-brain_qa-full.bat
     pause
     exit /b 1
 )
 
-:: Check index
-if not exist "D:\MIGHAN Model\apps\brain_qa\.data\READY" (
+if not exist "%REPO%\apps\brain_qa\.data\READY" (
     echo [!] Index belum ada. Membangun index dulu...
-    cd /d "D:\MIGHAN Model\apps\brain_qa"
+    cd /d "%REPO%\apps\brain_qa"
     .venv\Scripts\python.exe -m brain_qa index
     if %errorlevel% neq 0 (
-        echo ERROR: Gagal build index. Jalankan install-deps.bat dulu.
+        echo ERROR: Gagal build index.
         pause
         exit /b 1
     )
@@ -26,21 +26,20 @@ if not exist "D:\MIGHAN Model\apps\brain_qa\.data\READY" (
     echo.
 )
 
-:: Check node_modules SIDIX UI
-if not exist "D:\MIGHAN Model\SIDIX_USER_UI\node_modules" (
+if not exist "%REPO%\SIDIX_USER_UI\node_modules" (
     echo [!] node_modules belum ada. Install dulu...
-    cd /d "D:\MIGHAN Model\SIDIX_USER_UI"
+    cd /d "%REPO%\SIDIX_USER_UI"
     npm install --silent
     echo.
 )
 
 echo [1/2] Menjalankan brain_qa serve (port 8765)...
-start "SIDIX Backend" cmd /k "cd /d \"D:\MIGHAN Model\apps\brain_qa\" && .venv\Scripts\python.exe -m brain_qa serve"
+start "SIDIX Backend" cmd /k "cd /d \"%REPO%\apps\brain_qa\" && .venv\Scripts\python.exe -m brain_qa serve"
 
 timeout /t 2 /nobreak > nul
 
 echo [2/2] Menjalankan SIDIX UI (port 3000)...
-start "SIDIX Frontend" cmd /k "cd /d \"D:\MIGHAN Model\SIDIX_USER_UI\" && npm run dev"
+start "SIDIX Frontend" cmd /k "cd /d \"%REPO%\SIDIX_USER_UI\" && npm run dev"
 
 timeout /t 3 /nobreak > nul
 

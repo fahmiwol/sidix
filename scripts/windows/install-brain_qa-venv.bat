@@ -1,13 +1,14 @@
 @echo off
 chcp 65001 >nul
+set "REPO=%~dp0..\.."
 echo ========================================
-echo   Mighan-brain-1 — Install Dependencies
+echo   SIDIX brain_qa — Install Dependencies (venv only)
+echo   Repo: %REPO%
 echo ========================================
 echo.
 
-cd /d "D:\MIGHAN Model\apps\brain_qa"
+cd /d "%REPO%\apps\brain_qa"
 
-REM Check if venv exists
 if not exist ".venv\Scripts\pip.exe" (
     echo [!] Virtual env tidak ditemukan. Membuat baru...
     python -m venv .venv
@@ -28,12 +29,10 @@ if %ERRORLEVEL% EQU 0 (
     echo.
     echo ========================================
     echo  SUKSES! Dependencies terinstall.
-    echo  Test dengan: python -m brain_qa ask "test"
+    echo  Untuk index + eval lengkap jalankan: install-brain_qa-full.bat
     echo ========================================
 ) else (
-    echo.
-    echo [ERROR] Install gagal. Cek koneksi internet.
+    echo [ERROR] pip install gagal.
 )
-
 echo.
 pause

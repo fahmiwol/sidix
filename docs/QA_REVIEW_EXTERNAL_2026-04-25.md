@@ -173,13 +173,13 @@
 
 ```markdown
 ### Repo
-- [ ] Konsolidasi `*.bat` ke `scripts/windows/` (atau setara)
+- [x] Konsolidasi `*.bat` ke `scripts/windows/` (2026-04-23) — lihat `scripts/windows/README.md`
 - [ ] Rapikan aset root (svg, pdf) ke `assets/` / `docs/`
-- [ ] Satukan / hapus duplikat skrip install
+- [x] Satukan nama skrip install: `install-brain_qa-full.bat` + `install-brain_qa-venv.bat`
 - [ ] Tinjau folder ber-spasi / eksperimen → archive atau docs
 
 ### CI & testing
-- [ ] Workflow CI (pytest + lint)
+- [x] Workflow CI pytest: `.github/workflows/brain_qa-ci.yml` (2026-04-23)
 - [ ] Tes regresi typo bridge
 - [ ] Tes bertahap untuk modul Jiwa / orkestrasi
 - [ ] Target coverage bertahap untuk inti
@@ -209,9 +209,26 @@
 
 ---
 
-## 9. Penutup
+## 9. Dieksekusi di repo (sinkron dengan checklist QA)
 
-SIDIX menempatkan **kejujuran epistemik** sebagai produk, bukan sekadar gaya bahasa. Celah utama saat ini ada di **higiene repo**, **tes otomatis**, dan **eksposur diferensiator di UI** — bukan di visi inti.
+Tindakan berikut **sudah diterapkan** pada branch `main` (lihat commit terkait):
+
+| Item QA | Implementasi |
+|---------|----------------|
+| Root `.bat` berantakan | Semua skrip dipindah ke `scripts/windows/`; path keras `D:\MIGHAN Model` diganti `REPO=%~dp0..\..`. |
+| Duplikat install | Diganti dua nama eksplisit: `install-brain_qa-full.bat` / `install-brain_qa-venv.bat`. |
+| CI otomatis | `.github/workflows/brain_qa-ci.yml` — `pytest tests/` di `apps/brain_qa` pada push/PR ke `main`. |
+| `test_sprint5.py` di root | Dihapus dari root; pengganti: `scripts/legacy/test_sprint5_smoke.py` (path relatif ke repo). |
+
+**Belum otomatis dalam commit ini:** landing CTA, footer, badge FACT/OPINION di UI, audit grep seluruh corpus untuk path lama, OpenAPI, folder eksperimen ber-spasi.
+
+**Ekspor PDF:** `pandoc docs/QA_REVIEW_EXTERNAL_2026-04-25.md -o QA.pdf` membutuhkan LaTeX (mis. MiKTeX). Tanpa LaTeX: buka ekspor **`.docx`** (generasi dari pandoc) di Word/LibreOffice lalu *Simpan sebagai PDF*, atau gunakan *Print to PDF* dari pratinjau Markdown di editor.
+
+---
+
+## 10. Penutup
+
+SIDIX menempatkan **kejujuran epistemik** sebagai produk, bukan sekadar gaya bahasa. Setelah langkah di **bagian 9**, higiene skrip Windows dan **CI pytest** sudah lebih selaras dengan rekomendasi QA; sisa celah besar: **UI/landing**, **cakupan tes Jiwa**, dan **audit konten path lama** di korpus/dokumen arsip.
 
 **Kutipan untuk README (opsional):**
 

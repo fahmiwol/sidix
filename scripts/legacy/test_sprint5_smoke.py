@@ -1,12 +1,20 @@
-# Sprint 5 smoke test
-import sys
-sys.path.insert(0, r"D:\MIGHAN Model\sprint5\apps\brain_qa")
+# Sprint 5 smoke test (legacy) — jalankan dari repo root:
+#   python scripts/legacy/test_sprint5_smoke.py
+from __future__ import annotations
 
-tests = []
+import sys
+from pathlib import Path
+
+_ROOT = Path(__file__).resolve().parents[2]
+_BRAIN_QA = _ROOT / "apps" / "brain_qa"
+sys.path.insert(0, str(_BRAIN_QA))
+
+tests: list[tuple[str, object]] = []
 
 # T5.1 curator
 try:
-    from brain_qa.curator_agent import run_curation, get_curation_stats
+    from brain_qa.curator_agent import run_curation
+
     r = run_curation(dry_run=True)
     tests.append(("[PASS] curator_agent", r.get("ok") is True))
 except Exception as e:
@@ -15,6 +23,7 @@ except Exception as e:
 # T5.2 debate_ring
 try:
     from brain_qa.debate_ring import debate_copy_vs_strategy
+
     r = debate_copy_vs_strategy("Produk terbaik untuk kamu!", "test context")
     tests.append(("[PASS] debate_ring", r.consensus or r.rounds_taken > 0))
 except Exception as e:
@@ -23,6 +32,7 @@ except Exception as e:
 # T5.3 agency_kit
 try:
     from brain_qa.agency_kit import build_agency_kit
+
     r = build_agency_kit(
         business_name="Test Biz",
         niche="kuliner",
@@ -38,6 +48,7 @@ except Exception as e:
 # T5.4 llm_judge
 try:
     from brain_qa.llm_judge import judge_content
+
     r = judge_content("Ini adalah copy test untuk produk kami.", brief="test", domain="content")
     tests.append(("[PASS] llm_judge", r.get("ok") is True and r.get("total", 0) > 0))
 except Exception as e:
@@ -47,5 +58,5 @@ for label, result in tests:
     print(f"{label}: {result}")
 
 total = len(tests)
-passed = sum(1 for _, r in tests if r is True or (isinstance(r, bool) and r))
+passed = sum(1 for _, r in tests if r is True)
 print(f"\nTotal: {passed}/{total} PASS")

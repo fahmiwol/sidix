@@ -15,6 +15,12 @@ Semua perubahan signifikan dicatat di sini. Format: `[versi] — tanggal — rin
 ### English
 Full QA audit of release consistency. Critical fixes: (1) Validation of persona set **AYMAN/ABOO/OOMAR/ALEY/UTZ** (current pivot) in `kimi-plugin/manifest.json` and `sidix_skill.yaml`; (2) explicit vendor heading neutralized to metaphor; (3) agent brand footprint removed from handoff. Metaphor vs explicit boundary documented.
 
+### Narasi (lanjutan — eksekusi QA struktur & CI)
+**Checklist QA eksternal:** semua `*.bat` root dipindah ke **`scripts/windows/`** dengan root repo dinamis; duplikat install diganti nama **`install-brain_qa-full.bat`** / **`install-brain_qa-venv.bat`**; **`test_sprint5.py`** diganti **`scripts/legacy/test_sprint5_smoke.py`**; CI **`brain_qa-ci.yml`** menjalankan pytest di **`apps/brain_qa`**. **`docs/QA_REVIEW_EXTERNAL_2026-04-25.md`** diperbarui (bagian *Dieksekusi*, ekspor DOCX/PDF). Artefak bantu: **`SIDIX_QA_REVIEW_2026-04-25.docx`** di folder Downloads (generate ulang dengan `pandoc` bila perlu).
+
+### English (follow-up)
+QA doc execution: Windows batch scripts consolidated under `scripts/windows/` with dynamic repo root; install script names clarified; root sprint5 smoke test replaced by `scripts/legacy/test_sprint5_smoke.py`; GitHub Actions workflow runs `pytest` for `apps/brain_qa`. QA markdown updated; DOCX export documented for PDF via Word/LibreOffice.
+
 ---
 
 ## [v0.7.4-dev] — 2026-04-25 — Typo bridge + korpus Jiwa + Kimi + dokumen operasional ke git
