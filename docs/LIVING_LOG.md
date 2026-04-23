@@ -44,6 +44,14 @@ Contoh:
 
 ## Log
 
+### 2026-04-25 (analisis dan pemetaan - sociometer docs + landing)
+
+- DOC: `docs/MAPPING_FRAMEWORK_TO_REPO.md` - peta bundel framework ke path repo; status spec vs implementasi.
+- DOC: Paket `Framework_bahasa_plugin_update/sidix-docs/` tersinkron ke `docs/sociometer/`; indeks `docs/sociometer/README.md`; hapus duplikat nested `sidix-docs/`.
+- UPDATE: `docs/00_START_HERE.md`, `docs/HANDOFF_2026-04-24_ARSITEKTUR_JIWA_TYPo_PLUGIN.md`, `brain/typo/README.md` - taut ke pemetaan.
+- UPDATE: `SIDIX_USER_UI` v1.0.3 - What is new / Yang baru bilingual; footer `index.html`.
+- DOC: `CHANGELOG.md` v0.7.3-dev, `docs/CHANGELOG.md`.
+
 ### 2026-04-23 (sprint 6.5 batch â€” Raudah DAG, MinHash, CQF, intent, metrics)
 
 - IMPL: `brain/raudah/taskgraph.py` â€” gelombang eksekusi per peran; `urai_task` memecah paralel bertingkat + verifikator opsional.
@@ -4036,14 +4044,14 @@ Fokus pada "what architecture of knowledge means, not volume of knowledge."
 - DECISION: Branding publik SIDIX = **Tiranyx Ã— Mighan Lab** (bukan solo project, bukan nama pribadi). URL repo tetap `github.com/fahmiwol/sidix` (tidak bisa ubah tanpa transfer org), tapi display text sudah dipersihkan.
 
 
-### 2026-04-23 — Sesi Codex: Lanjutan Sprint 7b (Socio Bot MCP + RAG balance)
+### 2026-04-23 ï¿½ Sesi Codex: Lanjutan Sprint 7b (Socio Bot MCP + RAG balance)
 
 - IMPL: `apps/sidix-mcp/src/index.js` direwrite dan di-wire penuh ke social tools; `ListTools` sekarang expose core + social, dispatcher `CallTool` sudah mengenali canonical names + alias, dan payload `sidix_query` diperbaiki pakai field `question` (sesuai `POST /agent/chat`).
 - IMPL: `apps/sidix-mcp/src/social_tools.js` dibangun ulang untuk Sprint 7b: tools canonical `scan_instagram_profile`, `scan_threads_profile`, `scan_youtube_channel`, `scan_twitter_profile`, `analyze_social`, `compare_social_accounts`, `social_post_threads`, `wa_send`, `wa_receive`; tetap kompatibel dengan alias lama (`social_scan_*`, `social_radar_analyze`, `social_compare`).
 - IMPL: `browser/social-radar-extension/manifest.json` + `popup.js` di-upgrade dari scaffold simulasi ke DOM scraping runtime (active tab via `chrome.scripting.executeScript`), metadata publik dipush ke endpoint `/social/radar/scan`.
-- FIX: `apps/brain_qa/brain_qa/agent_react.py` — planner sekarang model-first untuk topik umum dan corpus-first untuk topik SIDIX/IHOS/sumber internal; fallback error tidak lagi memaksa `search_corpus` pada topik umum.
-- FIX: `apps/brain_qa/brain_qa/agent_react.py` + `ollama_llm.py` — blending context RAG dikontrol lewat profile (`sidix_focused` vs `model_focused`), jumlah context snippet diturunkan untuk topik umum, dan system hint runtime digabung tanpa menghapus prinsip dasar SIDIX.
-- FIX: `apps/brain_qa/brain_qa/learn_agent.py` — ditambah gating ingest corpus statis (`_is_sidix_relevant_item`, `_estimate_cqf_score`, `_should_store_in_static_corpus`) agar learning queue tidak mengisi corpus dengan topik umum/noise; `process_corpus_queue()` kini melaporkan `processed/skipped_scope`.
+- FIX: `apps/brain_qa/brain_qa/agent_react.py` ï¿½ planner sekarang model-first untuk topik umum dan corpus-first untuk topik SIDIX/IHOS/sumber internal; fallback error tidak lagi memaksa `search_corpus` pada topik umum.
+- FIX: `apps/brain_qa/brain_qa/agent_react.py` + `ollama_llm.py` ï¿½ blending context RAG dikontrol lewat profile (`sidix_focused` vs `model_focused`), jumlah context snippet diturunkan untuk topik umum, dan system hint runtime digabung tanpa menghapus prinsip dasar SIDIX.
+- FIX: `apps/brain_qa/brain_qa/learn_agent.py` ï¿½ ditambah gating ingest corpus statis (`_is_sidix_relevant_item`, `_estimate_cqf_score`, `_should_store_in_static_corpus`) agar learning queue tidak mengisi corpus dengan topik umum/noise; `process_corpus_queue()` kini melaporkan `processed/skipped_scope`.
 - DOC: `apps/sidix-mcp/INSTALL.md` diperbarui untuk daftar tool Sprint 7b + env bridge opsional (`SIDIX_WA_BRIDGE_URL`, `SIDIX_IG_EXTENSION_BRIDGE_URL`).
 - TEST: tambah `tests/test_sprint7b_balance.py` (routing model-vs-corpus + scope filter learn agent). Hasil test lokal: `python -m pytest tests -q` => **81 passed**.
 - TEST: syntax checks lulus: `node --check apps/sidix-mcp/src/index.js`, `node --check apps/sidix-mcp/src/social_tools.js`, `node --check browser/social-radar-extension/popup.js`.
@@ -4109,18 +4117,18 @@ Fokus pada "what architecture of knowledge means, not volume of knowledge."
 - DECISION: Pilar 4/6/7 (Ruh/Ilm/Hikmah) delegate ke daily_growth/learn_agent/auto_lora yang sudah ada
   daripada buat modul baru. DRY principle.
 
-### 2026-04-23 — Jiwa Validation + Nafs Routing Fix
+### 2026-04-23 ï¿½ Jiwa Validation + Nafs Routing Fix
 
-- TEST: scripts/test_jiwa_final.py — run live di VPS setelah deploy Jiwa 7-Pilar
+- TEST: scripts/test_jiwa_final.py ï¿½ run live di VPS setelah deploy Jiwa 7-Pilar
   - T1 jiwa import: PASS (jiwa imports OK, jiwa.health: healthy)
   - T2 nafs routing: 6/7 (FAIL: 'GPU A100 vs H100?' salah route ke ngobrol, expected umum)
   - T3 chat ngobrol UTZ: PASS (SIDIX merespons)
   - T4 chat koding OOMAR: PASS (jawaban kode prima dari model)
-  - T5 training pairs dir: PASS (pairs_2026-04-23.jsonl EXISTS — Aql sudah belajar!)
+  - T5 training pairs dir: PASS (pairs_2026-04-23.jsonl EXISTS ï¿½ Aql sudah belajar!)
   - T6 openapi.yaml: PASS (GitHub raw accessible)
-- FIX: apps/brain_qa/brain_qa/jiwa/nafs.py — routing logic 'ngobrol' fallback:
+- FIX: apps/brain_qa/brain_qa/jiwa/nafs.py ï¿½ routing logic 'ngobrol' fallback:
   Root cause: len(q) < 30 trigger ngobrol tanpa cek keyword substantif. 'GPU A100 vs H100?' (18 chars) salah route.
   Fix: pisahkan regex check dari length check; length < 25 hanya ngobrol kalau tidak ada kata substantif (vs/apa/jelaskan/dll)
   Verified: commit bf904d4, push, VPS pull + restart
-- TEST: re-run test_jiwa_final.py setelah fix — T2 nafs routing: 7/7 correct
-- DECISION: Jiwa Sprint DONE — 7/7 routing correct, training pairs aktif, health monitor online
+- TEST: re-run test_jiwa_final.py setelah fix ï¿½ T2 nafs routing: 7/7 correct
+- DECISION: Jiwa Sprint DONE ï¿½ 7/7 routing correct, training pairs aktif, health monitor online

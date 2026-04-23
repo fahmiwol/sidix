@@ -1737,7 +1737,7 @@ const settingsTabs: Record<string, string> = {
         </div>
         <div>
           <h3 class="font-display text-3xl font-bold glow-gold">SIDIX</h3>
-          <p class="text-gold-400 font-medium tracking-widest text-xs uppercase mt-2 font-sans">Self-Hosted AI Agent · v1.0</p>
+          <p class="text-gold-400 font-medium tracking-widest text-xs uppercase mt-2 font-sans">Self-Hosted AI Agent · v1.0.3</p>
         </div>
         <p class="text-parchment-400 text-sm max-w-sm leading-relaxed">
           SIDIX adalah AI agent yang jujur, bersumber, dan bisa diverifikasi.
@@ -1762,7 +1762,15 @@ const settingsTabs: Record<string, string> = {
         </div>
         <div class="academic-card text-center">
           <p class="text-[10px] text-parchment-500 uppercase font-bold mb-1">Versi</p>
-          <p class="text-sm font-medium text-parchment-100">v1.0 · Mighan-brain-1</p>
+          <p class="text-sm font-medium text-parchment-100">v1.0.2 · SIDIX Core</p>
+        </div>
+        <div class="academic-card col-span-2 text-left">
+          <p class="text-[10px] text-parchment-500 uppercase font-bold mb-1">What&apos;s new · Yang baru</p>
+          <p class="text-xs text-parchment-400 leading-relaxed space-y-1">
+            <span class="text-parchment-200">EN:</span> Internal mapping doc (<code class="text-parchment-300">docs/MAPPING_FRAMEWORK_TO_REPO.md</code>): bundle → repo paths + spec vs code status. SocioMeter doc pack under <code class="text-parchment-300">docs/sociometer/</code>. Typo bridge + multilingual specs unchanged; see CHANGELOG v0.7.3-dev.
+            <br />
+            <span class="text-parchment-200">ID:</span> Dokumen pemetaan internal: bundel framework → path git + status implementasi. Paket dokumen SocioMeter di <code class="text-parchment-300">docs/sociometer/</code>. Lihat juga <code class="text-parchment-300">docs/00_START_HERE.md</code> dan CHANGELOG v0.7.3-dev.
+          </p>
         </div>
         <div class="academic-card text-center col-span-2">
           <p class="text-[10px] text-parchment-500 uppercase font-bold mb-1">Source Code</p>

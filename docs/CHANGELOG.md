@@ -4,6 +4,32 @@ Format: `[YYYY-MM-DD] — Ringkasan perubahan`
 
 ---
 
+## [2026-04-25] — Mapping framework + docs/sociometer + landing v1.0.3
+
+- **DOC:** `docs/MAPPING_FRAMEWORK_TO_REPO.md` — peta brief → repo, status typo/Jiwa, git/landing.
+- **DOC:** `docs/sociometer/*` — impor paket SocioMeter; `docs/sociometer/README.md` indeks; hapus duplikat nested.
+- **DOC:** `docs/00_START_HERE.md`, `HANDOFF_2026-04-24_*`, `brain/typo/README.md` — taut ke pemetaan.
+- **UI:** `SIDIX_USER_UI` v1.0.3 — What’s new (EN/ID).
+
+## [2026-04-24] — Paket Framework_bahasa_plugin (multilingual + TYPO ID + Kimi + brief)
+
+- **Typo:** `brain/typo/MULTILINGUAL_TYPO_FRAMEWORK.md` (impor spesifikasi lengkap), `brain/typo/TYPO_RESILIENT_FRAMEWORK.md` (4-layer ID), `brain/typo/README.md` (indeks).
+- **Jiwa:** `brain/jiwa/ARSITEKTUR_JIWA_SIDIX.md` + taut di `brain/jiwa/README.md`.
+- **Docs:** `docs/KIMI_INTEGRATION_GUIDE.md`, `docs/BRIEF_SIDIX_SocioMeter.md`.
+- **Kimi:** `kimi-plugin/manifest.json`, `kimi-plugin/sidix_skill.yaml` (MCP default off; 5 persona).
+
+## [2026-04-24] — Jiwa docs + Typo multibahasa + assistant bridge stub
+
+- **Handoff:** `docs/HANDOFF_2026-04-24_ARSITEKTUR_JIWA_TYPo_PLUGIN.md` (sesi Claude terputus karena limit API — status disk & langkah lanjut).
+- **PRD:** `docs/PRD_ARSITEKTUR_JIWA_MULTILINGUAL_TYPO_ASSISTANT_PLUGIN.md` (ID + English summary).
+- **Typo:** `brain/typo/MULTILINGUAL_TYPO_FRAMEWORK.md`, `brain/typo/pipeline.py` (normalisasi Unicode + substitusi ringan + script hint); **`brain_qa/typo_bridge.py` + wiring `run_react`** (`SIDIX_TYPO_PIPELINE`, default on).
+- **Jiwa (korpus):** `brain/jiwa/README.md`, `brain/ruh|hayat|ilm|hikmah/README.md` (delegasi vs `brain_qa.jiwa`).
+- **Plugin:** `kimi-plugin/README.md`, `kimi-plugin/bridge.py` (HTTP opsional, stdlib, tanpa secret di repo).
+- **Kode:** `brain/nafs/response_orchestrator.py` — hapus nama pribadi dari pola `sidix_internal`.
+- **UI:** `SIDIX_USER_UI/src/main.ts` — “What’s new” bilingual + versi patch.
+
+---
+
 ## [2026-04-17] — Mode agen: sandbox workspace + alur implement
 
 - `apps/brain_qa/brain_qa/agent_tools.py` — tool `workspace_list`, `workspace_read`, `workspace_write` (restricted); folder `apps/brain_qa/agent_workspace/` + README; helper `get_agent_workspace_root()`.

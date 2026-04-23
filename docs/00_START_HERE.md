@@ -27,6 +27,8 @@ Halaman ini untuk **siapa saja** yang baru masuk: kontributor korpus, developer 
 - Konteks untuk **Claude** (Code / project / chat) → [12_prompt_claude_project_context.md](12_prompt_claude_project_context.md) — apa yang dibangun + aturan + path repo + **inferensi/own-stack (bukan default Claude API)**.
 - Sprint singkat **SIDIX / inference lokal** (±2 jam, scope realistis) → [SPRINT_SIDIX_2H.md](SPRINT_SIDIX_2H.md).
 - Fondasi **SIDIX + IHOS** dan lapisan AI (RAG, ReAct, tool gate) → [SIDIX_FUNDAMENTALS.md](SIDIX_FUNDAMENTALS.md); latihan kurikulum coding → [SIDIX_CODING_CURRICULUM_V1.md](SIDIX_CODING_CURRICULUM_V1.md).
+- **Pemetaan bundel framework → path repo** (typo, Jiwa, Kimi, SocioMeter) → [MAPPING_FRAMEWORK_TO_REPO.md](MAPPING_FRAMEWORK_TO_REPO.md).
+- **Paket dokumen SocioMeter** (strategi, PRD, ERD, implementasi) → [sociometer/README.md](sociometer/README.md).
 
 ---
 
@@ -51,6 +53,8 @@ Identitas proyek di sisi publik disapa **Mighan**; detail identitas pribadi pemi
 | Rencana prioritas | [10_execution_plan.md](10_execution_plan.md) | Fase A–E; sinkron dengan `STATUS_TODAY`. |
 | Korpus & metodologi | `brain/public/principles/`, `research_notes/` | Mis. metodologi riset: `principles/08_learning_methodology.md`. |
 | MVP lokal (CLI) | `apps/brain_qa/` | Lihat README di folder itu untuk perintah. |
+| SocioMeter / Social Radar (dok produk) | `docs/sociometer/` | PRD, ERD, fitur, rencana; selaraskan dengan kode radar di `brain_qa`. |
+| Peta impor framework | `docs/MAPPING_FRAMEWORK_TO_REPO.md` | Brief lokal → path canonical di git. |
 
 ---
 
