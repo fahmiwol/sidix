@@ -23,7 +23,7 @@ tags: ["tech", "programming", "engineering"]
 ## Sanad (wajib)
 - Source URL: `https://www.ibm.com/id-id/think/topics/retrieval-augmented-generation`
 - Fetched at (UTC): `2026-04-15T12:08:00+00:00`
-- Clip path (private): `D:\MIGHAN Model\brain\private\web_clips\www.ibm.com__apa-itu-rag-retrieval-augmented-generation-ibm.md`
+- Clip path (private): `<local_private_path>/brain/private/web_clips/www.ibm.com__apa-itu-rag-retrieval-augmented-generation-ibm.md`
 - License: (isi setelah cek halaman / ketentuan penggunaan)
 
 ## Kutipan (optional, pilih 1–3)

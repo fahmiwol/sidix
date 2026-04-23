@@ -19,7 +19,7 @@ from brain_qa.skill_builder import harvest_dataset_jsonl
 
 
 def main() -> None:
-    root = Path(__file__).resolve().parents[3]   # naik ke D:\MIGHAN Model
+    root = Path(__file__).resolve().parents[3]   # repo root (dinamis)
     datasets = [
         root / "brain" / "datasets" / "corpus_qa.jsonl",
         root / "brain" / "datasets" / "finetune_sft.jsonl",

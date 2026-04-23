@@ -1,6 +1,6 @@
 # Living log ??? uji, implementasi, error, keputusan
 
-Repositori: **Mighan Model** (`D:\MIGHAN Model`).
+Repositori: **Mighan Model** (`<WORKSPACE_ROOT>`).
 
 ## Tujuan file ini
 
@@ -161,9 +161,9 @@ Contoh:
   - `numpy binary incompatibility` ??? fix: jangan downgrade pre-installed packages, hanya install `peft trl bitsandbytes accelerate`
   - `OutOfMemoryError CUDA` ??? fix: restart kernel + `low_cpu_mem_usage=True`
   - `NotImplementedError _amp_foreach BFloat16` ??? fix: ganti `paged_adamw_32bit` + `fp16=False` ??? `adamw_torch` + `fp16=False`
-- NOTE: **Kaggle training status** ??? QLoRA Qwen2.5-7B fine-tune STARTED (T4 GPU). Adapter akan tersimpan di `/kaggle/working/sidix-lora-adapter/`. Setelah selesai (~60 min), download adapter ??? taruh di `D:\MIGHAN Model\apps\brain_qa\models\sidix-lora-adapter\` ??? swap `_llm_generate()` di `agent_serve.py` dengan PeftModel inference.
+- NOTE: **Kaggle training status** ??? QLoRA Qwen2.5-7B fine-tune STARTED (T4 GPU). Adapter akan tersimpan di `/kaggle/working/sidix-lora-adapter/`. Setelah selesai (~60 min), download adapter ??? taruh di `<WORKSPACE_ROOT>/apps/brain_qa/models/sidix-lora-adapter/` ??? swap `_llm_generate()` di `agent_serve.py` dengan PeftModel inference.
 - NOTE: **Corpus personal data** ??? `cleanup-personal-corpus.bat` sudah dibuat. Fahmi perlu double-click untuk hapus portfolio/projects/roadmap + file personal + reindex.
-- NOTE: **Auto-fetch startup** ??? `startup-fetch.bat` perlu didaftarkan ke Windows Task Scheduler: Action ??? Jalankan program ??? `D:\MIGHAN Model\startup-fetch.bat`, trigger: At log on.
+- NOTE: **Auto-fetch startup** ??? `startup-fetch.bat` perlu didaftarkan ke Windows Task Scheduler: Action ??? Jalankan program ??? `<WORKSPACE_ROOT>/scripts/windows/startup-fetch.bat`, trigger: At log on.
 
 ### 2026-04-16 (lanjutan ??? smoke test backend)
 
@@ -397,7 +397,7 @@ Contoh:
 - CODE: `apps/brain_qa/brain_qa/local_llm.py` ??? load **Qwen2.5-7B-Instruct** + **PeftModel** (4-bit opsional via `bitsandbytes`, fallback `SIDIX_DISABLE_4BIT=1`); `generate_sidix()` pakai `apply_chat_template` dengan fallback ChatML manual.
 - CODE: `apps/brain_qa/brain_qa/agent_serve.py` ??? `_llm_generate` memanggil `generate_sidix`; `/health` memeriksa `adapter_model.safetensors` untuk `model_ready`.
 - DOC: `docs/SPRINT_SIDIX_2H.md` ??? sprint realistis ??2 jam: health + `/agent/generate` + polish UI minimal (tombol tes generate, status mode).
-- DOC: `brain/public/research_notes/27_image_ai_research_methods_external_refs.md` ??? ringkasan kerangka makalah AI gambar + **path PDF lokal** (tidak di-commit): `5.+19022023...pdf`, `nardon-et-al-2025...pdf`, `AI_Image_Generator.pdf` di `C:\Users\ASUS\Downloads\...`.
+- DOC: `brain/public/research_notes/27_image_ai_research_methods_external_refs.md` ??? ringkasan kerangka makalah AI gambar + **path PDF lokal** (tidak di-commit): `5.+19022023...pdf`, `nardon-et-al-2025...pdf`, `AI_Image_Generator.pdf` di `<local_downloads_path>/...`.
 - NOTE: Inference stack berat; Windows + 4-bit mungkin perlu WSL atau env khusus ??? lihat komentar di `apps/brain_qa/requirements.txt`.
 - DOC: `docs/SPRINT_LOG_SIDIX.md` ??? **sprint log** append-only per sesi (checkbox A1???C3, blocker, next); etos: ihos + langkah terukur (bukan klaim model frontier 24 jam tanpa bukti).
 
@@ -726,7 +726,7 @@ Auto-trigger:
   - Section 17: DIKW-H (2 tests)
 
 - TEST: `python _qa_suite.py` (dari `apps/brain_qa/`) ??? **111/111 PASS, 0 FAIL, 0 ERROR**
-  - Perintah: `cd "D:\MIGHAN Model\apps\brain_qa" && python _qa_suite.py`
+  - Perintah: `cd "<WORKSPACE_ROOT>/apps/brain_qa" && python _qa_suite.py`
   - Hasil: ALL PASS ??? exit code 0
 
 - FIX: **UnicodeEncodeError cp1252** ??? karakter `???` (U+2192) tidak bisa dienkode Windows cp1252 console.
@@ -908,7 +908,7 @@ Auto-trigger:
 - UPDATE: **`apps/brain_qa/brain_qa/agent_react.py`** ??? import `agent_build_intent` dari `orchestration` (sumber tunggal intent build); field `AgentSession.orchestration_digest`; `_ORCH_META_RE` + cabang `_rule_based_plan` step 0 ??? `orchestration_plan`, step 1+ setelah tool tersebut ??? final; (sesi sebelumnya) `_attach_orchestration_digest` + `format_trace` menampilkan cuplikan digest bila ada.
 - UPDATE: **`apps/brain_qa/brain_qa/agent_serve.py`** ??? `ChatResponse.orchestration_digest` + diisi di `POST /agent/chat`; **`GET /agent/orchestration`** (`q`, `persona`) mengembalikan `plan_text` + `plan` (dict); `POST /ask` menambah key `orchestration_digest`; `POST /ask/stream` event `meta` dan `done` menyertakan `orchestration_digest`; docstring file ??? endpoint baru dicatat.
 - IMPL: **`tests/test_orchestration.py`** ??? uji skor/plan, tool, `_rule_based_plan` step 0/1.
-- TEST: **`python -m pytest tests/test_orchestration.py -q`** dari root `D:\MIGHAN Model` ??? **6 passed** (lingkungan: Python 3.14, pytest di-install ke user site bila belum ada).
+- TEST: **`python -m pytest tests/test_orchestration.py -q`** dari root `<WORKSPACE_ROOT>` ??? **6 passed** (lingkungan: Python 3.14, pytest di-install ke user site bila belum ada).
 - NOTE: PowerShell ??? gunakan **`;`** bukan `&&` untuk rangkai perintah.
 
 ### 2026-04-17 (Praxis ??? SIDIX belajar dari jejak eksekusi agen)
@@ -2094,7 +2094,7 @@ catatan valid, tidak ambigu.'
 ### State file SSOT
 - docs/SIDIX_CHECKPOINT_2026-04-19.md (snapshot lengkap)
 - docs/LIVING_LOG.md (audit trail harian)
-- C:\Users\ASUS\.claude\projects\D--MIGHAN-Model\memory\framework_living.md
+- <local_user_path>/.claude/projects/.../memory/framework_living.md
 - apps/brain_qa/brain_qa/hadith_validate.py (metodologi validasi)
 
 ### Queue (in-flight, akan dilanjut next turn)
@@ -3642,7 +3642,7 @@ Fokus pada "what architecture of knowledge means, not volume of knowledge."
 
 [NOTE] Kredensial SSH tidak dicatat ? hanya dipakai sekali untuk deploy, tidak masuk ke file apapun.
 
-[NOTE] Sprint 5 worktree: D:\MIGHAN Model\sprint5\ ? branch feat/sprint5-agency-kit. File baru: llm_judge.py, agent_tools.py (copy+extend dari main), agent_serve.py (copy+extend).
+[NOTE] Sprint 5 worktree: <WORKSPACE_ROOT>/sprint5/ ? branch feat/sprint5-agency-kit. File baru: llm_judge.py, agent_tools.py (copy+extend), agent_serve.py (copy+extend).
 
 ## 2026-04-22 ? continual-learning (memori agen + indeks transcript)
 
@@ -3737,20 +3737,20 @@ Fokus pada "what architecture of knowledge means, not volume of knowledge."
 
 [FIX] Merge conflict di `docs/LIVING_LOG.md` baris ~3581 (`<<<<<<< HEAD` / `>>>>>>> 7a67e6a`) ? diselesaikan manual. Kedua blok (2026-04-22 continual-learning entries + 2026-04-21 Sprint 6 Quick Wins) digabung tanpa menghapus konten dari sisi manapun.
 
-[DOC] `C:\Users\ASUS\Documents\SIDIX_SESSION_2026-04-22.md` ? session brief dibuat untuk sesi hari ini. Berisi: status VPS live, prioritas (curator_agent score_gte_85 + test coverage + Sprint 6 full), known issues, file kunci, quick start commands, dan kanban Sprint 4 sisa.
+[DOC] `<local_documents_path>/SIDIX_SESSION_2026-04-22.md` ? session brief dibuat untuk sesi hari ini. Berisi: status VPS live, prioritas (curator_agent score_gte_85 + test coverage + Sprint 6 full), known issues, file kunci, quick start commands, dan kanban Sprint 4 sisa.
 
 [DOC] `docs/HANDOFF_2026-04-22.md` ? handoff komprehensif sesi ini. 9 section: situasi 1 paragraf, VPS state, cron aktif, prioritas (quick wins A-B + sprint 6 full C-D + sprint 4 sisa), manual TODO untuk Fahmi, file kunci, nomor research note berikutnya (183+), mandat user, quick commands.
 
-[DOC] `C:\Users\ASUS\Documents\SIDIX_PROMPT_SESI_BARU.md` ? prompt siap tempel 5 varian (pendek/lengkap/minimalis + 5 task cards A-E) untuk Claude Code / Cursor sesi berikutnya.
+[DOC] `<local_documents_path>/SIDIX_PROMPT_SESI_BARU.md` ? prompt siap tempel 5 varian (pendek/lengkap/minimalis + 5 task cards A-E) untuk sesi berikutnya.
 
 ## 2026-04-23 ? Kimi K2.6 Handoff Adoption: Maqashid v2, Naskh, Swarm Skeleton
 
 [NOTE] Sesi ini mengadopsi rekomendasi dari dua dokumen riset Kimi K2.6:
   (1) sidix_handoff_kimi_to_claude.html ? analisis critical gaps + 3 file kode siap pakai
   (2) sidix-kimi-agent-research.html ? arsitektur swarm 7-hari
-  Path lokal: C:\Users\ASUS\Downloads\ (dokumen riset kolaborator eksternal, dirahasiakan)
+  Path lokal: <local_downloads_path>/ (dokumen riset kolaborator eksternal, dirahasiakan)
 
-[NOTE] Repo sekarang di C:\SIDIX-AI\ (D: drive error, di-clone ulang dari pohon utama GitHub 347f803).
+[NOTE] Repo sekarang di `<WORKSPACE_ROOT>` (perpindahan lokasi lokal; sumber tetap pohon utama GitHub).
   Semua path internal tetap relatif ? tidak ada breaking change.
 
 [IMPL] maqashid_profiles.py (BARU) ? Maqashid Filter v2 mode-based.
@@ -3970,8 +3970,8 @@ Fokus pada "what architecture of knowledge means, not volume of knowledge."
   3. Raudah v0.2 ? TaskGraph DAG (code dari riset A3) + `/raudah/run` endpoint
 
 - NOTE: **Source HTML files disimpan di Downloads user:**
-  - Sprint 7 riset: `C:\Users\ASUS\Downloads\Sidix Adik AI -_riset_tambahan_sprint 7_files\5824c294-*.html`
-  - Strategic masterplan: `C:\Users\ASUS\Downloads\Sidix Adik AI -Strategi_harvest data_files\a4079eb7-*.html`
+  - Sprint 7 riset: `<local_downloads_path>/Sidix Adik AI -_riset_tambahan_sprint 7_files/5824c294-*.html`
+  - Strategic masterplan: `<local_downloads_path>/Sidix Adik AI -Strategi_harvest data_files/a4079eb7-*.html`
 
 - FIX: Semua referensi vendor (nama agen AI eksternal) dihapus dari 4 file
   (HANDOFF, CHANGELOG, LIVING_LOG, MASTER_ROADMAP) ? prinsip standing-alone SIDIX.
@@ -4109,7 +4109,7 @@ Fokus pada "what architecture of knowledge means, not volume of knowledge."
 - IMPL: `browser/social-radar-extension/popup.js` ? setelah scan berhasil, push hasil ke background storage + POST ke `http://localhost:7788/push-scan` (extension bridge) agar MCP bisa baca.
 - IMPL: `apps/sidix-extension-bridge/` ? server baru (Express, port 7788): endpoint `POST /push-scan`, `GET /last-scan` (TTL 5 menit), `POST /clear`, `GET /health`. Jembatan antara Chrome Extension dan MCP tool.
 - IMPL: `apps/sidix-wa-bridge/` ? server baru (Express + Baileys, port 7789): endpoint `POST /send`, `GET /inbox`, `GET /status` (QR jika belum paired), `POST /clear`. Auth disimpan di `.wa_auth/` (gitignored).
-- UPDATE: `apps/sidix-mcp/claude_desktop_config.json` ? path difix dari `D:\MIGHAN Model\` ke `C:\SIDIX-AI\` + tambah env `SIDIX_IG_EXTENSION_BRIDGE_URL=http://localhost:7788` dan `SIDIX_WA_BRIDGE_URL=http://localhost:7789`.
+- UPDATE: `apps/sidix-mcp/claude_desktop_config.json` ? path difix dari `<WORKSPACE_ROOT>` ke `<WORKSPACE_ROOT>` (path relatif) + tambah env `SIDIX_IG_EXTENSION_BRIDGE_URL=http://localhost:7788` dan `SIDIX_WA_BRIDGE_URL=http://localhost:7789`.
 - UPDATE: `apps/sidix-mcp/claude_desktop_config_production.json` ? path fix + SIDIX_URL ganti ke `https://ctrl.sidixlab.com` + env bridge.
 - DOC: `brain/public/research_notes/188_sprint7b_socio_bot_mcp_architecture.md` ? arsitektur lengkap: komponen, bridge pattern, DOM scraping strategy, WA flow, format radar response.
 - DECISION: 2 bridge server (extension + WA) dijalankan lokal, bukan di VPS ? karena extension Chrome hanya bisa POST ke localhost, dan WA session perlu QR scan di device pemilik.

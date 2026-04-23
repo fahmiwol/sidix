@@ -23,7 +23,7 @@ tags: ["general", "reference", "knowledge"]
 ## Sanad (wajib)
 - Source URL: `https://en.wikipedia.org/wiki/Artificial_intelligence`
 - Fetched at (UTC): `2026-04-15T12:02:54+00:00`
-- Clip path (private): `D:\MIGHAN Model\brain\private\web_clips\en.wikipedia.org__artificial-intelligence-wikipedia.md`
+- Clip path (private): `<local_private_path>/brain/private/web_clips/en.wikipedia.org__artificial-intelligence-wikipedia.md`
 - License: CC BY-SA 4.0 ([Wikipedia:Text of the Creative Commons Attribution-ShareAlike 4.0 International License](https://en.wikipedia.org/wiki/Wikipedia:Text_of_the_Creative_Commons_Attribution-ShareAlike_4.0_International_License))
 
 ## Kutipan (optional, pilih 1–3)

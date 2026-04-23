@@ -185,8 +185,8 @@ harus diintegrasikan ke sprint dan roadmap SIDIX.
 
 | File | Lokasi |
 |------|--------|
-| Sprint 7 Research | `C:\Users\ASUS\Downloads\Sidix Adik AI -_riset_tambahan_sprint 7_files\5824c294-*.html` |
-| Strategic Masterplan | `C:\Users\ASUS\Downloads\Sidix Adik AI -Strategi_harvest data_files\a4079eb7-*.html` |
+| Sprint 7 Research | `<local_downloads_path>/Sidix Adik AI -_riset_tambahan_sprint 7_files/5824c294-*.html` |
+| Strategic Masterplan | `<local_downloads_path>/Sidix Adik AI -Strategi_harvest data_files/a4079eb7-*.html` |
 
 ---
 

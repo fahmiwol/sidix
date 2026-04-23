@@ -24,12 +24,13 @@ from typing import Optional
 logger = logging.getLogger(__name__)
 
 # ── Paths ──────────────────────────────────────────────────────────────────────
-PROJECT_ROOT = Path(__file__).parent.parent.parent.parent  # D:\MIGHAN Model
+PROJECT_ROOT = Path(__file__).parent.parent.parent.parent  # repo root (dinamis)
 HARVEST_DIR = PROJECT_ROOT / ".data" / "harvest"
 CORPUS_DIR = PROJECT_ROOT / "brain" / "public" / "sources" / "mighan_opix"
 
-MIGHAN_PATH = Path("D:/Mighan")
-OPIX_PATH = Path("D:/OPIX")
+# Path sumber eksternal bersifat lokal; set via env jika ingin dipakai.
+MIGHAN_PATH = Path(os.getenv("SIDIX_MIGHAN_SOURCE_ROOT", "D:/Mighan"))
+OPIX_PATH = Path(os.getenv("SIDIX_OPIX_SOURCE_ROOT", "D:/OPIX"))
 
 # File extensions yang menarik untuk ekstraksi kapabilitas
 INTERESTING_EXTENSIONS = {

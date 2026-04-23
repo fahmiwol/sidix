@@ -23,7 +23,7 @@ tags: ["tech", "programming", "engineering"]
 ## Sanad (wajib)
 - Source URL: `https://cloud.google.com/use-cases/retrieval-augmented-generation?hl=id`
 - Fetched at (UTC): `2026-04-15T12:08:02+00:00`
-- Clip path (private): `D:\MIGHAN Model\brain\private\web_clips\cloud.google.com__apa-itu-retrieval-augmented-generation-rag-google-cloud.md`
+- Clip path (private): `<local_private_path>/brain/private/web_clips/cloud.google.com__apa-itu-retrieval-augmented-generation-rag-google-cloud.md`
 - License: (isi setelah cek halaman / ketentuan penggunaan)
 
 ## Kutipan (optional, pilih 1–3)

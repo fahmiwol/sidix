@@ -7,7 +7,7 @@
 ## 1. Kebijakan Privasi & Kebocoran Informasi
 Dilarang keras mempublikasikan informasi internal ke area publik (Landing Page, README publik, CHANGELOG publik, atau Commit Message).
 
-- **Internal Paths:** Jangan pernah menulis path lokal (misal: `D:\MIGHAN Model`, `C:\Users\...`) ke file HTML, CSS, atau JS yang bisa diakses publik.
+- **Internal Paths:** Jangan pernah menulis path lokal (misal: `<WORKSPACE_ROOT>`, `<local_user_path>`) ke file HTML, CSS, atau JS yang bisa diakses publik.
 - **Credentials:** Jangan melakukan commit pada file `.env` atau file yang berisi API Key, Password, atau SSH Credentials.
 - **Redaksi:** Gunakan istilah netral seperti "local path", "environment optimization", atau "server-side configuration".
 
@@ -50,6 +50,7 @@ Setiap selesai menyelesaikan Task atau Sprint, agen wajib melakukan:
 - **Changelog:** Update `CHANGELOG.md` dengan narasi yang jujur.
 - **Landing Page:** Update versi rilis dan fitur baru (cek kebocoran internal!).
 - **Git Status:** Pastikan branch `main` sinkron dengan server produksi.
+- **Dependency hygiene:** Pastikan Dependabot aktif (`.github/dependabot.yml`). Opsional: jalankan `scripts/git/scan-sensitive.ps1` sebelum commit/push.
 
 ---
 *Ditetapkan pada: 2026-04-23*

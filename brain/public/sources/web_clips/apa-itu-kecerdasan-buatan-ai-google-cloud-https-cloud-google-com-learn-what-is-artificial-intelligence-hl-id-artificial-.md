@@ -23,7 +23,7 @@ tags: ["general", "reference", "knowledge"]
 ## Sanad (wajib)
 - Source URL: `https://cloud.google.com/learn/what-is-artificial-intelligence?hl=id#artificial-intelligence-ai-a-simple-to-understand-guide`
 - Fetched at (UTC): `2026-04-15T11:10:16+00:00`
-- Clip path (private): `D:\MIGHAN Model\brain\private\web_clips\cloud.google.com__apa-itu-kecerdasan-buatan-ai-google-cloud.md`
+- Clip path (private): `<local_private_path>/brain/private/web_clips/cloud.google.com__apa-itu-kecerdasan-buatan-ai-google-cloud.md`
 - License: CC BY-SA 4.0 ([Wikipedia:Text of the Creative Commons Attribution-ShareAlike 4.0 International License](https://en.wikipedia.org/wiki/Wikipedia:Text_of_the_Creative_Commons_Attribution-ShareAlike_4.0_International_License))
 
 ## Kutipan (optional, pilih 1–3)

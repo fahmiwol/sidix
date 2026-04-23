@@ -1,4 +1,4 @@
-# Next steps (lokal) — mulai dari Markdown di `D:\MIGHAN Model`
+# Next steps (lokal) — mulai dari Markdown di `<WORKSPACE_ROOT>`
 
 ## 1) Masukkan data Markdown kamu
 Taruh dokumen Markdown yang aman untuk publik ke:

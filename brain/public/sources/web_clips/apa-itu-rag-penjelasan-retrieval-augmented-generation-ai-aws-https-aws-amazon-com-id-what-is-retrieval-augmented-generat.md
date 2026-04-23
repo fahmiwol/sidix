@@ -23,7 +23,7 @@ tags: ["tech", "programming", "engineering"]
 ## Sanad (wajib)
 - Source URL: `https://aws.amazon.com/id/what-is/retrieval-augmented-generation/`
 - Fetched at (UTC): `2026-04-15T12:08:00+00:00`
-- Clip path (private): `D:\MIGHAN Model\brain\private\web_clips\aws.amazon.com__apa-itu-rag-penjelasan-retrieval-augmented-generation-ai-aws.md`
+- Clip path (private): `<local_private_path>/brain/private/web_clips/aws.amazon.com__apa-itu-rag-penjelasan-retrieval-augmented-generation-ai-aws.md`
 - License: (isi setelah cek halaman / ketentuan penggunaan)
 
 ## Kutipan (optional, pilih 1–3)

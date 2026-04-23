@@ -5,7 +5,7 @@ Salin blok **`<<<CLAUDE_CONTEXT`** sampai **`CLAUDE_CONTEXT>>>`** ke:
 - Pesan pertama di chat baru, atau
 - `CLAUDE.md` repo (ringkas) jika pakai Claude Code.
 
-Sesuaikan `[WORKSPACE_ROOT]` jika path beda (default Windows: `D:\MIGHAN Model`).
+Sesuaikan `[WORKSPACE_ROOT]` jika path beda (contoh Windows: `<WORKSPACE_ROOT>`).
 
 ---
 
@@ -64,7 +64,7 @@ Kami membangun **Mighan** supaya **bukan** sekadar “wrapper” di atas satu la
 | Log operasional | `docs/LIVING_LOG.md` |
 | Prompt desain UI (Google AI Studio) | `docs/11_prompt_google_ai_studio_mvp_ui.md` |
 
-**Workspace root tipikal:** `[WORKSPACE_ROOT]` = `D:\MIGHAN Model` (Windows, PowerShell).
+**Workspace root tipikal:** `[WORKSPACE_ROOT]` = `<WORKSPACE_ROOT>` (Windows, PowerShell).
 
 ## Fokus kerja saat ini (untuk prioritisasi PR)
 

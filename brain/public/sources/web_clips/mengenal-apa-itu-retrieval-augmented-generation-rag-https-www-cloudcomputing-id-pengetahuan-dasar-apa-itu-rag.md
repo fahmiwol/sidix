@@ -23,7 +23,7 @@ tags: ["tech", "programming", "engineering"]
 ## Sanad (wajib)
 - Source URL: `https://www.cloudcomputing.id/pengetahuan-dasar/apa-itu-rag`
 - Fetched at (UTC): `2026-04-15T12:07:59+00:00`
-- Clip path (private): `D:\MIGHAN Model\brain\private\web_clips\www.cloudcomputing.id__mengenal-apa-itu-retrieval-augmented-generation-rag.md`
+- Clip path (private): `<local_private_path>/brain/private/web_clips/www.cloudcomputing.id__mengenal-apa-itu-retrieval-augmented-generation-rag.md`
 - License: (isi setelah cek halaman / ketentuan penggunaan)
 
 ## Kutipan (optional, pilih 1–3)

@@ -8,12 +8,12 @@ Cara kerja:
 4. Simpan ke brain/datasets/corpus_qa.jsonl (format sama dengan qa_pairs.jsonl)
 
 Run:
-  cd D:\\MIGHAN Model\\apps\\brain_qa
+  cd <WORKSPACE_ROOT>\\apps\\brain_qa
   .venv\\Scripts\\python.exe generate_corpus_qa.py
 
 Output:
-  D:\\MIGHAN Model\\brain\\datasets\\corpus_qa.jsonl  (auto-generated QA)
-  D:\\MIGHAN Model\\brain\\datasets\\finetune_sft.jsonl (merged: manual + auto, ChatML format)
+  <WORKSPACE_ROOT>\\brain\\datasets\\corpus_qa.jsonl  (auto-generated QA)
+  <WORKSPACE_ROOT>\\brain\\datasets\\finetune_sft.jsonl (merged: manual + auto, ChatML format)
 """
 
 import json
@@ -23,7 +23,8 @@ import sys
 from pathlib import Path
 
 # ── Paths ────────────────────────────────────────────────────────────────────
-ROOT = Path(__file__).parent.parent.parent  # D:\MIGHAN Model
+# Repo root (dinamis, tanpa mengikat path lokal tertentu)
+ROOT = Path(__file__).parent.parent.parent
 CHUNKS_FILE = Path(__file__).parent / ".data" / "chunks.jsonl"
 QA_MANUAL = ROOT / "brain" / "datasets" / "qa_pairs.jsonl"
 QA_AUTO = ROOT / "brain" / "datasets" / "corpus_qa.jsonl"

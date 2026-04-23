@@ -23,7 +23,7 @@ tags: ["tech", "programming", "engineering"]
 ## Sanad (wajib)
 - Source URL: `https://codelabs.developers.google.com/multimodal-rag-gemini?hl=id#0`
 - Fetched at (UTC): `2026-04-15T12:08:00+00:00`
-- Clip path (private): `D:\MIGHAN Model\brain\private\web_clips\codelabs.developers.google.com__membuat-aplikasi-tanya-jawab-dengan-rag-multi-modal-menggunakan-gemini-pro-googl.md`
+- Clip path (private): `<local_private_path>/brain/private/web_clips/codelabs.developers.google.com__membuat-aplikasi-tanya-jawab-dengan-rag-multi-modal-menggunakan-gemini-pro-googl.md`
 - License: (isi setelah cek halaman / ketentuan penggunaan)
 
 ## Kutipan (optional, pilih 1–3)

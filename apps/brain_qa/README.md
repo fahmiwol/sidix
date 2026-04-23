@@ -10,16 +10,16 @@ Tujuan: jalanin Q&A berbasis **Markdown** di `brain/public/` secara lokal, denga
 ## Setup (Windows)
 
 ```powershell
-cd "D:\MIGHAN Model\apps\brain_qa"
+cd "<WORKSPACE_ROOT>\\apps\\brain_qa"
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 pip install -r requirements.txt
 pip install -r requirements-dev.txt
 ```
 
-## QA ringan (golden + pytest root)
+## QA ringan (golden + pytest)
 
-Dari **akar repo** `D:\MIGHAN Model` (venv tetap di `apps/brain_qa/.venv`):
+Dari **akar repo** `<WORKSPACE_ROOT>` (venv tetap di `apps/brain_qa/.venv`):
 
 ```powershell
 python apps/brain_qa/scripts/run_golden_smoke.py
@@ -163,7 +163,7 @@ python -m brain_qa storage status
 Register file (buat CID + masuk manifest):
 
 ```powershell
-python -m brain_qa storage add "D:\MIGHAN Model\brain\public\principles\11_storage_layers_ledger_vs_distribution.md"
+python -m brain_qa storage add "<WORKSPACE_ROOT>\\brain\\public\\principles\\11_storage_layers_ledger_vs_distribution.md"
 ```
 
 Verify:
@@ -175,7 +175,7 @@ python -m brain_qa storage verify "sha256:<hash>"
 Export/mirror manual:
 
 ```powershell
-python -m brain_qa storage export "sha256:<hash>" "D:\MIGHAN Model\.data\mirrors"
+python -m brain_qa storage export "sha256:<hash>" "<WORKSPACE_ROOT>\\.data\\mirrors"
 ```
 
 ### Erasure coding (Hafidz advanced) — 4+2 pack & reconstruct
@@ -185,7 +185,7 @@ Ini membuktikan konsep “2 node mati tetap bisa reconstruct”.
 Pack (buat 6 shard: 4 data + 2 parity):
 
 ```powershell
-python -m brain_qa storage pack "D:\MIGHAN Model\brain\public\principles\11_storage_layers_ledger_vs_distribution.md"
+python -m brain_qa storage pack "<WORKSPACE_ROOT>\\brain\\public\\principles\\11_storage_layers_ledger_vs_distribution.md"
 ```
 
 Hasilnya tersimpan di `apps/brain_qa/.data/storage/packs/<cid>/` + `pack_manifest.json`.
@@ -193,7 +193,7 @@ Hasilnya tersimpan di `apps/brain_qa/.data/storage/packs/<cid>/` + `pack_manifes
 Reconstruct dari pack (cukup ada 4 shard):
 
 ```powershell
-python -m brain_qa storage reconstruct "D:\MIGHAN Model\apps\brain_qa\.data\storage\packs\<cid>" "D:\MIGHAN Model\apps\brain_qa\.data\reconstructed\rebuild.md"
+python -m brain_qa storage reconstruct "<WORKSPACE_ROOT>\\apps\\brain_qa\\.data\\storage\\packs\\<cid>" "<WORKSPACE_ROOT>\\apps\\brain_qa\\.data\\reconstructed\\rebuild.md"
 ```
 
 ### Phase 2 (simulasi komunitas terbatas): nodes + distribute + reconstruct-nodes
@@ -203,8 +203,8 @@ Kita bisa mensimulasikan “peer nodes” sebagai folder lokal.
 Daftarkan node:
 
 ```powershell
-python -m brain_qa storage node add nodeA "D:\MIGHAN Model\apps\brain_qa\.data\nodes\nodeA"
-python -m brain_qa storage node add nodeB "D:\MIGHAN Model\apps\brain_qa\.data\nodes\nodeB"
+python -m brain_qa storage node add nodeA "<WORKSPACE_ROOT>\\apps\\brain_qa\\.data\\nodes\\nodeA"
+python -m brain_qa storage node add nodeB "<WORKSPACE_ROOT>\\apps\\brain_qa\\.data\\nodes\\nodeB"
 python -m brain_qa storage node list
 ```
 
@@ -217,7 +217,7 @@ python -m brain_qa storage distribute "sha256:<file_hash>" nodeA nodeB
 Reconstruct dari nodes (walau shard lokal hilang/offline, selama masih <=2 shard hilang total):
 
 ```powershell
-python -m brain_qa storage reconstruct-nodes "sha256:<file_hash>" "D:\MIGHAN Model\apps\brain_qa\.data\reconstructed\rebuild_from_nodes.md"
+python -m brain_qa storage reconstruct-nodes "sha256:<file_hash>" "<WORKSPACE_ROOT>\\apps\\brain_qa\\.data\\reconstructed\\rebuild_from_nodes.md"
 ```
 
 Audit (cek shard hilang + integritas hash shard vs `shard_cid`):
@@ -299,7 +299,7 @@ python -m brain_qa curate list --queue
 Buat draft dari 1 clip (kategori: `general` / `tech` / `creative`):
 
 ```powershell
-python -m brain_qa curate draft "D:\MIGHAN Model\brain\private\web_clips\cloud.google.com__apa-itu-kecerdasan-buatan-ai-google-cloud.md" --category general
+python -m brain_qa curate draft "<local_private_path>\\brain\\private\\web_clips\\cloud.google.com__apa-itu-kecerdasan-buatan-ai-google-cloud.md" --category general
 ```
 
 Draft akan dibuat di `apps/brain_qa/.data/curation_drafts/`.
@@ -307,7 +307,7 @@ Draft akan dibuat di `apps/brain_qa/.data/curation_drafts/`.
 Publish (explicit) ke `brain/public/sources/web_clips/`:
 
 ```powershell
-python -m brain_qa curate publish "D:\MIGHAN Model\apps\brain_qa\.data\curation_drafts\draft__cloud-google-com-apa-itu-kecerdasan-buatan-ai-google-cloud.md"
+python -m brain_qa curate publish "<WORKSPACE_ROOT>\\apps\\brain_qa\\.data\\curation_drafts\\draft__cloud-google-com-apa-itu-kecerdasan-buatan-ai-google-cloud.md"
 ```
 
 Catatan: `curate publish` akan otomatis membuat **ledger snapshot** (Merkle root) setelah publish sukses.

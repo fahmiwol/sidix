@@ -20,7 +20,7 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[3]   # naik ke D:\MIGHAN Model
+ROOT = Path(__file__).resolve().parents[3]   # repo root (dinamis)
 sys.path.insert(0, str(ROOT / "apps" / "brain_qa"))
 
 from brain_qa.skill_builder import extract_lessons_from_note

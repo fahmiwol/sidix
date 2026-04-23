@@ -38,7 +38,8 @@ from typing import Any
 
 # ── Paths ──────────────────────────────────────────────────────────────────────
 
-_ROOT = Path(__file__).resolve().parent.parent.parent.parent  # D:\MIGHAN Model
+# Repo root (dinamis, tanpa mengikat path lokal tertentu)
+_ROOT = Path(__file__).resolve().parent.parent.parent.parent
 _BRAIN_DIR = _ROOT / "brain" / "public"
 _CORPUS_WEB = _BRAIN_DIR / "sources" / "web_clips"
 _CORPUS_RESEARCH = _BRAIN_DIR / "research_notes"

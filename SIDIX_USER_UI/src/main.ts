@@ -316,6 +316,9 @@ function updateQuotaBadge(used: number, limit: number, tier: string) {
 
   const remaining = Math.max(0, limit - used);
   badgeText.textContent = `${remaining}/${limit}`;
+  badge.title = LANG === 'id'
+    ? `Sisa pesan gratis hari ini: ${remaining} dari ${limit}`
+    : `Remaining free messages today: ${remaining} of ${limit}`;
 
   // Tampilkan badge hanya untuk guest/free (sponsored & admin tidak perlu lihat ini)
   const showBadge = tier === 'guest' || tier === 'free';
@@ -1122,6 +1125,14 @@ function appendError(message: string) {
   initIcons();
 }
 
+function extractEpistemicTag(text: string): { tag: 'FACT' | 'OPINION' | 'UNKNOWN' | 'SPECULATION' | null; stripped: string } {
+  const m = text.match(/^\s*\[(FACT|OPINION|UNKNOWN|SPECULATION)\]\s*/);
+  if (!m) return { tag: null, stripped: text };
+  const tag = m[1] as 'FACT' | 'OPINION' | 'UNKNOWN' | 'SPECULATION';
+  const stripped = text.slice(m[0].length);
+  return { tag, stripped };
+}
+
 async function handleSend() {
   const question = chatInput.value.trim();
   if (!question) return;
@@ -1223,6 +1234,34 @@ async function handleSend() {
       if ((meta as any)?.quota) {
         const q = (meta as any).quota as { used: number; limit: number; remaining: number; tier: string };
         updateQuotaBadge(q.used ?? 0, q.limit ?? 3, q.tier ?? 'guest');
+      }
+
+      // Epistemic tag badge (FACT/OPINION/UNKNOWN/SPECULATION)
+      const tagInfo = extractEpistemicTag(fullText);
+      if (tagInfo.tag) {
+        streamText.textContent = tagInfo.stripped;
+        const badgeRow = document.createElement('div');
+        badgeRow.className = 'mb-2 flex items-center gap-2';
+
+        const pill = document.createElement('span');
+        const color = tagInfo.tag === 'FACT'
+          ? 'bg-status-ready/15 text-status-ready border-status-ready/30'
+          : tagInfo.tag === 'OPINION'
+          ? 'bg-gold-500/10 text-gold-400 border-gold-500/30'
+          : tagInfo.tag === 'SPECULATION'
+          ? 'bg-sky-500/10 text-sky-300 border-sky-500/30'
+          : 'bg-parchment-200/10 text-parchment-300 border-parchment-200/20';
+        pill.className = `text-[10px] font-bold px-2 py-0.5 rounded-full border ${color}`;
+        pill.textContent = `[${tagInfo.tag}]`;
+        badgeRow.appendChild(pill);
+
+        const sanad = document.createElement('span');
+        sanad.className = 'text-[10px] text-parchment-500';
+        const sanadCount = citations.filter(c => c.type !== 'text_to_image' && c.filename).length;
+        sanad.textContent = sanadCount > 0 ? `Sanad: ${sanadCount}` : 'Sanad: —';
+        badgeRow.appendChild(sanad);
+
+        streamBubble.insertBefore(badgeRow, streamBubble.firstChild);
       }
       // Tambah citation chips jika ada
       if (citations.length > 0) {

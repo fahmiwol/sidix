@@ -215,7 +215,7 @@ Tindakan berikut **sudah diterapkan** pada branch `main` (lihat commit terkait):
 
 | Item QA | Implementasi |
 |---------|----------------|
-| Root `.bat` berantakan | Semua skrip dipindah ke `scripts/windows/`; path keras `D:\MIGHAN Model` diganti `REPO=%~dp0..\..`. |
+| Root `.bat` berantakan | Semua skrip dipindah ke `scripts/windows/`; path keras `<WORKSPACE_ROOT>` diganti `REPO=%~dp0..\..`. |
 | Duplikat install | Diganti dua nama eksplisit: `install-brain_qa-full.bat` / `install-brain_qa-venv.bat`. |
 | CI otomatis | `.github/workflows/brain_qa-ci.yml` — `pytest tests/` di `apps/brain_qa` pada push/PR ke `main`. |
 | `test_sprint5.py` di root | Dihapus dari root; pengganti: `scripts/legacy/test_sprint5_smoke.py` (path relatif ke repo). |

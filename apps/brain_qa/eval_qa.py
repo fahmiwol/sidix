@@ -22,7 +22,8 @@ from pathlib import Path
 
 # ── Paths ──────────────────────────────────────────────────────────────────────
 
-ROOT = Path(__file__).parent.parent.parent  # D:\MIGHAN Model
+# Repo root (dinamis, tanpa mengikat path lokal tertentu)
+ROOT = Path(__file__).parent.parent.parent
 DATA_DIR = Path(__file__).parent / ".data"
 QA_PAIRS_PATH = ROOT / "brain" / "datasets" / "qa_pairs.jsonl"
 CHUNKS_PATH = DATA_DIR / "chunks.jsonl"

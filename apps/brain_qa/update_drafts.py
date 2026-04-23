@@ -2,7 +2,9 @@ import os
 import glob
 import re
 
-drafts = glob.glob(r"D:\MIGHAN Model\apps\brain_qa\.data\curation_drafts\*.md")
+repo_root = os.getenv("SIDIX_REPO_ROOT")
+drafts_dir = (repo_root and os.path.join(repo_root, "apps", "brain_qa", ".data", "curation_drafts")) or os.path.join(os.getcwd(), ".data", "curation_drafts")
+drafts = glob.glob(os.path.join(drafts_dir, "*.md"))
 
 def clean_content(path):
     with open(path, "r", encoding="utf-8") as f:

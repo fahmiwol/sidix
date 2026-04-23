@@ -1,0 +1,107 @@
+openapi: 3.0.3
+info:
+  title: SIDIX HTTP API (self-hosted)
+  version: "0.1"
+  description: |
+    Minimal OpenAPI spec for SIDIX self-hosted HTTP endpoints.
+
+    Notes:
+    - This file is a documentation artifact (repo-level SSOT).
+    - The running FastAPI servers also expose live OpenAPI JSON:
+      - Inference engine: `GET /openapi.json`
+      - UI server (`brain_qa serve`): `GET /openapi.json`
+servers:
+  - url: http://localhost:8765
+    description: Local dev (default)
+paths:
+  /health:
+    get:
+      summary: Health check
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+
+  /agent/chat:
+    post:
+      summary: ReAct agent chat
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [question]
+              properties:
+                question:
+                  type: string
+                persona:
+                  type: string
+                  description: One of the SIDIX personas (router may normalize).
+                verbose:
+                  type: boolean
+                  default: false
+                corpus_only:
+                  type: boolean
+                  default: false
+      responses:
+        "200":
+          description: Chat response
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [session_id, answer, persona, steps, citations, duration_ms, finished]
+                properties:
+                  session_id: { type: string }
+                  answer: { type: string }
+                  persona: { type: string }
+                  steps: { type: integer }
+                  citations:
+                    type: array
+                    items:
+                      type: object
+                      additionalProperties: true
+                  duration_ms: { type: integer }
+                  finished: { type: boolean }
+
+  /agent/generate:
+    post:
+      summary: Direct generate (non-agent)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [prompt]
+              properties:
+                prompt: { type: string }
+                system: { type: string }
+                max_tokens: { type: integer }
+                temperature: { type: number }
+      responses:
+        "200":
+          description: Generation response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+
+  /agent/tools:
+    get:
+      summary: List available tools
+      responses:
+        "200":
+          description: Tools list
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+
