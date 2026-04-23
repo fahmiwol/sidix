@@ -84,7 +84,7 @@ Indeks manusia: **`docs/sociometer/README.md`**.
 
 Setelah perubahan dokumen bermakna: **commit** dengan pesan konvensional; **landing** mengikuti versi patch UI (`v1.0.x`) yang selaras dengan narasi rilis, bukan selalu sama dengan tag semver backend.
 
-**Rilis sinkron (2026-04-25):** backend/docs **`v0.7.4-dev`**, landing **`v1.0.4`**, commit **`123c50e`** — lihat `CHANGELOG.md` dan `docs/HANDOFF_2026-04-25_SYNC_TYPO_JIWA_KIMI.md`.
+**Rilis sinkron (2026-04-25):** backend/docs **`v0.7.4-dev`**, landing **`v1.0.4`** — commit fitur utama **`123c50e`**, tip **`7c24301`** (`git log -2`). Lihat `CHANGELOG.md` dan `docs/HANDOFF_2026-04-25_SYNC_TYPO_JIWA_KIMI.md`.
 
 ---
 
