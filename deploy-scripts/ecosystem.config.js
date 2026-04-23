@@ -1,44 +1,40 @@
 module.exports = {
   apps: [
     {
-      name: 'sidix-backend-prod',
-      script: 'python',
-      args: '-m brain_qa serve',
-      cwd: './apps/brain_qa',
-      interpreter: 'python3',
+      name: 'sidix-brain',
+      script: './start_brain.sh',
+      cwd: '/opt/sidix',
+      interpreter: 'bash',
       env: {
-        NODE_ENV: 'production',
-        SIDIX_TYPO_PIPELINE: '1',
-        BRAIN_QA_PORT: '8765'
+        SIDIX_TYPO_PIPELINE: '1'
+      }
+    },
+    {
+      name: 'sidix-ui',
+      script: '/usr/bin/serve',
+      args: 'dist -p 4000',
+      cwd: '/opt/sidix/SIDIX_USER_UI',
+      interpreter: 'none',
+      env: {
+        NODE_ENV: 'production'
       }
     },
     {
       name: 'sidix-mcp-prod',
       script: 'node',
       args: './src/index.js',
-      cwd: './apps/sidix-mcp',
-      autorestart: false, // Default OFF per user request
-      watch: false,
+      cwd: '/opt/sidix/apps/sidix-mcp',
+      autorestart: false,
       env: {
-        NODE_ENV: 'production',
         SIDIX_MCP_ENABLED: 'false'
       }
     },
     {
-      name: 'sidix-dashboard',
-      script: 'npm',
-      args: 'run start',
-      cwd: './jariyah-hub',
-      env: {
-        NODE_ENV: 'production',
-        PORT: '4000'
-      }
-    },
-    {
-      name: 'sidix-health',
+      name: 'sidix-health-prod',
       script: './deploy-scripts/health-check.sh',
+      cwd: '/opt/sidix',
       interpreter: 'bash',
-      cron_restart: '*/15 * * * *', // Run every 15 mins
+      cron_restart: '*/15 * * * *',
       autorestart: false
     }
   ]
