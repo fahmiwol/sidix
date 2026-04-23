@@ -1,0 +1,10 @@
+﻿#,Disiplin,Kemampuan Detail,Status Target
+**A**,🎨 **Image & Visual**,"FLUX.1 + Nusantara LoRA (wayang, batik, adat). Text2img, img2img, inpainting, outpainting, upscaling, logo design, social graphics, ad creative, product mockup, infographic, character design",v0.9
+**B**,🎬 **Video & Motion**,"CogVideoX/LTX-Video. Text2video, image2video, video2video, motion brush, short-form (TikTok/Reels), explainer video, animation (AnimateDiff), slideshow, b-roll",v1.0
+**C**,🎙️ **Audio & Voice**,"Piper TTS + Whisper STT. Voice over, voice cloning (ethical), voice chat real-time, music generation (MusicGen), sound effects, podcast production, audiobook",v0.9-1.1
+**D**,💻 **Code & Development**,"Qwen-Coder-14B. Full-stack app, landing page, e-commerce, mobile app, Chrome extension, API, database, DevOps config, game prototype, low-code app, auto-debug loop",v0.9-1.0
+**E**,🎮 **Game Builder**,Concept + mechanic + asset gen + level design + NPC behavior + soundtrack + trailer + publishing config,v1.1-1.2
+**F**,📱 **Social Media & Marketing**,"Content calendar, post generation, story/Reels, engagement response, influencer brief, ad creative (FB/Google/TikTok), A/B test, competitor monitor, trend hijacking, report generation, UGC campaign, community management",v1.0
+**G**,🛒 **E-Commerce**,"Product description, product photo, category page, checkout flow, email marketing, inventory insights, price optimization, review analysis, chatbot sales, store analytics",v1.0
+**H**,🏷️ **Brand & Strategy**,"Brand strategy, brand identity (logo+color+font), naming, tagline, brand story, persona development, competitive analysis, campaign concept, brand audit, rebranding",v1.0-1.1
+**I**,📊 **Data & Intelligence**,"Market research, competitor intel, sentiment analysis, social listening, dashboard build, report automation, forecasting, A/B analysis, funnel analysis, cohort analysis",v1.0-1.1

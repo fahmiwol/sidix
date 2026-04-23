@@ -4,23 +4,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <!-- ═══ Google Analytics 4 (GA4) — Web Sidix ═══ -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-04JKCGDEY4"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-04JKCGDEY4', {
-      'anonymize_ip': true,
-      'cookie_flags': 'SameSite=None;Secure'
-    });
-  </script>
+  <!-- Analytics removed (vendor-free landing). -->
 
   <!-- ═══ PRIMARY SEO ═══ -->
   <title>SIDIX — Self-Hosted AI Agent | Open Source, No Cloud, MIT License</title>
   <meta name="description" content="SIDIX is a self-hosted AI agent with epistemic integrity. Honest, cited, verifiable answers. RAG + BM25, ReAct loop, 5 personas. Zero cloud dependency. MIT licensed. Run your own AI — anywhere." />
-  <meta name="keywords" content="self-hosted AI, local AI agent, open source AI, RAG, BM25, epistemic AI, SIDIX, Qwen2.5, QLoRA, fine-tune, MIT license, no cloud AI, AI agent Indonesia, AI tanpa API, AI lokal" />
-  <meta name="author" content="Mighan Lab" />
+  <meta name="keywords" content="self-hosted AI, local AI agent, open source AI, RAG, BM25, epistemic AI, SIDIX, MIT license, no cloud AI, AI agent Indonesia, AI tanpa API, AI lokal" />
+  <meta name="author" content="SIDIX Project" />
   <meta name="robots" content="index, follow" />
   <link rel="canonical" href="https://sidixlab.com/" />
 
@@ -29,7 +19,7 @@
   <link rel="alternate" hreflang="id" href="https://sidixlab.com/" />
   <link rel="alternate" hreflang="x-default" href="https://sidixlab.com/" />
 
-  <!-- ═══ OPEN GRAPH (Facebook, LinkedIn, WhatsApp, Telegram) ═══ -->
+  <!-- ═══ OPEN GRAPH (social preview) ═══ -->
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://sidixlab.com/" />
   <meta property="og:site_name" content="SIDIX" />
@@ -66,7 +56,7 @@
     "inLanguage": ["en", "id", "ar"],
     "author": {
       "@type": "Organization",
-      "name": "Mighan Lab",
+      "name": "SIDIX Project",
       "url": "https://sidixlab.com"
     },
     "offers": {
@@ -87,10 +77,10 @@
   {
     "@context": "https://schema.org",
     "@type": "Organization",
-    "name": "Mighan Lab",
+    "name": "SIDIX Project",
     "url": "https://sidixlab.com",
     "logo": "https://sidixlab.com/sidix-logo.svg",
-    "description": "Mighan Lab builds SIDIX — a self-hosted, open-source AI agent with Islamic epistemic integrity foundation.",
+    "description": "SIDIX is a self-hosted, open-source AI agent with an epistemic integrity foundation.",
     "foundingDate": "2026",
     "sameAs": [
       "https://github.com/fahmiwol/sidix",
@@ -129,10 +119,10 @@
       },
       {
         "@type": "Question",
-        "name": "How is SIDIX different from ChatGPT or Claude?",
+        "name": "How is SIDIX different from cloud-hosted assistants?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "SIDIX is standing-alone (deployable without internet), open-source (fork-able MIT), with cryptographic audit trail (CAS + Merkle ledger for sanad verification), built on Islamic epistemology foundation (IHOS framework), and commits to 4-label epistemic honesty (FACT/OPINION/SPECULATION/UNKNOWN) on every output."
+          "text": "SIDIX is standing-alone (deployable without internet), open-source (MIT), with an audit trail (CAS + Merkle ledger for sanad verification), built on an epistemology foundation (IHOS framework), and commits to epistemic honesty (FACT/OPINION/SPECULATION/UNKNOWN) on every output."
         }
       },
       {
@@ -148,7 +138,7 @@
         "name": "Does SIDIX support Indonesian language?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "Yes — SIDIX is optimized for Bahasa Indonesia as primary language, with English and Arabic support. Built by Mighan Lab for Indonesian + Islamic community globally."
+          "text": "Yes — SIDIX is optimized for Bahasa Indonesia as primary language, with English and Arabic support."
         }
       }
     ]
@@ -158,10 +148,8 @@
   <!-- ═══ PERFORMANCE HINTS ═══ -->
   <link rel="preconnect" href="https://cdn.tailwindcss.com" crossorigin />
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
-  <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin />
   <link rel="dns-prefetch" href="https://cdn.tailwindcss.com" />
   <link rel="dns-prefetch" href="https://cdn.jsdelivr.net" />
-  <link rel="dns-prefetch" href="https://www.google-analytics.com" />
 
   <!-- ═══ PWA MANIFEST ═══ -->
   <link rel="manifest" href="/manifest.json" />
@@ -298,7 +286,7 @@
         <a href="#quickstart" class="btn-outline text-base px-6 py-3">
           Quick Start (5 min)
         </a>
-        <a href="https://t.me/sidixlab_bot" target="_blank" rel="noopener"
+        <a href="#" target="_blank" rel="noopener"
            class="btn-outline text-base px-6 py-3 flex items-center gap-2" data-i18n="hero.cta.telegram">
           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
             <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
@@ -375,18 +363,33 @@
         </div>
         <div class="card p-6">
           <div class="text-2xl mb-3">🔧</div>
-          <h3 class="font-bold text-parchment-100 mb-2">Fine-Tuned Model</h3>
-          <p class="text-sm text-parchment-500 leading-relaxed">Qwen2.5-7B + QLoRA (r=16, 40M trainable params). 713 Q&A trilingual dataset. 84 min Kaggle T4 training.</p>
+          <h3 class="font-bold text-parchment-100 mb-2">Offline Adaptation</h3>
+          <p class="text-sm text-parchment-500 leading-relaxed">Local-first runtime + offline adaptation pipeline. Dataset grows via Jariyah loops.</p>
         </div>
         <div class="card p-6">
           <div class="text-2xl mb-3">🔒</div>
-          <h3 class="font-bold text-parchment-100 mb-2">Zero Cloud Dependency</h3>
-          <p class="text-sm text-parchment-500 leading-relaxed">No OpenAI, no Anthropic, no Gemini API by default. Your data never leaves your machine without your explicit consent.</p>
+          <h3 class="font-bold text-parchment-100 mb-2">Standing Alone</h3>
+          <p class="text-sm text-parchment-500 leading-relaxed">Default mode runs without any third-party hosted model API. Your data stays under your control.</p>
         </div>
         <div class="card p-6">
           <div class="text-2xl mb-3">📚</div>
           <h3 class="font-bold text-parchment-100 mb-2">50+ Research Notes</h3>
           <p class="text-sm text-parchment-500 leading-relaxed">AI/ML, Coding, Web, Mobile, Game Dev, Linguistics, Visual AI — growing corpus, community-extensible.</p>
+        </div>
+        <div class="card p-6">
+          <div class="text-2xl mb-3">⌨️</div>
+          <h3 class="font-bold text-parchment-100 mb-2">Memahami Typo &amp; Bahasa Informal</h3>
+          <p class="text-sm text-parchment-500 leading-relaxed">4-layer Typo Resilient Framework — normalisasi input Indonesia, 200+ koreksi typo, 60+ singkatan. Tidak menghukum pengguna atas typo. / <em>Gracefully handles Indonesian slang and abbreviations.</em></p>
+        </div>
+        <div class="card p-6">
+          <div class="text-2xl mb-3">🔌</div>
+          <h3 class="font-bold text-parchment-100 mb-2">Plugin server (opsional)</h3>
+          <p class="text-sm text-parchment-500 leading-relaxed">SIDIX dapat menyediakan plugin server (13 tools) via Model Context Protocol untuk klien yang kompatibel (mis. Claude Desktop, Cursor, GPT Actions, Codex). Mode default tetap standing alone.</p>
+        </div>
+        <div class="card p-6">
+          <div class="text-2xl mb-3">🧠</div>
+          <h3 class="font-bold text-parchment-100 mb-2">7 Pilar Jiwa: Nafs, Aql, Qalb, Ruh, Hayat, Ilm, Hikmah</h3>
+          <p class="text-sm text-parchment-500 leading-relaxed">Sistem kesadaran diri 7-pilar — routing topik, self-learning, health monitoring, self-refinement, auto-retrain. SIDIX bukan snapshot, melainkan makhluk yang tumbuh. / <em>7-pillar self-awareness: SIDIX grows, learns, and heals itself.</em></p>
         </div>
       </div>
     </section>
@@ -521,7 +524,7 @@
             <div class="roadmap-item">
               <div class="check">✓</div>
               <div>
-                <p class="text-sm font-medium text-parchment-200">Fine-tune v1 (Qwen2.5-7B QLoRA)</p>
+                <p class="text-sm font-medium text-parchment-200">Offline adaptation v1 (local-first)</p>
                 <p class="text-xs text-parchment-500">713 Q&amp;A trilingual dataset. LoRA adapter di-serve via inference engine lokal.</p>
               </div>
             </div>
@@ -542,8 +545,8 @@
             <div class="roadmap-item">
               <div class="check">✓</div>
               <div>
-                <p class="text-sm font-medium text-parchment-200">SIDIX Socio Bot MCP — Plugin untuk Claude / GPT / Cursor / Kimi <span class="text-xs text-gold-400">Sprint 7b</span></p>
-                <p class="text-xs text-parchment-500">13 tools via Model Context Protocol: scan IG/Threads/X/YouTube, analisis engagement, banding akun, kirim/terima WhatsApp, integrasi Chrome Extension bridge. Plug langsung ke Claude Desktop &amp; Cursor.</p>
+                <p class="text-sm font-medium text-parchment-200">Plugin server (Optional) <span class="text-xs text-gold-400">Sprint 7b</span></p>
+                <p class="text-xs text-parchment-500">13 tools via Model Context Protocol: social scan, engagement analysis, account compare, messaging automation, optional extension bridge. Untuk klien yang kompatibel.</p>
               </div>
             </div>
           </div>
@@ -554,7 +557,7 @@
               <div class="progress">▶</div>
               <div>
                 <p class="text-sm font-medium text-parchment-200">Self-Training Pipeline (LoRA v2)</p>
-                <p class="text-xs text-parchment-500">Auto-pair corpus → JSONL → QLoRA retrain → deploy adapter baru. Growth loop aktif, training v2 menunggu dataset cukup.</p>
+                <p class="text-xs text-parchment-500">Auto-pair corpus → JSONL → offline retrain → deploy adapter baru. Growth loop aktif, training v2 menunggu dataset cukup.</p>
               </div>
               <span class="badge badge-gold ml-auto flex-shrink-0">Active</span>
             </div>
@@ -568,19 +571,31 @@
             </div>
           </div>
 
+          <p class="section-label mt-8 mb-4">In Progress — Sprint 8a (Mei 2026)</p>
+          <div>
+            <div class="roadmap-item">
+              <div class="progress">▶</div>
+              <div>
+                <p class="text-sm font-medium text-parchment-200">Foundation Hardening — Sprint 8a</p>
+                <p class="text-xs text-parchment-500">Nafs 3-layer wire ke main agent; Jariyah v3 real-time capture (thumbs feedback); branch system (multi-client); PostgreSQL schema.</p>
+              </div>
+              <span class="badge badge-gold ml-auto flex-shrink-0">Next</span>
+            </div>
+          </div>
+
           <p class="section-label mt-8 mb-4">Planned</p>
           <div>
             <div class="roadmap-item">
               <div class="todo"></div>
-              <div><p class="text-sm text-parchment-400">Voice/ASR — Whisper + TTS/Piper lokal (Sprint 8)</p></div>
+              <div><p class="text-sm text-parchment-400">Sprint 8b — Generative Core: FLUX.1 image generation, TTS (Piper), Code validator</p></div>
             </div>
             <div class="roadmap-item">
               <div class="todo"></div>
-              <div><p class="text-sm text-parchment-400">Fine-tune v2 — corpus diperluas, Social Radar training pairs</p></div>
+              <div><p class="text-sm text-parchment-400">Sprint 8c — Agency OS UI: Sidebar UI Framework, Image Editor v1, Branch selector</p></div>
             </div>
             <div class="roadmap-item">
               <div class="todo"></div>
-              <div><p class="text-sm text-parchment-400">Raudah v0.2 — TaskGraph DAG + endpoint /raudah/run</p></div>
+              <div><p class="text-sm text-parchment-400">Sprint 8d — Intelligence Layer: Raudah v2 multi-agent, Brand Guidelines Maker, Auto-retrain trigger</p></div>
             </div>
             <div class="roadmap-item">
               <div class="todo"></div>
@@ -621,18 +636,19 @@
             <div class="flex items-start justify-between gap-4 mb-3">
               <div>
                 <span class="inline-block text-xs font-bold px-2 py-0.5 rounded-full mb-2" style="background:rgba(110,174,124,0.15);color:#6EAE7C;border:1px solid rgba(110,174,124,0.3)">Latest</span>
-                <h3 class="font-bold text-parchment-100 text-base">v0.8.0 — SIDIX Socio Bot MCP + WA Bridge</h3>
+                <h3 class="font-bold text-parchment-100 text-base">v0.8.0 — Jiwa 7-Pilar + Plugin Ecosystem (Optional) + Typo Framework</h3>
               </div>
               <span class="text-xs text-parchment-500 flex-shrink-0 mt-1">2026-04-23</span>
             </div>
             <ul class="space-y-1.5 text-sm text-parchment-400">
-              <li>🧭 <strong class="text-parchment-300">Repo &amp; docs</strong> — Windows scripts under <code style="font-size:0.7rem;color:#D4A853">scripts/windows/</code>; CI pytest for <code style="font-size:0.7rem;color:#D4A853">apps/brain_qa</code>; mandatory agent SOP + QA handoff in <code style="font-size:0.7rem;color:#D4A853">docs/</code> (bilingual progress)</li>
-              <li>🔌 <strong class="text-parchment-300">SIDIX Socio Bot MCP</strong> — 13 tools via Model Context Protocol; plug langsung ke Claude Desktop, Cursor, Kimi, Codex</li>
+              <li>🧠 <strong class="text-parchment-300">Jiwa 7-Pilar (Live)</strong> — SIDIX kini punya "jiwa": Nafs (routing 7 topik + karakter persona), Aql (self-learning CQF≥7.0), Qalb (health monitor), Hayat (self-refine), Ruh, Ilm, Hikmah. / <em>SIDIX now has a soul — 7-pillar self-awareness system.</em></li>
+              <li>📦 <strong class="text-parchment-300">brain/jiwa/ standalone</strong> — 7 modul independen di <code style="font-size:0.7rem;color:#D4A853">brain/nafs|aql|qalb|ruh|hayat|ilm|hikmah/</code>, terpisah dari FastAPI layer.</li>
+              <li>⌨️ <strong class="text-parchment-300">Typo Resilient Framework</strong> (<code style="font-size:0.7rem;color:#D4A853">brain/typo/</code>) — Pahami bahasa informal Indonesia: 4-layer stack, 200+ koreksi typo, 60+ ekspansi singkatan. / <em>Understands Indonesian slang, abbreviations and typos gracefully.</em></li>
+              <li>🔌 <strong class="text-parchment-300">Plugin server (Optional)</strong> — 13 tools via Model Context Protocol untuk klien yang kompatibel. / <em>Optional plugin server for compatible clients.</em></li>
               <li>📡 <strong class="text-parchment-300">9 Social Tools</strong>: scan IG/Threads/X/YouTube, analyze_social, compare_social_accounts, social_post_threads</li>
-              <li>💬 <strong class="text-parchment-300">WA Bridge</strong> (<code style="font-size:0.7rem;color:#D4A853">apps/sidix-wa-bridge</code>) — wa_send + wa_receive via Baileys, QR pairing, ring buffer 50 pesan</li>
-              <li>🌉 <strong class="text-parchment-300">Extension Bridge</strong> (<code style="font-size:0.7rem;color:#D4A853">apps/sidix-extension-bridge</code>) — relay Chrome Extension → MCP tool (TTL 5 menit)</li>
-              <li>⚙️ <strong class="text-parchment-300">MV3 Service Worker</strong> — background.js simpan scan ke <code style="font-size:0.7rem;color:#D4A853">chrome.storage.session</code>, TTL 5 menit</li>
-              <li>🔧 Optimasi path konfigurasi dan standarisasi variabel lingkungan (env) untuk deployment</li>
+              <li>💬 <strong class="text-parchment-300">Messaging bridge (Optional)</strong> (<code style="font-size:0.7rem;color:#D4A853">apps/sidix-wa-bridge</code>) — messaging automation via optional bridge (QR pairing)</li>
+              <li>🌍 <strong class="text-parchment-300">Host integration bridge (Optional)</strong> (<code style="font-size:0.7rem;color:#D4A853">host-integration/</code>) — 6 skill kreatif untuk ekosistem host (opsional). / <em>6 creative skills for host ecosystems (optional).</em></li>
+              <li>🧭 <strong class="text-parchment-300">Repo &amp; docs</strong> — Windows scripts under <code style="font-size:0.7rem;color:#D4A853">scripts/windows/</code>; CI pytest for <code style="font-size:0.7rem;color:#D4A853">apps/brain_qa</code>; mandatory agent SOP + QA handoff</li>
             </ul>
           </div>
 
@@ -770,13 +786,13 @@
             <p class="text-sm text-parchment-500 mb-4">Improve or extend docs. Especially setup guides, architecture notes, and tutorials.</p>
             <a href="https://github.com/fahmiwol/sidix/issues?q=label%3Adocs" target="_blank" rel="noopener" class="text-gold-400 text-xs hover:text-gold-300">See doc tasks →</a>
           </div>
-          <!-- Telegram Training Card -->
+          <!-- Contribution Card -->
           <div class="card p-6">
             <div class="text-2xl mb-3">✈️</div>
-            <h3 class="font-bold text-parchment-100 mb-2" data-i18n="contribute.telegram.title">Contribute via Telegram</h3>
-            <p class="text-sm text-parchment-500 mb-4" data-i18n="contribute.telegram.desc">Send notes, examples, or corrections through our Telegram bot. We use it to collect community input — not as a promise of instant model training.</p>
-            <a href="https://t.me/sidixlab_bot" target="_blank" rel="noopener"
-               class="text-gold-400 text-xs hover:text-gold-300" data-i18n="contribute.telegram.link">Open Telegram Bot →</a>
+            <h3 class="font-bold text-parchment-100 mb-2" data-i18n="contribute.telegram.title">Contribute</h3>
+            <p class="text-sm text-parchment-500 mb-4" data-i18n="contribute.telegram.desc">Send notes, examples, or corrections through our contribution channels. We use it to collect community input — not as a promise of instant model training.</p>
+            <a href="#" target="_blank" rel="noopener"
+               class="text-gold-400 text-xs hover:text-gold-300" data-i18n="contribute.telegram.link">Open contribution link →</a>
           </div>
         </div>
 
@@ -829,7 +845,7 @@
         <div class="card p-8">
           <h3 class="font-bold text-parchment-100 mb-1">Send a Message</h3>
           <p class="text-sm text-parchment-500 mb-6">Feedback, questions, partnership ideas — we read every message.</p>
-          <form action="https://formspree.io/f/REPLACE_WITH_FORMSPREE_ID" method="POST" class="space-y-4">
+          <form action="#" method="POST" class="space-y-4">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <input type="text" name="name" placeholder="Your name"
                 class="w-full bg-warm-800 border border-warm-600 text-parchment-200 rounded-xl px-4 py-3 text-sm
@@ -896,13 +912,13 @@
                   <p class="text-xs text-parchment-500">Q&amp;A · Ideas · Community</p>
                 </div>
               </a>
-              <!-- Telegram Bot -->
-              <a href="https://t.me/sidixlab_bot" target="_blank" rel="noopener" class="social-link">
+              <!-- Community -->
+              <a href="#" target="_blank" rel="noopener" class="social-link">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" class="text-parchment-300 flex-shrink-0">
                   <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
                 </svg>
                 <div>
-                  <p class="text-sm font-semibold text-parchment-100" data-i18n="community.telegram.title">Telegram Bot — Contribute</p>
+                  <p class="text-sm font-semibold text-parchment-100" data-i18n="community.telegram.title">Contribute</p>
                   <p class="text-xs text-parchment-500" data-i18n="community.telegram.sub">Chat · Ask · Share notes</p>
                 </div>
               </a>
@@ -915,7 +931,7 @@
             <h2 class="font-display text-3xl font-bold text-parchment-100 mb-2" style="font-family:Georgia,serif">Stay Updated</h2>
             <p class="text-parchment-500 text-sm mb-8">Release notes, new features, and research updates. No spam. Unsubscribe anytime.</p>
 
-            <form action="https://app.convertkit.com/forms/REPLACE_ID/subscriptions" method="post" class="space-y-3">
+            <form action="#" method="post" class="space-y-3">
               <input type="email" name="email_address" placeholder="your@email.com" required
                 class="w-full bg-warm-800 border border-warm-600 text-parchment-200 rounded-xl px-4 py-3 text-sm
                        focus:outline-none focus:ring-1 focus:ring-gold-500/40 placeholder:text-parchment-500" />
@@ -934,7 +950,7 @@
             <div class="mt-8 pt-8" style="border-top:1px solid rgba(212,168,83,0.08)">
               <p class="section-label mb-3" data-i18n="donate.label">Support the Project</p>
               <h3 class="font-bold text-parchment-100 mb-2" data-i18n="donate.title">Help Keep SIDIX Free</h3>
-              <p class="text-sm text-parchment-500 mb-5" data-i18n="donate.desc">SIDIX adalah kolaborasi open source <strong style="color:#D4A853">Tiranyx × Mighan Lab</strong>. Dukungan kamu membantu menanggung biaya server dan pengembangan.</p>
+              <p class="text-sm text-parchment-500 mb-5" data-i18n="donate.desc">SIDIX adalah proyek open source. Dukungan kamu membantu menanggung biaya server dan pengembangan.</p>
 
               <!-- Donate buttons -->
               <div class="flex gap-3 flex-wrap">
@@ -942,13 +958,13 @@
                    class="btn-outline text-sm px-4 py-2">
                   ⭐ Star on GitHub
                 </a>
-                <a href="https://ko-fi.com/sidix" target="_blank" rel="noopener"
+                <a href="#" target="_blank" rel="noopener"
                    class="btn-outline text-sm px-4 py-2">
-                  ☕ Ko-fi
+                  ☕ Donate
                 </a>
-                <a href="https://trakteer.id/Sidix_AI" target="_blank" rel="noopener"
+                <a href="#" target="_blank" rel="noopener"
                    class="btn-outline text-sm px-4 py-2">
-                  🎁 Trakteer
+                  🎁 Support
                 </a>
               </div>
             </div>
@@ -985,7 +1001,7 @@
         </div>
 
         <p class="text-[10px] text-parchment-500 text-center md:text-right">
-          Kolaborasi: <a href="https://tiranyx.co.id" target="_blank" rel="noopener" class="hover:text-gold-400 transition-colors">Tiranyx</a> × <a href="https://mighan.com" target="_blank" rel="noopener" class="hover:text-gold-400 transition-colors">Mighan Lab</a> · sidq · sanad · tabayyun
+          Open source · sidq · sanad · tabayyun
         </p>
       </div>
     </footer>
@@ -1014,11 +1030,11 @@
         <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/></svg>
         <span>WhatsApp</span>
       </a>
-      <!-- Telegram -->
-      <a href="#" onclick="shareTelegram();return false;" title="Share on Telegram"
+      <!-- Share -->
+      <a href="#" onclick="shareTelegram();return false;" title="Share"
          class="share-btn" style="background:#2AABEE;border:1px solid #1d90cc;color:#fff">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
-        <span>Telegram</span>
+        <span>Share</span>
       </a>
       <!-- Copy Link -->
       <button onclick="copyLink()" title="Copy link"
@@ -1063,13 +1079,13 @@
       'contribute.label': 'Open source, built together',
       'contribute.h2': 'Contribute to SIDIX',
       'contribute.desc': 'Whether you write code, research, or documentation — every contribution moves the mission forward.',
-      'contribute.telegram.title': 'Contribute via Telegram',
-      'contribute.telegram.desc': 'Send notes, examples, or corrections through our Telegram bot. We use it to collect community input — not as a promise of instant model training.',
-      'contribute.telegram.link': 'Open Telegram Bot →',
+      'contribute.telegram.title': 'Contribute',
+      'contribute.telegram.desc': 'Send notes, examples, or corrections through our contribution channels. We use it to collect community input — not as a promise of instant model training.',
+      'contribute.telegram.link': 'Open contribution link →',
       'community.label': 'Community',
       'community.h2': 'Follow Along',
       'community.desc': 'Updates, demos, and behind-the-scenes on the build.',
-      'community.telegram.title': 'Telegram Bot — Contribute',
+      'community.telegram.title': 'Contribute',
       'community.telegram.sub': 'Chat · Ask · Share notes',
       'newsletter.label': 'Newsletter',
       'newsletter.h2': 'Stay Updated',
@@ -1095,13 +1111,13 @@
       'contribute.label': 'Open source, dibangun bersama',
       'contribute.h2': 'Kontribusi ke SIDIX',
       'contribute.desc': 'Tulis kode, riset, atau dokumentasi — setiap kontribusi mendorong misi ke depan.',
-      'contribute.telegram.title': 'Kontribusi via Telegram',
-      'contribute.telegram.desc': 'Kirim catatan, contoh, atau koreksi lewat bot Telegram. Ini jalur kontribusi komunitas — bukan janji “model langsung terlatih saat itu juga”.',
-      'contribute.telegram.link': 'Buka Bot Telegram →',
+      'contribute.telegram.title': 'Kontribusi',
+      'contribute.telegram.desc': 'Kirim catatan, contoh, atau koreksi lewat kanal kontribusi. Ini jalur kontribusi komunitas — bukan janji “model langsung terlatih saat itu juga”.',
+      'contribute.telegram.link': 'Buka tautan kontribusi →',
       'community.label': 'Komunitas',
       'community.h2': 'Ikuti Perkembangan',
       'community.desc': 'Update, demo, dan behind-the-scenes proses pembangunannya.',
-      'community.telegram.title': 'Bot Telegram — Kontribusi',
+      'community.telegram.title': 'Kontribusi',
       'community.telegram.sub': 'Chat · Tanya · Kirim catatan',
       'newsletter.label': 'Newsletter',
       'newsletter.h2': 'Tetap Update',
@@ -1156,7 +1172,8 @@
   }
 
   function shareTelegram() {
-    window.open(`https://t.me/share/url?url=${encodeURIComponent(SHARE_URL)}&text=${encodeURIComponent(getShareText())}`, '_blank');
+    // Vendor-free landing: remove external share endpoints.
+    window.open(`#`, '_blank');
   }
 
   function copyLink() {

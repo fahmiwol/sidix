@@ -1,41 +1,69 @@
 # SIDIX — Changelog
 
-> Kolaborasi: **Tiranyx × Mighan Lab** — [tiranyx.co.id](https://tiranyx.co.id) · [mighan.com](https://mighan.com)
-> Lisensi: MIT · Repo: [github.com/fahmiwol/sidix](https://github.com/fahmiwol/sidix)
+> License: MIT · Repo: [github.com/fahmiwol/sidix](https://github.com/fahmiwol/sidix)
 
 Semua perubahan signifikan dicatat di sini. Format: `[versi] — tanggal — ringkasan`.
 
 ---
 
-## [v0.8.0] — 2026-04-23 — QA audit: persona plugin, heading vendor, footprint agen
+## [0.8.0] — 2026-04-23
 
-### Narasi
-**Audit menyeluruh** konsistensi rilis: 8 poin verifikasi. Temuan kritis diperbaiki: (1) Validasi persona **AYMAN/ABOO/OOMAR/ALEY/UTZ** (set terbaru/pivot) di `kimi-plugin/manifest.json` dan `sidix_skill.yaml`; (2) heading vendor eksplisit di `KIMI_INTEGRATION_GUIDE.md` → metafora *sarang-tamu*; (3) footprint nama agen di `HANDOFF_SPRINT7.md` → narasi netral. Peta metafora vs eksplisit didokumentasikan: heading/narasi = metafora; path/kode/CLI = eksplisit.
+### Added — Jiwa Architecture
+- 7-Pillar Jiwa system: Nafs, Aql, Qalb, Ruh, Hayat, Ilm, Hikmah
+- NafsRouter: 7-topic detection with persona character injection
+- Aql: self-learning pipeline (CQF ≥7.0 → training pairs)
+- Qalb: background health monitoring with auto-heal
+- brain/jiwa/ standalone modules (independent of FastAPI layer)
 
-### English
-Full QA audit of release consistency. Critical fixes: (1) Validation of persona set **AYMAN/ABOO/OOMAR/ALEY/UTZ** (current pivot) in `kimi-plugin/manifest.json` and `sidix_skill.yaml`; (2) explicit vendor heading neutralized to metaphor; (3) agent brand footprint removed from handoff. Metaphor vs explicit boundary documented.
+### Added — Typo Resilient Framework
+- brain/typo/: 4-layer input normalization
+- 200+ Indonesian typo corrections, 60+ abbreviation expansions
+- Dignity-preserving: never shames user for typos
 
-### Narasi (lanjutan — eksekusi QA struktur & CI)
-**Checklist QA eksternal:** semua `*.bat` root dipindah ke **`scripts/windows/`** dengan root repo dinamis; duplikat install diganti nama **`install-brain_qa-full.bat`** / **`install-brain_qa-venv.bat`**; **`test_sprint5.py`** diganti **`scripts/legacy/test_sprint5_smoke.py`**; CI **`brain_qa-ci.yml`** menjalankan pytest di **`apps/brain_qa`**. **`docs/QA_REVIEW_EXTERNAL_2026-04-25.md`** diperbarui (bagian *Dieksekusi*, ekspor DOCX/PDF). Artefak bantu: **`SIDIX_QA_REVIEW_2026-04-25.docx`** di folder Downloads (generate ulang dengan `pandoc` bila perlu).
+### Added — Host Integration (Optional)
+- `host-integration/`: host-integration bridge + 6 skills (internal tooling)
+- **Catatan**: Integrasi host bersifat opsional dan tidak diperlukan untuk mode default (standing alone)
 
-### English (follow-up)
-QA doc execution: Windows batch scripts consolidated under `scripts/windows/` with dynamic repo root; install script names clarified; root sprint5 smoke test replaced by `scripts/legacy/test_sprint5_smoke.py`; GitHub Actions workflow runs `pytest` for `apps/brain_qa`. QA markdown updated; DOCX export documented for PDF via Word/LibreOffice.
+### Added — Plugin Ecosystem (Optional)
+- `apps/sidix-mcp/`: local plugin server untuk klien yang kompatibel
+- `docs/openapi.yaml`: kontrak OpenAPI tingkat repo (referensi)
 
-### Narasi (kontinuitas dokumentasi — SOP agen & handoff)
-**SOP wajib** diperkuat lewat `docs/AGENTS_MANDATORY_SOP.md` (workflow pasca-task: LIVING_LOG, handoff, changelog/landing bilingual, guardrail privasi). **Handoff** `docs/HANDOFF_2026-04-23_QA_KONTINUITAS_DOK.md` menjelaskan bahwa **DOCX** di folder unduhan pengguna bukan SSOT; tinjauan kanonis di git tetap **`docs/QA_REVIEW_EXTERNAL_2026-04-25.md`**. Diperbarui: `AGENTS.md`, `docs/00_START_HERE.md`, `docs/STATUS_TODAY.md`, `docs/LIVING_LOG.md`, teks **What’s new** di app, dan kartu changelog landing (ringkas: CI + skrip Windows + dokumen agen).
+### Fixed
+- Nafs routing: short questions (<25 chars) now correctly routed to 'umum' if substantive
 
-### English (documentation continuity — agent SOP & handoff)
-Published **`docs/AGENTS_MANDATORY_SOP.md`** as the mandatory post-task checklist (living log, handoff, bilingual changelog/landing, privacy guardrails). Added **`docs/HANDOFF_2026-04-23_QA_KONTINUITAS_DOK.md`** clarifying that downloadable **DOCX** exports are non-canonical; **`docs/QA_REVIEW_EXTERNAL_2026-04-25.md`** remains the review SSOT in git. Updated **`AGENTS.md`**, **`docs/00_START_HERE.md`**, **`docs/STATUS_TODAY.md`**, **`docs/LIVING_LOG.md`**, and the app **What’s new** copy for bilingual progress; landing changelog card includes repo CI/docs hygiene.
+### Infrastructure
+- docs/ARCHITECTURE.md: Mermaid diagram
+- docs/openapi.yaml: repo-level OpenAPI spec
+- .github/dependabot.yml: automated dependency updates
+- scripts/git/scan-sensitive.ps1: pre-commit security scan
 
 ---
 
-## [v0.7.4-dev] — 2026-04-25 — Typo bridge + korpus Jiwa + Kimi + dokumen operasional ke git
+## [0.8.0] — 2026-04-23 — QA + documentation continuity
+
+### Narasi (internal)
+Audit konsistensi rilis + sinkron dokumentasi pasca-task sesuai SOP:
+- Persona resmi **AYMAN/ABOO/OOMAR/ALEY/UTZ** dipastikan konsisten pada artefak integrasi host (opsional)
+- Narasi dan heading dipastikan **vendor-neutral** (tanpa nama host/assistant)
+- Struktur skrip Windows dan CI dirapikan untuk jalur verifikasi yang reproducible
+- SOP agen dipertegas untuk mencegah kebocoran path lokal/secret ke area publik
+
+### English (public)
+Release QA and documentation continuity pass:
+- Ensured the official persona set is consistent across optional host integration artifacts
+- Kept public-facing copy vendor-neutral (no host/assistant names)
+- Consolidated Windows scripts and CI verification paths
+- Strengthened agent SOP to prevent leaking local paths or secrets into public content
+
+---
+
+## [v0.7.4-dev] — 2026-04-25 — Typo bridge + korpus Jiwa + host integration + dokumen operasional ke git
 
 ### Narasi
-**Sinkron besar:** `typo_bridge.py` dan penyambungan **`run_react`** (kueri ternormalisasi untuk cache/RAG setelah gate keamanan); **`brain/typo/`** (`pipeline.py`, kerangka multibahasa + TYPO Indonesia); modul/README pilar **`brain/nafs`**, **`aql`**, **`qalb`**, **`ruh`**, **`hayat`**, **`ilm`**, **`hikmah`** + **`ARSITEKTUR_JIWA_SIDIX.md`**; **`kimi-plugin/`** (`bridge.py`, manifest, skill YAML); dokumen **`BRIEF_SIDIX_SocioMeter`**, **`KIMI_INTEGRATION_GUIDE`**, **`PRD_...`**, handoff 2026-04-23; uji **`test_typo_*`**. Folder bundel lokal / scraping / skrip VPS sekali pakai **tidak** dimasukkan agar repo tetap bersih.
+**Sinkron besar:** `typo_bridge.py` dan penyambungan **`run_react`** (kueri ternormalisasi untuk cache/RAG setelah gate keamanan); **`brain/typo/`** (`pipeline.py`, kerangka multibahasa + TYPO Indonesia); modul/README pilar **`brain/nafs`**, **`aql`**, **`qalb`**, **`ruh`**, **`hayat`**, **`ilm`**, **`hikmah`** + **`ARSITEKTUR_JIWA_SIDIX.md`**; **`host-integration/`** (bridge, manifest, skill YAML); dokumen brief + guide; uji **`test_typo_*`**. Folder bundel lokal / scraping / skrip VPS sekali pakai **tidak** dimasukkan agar repo tetap bersih.
 
 ### English
-Landed typo pipeline integration (`typo_bridge`, `run_react`), full `brain/typo` spec + MVP code, Jiwa pillar corpus modules and architecture doc, guest-host bridge artifacts under `kimi-plugin/`, and operational docs; added tests. Excluded duplicate framework bundles and ad-hoc VPS scripts from this commit.
+Landed typo pipeline integration (`typo_bridge`, `run_react`), full `brain/typo` spec + MVP code, Jiwa pillar corpus modules and architecture doc, guest-host bridge artifacts under `host-integration/`, and operational docs; added tests. Excluded duplicate framework bundles and ad-hoc VPS scripts from this commit.
 
 ### UI (landing app)
 - `SIDIX_USER_UI` — **v1.0.4**: About / What is new — sinkron git v0.7.4-dev, typo bridge, paket dokumen.
@@ -45,7 +73,7 @@ Landed typo pipeline integration (`typo_bridge`, `run_react`), full `brain/typo`
 ## [v0.7.4-dev] — 2026-04-23 — Lanjutan dokumentasi (metafora host, handoff orbit)
 
 ### Narasi
-Penyelarasan narasi **tanpa promosi merek vendor**: leksikon *sarang-tamu* / *meja-arsip* / *bengkel-pena* / *paviliun obrolan* / *sangkar naskah* di panduan MCP dan jembatan host; handoff kanonis **`docs/HANDOFF_2026-04-25_SYNC_TYPO_JIWA_PLUGIN_ORBIT.md`** (berkas **`HANDOFF_*_KIMI.md`** hanya stub pengalihan); pembaruan teks landing EN/ID; isi **`docs/KIMI_INTEGRATION_GUIDE.md`** memakai metafora (nama file tetap historis). **Live produksi:** sinkron GitHub **bukan** otomatis deploy VPS — perlu `git pull` dan restart proses di server.
+Penyelarasan narasi **tanpa promosi merek vendor**: leksikon *sarang-tamu* / *meja-arsip* / *bengkel-pena* / *paviliun obrolan* / *sangkar naskah* di panduan MCP dan jembatan host; handoff kanonis **`docs/HANDOFF_2026-04-25_SYNC_TYPO_JIWA_PLUGIN_ORBIT.md`**; pembaruan teks landing EN/ID; isi **`docs/HOST_INTEGRATION_GUIDE.md`** memakai metafora. **Live produksi:** sinkron GitHub **bukan** otomatis deploy VPS — perlu `git pull` dan restart proses di server.
 
 ### English
 Documentation only: neutral metaphors for external tool hosts, canonical handoff filename, landing copy; clarify that git push does not by itself update production servers.
@@ -55,7 +83,7 @@ Documentation only: neutral metaphors for external tool hosts, canonical handoff
 ## [v0.7.3-dev] — 2026-04-25 — Pemetaan framework + paket `docs/sociometer/` + landing v1.0.3
 
 ### Narasi
-Setelah impor brief, langkah **analisis dan penyatuan** dilakukan: **`docs/MAPPING_FRAMEWORK_TO_REPO.md`** mencatat asal bundel, path canonical, status **spesifikasi vs implementasi** (typo, Jiwa, Kimi, SocioMeter), dan relasi git/landing. Seluruh isi **`Framework_bahasa_plugin_update/sidix-docs/`** disalin ke **`docs/sociometer/`** (nested duplikat `sidix-docs/` di dalamnya dihapus). Indeks **`docs/sociometer/README.md`**; **`docs/00_START_HERE.md`** ditautkan. **Landing** `SIDIX_USER_UI` → **v1.0.3** dengan “What’s new” bilingual memuat pemetaan + paket SocioMeter.
+Setelah impor brief, langkah **analisis dan penyatuan** dilakukan: **`docs/MAPPING_FRAMEWORK_TO_REPO.md`** mencatat asal bundel, path canonical, status **spesifikasi vs implementasi** (typo, Jiwa, host integration, SocioMeter), dan relasi git/landing. Seluruh isi **`Framework_bahasa_plugin_update/sidix-docs/`** disalin ke **`docs/sociometer/`** (nested duplikat `sidix-docs/` di dalamnya dihapus). Indeks **`docs/sociometer/README.md`**; **`docs/00_START_HERE.md`** ditautkan. **Landing** `SIDIX_USER_UI` → **v1.0.3** dengan “What’s new” bilingual memuat pemetaan + paket SocioMeter.
 
 ### UI (landing app)
 - `SIDIX_USER_UI` — v1.0.3: What’s new / Yang baru (pemetaan `MAPPING_FRAMEWORK_TO_REPO.md` + paket `docs/sociometer/`).
@@ -65,20 +93,20 @@ Added an internal mapping doc from framework bundles to repo paths and implement
 
 ---
 
-## [v0.7.2-dev] — 2026-04-24 — Paket dokumen Framework_bahasa_plugin_update + Kimi manifest/skill
+## [v0.7.2-dev] — 2026-04-24 — Paket dokumen Framework_bahasa_plugin_update + host integration manifest/skill
 
 ### Narasi
-Mengimpor isi **`Framework_bahasa_plugin_update/sidix-cursor-brief/`** ke struktur SIDIX: **`brain/typo/MULTILINGUAL_TYPO_FRAMEWORK.md`** (spesifikasi besar 6+ bahasa + pola kamus), **`brain/typo/TYPO_RESILIENT_FRAMEWORK.md`** (empat lapis Indonesia), **`docs/KIMI_INTEGRATION_GUIDE.md`**, **`docs/BRIEF_SIDIX_SocioMeter.md`**, **`brain/jiwa/ARSITEKTUR_JIWA_SIDIX.md`**. **`kimi-plugin/manifest.json`** dan **`kimi-plugin/sidix_skill.yaml`** ditambahkan; enum persona diselaraskan ke **lima persona** resmi; blok MCP skill YAML **dimatikan default** agar tidak merujuk modul yang tidak ada di repo. **`brain/typo/README.md`** menjadi indeks; **`MULTILINGUAL_*`** mendapat appendix **INTEGRASI RUNTIME** ( `typo_bridge`, `pipeline.py`, `TYPO_RESILIENT_*`).
+Mengimpor isi bundle brief ke struktur SIDIX: **`brain/typo/MULTILINGUAL_TYPO_FRAMEWORK.md`** (spesifikasi besar 6+ bahasa + pola kamus), **`brain/typo/TYPO_RESILIENT_FRAMEWORK.md`** (empat lapis Indonesia), guide + brief, **`brain/jiwa/ARSITEKTUR_JIWA_SIDIX.md`**. Manifest + skill YAML untuk integrasi host ditambahkan; enum persona diselaraskan ke **lima persona** resmi; blok MCP skill YAML **dimatikan default** agar tidak merujuk modul yang tidak ada di repo. **`brain/typo/README.md`** menjadi indeks; **`MULTILINGUAL_*`** mendapat appendix **INTEGRASI RUNTIME** ( `typo_bridge`, `pipeline.py`, `TYPO_RESILIENT_*`).
 
 ### English
-Imported the SocioMeter / typo / Kimi brief bundle into the repo; added plugin manifest + skill YAML with safe defaults (MCP off until self-hosted). Indonesian 4-layer and multilingual specs live under `brain/typo/`; master Cursor brief under `docs/`.
+Imported the SocioMeter / typo / host integration brief bundle into the repo; added manifest + skill YAML with safe defaults (MCP off until self-hosted). Indonesian 4-layer and multilingual specs live under `brain/typo/`; master brief under `docs/`.
 
 ---
 
 ## [v0.7.1-dev] — 2026-04-24 — Arsitektur Jiwa (dok) + Typo multibahasa + plugin jembatan
 
 ### Narasi
-Sesi pengembangan sebelumnya terhenti di **batas kuota API** saat menyusun tiga jalur paralel. **Kode pilar** di `brain/nafs`, `brain/aql`, `brain/qalb` sudah ada; **orchestrator runtime** tetap di `apps/brain_qa/brain_qa/jiwa/`. Sesi ini melengkapi **dokumentasi handoff/PRD**, **kerangka typo universal** (`brain/typo/`), **plugin HTTP opsional** (`kimi-plugin/`, tanpa kunci vendor), dan **README pilar** (`brain/jiwa`, `ruh`, `hayat`, `ilm`, `hikmah`). Pembersihan pola topik internal: menghapus nama pribadi dari regex `sidix_internal` di `brain/nafs/response_orchestrator.py`.
+Sesi pengembangan sebelumnya terhenti di **batas kuota API** saat menyusun tiga jalur paralel. **Kode pilar** di `brain/nafs`, `brain/aql`, `brain/qalb` sudah ada; **orchestrator runtime** tetap di `apps/brain_qa/brain_qa/jiwa/`. Sesi ini melengkapi **dokumentasi handoff/PRD**, **kerangka typo universal** (`brain/typo/`), **plugin HTTP opsional** (`host-integration/`, tanpa kunci vendor), dan **README pilar** (`brain/jiwa`, `ruh`, `hayat`, `ilm`, `hikmah`). Pembersihan pola topik internal: menghapus nama pribadi dari regex `sidix_internal` di `brain/nafs/response_orchestrator.py`.
 
 **Lanjutan:** penyambungan produksi — `typo_bridge.py` memuat pipeline dari root repo; `run_react` memakai **pertanyaan ternormalisasi** untuk cache dedup, RAG, dan loop ReAct (teks asli tetap di `AgentSession.question` untuk audit). `MULTILINGUAL_TYPO_FRAMEWORK.md` diperkaya dengan enam bahasa inti + meja integrasi.
 
@@ -100,7 +128,7 @@ Unblocked documentation after an API limit interruption: multilingual typo frame
 ## [v0.7.0] — 2026-04-23 — Security Hardening + Social Radar MVP
 
 ### Keamanan (Security)
-- **Identity cleanup**: hapus semua identifier pribadi dari kode — `identity.py`, `world_sensor.py`, `programming_learner.py`, `bot.py`, dll. Ganti dengan `contact@sidixlab.com` dan branding `Tiranyx × Mighan Lab`.
+- **Identity cleanup**: hapus semua identifier pribadi dari kode — `identity.py`, `world_sensor.py`, `programming_learner.py`, `bot.py`, dll. Ganti dengan identitas proyek yang netral.
 - **SECURITY.md**: ditambahkan di root untuk GitHub security tab — vulnerability disclosure policy, arsitektur keamanan, scope.
 - **Endpoint hardening `/social/radar/scan`**: ganti `dict` mentah dengan Pydantic `RadarScanRequest`. Guard payload >10KB (HTTP 413). Error message generik — tidak leak internals.
 
@@ -126,11 +154,11 @@ Unblocked documentation after an API limit interruption: multilingual typo frame
 
 | Nama Lama | Nama Baru | Karakter | Mode |
 |-----------|-----------|----------|------|
-| MIGHAN | **AYMAN** | Strategic Sage | IJTIHAD |
-| TOARD | **ABOO** | The Analyst | ACADEMIC |
-| FACH | **OOMAR** | The Craftsman | IJTIHAD |
-| HAYFAR | **ALEY** | The Learner | GENERAL |
-| INAN | **UTZ** | The Generalist | CREATIVE |
+| (legacy) | **AYMAN** | Strategic Sage | IJTIHAD |
+| (legacy) | **ABOO** | The Analyst | ACADEMIC |
+| (legacy) | **OOMAR** | The Craftsman | IJTIHAD |
+| (legacy) | **ALEY** | The Learner | GENERAL |
+| (legacy) | **UTZ** | The Generalist | CREATIVE |
 
 Backward compatible — nama lama diterima via `_PERSONA_ALIAS`.
 

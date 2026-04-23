@@ -44,6 +44,12 @@ Contoh:
 
 ## Log
 
+### 2026-04-23 (Agent 4 — update dokumentasi publik v0.8.0)
+
+- DOC: `README.md` diupdate — section `What's New in v0.8.0` ditambahkan (Jiwa 7-Pilar, Typo Resilient Framework, Kimi Plugin, MCP Ecosystem); Roadmap diperbarui ke format sprint 7b/7c/8a-8d menggantikan tabel BABY-ADULT.
+- DOC: `SIDIX_LANDING/index.html` diupdate — entry v0.8.0 changelog bilingual (ID+EN) diperluas: Jiwa 7-Pilar, brain/jiwa/ standalone, Typo Framework, MCP, Kimi Plugin, WA Bridge; section Features ditambah 3 kartu baru (Typo/Bahasa Informal, Plugin MCP, 7 Pilar Jiwa); section Roadmap ditambah Sprint 8a sebagai "In Progress" dan Sprint 8b-8d sebagai "Planned".
+- DOC: `CHANGELOG.md` (root) — entry semver `[0.8.0] — 2026-04-23` ditambahkan di atas entry narasi lama; mencakup Added (Jiwa, Typo, Kimi, MCP), Fixed (Nafs routing), Infrastructure.
+
 ### 2026-04-23 (kontinuitas agen ? QA, SOP wajib, artefak DOCX luar repo)
 
 - DOC: `docs/HANDOFF_2026-04-23_QA_KONTINUITAS_DOK.md` ? handoff tinjauan QA, artefak `.docx` lokal vs Markdown kanonis, checklist agen berikutnya.
@@ -4175,3 +4181,55 @@ Fokus pada "what architecture of knowledge means, not volume of knowledge."
   Verified: commit bf904d4, push, VPS pull + restart
 - TEST: re-run test_jiwa_final.py setelah fix ? T2 nafs routing: 7/7 correct
 - DECISION: Jiwa Sprint DONE ? 7/7 routing correct, training pairs aktif, health monitor online
+
+---
+
+### 2026-04-23 � Selaras Ulang Semua Agent + Baca Sprint Plan Baru
+
+#### Narasi Sesi Ini
+
+Sesi ini dimulai dengan fakta bahwa banyak agent berbeda (Cursor, Kimi, Gemini, Codex) telah
+bekerja secara paralel tanpa koordinasi yang baik � sehingga terjadi konteks yang terputus-putus.
+Tugas pertama adalah membaca semua dokumen terbaru, menyinkronkan kondisi nyata di repo dan VPS,
+lalu merancang sprint berikutnya secara terstruktur agar tidak lagi kehilangan konteks.
+
+Status VPS saat pengecekan:
+- v0.8.0 live, sidix-brain online, sidix-ui online
+- Jiwa 7-pilar (Layer A) aktif � 7/7 routing correct, training pairs berjalan
+- 22 pytest lokal pass, QA review selesai (commit 6e593dc)
+- brain/jiwa/, brain/typo/, kimi-plugin/ ada di repo tapi belum di-deploy ke VPS
+
+Folder baru 'SIDIX next Sprint plan-20260423T131632Z-3-001' dibaca dan diekstrak penuh:
+- SIDIX_GENERATIVE_ROADMAP_2026-04-25.docx: roadmap 4 fase (Apr2026 - Mar2027)
+- SIDIX_PRD_V2_AGENCY_VISION.docx: PRD lengkap agency vision + stack teknis
+- BRIEF_FOR_AGENT.docx: brief implementasi + filosofi IHOS
+- SIDIX_AGENCY_OS_TIRANYX_PILOT.docx: pilot agency Tiranyx + branch system + sidebar tools
+- 11_LOGIC.docx: state machine, decision tree, business logic
+- 12_INPUT_OUTPUT.docx: API contract + WebSocket schema
+- 13_ALGORITHMS.docx: algoritma Jiwa/Raudah/Jariyah/CQF/Nafs/Sanad/Naskh
+
+Kesimpulan: SIDIX bukan sekadar chatbot. Target final adalah **AI Creative Agency** � self-hosted,
+self-evolving, mampu generate image/video/audio/code/3D, multi-agent via Raudah, multi-client via
+Branch System, berjiwa IHOS. Pilot pertama: Tiranyx Digital Agency.
+
+#### Entri Log
+
+- NOTE: Pembacaan sprint plan selesai � 8 dokumen .docx diekstrak dan dianalisis
+- DECISION: Visi diklarifikasi � SIDIX = AI Creative Agency (al-Amin + Jariyah), bukan sekadar chatbot
+- DECISION: Sprint 8 dibagi menjadi 4 sub-sprint (8a/8b/8c/8d) untuk menghindari context limit
+- DOC: docs/MASTER_SPRINT_PLAN_2026.md � dibuat sebagai SSOT sprint planning ke depan
+- DOC: HANDOFF_2026-04-23_FINAL_SYNC.md � handoff lengkap untuk semua agent
+- NOTE: Aturan baru dari AGENTS_MANDATORY_SOP.md sudah dibaca dan diterapkan dalam sesi ini
+
+### 2026-04-23 — Sinkron status repo + sanitasi artefak publik (SOP)
+
+- STATUS: Repo dalam keadaan **dirty** (perubahan belum di-commit). Fokus sesi ini: menyelaraskan artefak publik agar patuh SOP.
+- FIX: `README.md` — hapus penyebutan host/vendor/assistant, hapus instruksi path lokal, dan tegaskan integrasi plugin sebagai **opsional** (mode default standing alone).
+- FIX: `SIDIX_LANDING/index.html` — hapus analytics & endpoint eksternal, netralkan copy “plugin untuk X”, ganti klaim model spesifik menjadi “local-first + offline adaptation”, serta jadikan kanal kontribusi vendor-neutral.
+- FIX: `CHANGELOG.md` — rapikan narasi QA agar vendor-neutral dan tetap bilingual (ID internal + EN public).
+- NOTE: Semua perubahan di atas mengikuti `docs/AGENTS_MANDATORY_SOP.md` (tanpa path lokal, tanpa nama host/vendor/asisten, standing alone sebagai default).
+
+### 2026-04-23 — Koreksi boundary: vendor naming teknis vs publik
+
+- FIX: Interpretasi SOP diperjelas: penyebutan vendor/host **boleh** di dokumen integrasi yang teknis-operasional, tetapi **wajib netral/metafora** di area publik/marketing.
+- DOC: `docs/AGENTS_MANDATORY_SOP.md` ditambah bagian “Batas Teknis vs Publik (Vendor/Host Naming)” agar agent lain tidak menghapus info teknis yang memang dibutuhkan.
