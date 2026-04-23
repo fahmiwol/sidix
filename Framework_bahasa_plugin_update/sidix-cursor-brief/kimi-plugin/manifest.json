@@ -1,7 +1,7 @@
 {
   "manifest_version": "1.0",
   "name": "SIDIX-SocioMeter",
-  "version": "0.8.0",
+  "version": "1.0.0",
   "description": "AI Agent berbasis IHOS untuk creative content, competitor analysis, self-training, dan multilingual typo-resilient interaction",
   "author": "SIDIX Team",
   "icon": "🔷",
@@ -25,7 +25,7 @@
       "trigger_keywords": ["buatkan", "copywriting", "branding", "marketing", "iklan", "caption", "content", "creative"],
       "parameters": {
         "brief": {"type": "string", "required": true, "description": "Deskripsi tugas kreatif"},
-        "persona": {"type": "string", "enum": ["AYMAN", "ABOO", "OOMAR", "ALEY", "UTZ"], "default": "AYMAN"},
+        "persona": {"type": "string", "enum": ["AYMAN", "UTZ", "ABOO"], "default": "AYMAN"},
         "format": {"type": "string", "enum": ["caption", "ad_copy", "brand_story", "email", "script", "slogan"], "default": "caption"}
       }
     },
@@ -74,7 +74,7 @@
       "trigger_keywords": ["kompleks", "multi", "raudah", "collaborate", "orchestrate", "workflow"],
       "parameters": {
         "task": {"type": "string", "required": true, "description": "Deskripsi tugas kompleks"},
-        "agents_needed": {"type": "array", "items": {"type": "string"}, "default": ["AYMAN", "ABOO", "OOMAR", "ALEY", "UTZ"]}
+        "agents_needed": {"type": "array", "items": {"type": "string"}, "default": ["AYMAN", "ABOO", "UTZ"]}
       }
     },
     {

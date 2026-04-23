@@ -10,7 +10,7 @@
 
 | Item | Value |
 |------|-------|
-| **Versi** | v0.7.4-dev (Sprint 7 aktif) |
+| **Versi** | v0.8.0 (Sprint 7b Final) |
 | **Domain Frontend** | [sidixlab.com](https://sidixlab.com) (landing page) |
 | **Domain App** | [app.sidixlab.com](https://app.sidixlab.com) (AI agent UI) |
 | **Domain API** | ctrl.sidixlab.com |

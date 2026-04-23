@@ -7,7 +7,7 @@ Semua perubahan signifikan dicatat di sini. Format: `[versi] — tanggal — rin
 
 ---
 
-## [v0.7.4-dev] — 2026-04-23 — QA audit: persona plugin, heading vendor, footprint agen
+## [v0.8.0] — 2026-04-23 — QA audit: persona plugin, heading vendor, footprint agen
 
 ### Narasi
 **Audit menyeluruh** konsistensi rilis: 8 poin verifikasi. Temuan kritis diperbaiki: (1) Validasi persona **AYMAN/ABOO/OOMAR/ALEY/UTZ** (set terbaru/pivot) di `kimi-plugin/manifest.json` dan `sidix_skill.yaml`; (2) heading vendor eksplisit di `KIMI_INTEGRATION_GUIDE.md` → metafora *sarang-tamu*; (3) footprint nama agen di `HANDOFF_SPRINT7.md` → narasi netral. Peta metafora vs eksplisit didokumentasikan: heading/narasi = metafora; path/kode/CLI = eksplisit.

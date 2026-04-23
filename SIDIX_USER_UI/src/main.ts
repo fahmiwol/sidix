@@ -1737,7 +1737,7 @@ const settingsTabs: Record<string, string> = {
         </div>
         <div>
           <h3 class="font-display text-3xl font-bold glow-gold">SIDIX</h3>
-          <p class="text-gold-400 font-medium tracking-widest text-xs uppercase mt-2 font-sans">Self-Hosted AI Agent · v1.0.4</p>
+          <p class="text-gold-400 font-medium tracking-widest text-xs uppercase mt-2 font-sans">Self-Hosted AI Agent · v0.8.0</p>
         </div>
         <p class="text-parchment-400 text-sm max-w-sm leading-relaxed">
           SIDIX adalah AI agent yang jujur, bersumber, dan bisa diverifikasi.
@@ -1762,14 +1762,14 @@ const settingsTabs: Record<string, string> = {
         </div>
         <div class="academic-card text-center">
           <p class="text-[10px] text-parchment-500 uppercase font-bold mb-1">Versi</p>
-          <p class="text-sm font-medium text-parchment-100">v1.0.4 · SIDIX Core</p>
+          <p class="text-sm font-medium text-parchment-100">v0.8.0 · SIDIX Core</p>
         </div>
         <div class="academic-card col-span-2 text-left">
           <p class="text-[10px] text-parchment-500 uppercase font-bold mb-1">What&apos;s new · Yang baru</p>
           <p class="text-xs text-parchment-400 leading-relaxed space-y-1">
-            <span class="text-parchment-200">EN:</span> Repo <strong>v0.7.4-dev</strong>: typo pipeline in ReAct (<code class="text-parchment-300">typo_bridge</code>, <code class="text-parchment-300">SIDIX_TYPO_PIPELINE</code>), <code class="text-parchment-300">brain/typo/</code> specs + MVP, Jiwa pillar corpus under <code class="text-parchment-300">brain/</code>, guest-host bridge files in <code class="text-parchment-300">kimi-plugin/</code>, brief + bridge guide + PRD in <code class="text-parchment-300">docs/</code>. Mapping: <code class="text-parchment-300">docs/MAPPING_FRAMEWORK_TO_REPO.md</code>. Handoff: <code class="text-parchment-300">docs/HANDOFF_2026-04-25_SYNC_TYPO_JIWA_PLUGIN_ORBIT.md</code>.
+            <span class="text-parchment-200">EN:</span> <strong>v0.8.0 Release</strong>: SIDIX Socio Bot MCP (13 tools), Extension Bridge for Chrome, WhatsApp Bridge (wa_send/receive), MV3 Social Radar Extension, Typo Bridge in ReAct loop, Jiwa pillar corpus integration. Optimized for production VPS deployment via PM2.
             <br />
-            <span class="text-parchment-200">ID:</span> <strong>v0.7.4-dev</strong> di git: sambungan typo ke ReAct, spesifikasi + kode typo, korpus pilar Jiwa, jembatan <em>sarang-tamu</em> (<code class="text-parchment-300">kimi-plugin/</code>), dokumen operasional. Pemetaan dan handoff lihat path di atas; changelog root <code class="text-parchment-300">CHANGELOG.md</code>.
+            <span class="text-parchment-200">ID:</span> <strong>Rilis v0.8.0</strong>: SIDIX Socio Bot MCP (13 tools), Extension Bridge, WA Bridge, MV3 Social Radar Extension, Typo Bridge di ReAct loop, Korpus pilar Jiwa. Dioptimalkan untuk deploy VPS via PM2.
           </p>
         </div>
         <div class="academic-card text-center col-span-2">
