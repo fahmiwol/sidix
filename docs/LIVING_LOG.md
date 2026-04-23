@@ -4064,3 +4064,21 @@ Fokus pada "what architecture of knowledge means, not volume of knowledge."
 - UPDATE: `apps/sidix-mcp/claude_desktop_config_production.json` — path fix + SIDIX_URL ganti ke `https://ctrl.sidixlab.com` + env bridge.
 - DOC: `brain/public/research_notes/188_sprint7b_socio_bot_mcp_architecture.md` — arsitektur lengkap: komponen, bridge pattern, DOM scraping strategy, WA flow, format radar response.
 - DECISION: 2 bridge server (extension + WA) dijalankan lokal, bukan di VPS — karena extension Chrome hanya bisa POST ke localhost, dan WA session perlu QR scan di device pemilik.
+
+
+### 2026-04-23 — Sprint 7b: Deploy + Test 10/10 PASSED
+
+- IMPL: `scripts/vps_deploy_sprint7b.py` — deploy script: git stash/pull/drop, rsync landing, pm2 restart, health check
+- TEST: `scripts/test_sprint7b_v2.py` — 10/10 live test VPS:
+  - T1  health ok | corpus 1182 | tools 35
+  - T2  /social/radar/scan -> ER 0.03, tier leader, advice terpopulasi
+  - T3  MCP node syntax OK (index.js + social_tools.js)
+  - T4  getSocialToolDefinitions() returns 9 tools (semua canonical names)
+  - T5  sidixlab.com loads v0.8.0
+  - T6  sidixlab.com loads 'Socio Bot MCP'
+  - T7  ctrl.sidixlab.com /health public: ok
+  - T8  app.sidixlab.com HTTP 200
+  - T9  pytest test_social_radar: 1 passed
+  - T10 extension-bridge + wa-bridge dirs PRESENT on VPS
+- NOTE: rsync warning untuk .user.ini (immutable aapanel file) tidak mempengaruhi konten landing page
+- NOTE: tools_available di /health masih 35 (hitungan agent_tools internal FastAPI, bukan MCP tools -- normal)
