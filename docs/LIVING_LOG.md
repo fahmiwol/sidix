@@ -4108,3 +4108,19 @@ Fokus pada "what architecture of knowledge means, not volume of knowledge."
 - DOC: research_notes/190_jiwa_implementasi_7_pilar_wiring.md -- teknis wiring
 - DECISION: Pilar 4/6/7 (Ruh/Ilm/Hikmah) delegate ke daily_growth/learn_agent/auto_lora yang sudah ada
   daripada buat modul baru. DRY principle.
+
+### 2026-04-23 — Jiwa Validation + Nafs Routing Fix
+
+- TEST: scripts/test_jiwa_final.py — run live di VPS setelah deploy Jiwa 7-Pilar
+  - T1 jiwa import: PASS (jiwa imports OK, jiwa.health: healthy)
+  - T2 nafs routing: 6/7 (FAIL: 'GPU A100 vs H100?' salah route ke ngobrol, expected umum)
+  - T3 chat ngobrol UTZ: PASS (SIDIX merespons)
+  - T4 chat koding OOMAR: PASS (jawaban kode prima dari model)
+  - T5 training pairs dir: PASS (pairs_2026-04-23.jsonl EXISTS — Aql sudah belajar!)
+  - T6 openapi.yaml: PASS (GitHub raw accessible)
+- FIX: apps/brain_qa/brain_qa/jiwa/nafs.py — routing logic 'ngobrol' fallback:
+  Root cause: len(q) < 30 trigger ngobrol tanpa cek keyword substantif. 'GPU A100 vs H100?' (18 chars) salah route.
+  Fix: pisahkan regex check dari length check; length < 25 hanya ngobrol kalau tidak ada kata substantif (vs/apa/jelaskan/dll)
+  Verified: commit bf904d4, push, VPS pull + restart
+- TEST: re-run test_jiwa_final.py setelah fix — T2 nafs routing: 7/7 correct
+- DECISION: Jiwa Sprint DONE — 7/7 routing correct, training pairs aktif, health monitor online
