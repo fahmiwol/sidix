@@ -4082,3 +4082,29 @@ Fokus pada "what architecture of knowledge means, not volume of knowledge."
   - T10 extension-bridge + wa-bridge dirs PRESENT on VPS
 - NOTE: rsync warning untuk .user.ini (immutable aapanel file) tidak mempengaruhi konten landing page
 - NOTE: tools_available di /health masih 35 (hitungan agent_tools internal FastAPI, bukan MCP tools -- normal)
+
+
+### 2026-04-23 — Jiwa Architecture + MCP Registration
+
+- IMPL: `apps/brain_qa/brain_qa/jiwa/` — 7 Pilar Kemandirian SIDIX:
+  - nafs.py: NafsRouter dengan 7 kategori topik + persona jiwa (karakter/rasa/gaya per persona)
+  - hayat.py: self-iteration wrapper atas muhasabah_loop.py (max 2 rounds, CQF target 8.0)
+  - aql.py: fire-and-forget learning hook → jiwa_training_pairs/*.jsonl (CQF ≥ 7.0 gate)
+  - qalb.py: background health monitor (psutil, 120s interval, auto-heal)
+  - orchestrator.py: JiwaOrchestrator singleton — entry point tunggal
+- FIX: agent_react.py -- _response_blend_profile() sekarang delegasi ke NafsRouter:
+  7 kategori (ngobrol/umum/kreatif/koding/sidix_internal/agama/etika) menggantikan 2 kategori lama
+  system_hint sekarang mengandung persona jiwa (karakter, rasa, gaya) untuk jawaban yang berkarakter
+- IMPL: Hayat wired ke agent_react.py setelah _apply_maqashid_mode_gate() --
+  self-iteration: refine jawaban dengan Ollama jika CQF < 8.0, max 2 round, non-blocking
+- IMPL: Aql wired ke agent_react.py setelah final_answer di-set --
+  background thread, save training pair jika CQF >= 7.0
+- IMPL: Qalb auto-start monitoring saat JiwaOrchestrator instantiated
+- IMPL: `smithery.yaml` -- Smithery MCP marketplace registration untuk Claude/Cursor/Kimi
+- IMPL: `apps/sidix-mcp/openapi.yaml` -- OpenAPI 3.1 spec untuk GPT Actions dan Codex
+- IMPL: `apps/sidix-mcp/configs/` -- cursor_mcp.json dan kimi_mcp.json config templates
+- UPDATE: `apps/sidix-mcp/INSTALL.md` -- panduan lengkap semua platform (Claude/Cursor/Kimi/GPT/Codex/Smithery)
+- DOC: research_notes/189_arsitektur_jiwa_7_pilar_sidix.md (copy dari ARSITEKTUR_JIWA_SIDIX.md)
+- DOC: research_notes/190_jiwa_implementasi_7_pilar_wiring.md -- teknis wiring
+- DECISION: Pilar 4/6/7 (Ruh/Ilm/Hikmah) delegate ke daily_growth/learn_agent/auto_lora yang sudah ada
+  daripada buat modul baru. DRY principle.

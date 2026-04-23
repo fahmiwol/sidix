@@ -35,6 +35,14 @@ from .agent_tools import call_tool, list_available_tools, ToolResult
 from .orchestration import agent_build_intent
 from .user_intelligence import analyze_user, get_response_instructions, UserProfile
 
+# ── Jiwa: 7-Pilar Kemandirian ──────────────────────────────────────────────
+try:
+    from .jiwa.orchestrator import jiwa as _jiwa
+    _JIWA_ENABLED = True
+except Exception:
+    _jiwa = None  # type: ignore[assignment]
+    _JIWA_ENABLED = False
+
 
 # ── Config ────────────────────────────────────────────────────────────────────
 MAX_STEPS = 6           # max ReAct loop iterations (default)
@@ -184,13 +192,30 @@ def _should_prioritize_corpus(question: str, *, corpus_only: bool) -> bool:
     return bool(_SIDIX_DOMAIN_RE.search(q))
 
 
-def _response_blend_profile(question: str) -> dict[str, Any]:
+def _response_blend_profile(
+    question: str, persona: str = "UTZ", *, corpus_only: bool = False
+) -> dict[str, Any]:
     """
-    Menentukan strategi model-vs-corpus.
-    - sidix_focused: corpus dipakai kuat
-    - model_focused: corpus hanya referensi ringan
+    Menentukan strategi model-vs-corpus via Jiwa Nafs (Pilar 1).
+    Fallback ke logika lama jika Jiwa tidak tersedia.
     """
-    if _should_prioritize_corpus(question, corpus_only=False):
+    if _JIWA_ENABLED and _jiwa is not None:
+        try:
+            profile = _jiwa.route(question, persona, corpus_only=corpus_only)
+            return {
+                "name": profile.blend_name,
+                "max_obs_blocks": profile.max_obs_blocks,
+                "system_hint": profile.system_hint,
+                "skip_corpus": profile.skip_corpus,
+                "hayat_enabled": profile.hayat_enabled,
+                "topic": profile.topic,
+                "emotion_tag": profile.emotion_tag,
+            }
+        except Exception:
+            pass  # fallback ke logika lama
+
+    # ── Fallback lama ──────────────────────────────────────────────────────
+    if _should_prioritize_corpus(question, corpus_only=corpus_only):
         return {
             "name": "sidix_focused",
             "max_obs_blocks": 3,
@@ -198,6 +223,9 @@ def _response_blend_profile(question: str) -> dict[str, Any]:
                 "Prioritaskan konteks SIDIX bila relevan. "
                 "Jika konteks tidak cukup, jawab jujur dan sebutkan keterbatasan."
             ),
+            "skip_corpus": False,
+            "hayat_enabled": True,
+            "topic": "sidix_internal",
         }
     return {
         "name": "model_focused",
@@ -206,6 +234,9 @@ def _response_blend_profile(question: str) -> dict[str, Any]:
             "Untuk topik umum/non-SIDIX, prioritaskan pengetahuan model. "
             "Gunakan konteks corpus hanya sebagai referensi tambahan jika benar-benar relevan."
         ),
+        "skip_corpus": False,
+        "hayat_enabled": True,
+        "topic": "umum",
     }
 
 
@@ -568,7 +599,7 @@ def _compose_final_answer(
             obs_blocks.append(s.observation)
         all_citations.extend(s.action_args.get("_citations", []))
 
-    blend = _response_blend_profile(question)
+    blend = _response_blend_profile(question, persona)
     max_obs_blocks = int(blend.get("max_obs_blocks", 2))
     system_hint = str(blend.get("system_hint", ""))
 
@@ -1192,9 +1223,48 @@ def run_react(
                 persona=persona,
             )
             final_answer = _apply_maqashid_mode_gate(session, question, persona, final_answer)
-            session.final_answer = final_answer
+
+            # ── Jiwa Pilar 5: Hayat — Self-Iteration ─────────────────────────
+            if _JIWA_ENABLED and _jiwa is not None and not simple_mode:
+                try:
+                    _blend = _response_blend_profile(question, persona)
+                    _hayat_on = _blend.get("hayat_enabled", True)
+                    _topic = _blend.get("topic", "umum")
+                    if _hayat_on:
+                        from .ollama_llm import ollama_available, ollama_generate
+                        if ollama_available():
+                            def _gen_fn(prompt: str) -> str:
+                                text, _ = ollama_generate(
+                                    prompt=prompt,
+                                    system=_blend.get("system_hint", ""),
+                                    max_tokens=600,
+                                    temperature=0.65,
+                                )
+                                return text
+                            final_answer = _jiwa.refine(
+                                question=question,
+                                answer=final_answer,
+                                generate_fn=_gen_fn,
+                                topic=_topic,
+                                hayat_enabled=True,
+                            )
+                except Exception:
+                    pass  # Hayat non-blocking — fallback ke jawaban asli
+            # ── Jiwa Pilar 2: Aql — post-response learning ───────────────────
+            if _JIWA_ENABLED and _jiwa is not None:
+                try:
+                    _topic_for_aql = _response_blend_profile(question, persona).get("topic", "umum")
+                    _jiwa.post_response(
+                        question, final_answer, persona,
+                        topic=_topic_for_aql,
+                        platform="direct",
+                        cqf_score=float(conf_score or 0) * 10,
+                    )
+                except Exception:
+                    pass  # Aql non-blocking
             # ─────────────────────────────────────────────────────────────────
 
+            session.final_answer = final_answer
             answer_dedup.set_cached_answer(persona, question, final_answer)
             session.finished = True
             _attach_orchestration_digest(session, question, persona)

@@ -1,48 +1,59 @@
-# SIDIX MCP — Install di Semua Platform
+# SIDIX Socio Bot MCP — Install di Semua Platform
 
-SIDIX MCP Server menghubungkan AI agent (Claude, Cursor, Codex, dll) ke SIDIX brain_qa.
-Sekali dipasang → SIDIX hadir di semua sesi, semua proyek.
+SIDIX MCP Server menghubungkan Claude, GPT, Cursor, Kimi, Codex, dan AI apapun
+ke SIDIX brain (13 tools: 4 core + 9 social intelligence).
 
-## Tools yang tersedia setelah install
+---
+
+## 13 Tools yang Tersedia
 
 | Tool | Fungsi |
 |---|---|
-| `sidix_query` | Tanya ke SIDIX |
-| `sidix_capture` | Rekam pengetahuan baru ke corpus |
+| `sidix_query` | Tanya ke SIDIX (RAG + generative, 5 persona) |
+| `sidix_capture` | Simpan knowledge baru ke corpus |
 | `sidix_learn_session` | Rekam ringkasan sesi kerja |
-| `sidix_status` | Cek SIDIX online + jumlah dokumen |
-| `scan_instagram_profile` | Scan profil Instagram publik (extension bridge atau fallback backend) |
-| `scan_threads_profile` | Scan sinyal profil Threads |
-| `scan_youtube_channel` | Scan channel YouTube |
-| `scan_twitter_profile` | Scan profil X/Twitter |
-| `analyze_social` | Analisis social radar dari URL + metadata |
-| `compare_social_accounts` | Bandingkan 2-5 akun social |
-| `social_post_threads` | Post ke Threads via backend SIDIX |
-| `wa_send` / `wa_receive` | Bridge WhatsApp MCP (jika WA bridge dikonfigurasi) |
+| `sidix_status` | Cek health + corpus size |
+| `scan_instagram_profile` | ER + sentiment + tier profil IG publik |
+| `scan_threads_profile` | Analisis profil Threads |
+| `scan_youtube_channel` | Engagement rate YouTube channel |
+| `scan_twitter_profile` | Analisis X/Twitter |
+| `analyze_social` | Deep analysis dari URL social media |
+| `compare_social_accounts` | Banding 2–5 akun lintas platform |
+| `social_post_threads` | Auto-post ke Threads |
+| `wa_send` | Kirim pesan WhatsApp via WA Bridge |
+| `wa_receive` | Baca inbox WA (ring buffer 50 pesan) |
 
 ---
 
 ## Prasyarat
 
 ```bash
-# Node.js 18+
-node --version  # harus >= 18
-
-# Clone repo SIDIX (kalau belum)
+node --version   # >= 18
 git clone https://github.com/fahmiwol/sidix.git
-cd sidix/apps/sidix-mcp
-npm install
+cd sidix/apps/sidix-mcp && npm install
 ```
 
 ---
 
-## 1. Claude Desktop
+## 1. One-Click via Smithery (Direkomendasikan)
 
-**Config file:**
-- Windows: `C:\Users\[USER]\AppData\Roaming\Claude\claude_desktop_config.json`
-- macOS: `~/Library/Application Support/Claude/claude_desktop_config.json`
+[![Install via Smithery](https://smithery.ai/badge/sidix-socio-mcp)](https://smithery.ai/server/sidix-socio-mcp)
 
-**Tambahkan:**
+```bash
+# Install otomatis ke Claude Desktop / Cursor / Kimi
+npx @smithery/cli install sidix-socio-mcp --client claude
+npx @smithery/cli install sidix-socio-mcp --client cursor
+npx @smithery/cli install sidix-socio-mcp --client kimi
+```
+
+---
+
+## 2. Claude Desktop (Manual)
+
+Config file:
+- **Windows:** `%APPDATA%\Claude\claude_desktop_config.json`
+- **macOS:** `~/Library/Application Support/Claude/claude_desktop_config.json`
+
 ```json
 {
   "mcpServers": {
@@ -52,48 +63,59 @@ npm install
       "env": {
         "SIDIX_URL": "http://localhost:8765",
         "SIDIX_CORPUS": "/path/to/sidix/brain/public",
-        "SIDIX_WA_BRIDGE_URL": "http://localhost:3977",
-        "SIDIX_IG_EXTENSION_BRIDGE_URL": "http://localhost:3821"
+        "SIDIX_IG_EXTENSION_BRIDGE_URL": "http://localhost:7788",
+        "SIDIX_WA_BRIDGE_URL": "http://localhost:7789"
       }
     }
   }
 }
 ```
 
-**Restart Claude Desktop** → SIDIX muncul di tool panel (🔨 icon).
+Copy siap pakai (Windows): `apps/sidix-mcp/claude_desktop_config.json`
+
+**Restart Claude Desktop** → SIDIX muncul di tool panel (🔨).
 
 ---
 
-## 2. Claude Code (CLI)
+## 3. Claude Code (CLI)
 
-**Project level** — buat `.claude/mcp.json` di root project:
-```json
-{
-  "mcpServers": {
-    "sidix": {
-      "command": "node",
-      "args": ["/path/to/sidix/apps/sidix-mcp/src/index.js"],
-      "env": {
-        "SIDIX_URL": "http://localhost:8765",
-        "SIDIX_CORPUS": "/path/to/sidix/brain/public"
-      }
-    }
-  }
-}
-```
-
-**Global** — tambahkan via Claude Code settings:
 ```bash
+# Tambah global
 claude mcp add sidix node /path/to/sidix/apps/sidix-mcp/src/index.js \
   --env SIDIX_URL=http://localhost:8765 \
   --env SIDIX_CORPUS=/path/to/sidix/brain/public
+
+# Atau project-level — buat .claude/mcp.json
 ```
 
 ---
 
-## 3. Cursor
+## 4. Cursor
 
-**Project level** — buat `.cursor/mcp.json`:
+**Cara 1 — Via Smithery:**
+```bash
+npx @smithery/cli install sidix-socio-mcp --client cursor
+```
+
+**Cara 2 — Manual:**
+Buka Cursor Settings → Features → MCP → Add Server:
+- Name: `sidix`
+- Command: `node /path/to/sidix/apps/sidix-mcp/src/index.js`
+- Env: `SIDIX_URL=https://ctrl.sidixlab.com`
+
+Atau buat `.cursor/mcp.json` (copy dari `apps/sidix-mcp/configs/cursor_mcp.json`).
+
+Tambahkan ke `.cursorrules`:
+```
+Setelah setiap implementasi fitur atau fix bug penting:
+panggil sidix_capture untuk merekam pengetahuan baru ke SIDIX corpus.
+```
+
+---
+
+## 5. Kimi (Moonshot AI)
+
+Kimi mendukung MCP server via `.kimi/mcp.json`:
 ```json
 {
   "mcpServers": {
@@ -101,109 +123,84 @@ claude mcp add sidix node /path/to/sidix/apps/sidix-mcp/src/index.js \
       "command": "node",
       "args": ["/path/to/sidix/apps/sidix-mcp/src/index.js"],
       "env": {
-        "SIDIX_URL": "http://localhost:8765",
-        "SIDIX_CORPUS": "/path/to/sidix/brain/public"
+        "SIDIX_URL": "https://ctrl.sidixlab.com",
+        "SIDIX_IG_EXTENSION_BRIDGE_URL": "http://localhost:7788"
       }
     }
   }
 }
 ```
 
-**Global** — buka Cursor Settings → Features → MCP → Add Server:
-- Name: `sidix`
-- Command: `node /path/to/sidix/apps/sidix-mcp/src/index.js`
-- Env: `SIDIX_URL=http://localhost:8765`
-
-Tambahkan juga di `.cursorrules` agar Cursor otomatis mengajar SIDIX:
-```
-Setiap kali mengimplementasikan fitur, fix bug, atau membuat keputusan arsitektur:
-panggil tool sidix_capture dengan topik dan penjelasan apa yang baru dikerjakan.
-Ini agar SIDIX belajar dari setiap sesi kerja di Cursor.
-```
+Copy dari `apps/sidix-mcp/configs/kimi_mcp.json`.
 
 ---
 
-## 4. Codex (OpenAI CLI)
+## 6. GPT / ChatGPT (GPT Actions)
 
-Codex CLI mendukung MCP via config:
+GPT Actions menggunakan OpenAPI spec yang di-deploy publik.
+SIDIX sudah deploy backend di `https://ctrl.sidixlab.com`.
 
-**`~/.codex/config.toml`:**
+1. Buka ChatGPT → My GPTs → Create → Actions → Import OpenAPI
+2. Upload atau paste URL: `https://raw.githubusercontent.com/fahmiwol/sidix/main/apps/sidix-mcp/openapi.yaml`
+3. Atau upload file: `apps/sidix-mcp/openapi.yaml`
+4. Set Authentication: None (public API)
+5. Save → GPT sekarang bisa call `sidix_query`, `social_radar_scan`, dll
+
+---
+
+## 7. Codex (OpenAI CLI)
+
 ```toml
+# ~/.codex/config.toml
 [[mcp_servers]]
 name = "sidix"
 command = "node"
 args = ["/path/to/sidix/apps/sidix-mcp/src/index.js"]
 
 [mcp_servers.env]
-SIDIX_URL = "http://localhost:8765"
-SIDIX_CORPUS = "/path/to/sidix/brain/public"
+SIDIX_URL = "https://ctrl.sidixlab.com"
 ```
 
 ---
 
-## 5. Antigravity
+## 8. Bridge Servers (Opsional)
 
-**`antigravity.config.json`** di root project:
-```json
-{
-  "plugins": {
-    "sidix": {
-      "type": "mcp",
-      "command": "node",
-      "args": ["/path/to/sidix/apps/sidix-mcp/src/index.js"],
-      "env": {
-        "SIDIX_URL": "http://localhost:8765",
-        "SIDIX_CORPUS": "/path/to/sidix/brain/public"
-      }
-    }
-  }
-}
+Untuk mengaktifkan `wa_send`/`wa_receive` dan Social Radar real-time:
+
+```bash
+# Extension Bridge (port 7788) — relay Chrome Extension → MCP
+cd apps/sidix-extension-bridge && npm install && npm start
+
+# WA Bridge (port 7789) — WhatsApp Web via Baileys
+cd apps/sidix-wa-bridge && npm install && npm start
+# → Scan QR code di terminal dengan HP kamu
 ```
 
 ---
 
-## Cara Pakai Setelah Install
+## Tips Penggunaan
 
-### Tanya ke SIDIX
+### Tanya SIDIX (dari Claude/Cursor/GPT)
 ```
-Panggil sidix_query dengan pertanyaan:
-"Bagaimana cara setup RLS di Supabase untuk user anonim?"
+Panggil sidix_query:
+question: "Cara optimasi engagement Instagram untuk UMKM Indonesia?"
+persona: "UTZ"
 ```
 
-### Rekam pengetahuan baru
+### Scan kompetitor
 ```
-Panggil sidix_capture:
-- topic: "inline edit pattern di PHP"
-- content: "Untuk inline edit tanpa framework: ..."
+Panggil scan_instagram_profile:
+url: "https://www.instagram.com/[username]/"
 ```
 
 ### Rekam sesi kerja (panggil di akhir sesi)
 ```
 Panggil sidix_learn_session:
-- project: "CRM Nutrisius"
-- summary: "Implementasi inline edit di tabel leads..."
-- decisions: "Pilih fetch POST ke save_inline.php..."
-- errors: "CORS error saat fetch → fix dengan header di PHP"
+project: "Nama Proyek"
+summary: "Apa yang dikerjakan hari ini..."
+decisions: "Pilih X karena..."
+errors: "Bug Y → fix dengan..."
 ```
-
-### Cek status
-```
-Panggil sidix_status
-→ SIDIX Online | 523 dokumen | Tools: 14
-```
-
----
-
-## Kontribusi ke SIDIX
-
-Kalau kamu pakai SIDIX dan menemukan pengetahuan baru:
-
-1. **Cara paling mudah:** panggil `sidix_capture` dari tool AI apapun
-2. **Cara manual:** buat file di `brain/public/research_notes/[N]_[topik].md`
-3. **Cara developer:** jalankan `python tools/sidix-learn.ps1 "topik"` di terminal
-
-Semua kontribusi knowledge diterima via Pull Request ke repo ini.
-Format lengkap: lihat [`CLAUDE.md`](../../CLAUDE.md).
 
 ---
 
@@ -212,6 +209,7 @@ Format lengkap: lihat [`CLAUDE.md`](../../CLAUDE.md).
 | Error | Fix |
 |---|---|
 | `Cannot find module` | `cd apps/sidix-mcp && npm install` |
-| `SIDIX Offline` | Pastikan `python3 -m brain_qa serve` berjalan di port 8765 |
-| Tool tidak muncul di Claude | Restart aplikasi setelah edit config |
-| `ENOENT: no such file` | Cek path di config — gunakan path absolut |
+| `SIDIX offline` | Pastikan backend jalan: `python3 -m brain_qa serve` |
+| Tool tidak muncul | Restart aplikasi setelah edit config |
+| WA: QR expired | Hapus `.wa_auth/` dan restart WA bridge |
+| Scan IG: 0 followers | Buka profil di browser dulu, lalu scan lagi |
