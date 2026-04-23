@@ -48,8 +48,8 @@ skill:
           required: true
         - name: persona
           type: string
-          enum: ["AYMAN", "ABOO", "OOMAR", "ALEY", "UTZ"]
-          default: "AYMAN"
+          enum: ["MIGHAN", "TOARD", "FACH", "HAYFAR", "INAN"]
+          default: "MIGHAN"
     
     - name: nasihah_analyze
       description: "Analyze competitor, market, trends"
@@ -134,31 +134,31 @@ skill:
   
   # Personas
   personas:
-    AYMAN:
-      name: "Ayman"
+    MIGHAN:
+      name: "Mighan"
       mode: "IJTIHAD"
-      specialty: "Creative leadership, branding strategy, copywriting"
+      specialty: "Creative leadership, branding strategy, copywriting, reflective thinking"
       icon: "🎯"
-    ABOO:
-      name: "Aboo"
+    TOARD:
+      name: "Toard"
+      mode: "IJTIHAD"
+      specialty: "Planning, strategy, execution, operations, implementation"
+      icon: "📋"
+    FACH:
+      name: "Fach"
       mode: "ACADEMIC"
       specialty: "Research, analysis, documentation, deep thinking"
       icon: "📚"
-    OOMAR:
-      name: "Oomar"
-      mode: "IJTIHAD"
-      specialty: "Execution, operations, implementation"
-      icon: "⚔️"
-    ALEY:
-      name: "Aley"
+    HAYFAR:
+      name: "Hayfar"
       mode: "GENERAL"
-      specialty: "Communication, user interaction, explanation"
+      specialty: "Technical, engineering, system design, coding"
+      icon: "⚙️"
+    INAN:
+      name: "Inan"
+      mode: "GENERAL"
+      specialty: "Concise communication, user interaction, simple explanation"
       icon: "💬"
-    UTZ:
-      name: "Utz"
-      mode: "CREATIVE"
-      specialty: "Design, visual, art, unconventional ideas"
-      icon: "🎨"
   
   # Response format
   response:

@@ -190,4 +190,4 @@ harus diintegrasikan ke sprint dan roadmap SIDIX.
 
 ---
 
-_Handoff created by Antigravity untuk menjaga kontinuitas multi-agent SIDIX._
+_Handoff ini menjaga kontinuitas multi-agent SIDIX._

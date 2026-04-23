@@ -472,7 +472,7 @@ SKILL = SIDIXSkill()
 
 ---
 
-## CARA USER PAKAI SIDIX DI KIMI
+## CARA USER PAKAI SIDIX DI SARANG-TAMU
 
 Setelah integrasi selesai, user bisa:
 
