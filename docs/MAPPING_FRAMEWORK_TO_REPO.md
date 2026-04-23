@@ -84,7 +84,7 @@ Indeks manusia: **`docs/sociometer/README.md`**.
 
 Setelah perubahan dokumen bermakna: **commit** dengan pesan konvensional; **landing** mengikuti versi patch UI (`v1.0.x`) yang selaras dengan narasi rilis, bukan selalu sama dengan tag semver backend.
 
-**Rilis sinkron (2026-04-25):** backend/docs **`v0.7.4-dev`**, landing **`v1.0.4`** — riwayat commit: `git log --oneline -5` pada `main` (paket fitur besar: *typo bridge*, *brain/typo*, *Jiwa korpus*, *kimi-plugin*). Lihat `CHANGELOG.md` dan `docs/HANDOFF_2026-04-25_SYNC_TYPO_JIWA_KIMI.md`.
+**Rilis sinkron (2026-04-25):** backend/docs **`v0.7.4-dev`**, landing **`v1.0.4`** — riwayat commit: `git log --oneline -5` pada `main` (paket fitur besar: *typo bridge*, *brain/typo*, *Jiwa korpus*, *jembatan sarang-tamu* — folder `kimi-plugin/`). Lihat `CHANGELOG.md` dan `docs/HANDOFF_2026-04-25_SYNC_TYPO_JIWA_PLUGIN_ORBIT.md`.
 
 ---
 

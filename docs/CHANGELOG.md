@@ -4,14 +4,20 @@ Format: `[YYYY-MM-DD] — Ringkasan perubahan`
 
 ---
 
-## [2026-04-25] — Typo bridge, brain/typo + Jiwa korpus, kimi-plugin, docs — v0.7.4-dev
+## [2026-04-23] — Dokumentasi: metafora host (sarang-tamu / meja-arsip / bengkel-pena), handoff `PLUGIN_ORBIT`, stub handoff lama
+
+- **DOC:** `HANDOFF_2026-04-25_SYNC_TYPO_JIWA_PLUGIN_ORBIT.md` (kanonis); `HANDOFF_2026-04-25_SYNC_TYPO_JIWA_KIMI.md` (redirect).
+- **DOC:** `docs/KIMI_INTEGRATION_GUIDE.md`, `apps/sidix-mcp/INSTALL.md`, `docs/00_START_HERE.md`, `MAPPING_FRAMEWORK_TO_REPO.md`, `LIVING_LOG.md`, `CHANGELOG.md` (root) — narasi tanpa promosi vendor.
+- **UI:** `SIDIX_USER_UI` — salinan What’s new EN/ID (path handoff baru, istilah jembatan tamu).
+
+## [2026-04-25] — Typo bridge, brain/typo + Jiwa korpus, jembatan sarang-tamu (`kimi-plugin/`), docs — v0.7.4-dev
 
 - **IMPL:** `apps/brain_qa/brain_qa/typo_bridge.py`, update `agent_react.py`; tests `test_typo_bridge.py`, `test_typo_pipeline.py`.
 - **DOC+IMPL:** `brain/typo/*` (pipeline, MULTILINGUAL, TYPO_RESILIENT, `__init__.py`).
 - **DOC:** `brain/jiwa/*`, `brain/nafs|aql|qalb|ruh|hayat|ilm|hikmah/` (README + modul referensi).
-- **PLUGIN:** `kimi-plugin/` (README, bridge, manifest, skill YAML).
-- **DOC:** `docs/BRIEF_SIDIX_SocioMeter.md`, `KIMI_INTEGRATION_GUIDE.md`, `PRD_ARSITEKTUR_JIWA_MULTILINGUAL_TYPO_ASSISTANT_PLUGIN.md`, `HANDOFF_2026-04-23_jiwa_typo_kimi.md`.
-- **DOC:** `docs/HANDOFF_2026-04-25_SYNC_TYPO_JIWA_KIMI.md`.
+- **PLUGIN:** `kimi-plugin/` (README, bridge, manifest, skill YAML — narasi dokumen: *sarang-tamu*, tanpa promosi merek host).
+- **DOC:** `docs/BRIEF_SIDIX_SocioMeter.md`, `KIMI_INTEGRATION_GUIDE.md` (judul file historis; isi memakai metafora host), `PRD_ARSITEKTUR_JIWA_MULTILINGUAL_TYPO_ASSISTANT_PLUGIN.md`, `HANDOFF_2026-04-23_jiwa_typo_kimi.md`.
+- **DOC:** `docs/HANDOFF_2026-04-25_SYNC_TYPO_JIWA_PLUGIN_ORBIT.md` (+ stub redirect nama lama).
 - **PRAXIS:** `brain/public/praxis/lessons/*.md` (tiga lesson).
 - **UI:** `SIDIX_USER_UI` v1.0.4.
 
@@ -31,7 +37,7 @@ Format: `[YYYY-MM-DD] — Ringkasan perubahan`
 
 ## [2026-04-24] — Jiwa docs + Typo multibahasa + assistant bridge stub
 
-- **Handoff:** `docs/HANDOFF_2026-04-24_ARSITEKTUR_JIWA_TYPo_PLUGIN.md` (sesi Claude terputus karena limit API — status disk & langkah lanjut).
+- **Handoff:** `docs/HANDOFF_2026-04-24_ARSITEKTUR_JIWA_TYPo_PLUGIN.md` (sesi mitra luar terputus karena limit API — status disk & langkah lanjut).
 - **PRD:** `docs/PRD_ARSITEKTUR_JIWA_MULTILINGUAL_TYPO_ASSISTANT_PLUGIN.md` (ID + English summary).
 - **Typo:** `brain/typo/MULTILINGUAL_TYPO_FRAMEWORK.md`, `brain/typo/pipeline.py` (normalisasi Unicode + substitusi ringan + script hint); **`brain_qa/typo_bridge.py` + wiring `run_react`** (`SIDIX_TYPO_PIPELINE`, default on).
 - **Jiwa (korpus):** `brain/jiwa/README.md`, `brain/ruh|hayat|ilm|hikmah/README.md` (delegasi vs `brain_qa.jiwa`).

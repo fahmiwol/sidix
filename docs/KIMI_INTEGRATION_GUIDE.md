@@ -1,31 +1,33 @@
-# KIMI INTEGRATION GUIDE
-## SIDIX-SocioMeter sebagai Plugin di Kimi
+# Panduan jembatan sarang-tamu (nama file historis: `KIMI_INTEGRATION_GUIDE.md`)
+## SIDIX-SocioMeter sebagai plugin di host percakapan eksternal
+
+> **Leksikon metafora SIDIX:** *sarang-tamu* = host/orbit percakapan tempat SIDIX dipasang; *meja-arsip* = app desktop MCP; *bengkel-pena* = IDE MCP. Dokumen ini sengaja **tidak** mempromosikan merek pihak ketiga — ikuti path file (`kimi-plugin/`, `.kimi/`) sebagai kontrak teknis repo.
 
 **Versi:** 1.0 | **Status:** INTEGRATION-READY
 
 ---
 
-## STATUS KIMI SEKARANG
+## STATUS HOST (cuplikan sesi)
 
 Dari screenshot yang dikirim:
-- ✅ Kimi Agent Mode: AKTIF
-- ✅ Skills Panel: Terlihat (image_tool, web_search, browser, python, dll)
-- ✅ Kimi K2.6: Running
+- ✅ Mode agen host: AKTIF
+- ✅ Panel skill: Terlihat (image_tool, web_search, browser, python, dll)
+- ✅ Model panas di UI tamu: Running
 - ✅ File ZIP SIDIX: sudah di-generate
 
-**Kesimpulan:** Kimi sudah siap untuk integrasi!
+**Kesimpulan:** Host sarang-tamu siap untuk integrasi.
 
 ---
 
-## CARA SIDIX MENJADI PLUGIN DI KIMI
+## CARA SIDIX MENJADI PLUGIN DI SARANG-TAMU
 
-### Metode 1: Kimi Custom Plugin (Paling Tepat)
+### Metode 1: Plugin kustom host (paling tepat)
 
-Kimi mendukung **custom skills/plugins** yang bisa ditambahkan ke Agent mode.
+Host sarang-tamu mendukung **skill/plugin kustom** yang bisa ditambahkan ke mode agen.
 
-#### Langkah Integrasi:
+#### Langkah integrasi:
 
-**Step 1: Buat Kimi Plugin Manifest**
+**Step 1: Buat manifest plugin**
 
 File: `kimi-plugin/manifest.json`
 ```json
@@ -107,9 +109,9 @@ File: `kimi-plugin/manifest.json`
 
 ### Metode 2: MCP Direct Connection (Recommended)
 
-Kimi mendukung MCP (Model Context Protocol) — sama seperti Claude, Cursor, dll.
+Host sarang-tamu mendukung MCP (Model Context Protocol) — pola yang sama dipakai meja-arsip, bengkel-pena, dan klien MCP lain.
 
-#### Config File untuk Kimi:
+#### Berkas konfigurasi (folder `.kimi/`):
 
 File: `~/.config/kimi/mcp.json`
 ```json
@@ -127,12 +129,12 @@ File: `~/.config/kimi/mcp.json`
 }
 ```
 
-#### Cara Load di Kimi:
-1. Buka Kimi → Settings → Plugins/MCP
+#### Cara memuat di host:
+1. Buka pengaturan host → Plugins/MCP
 2. Klik "Add MCP Server"
 3. Paste config di atas
 4. Klik "Connect"
-5. SIDIX akan muncul di Skills Panel Kimi
+5. SIDIX akan muncul di panel skill host
 
 ---
 
@@ -140,12 +142,12 @@ File: `~/.config/kimi/mcp.json`
 
 Kalau MCP belum fully supported, gunakan HTTP API langsung:
 
-#### Kimi Custom Action:
+#### Action kustom (HTTP):
 
 ```python
 # kimi-plugin/sidix_action.py
 """
-SIDIX Action untuk Kimi Agent Mode.
+SIDIX Action untuk mode agen host.
 Dipanggil saat user mention @SIDIX atau trigger keyword.
 """
 
@@ -155,7 +157,7 @@ import json
 SIDIX_API_URL = "http://localhost:8765/api/v1"
 
 class SIDIXAction:
-    """Kimi Action wrapper untuk SIDIX."""
+    """Action wrapper host → SIDIX."""
     
     def __init__(self):
         self.base_url = SIDIX_API_URL
@@ -172,7 +174,7 @@ class SIDIXAction:
     
     async def handle(self, user_input: str, context: dict) -> dict:
         """
-        Handle user input dari Kimi.
+        Handle user input dari host sarang-tamu.
         
         Flow:
         1. Detect if user wants SIDIX
@@ -182,7 +184,7 @@ class SIDIXAction:
         
         # Check if SIDIX is requested
         if not self._is_sidix_request(user_input):
-            return None  # Let Kimi handle normally
+            return None  # Biarkan host tangani bila perlu
         
         # Normalize input (typo correction)
         normalized = await self._normalize(user_input)
@@ -274,7 +276,7 @@ class SIDIXAction:
             }
     
     def _format_response(self, result: dict, tool: str) -> dict:
-        """Format SIDIX response untuk Kimi."""
+        """Format respons SIDIX untuk UI host."""
         
         if result.get("error"):
             return {
@@ -371,15 +373,15 @@ class SIDIXAction:
         }
 
 
-# Kimi Action Registration
-KIMI_ACTION = SIDIXAction()
+# Registrasi action host
+HOST_ACTION = SIDIXAction()
 ```
 
 ---
 
-## METODE 4: SIDIX sebagai Kimi Skill (Paling Sederhana)
+## METODE 4: SIDIX sebagai skill host (paling sederhana)
 
-Kalau Kimi punya custom skill system seperti yang terlihat di screenshot (image_tool, web_search, browser, python):
+Jika host punya sistem skill kustom seperti di screenshot (image_tool, web_search, browser, python):
 
 ### Register SIDIX sebagai Skill:
 
@@ -387,14 +389,14 @@ Kalau Kimi punya custom skill system seperti yang terlihat di screenshot (image_
 
 ```python
 """
-SIDIX Skill untuk Kimi Agent Mode.
-Register sebagai skill di Kimi skills panel.
+SIDIX Skill untuk mode agen host.
+Register sebagai skill di panel skill host.
 """
 
 from kimi.skills import Skill, SkillContext
 
 class SIDIXSkill(Skill):
-    """SIDIX-SocioMeter Skill untuk Kimi."""
+    """SIDIX-SocioMeter Skill untuk host sarang-tamu."""
     
     name = "sidix"
     description = "AI Agent berbasis IHOS untuk creative, analysis, dan self-training"
@@ -447,7 +449,7 @@ class SIDIXSkill(Skill):
         return result
     
     def _format(self, result: dict) -> str:
-        """Format hasil untuk ditampilkan di Kimi."""
+        """Format hasil untuk ditampilkan di UI host."""
         output = result.get("output", "Maaf, terjadi kesalahan.")
         
         # Add metadata
@@ -495,16 +497,16 @@ SIDIX: jelaskan Maqashid mode
 
 ---
 
-## RESPONSE FORMAT DI KIMI
+## FORMAT RESPONS DI UI HOST
 
-### Contoh Response
+### Contoh respons
 
 **Input:**
 ```
 /sidix buatkan caption instagram untuk produk kopi lokal
 ```
 
-**Output Kimi:**
+**Output host:**
 ```markdown
 ✨ **Hasil Kreatif SIDIX** (Persona: AYMAN)
 
@@ -533,8 +535,8 @@ Tag temanmu yang butuh kopi berkualitas! 👇
 |------|------|--------|
 | 1 | SIDIX backend running di localhost:8765 | ⬜ |
 | 2 | MCP server configured | ⬜ |
-| 3 | Kimi plugin manifest dibuat | ⬜ |
-| 4 | Kimi config updated | ⬜ |
+| 3 | Manifest plugin (`kimi-plugin/`) dibuat | ⬜ |
+| 4 | Berkas MCP host diperbarui | ⬜ |
 | 5 | Test connection | ⬜ |
 | 6 | Verify typo normalization works | ⬜ |
 | 7 | Document untuk user | ⬜ |
@@ -543,7 +545,7 @@ Tag temanmu yang butuh kopi berkualitas! 👇
 
 ## TROUBLESHOOTING
 
-### Problem: Kimi tidak bisa connect ke SIDIX
+### Problem: Host tidak bisa connect ke SIDIX
 **Check:**
 ```bash
 # 1. SIDIX backend running?
@@ -555,8 +557,8 @@ curl http://localhost:8765/mcp/health
 # 3. Firewall blocking?
 sudo ufw allow 8765/tcp
 
-# 4. Kimi config correct?
-cat ~/.config/kimi/mcp.json
+# 4. Path konfigurasi MCP host benar? (sesuai dokumentasi host; contoh folder `.kimi/`)
+cat path/ke/mcp.json
 ```
 
 ### Problem: Typo tidak ter-normalize
@@ -577,4 +579,4 @@ curl -X POST http://localhost:8765/api/v1/sociometer/typo/normalize \
 
 ---
 
-*SIDIX di Kimi = AI Agent yang mengerti typo, punya sanad chain, dan Maqashid filter — langsung di chat interface yang sudah familiar.*
+*SIDIX di sarang-tamu = agen yang mengerti typo, punya sanad chain, dan Maqashid filter — di antarmuka obrolan yang sudah Anda pakai.*

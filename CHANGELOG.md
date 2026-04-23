@@ -13,10 +13,20 @@ Semua perubahan signifikan dicatat di sini. Format: `[versi] — tanggal — rin
 **Sinkron besar:** `typo_bridge.py` dan penyambungan **`run_react`** (kueri ternormalisasi untuk cache/RAG setelah gate keamanan); **`brain/typo/`** (`pipeline.py`, kerangka multibahasa + TYPO Indonesia); modul/README pilar **`brain/nafs`**, **`aql`**, **`qalb`**, **`ruh`**, **`hayat`**, **`ilm`**, **`hikmah`** + **`ARSITEKTUR_JIWA_SIDIX.md`**; **`kimi-plugin/`** (`bridge.py`, manifest, skill YAML); dokumen **`BRIEF_SIDIX_SocioMeter`**, **`KIMI_INTEGRATION_GUIDE`**, **`PRD_...`**, handoff 2026-04-23; uji **`test_typo_*`**. Folder bundel lokal / scraping / skrip VPS sekali pakai **tidak** dimasukkan agar repo tetap bersih.
 
 ### English
-Landed typo pipeline integration (`typo_bridge`, `run_react`), full `brain/typo` spec + MVP code, Jiwa pillar corpus modules and architecture doc, Kimi plugin artifacts, and operational docs; added tests. Excluded duplicate framework bundles and ad-hoc VPS scripts from this commit.
+Landed typo pipeline integration (`typo_bridge`, `run_react`), full `brain/typo` spec + MVP code, Jiwa pillar corpus modules and architecture doc, guest-host bridge artifacts under `kimi-plugin/`, and operational docs; added tests. Excluded duplicate framework bundles and ad-hoc VPS scripts from this commit.
 
 ### UI (landing app)
 - `SIDIX_USER_UI` — **v1.0.4**: About / What is new — sinkron git v0.7.4-dev, typo bridge, paket dokumen.
+
+---
+
+## [v0.7.4-dev] — 2026-04-23 — Lanjutan dokumentasi (metafora host, handoff orbit)
+
+### Narasi
+Penyelarasan narasi **tanpa promosi merek vendor**: leksikon *sarang-tamu* / *meja-arsip* / *bengkel-pena* / *paviliun obrolan* / *sangkar naskah* di panduan MCP dan jembatan host; handoff kanonis **`docs/HANDOFF_2026-04-25_SYNC_TYPO_JIWA_PLUGIN_ORBIT.md`** (berkas **`HANDOFF_*_KIMI.md`** hanya stub pengalihan); pembaruan teks landing EN/ID; isi **`docs/KIMI_INTEGRATION_GUIDE.md`** memakai metafora (nama file tetap historis). **Live produksi:** sinkron GitHub **bukan** otomatis deploy VPS — perlu `git pull` dan restart proses di server.
+
+### English
+Documentation only: neutral metaphors for external tool hosts, canonical handoff filename, landing copy; clarify that git push does not by itself update production servers.
 
 ---
 

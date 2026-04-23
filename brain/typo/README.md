@@ -18,5 +18,5 @@
 ## Rujukan Jiwa / integrasi asisten
 
 - Orkestrator runtime: `apps/brain_qa/brain_qa/jiwa/`.
-- Panduan jembatan asisten: `docs/KIMI_INTEGRATION_GUIDE.md`, `kimi-plugin/`.
+- Panduan jembatan *sarang-tamu* (judul file historis `KIMI_INTEGRATION_GUIDE.md`), folder `kimi-plugin/`.
 - **Pemetaan bundel → repo:** `docs/MAPPING_FRAMEWORK_TO_REPO.md`.

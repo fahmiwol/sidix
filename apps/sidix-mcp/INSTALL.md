@@ -1,7 +1,6 @@
-# SIDIX Socio Bot MCP — Install di Semua Platform
+# SIDIX Socio Bot MCP — Install di semua platform
 
-SIDIX MCP Server menghubungkan Claude, GPT, Cursor, Kimi, Codex, dan AI apapun
-ke SIDIX brain (13 tools: 4 core + 9 social intelligence).
+SIDIX MCP menghubungkan **meja-arsip** (app desktop), **bengkel-pena** (IDE), **sarang-tamu** (host percakapan ber-MCP), **paviliun obrolan** (aksi terbuka), dan **sangkar naskah** (CLI cepat) — metafora untuk klien ber-MCP pada umumnya — ke otak SIDIX (13 tools: 4 inti + 9 social intelligence). Perintah konkret di bawah memakai path/flag **sesuai CLI masing-masing host** (lihat dokumentasi upstream untuk nama tepat).
 
 ---
 
@@ -40,7 +39,7 @@ cd sidix/apps/sidix-mcp && npm install
 [![Install via Smithery](https://smithery.ai/badge/sidix-socio-mcp)](https://smithery.ai/server/sidix-socio-mcp)
 
 ```bash
-# Install otomatis ke Claude Desktop / Cursor / Kimi
+# Install otomatis (flag --client mengikuti Smithery / host; contoh umum)
 npx @smithery/cli install sidix-socio-mcp --client claude
 npx @smithery/cli install sidix-socio-mcp --client cursor
 npx @smithery/cli install sidix-socio-mcp --client kimi
@@ -73,14 +72,14 @@ Config file:
 
 Copy siap pakai (Windows): `apps/sidix-mcp/claude_desktop_config.json`
 
-**Restart Claude Desktop** → SIDIX muncul di tool panel (🔨).
+**Restart aplikasi desktop** → SIDIX muncul di panel tool (🔨).
 
 ---
 
-## 3. Claude Code (CLI)
+## 3. Meja-arsip — CLI agen
 
 ```bash
-# Tambah global
+# Tambah global (perintah mengikuti CLI host)
 claude mcp add sidix node /path/to/sidix/apps/sidix-mcp/src/index.js \
   --env SIDIX_URL=http://localhost:8765 \
   --env SIDIX_CORPUS=/path/to/sidix/brain/public
@@ -113,9 +112,9 @@ panggil sidix_capture untuk merekam pengetahuan baru ke SIDIX corpus.
 
 ---
 
-## 5. Kimi (Moonshot AI)
+## 5. Sarang-tamu — host orbit (folder `.kimi/`)
 
-Kimi mendukung MCP server via `.kimi/mcp.json`:
+Host percakapan ini memakai berkas MCP serupa; contoh `/.kimi/mcp.json`:
 ```json
 {
   "mcpServers": {
@@ -135,20 +134,19 @@ Copy dari `apps/sidix-mcp/configs/kimi_mcp.json`.
 
 ---
 
-## 6. GPT / ChatGPT (GPT Actions)
+## 6. Paviliun obrolan — aksi terbuka (OpenAPI)
 
-GPT Actions menggunakan OpenAPI spec yang di-deploy publik.
-SIDIX sudah deploy backend di `https://ctrl.sidixlab.com`.
+Host yang memakai **GPT Actions** / OpenAPI publik. Backend contoh: `https://ctrl.sidixlab.com`.
 
-1. Buka ChatGPT → My GPTs → Create → Actions → Import OpenAPI
+1. Buka penyusun GPT kustom → Actions → Import OpenAPI
 2. Upload atau paste URL: `https://raw.githubusercontent.com/fahmiwol/sidix/main/apps/sidix-mcp/openapi.yaml`
 3. Atau upload file: `apps/sidix-mcp/openapi.yaml`
 4. Set Authentication: None (public API)
-5. Save → GPT sekarang bisa call `sidix_query`, `social_radar_scan`, dll
+5. Simpan → aksi dapat memanggil `sidix_query`, `social_radar_scan`, dll.
 
 ---
 
-## 7. Codex (OpenAI CLI)
+## 7. Sangkar naskah — CLI cepat (contoh `config.toml`)
 
 ```toml
 # ~/.codex/config.toml
@@ -180,7 +178,7 @@ cd apps/sidix-wa-bridge && npm install && npm start
 
 ## Tips Penggunaan
 
-### Tanya SIDIX (dari Claude/Cursor/GPT)
+### Tanya SIDIX (dari meja-arsip, bengkel-pena, atau paviliun obrolan)
 ```
 Panggil sidix_query:
 question: "Cara optimasi engagement Instagram untuk UMKM Indonesia?"
