@@ -4036,3 +4036,31 @@ Fokus pada "what architecture of knowledge means, not volume of knowledge."
 - DECISION: Branding publik SIDIX = **Tiranyx × Mighan Lab** (bukan solo project, bukan nama pribadi). URL repo tetap `github.com/fahmiwol/sidix` (tidak bisa ubah tanpa transfer org), tapi display text sudah dipersihkan.
 
 
+### 2026-04-23 � Sesi Codex: Lanjutan Sprint 7b (Socio Bot MCP + RAG balance)
+
+- IMPL: `apps/sidix-mcp/src/index.js` direwrite dan di-wire penuh ke social tools; `ListTools` sekarang expose core + social, dispatcher `CallTool` sudah mengenali canonical names + alias, dan payload `sidix_query` diperbaiki pakai field `question` (sesuai `POST /agent/chat`).
+- IMPL: `apps/sidix-mcp/src/social_tools.js` dibangun ulang untuk Sprint 7b: tools canonical `scan_instagram_profile`, `scan_threads_profile`, `scan_youtube_channel`, `scan_twitter_profile`, `analyze_social`, `compare_social_accounts`, `social_post_threads`, `wa_send`, `wa_receive`; tetap kompatibel dengan alias lama (`social_scan_*`, `social_radar_analyze`, `social_compare`).
+- IMPL: `browser/social-radar-extension/manifest.json` + `popup.js` di-upgrade dari scaffold simulasi ke DOM scraping runtime (active tab via `chrome.scripting.executeScript`), metadata publik dipush ke endpoint `/social/radar/scan`.
+- FIX: `apps/brain_qa/brain_qa/agent_react.py` � planner sekarang model-first untuk topik umum dan corpus-first untuk topik SIDIX/IHOS/sumber internal; fallback error tidak lagi memaksa `search_corpus` pada topik umum.
+- FIX: `apps/brain_qa/brain_qa/agent_react.py` + `ollama_llm.py` � blending context RAG dikontrol lewat profile (`sidix_focused` vs `model_focused`), jumlah context snippet diturunkan untuk topik umum, dan system hint runtime digabung tanpa menghapus prinsip dasar SIDIX.
+- FIX: `apps/brain_qa/brain_qa/learn_agent.py` � ditambah gating ingest corpus statis (`_is_sidix_relevant_item`, `_estimate_cqf_score`, `_should_store_in_static_corpus`) agar learning queue tidak mengisi corpus dengan topik umum/noise; `process_corpus_queue()` kini melaporkan `processed/skipped_scope`.
+- DOC: `apps/sidix-mcp/INSTALL.md` diperbarui untuk daftar tool Sprint 7b + env bridge opsional (`SIDIX_WA_BRIDGE_URL`, `SIDIX_IG_EXTENSION_BRIDGE_URL`).
+- TEST: tambah `tests/test_sprint7b_balance.py` (routing model-vs-corpus + scope filter learn agent). Hasil test lokal: `python -m pytest tests -q` => **81 passed**.
+- TEST: syntax checks lulus: `node --check apps/sidix-mcp/src/index.js`, `node --check apps/sidix-mcp/src/social_tools.js`, `node --check browser/social-radar-extension/popup.js`.
+- TEST: jalankan `python scripts/final_verify.py` => 14/18 pass, 4 fail: `mail.sidixlab.com` DNS unresolved, frontend tidak embed supabase/ctrl URL literal, dan Supabase `site_url` belum set.
+- ERROR: ditemukan BOM UTF-8 di `apps/sidix-mcp/src/index.js` menyebabkan `node --check` error; diselesaikan dengan rewrite UTF-8 tanpa BOM.
+- DECISION: sesuai preferensi own-stack, balancing inference diarahkan ke **model-first untuk topik umum** dan **corpus-first hanya untuk domain SIDIX / permintaan sanad eksplisit**; fallback cloud tetap sekunder, bukan jalur default.
+- NOTE: workspace sedang dirty sebelum sesi ini (`AGENTS.md` dan beberapa file untracked lain sudah ada), perubahan sesi ini dibuat tanpa revert file milik sesi lain.
+
+
+### 2026-04-23 — Sprint 7b Lanjutan: WA Bridge + Extension Bridge + Manifest Fix
+
+- IMPL: `browser/social-radar-extension/manifest.json` — tambah `"background": {"service_worker": "background.js", "type": "module"}` agar background.js terdaftar sebagai service worker MV3.
+- IMPL: `browser/social-radar-extension/background.js` — service worker baru: menyimpan hasil scan ke `chrome.storage.session` (TTL 5 menit), melayani `SIDIX_GET_LAST_SCAN` / `SIDIX_SCAN_RESULT` / `SIDIX_CLEAR_SCAN` messages dari popup.
+- IMPL: `browser/social-radar-extension/popup.js` — setelah scan berhasil, push hasil ke background storage + POST ke `http://localhost:7788/push-scan` (extension bridge) agar MCP bisa baca.
+- IMPL: `apps/sidix-extension-bridge/` — server baru (Express, port 7788): endpoint `POST /push-scan`, `GET /last-scan` (TTL 5 menit), `POST /clear`, `GET /health`. Jembatan antara Chrome Extension dan MCP tool.
+- IMPL: `apps/sidix-wa-bridge/` — server baru (Express + Baileys, port 7789): endpoint `POST /send`, `GET /inbox`, `GET /status` (QR jika belum paired), `POST /clear`. Auth disimpan di `.wa_auth/` (gitignored).
+- UPDATE: `apps/sidix-mcp/claude_desktop_config.json` — path difix dari `D:\MIGHAN Model\` ke `C:\SIDIX-AI\` + tambah env `SIDIX_IG_EXTENSION_BRIDGE_URL=http://localhost:7788` dan `SIDIX_WA_BRIDGE_URL=http://localhost:7789`.
+- UPDATE: `apps/sidix-mcp/claude_desktop_config_production.json` — path fix + SIDIX_URL ganti ke `https://ctrl.sidixlab.com` + env bridge.
+- DOC: `brain/public/research_notes/188_sprint7b_socio_bot_mcp_architecture.md` — arsitektur lengkap: komponen, bridge pattern, DOM scraping strategy, WA flow, format radar response.
+- DECISION: 2 bridge server (extension + WA) dijalankan lokal, bukan di VPS — karena extension Chrome hanya bisa POST ke localhost, dan WA session perlu QR scan di device pemilik.

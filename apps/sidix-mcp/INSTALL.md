@@ -11,6 +11,14 @@ Sekali dipasang → SIDIX hadir di semua sesi, semua proyek.
 | `sidix_capture` | Rekam pengetahuan baru ke corpus |
 | `sidix_learn_session` | Rekam ringkasan sesi kerja |
 | `sidix_status` | Cek SIDIX online + jumlah dokumen |
+| `scan_instagram_profile` | Scan profil Instagram publik (extension bridge atau fallback backend) |
+| `scan_threads_profile` | Scan sinyal profil Threads |
+| `scan_youtube_channel` | Scan channel YouTube |
+| `scan_twitter_profile` | Scan profil X/Twitter |
+| `analyze_social` | Analisis social radar dari URL + metadata |
+| `compare_social_accounts` | Bandingkan 2-5 akun social |
+| `social_post_threads` | Post ke Threads via backend SIDIX |
+| `wa_send` / `wa_receive` | Bridge WhatsApp MCP (jika WA bridge dikonfigurasi) |
 
 ---
 
@@ -43,7 +51,9 @@ npm install
       "args": ["/path/to/sidix/apps/sidix-mcp/src/index.js"],
       "env": {
         "SIDIX_URL": "http://localhost:8765",
-        "SIDIX_CORPUS": "/path/to/sidix/brain/public"
+        "SIDIX_CORPUS": "/path/to/sidix/brain/public",
+        "SIDIX_WA_BRIDGE_URL": "http://localhost:3977",
+        "SIDIX_IG_EXTENSION_BRIDGE_URL": "http://localhost:3821"
       }
     }
   }

@@ -28,6 +28,7 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
+import os
 import re
 import time
 from datetime import datetime, timezone
@@ -134,6 +135,26 @@ def _topic_slug(title: str) -> str:
 
 
 _VALID_SANAD = frozenset({"primer", "ulama", "peer_review", "aggregator"})
+_STATIC_SCOPE_KEYWORDS = (
+    "sidix",
+    "ihos",
+    "maqashid",
+    "naskh",
+    "sanad",
+    "raudah",
+    "tafsir",
+    "jariyah",
+    "muhasabah",
+    "islamic",
+    "quran",
+    "hadith",
+    "fiqh",
+)
+_LEARN_SCOPE = os.getenv("SIDIX_LEARN_SCOPE", "focused").strip().lower() or "focused"
+try:
+    _MIN_STATIC_CQF = float(os.getenv("SIDIX_LEARN_MIN_CQF", "8.0"))
+except Exception:
+    _MIN_STATIC_CQF = 8.0
 
 
 def _normalize_sanad_tier(raw: str | None) -> str:
@@ -148,6 +169,63 @@ def _extract_sanad_tier_from_md(text: str) -> str:
         if line.lower().startswith("sanad-tier:"):
             return _normalize_sanad_tier(line.split(":", 1)[1].strip())
     return "aggregator"
+
+
+def _estimate_cqf_score(item: dict) -> float:
+    """
+    Heuristik CQF ringan [0..10] untuk gating corpus statis.
+    Bukan evaluator final; hanya filter pre-ingest agar corpus tidak bengkak noise.
+    """
+    title = str(item.get("title", "")).strip()
+    content = str(item.get("content", "")).strip()
+    url = str(item.get("url", "")).strip()
+    sanad = _normalize_sanad_tier(item.get("sanad_tier"))
+
+    score = 4.5
+    if len(title) >= 12:
+        score += 1.0
+    if len(content) >= 300:
+        score += 1.5
+    if len(content) >= 900:
+        score += 1.0
+    if url.startswith("http"):
+        score += 0.5
+    if sanad in ("peer_review", "ulama", "primer"):
+        score += 1.5
+
+    # Penalti konten terlalu pendek/noisy
+    if len(content) < 120:
+        score -= 1.5
+
+    return max(0.0, min(10.0, round(score, 2)))
+
+
+def _is_sidix_relevant_item(item: dict) -> bool:
+    """True bila item layak masuk corpus statis SIDIX (IHOS, sanad, referensi agama/sistem)."""
+    haystack = " ".join(
+        [
+            str(item.get("title", "")),
+            str(item.get("domain", "")),
+            str(item.get("url", "")),
+            str(item.get("content", ""))[:1200],
+        ]
+    ).lower()
+    return any(k in haystack for k in _STATIC_SCOPE_KEYWORDS)
+
+
+def _should_store_in_static_corpus(item: dict) -> bool:
+    """
+    Default focused:
+      - hanya topik SIDIX/IHOS/agama
+      - CQF >= SIDIX_LEARN_MIN_CQF (default 8.0)
+    Mode broad:
+      - relevance boleh longgar
+      - CQF minimum turun ke 6.0
+    """
+    cqf = _estimate_cqf_score(item)
+    if _LEARN_SCOPE == "broad":
+        return cqf >= min(_MIN_STATIC_CQF, 6.0)
+    return _is_sidix_relevant_item(item) and cqf >= _MIN_STATIC_CQF
 
 
 # ── Deduplication ──────────────────────────────────────────────────────────────
@@ -427,9 +505,14 @@ class LearnAgent:
             auto_dir = workspace_root() / "brain" / "public" / "auto_learn"
             auto_dir.mkdir(parents=True, exist_ok=True)
             handler = NaskhHandler()
+            processed = 0
+            skipped_scope = 0
             for line in lines:
                 try:
                     item = json.loads(line)
+                    if not _should_store_in_static_corpus(item):
+                        skipped_scope += 1
+                        continue
                     title = item.get("title", "Untitled")
                     topic = _topic_slug(title)
                     sanad = _normalize_sanad_tier(item.get("sanad_tier"))
@@ -466,13 +549,22 @@ class LearnAgent:
                         if status == "retained":
                             continue
                         md_path.write_text(winner.content, encoding="utf-8")
+                        processed += 1
                     else:
                         md_path.write_text(full_md_body, encoding="utf-8")
+                        processed += 1
                 except Exception:
                     pass
-            build_index()
+            if processed > 0:
+                build_index()
+            logger.info(
+                "learn_agent.process_corpus_queue: total=%d processed=%d skipped_scope=%d",
+                len(lines),
+                processed,
+                skipped_scope,
+            )
             queue_file.write_text("", encoding="utf-8")
-            return len(lines)
+            return processed
         except ImportError:
             logger.warning("indexer not available; queue items preserved")
             return 0

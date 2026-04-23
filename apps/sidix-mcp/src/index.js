@@ -1,245 +1,259 @@
 #!/usr/bin/env node
 /**
- * SIDIX MCP Server
+ * SIDIX Socio Bot MCP Server
  *
- * Menghubungkan Claude (Code / Desktop / claude.ai) ke SIDIX brain_qa.
- * Install sekali → SIDIX hadir di semua sesi.
+ * Core tools:
+ *   - sidix_query
+ *   - sidix_capture
+ *   - sidix_learn_session
+ *   - sidix_status
  *
- * Tools:
- *   sidix_query         — tanya ke SIDIX
- *   sidix_capture       — rekam pengetahuan baru ke corpus
- *   sidix_learn_session — rekam ringkasan sesi saat ini
- *   sidix_status        — cek health + jumlah dokumen
+ * Socio tools are defined in social_tools.js
+ * and exposed together with core tools.
  */
 
-import { Server }       from '@modelcontextprotocol/sdk/server/index.js';
-import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
-import {
-  CallToolRequestSchema,
-  ListToolsRequestSchema,
-} from '@modelcontextprotocol/sdk/types.js';
-import fs   from 'fs';
+import fs from 'fs';
 import path from 'path';
+import { Server } from '@modelcontextprotocol/sdk/server/index.js';
+import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
+import { CallToolRequestSchema, ListToolsRequestSchema } from '@modelcontextprotocol/sdk/types.js';
+import {
+  getSocialToolDefinitions,
+  handleSocialTool,
+  isSocialToolName,
+} from './social_tools.js';
 
-// ── Config ───────────────────────────────────────────────────────────────────
-const BRAIN_QA_URL  = process.env.SIDIX_URL  || 'http://localhost:8765';
-const CORPUS_PATH   = process.env.SIDIX_CORPUS
-  || path.join(process.env.HOME || process.env.USERPROFILE, 'MIGHAN Model', 'brain', 'public');
+const BRAIN_QA_URL = process.env.SIDIX_URL || 'http://localhost:8765';
+const CORPUS_PATH =
+  process.env.SIDIX_CORPUS ||
+  path.join(process.env.HOME || process.env.USERPROFILE || '', 'MIGHAN Model', 'brain', 'public');
 
-// ── Server ───────────────────────────────────────────────────────────────────
 const server = new Server(
-  { name: 'sidix', version: '1.0.0' },
-  { capabilities: { tools: {} } }
+  { name: 'sidix-socio-mcp', version: '1.1.0' },
+  { capabilities: { tools: {} } },
 );
 
-// ── Tool definitions ─────────────────────────────────────────────────────────
+const CORE_TOOLS = [
+  {
+    name: 'sidix_query',
+    description:
+      'Tanya ke SIDIX (agent backend). Cocok untuk pertanyaan proyek, arsitektur, atau topik corpus SIDIX.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        question: { type: 'string', description: 'Pertanyaan ke SIDIX' },
+        persona: {
+          type: 'string',
+          description: 'Persona SIDIX opsional: MIGHAN, TOARD, FACH, HAYFAR, INAN',
+          default: 'MIGHAN',
+        },
+      },
+      required: ['question'],
+    },
+  },
+  {
+    name: 'sidix_capture',
+    description: 'Simpan pengetahuan baru ke corpus SIDIX dan trigger re-index.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        topic: { type: 'string', description: 'Judul/topik singkat' },
+        content: { type: 'string', description: 'Isi markdown' },
+        category: {
+          type: 'string',
+          description: 'Kategori corpus: research_notes | feedback_learning | praxis',
+          default: 'research_notes',
+        },
+      },
+      required: ['topic', 'content'],
+    },
+  },
+  {
+    name: 'sidix_learn_session',
+    description: 'Rekam ringkasan sesi kerja ke corpus SIDIX.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project: { type: 'string', description: 'Nama proyek' },
+        summary: { type: 'string', description: 'Ringkasan sesi' },
+        decisions: { type: 'string', description: 'Keputusan penting (opsional)' },
+        errors: { type: 'string', description: 'Error dan fix (opsional)' },
+      },
+      required: ['project', 'summary'],
+    },
+  },
+  {
+    name: 'sidix_status',
+    description: 'Cek status health SIDIX backend.',
+    inputSchema: { type: 'object', properties: {}, required: [] },
+  },
+];
+
+const SOCIAL_TOOLS = getSocialToolDefinitions();
+
 server.setRequestHandler(ListToolsRequestSchema, async () => ({
-  tools: [
-    {
-      name: 'sidix_query',
-      description: 'Tanya ke SIDIX — AI agent berbasis corpus pengetahuan Mighan/SIDIX. Gunakan untuk pertanyaan tentang proyek, framework, arsitektur, atau topik yang sudah didokumentasikan.',
-      inputSchema: {
-        type: 'object',
-        properties: {
-          question: { type: 'string', description: 'Pertanyaan yang ingin ditanyakan ke SIDIX' },
-          persona: {
-            type: 'string',
-            description: 'Persona SIDIX (opsional): MIGHAN, TOARD, FACH, HAYFAR, INAN',
-            default: 'MIGHAN'
-          }
-        },
-        required: ['question']
-      }
-    },
-    {
-      name: 'sidix_capture',
-      description: 'Rekam pengetahuan baru ke corpus SIDIX. Gunakan ini setiap kali ada konsep, keputusan, error+fix, atau framework yang perlu SIDIX pelajari.',
-      inputSchema: {
-        type: 'object',
-        properties: {
-          topic:   { type: 'string', description: 'Judul/topik singkat (akan jadi nama file)' },
-          content: { type: 'string', description: 'Isi pengetahuan dalam format Markdown' },
-          category: {
-            type: 'string',
-            description: 'Kategori: research_notes | feedback_learning | praxis',
-            default: 'research_notes'
-          }
-        },
-        required: ['topic', 'content']
-      }
-    },
-    {
-      name: 'sidix_learn_session',
-      description: 'Rekam ringkasan sesi kerja saat ini ke corpus SIDIX. Panggil di akhir sesi atau saat pindah proyek.',
-      inputSchema: {
-        type: 'object',
-        properties: {
-          project:  { type: 'string', description: 'Nama proyek yang dikerjakan' },
-          summary:  { type: 'string', description: 'Ringkasan apa yang dikerjakan dan dipelajari' },
-          decisions:{ type: 'string', description: 'Keputusan penting yang diambil (opsional)' },
-          errors:   { type: 'string', description: 'Error yang ditemukan dan cara fixnya (opsional)' }
-        },
-        required: ['project', 'summary']
-      }
-    },
-    {
-      name: 'sidix_status',
-      description: 'Cek status SIDIX — apakah online, berapa dokumen di corpus, mode model.',
-      inputSchema: {
-        type: 'object',
-        properties: {},
-        required: []
-      }
-    }
-  ]
+  tools: [...CORE_TOOLS, ...SOCIAL_TOOLS],
 }));
 
-// ── Tool handlers ─────────────────────────────────────────────────────────────
+function nextResearchNoteNumber(notesDir) {
+  const files = fs
+    .readdirSync(notesDir)
+    .filter((name) => /^\d+_/.test(name))
+    .sort();
+  if (files.length === 0) {
+    return 1;
+  }
+  const match = files[files.length - 1].match(/^(\d+)/);
+  return match ? Number.parseInt(match[1], 10) + 1 : 1;
+}
+
+function slugify(input, maxLen = 50) {
+  return String(input || 'untitled')
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, '')
+    .replace(/\s+/g, '_')
+    .slice(0, maxLen);
+}
+
+async function sidixReindexFireAndForget() {
+  try {
+    await fetch(`${BRAIN_QA_URL}/corpus/reindex`, { method: 'POST' });
+  } catch (_err) {
+    // no-op: backend mungkin sedang restart
+  }
+}
+
 server.setRequestHandler(CallToolRequestSchema, async (req) => {
-  const { name, arguments: args } = req.params;
+  const name = req?.params?.name || '';
+  const args = req?.params?.arguments || {};
 
   try {
-    switch (name) {
+    if (isSocialToolName(name)) {
+      return await handleSocialTool(name, args, BRAIN_QA_URL);
+    }
 
-      // ── sidix_query ──────────────────────────────────────────────────────
+    switch (name) {
       case 'sidix_query': {
         const res = await fetch(`${BRAIN_QA_URL}/agent/chat`, {
-          method:  'POST',
+          method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            message: args.question,
+            question: args.question,
             persona: args.persona || 'MIGHAN',
             corpus_only: false,
-          })
+          }),
         });
-
-        if (!res.ok) throw new Error(`SIDIX HTTP ${res.status}`);
+        if (!res.ok) {
+          throw new Error(`SIDIX HTTP ${res.status}`);
+        }
         const data = await res.json();
-
+        const answer = data.answer || data.reply || '(tanpa isi)';
+        const sourceCount = Array.isArray(data.citations) ? data.citations.length : 0;
         return {
-          content: [{
-            type: 'text',
-            text: `**SIDIX (${args.persona || 'MIGHAN'}) menjawab:**\n\n${data.reply || data.answer || JSON.stringify(data)}\n\n*Confidence: ${data.confidence || '–'} | Sources: ${data.citations?.length || 0}*`
-          }]
+          content: [
+            {
+              type: 'text',
+              text: [
+                `SIDIX (${args.persona || 'MIGHAN'})`,
+                '',
+                answer,
+                '',
+                `Confidence: ${data.confidence || '-'} | Sources: ${sourceCount}`,
+              ].join('\n'),
+            },
+          ],
         };
       }
 
-      // ── sidix_capture ────────────────────────────────────────────────────
       case 'sidix_capture': {
         const category = args.category || 'research_notes';
         const notesDir = path.join(CORPUS_PATH, category);
-
-        // Buat direktori kalau belum ada
         fs.mkdirSync(notesDir, { recursive: true });
 
-        // Cari nomor berikutnya
-        let nextNum = 1;
-        if (category === 'research_notes') {
-          const files = fs.readdirSync(notesDir)
-            .filter(f => /^\d+_/.test(f))
-            .sort();
-          if (files.length > 0) {
-            const last = files[files.length - 1];
-            const match = last.match(/^(\d+)/);
-            if (match) nextNum = parseInt(match[1]) + 1;
-          }
-        }
-
-        // Buat slug dari topik
-        const slug = args.topic.toLowerCase()
-          .replace(/[^a-z0-9\s]/g, '')
-          .replace(/\s+/g, '_')
-          .slice(0, 50);
-
         const today = new Date().toISOString().slice(0, 10);
-        const filename = category === 'research_notes'
-          ? `${nextNum}_${slug}.md`
-          : `${today}_${slug}.md`;
-
+        const slug = slugify(args.topic, 60);
+        const filename =
+          category === 'research_notes'
+            ? `${nextResearchNoteNumber(notesDir)}_${slug}.md`
+            : `${today}_${slug}.md`;
         const filepath = path.join(notesDir, filename);
-
-        // Tulis file
-        const fullContent = `# ${args.topic}\n\n> Dicapture via SIDIX MCP — ${today}\n\n${args.content}\n`;
-        fs.writeFileSync(filepath, fullContent, 'utf8');
-
-        // Trigger re-index via API (fire-and-forget)
-        fetch(`${BRAIN_QA_URL}/corpus/reindex`, { method: 'POST' })
-          .catch(() => {}); // tidak blokir kalau SIDIX offline
-
-        return {
-          content: [{
-            type: 'text',
-            text: `✅ **Tersimpan ke corpus SIDIX**\n\nFile: \`${category}/${filename}\`\nSIDIX sedang re-index... pengetahuan ini akan tersedia dalam beberapa detik.`
-          }]
-        };
-      }
-
-      // ── sidix_learn_session ──────────────────────────────────────────────
-      case 'sidix_learn_session': {
-        const today = new Date().toISOString().slice(0, 10);
-        const slug  = args.project.toLowerCase().replace(/[^a-z0-9]/g, '_').slice(0, 30);
-        const notesDir = path.join(CORPUS_PATH, 'research_notes');
-
-        fs.mkdirSync(notesDir, { recursive: true });
-
-        // Cari nomor berikutnya
-        const files = fs.readdirSync(notesDir)
-          .filter(f => /^\d+_/.test(f)).sort();
-        let nextNum = 1;
-        if (files.length > 0) {
-          const match = files[files.length - 1].match(/^(\d+)/);
-          if (match) nextNum = parseInt(match[1]) + 1;
-        }
-
-        const filename = `${nextNum}_sesi_${slug}_${today}.md`;
-        const filepath = path.join(notesDir, filename);
-
-        const content = `# Sesi Kerja: ${args.project} — ${today}
-
-> Direkam via SIDIX MCP dari sesi Claude
-
-## Ringkasan
-${args.summary}
-
-${args.decisions ? `## Keputusan Penting\n${args.decisions}\n` : ''}
-${args.errors ? `## Error & Fix\n${args.errors}\n` : ''}
-`;
-
+        const content = `# ${args.topic}\n\n> Captured via SIDIX MCP - ${today}\n\n${args.content}\n`;
         fs.writeFileSync(filepath, content, 'utf8');
-        fetch(`${BRAIN_QA_URL}/corpus/reindex`, { method: 'POST' }).catch(() => {});
+        sidixReindexFireAndForget();
 
         return {
-          content: [{
-            type: 'text',
-            text: `✅ **Sesi direkam ke corpus SIDIX**\n\nFile: \`research_notes/${filename}\`\nSIDIX belajar dari sesi kerja di proyek: ${args.project}`
-          }]
+          content: [
+            {
+              type: 'text',
+              text: `Tersimpan: ${category}/${filename}\nRe-index SIDIX berjalan di background.`,
+            },
+          ],
         };
       }
 
-      // ── sidix_status ─────────────────────────────────────────────────────
+      case 'sidix_learn_session': {
+        const notesDir = path.join(CORPUS_PATH, 'research_notes');
+        fs.mkdirSync(notesDir, { recursive: true });
+        const today = new Date().toISOString().slice(0, 10);
+        const slug = slugify(args.project, 40);
+        const filename = `${nextResearchNoteNumber(notesDir)}_sesi_${slug}_${today}.md`;
+        const filepath = path.join(notesDir, filename);
+
+        const lines = [
+          `# Sesi Kerja: ${args.project} - ${today}`,
+          '',
+          '> Direkam via SIDIX MCP',
+          '',
+          '## Ringkasan',
+          `${args.summary || ''}`,
+          '',
+        ];
+        if (args.decisions) {
+          lines.push('## Keputusan Penting', `${args.decisions}`, '');
+        }
+        if (args.errors) {
+          lines.push('## Error dan Fix', `${args.errors}`, '');
+        }
+
+        fs.writeFileSync(filepath, lines.join('\n'), 'utf8');
+        sidixReindexFireAndForget();
+        return {
+          content: [
+            {
+              type: 'text',
+              text: `Sesi direkam: research_notes/${filename}`,
+            },
+          ],
+        };
+      }
+
       case 'sidix_status': {
         try {
-          const res  = await fetch(`${BRAIN_QA_URL}/health`);
+          const res = await fetch(`${BRAIN_QA_URL}/health`);
           const data = await res.json();
           return {
-            content: [{
-              type: 'text',
-              text: [
-                `**SIDIX Status**`,
-                `🟢 Online: ${data.status === 'ok' ? 'Ya' : 'Tidak'}`,
-                `📚 Corpus: ${data.corpus_doc_count} dokumen`,
-                `🤖 Model: ${data.model_mode} (ready: ${data.model_ready})`,
-                `🛠️ Tools: ${data.tools_available} tersedia`,
-                `🔗 URL: ${BRAIN_QA_URL}`,
-              ].join('\n')
-            }]
+            content: [
+              {
+                type: 'text',
+                text: [
+                  'SIDIX Status',
+                  `Online: ${data.status === 'ok' ? 'Ya' : 'Tidak'}`,
+                  `Corpus: ${data.corpus_doc_count ?? '-'} dokumen`,
+                  `Model: ${data.model_mode ?? '-'} (ready: ${String(data.model_ready)})`,
+                  `Tools: ${data.tools_available ?? '-'}`,
+                  `URL: ${BRAIN_QA_URL}`,
+                ].join('\n'),
+              },
+            ],
           };
-        } catch {
+        } catch (_err) {
           return {
-            content: [{
-              type: 'text',
-              text: `⚠️ **SIDIX Offline**\n\nTidak bisa terhubung ke ${BRAIN_QA_URL}\nPastikan backend brain_qa berjalan.`
-            }]
+            content: [
+              {
+                type: 'text',
+                text: `SIDIX offline: tidak bisa menghubungi ${BRAIN_QA_URL}`,
+              },
+            ],
           };
         }
       }
@@ -249,13 +263,14 @@ ${args.errors ? `## Error & Fix\n${args.errors}\n` : ''}
     }
   } catch (err) {
     return {
-      content: [{ type: 'text', text: `❌ Error: ${err.message}` }],
-      isError: true
+      content: [{ type: 'text', text: `Error: ${err.message}` }],
+      isError: true,
     };
   }
 });
 
-// ── Start ────────────────────────────────────────────────────────────────────
 const transport = new StdioServerTransport();
 await server.connect(transport);
-console.error('SIDIX MCP Server running. Tools: sidix_query, sidix_capture, sidix_learn_session, sidix_status');
+console.error(
+  `SIDIX Socio MCP running | core=${CORE_TOOLS.length} social=${SOCIAL_TOOLS.length} | ${BRAIN_QA_URL}`,
+);

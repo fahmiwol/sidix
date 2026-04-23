@@ -152,6 +152,62 @@ _ADS_GEN_RE = re.compile(
     re.IGNORECASE,
 )
 
+_SIDIX_DOMAIN_RE = re.compile(
+    r"\b("
+    r"sidix|ihos|maqashid|naskh|sanad|raudah|tafsir|jariyah|muhasabah|"
+    r"hafidz|praxis|persona|toard|fach|hayfar|inan|mighan|"
+    r"brain_qa|corpus|korpus|knowledge\s+base"
+    r")\b",
+    re.IGNORECASE,
+)
+
+_FORCE_CORPUS_RE = re.compile(
+    r"\b("
+    r"berdasarkan\s+(corpus|korpus|dokumen|sumber)|"
+    r"ambil\s+dari\s+(corpus|korpus)|"
+    r"cite|sitasi|rujuk|sanad|"
+    r"lihat\s+catatan|daftar\s+sumber"
+    r")\b",
+    re.IGNORECASE,
+)
+
+
+def _should_prioritize_corpus(question: str, *, corpus_only: bool) -> bool:
+    """Putuskan kapan RAG harus dominan (topik SIDIX atau user minta sumber eksplisit)."""
+    if corpus_only:
+        return True
+    q = (question or "").strip()
+    if not q:
+        return False
+    if _FORCE_CORPUS_RE.search(q):
+        return True
+    return bool(_SIDIX_DOMAIN_RE.search(q))
+
+
+def _response_blend_profile(question: str) -> dict[str, Any]:
+    """
+    Menentukan strategi model-vs-corpus.
+    - sidix_focused: corpus dipakai kuat
+    - model_focused: corpus hanya referensi ringan
+    """
+    if _should_prioritize_corpus(question, corpus_only=False):
+        return {
+            "name": "sidix_focused",
+            "max_obs_blocks": 3,
+            "system_hint": (
+                "Prioritaskan konteks SIDIX bila relevan. "
+                "Jika konteks tidak cukup, jawab jujur dan sebutkan keterbatasan."
+            ),
+        }
+    return {
+        "name": "model_focused",
+        "max_obs_blocks": 1,
+        "system_hint": (
+            "Untuk topik umum/non-SIDIX, prioritaskan pengetahuan model. "
+            "Gunakan konteks corpus hanya sebagai referensi tambahan jika benar-benar relevan."
+        ),
+    }
+
 
 def _effective_max_steps(question: str, max_steps: int | None) -> int:
     if max_steps is not None:
@@ -343,11 +399,18 @@ def _rule_based_plan(
                 {"slug": slug, "n": 10},
             )
 
-        # Default: search corpus
+        # Default routing: corpus untuk topik SIDIX, model untuk topik umum.
+        if _should_prioritize_corpus(question, corpus_only=corpus_only):
+            return (
+                f"Topik terkait SIDIX/sumber internal. Gunakan search_corpus dengan query: '{question}'.",
+                "search_corpus",
+                {"query": question, "k": 5, "persona": persona},
+            )
         return (
-            f"Pertanyaan ini butuh referensi dari corpus. Gunakan search_corpus dengan query: '{question}'.",
-            "search_corpus",
-            {"query": question, "k": 5, "persona": persona},
+            "Topik umum/non-SIDIX. Jawab langsung dari kemampuan model dulu, "
+            "lalu gunakan corpus hanya bila diminta.",
+            "",
+            {},
         )
 
     # Step 1+: evaluasi hasil sebelumnya
@@ -447,23 +510,35 @@ def _rule_based_plan(
                 {},
             )
 
-        # Jika ada error di observation, coba search corpus sebagai fallback
+        # Jika ada error di observation, coba search corpus hanya bila perlu corpus.
         if "[error]" in obs_lower[:200] or "error" in obs_lower[:50]:
             if step < 3:
+                if _should_prioritize_corpus(question, corpus_only=corpus_only):
+                    return (
+                        "Langkah sebelumnya error. Coba search_corpus sebagai fallback.",
+                        "search_corpus",
+                        {"query": question, "k": 3, "persona": persona},
+                    )
                 return (
-                    f"Langkah sebelumnya error. Coba search_corpus sebagai fallback.",
-                    "search_corpus",
-                    {"query": question, "k": 3, "persona": persona},
+                    "Langkah sebelumnya error, tetapi topik umum. Lanjutkan final answer dari model.",
+                    "",
+                    {},
                 )
 
     # Default: final answer setelah MAX_STEPS/2
     if step >= MAX_STEPS // 2:
         return ("Cukup informasi untuk menjawab. Buat final answer.", "", {})
 
+    if _should_prioritize_corpus(question, corpus_only=corpus_only):
+        return (
+            "Belum cukup info. Coba search corpus lebih dalam.",
+            "search_corpus",
+            {"query": question, "k": 5, "persona": persona},
+        )
     return (
-        "Belum cukup info. Coba search lebih dalam.",
-        "search_corpus",
-        {"query": question, "k": 5, "persona": persona},
+        "Topik umum dan tidak butuh corpus tambahan. Lanjut final answer.",
+        "",
+        {},
     )
 
 
@@ -493,15 +568,20 @@ def _compose_final_answer(
             obs_blocks.append(s.observation)
         all_citations.extend(s.action_args.get("_citations", []))
 
+    blend = _response_blend_profile(question)
+    max_obs_blocks = int(blend.get("max_obs_blocks", 2))
+    system_hint = str(blend.get("system_hint", ""))
+
     # ── Coba Ollama generative (sebelum greeting check) ──────────────────────
     # Kalau Ollama tersedia: generate jawaban nyata pakai LLM + corpus context
     try:
         from .ollama_llm import ollama_available, ollama_generate
         if ollama_available():
             # Build corpus context dari semua observation
-            corpus_ctx = "\n\n---\n\n".join(obs_blocks[:3]) if obs_blocks else ""
+            corpus_ctx = "\n\n---\n\n".join(obs_blocks[:max_obs_blocks]) if obs_blocks else ""
             text, mode = ollama_generate(
                 prompt=question,
+                system=system_hint,
                 corpus_context=corpus_ctx,
                 max_tokens=600 if not simple_mode else 200,
                 temperature=0.7,
@@ -518,7 +598,7 @@ def _compose_final_answer(
     try:
         from .anthropic_llm import anthropic_available, anthropic_generate
         if anthropic_available():
-            corpus_ctx_snippets = obs_blocks[:3] if obs_blocks else None
+            corpus_ctx_snippets = obs_blocks[:max_obs_blocks] if obs_blocks else None
             max_tok = 500 if not simple_mode else 200
             text, mode = anthropic_generate(
                 prompt=question,

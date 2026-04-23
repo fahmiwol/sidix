@@ -138,8 +138,11 @@ def ollama_generate(
     """
     used_model = model or ollama_best_available_model()
 
-    # Build system prompt
-    combined_system = system.strip() if system.strip() else SIDIX_SYSTEM
+    # Build system prompt: base SIDIX + optional runtime hint
+    if system.strip():
+        combined_system = f"{SIDIX_SYSTEM}\n\nInstruksi tambahan runtime:\n{system.strip()}"
+    else:
+        combined_system = SIDIX_SYSTEM
 
     # Inject corpus context ke user message kalau ada (RAG pattern)
     user_message = prompt
@@ -147,6 +150,8 @@ def ollama_generate(
         user_message = (
             f"[KONTEKS DARI KNOWLEDGE BASE SIDIX]\n"
             f"{corpus_context.strip()}\n\n"
+            "[ATURAN PEMAKAIAN KONTEKS]\n"
+            "Gunakan konteks di atas sebagai referensi tambahan, bukan satu-satunya sumber.\n\n"
             f"[PERTANYAAN USER]\n"
             f"{prompt}"
         )
