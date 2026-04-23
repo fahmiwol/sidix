@@ -528,8 +528,22 @@
             <div class="roadmap-item">
               <div class="check">✓</div>
               <div>
-                <p class="text-sm font-medium text-parchment-200">180+ Research Notes Corpus</p>
+                <p class="text-sm font-medium text-parchment-200">188+ Research Notes Corpus</p>
                 <p class="text-xs text-parchment-500">AI/ML, Coding, Web, Mobile, Game, Linguistics, Visual AI, Islamic Epistemology, Social Media.</p>
+              </div>
+            </div>
+            <div class="roadmap-item">
+              <div class="check">✓</div>
+              <div>
+                <p class="text-sm font-medium text-parchment-200">Social Radar MVP — Competitor Intelligence <span class="text-xs text-gold-400">Sprint 7</span></p>
+                <p class="text-xs text-parchment-500">Chrome Extension dengan DOM scraping real (Instagram/Threads/X/YouTube/Facebook) + backend analisis ER, sentimen, tier. MV3 service worker. 15/15 test PASSED.</p>
+              </div>
+            </div>
+            <div class="roadmap-item">
+              <div class="check">✓</div>
+              <div>
+                <p class="text-sm font-medium text-parchment-200">SIDIX Socio Bot MCP — Plugin untuk Claude / GPT / Cursor / Kimi <span class="text-xs text-gold-400">Sprint 7b</span></p>
+                <p class="text-xs text-parchment-500">13 tools via Model Context Protocol: scan IG/Threads/X/YouTube, analisis engagement, banding akun, kirim/terima WhatsApp, integrasi Chrome Extension bridge. Plug langsung ke Claude Desktop &amp; Cursor.</p>
               </div>
             </div>
           </div>
@@ -539,18 +553,18 @@
             <div class="roadmap-item">
               <div class="progress">▶</div>
               <div>
-                <p class="text-sm font-medium text-parchment-200">Social Radar — Competitor Intelligence untuk UMKM <span class="text-xs text-gold-400">Sprint 7</span></p>
-                <p class="text-xs text-parchment-500">Chrome Extension + backend analisis engagement rate, sentimen, tier kompetitor. Tanpa data privat (public-aggregate only). MVP scaffolded, real scrape next.</p>
+                <p class="text-sm font-medium text-parchment-200">Self-Training Pipeline (LoRA v2)</p>
+                <p class="text-xs text-parchment-500">Auto-pair corpus → JSONL → QLoRA retrain → deploy adapter baru. Growth loop aktif, training v2 menunggu dataset cukup.</p>
               </div>
               <span class="badge badge-gold ml-auto flex-shrink-0">Active</span>
             </div>
             <div class="roadmap-item">
               <div class="progress">▶</div>
               <div>
-                <p class="text-sm font-medium text-parchment-200">Self-Training Pipeline (LoRA v2)</p>
-                <p class="text-xs text-parchment-500">Auto-pair corpus → JSONL → QLoRA retrain → deploy adapter baru. Growth loop aktif, training v2 menunggu dataset cukup.</p>
+                <p class="text-sm font-medium text-parchment-200">Social Radar Dashboard — Multi-Competitor Visualisasi</p>
+                <p class="text-xs text-parchment-500">Dashboard di app.sidixlab.com untuk visualisasi data radar beberapa akun sekaligus. TikTok scraping via OpHarvest.</p>
               </div>
-              <span class="badge badge-gold ml-auto flex-shrink-0">Active</span>
+              <span class="badge badge-gold ml-auto flex-shrink-0">Next</span>
             </div>
           </div>
 
@@ -558,19 +572,19 @@
           <div>
             <div class="roadmap-item">
               <div class="todo"></div>
-              <div><p class="text-sm text-parchment-400">Social Radar — OpHarvest real scrape (Instagram → TikTok)</p></div>
+              <div><p class="text-sm text-parchment-400">Voice/ASR — Whisper + TTS/Piper lokal (Sprint 8)</p></div>
             </div>
             <div class="roadmap-item">
               <div class="todo"></div>
-              <div><p class="text-sm text-parchment-400">Radar dashboard di app.sidixlab.com (multi-competitor visualisasi)</p></div>
+              <div><p class="text-sm text-parchment-400">Fine-tune v2 — corpus diperluas, Social Radar training pairs</p></div>
             </div>
             <div class="roadmap-item">
               <div class="todo"></div>
-              <div><p class="text-sm text-parchment-400">Fine-tune v2 (corpus diperluas, termasuk Social Radar training pairs)</p></div>
+              <div><p class="text-sm text-parchment-400">Raudah v0.2 — TaskGraph DAG + endpoint /raudah/run</p></div>
             </div>
             <div class="roadmap-item">
               <div class="todo"></div>
-              <div><p class="text-sm text-parchment-400">Distributed Hafidz sync (P2P corpus nodes)</p></div>
+              <div><p class="text-sm text-parchment-400">Distributed Hafidz sync (P2P corpus nodes, IPFS + BFT ledger)</p></div>
             </div>
             <div class="roadmap-item">
               <div class="todo"></div>
@@ -602,11 +616,30 @@
 
         <div class="space-y-4">
 
-          <!-- v0.7.0 -->
+          <!-- v0.8.0 -->
           <div class="card p-6">
             <div class="flex items-start justify-between gap-4 mb-3">
               <div>
                 <span class="inline-block text-xs font-bold px-2 py-0.5 rounded-full mb-2" style="background:rgba(110,174,124,0.15);color:#6EAE7C;border:1px solid rgba(110,174,124,0.3)">Latest</span>
+                <h3 class="font-bold text-parchment-100 text-base">v0.8.0 — SIDIX Socio Bot MCP + WA Bridge</h3>
+              </div>
+              <span class="text-xs text-parchment-500 flex-shrink-0 mt-1">2026-04-23</span>
+            </div>
+            <ul class="space-y-1.5 text-sm text-parchment-400">
+              <li>🔌 <strong class="text-parchment-300">SIDIX Socio Bot MCP</strong> — 13 tools via Model Context Protocol; plug langsung ke Claude Desktop, Cursor, Kimi, Codex</li>
+              <li>📡 <strong class="text-parchment-300">9 Social Tools</strong>: scan IG/Threads/X/YouTube, analyze_social, compare_social_accounts, social_post_threads</li>
+              <li>💬 <strong class="text-parchment-300">WA Bridge</strong> (<code style="font-size:0.7rem;color:#D4A853">apps/sidix-wa-bridge</code>) — wa_send + wa_receive via Baileys, QR pairing, ring buffer 50 pesan</li>
+              <li>🌉 <strong class="text-parchment-300">Extension Bridge</strong> (<code style="font-size:0.7rem;color:#D4A853">apps/sidix-extension-bridge</code>) — relay Chrome Extension → MCP tool (TTL 5 menit)</li>
+              <li>⚙️ <strong class="text-parchment-300">MV3 Service Worker</strong> — background.js simpan scan ke <code style="font-size:0.7rem;color:#D4A853">chrome.storage.session</code>, TTL 5 menit</li>
+              <li>🔧 Config paths difix dari <code style="font-size:0.7rem;color:#D4A853">D:\MIGHAN Model</code> → <code style="font-size:0.7rem;color:#D4A853">C:\SIDIX-AI</code>; env bridge vars ditambahkan</li>
+            </ul>
+          </div>
+
+          <!-- v0.7.0 -->
+          <div class="card p-6">
+            <div class="flex items-start justify-between gap-4 mb-3">
+              <div>
+                <span class="inline-block text-xs font-bold px-2 py-0.5 rounded-full mb-2" style="background:rgba(212,168,83,0.1);color:#D4A853;border:1px solid rgba(212,168,83,0.25)">Stable</span>
                 <h3 class="font-bold text-parchment-100 text-base">v0.7.0 — Security Hardening + Social Radar MVP</h3>
               </div>
               <span class="text-xs text-parchment-500 flex-shrink-0 mt-1">2026-04-23</span>

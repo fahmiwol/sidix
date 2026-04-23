@@ -6,7 +6,7 @@
   <p><em>Self-Hosted · Self-Learning · Self-Evolving · Own Stack · No Vendor API</em></p>
 
   <p>
-    <img src="https://img.shields.io/badge/version-v0.6.1-blue?style=flat-square" alt="Version" />
+    <img src="https://img.shields.io/badge/version-v0.8.0-blue?style=flat-square" alt="Version" />
     <img src="https://img.shields.io/badge/Free-100%25-brightgreen?style=flat-square" alt="Free" />
     <img src="https://img.shields.io/badge/Open%20Source-MIT-gold?style=flat-square" alt="Open Source MIT" />
     <img src="https://img.shields.io/badge/Self--Hosted-Own%20Stack-blue?style=flat-square" alt="Self-Hosted" />
@@ -19,7 +19,7 @@
     <a href="https://github.com/fahmiwol/sidix/stargazers"><img src="https://img.shields.io/github/stars/fahmiwol/sidix?color=gold" alt="Stars" /></a>
     <a href="https://github.com/fahmiwol/sidix/issues"><img src="https://img.shields.io/github/issues/fahmiwol/sidix" alt="Issues" /></a>
     <img src="https://img.shields.io/badge/Model-Qwen2.5--7B + QLoRA-blue" alt="Model" />
-    <img src="https://img.shields.io/badge/Tools-35 active-orange" alt="Tools" />
+    <img src="https://img.shields.io/badge/Tools-44 active-orange" alt="Tools" />
     <a href="https://huggingface.co/Tiranyx"><img src="https://img.shields.io/badge/HuggingFace-Tiranyx-FFD21E?logo=huggingface&logoColor=000" alt="HuggingFace" /></a>
     <a href="./sidix-hafidz-ledger-whitepaper.pdf"><img src="https://img.shields.io/badge/Whitepaper-Proof--of--Hifdz-darkblue" alt="Whitepaper" /></a>
     <a href="https://t.me/sidixlab_bot"><img src="https://img.shields.io/badge/Telegram-Train%20SIDIX-2AABEE?logo=telegram" alt="Telegram Bot" /></a>
@@ -48,6 +48,7 @@
     <a href="https://sidixlab.com">🌐 Website</a> ·
     <a href="https://app.sidixlab.com">🚀 Try SIDIX Free</a> ·
     <a href="#-quick-start">⚡ Quick Start</a> ·
+    <a href="#-sidix-socio-bot-mcp--ai-plugin-for-claude--gpt--cursor--kimi">🔌 MCP Plugin</a> ·
     <a href="#-the-ihos-foundation">🧠 The Foundation</a> ·
     <a href="#-architecture">🏗️ Architecture</a> ·
     <a href="https://huggingface.co/Tiranyx/sidix-lora">🤗 HuggingFace</a> ·
@@ -195,7 +196,48 @@ print(result.jawaban_final)   # synthesized consensus
 print(result.durasi_s)        # e.g. 45.2s on RTX 3060
 ```
 
-### Current Capabilities (v0.6.1 — 2026-04-23)
+### 🔌 SIDIX Socio Bot MCP — AI Plugin for Claude / GPT / Cursor / Kimi
+
+**Sprint 7b** ships a full [Model Context Protocol](https://modelcontextprotocol.io) server that lets Claude Desktop, Cursor, Kimi, and any MCP-compatible client call SIDIX's social intelligence tools directly.
+
+```
+Claude/GPT/Cursor/Kimi
+        │  MCP (stdio)
+        ▼
+apps/sidix-mcp/src/index.js        ← 13 tools total
+        │
+        ├── http://localhost:8765   ← SIDIX brain backend
+        ├── http://localhost:7788   ← Extension Bridge (Chrome ↔ MCP)
+        └── http://localhost:7789   ← WA Bridge (WhatsApp Web via Baileys)
+```
+
+**Install in Claude Desktop:**
+```bash
+# Copy config
+cp apps/sidix-mcp/claude_desktop_config.json %APPDATA%\Claude\claude_desktop_config.json
+
+# Start bridges (two terminals)
+cd apps/sidix-extension-bridge && npm install && npm start   # port 7788
+cd apps/sidix-wa-bridge        && npm install && npm start   # port 7789 → scan QR
+```
+
+**9 Social Tools available:**
+
+| Tool | What it does |
+|---|---|
+| `scan_instagram_profile` | ER + sentiment + tier dari profil publik IG |
+| `scan_threads_profile` | Analisis profil Threads |
+| `scan_youtube_channel` | Engagement rate YouTube channel |
+| `scan_twitter_profile` | Analisis X/Twitter profil |
+| `analyze_social` | Analisis mendalam dari URL apapun |
+| `compare_social_accounts` | Banding 2+ akun lintas platform |
+| `social_post_threads` | Auto-post ke Threads (butuh token) |
+| `wa_send` | Kirim pesan WhatsApp via bridge |
+| `wa_receive` | Baca inbox WA terbaru (ring buffer 50) |
+
+---
+
+### Current Capabilities (v0.8.0 — 2026-04-23)
 
 | Domain | Agent / Tool | Status |
 |---|---|---|
@@ -214,8 +256,12 @@ print(result.durasi_s)        # e.g. 45.2s on RTX 3060
 | **Self-Evolution** | `prompt_optimizer` — L1 flywheel, weekly improvement | ✅ Live |
 | **Knowledge** | BM25 corpus · Wikipedia · web_search · web_fetch | ✅ Live |
 | **Image** | SDXL self-hosted (RTX 3060 / RunPod fallback) | ✅ Live |
-| **Voice / Video** | Whisper + TTS + FFmpeg | 🗓 Sprint 7 |
-| **3D / Gaming** | Hunyuan3D + Blender API | 🗓 Sprint 8 |
+| **Social Intelligence** | `scan_instagram_profile` · `scan_threads` · `scan_youtube` · `scan_twitter` · `analyze_social` · `compare_social_accounts` | ✅ Live |
+| **WA Automation** | `wa_send` · `wa_receive` (Baileys bridge, port 7789) | ✅ Live |
+| **MCP Plugin** | Claude/GPT/Cursor/Kimi/Codex — 13 tools via stdio MCP | ✅ Live |
+| **Chrome Extension** | Social Radar MV3 — DOM scrape + background service worker | ✅ Live |
+| **Voice / Video** | Whisper + TTS + FFmpeg | 🗓 Sprint 8 |
+| **3D / Gaming** | Hunyuan3D + Blender API | 🗓 Sprint 9 |
 | **Raudah v0.2** | TaskGraph DAG + POST /raudah/run endpoint | 🗓 Next sprint |
 
 ---
