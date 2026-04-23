@@ -7,6 +7,19 @@ Semua perubahan signifikan dicatat di sini. Format: `[versi] — tanggal — rin
 
 ---
 
+## [v0.7.4-dev] — 2026-04-25 — Typo bridge + korpus Jiwa + Kimi + dokumen operasional ke git
+
+### Narasi
+**Sinkron besar:** `typo_bridge.py` dan penyambungan **`run_react`** (kueri ternormalisasi untuk cache/RAG setelah gate keamanan); **`brain/typo/`** (`pipeline.py`, kerangka multibahasa + TYPO Indonesia); modul/README pilar **`brain/nafs`**, **`aql`**, **`qalb`**, **`ruh`**, **`hayat`**, **`ilm`**, **`hikmah`** + **`ARSITEKTUR_JIWA_SIDIX.md`**; **`kimi-plugin/`** (`bridge.py`, manifest, skill YAML); dokumen **`BRIEF_SIDIX_SocioMeter`**, **`KIMI_INTEGRATION_GUIDE`**, **`PRD_...`**, handoff 2026-04-23; uji **`test_typo_*`**. Folder bundel lokal / scraping / skrip VPS sekali pakai **tidak** dimasukkan agar repo tetap bersih.
+
+### English
+Landed typo pipeline integration (`typo_bridge`, `run_react`), full `brain/typo` spec + MVP code, Jiwa pillar corpus modules and architecture doc, Kimi plugin artifacts, and operational docs; added tests. Excluded duplicate framework bundles and ad-hoc VPS scripts from this commit.
+
+### UI (landing app)
+- `SIDIX_USER_UI` — **v1.0.4**: About / What is new — sinkron git v0.7.4-dev, typo bridge, paket dokumen.
+
+---
+
 ## [v0.7.3-dev] — 2026-04-25 — Pemetaan framework + paket `docs/sociometer/` + landing v1.0.3
 
 ### Narasi

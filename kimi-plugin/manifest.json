@@ -1,0 +1,170 @@
+{
+  "manifest_version": "1.0",
+  "name": "SIDIX-SocioMeter",
+  "version": "1.0.0",
+  "description": "AI Agent berbasis IHOS untuk creative content, competitor analysis, self-training, dan multilingual typo-resilient interaction",
+  "author": "SIDIX Team",
+  "icon": "🔷",
+  "homepage": "https://github.com/fahmiwol/sidix",
+
+  "capabilities": {
+    "agent_mode": true,
+    "multilingual": true,
+    "typo_resilience": true,
+    "self_training": true,
+    "maqashid_filter": true,
+    "sanad_chain": true
+  },
+
+  "skills": [
+    {
+      "name": "nasihah_creative",
+      "display_name": "✨ Creative Studio",
+      "description": "Generate creative content: copywriting, branding, marketing, caption, ad copy dengan Maqashid filter",
+      "icon": "✨",
+      "trigger_keywords": ["buatkan", "copywriting", "branding", "marketing", "iklan", "caption", "content", "creative"],
+      "parameters": {
+        "brief": {"type": "string", "required": true, "description": "Deskripsi tugas kreatif"},
+        "persona": {"type": "string", "enum": ["AYMAN", "ABOO", "OOMAR", "ALEY", "UTZ"], "default": "AYMAN"},
+        "format": {"type": "string", "enum": ["caption", "ad_copy", "brand_story", "email", "script", "slogan"], "default": "caption"}
+      }
+    },
+    {
+      "name": "nasihah_analyze",
+      "display_name": "📊 Intelligence Analyst",
+      "description": "Analyze data: competitor, market, trends, social media dengan Sanad chain",
+      "icon": "📊",
+      "trigger_keywords": ["analisis", "analisa", "competitor", "tren", "market", "research", "intel"],
+      "parameters": {
+        "data": {"type": "string", "required": true, "description": "Data atau query analisis"},
+        "analysis_type": {"type": "string", "enum": ["competitor", "market", "trends", "sentiment", "swot"], "default": "competitor"},
+        "platform": {"type": "string", "enum": ["instagram", "tiktok", "twitter", "youtube", "facebook", "linkedin", "all"], "default": "all"}
+      }
+    },
+    {
+      "name": "nasihah_design",
+      "display_name": "🎨 Visual Studio",
+      "description": "Generate visual content: images, thumbnails, logos, banners",
+      "icon": "🎨",
+      "trigger_keywords": ["gambar", "design", "logo", "thumbnail", "visual", "banner", "image"],
+      "parameters": {
+        "prompt": {"type": "string", "required": true, "description": "Deskripsi visual yang diinginkan"},
+        "format": {"type": "string", "enum": ["image", "thumbnail", "logo", "banner", "social_post"], "default": "image"},
+        "aspect_ratio": {"type": "string", "enum": ["1:1", "16:9", "9:16", "4:3"], "default": "1:1"}
+      }
+    },
+    {
+      "name": "nasihah_code",
+      "display_name": "💻 Code Generator",
+      "description": "Generate code dengan dokumentasi, test cases, dan penjelasan",
+      "icon": "💻",
+      "trigger_keywords": ["code", "kode", "script", "program", "function", "api", "backend"],
+      "parameters": {
+        "task": {"type": "string", "required": true, "description": "Deskripsi tugas coding"},
+        "language": {"type": "string", "default": "python"},
+        "include_tests": {"type": "boolean", "default": true},
+        "include_docs": {"type": "boolean", "default": true}
+      }
+    },
+    {
+      "name": "nasihah_raudah",
+      "display_name": "🤝 Multi-Agent Collab",
+      "description": "TaskGraph DAG multi-agent orchestration untuk tugas kompleks",
+      "icon": "🤝",
+      "trigger_keywords": ["kompleks", "multi", "raudah", "collaborate", "orchestrate", "workflow"],
+      "parameters": {
+        "task": {"type": "string", "required": true, "description": "Deskripsi tugas kompleks"},
+        "agents_needed": {"type": "array", "items": {"type": "string"}, "default": ["AYMAN", "ABOO", "OOMAR", "ALEY", "UTZ"]}
+      }
+    },
+    {
+      "name": "maqashid_check",
+      "display_name": "⚖️ Maqashid Evaluator",
+      "description": "Evaluasi content dengan Maqashid filter (CREATIVE/ACADEMIC/IJTIHAD/GENERAL)",
+      "icon": "⚖️",
+      "trigger_keywords": ["maqashid", "check", "evaluasi", "filter", "review", "assess"],
+      "parameters": {
+        "content": {"type": "string", "required": true, "description": "Content yang akan dievaluasi"},
+        "mode": {"type": "string", "enum": ["CREATIVE", "ACADEMIC", "IJTIHAD", "GENERAL"], "required": true}
+      }
+    },
+    {
+      "name": "typo_normalize",
+      "display_name": "🔤 Typo Normalizer",
+      "description": "Normalize text dengan typo correction multilingual (id, en, ar, ms, tl, hi)",
+      "icon": "🔤",
+      "trigger_keywords": ["typo", "normalize", "correct", "spell"],
+      "parameters": {
+        "text": {"type": "string", "required": true, "description": "Text dengan typo yang akan di-normalize"},
+        "language": {"type": "string", "enum": ["auto", "id", "en", "ar-latin", "ms", "tl", "hi-latin"], "default": "auto"}
+      }
+    },
+    {
+      "name": "jiwa_status",
+      "display_name": "🔮 Jiwa Status",
+      "description": "Check SIDIX system health, learning progress, dan self-improvement status",
+      "icon": "🔮",
+      "trigger_keywords": ["status", "health", "jiwa", "system", "monitor"],
+      "parameters": {
+        "detail_level": {"type": "string", "enum": ["summary", "full"], "default": "summary"}
+      }
+    }
+  ],
+
+  "endpoints": {
+    "primary": {
+      "type": "mcp",
+      "url": "http://localhost:8765/mcp",
+      "transport": "streamable-http",
+      "auth": {
+        "type": "none"
+      }
+    },
+    "fallback": {
+      "type": "http",
+      "url": "http://localhost:8765/api/v1",
+      "headers": {
+        "Content-Type": "application/json",
+        "X-SIDIX-Client": "kimi-plugin"
+      }
+    }
+  },
+
+  "triggers": {
+    "commands": ["/sidix", "/sociometer", "/nasihah"],
+    "mentions": ["@SIDIX", "@Sociometer"],
+    "keywords": ["SIDIX:", "Sociometer:", "maqashid", "naskh", "raudah", "sanad", "jariyah", "nasihah"],
+    "context_menu": {
+      "enabled": true,
+      "items": [
+        {"label": "Analyze with SIDIX", "action": "nasihah_analyze"},
+        {"label": "Generate with SIDIX", "action": "nasihah_creative"},
+        {"label": "Check Maqashid", "action": "maqashid_check"}
+      ]
+    }
+  },
+
+  "multilingual": {
+    "enabled": true,
+    "languages": ["id", "en", "ar-latin", "ms", "tl", "hi-latin"],
+    "auto_detect": true,
+    "typo_correction": true,
+    "cultural_adaptation": true
+  },
+
+  "jiwa": {
+    "enabled": true,
+    "pillars": ["nafs", "aql", "qalb", "ruh", "hayat", "ilm", "hikmah"],
+    "self_training": true,
+    "self_healing": true,
+    "knowledge_layers": ["parametric", "dynamic", "static"]
+  },
+
+  "metadata": {
+    "license": "MIT",
+    "repository": "https://github.com/fahmiwol/sidix",
+    "documentation": "https://github.com/fahmiwol/sidix/docs",
+    "issues": "https://github.com/fahmiwol/sidix/issues",
+    "changelog": "https://github.com/fahmiwol/sidix/blob/main/CHANGELOG.md"
+  }
+}

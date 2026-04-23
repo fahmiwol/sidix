@@ -52,6 +52,18 @@ Contoh:
 - UPDATE: `SIDIX_USER_UI` v1.0.3 - What is new / Yang baru bilingual; footer `index.html`.
 - DOC: `CHANGELOG.md` v0.7.3-dev, `docs/CHANGELOG.md`.
 
+### 2026-04-25 (git sync - typo bridge, Jiwa korpus, Kimi)
+
+- IMPL: `typo_bridge.py`, update `agent_react.py`; tests `test_typo_bridge.py`, `test_typo_pipeline.py`.
+- IMPL+DOC: `brain/typo/` (pipeline, MULTILINGUAL, TYPO_RESILIENT).
+- DOC+IMPL: `brain/nafs|aql|qalb|ruh|hayat|ilm|hikmah/`, `brain/jiwa/ARSITEKTUR_JIWA_SIDIX.md`.
+- IMPL: `kimi-plugin/` (bridge, manifest, skill YAML).
+- DOC: `docs/BRIEF_SIDIX_SocioMeter.md`, `KIMI_INTEGRATION_GUIDE.md`, `PRD_ARSITEKTUR_JIWA_MULTILINGUAL_TYPO_ASSISTANT_PLUGIN.md`, `HANDOFF_2026-04-23_jiwa_typo_kimi.md`.
+- DOC: `docs/HANDOFF_2026-04-25_SYNC_TYPO_JIWA_KIMI.md`.
+- DOC: `CHANGELOG.md` v0.7.4-dev; UPDATE: `SIDIX_USER_UI` v1.0.4.
+- TEST: `python -m pytest tests/` dari `apps/brain_qa` - 18 passed.
+- NOTE: Bundel `Framework_bahasa_plugin_update/`, scraping, skrip VPS ad-hoc tidak di-commit.
+
 ### 2026-04-23 (sprint 6.5 batch — Raudah DAG, MinHash, CQF, intent, metrics)
 
 - IMPL: `brain/raudah/taskgraph.py` — gelombang eksekusi per peran; `urai_task` memecah paralel bertingkat + verifikator opsional.

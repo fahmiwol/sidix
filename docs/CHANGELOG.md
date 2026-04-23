@@ -4,6 +4,17 @@ Format: `[YYYY-MM-DD] — Ringkasan perubahan`
 
 ---
 
+## [2026-04-25] — Typo bridge, brain/typo + Jiwa korpus, kimi-plugin, docs — v0.7.4-dev
+
+- **IMPL:** `apps/brain_qa/brain_qa/typo_bridge.py`, update `agent_react.py`; tests `test_typo_bridge.py`, `test_typo_pipeline.py`.
+- **DOC+IMPL:** `brain/typo/*` (pipeline, MULTILINGUAL, TYPO_RESILIENT, `__init__.py`).
+- **DOC:** `brain/jiwa/*`, `brain/nafs|aql|qalb|ruh|hayat|ilm|hikmah/` (README + modul referensi).
+- **PLUGIN:** `kimi-plugin/` (README, bridge, manifest, skill YAML).
+- **DOC:** `docs/BRIEF_SIDIX_SocioMeter.md`, `KIMI_INTEGRATION_GUIDE.md`, `PRD_ARSITEKTUR_JIWA_MULTILINGUAL_TYPO_ASSISTANT_PLUGIN.md`, `HANDOFF_2026-04-23_jiwa_typo_kimi.md`.
+- **DOC:** `docs/HANDOFF_2026-04-25_SYNC_TYPO_JIWA_KIMI.md`.
+- **PRAXIS:** `brain/public/praxis/lessons/*.md` (tiga lesson).
+- **UI:** `SIDIX_USER_UI` v1.0.4.
+
 ## [2026-04-25] — Mapping framework + docs/sociometer + landing v1.0.3
 
 - **DOC:** `docs/MAPPING_FRAMEWORK_TO_REPO.md` — peta brief → repo, status typo/Jiwa, git/landing.

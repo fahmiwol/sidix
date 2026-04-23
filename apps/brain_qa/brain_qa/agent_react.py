@@ -105,6 +105,10 @@ class AgentSession:
     # ── Maqashid mode gate (maqashid_profiles.py — IHOS-aligned) ────────────────
     maqashid_profile_status: str = ""   # pass | warn | block
     maqashid_profile_reasons: str = ""  # ringkasan alasan (API / trace)
+    # ── Typo-resilience (brain/typo/pipeline — Muhasabah: simpan asli di question) ─
+    question_normalized: str = ""     # kosong jika sama dengan question
+    typo_script_hint: str = ""         # latin | arabic | mixed_arab_latin | ...
+    typo_substitutions: int = 0
 
 
 # ── Rule-based "LLM" (offline planner) ───────────────────────────────────────
@@ -1026,9 +1030,29 @@ def run_react(
             pass
         return session
 
-    cached = answer_dedup.get_cached_answer(persona, question)
+    # ── Typo pipeline (multilingual, lokal) — setelah gate keamanan, sebelum cache/RAG ─
+    working_question = question
+    session.question_normalized = ""
+    session.typo_script_hint = ""
+    session.typo_substitutions = 0
+    try:
+        from .typo_bridge import normalize_for_react
+
+        wq, hint, n_sub = normalize_for_react(question)
+        working_question = wq or question
+        session.typo_script_hint = hint
+        session.typo_substitutions = n_sub
+        if working_question != question:
+            session.question_normalized = working_question
+    except Exception as _typo_err:
+        import logging as _log
+
+        _log.getLogger(__name__).debug(f"[TypoPipeline] skip — {_typo_err}")
+        working_question = question
+
+    cached = answer_dedup.get_cached_answer(persona, working_question)
     if cached is not None:
-        session.final_answer = _apply_maqashid_mode_gate(session, question, persona, cached)
+        session.final_answer = _apply_maqashid_mode_gate(session, working_question, persona, cached)
         session.finished = True
         session.confidence = "cache singkat"
         _praxis.record_praxis_event(session_id, "cache_hit", {"persona": persona})
@@ -1041,7 +1065,7 @@ def run_react(
     # ── FAST PATH: Image generation intent detection ─────────────────────────
     # Deteksi user minta gambar → langsung panggil text_to_image, skip ReAct.
     # Keywords ID+EN, cover variasi umum: "bikin/buat/generate/create image/gambar/foto/ilustrasi"
-    _q_lower = question.lower()
+    _q_lower = working_question.lower()
     _image_verbs = ("bikin", "buat", "buatkan", "generate", "create", "gambarkan", "gambarin", "render", "visualisasikan", "lukiskan", "desainkan")
     _image_nouns = ("gambar", "foto", "ilustrasi", "image", "picture", "visual", "artwork", "poster", "lukisan", "desain",
                     "thumbnail", "konten", "banner", "feed", "story", "reels", "cover", "wallpaper", "logo", "sticker")
@@ -1059,7 +1083,7 @@ def run_react(
             # Inspired by BG Maker Prompt Engineering (Aaker/Sinek/Neumeier/Jungian/CBBE).
             try:
                 from .creative_framework import enhance_prompt_creative
-                enh = enhance_prompt_creative(question)
+                enh = enhance_prompt_creative(working_question)
                 enhanced = enh["enhanced_prompt"]
                 width = enh["width"]
                 height = enh["height"]
@@ -1072,7 +1096,7 @@ def run_react(
                 if height > 768: height = 768
             except Exception as _enh_err:
                 _log_fp.getLogger(__name__).warning(f"[ImageFastPath] enhance_creative fallback: {_enh_err}")
-                enhanced = question
+                enhanced = working_question
                 width = height = 512
 
             _result = _call_tool(
@@ -1085,7 +1109,7 @@ def run_react(
             _log_fp.getLogger(__name__).warning(f"[ImageFastPath] tool result success={_result.success} err={_result.error!r} out_len={len(_result.output or '')}")
             if _result.success:
                 session.final_answer = _apply_maqashid_mode_gate(
-                    session, question, persona, _result.output or ""
+                    session, working_question, persona, _result.output or ""
                 )
                 session.citations = list(_result.citations or [])
                 session.finished = True
@@ -1124,7 +1148,7 @@ def run_react(
     try:
         from .experience_engine import get_experience_engine
         _exp = get_experience_engine()
-        _experience_context = _exp.synthesize(question, top_k=2)
+        _experience_context = _exp.synthesize(working_question, top_k=2)
     except Exception as _exp_err:
         import logging as _log
         _log.getLogger(__name__).debug(f"[ExperienceEngine] skip — {_exp_err}")
@@ -1132,7 +1156,7 @@ def run_react(
     try:
         from .skill_library import get_skill_library
         _skills = get_skill_library()
-        _skill_context = _skills.search_skills(question, top_k=2)
+        _skill_context = _skills.search_skills(working_question, top_k=2)
     except Exception as _skill_err:
         import logging as _log
         _log.getLogger(__name__).debug(f"[SkillLibrary] skip — {_skill_err}")
@@ -1143,7 +1167,7 @@ def run_react(
             step=-2,
             thought="[Pre-context] Ambil pola pengalaman relevan dari ExperienceEngine.",
             action_name="experience_synthesize",
-            action_args={"query": question[:80]},
+            action_args={"query": working_question[:80]},
             observation=_experience_context[:MAX_TOKENS_PER_OBS],
         )
         session.steps.insert(0, _pre_step_exp)
@@ -1153,7 +1177,7 @@ def run_react(
             step=-1,
             thought="[Pre-context] Cari skill relevan dari SkillLibrary.",
             action_name="skill_search",
-            action_args={"query": question[:80]},
+            action_args={"query": working_question[:80]},
             observation=_skill_context[:MAX_TOKENS_PER_OBS],
         )
         session.steps.insert(len(session.steps), _pre_step_skill)
@@ -1163,6 +1187,8 @@ def run_react(
         print(f"\n{'='*50}")
         print(f"[SIDIX Agent] Session: {session_id}")
         print(f"Q: {question}")
+        if working_question != question:
+            print(f"Q (normalized): {working_question}")
         print(f"Persona: {persona}")
         if u_profile:
             print(f"UserProfile: lang={u_profile.language.value} | "
@@ -1172,11 +1198,11 @@ def run_react(
                   f"style={u_profile.suggested_formality}/{u_profile.suggested_depth}/{u_profile.suggested_style}")
         print(f"{'='*50}")
 
-    eff_max = _effective_max_steps(question, max_steps)
+    eff_max = _effective_max_steps(working_question, max_steps)
     for step_num in range(eff_max):
         # 1. THINK
         thought, action_name, action_args = _rule_based_plan(
-            question=question,
+            question=working_question,
             persona=persona,
             history=session.steps,
             step=step_num,
@@ -1190,7 +1216,7 @@ def run_react(
         # 2. Final Answer check
         if not action_name:
             final_answer, citations, conf_score, atype = _compose_final_answer(
-                question=question,
+                question=working_question,
                 persona=persona,
                 steps=session.steps,
                 simple_mode=simple_mode,
@@ -1217,17 +1243,17 @@ def run_react(
             # ── Islamic Epistemology Engine ───────────────────────────────────
             final_answer = _apply_epistemology(
                 session=session,
-                question=question,
+                question=working_question,
                 final_answer=final_answer,
                 citations=citations,
                 persona=persona,
             )
-            final_answer = _apply_maqashid_mode_gate(session, question, persona, final_answer)
+            final_answer = _apply_maqashid_mode_gate(session, working_question, persona, final_answer)
 
             # ── Jiwa Pilar 5: Hayat — Self-Iteration ─────────────────────────
             if _JIWA_ENABLED and _jiwa is not None and not simple_mode:
                 try:
-                    _blend = _response_blend_profile(question, persona)
+                    _blend = _response_blend_profile(working_question, persona)
                     _hayat_on = _blend.get("hayat_enabled", True)
                     _topic = _blend.get("topic", "umum")
                     if _hayat_on:
@@ -1242,7 +1268,7 @@ def run_react(
                                 )
                                 return text
                             final_answer = _jiwa.refine(
-                                question=question,
+                                question=working_question,
                                 answer=final_answer,
                                 generate_fn=_gen_fn,
                                 topic=_topic,
@@ -1253,9 +1279,9 @@ def run_react(
             # ── Jiwa Pilar 2: Aql — post-response learning ───────────────────
             if _JIWA_ENABLED and _jiwa is not None:
                 try:
-                    _topic_for_aql = _response_blend_profile(question, persona).get("topic", "umum")
+                    _topic_for_aql = _response_blend_profile(working_question, persona).get("topic", "umum")
                     _jiwa.post_response(
-                        question, final_answer, persona,
+                        working_question, final_answer, persona,
                         topic=_topic_for_aql,
                         platform="direct",
                         cqf_score=float(conf_score or 0) * 10,
@@ -1265,9 +1291,9 @@ def run_react(
             # ─────────────────────────────────────────────────────────────────
 
             session.final_answer = final_answer
-            answer_dedup.set_cached_answer(persona, question, final_answer)
+            answer_dedup.set_cached_answer(persona, working_question, final_answer)
             session.finished = True
-            _attach_orchestration_digest(session, question, persona)
+            _attach_orchestration_digest(session, working_question, persona)
 
             _praxis.record_react_step(session_id, step)
             try:
@@ -1316,7 +1342,7 @@ def run_react(
     else:
         # Loop habis tanpa final answer
         final_answer, citations, conf_score, atype = _compose_final_answer(
-            question=question,
+            question=working_question,
             persona=persona,
             steps=session.steps,
             simple_mode=simple_mode,
@@ -1333,16 +1359,16 @@ def run_react(
         # ── Islamic Epistemology Engine ───────────────────────────────────────
         final_answer = _apply_epistemology(
             session=session,
-            question=question,
+            question=working_question,
             final_answer=final_answer,
             citations=citations,
             persona=persona,
         )
-        final_answer = _apply_maqashid_mode_gate(session, question, persona, final_answer)
+        final_answer = _apply_maqashid_mode_gate(session, working_question, persona, final_answer)
         session.final_answer = final_answer
         # ─────────────────────────────────────────────────────────────────────
-        answer_dedup.set_cached_answer(persona, question, final_answer)
-        _attach_orchestration_digest(session, question, persona)
+        answer_dedup.set_cached_answer(persona, working_question, final_answer)
+        _attach_orchestration_digest(session, working_question, persona)
         try:
             _praxis.finalize_session_teaching(session)
         except Exception:

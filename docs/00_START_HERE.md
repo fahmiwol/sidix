@@ -29,6 +29,7 @@ Halaman ini untuk **siapa saja** yang baru masuk: kontributor korpus, developer 
 - Fondasi **SIDIX + IHOS** dan lapisan AI (RAG, ReAct, tool gate) → [SIDIX_FUNDAMENTALS.md](SIDIX_FUNDAMENTALS.md); latihan kurikulum coding → [SIDIX_CODING_CURRICULUM_V1.md](SIDIX_CODING_CURRICULUM_V1.md).
 - **Pemetaan bundel framework → path repo** (typo, Jiwa, Kimi, SocioMeter) → [MAPPING_FRAMEWORK_TO_REPO.md](MAPPING_FRAMEWORK_TO_REPO.md).
 - **Paket dokumen SocioMeter** (strategi, PRD, ERD, implementasi) → [sociometer/README.md](sociometer/README.md).
+- **Handoff sinkron git v0.7.4-dev** (typo bridge, korpus Jiwa, Kimi) → [HANDOFF_2026-04-25_SYNC_TYPO_JIWA_KIMI.md](HANDOFF_2026-04-25_SYNC_TYPO_JIWA_KIMI.md).
 
 ---
 
