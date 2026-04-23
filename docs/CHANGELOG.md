@@ -4,6 +4,12 @@ Format: `[YYYY-MM-DD] — Ringkasan perubahan`
 
 ---
 
+## [2026-04-23] — Kontinuitas agen: SOP wajib, handoff QA/DOCX, STATUS + landing
+
+- **DOC:** `docs/AGENTS_MANDATORY_SOP.md` (pembuka netral); `docs/HANDOFF_2026-04-23_QA_KONTINUITAS_DOK.md` — DOCX unduhan vs Markdown kanonis; pembaruan `AGENTS.md`, `00_START_HERE.md`, `STATUS_TODAY.md`, `LIVING_LOG.md`.
+- **UPDATE:** `SIDIX_USER_UI` — What’s new bilingual (CI repo, skrip Windows, SOP); `SIDIX_LANDING` — item ringkas hygiene.
+- **CATATAN:** Salinan `SIDIX_QA_REVIEW_2026-04-25 (1).docx` di folder unduhan pengguna bukan artefak git; SSOT tinjauan: `docs/QA_REVIEW_EXTERNAL_2026-04-25.md`.
+
 ## [2026-04-23] — Eksekusi QA review: `scripts/windows/`, CI brain_qa, legacy sprint5
 
 - **UPDATE:** Root `*.bat` → `scripts/windows/`; path dinamis `REPO=%~dp0..\..`; install → `install-brain_qa-full.bat` / `install-brain_qa-venv.bat`; README skrip Windows.

@@ -1,14 +1,15 @@
 # AGENTS.md — memori & aturan untuk agen
 
-**Siapa pun yang mengerjakan repo ini** (Cursor, Claude, IDE lain): mulai dari **urutan singkat** ini supaya tidak melewati preferensi user, fakta workspace, dan kewajiban log.
+**Siapa pun yang mengerjakan repo ini** (kontributor manusia atau agen otomatis): mulai dari **urutan singkat** ini supaya tidak melewati preferensi user, fakta workspace, dan kewajiban log.
 
 | Urutan | File | Fungsi |
 |--------|------|--------|
 | 1 | [`docs/00_START_HERE.md`](docs/00_START_HERE.md) | Pintu masuk manusia + agen; status & rencana eksekusi. |
 | 2 | **`AGENTS.md` (file ini)** | Preferensi belajar, fakta workspace, Projek Badar, **wajib** `LIVING_LOG` untuk pekerjaan berarti. |
 | 3 | [`docs/LIVING_LOG.md`](docs/LIVING_LOG.md) | Riwayat keputusan/uji/impl terbaru (append-only; baca bagian bawah). |
-| 4 | [`CLAUDE.md`](CLAUDE.md) | SSOT tambahan untuk Claude: **MASTER_ROADMAP**, DEVELOPMENT_RULES, North Star, keamanan, UI lock. |
-| 5 | [`docs/NORTH_STAR.md`](docs/NORTH_STAR.md) · [`docs/MASTER_ROADMAP_2026-2027.md`](docs/MASTER_ROADMAP_2026-2027.md) · [`docs/SIDIX_CAPABILITY_MAP.md`](docs/SIDIX_CAPABILITY_MAP.md) | Arah produk, sprint canonical, kemampuan teknis. |
+| 4 | [`docs/AGENTS_MANDATORY_SOP.md`](docs/AGENTS_MANDATORY_SOP.md) | **Wajib:** terminologi SIDIX-native, lima persona, workflow pasca-task, bilingual changelog/landing, guardrail privasi. |
+| 5 | [`CLAUDE.md`](CLAUDE.md) | SSOT tambahan untuk Claude: **MASTER_ROADMAP**, DEVELOPMENT_RULES, North Star, keamanan, UI lock. |
+| 6 | [`docs/NORTH_STAR.md`](docs/NORTH_STAR.md) · [`docs/MASTER_ROADMAP_2026-2027.md`](docs/MASTER_ROADMAP_2026-2027.md) · [`docs/SIDIX_CAPABILITY_MAP.md`](docs/SIDIX_CAPABILITY_MAP.md) | Arah produk, sprint canonical, kemampuan teknis. |
 
 Transcript Cursor untuk kutipan user: folder `agent-transcripts` di profil Cursor (lihat root [`CLAUDE.md`](CLAUDE.md) / README proyek). **Jangan** commit secret; ikuti bagian keamanan di `CLAUDE.md` bila relevan.
 

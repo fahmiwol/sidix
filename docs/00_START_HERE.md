@@ -15,6 +15,8 @@ Halaman ini untuk **siapa saja** yang baru masuk: kontributor korpus, developer 
 | 3 | [PRD](02_prd.md) | Masalah, tujuan, persona, requirement MVP+. |
 | 4 | [Roadmap](06_roadmap.md) | Fase 0–4 waktu tinggi. |
 | 5 | [Spesifikasi brain pack](08_mighan_brain_1_spec.md) | Struktur `brain/`, format dataset, privasi vs publik. |
+| 6 | [SOP wajib agen](AGENTS_MANDATORY_SOP.md) | Terminologi SIDIX, lima persona, pasca-task: LIVING_LOG, handoff, changelog bilingual. |
+| 7 | [Handoff QA & kontinuitas dokumen](HANDOFF_2026-04-23_QA_KONTINUITAS_DOK.md) | Artefak DOCX luar repo vs Markdown kanonis; CI `brain_qa`; skrip `scripts/windows/`. |
 
 **Opsional sesuai peran:**
 
@@ -63,7 +65,7 @@ Identitas proyek di sisi publik disapa **Mighan**; detail identitas pribadi pemi
 
 **Inti (jangan lompat):** [STATUS_TODAY.md](STATUS_TODAY.md) → [AGENTS.md](../AGENTS.md) (preferensi + fakta workspace + aturan log) → cuplikan terbaru [LIVING_LOG.md](LIVING_LOG.md).
 
-**Handoff sesi terbaru (kontinuitas multi-agen):** [HANDOFF_2026-04-23_FINAL.md](HANDOFF_2026-04-23_FINAL.md) — sprint 6.5 (DONE), sprint 7 (MVP Radar). **Claude: Mohon lakukan validasi teknis sesuai checklist di akhir file handoff.**
+**Handoff sesi terbaru (kontinuitas multi-agen):** [HANDOFF_2026-04-23_FINAL.md](HANDOFF_2026-04-23_FINAL.md) — sprint 6.5 (DONE), sprint 7 (MVP Radar). **Lanjutan hygiene QA repo + SOP:** [HANDOFF_2026-04-23_QA_KONTINUITAS_DOK.md](HANDOFF_2026-04-23_QA_KONTINUITAS_DOK.md).
 
 **Lanjutan sesuai tugas:** [CLAUDE.md](../CLAUDE.md) (SSOT Claude: North Star, MASTER_ROADMAP, DEVELOPMENT_RULES, keamanan); [NORTH_STAR.md](NORTH_STAR.md), [MASTER_ROADMAP_2026-2027.md](MASTER_ROADMAP_2026-2027.md), [SIDIX_CAPABILITY_MAP.md](SIDIX_CAPABILITY_MAP.md).
 

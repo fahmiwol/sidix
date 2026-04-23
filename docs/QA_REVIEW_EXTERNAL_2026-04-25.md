@@ -224,6 +224,8 @@ Tindakan berikut **sudah diterapkan** pada branch `main` (lihat commit terkait):
 
 **Ekspor PDF:** `pandoc docs/QA_REVIEW_EXTERNAL_2026-04-25.md -o QA.pdf` membutuhkan LaTeX (mis. MiKTeX). Tanpa LaTeX: buka ekspor **`.docx`** (generasi dari pandoc) di Word/LibreOffice lalu *Simpan sebagai PDF*, atau gunakan *Print to PDF* dari pratinjau Markdown di editor.
 
+**Artefak unduhan (mis. `…(1).docx`):** itu **bukan** sumber kebenaran — hanya salinan lokal dari ekspor. **SSOT** tinjauan ini adalah **Markdown di repo** (`docs/QA_REVIEW_EXTERNAL_2026-04-25.md`). Kontinuitas agen: `docs/HANDOFF_2026-04-23_QA_KONTINUITAS_DOK.md` + `docs/AGENTS_MANDATORY_SOP.md`.
+
 ---
 
 ## 10. Penutup

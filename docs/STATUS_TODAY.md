@@ -2,7 +2,19 @@
 
 > Dokumen ini merangkum audit penuh terhadap **server produksi**, **codebase**, dan **live app**.
 > Tujuan: referensi bagi semua agen (dan manusia) yang bekerja di repo ini.
-> Update terakhir: 2026-04-23 (sesi Claude — post-Sprint 7 MVP hardening).
+> Update terakhir: 2026-04-23 — ditambah **kontinuitas dokumentasi QA** + **SOP wajib agen**.
+
+---
+
+## 📌 Repo & dokumentasi (baru)
+
+| Item | Status |
+|------|--------|
+| **SOP wajib** | [`docs/AGENTS_MANDATORY_SOP.md`](AGENTS_MANDATORY_SOP.md) — pasca-task: `LIVING_LOG`, handoff, changelog bilingual, landing. |
+| **Handoff QA / DOCX** | [`docs/HANDOFF_2026-04-23_QA_KONTINUITAS_DOK.md`](HANDOFF_2026-04-23_QA_KONTINUITAS_DOK.md) — sumber kanonis tinjauan: `docs/QA_REVIEW_EXTERNAL_2026-04-25.md`; `.docx` di folder unduhan = salinan ekspor. |
+| **Skrip Windows** | [`scripts/windows/`](../scripts/windows/) — semua `.bat` konsolidasi; baca [`scripts/windows/README.md`](../scripts/windows/README.md). |
+| **CI `brain_qa`** | [`.github/workflows/brain_qa-ci.yml`](../.github/workflows/brain_qa-ci.yml) — `pytest` pada push/PR `main`. |
+| **Uji lokal brain_qa** | Dari `apps/brain_qa`: `python -m pytest tests/ -q` — **18 passed** (sesi verifikasi 2026-04-25). |
 
 ---
 
@@ -20,7 +32,7 @@
 | **SIDIX UI** | `pm2 id:9`, `serve dist -p 4000` |
 | **Model** | `sidix-lora:latest` (Qwen2.5-7B Q4_K_M) + `qwen2.5:1.5b` (fallback) |
 | **Corpus** | 1182 docs indexed, 377 markdown files |
-| **Tests** | 15/15 PASSED (Sprint 6.5: 8 + Sprint 7: 3 + existing: 4) |
+| **Tests** | 15/15 PASSED (Sprint 6.5: 8 + Sprint 7: 3 + existing: 4); CI + lokal `brain_qa` pytest **18 passed** |
 | **Benchmark** | 64/70 pass, 6 harmful correctly blocked |
 | **Health** | `/health` → `ok: true`, `model_ready: true`, `tools_available: 35` |
 

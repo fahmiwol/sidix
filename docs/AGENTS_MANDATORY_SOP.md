@@ -1,6 +1,6 @@
 # SIDIX — Agent Mandatory SOP & Guardrails (v0.8.0)
 
-> **IMPORTANT**: Dokumen ini bersifat wajib bagi setiap agen (Claude, Cursor, Antigravity, dll.) yang bekerja di repositori SIDIX. Pelanggaran terhadap SOP ini dapat membahayakan keamanan data internal dan integritas branding proyek.
+> **IMPORTANT**: Dokumen ini bersifat wajib bagi **setiap agen pengembang** yang bekerja di repositori SIDIX. Pelanggaran terhadap SOP ini dapat membahayakan keamanan data internal dan integritas branding proyek.
 
 ---
 

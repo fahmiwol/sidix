@@ -21,6 +21,12 @@ Full QA audit of release consistency. Critical fixes: (1) Validation of persona 
 ### English (follow-up)
 QA doc execution: Windows batch scripts consolidated under `scripts/windows/` with dynamic repo root; install script names clarified; root sprint5 smoke test replaced by `scripts/legacy/test_sprint5_smoke.py`; GitHub Actions workflow runs `pytest` for `apps/brain_qa`. QA markdown updated; DOCX export documented for PDF via Word/LibreOffice.
 
+### Narasi (kontinuitas dokumentasi — SOP agen & handoff)
+**SOP wajib** diperkuat lewat `docs/AGENTS_MANDATORY_SOP.md` (workflow pasca-task: LIVING_LOG, handoff, changelog/landing bilingual, guardrail privasi). **Handoff** `docs/HANDOFF_2026-04-23_QA_KONTINUITAS_DOK.md` menjelaskan bahwa **DOCX** di folder unduhan pengguna bukan SSOT; tinjauan kanonis di git tetap **`docs/QA_REVIEW_EXTERNAL_2026-04-25.md`**. Diperbarui: `AGENTS.md`, `docs/00_START_HERE.md`, `docs/STATUS_TODAY.md`, `docs/LIVING_LOG.md`, teks **What’s new** di app, dan kartu changelog landing (ringkas: CI + skrip Windows + dokumen agen).
+
+### English (documentation continuity — agent SOP & handoff)
+Published **`docs/AGENTS_MANDATORY_SOP.md`** as the mandatory post-task checklist (living log, handoff, bilingual changelog/landing, privacy guardrails). Added **`docs/HANDOFF_2026-04-23_QA_KONTINUITAS_DOK.md`** clarifying that downloadable **DOCX** exports are non-canonical; **`docs/QA_REVIEW_EXTERNAL_2026-04-25.md`** remains the review SSOT in git. Updated **`AGENTS.md`**, **`docs/00_START_HERE.md`**, **`docs/STATUS_TODAY.md`**, **`docs/LIVING_LOG.md`**, and the app **What’s new** copy for bilingual progress; landing changelog card includes repo CI/docs hygiene.
+
 ---
 
 ## [v0.7.4-dev] — 2026-04-25 — Typo bridge + korpus Jiwa + Kimi + dokumen operasional ke git

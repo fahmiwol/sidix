@@ -44,6 +44,14 @@ Contoh:
 
 ## Log
 
+### 2026-04-23 (kontinuitas agen ? QA, SOP wajib, artefak DOCX luar repo)
+
+- DOC: `docs/HANDOFF_2026-04-23_QA_KONTINUITAS_DOK.md` ? handoff tinjauan QA, artefak `.docx` lokal vs Markdown kanonis, checklist agen berikutnya.
+- UPDATE: `docs/AGENTS_MANDATORY_SOP.md` ? pembuka netral (tanpa daftar merek IDE/asisten); `AGENTS.md`, `docs/00_START_HERE.md`, `docs/STATUS_TODAY.md` ? taut ke SOP + handoff QA.
+- DOC: `CHANGELOG.md` (root, EN), `docs/CHANGELOG.md` (ID) ? narasi kontinuitas dokumentasi + rilis; `SIDIX_USER_UI` What?s new bilingual; `SIDIX_LANDING` ? item ringkas repo CI/docs.
+- NOTE: Berkas **`SIDIX_QA_REVIEW_2026-04-25 (1).docx`** di folder unduhan pengguna adalah salinan ekspor; **SSOT** tetap `docs/QA_REVIEW_EXTERNAL_2026-04-25.md` ? jangan mengandalkan nama berkas dengan sufiks `(1)` sebagai identitas rilis.
+- DECISION: Pasca-sprint: wajib **LIVING_LOG** + **handoff** + **CHANGELOG bilingual** (EN untuk publik/git, ID untuk penjelasan internal) selaras `AGENTS_MANDATORY_SOP.md`.
+
 ### 2026-04-23 (verifikasi konsistensi rilis v0.7.4-dev / UI v1.0.4)
 
 - TEST: Verifikasi 8 poin konsistensi rilis: versi, handoff kanonis, stub, narasi vendor, metafora INSTALL, CHANGELOG, tautan docs, What's New UI -- **8/8 PASS** (1 fix diterapkan).
