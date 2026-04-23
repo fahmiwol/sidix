@@ -2,7 +2,7 @@ rank-bm25==0.2.2
 datasketch>=1.6.0
 pytest>=8.0.0
 httpx==0.27.0
-requests>=2.31.0
+requests>=2.33.1
 beautifulsoup4==4.12.3
 reedsolo==1.7.0
 
