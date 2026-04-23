@@ -52,7 +52,8 @@ Contoh:
 - FIX: `docs/KIMI_INTEGRATION_GUIDE.md` L475 -- heading `## CARA USER PAKAI SIDIX DI KIMI` diganti ke `## CARA USER PAKAI SIDIX DI SARANG-TAMU` (netralitas vendor).
 - FIX: `docs/HANDOFF_2026-04-23_SPRINT7.md` L193 -- Footprint nama agen dihapus untuk menjaga autentisitas SIDIX.
 - NOTE: `deploy-scripts/` dan `ecosystem.config.js` tidak ditemukan di repo (output agen lain). SIDIX menggunakan Docker Compose sebagai standar deploy saat ini.
-- NOTE: Git status: 5 file diperbarui dan siap di-push (KIMI_INTEGRATION_GUIDE, LIVING_LOG, manifest.json, sidix_skill.yaml, HANDOFF_SPRINT7).
+- IMPL: `deploy-scripts/` -- Pembuatan **Deploy Kit (PM2)** lengkap: `deploy.sh`, `restart.sh`, `ecosystem.config.js`, `health-check.sh`, dan `DEPLOY.md`.
+- NOTE: Git status: 5 file diperbarui + 1 folder baru (`deploy-scripts/`). Siap commit & push final.
 
 ### 2026-04-25 (analisis dan pemetaan - sociometer docs + landing)
 
