@@ -4,6 +4,26 @@ Format: `[YYYY-MM-DD] — Ringkasan perubahan`
 
 ---
 
+## [Sprint 11 — 2026-04-24] Conversational Memory + Self-Healing + Natural Prompt
+
+### Conversational Memory Layer
+**ID:** `memory_store.py` — SQLite persistence untuk conversation threads, user profiles, dan message history. Context injection N-turn ke ReAct prompt. Endpoint baru: `/memory/conversations/*`. Auto-create thread kalau tidak ada `conversation_id`. Non-blocking, privacy-first (anon user_id).
+**EN:** `memory_store.py` — SQLite persistence for conversation threads, user profiles, message history. N-turn context injection into ReAct prompt. New endpoints: `/memory/conversations/*`. Auto-create thread if no `conversation_id`. Non-blocking, privacy-first (anon user_id).
+
+### Self-Healing Recovery Monitor
+**ID:** `scripts/self_heal.py` — health ping, PM2 process monitor, auto-restart, disk space check. `scripts/deploy_latest.py` — SSH-based auto-deploy (git pull + pm2 restart + health verify).
+**EN:** `scripts/self_heal.py` — health ping, PM2 process monitor, auto-restart, disk check. `scripts/deploy_latest.py` — SSH-based auto-deploy.
+
+### Conversational System Prompt Refactor
+**ID:** `ollama_llm.py` — `SIDIX_SYSTEM` diubah ke tone conversational, multilingual-friendly, support code-switching. Tetap menjaga epistemic labels [FAKTA]/[OPINI]/[SPEKULASI]/[TIDAK TAHU] dan prinsip Sidq/Sanad/Tabayyun.
+**EN:** `ollama_llm.py` — `SIDIX_SYSTEM` refactored to conversational, multilingual-friendly tone, supports code-switching. Maintains epistemic labels [FACT]/[OPINION]/[SPECULATION]/[UNKNOWN] and Sidq/Sanad/Tabayyun principles.
+
+### Research Notes
+**ID:** Research notes 202-204: arsitektur memory layer, self-healing recovery, conversational prompt engineering
+**EN:** Research notes 202-204: memory layer architecture, self-healing recovery, conversational prompt engineering
+
+---
+
 ## [Research — 2026-04-24] Frontier AI Architecture + Constitutional AI
 
 ### Arsitektur AI Frontier dan Roadmap SIDIX ke Frontier
