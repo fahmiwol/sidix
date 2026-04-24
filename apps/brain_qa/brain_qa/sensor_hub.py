@@ -17,6 +17,7 @@ Digunakan oleh endpoint `/sidix/senses/status` untuk real-time dashboard.
 
 from __future__ import annotations
 
+import concurrent.futures
 import logging
 from dataclasses import dataclass, field
 from enum import Enum
@@ -312,9 +313,13 @@ def list_senses() -> list[Sense]:
     return list(_REGISTRY.values())
 
 
-def probe_all() -> dict[str, Any]:
+def probe_all(parallel: bool = True) -> dict[str, Any]:
     """
     Jalankan probe semua sense, return snapshot lengkap.
+
+    Args:
+        parallel: Jika True (default), probe semua sense secara parallel
+                  menggunakan ThreadPoolExecutor. Jika False, sequential.
 
     Returns:
       {
@@ -326,13 +331,26 @@ def probe_all() -> dict[str, Any]:
         "senses": [...]  # list of sense snapshots
       }
     """
-    snapshots = []
+    senses = list(_REGISTRY.values())
+
+    if parallel and len(senses) > 1:
+        # Parallel probe using ThreadPoolExecutor
+        with concurrent.futures.ThreadPoolExecutor(max_workers=len(senses)) as executor:
+            future_to_sense = {
+                executor.submit(sense.probe): sense
+                for sense in senses
+            }
+            snapshots = []
+            for future in concurrent.futures.as_completed(future_to_sense):
+                snapshots.append(future.result())
+    else:
+        # Sequential fallback
+        snapshots = [sense.probe() for sense in senses]
+
     by_body: dict[str, list] = {}
     counts = {"active": 0, "inactive": 0, "broken": 0, "unknown": 0}
 
-    for sense in _REGISTRY.values():
-        snap = sense.probe()
-        snapshots.append(snap)
+    for snap in snapshots:
         counts[snap["status"]] = counts.get(snap["status"], 0) + 1
         by_body.setdefault(snap["body_part"], []).append(snap["slug"])
 
