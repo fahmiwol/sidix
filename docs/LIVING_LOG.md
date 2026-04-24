@@ -44,6 +44,17 @@ Contoh:
 
 ## Log
 
+### 2026-04-24 (Claude — Sprint 9: social_radar tool + Sprint 9 plan + research note 195)
+
+- IMPL: `apps/brain_qa/brain_qa/tools/social_radar.py` — modul Social Radar baru: `detect_sentiment()` rule-based (Indonesia + English, ~105 kata), `extract_keywords()` word frequency + stopword filter, `extract_hashtags()` regex, `analyze_social_signals()` → `SocialSignal` dataclass, `format_report()` → markdown output. Standing-alone: tidak butuh API sosmed berbayar.
+- IMPL: `apps/brain_qa/brain_qa/tools/__init__.py` — folder `tools/` dibuat sebagai sub-package.
+- IMPL: `apps/brain_qa/brain_qa/agent_tools.py` — tambah `_tool_social_radar()` + entry `"social_radar"` di `TOOL_REGISTRY` (permission: open). Tool menggunakan `_tool_web_search` + `analyze_social_signals` + `format_report`. Fallback graceful jika web_search gagal.
+- IMPL: `apps/brain_qa/tests/test_social_radar.py` — rewrite total dari integration test (butuh server) ke unit tests isolated: 13 test cases mencakup `detect_sentiment` (6), `extract_keywords` (4), `analyze_social_signals` (5), `format_report` (4), `extract_hashtags` (2).
+- DOC: `docs/sprints/2026-04-25_sprint-9_plan.md` — Sprint 9 plan: Sociometer/Social Radar (TINGGI), Jariyah→LoRA Export (TINGGI), Distilasi Model Pertama (SEDANG), Tiranyx Pilot (SEDANG), PostgreSQL Live (RENDAH).
+- DOC: `brain/public/research_notes/195_sociometer_social_radar.md` — research note: apa, mengapa, bagaimana, contoh nyata, keterbatasan, rencana pengembangan.
+- NOTE: Social Radar sengaja NOT real-time — proxy via DuckDuckGo public HTML. Akurasi sentimen ±70% (rule-based). Upgrade ke model lokal dijadwalkan Sprint 10+.
+- NOTE: Test file lama `test_social_radar.py` adalah integration test (butuh server localhost:8765). Sudah direplace dengan unit tests yang bisa jalan tanpa server.
+
 ### 2026-04-24 (Claude — audit Sprint 8a, verifikasi Standing Alone, commit untracked)
 
 - TEST: `python -m pytest tests/ -q` dari `apps/brain_qa` → **22 passed** (10.11s). Tidak ada regresi setelah perubahan Standing Alone oleh Cursor agent.

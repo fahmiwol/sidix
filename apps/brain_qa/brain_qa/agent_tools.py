@@ -1906,6 +1906,87 @@ def _tool_scaffold_project(args: dict) -> ToolResult:
         return ToolResult(success=False, output="", error=f"scaffold gagal: {e}")
 
 
+def _tool_social_radar(args: dict) -> ToolResult:
+    """
+    Analisis tren dan sentimen sosial media untuk query tertentu.
+    Menggunakan web_search (DuckDuckGo) + sentiment rule-based + keyword extraction.
+    Standing-alone: tidak butuh API Twitter/Instagram berbayar.
+    Params: query (str, wajib), max_results (int, default 8).
+    """
+    query = str(args.get("query", "")).strip()
+    if not query:
+        return ToolResult(success=False, output="", error="query wajib diisi")
+
+    max_results = int(args.get("max_results", 8))
+    max_results = max(1, min(max_results, 15))
+
+    # Lazy import modul social_radar
+    try:
+        from .tools.social_radar import analyze_social_signals, format_report
+    except ImportError as e:
+        return ToolResult(
+            success=False, output="",
+            error=f"Modul social_radar tidak tersedia: {e}",
+        )
+
+    # Search web dengan query yang diperluas ke sosmed
+    search_query = f"{query} site:twitter.com OR site:instagram.com OR site:tiktok.com OR trending"
+    search_args = {"query": search_query, "max_results": max_results}
+    search_result = _tool_web_search(search_args)
+
+    # Parse output string dari _tool_web_search menjadi list dict
+    raw_results: list[dict] = []
+    if search_result.success and search_result.output:
+        for line in search_result.output.split("\n"):
+            line = line.strip()
+            if not line:
+                continue
+            # Format output web_search: "N. Title — snippet\n   URL: ..."
+            # Tangkap apapun sebagai title untuk sentiment analysis
+            raw_results.append({"title": line, "snippet": "", "url": ""})
+
+    # Jika ada citations dari web_search, gunakan itu sebagai raw_results yang lebih terstruktur
+    if search_result.citations:
+        structured: list[dict] = []
+        for cit in search_result.citations:
+            if isinstance(cit, dict) and cit.get("title"):
+                structured.append({
+                    "title": str(cit.get("title", "")),
+                    "snippet": str(cit.get("snippet", "")),
+                    "url": str(cit.get("url", "")),
+                })
+        if structured:
+            raw_results = structured
+
+    # Fallback graceful jika search gagal
+    if not raw_results and not search_result.success:
+        # Tetap lanjut dengan data kosong, jangan crash
+        raw_results = []
+
+    try:
+        signal = analyze_social_signals(query, raw_results)
+        report = format_report(signal)
+    except Exception as e:
+        return ToolResult(
+            success=False, output="",
+            error=f"Analisis social_radar gagal: {e}",
+        )
+
+    return ToolResult(
+        success=True,
+        output=report,
+        citations=[{
+            "type": "social_radar",
+            "query": query,
+            "sentiment": signal.sentiment,
+            "sentiment_score": signal.sentiment_score,
+            "volume": signal.estimated_volume,
+            "platforms": signal.platform_hints,
+            "keywords": signal.trending_keywords[:5],
+        }],
+    )
+
+
 TOOL_REGISTRY: dict[str, ToolSpec] = {
     "search_corpus": ToolSpec(
         name="search_corpus",
@@ -2295,6 +2376,19 @@ TOOL_REGISTRY: dict[str, ToolSpec] = {
         params=["agent", "domain", "force", "dry_run"],
         permission="restricted",
         fn=_tool_prompt_optimizer,
+    ),
+    "social_radar": ToolSpec(
+        name="social_radar",
+        description=(
+            "Analisis tren dan sentimen sosial media untuk query tertentu. "
+            "Menggunakan web_search public (DuckDuckGo) + sentiment rule-based + keyword extraction. "
+            "Tidak butuh API berbayar Twitter/Instagram. Cocok untuk: riset tren, analisis sentimen "
+            "brand, monitoring topik, persiapan konten sosmed. "
+            "Params: query (str, wajib), max_results (int, default 8)."
+        ),
+        params=["query", "max_results"],
+        permission="open",
+        fn=_tool_social_radar,
     ),
 }
 

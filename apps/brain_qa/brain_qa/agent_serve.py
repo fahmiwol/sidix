@@ -719,6 +719,20 @@ def create_app() -> "FastAPI":
             pass
         return {"ok": True, "session_id": req.session_id, "vote": req.vote}
 
+    @app.get("/jariyah/stats")
+    async def jariyah_stats():
+        """Statistik jariyah pairs — total, exportable, ready for LoRA."""
+        from .jariyah_collector import get_pairs_stats
+        from .jariyah_exporter import get_export_stats
+        return {**get_pairs_stats(), **get_export_stats()}
+
+    @app.post("/jariyah/export")
+    async def jariyah_export(min_score: float = 0.7):
+        """Export jariyah pairs ke format LoRA JSONL."""
+        from .jariyah_exporter import export_to_lora_jsonl
+        result = export_to_lora_jsonl(min_score=min_score)
+        return result
+
     @app.delete("/agent/session/{session_id}")
     def agent_session_forget(session_id: str):
         if session_id in _sessions:
