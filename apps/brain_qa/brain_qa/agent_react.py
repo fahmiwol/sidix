@@ -121,6 +121,8 @@ class AgentSession:
     question_normalized: str = ""     # kosong jika sama dengan question
     typo_script_hint: str = ""         # latin | arabic | mixed_arab_latin | ...
     typo_substitutions: int = 0
+    # ── Pivot 2026-04-25: Follow-up awareness ───────────────────────────────────
+    is_followup: bool = False          # True kalau question detect sebagai follow-up
     # ── Nafs Layer B (brain/nafs/response_orchestrator) ──────────────────────────
     nafs_topic: str = ""              # topic dari NafsOrchestrator (umum|kreatif|koding|agama|...)
     nafs_layers_used: str = ""        # "parametric,dynamic,static" (layer yang aktif)
@@ -1018,6 +1020,189 @@ def _apply_constitution(final_answer: str) -> str:
         return final_answer
 
 
+# ── Pivot 2026-04-25: Response Hygiene ────────────────────────────────────────
+# Filter terakhir sebelum jawaban ke user. Deduplikasi label/footer,
+# strip leaked system context markers, trim template dump patterns.
+
+import re as _re_hygiene
+
+# Labels/footers yang sering muncul duplikat karena multiple pipeline passes
+_HYGIENE_DEDUPE_PATTERNS = [
+    r"\[⚠️ SANAD MISSING\]",
+    r"\[EXPLORATORY — ini adalah eksplorasi ijtihad, bukan fatwa\]",
+    r"\[Intellect-Optimized \| Value-Creation Mode\]",
+    r"_Berdasarkan referensi yang tersedia_",
+    r"\[FAKTA\]",
+    r"\[OPINI\]",
+    r"\[SPEKULASI\]",
+    r"\[TIDAK TAHU\]",
+    r"\[FACT\]",
+    r"\[OPINION\]",
+    r"\[SPECULATION\]",
+    r"\[UNKNOWN\]",
+]
+
+# System context leaks yang tidak boleh bocor ke user.
+# Setiap marker dihapus beserta blok konten sampai blank-line berikutnya
+# atau sampai marker lain di-detect. Diproses via _strip_leaked_block.
+_HYGIENE_LEAK_MARKERS = [
+    "[KONTEKS DARI KNOWLEDGE BASE SIDIX]",
+    "[ATURAN PEMAKAIAN KONTEKS]",
+    "[PERTANYAAN USER]",
+    "[PERTANYAAN SAAT INI]",
+    "[KONTEKS PERCAKAPAN SEBELUMNYA]",
+]
+
+
+def _dedupe_label(text: str, label_pattern: str) -> str:
+    """Buang label duplikat — sisakan occurrence pertama saja."""
+    matches = list(_re_hygiene.finditer(label_pattern, text))
+    if len(matches) <= 1:
+        return text
+    # Buang dari match kedua dst, mulai dari belakang biar index stabil
+    for m in reversed(matches[1:]):
+        text = text[:m.start()] + text[m.end():]
+    return text
+
+
+def _strip_leaked_block(text: str, marker: str) -> str:
+    """
+    Hapus marker beserta blok konten setelahnya sampai blank-line berikutnya
+    atau marker lain. Bracket-based marker string-matched (case-sensitive).
+    """
+    idx = text.find(marker)
+    while idx != -1:
+        # Cari akhir block: blank-line berikutnya
+        rest = text[idx:]
+        # Skip baris marker itu sendiri
+        nl = rest.find("\n")
+        if nl == -1:
+            # Marker di akhir, buang sampai akhir
+            text = text[:idx]
+            break
+        after = rest[nl + 1:]
+        # Akhir blok = blank line pertama
+        blank_nl = after.find("\n\n")
+        if blank_nl == -1:
+            # Sampai EOF
+            text = text[:idx]
+            break
+        end_rel = nl + 1 + blank_nl + 2  # termasuk \n\n
+        text = text[:idx] + text[idx + end_rel:]
+        # Cari occurrence berikutnya
+        idx = text.find(marker)
+    return text
+
+
+def _self_critique_lite(
+    final_answer: str,
+    question: str,
+    persona: str,
+) -> str:
+    """
+    Pivot 2026-04-25: Self-critique lite.
+    Pre-final check ringan berbasis rule — inspired Claude/GPT self-reflection.
+
+    Checklist (non-blocking fixes):
+      1. Over-labeling: kalau punya >5 label epistemik eksplisit, response
+         kemungkinan kaku. Kurangi ke 1-2 di pembuka.
+      2. Question mirror: kalau answer dimulai dengan pengulangan persis
+         pertanyaan, strip prefix itu (itu anti-pattern LLM).
+      3. Persona voice sanity: untuk persona casual (ABOO/UTZ), kalau ada
+         "Saya adalah {persona} dengan keahlian..." boilerplate di pembuka,
+         strip — itu style lama pre-pivot.
+      4. Empty/too-short: kalau answer < 20 char setelah hygiene, jangan
+         kosongi — return graceful fallback.
+
+    Non-blocking: kalau error, return input apa adanya.
+    """
+    if not final_answer:
+        return final_answer
+    try:
+        text = final_answer
+
+        # 1. Over-labeling check — kalau >5 label, keep first occurrence per kind only
+        label_kinds = ["[FAKTA]", "[FACT]", "[OPINI]", "[OPINION]",
+                       "[SPEKULASI]", "[SPECULATION]", "[TIDAK TAHU]", "[UNKNOWN]"]
+        total_labels = sum(text.count(lbl) for lbl in label_kinds)
+        if total_labels > 5:
+            for lbl in label_kinds:
+                count = text.count(lbl)
+                if count > 1:
+                    # Keep first, replace rest with empty (space preserved)
+                    first_idx = text.find(lbl)
+                    rest = text[first_idx + len(lbl):].replace(lbl, "")
+                    text = text[:first_idx + len(lbl)] + rest
+
+        # 2. Question mirror strip
+        q_stripped = question.strip().rstrip("?.!").lower()
+        if q_stripped and len(q_stripped) >= 10:
+            text_lower = text.strip().lower()
+            if text_lower.startswith(q_stripped):
+                # Strip pertanyaan dari awal jawaban + surrounding chars
+                cut_at = len(q_stripped)
+                # Find actual end in original text (preserve case)
+                remaining = text.strip()[cut_at:]
+                # Skip leading ? . ! - : whitespace
+                remaining = _re_hygiene.sub(r"^[\s?.!:\-—]+", "", remaining)
+                if remaining:
+                    text = remaining
+
+        # 3. Persona boilerplate strip — casual persona shouldn't say
+        #    "Saya adalah ABOO dengan keahlian..."
+        boilerplate_re = _re_hygiene.compile(
+            r"^(Saya|Aku|Gue)\s+(adalah\s+)?(AYMAN|ABOO|OOMAR|ALEY|UTZ)"
+            r"[^\n.]*((dengan keahlian|dengan pendekatan|bagian dari SIDIX))[^\n.]*\.?\s*",
+            _re_hygiene.IGNORECASE,
+        )
+        text = boilerplate_re.sub("", text, count=1).lstrip()
+
+        # 4. Empty/too-short guard — graceful fallback
+        if len(text.strip()) < 20:
+            return final_answer  # original at least has something
+
+        return text
+    except Exception:
+        return final_answer
+
+
+def _apply_hygiene(final_answer: str) -> str:
+    """
+    Filter terakhir sebelum jawaban ke user.
+
+    Tugas:
+      1. Dedupe label/footer yang double-applied (e.g. [SANAD MISSING] 2x)
+      2. Strip system-context markers yang bocor ke output
+      3. Collapse 3+ consecutive blank lines → 1 blank line
+      4. Trim leading/trailing whitespace
+
+    Non-blocking — kalau error, return input apa adanya.
+    """
+    if not final_answer or not final_answer.strip():
+        return final_answer
+    try:
+        text = final_answer
+
+        # 1. Dedupe labels/footers
+        for pattern in _HYGIENE_DEDUPE_PATTERNS:
+            text = _dedupe_label(text, pattern)
+
+        # 2. Strip leaked system context
+        for marker in _HYGIENE_LEAK_MARKERS:
+            text = _strip_leaked_block(text, marker)
+
+        # 3. Collapse multiple blank lines (3+ → 2)
+        text = _re_hygiene.sub(r"\n{3,}", "\n\n", text)
+
+        # 4. Strip trailing whitespace per baris
+        lines = [line.rstrip() for line in text.split("\n")]
+        text = "\n".join(lines).strip()
+
+        return text or final_answer
+    except Exception:
+        return final_answer
+
+
 # ── Main ReAct runner ─────────────────────────────────────────────────────────
 
 def _attach_orchestration_digest(session: AgentSession, question: str, persona: str) -> None:
@@ -1046,6 +1231,74 @@ def _inject_conversation_context(question: str, context: list[dict]) -> str:
     lines.append("")
     lines.append(f"[PERTANYAAN SAAT INI]\n{question}")
     return "\n".join(lines)
+
+
+# ── Pivot 2026-04-25: Follow-up detection ─────────────────────────────────────
+# User sering reply pendek yang merujuk ke turn sebelumnya:
+#   "itu apa?", "lebih singkat dong", "terjemahkan ke inggris",
+#   "coba yang lain", "kasih contoh", "kenapa begitu?"
+# Tanpa detection, SIDIX treat sebagai pertanyaan baru yang ambigu.
+# Dengan detection, kita reformulate pertanyaan dengan konteks turn sebelumnya.
+
+_FOLLOWUP_RE = _re_hygiene.compile(
+    r"^\s*(?:"
+    r"(itu|tersebut|yang\s+(tadi|itu|barusan))\b"
+    r"|(lebih\s+(singkat|ringkas|panjang|detail|pendek|formal|santai))"
+    r"|(terjemah(kan|in)?\s+(ke\s+)?(bahasa\s+)?(inggris|indonesia|arab|jawa|english|arabic))"
+    r"|(coba\s+(yang\s+)?(lebih\s+)?(lain|beda|pendek|panjang|formal|sedikit|singkat|ringkas))"
+    r"|(kasih|berikan|kasi|beri)\s+contoh"
+    r"|(kenapa|mengapa)\s+(begitu|gitu|demikian|bisa)"
+    r"|(lanjut(kan|in)?|terusin|teruskan)\s*$"
+    r"|(ringkas|simpulkan|rangkum)\s*(itu|dong|saja)?\s*$"
+    r"|(jelasin|jelaskan|elaborate)\s+(lebih|deeper|dong)?\s*$"
+    r"|(oke|ok|mantap|thanks|makasih)\s*[,.!?]*\s*(lalu|terus|kalau|next)\b"
+    r")",
+    _re_hygiene.IGNORECASE,
+)
+
+
+def _is_followup(question: str) -> bool:
+    """Deteksi apakah question adalah follow-up yang butuh konteks turn sebelumnya."""
+    if not question or len(question.strip()) > 200:
+        return False  # Follow-up biasanya pendek
+    return bool(_FOLLOWUP_RE.match(question.strip()))
+
+
+def _reformulate_with_context(question: str, context: list[dict]) -> str:
+    """
+    Kalau follow-up detected, reformulate question dengan konteks turn sebelumnya.
+
+    Contoh:
+      context: User='Apa itu recursion?', Assistant='Recursion adalah fungsi...'
+      question: 'kasih contoh'
+      → reformulated: 'kasih contoh (konteks: pertanyaan sebelumnya tentang recursion)'
+
+    Kalau tidak bisa reformulate, return question asli.
+    """
+    if not context or not _is_followup(question):
+        return question
+
+    # Cari last user turn + last assistant turn
+    last_user = None
+    last_assistant = None
+    for turn in reversed(context):
+        role = turn.get("role", "")
+        content = (turn.get("content") or "").strip()
+        if not content:
+            continue
+        if role == "assistant" and last_assistant is None:
+            last_assistant = content[:300]
+        elif role == "user" and last_user is None:
+            last_user = content[:300]
+        if last_user and last_assistant:
+            break
+
+    if not last_user:
+        return question
+
+    # Tag question dengan referensi konteks
+    ref = f"[FOLLOW-UP atas pertanyaan: '{last_user[:150]}']"
+    return f"{question}\n\n{ref}"
 
 
 def run_react(
@@ -1152,6 +1405,14 @@ def run_react(
 
         _log.getLogger(__name__).debug(f"[TypoPipeline] skip — {_typo_err}")
         working_question = question
+
+    # ── Pivot 2026-04-25: Follow-up detection + reformulation ─────────────────
+    # Cek sebelum context injection, supaya routing regex di _rule_based_plan
+    # lihat reformulated question (dengan konteks ref) bukan single-word follow-up
+    session.is_followup = False
+    if conversation_context and _is_followup(working_question):
+        session.is_followup = True
+        working_question = _reformulate_with_context(working_question, conversation_context)
 
     # ── Inject conversational memory context ────────────────────────────────────
     if conversation_context:
@@ -1386,6 +1647,8 @@ def run_react(
             )
             final_answer = _apply_maqashid_mode_gate(session, working_question, persona, final_answer)
             final_answer = _apply_constitution(final_answer)
+            final_answer = _self_critique_lite(final_answer, working_question, persona)  # Pivot 2026-04-25
+            final_answer = _apply_hygiene(final_answer)  # Pivot 2026-04-25
 
             # ── Jiwa Pilar 5: Hayat — Self-Iteration ─────────────────────────
             if _JIWA_ENABLED and _jiwa is not None and not simple_mode:
@@ -1537,6 +1800,7 @@ def run_react(
         )
         final_answer = _apply_maqashid_mode_gate(session, working_question, persona, final_answer)
         final_answer = _apply_constitution(final_answer)
+        final_answer = _apply_hygiene(final_answer)  # Pivot 2026-04-25
         session.final_answer = final_answer
         # ─────────────────────────────────────────────────────────────────────
         answer_dedup.set_cached_answer(persona, working_question, final_answer)
