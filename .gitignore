@@ -26,6 +26,9 @@ apps/brain_qa/qa_output.txt
 data/generated/
 data/
 
+# ── Dokumen sprint pribadi (local only, jangan commit) ───────────────────────
+SIDIX next Sprint plan*/
+
 # ── Secrets & config lokal ───────────────────────────────────
 .env
 .env.*
