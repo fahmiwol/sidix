@@ -4304,3 +4304,35 @@ Branch System, berjiwa IHOS. Pilot pertama: Tiranyx Digital Agency.
 - CHORE: Repo cleanup — 36 branch → 2 branch (main + feat). 27 Dependabot PR di-close. Branch naming SOP: hapus prefix vendor/tool.
 - TEST: 22 passed (baseline stabil).
 - DEPLOY: Merge feat/sop-sync-sprint8 → main + push. VPS: `git pull && pm2 restart sidix-brain`.
+
+### 2026-04-24 — Dokumentasi Sprint 8 Complete
+
+- DOC: Research note 193 — `brain/public/research_notes/193_vps_distillation_strategy.md` — strategi distilasi model SIDIX di VPS CPU + Kaggle T4, progressive scaling v0.8→v2.0.
+- DOC: CHANGELOG bilingual Sprint 8a/8b/8c/8d ditambahkan di `docs/CHANGELOG.md` — Foundation Hardening + Generative Core.
+- DOC: HANDOFF doc Sprint 8d dibuat — `docs/HANDOFF_2026-04-24_SPRINT8D.md` — state VPS, next sprint priority, SOP reminders.
+- [2026-04-24] [DOC] Sprint 8d complete: research note, CHANGELOG bilingual, HANDOFF doc dibuat
+
+### 2026-04-24 — Sinkronisasi Status Sprint di Landing Page
+
+- UPDATE: `SIDIX_LANDING/index.html` — section Roadmap diperbarui: Sprint 8a/8b/8c/8d dipindah dari "In Progress/Planned" ke "Sprint 8 — Selesai ✓ / Completed ✓" dengan badge hijau (Done). Planned section diupdate ke Sprint 9/9b.
+- UPDATE: `SIDIX_LANDING/index.html` — Changelog ditambahkan entry v0.8.4 (Sprint 8a/8b/8c/8d) sebagai "Latest" dengan deskripsi bilingual ID+EN.
+- DECISION: Badge v0.8.0 diubah dari "Latest" → "Stable" karena v0.8.4 sekarang jadi entry terbaru.
+- NOTE: Semua perubahan hanya di section roadmap & changelog. Layout, header, footer, fitur lain tidak disentuh. Struktur DOM dipreserve.
+
+### 2026-04-24 — Riset GPU Cloud untuk LLM Training SIDIX
+
+- DOC: Research note 194 — `brain/public/research_notes/194_gpu_cloud_training_options_2026.md` — riset mendalam opsi GPU cloud untuk training LoRA/QLoRA SIDIX (4 sumber: GMI Cloud, free.ai, GitHub zszazi, Kaggle). Mencakup: kebutuhan VRAM per model, ranking platform gratis, estimasi biaya per fase, decision tree pilih platform, dan step-by-step setup Kaggle.
+- DECISION: **Kaggle** ditetapkan sebagai primary platform training SIDIX (gratis, T4×2 16GB, 30 jam/minggu, cukup untuk QLoRA Qwen2.5-7B). Backup: Vast.ai ($0.25-0.50/jam). Total biaya estimasi 6 bulan pertama: **$0–$30**.
+- NOTE: Note 170 (inference GPU) dan note 194 (training GPU) saling melengkapi — beda workload, beda platform prioritas.
+- NOTE: Free trial one-shot (GCP $300, Azure $200, AWS 250hr) disimpan sebagai "senjata sekali pakai" untuk training milestone v1.0+ (Bulan 7-12), bukan untuk eksperimen kecil.
+
+### 2026-04-24 — Investigasi Proses VPS PM2 yang Error/Stopped
+
+- NOTE: Task ini RESEARCH ONLY — tidak ada perubahan file kode.
+- DECISION: Investigasi mendalam terhadap 4 proses VPS yang tidak berjalan normal: `sidix-dashboard` (errored 15x), `sidix-health` (stopped), `sidix-health-prod` (stopped), `sidix-mcp-prod` (stopped).
+- FINDING: **`sidix-dashboard` = ORPHAN**. Tidak ada kode server untuk proses ini di seluruh repo. Tidak ada folder `apps/dashboard/`, tidak ada script Node.js atau Python yang cocok. Satu-satunya referensi "dashboard" di codebase adalah CLI tool one-shot (`scripts/api_cost_dashboard.py`) dan generator Markdown statis (`curation.py`). Proses ini kemungkinan didaftarkan manual ke PM2 di luar `ecosystem.config.js`. Rekomendasi: `pm2 delete sidix-dashboard && pm2 save`.
+- FINDING: **`sidix-health` = ORPHAN**. Berbeda dari `sidix-health-prod` yang terdaftar di `ecosystem.config.js`. Kemungkinan sisa penamaan lama sebelum rename. Rekomendasi: `pm2 show sidix-health` → jika orphan: `pm2 delete sidix-health && pm2 save`.
+- FINDING: **`sidix-health-prod` = NORMAL**. Status `stopped` memang expected untuk cron job (`cron_restart: '*/15 * * * *'`, `autorestart: false`). Ada satu bug: baris `pm2 restart sidix-backend` seharusnya `pm2 restart sidix-brain`. Fix diperlukan di `deploy-scripts/health-check.sh`.
+- FINDING: **`sidix-mcp-prod` = SENGAJA STOPPED**. `autorestart: false` + `SIDIX_MCP_ENABLED: 'false'` di `ecosystem.config.js`. MCP stdio server lebih tepat dijalankan oleh Claude/Cursor, bukan sebagai daemon PM2.
+- ERROR (KRITIS): File `scripts/vps_check.py`, `vps_fix.py`, `vps_fix2.py`, `vps_fix3.py`, `vps_fix4.py`, `vps_fix5.py` — mengandung **credentials VPS hardcoded** (HOST + USER + PASS). Wajib dibersihkan segera + rotate password VPS.
+- DOC: Laporan lengkap di `docs/sprints/2026-04-24_vps_process_investigation.md`.

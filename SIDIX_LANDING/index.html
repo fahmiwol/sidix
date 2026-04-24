@@ -571,31 +571,51 @@
             </div>
           </div>
 
-          <p class="section-label mt-8 mb-4">In Progress — Sprint 8a (Mei 2026)</p>
+          <p class="section-label mt-8 mb-4">Sprint 8 — Selesai ✓ / Completed ✓</p>
           <div>
             <div class="roadmap-item">
-              <div class="progress">▶</div>
+              <div class="check">✓</div>
               <div>
-                <p class="text-sm font-medium text-parchment-200">Foundation Hardening — Sprint 8a</p>
-                <p class="text-xs text-parchment-500">Nafs 3-layer wire ke main agent; Jariyah v3 real-time capture (thumbs feedback); branch system (multi-client); PostgreSQL schema.</p>
+                <p class="text-sm font-medium text-parchment-200">Foundation Hardening — Sprint 8a <span class="text-xs text-gold-400">DONE</span></p>
+                <p class="text-xs text-parchment-500">Nafs 3-layer wire ke main agent; Jariyah v3 real-time capture (thumbs feedback); branch system (multi-client); PostgreSQL schema. / <em>Wired to main, deployed to VPS.</em></p>
               </div>
-              <span class="badge badge-gold ml-auto flex-shrink-0">Next</span>
+              <span class="badge badge-green ml-auto flex-shrink-0">Done</span>
+            </div>
+            <div class="roadmap-item">
+              <div class="check">✓</div>
+              <div>
+                <p class="text-sm font-medium text-parchment-200">Generative Core — Sprint 8b <span class="text-xs text-gold-400">DONE</span></p>
+                <p class="text-xs text-parchment-500">FLUX.1 image generation pipeline, Piper TTS, endpoint <code style="font-size:0.7rem;color:#D4A853">/generate/image</code> + <code style="font-size:0.7rem;color:#D4A853">/tts/synthesize</code> aktif. / <em>FLUX.1 pipeline &amp; Piper TTS live.</em></p>
+              </div>
+              <span class="badge badge-green ml-auto flex-shrink-0">Done</span>
+            </div>
+            <div class="roadmap-item">
+              <div class="check">✓</div>
+              <div>
+                <p class="text-sm font-medium text-parchment-200">Jariyah Collector &amp; DB Layer — Sprint 8c <span class="text-xs text-gold-400">DONE</span></p>
+                <p class="text-xs text-parchment-500">jariyah_collector.py + db/connection.py tersambung; feedback loop data jariyah aktif tersimpan ke database. / <em>Jariyah collector &amp; DB connection live.</em></p>
+              </div>
+              <span class="badge badge-green ml-auto flex-shrink-0">Done</span>
+            </div>
+            <div class="roadmap-item">
+              <div class="check">✓</div>
+              <div>
+                <p class="text-sm font-medium text-parchment-200">Branch Manager &amp; Token Quota — Sprint 8d <span class="text-xs text-gold-400">DONE</span></p>
+                <p class="text-xs text-parchment-500">branch_manager.py (multi-client isolation), token_quota.py fix (quota enforcement per branch). / <em>Branch manager &amp; token quota enforcement deployed.</em></p>
+              </div>
+              <span class="badge badge-green ml-auto flex-shrink-0">Done</span>
             </div>
           </div>
 
-          <p class="section-label mt-8 mb-4">Planned</p>
+          <p class="section-label mt-8 mb-4">Planned / Direncanakan</p>
           <div>
             <div class="roadmap-item">
               <div class="todo"></div>
-              <div><p class="text-sm text-parchment-400">Sprint 8b — Generative Core: FLUX.1 image generation, TTS (Piper), Code validator</p></div>
+              <div><p class="text-sm text-parchment-400">Sprint 9 — Agency OS UI: Sidebar UI Framework, Image Editor v1, Branch selector</p></div>
             </div>
             <div class="roadmap-item">
               <div class="todo"></div>
-              <div><p class="text-sm text-parchment-400">Sprint 8c — Agency OS UI: Sidebar UI Framework, Image Editor v1, Branch selector</p></div>
-            </div>
-            <div class="roadmap-item">
-              <div class="todo"></div>
-              <div><p class="text-sm text-parchment-400">Sprint 8d — Intelligence Layer: Raudah v2 multi-agent, Brand Guidelines Maker, Auto-retrain trigger</p></div>
+              <div><p class="text-sm text-parchment-400">Sprint 9b — Intelligence Layer: Raudah v2 multi-agent, Brand Guidelines Maker, Auto-retrain trigger</p></div>
             </div>
             <div class="roadmap-item">
               <div class="todo"></div>
@@ -631,11 +651,28 @@
 
         <div class="space-y-4">
 
-          <!-- v0.8.0 -->
+          <!-- v0.8.4 Sprint 8d -->
           <div class="card p-6">
             <div class="flex items-start justify-between gap-4 mb-3">
               <div>
                 <span class="inline-block text-xs font-bold px-2 py-0.5 rounded-full mb-2" style="background:rgba(110,174,124,0.15);color:#6EAE7C;border:1px solid rgba(110,174,124,0.3)">Latest</span>
+                <h3 class="font-bold text-parchment-100 text-base">v0.8.4 — Sprint 8a/8b/8c/8d: Foundation, Generative, Jariyah, Branch</h3>
+              </div>
+              <span class="text-xs text-parchment-500 flex-shrink-0 mt-1">2026-04-24</span>
+            </div>
+            <ul class="space-y-1.5 text-sm text-parchment-400">
+              <li>🏗️ <strong class="text-parchment-300">Sprint 8a — Foundation Hardening</strong> — Nafs 3-layer wire ke main agent; Jariyah v3 real-time capture (thumbs feedback); branch system multi-client; PostgreSQL schema. Sudah di-merge ke main dan deploy ke VPS. / <em>Merged to main, deployed to VPS.</em></li>
+              <li>🖼️ <strong class="text-parchment-300">Sprint 8b — Generative Core</strong> — FLUX.1 image generation pipeline lokal aktif; Piper TTS tersambung; endpoint <code style="font-size:0.7rem;color:#D4A853">/generate/image</code> + <code style="font-size:0.7rem;color:#D4A853">/tts/synthesize</code> live. / <em>FLUX.1 + Piper TTS endpoints live.</em></li>
+              <li>🗄️ <strong class="text-parchment-300">Sprint 8c — Jariyah Collector &amp; DB Layer</strong> — <code style="font-size:0.7rem;color:#D4A853">jariyah_collector.py</code> + <code style="font-size:0.7rem;color:#D4A853">db/connection.py</code> aktif; feedback loop jariyah tersimpan ke database. / <em>Jariyah collector &amp; DB connection deployed.</em></li>
+              <li>🌿 <strong class="text-parchment-300">Sprint 8d — Branch Manager &amp; Token Quota</strong> — <code style="font-size:0.7rem;color:#D4A853">branch_manager.py</code> (multi-client isolation); <code style="font-size:0.7rem;color:#D4A853">token_quota.py</code> fix (quota enforcement per branch). / <em>Branch isolation &amp; token quota enforcement.</em></li>
+            </ul>
+          </div>
+
+          <!-- v0.8.0 -->
+          <div class="card p-6">
+            <div class="flex items-start justify-between gap-4 mb-3">
+              <div>
+                <span class="inline-block text-xs font-bold px-2 py-0.5 rounded-full mb-2" style="background:rgba(212,168,83,0.1);color:#D4A853;border:1px solid rgba(212,168,83,0.25)">Stable</span>
                 <h3 class="font-bold text-parchment-100 text-base">v0.8.0 — Jiwa 7-Pilar + Plugin Ecosystem (Optional) + Typo Framework</h3>
               </div>
               <span class="text-xs text-parchment-500 flex-shrink-0 mt-1">2026-04-23</span>

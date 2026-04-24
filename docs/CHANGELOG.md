@@ -4,6 +4,26 @@ Format: `[YYYY-MM-DD] — Ringkasan perubahan`
 
 ---
 
+## [Sprint 8 — 2026-04-24] Foundation Hardening + Generative Core
+
+### 8a — Foundation
+**ID:** Router lokal (tanpa vendor API), Nafs Bridge, feedback Jariyah, hapus anthropic_llm.py
+**EN:** Local router (no vendor API), Nafs Bridge, Jariyah feedback loop, removed anthropic_llm.py
+
+### 8b — Generative Core
+**ID:** Pipeline gambar FLUX.1, TTS Piper (stub), validator kode multi-bahasa, scaffold generator, endpoint /generate/image + /tts/synthesize
+**EN:** FLUX.1 image pipeline, Piper TTS (stub), multi-language code validator, scaffold generator, /generate/image + /tts/synthesize endpoints
+
+### 8c — Jariyah + DB
+**ID:** Modul jariyah_collector.py (pairs feedback JSONL), koneksi DB async PostgreSQL
+**EN:** jariyah_collector.py module (feedback pairs JSONL), async PostgreSQL DB connection pool
+
+### 8d — Multi-Tenant
+**ID:** branch_manager.py (sistem cabang multi-tenant, 5 persona), token_quota.py (hapus model deprecated)
+**EN:** branch_manager.py (multi-tenant branch system, 5 personas), token_quota.py (removed deprecated model names)
+
+---
+
 ## [2026-04-23] — Kontinuitas agen: SOP wajib, handoff QA/DOCX, STATUS + landing
 
 - **DOC:** `docs/AGENTS_MANDATORY_SOP.md` (pembuka netral); `docs/HANDOFF_2026-04-23_QA_KONTINUITAS_DOK.md` — DOCX unduhan vs Markdown kanonis; pembaruan `AGENTS.md`, `00_START_HERE.md`, `STATUS_TODAY.md`, `LIVING_LOG.md`.

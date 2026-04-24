@@ -79,3 +79,7 @@ logs/
 .data/download_adapter.py
 .data/kaggle_upload_cell.py
 .data/kaggle_adapter/
+
+# ── VPS scripts (contain credentials via env var, internal use only) ─────────
+scripts/vps_*.py
+scripts/vps_check.py

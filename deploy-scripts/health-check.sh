@@ -25,7 +25,7 @@ HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8765/healt
 if [ "$HTTP_STATUS" -ne 200 ]; then
     echo "❌ ERROR: Backend returned $HTTP_STATUS" >> "$LOG_FILE"
     # Auto-restart if down
-    pm2 restart sidix-backend
+    pm2 restart sidix-brain
 fi
 
 # 4. Ollama (if used)

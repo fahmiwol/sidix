@@ -2,11 +2,12 @@
 import paramiko
 import sys
 import io
+import os
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
 
-HOST = "72.62.125.6"
-USER = "root"
-PASS = "gY2UkMePh,Zvt5)5"
+HOST = os.getenv("SIDIX_VPS_HOST", "")
+USER = os.getenv("SIDIX_VPS_USER", "root")
+PASS = os.getenv("SIDIX_VPS_PASS", "")
 
 
 def ssh_run(client, cmd, timeout=60):
