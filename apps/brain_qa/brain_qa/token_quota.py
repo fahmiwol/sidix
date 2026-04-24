@@ -36,12 +36,13 @@ QUOTA_LIMITS: dict[QuotaTier, int] = {
     "admin":     9999, # unlimited efektif
 }
 
-# Model per tier — guest/free dapat Haiku (hemat), sponsored dapat Sonnet
+# Model per tier — semua tier pakai local LLM (Ollama/LoRA/Mock)
+# Standing Alone: tidak ada vendor cloud API di inference pipeline
 TIER_MODELS: dict[QuotaTier, str] = {
-    "guest":     "claude-3-haiku-20240307",
-    "free":      "claude-3-haiku-20240307",
-    "sponsored": "claude-3-5-sonnet-20241022",  # medium speed, better quality
-    "admin":     "claude-3-5-sonnet-20241022",
+    "guest":     "local",
+    "free":      "local",
+    "sponsored": "local",
+    "admin":     "local",
 }
 
 # Trakteer/Saweria link untuk top up
