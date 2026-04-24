@@ -198,6 +198,28 @@ _FORCE_CORPUS_RE = re.compile(
     re.IGNORECASE,
 )
 
+# Pivot 2026-04-25: current-events → web_search aggressive default.
+# Bila user menanyakan hal terkini/berita/tokoh/harga/event → langsung web_search.
+_CURRENT_EVENTS_RE = re.compile(
+    r"\b("
+    r"hari\s+ini|sekarang|saat\s+ini|terkini|terbaru|"
+    r"berita|news|update\s+terbaru|"
+    r"harga\s+(saham|bitcoin|btc|emas|dollar|rupiah|usd|idr)|"
+    r"kurs\s+(dollar|usd|rupiah|idr|euro)|"
+    r"cuaca|weather|"
+    r"presiden\s+(amerika|indonesia|rusia|china)\s+(saat|sekarang|sekarang)|"
+    r"siapa\s+(presiden|menteri|gubernur|ceo|juara)\s+.*(saat|sekarang|terkini)|"
+    r"kapan\s+(event|pemilu|piala|olimpiade|konser)|"
+    r"tanggal\s+berapa\s+(hari\s+ini|sekarang)"
+    r")\b",
+    re.IGNORECASE,
+)
+
+
+def _needs_web_search(question: str) -> bool:
+    """True bila pertanyaan butuh data terkini/real-time → web_search dulu."""
+    return bool(_CURRENT_EVENTS_RE.search(question or ""))
+
 
 def _should_prioritize_corpus(question: str, *, corpus_only: bool) -> bool:
     """Putuskan kapan RAG harus dominan (topik SIDIX atau user minta sumber eksplisit)."""
@@ -488,6 +510,15 @@ def _rule_based_plan(
                 f"User ingin belajar mandiri berbasis roadmap. Ambil item berikutnya dari roadmap '{slug}'.",
                 "roadmap_next_items",
                 {"slug": slug, "n": 10},
+            )
+
+        # Pivot 2026-04-25: current-events routing — web_search aggressive default.
+        # Bila pertanyaan butuh data terkini, langsung web_search sebelum corpus.
+        if _needs_web_search(question) and allow_web_fallback and not corpus_only:
+            return (
+                f"Pertanyaan menyangkut data terkini/real-time. Langsung web_search: '{question}'.",
+                "web_search",
+                {"query": question, "max_results": 5},
             )
 
         # Default routing: corpus untuk topik SIDIX, model untuk topik umum.

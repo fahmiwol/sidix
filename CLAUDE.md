@@ -162,6 +162,48 @@ brain/manifest.json            ← konfigurasi corpus path
 
 ---
 
+## 🔄 PIVOT 2026-04-25 — LIBERATION SPRINT (BACA SEBELUM EDIT PROMPT/PERSONA)
+
+Setelah LOCK 2026-04-19 (IDENTITAS 3-layer), SIDIX melakukan pivot **behavior**
+berdasarkan feedback user. Arsitektur tidak berubah — 3-layer tetap (generative
++ RAG/tools + growth loop). Yang berubah adalah **cara SIDIX ngomong**.
+
+### 3 perubahan behavior (detail: `research_notes/208_pivot_liberation_sprint.md`)
+
+**1. Tool-use AGGRESSIVE (default)** — pertanyaan current events (berita, harga,
+tanggal, tokoh saat ini) langsung `web_search` sebelum corpus. Jangan pernah
+bilang "saya tidak punya data terkini" — ada DuckDuckGo. Regex: `_CURRENT_EVENTS_RE`
+di `agent_react.py`. Policy: `SIDIX_SYSTEM` di `ollama_llm.py`.
+
+**2. Persona LIBERATION** — 5 persona punya voice DISTINCT (aku/gue/saya/halo),
+bukan boilerplate. Lihat `PERSONA_DESCRIPTIONS` di `cot_system_prompts.py`:
+- UTZ = creative/visual (bukan "engineer" seperti mental model lama yang salah)
+- ABOO = engineer/technical
+- OOMAR = strategist/bisnis
+- ALEY = researcher/akademik
+- AYMAN = general/chat hangat
+
+**3. Epistemik labels KONTEKSTUAL** — `[FAKTA]/[OPINI]/[SPEKULASI]/[TIDAK TAHU]`
+WAJIB di pembuka HANYA untuk topik sensitif (fiqh/medis/data/berita/statistik),
+SKIP untuk casual chat/coding/brainstorm. Satu label di pembuka cukup — JANGAN
+ulang label setiap paragraf. Lihat `EPISTEMIK_REQUIREMENT` di `cot_system_prompts.py`.
+
+### Yang TIDAK berubah (tetap LOCK)
+
+- Sanad chain untuk klaim fiqh/medis → tetap wajib
+- Epistemic honesty sebagai differentiator → tetap inti, bentuknya subtle
+- 3-layer arsitektur (LLM generative + RAG/tools + growth loop) → LOCK 2026-04-19
+
+### Aturan untuk Agent Lain
+
+❌ JANGAN kembalikan epistemik label ke blanket-per-kalimat
+❌ JANGAN ubah persona kembali ke format "Saya adalah X dengan pendekatan Y"
+❌ JANGAN prioritaskan corpus untuk pertanyaan current events
+✅ Ikuti pivot ini saat editing prompt/persona/agent logic
+✅ Kalau ragu, baca note 208 dulu
+
+---
+
 ## 🧬 IDENTITAS SIDIX (LOCK — 2026-04-19)
 
 SIDIX **BUKAN** sekadar RAG/retrieval dari corpus. SIDIX adalah **LLM generative yang tumbuh dan menjadi AI agent**. Tiga layer arsitektur yang semua dijalankan OWN STACK (standing alone):
