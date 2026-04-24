@@ -209,6 +209,36 @@ class AskRequest(BaseModel):
     simple_mode: bool = False
 
 
+class ImageGenRequest(BaseModel):
+    prompt: str
+    width: int = 1024
+    height: int = 1024
+    steps: int = 4
+    seed: int | None = None
+
+
+class ImageGenResponse(BaseModel):
+    path: str
+    url: str
+    mode: str
+    model: str
+
+
+class TTSRequest(BaseModel):
+    text: str
+    language: str = "id"
+    voice: str | None = None
+    speed: float = 1.0
+
+
+class TTSResponse(BaseModel):
+    path: str
+    mode: str
+    language: str
+    voice: str
+    duration_estimate: float
+
+
 # ── LLM generate function (Standing Alone) ────────────────────────────────────
 # Priority: 1) Ollama (local)  2) LoRA (local)  3) Mock
 
@@ -3332,6 +3362,59 @@ h1{{color:#0af}}p{{color:#aaa}}a{{color:#0af}}</style></head>
             return get_optimizer_stats()
         except Exception as e:
             return {"ok": False, "error": str(e)}
+
+    # ── Sprint 8b: Image Generation endpoint ────────────────────────────────
+    @app.post("/generate/image", response_model=ImageGenResponse, tags=["Generate"])
+    async def generate_image_endpoint(req: ImageGenRequest):
+        """Generate gambar via FLUX.1 (local) atau mock fallback."""
+        try:
+            import sys
+            from pathlib import Path
+            sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
+            from apps.image_gen.flux_pipeline import generate_image
+            result = generate_image(
+                prompt=req.prompt,
+                width=req.width,
+                height=req.height,
+                steps=req.steps,
+                seed=req.seed,
+            )
+            fname = Path(result["path"]).name
+            return ImageGenResponse(
+                path=str(result["path"]),
+                url=f"/generated/images/{fname}",
+                mode=result["mode"],
+                model=result["model"],
+            )
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=str(e))
+
+    # ── Sprint 8b: TTS Synthesize endpoint ──────────────────────────────────
+    @app.post("/tts/synthesize", response_model=TTSResponse, tags=["Generate"])
+    async def tts_synthesize_endpoint(req: TTSRequest):
+        """Convert teks ke audio WAV via Piper TTS atau stub WAV fallback."""
+        if not req.text.strip():
+            raise HTTPException(status_code=400, detail="text kosong")
+        try:
+            import sys
+            from pathlib import Path
+            sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
+            from apps.audio.tts_engine import synthesize
+            result = synthesize(
+                text=req.text,
+                language=req.language,
+                voice=req.voice,
+                speed=req.speed,
+            )
+            return TTSResponse(
+                path=str(result["path"]),
+                mode=result["mode"],
+                language=result["language"],
+                voice=result["voice"],
+                duration_estimate=result["duration_estimate"],
+            )
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=str(e))
 
     # ── Concept graph endpoint (Sprint 1 T1.4) ───────────────────────────────
     @app.get("/concept_graph/query")
