@@ -42,7 +42,7 @@ class ResearchFinding:
     """Satu potongan temuan dari satu angle/sub-pertanyaan."""
     angle:       str          # sub-pertanyaan yang dijawab
     content:     str          # jawaban/ringkasan
-    source:      str          # "llm:groq_llama3" / "webfetch:<host>"
+    source:      str          # "llm:local" / "webfetch:<host>"
     confidence:  float = 0.5
 
 
@@ -100,7 +100,7 @@ def _generate_search_angles(question: str, domain: str) -> list[str]:
             prompt=_ANGLE_PROMPT_TEMPLATE.format(question=question, domain=domain),
             max_tokens=250,
             temperature=0.5,
-            skip_local=True,   # riset butuh konteks terkini → cloud lebih relevan
+            skip_local=False,  # standing alone: local-only
         )
         text = result.text or ""
     except Exception as e:
@@ -186,7 +186,7 @@ def _synthesize_from_llm(angles: list[str], context: Optional[list[str]] = None)
                 max_tokens=320,
                 temperature=0.6,
                 context_snippets=context or [],
-                skip_local=True,
+                skip_local=False,
             )
             text = (result.text or "").strip()
             if not text or len(text) < 40:
@@ -235,7 +235,7 @@ def _synthesize_multi_perspective(
                 max_tokens=280,
                 temperature=0.75,  # higher temp → perspektif lebih beragam
                 context_snippets=context or [],
-                skip_local=True,
+                skip_local=False,
             )
             text = (result.text or "").strip()
             if not text or len(text) < 40:
@@ -313,7 +313,7 @@ def _comprehend_source(raw_text: str, main_question: str, source_host: str) -> O
             system=_COMPREHEND_SYSTEM,
             max_tokens=320,
             temperature=0.4,   # rendah → lebih akurat, tidak ngelantur
-            skip_local=True,
+            skip_local=False,
         )
         text = (result.text or "").strip()
         return text if len(text) >= 40 else None
@@ -418,7 +418,7 @@ def _narrate_synthesis(main_question: str, findings: list["ResearchFinding"], ur
             system=_NARRATOR_SYSTEM,
             max_tokens=520,
             temperature=0.55,
-            skip_local=True,
+            skip_local=False,
         )
         text = (result.text or "").strip()
         return text if len(text) >= 80 else None

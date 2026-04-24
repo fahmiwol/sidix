@@ -44,6 +44,24 @@ Contoh:
 
 ## Log
 
+### 2026-04-24 (Claude — audit Sprint 8a, verifikasi Standing Alone, commit untracked)
+
+- TEST: `python -m pytest tests/ -q` dari `apps/brain_qa` → **22 passed** (10.11s). Tidak ada regresi setelah perubahan Standing Alone oleh Cursor agent.
+- DECISION: Branch `cursor/sop-public-artifacts-sync` — perubahan Cursor agent di-audit dan di-commit: (1) Standing Alone enforcement, (2) Branch System foundation, (3) Feedback→Jariyah hook, (4) Persona validation guard.
+- IMPL: `apps/brain_qa/brain_qa/multi_llm_router.py` — rewrite total ke local-only router (Ollama → LoRA → Mock); hapus semua jalur cloud vendor (591 baris net dikurangi).
+- IMPL: `apps/brain_qa/brain_qa/multi_modal_router.py` — simplified ke local-only interface; jalur cloud dihapus.
+- DELETE: `apps/brain_qa/brain_qa/anthropic_llm.py` — file cloud wrapper dihapus (170 baris). Tidak ada lagi jalur fallback ke Anthropic API di inference pipeline.
+- FIX: `apps/brain_qa/brain_qa/agent_react.py` — hapus 2 blok fallback Anthropic Haiku (`_compose_final_answer`); tambah `client_id` + `conversation_id` ke `AgentSession`.
+- IMPL: `apps/brain_qa/brain_qa/agent_serve.py` — `_ALLOWED_PERSONAS` guard; `client_id` dipropagasi dari body atau header `x-client-id`; feedback endpoint: persist ke `data/feedback.jsonl` + trigger Jariyah hook ke `jiwa.post_response(user_feedback="thumbs_up")`.
+- IMPL: `apps/brain_qa/brain_qa/jiwa/aql.py` — terima `user_feedback` di `post_response()`; capture training pair jika `thumbs_up` walau CQF rendah.
+- DOC: `brain/public/research_notes/191_sprint8a_standing_alone_feedback_jariyah.md` — rationale + kontrak data Sprint 8a.
+- DOC: `docs/schema/SIDIX_AGENCY_OS_CORE.sql` — blueprint PostgreSQL: agencies, clients, conversations, messages, training_pairs, kg_nodes, health_checks, audit_logs.
+- DOC: `docs/sprints/2026-04-23_sprint-8a_implementation_checklist.md` — checklist implementasi Sprint 8a (Typo Bridge, Persona, Branch, Jiwa, Feedback, Epistemic, Sanad, Schema).
+- DOC: `docs/_imports/` — 7 dokumen spec diimport dari Sprint Plan (11_LOGIC, 12_INPUT_OUTPUT, 13_ALGORITHMS, BRIEF_FOR_AGENT, PRD v2, SIDIX_AGENCY_OS_TIRANYX_PILOT, Dokumen_tanpa_judul).
+- DOC: `docs/HANDOFF_2026-04-23_FINAL_SYNC.md` + `docs/MASTER_SPRINT_PLAN_2026.md` — handoff master + SSoT sprint plan v0.8.0→Agency OS v1.0.
+- NOTE: Alignment cek: Landing (`v0.8.0` Latest, Sprint 8a In Progress) ✅ — UI (5 persona AYMAN/ABOO/OOMAR/ALEY/UTZ) ✅ — Backend (local-only, no cloud vendor) ✅ — sesuai `AGENTS_MANDATORY_SOP.md`.
+- NOTE: TODO Sprint 8a yang belum diimplementasi: Typo Bridge wiring ke `agent_react.py` (A1/A2), Nafs 3-layer wire dari `brain/nafs/response_orchestrator.py` (D1), PostgreSQL migration strategy (H2).
+
 ### 2026-04-23 (Agent 4 — update dokumentasi publik v0.8.0)
 
 - DOC: `README.md` diupdate — section `What's New in v0.8.0` ditambahkan (Jiwa 7-Pilar, Typo Resilient Framework, Kimi Plugin, MCP Ecosystem); Roadmap diperbarui ke format sprint 7b/7c/8a-8d menggantikan tabel BABY-ADULT.
@@ -4233,3 +4251,16 @@ Branch System, berjiwa IHOS. Pilot pertama: Tiranyx Digital Agency.
 
 - FIX: Interpretasi SOP diperjelas: penyebutan vendor/host **boleh** di dokumen integrasi yang teknis-operasional, tetapi **wajib netral/metafora** di area publik/marketing.
 - DOC: `docs/AGENTS_MANDATORY_SOP.md` ditambah bagian “Batas Teknis vs Publik (Vendor/Host Naming)” agar agent lain tidak menghapus info teknis yang memang dibutuhkan.
+
+### 2026-04-23 — Sprint 8a: checklist implementasi + standing-alone hardening
+
+- DOC: `docs/sprints/2026-04-23_sprint-8a_implementation_checklist.md` — checklist implementasi Sprint 8a yang 100% merujuk kontrak dokumen (13/05/04/12), tanpa nambah scope.
+- DOC: `docs/schema/SIDIX_AGENCY_OS_CORE.sql` — blueprint schema PostgreSQL minimal (branch system, chat+feedback, training_pairs, KG, observability).
+- FIX: Hardening “standing alone” (no vendor AI API) di `apps/brain_qa`:
+  - `agent_react.py`: hapus jalur synthesis via cloud fallback; tambah metadata branch context (`client_id`, `conversation_id`).
+  - `multi_llm_router.py`: router lokal saja (Ollama → LoRA → Mock).
+  - `multi_modal_router.py`: interface multi-modal local-only (vision/ASR/TTS belum terpasang).
+- IMPL: Feedback loop `POST /agent/feedback` sekarang:
+  - persist event ke JSONL lokal, dan
+  - `thumbs_up` memicu capture training pair (Jariyah) via `jiwa.post_response(... user_feedback="thumbs_up")`.
+- DOC: Research note baru untuk keputusan desain & wiring: `brain/public/research_notes/191_sprint8a_standing_alone_feedback_jariyah.md`

@@ -103,6 +103,7 @@ class JiwaOrchestrator:
         topic: str = "umum",
         platform: str = "direct",
         cqf_score: float = 0.0,
+        user_feedback: str = "",
     ) -> None:
         """
         Fire-and-forget post-response hook.
@@ -115,6 +116,7 @@ class JiwaOrchestrator:
             topic=topic,
             platform=platform,
             cqf_score=cqf_score,
+            user_feedback=user_feedback,
         )
 
     # ── Pilar 3: Qalb ──────────────────────────────────────────────────────

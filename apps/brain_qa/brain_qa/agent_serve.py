@@ -45,6 +45,7 @@ from . import rate_limit
 from . import social_radar
 
 _PROCESS_STARTED = time.time()
+_ALLOWED_PERSONAS = {"AYMAN", "ABOO", "OOMAR", "ALEY", "UTZ"}
 
 # ── In-memory session store (ganti Redis nanti kalau scale) ──────────────────
 _sessions: dict[str, AgentSession] = {}
@@ -102,7 +103,7 @@ def _enforce_daily(request: Request) -> None:
 
 class ChatRequest(BaseModel):
     question: str
-    persona: str = "INAN"
+    persona: str = "UTZ"
     persona_style: str = ""   # Task 22: "pembimbing"|"faktual"|"kreatif"|"akademik"|"rencana"|"singkat"
     output_lang: str = "auto" # Task 26: "auto"|"id"|"en"|"ar"
     allow_restricted: bool = False
@@ -110,6 +111,8 @@ class ChatRequest(BaseModel):
     corpus_only: bool = False
     allow_web_fallback: bool = True
     simple_mode: bool = False
+    client_id: str = ""        # Branch context (Agency OS)
+    conversation_id: str = ""  # Optional thread id (client-side)
     max_steps: int | None = Field(
         default=None,
         ge=2,
@@ -190,7 +193,7 @@ class RadarScanRequest(BaseModel):
 
 class AskRequest(BaseModel):
     question: str
-    persona: str = "MIGHAN"
+    persona: str = "UTZ"
     persona_style: str = ""   # Task 22: style shorthand
     output_lang: str = "auto" # Task 26: output language override
     k: int = 5
@@ -199,9 +202,8 @@ class AskRequest(BaseModel):
     simple_mode: bool = False
 
 
-# ── LLM generate function ─────────────────────────────────────────────────────
-# Priority: 1) Ollama (local)  2) LoRA (GPU)  3) Groq (free)  4) Gemini (free)
-#           5) Anthropic Haiku/Sonnet (cheap/paid)  6) Mock
+# ── LLM generate function (Standing Alone) ────────────────────────────────────
+# Priority: 1) Ollama (local)  2) LoRA (local)  3) Mock
 
 def _llm_generate(
     prompt: str,
@@ -213,8 +215,7 @@ def _llm_generate(
 ) -> tuple[str, str]:
     """
     Returns (generated_text, mode).
-    mode = "ollama" | "local_lora" | "groq_llama3" | "gemini_flash"
-           | "anthropic_haiku" | "anthropic_sonnet" | "mock"
+    mode = "ollama" | "local_lora" | "mock"
 
     Delegasikan ke multi_llm_router — satu routing engine untuk semua.
     preferred_model: override model (misal dari quota tier untuk sponsored user).
@@ -347,31 +348,6 @@ def create_app() -> "FastAPI":
         except Exception:
             pass
 
-        # Multi-LLM router status
-        anthropic_ready = False
-        groq_ready = False
-        gemini_ready = False
-        try:
-            from .anthropic_llm import anthropic_available
-            anthropic_ready = anthropic_available()
-        except Exception:
-            pass
-        try:
-            from .multi_llm_router import groq_available, gemini_available
-            groq_ready = groq_available()
-            gemini_ready = gemini_available()
-        except Exception:
-            pass
-
-        # Update effective_mode berdasarkan provider yang tersedia
-        if not ollama_info.get("available") and not model_ready:
-            if groq_ready:
-                effective_mode = "groq_llama3"
-            elif gemini_ready:
-                effective_mode = "gemini_flash"
-            elif anthropic_ready:
-                effective_mode = "anthropic_haiku"
-
         # QnA stats
         qna_today = 0
         try:
@@ -400,11 +376,6 @@ def create_app() -> "FastAPI":
             "anon_daily_quota_cap": rate_limit.daily_quota_cap(),
             "engine_build": os.environ.get("BRAIN_QA_ENGINE_BUILD", "0.1.0").strip() or "0.1.0",
             "threads_alert": threads_alert,
-            "llm_providers": {
-                "groq": groq_ready,
-                "gemini": gemini_ready,
-                "anthropic": anthropic_ready,
-            },
             "qna_recorded_today": qna_today,
             "ok": True,
             "version": "0.1.0",
@@ -415,7 +386,6 @@ def create_app() -> "FastAPI":
             return mask_health_payload(raw_payload)
         except Exception:
             # Fallback safe: hilangkan field provider-specific
-            raw_payload.pop("llm_providers", None)
             raw_payload.pop("ollama", None)
             return raw_payload
 
@@ -432,9 +402,17 @@ def create_app() -> "FastAPI":
         try:
             from .persona import resolve_style_persona
             effective_persona = resolve_style_persona(req.persona_style, req.persona)
+            effective_persona = (effective_persona or "UTZ").strip().upper()
+            if effective_persona not in _ALLOWED_PERSONAS:
+                effective_persona = "UTZ"
+            # Branch context: prefer body override, fallback ke header x-client-id
+            effective_client_id = (req.client_id or "").strip() or request.headers.get("x-client-id", "").strip()
+            effective_conversation_id = (req.conversation_id or "").strip() or request.headers.get("x-conversation-id", "").strip()
             session = run_react(
                 question=req.question,
                 persona=effective_persona,
+                client_id=effective_client_id,
+                conversation_id=effective_conversation_id,
                 allow_restricted=req.allow_restricted,
                 max_steps=req.max_steps,
                 verbose=req.verbose,
@@ -480,14 +458,16 @@ def create_app() -> "FastAPI":
 
     # ── GET /agent/orchestration ───────────────────────────────────────────────
     @app.get("/agent/orchestration")
-    def agent_orchestration(q: str, persona: str = "INAN"):
+    def agent_orchestration(q: str, persona: str = "UTZ"):
         """Bangun OrchestrationPlan deterministik tanpa menjalankan loop ReAct penuh."""
         qq = (q or "").strip()
         if not qq:
             raise HTTPException(status_code=400, detail="q tidak boleh kosong")
         from .orchestration import build_orchestration_plan, format_plan_text
 
-        p = (persona or "INAN").strip().upper() or "INAN"
+        p = (persona or "UTZ").strip().upper() or "UTZ"
+        if p not in _ALLOWED_PERSONAS:
+            p = "UTZ"
         plan = build_orchestration_plan(qq, request_persona=p)
         return {
             "persona": p,
@@ -655,6 +635,54 @@ def create_app() -> "FastAPI":
             _METRICS["feedback_up"] = _METRICS.get("feedback_up", 0) + 1
         else:
             _METRICS["feedback_down"] = _METRICS.get("feedback_down", 0) + 1
+        # Persist feedback (local-only, append JSONL). Jangan simpan PII.
+        try:
+            from . import g1_policy
+
+            session = _sessions.get(req.session_id)
+            payload = {
+                "session_id": req.session_id,
+                "vote": req.vote,
+                "client_id": (getattr(session, "client_id", "") if session else "")[:120],
+                "conversation_id": (getattr(session, "conversation_id", "") if session else "")[:120],
+                "question": g1_policy.redact_pii_for_export(getattr(session, "question", ""))[:2000] if session else "",
+                "answer": g1_policy.redact_pii_for_export(getattr(session, "final_answer", ""))[:4000] if session else "",
+                "created_at": time.time(),
+            }
+
+            data_dir = Path(__file__).resolve().parent.parent / "data"
+            data_dir.mkdir(parents=True, exist_ok=True)
+            fpath = data_dir / "feedback.jsonl"
+            fpath.write_text(
+                (fpath.read_text(encoding="utf-8") if fpath.exists() else "")
+                + json.dumps(payload, ensure_ascii=False)
+                + "\n",
+                encoding="utf-8",
+            )
+        except Exception:
+            pass
+
+        # Jariyah hook: thumbs-up bisa memicu capture training pair (non-blocking).
+        try:
+            if req.vote == "up":
+                session = _sessions.get(req.session_id)
+                if session and getattr(session, "final_answer", ""):
+                    try:
+                        from .jiwa.orchestrator import jiwa as _jiwa
+                        _topic = getattr(session, "user_intent", "") or "umum"
+                        _jiwa.post_response(
+                            getattr(session, "question", ""),
+                            getattr(session, "final_answer", ""),
+                            getattr(session, "persona", "UTZ"),
+                            topic=_topic,
+                            platform="feedback_up",
+                            cqf_score=float(getattr(session, "confidence_score", 0.0)) * 10,
+                            user_feedback="thumbs_up",
+                        )
+                    except Exception:
+                        pass
+        except Exception:
+            pass
         return {"ok": True, "session_id": req.session_id, "vote": req.vote}
 
     @app.delete("/agent/session/{session_id}")
@@ -707,6 +735,8 @@ def create_app() -> "FastAPI":
         session = run_react(
             question=req.question,
             persona=req.persona,
+            client_id=request.headers.get("x-client-id", "").strip(),
+            conversation_id=request.headers.get("x-conversation-id", "").strip(),
             corpus_only=req.corpus_only,
             allow_web_fallback=req.allow_web_fallback,
             simple_mode=req.simple_mode,
