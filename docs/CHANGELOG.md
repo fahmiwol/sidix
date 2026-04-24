@@ -4,6 +4,30 @@ Format: `[YYYY-MM-DD] — Ringkasan perubahan`
 
 ---
 
+## [Sprint 9 — 2026-04-24] Distillation + Jariyah Export + Social Radar
+
+### Distillation Pipeline
+**ID:** Script distilasi model SIDIX ke VPS CPU — generate synthetic data, QLoRA training (Kaggle T4), export GGUF, Ollama Modelfile  
+**EN:** SIDIX model distillation pipeline — synthetic data generation, QLoRA training (Kaggle T4), GGUF export, Ollama Modelfile
+
+### Jariyah Exporter
+**ID:** Modul jariyah_exporter.py — ekspor feedback pairs ke format LoRA training. Endpoint baru: GET /jariyah/stats, POST /jariyah/export  
+**EN:** jariyah_exporter.py module — export feedback pairs to LoRA training format. New endpoints: GET /jariyah/stats, POST /jariyah/export
+
+### Social Radar (Tool ke-37)
+**ID:** tools/social_radar.py — analisis tren dan sentimen sosial media berbasis aturan, tanpa API berbayar. 37 tools aktif di ReAct loop  
+**EN:** tools/social_radar.py — rule-based social media trend and sentiment analysis, no paid API. 37 tools active in ReAct loop
+
+### DB Migration
+**ID:** scripts/db_migrate.py — apply schema PostgreSQL via env var SIDIX_DB_URL  
+**EN:** scripts/db_migrate.py — apply PostgreSQL schema via SIDIX_DB_URL env var
+
+### Security
+**ID:** Hapus credentials hardcoded dari scripts/vps_*.py → env var. Password VPS di-rotate.  
+**EN:** Removed hardcoded credentials from scripts/vps_*.py → env vars. VPS password rotated.
+
+---
+
 ## [Sprint 8 — 2026-04-24] Foundation Hardening + Generative Core
 
 ### 8a — Foundation
