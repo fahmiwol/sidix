@@ -24,6 +24,18 @@ Format: `[YYYY-MM-DD] — Ringkasan perubahan`
 
 ---
 
+## [Sprint A — 2026-04-24] Streaming Chat + Memory Persistence + Conversation Threading
+
+### Streaming Chat Memory Wire
+**ID:** `/ask/stream` endpoint di `agent_serve.py` sekarang support `conversation_id` + `user_id`, auto-create thread, load recent context (N-turn injection), save ke memory DB setelah stream selesai. Frontend `api.ts` + `main.ts` manage `conversation_id` via localStorage untuk persistence antar chat.
+**EN:** `/ask/stream` endpoint now supports `conversation_id` + `user_id`, auto-creates thread, loads recent context, persists to memory DB. Frontend manages `conversation_id` via localStorage for cross-chat persistence.
+
+### VPS Cron Template
+**ID:** `scripts/cron_setup.md` — template setup cron untuk self-healing (*/5 menit), auto-training flywheel (hari 03:00), memory DB backup (hari 02:00).
+**EN:** `scripts/cron_setup.md` — cron template for self-healing, auto-training flywheel, memory DB backup.
+
+---
+
 ## [Sprint 12 — 2026-04-24] Auto-Training Flywheel + Eval Harness + Ollama Deploy
 
 ### Auto-Training Flywheel
