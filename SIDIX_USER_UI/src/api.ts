@@ -309,7 +309,7 @@ export async function askStream(
     onMeta?: (meta: StreamDoneMeta & { quota?: QuotaInfo }) => void;
     onQuotaLimit?: (info: QuotaInfo) => void;
   },
-  opts?: AskInferenceOpts,
+  opts?: AskInferenceOpts & { conversationId?: string; userId?: string },
 ): Promise<void> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), 60_000);
@@ -317,8 +317,9 @@ export async function askStream(
   // Kirim user-id jika sudah login (untuk quota tracking & tier model)
   const headers: Record<string, string> = { 'Content-Type': 'application/json' };
   try {
-    const uid = localStorage.getItem('sidix_user_id') ?? '';
+    const uid = opts?.userId ?? localStorage.getItem('sidix_user_id') ?? '';
     if (uid) headers['x-user-id'] = uid;
+    if (opts?.conversationId) headers['x-conversation-id'] = opts.conversationId;
   } catch { /* ignore */ }
 
   try {
@@ -332,6 +333,8 @@ export async function askStream(
         corpus_only: opts?.corpus_only ?? false,
         allow_web_fallback: opts?.allow_web_fallback ?? true,
         simple_mode: opts?.simple_mode ?? false,
+        conversation_id: opts?.conversationId ?? '',
+        user_id: opts?.userId ?? '',
       }),
       signal: controller.signal,
     });

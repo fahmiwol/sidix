@@ -212,6 +212,8 @@ class AskRequest(BaseModel):
     corpus_only: bool = False
     allow_web_fallback: bool = True
     simple_mode: bool = False
+    conversation_id: str = ""  # Thread id untuk memory persistence
+    user_id: str = "anon"
 
 
 class ImageGenRequest(BaseModel):
@@ -1000,9 +1002,29 @@ def create_app() -> "FastAPI":
         dq_key = _daily_client_key(request)
 
         # ── Quota check ────────────────────────────────────────────────────────
-        user_id  = request.headers.get("x-user-id", "").strip() or None
+        effective_user_id = (req.user_id or "").strip() or request.headers.get("x-user-id", "anon").strip()
         is_admin = _admin_ok(request)
         client_ip = _client_ip(request)
+        effective_conversation_id = (req.conversation_id or "").strip() or request.headers.get("x-conversation-id", "").strip()
+
+        # Ensure conversation exists
+        if not effective_conversation_id:
+            try:
+                effective_conversation_id = memory_store.create_conversation(
+                    user_id=effective_user_id,
+                    title=req.question[:60],
+                    persona=req.persona,
+                )
+            except Exception:
+                pass
+
+        # Load previous context for injection
+        conversation_context: list[dict] = []
+        try:
+            if effective_conversation_id:
+                conversation_context = memory_store.get_recent_context(effective_conversation_id)
+        except Exception:
+            pass
 
         async def generate():
             import json as _json
@@ -1010,7 +1032,7 @@ def create_app() -> "FastAPI":
             # ── 1. Cek quota sebelum proses ────────────────────────────────────
             try:
                 from .token_quota import check_quota, record_usage
-                quota = check_quota(user_id=user_id, ip=client_ip, is_admin=is_admin)
+                quota = check_quota(user_id=effective_user_id, ip=client_ip, is_admin=is_admin)
                 if not quota["ok"]:
                     event = _json.dumps({
                         "type": "quota_limit",
@@ -1040,6 +1062,8 @@ def create_app() -> "FastAPI":
                     corpus_only=req.corpus_only,
                     allow_web_fallback=req.allow_web_fallback,
                     simple_mode=req.simple_mode,
+                    conversation_id=effective_conversation_id,
+                    conversation_context=conversation_context,
                 )
             except Exception as e:
                 err = _json.dumps({"type": "error", "message": str(e)})
@@ -1134,11 +1158,20 @@ def create_app() -> "FastAPI":
             except Exception:
                 pass  # jangan ganggu stream jika recorder error
 
-            # ── 9. Done event ──────────────────────────────────────────────────
+            # ── 9. Persist to memory (best-effort) ─────────────────────────────
+            try:
+                memory_store.save_session(
+                    session, conv_id=effective_conversation_id, user_id=effective_user_id
+                )
+            except Exception as e:
+                log.debug("Memory save in stream skipped: %s", e)
+
+            # ── 10. Done event ─────────────────────────────────────────────────
             event = _json.dumps({
                 "type": "done",
                 "persona": session.persona,
                 "session_id": session.session_id,
+                "conversation_id": effective_conversation_id,
                 "confidence": session.confidence,
                 "orchestration_digest": getattr(session, "orchestration_digest", ""),
                 "case_frame_ids": getattr(session, "case_frame_ids", ""),

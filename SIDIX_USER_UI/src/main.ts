@@ -900,6 +900,8 @@ optCorpusOnly?.addEventListener('change', () => {
 const forgetSessionBtn = document.getElementById('forget-session-btn') as HTMLButtonElement | null;
 /** Session ID terakhir dari stream (server-side trace). */
 let lastServerSessionId: string | null = null;
+/** Conversation ID untuk memory persistence antar chat. */
+let currentConversationId: string | null = null;
 
 function setLastSessionId(id: string | null) {
   lastServerSessionId = id && id.length > 0 ? id : null;
@@ -912,14 +914,36 @@ function setLastSessionId(id: string | null) {
   }
 }
 
+function getCurrentConversationId(): string | null {
+  if (!currentConversationId) {
+    try {
+      currentConversationId = localStorage.getItem('sidix_conversation_id');
+    } catch { /* ignore */ }
+  }
+  return currentConversationId;
+}
+
+function setCurrentConversationId(id: string | null) {
+  currentConversationId = id && id.length > 0 ? id : null;
+  try {
+    if (currentConversationId) {
+      localStorage.setItem('sidix_conversation_id', currentConversationId);
+    } else {
+      localStorage.removeItem('sidix_conversation_id');
+    }
+  } catch { /* ignore */ }
+}
+
 forgetSessionBtn?.addEventListener('click', async () => {
   if (!lastServerSessionId) return;
   try {
     await forgetAgentSession(lastServerSessionId);
     setLastSessionId(null);
+    setCurrentConversationId(null);
   } catch {
     /* tetap sembunyikan tombol bila 404 */
     setLastSessionId(null);
+    setCurrentConversationId(null);
   }
 });
 
@@ -1204,7 +1228,9 @@ async function handleSend() {
   const citations: Citation[] = [];
   let fullText = '';
 
+  const convId = getCurrentConversationId();
   await askStream(question, persona, 5, {
+    conversationId: convId ?? undefined,
     onMeta: (meta) => {
       if (meta.session_id) setLastSessionId(meta.session_id);
       // Update quota badge dari meta event
@@ -1230,6 +1256,10 @@ async function handleSend() {
     },
     onDone: (_persona, meta) => {
       if (meta?.session_id) setLastSessionId(meta.session_id);
+      // Persist conversation_id untuk chat berikutnya
+      if ((meta as any)?.conversation_id) {
+        setCurrentConversationId((meta as any).conversation_id);
+      }
       // Update quota badge dari done event
       if ((meta as any)?.quota) {
         const q = (meta as any).quota as { used: number; limit: number; remaining: number; tier: string };
