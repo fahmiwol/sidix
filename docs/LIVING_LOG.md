@@ -4336,3 +4336,5 @@ Branch System, berjiwa IHOS. Pilot pertama: Tiranyx Digital Agency.
 - FINDING: **`sidix-mcp-prod` = SENGAJA STOPPED**. `autorestart: false` + `SIDIX_MCP_ENABLED: 'false'` di `ecosystem.config.js`. MCP stdio server lebih tepat dijalankan oleh Claude/Cursor, bukan sebagai daemon PM2.
 - ERROR (KRITIS): File `scripts/vps_check.py`, `vps_fix.py`, `vps_fix2.py`, `vps_fix3.py`, `vps_fix4.py`, `vps_fix5.py` — mengandung **credentials VPS hardcoded** (HOST + USER + PASS). Wajib dibersihkan segera + rotate password VPS.
 - DOC: Laporan lengkap di `docs/sprints/2026-04-24_vps_process_investigation.md`.
+
+[2026-04-24] [SECURITY] Password VPS di-rotate oleh owner setelah credentials lama ditemukan hardcoded di scripts/vps_*.py (commit d9668b2). File sudah disanitize ke env var. Repo masih private — git history cleanup (filter-repo) opsional, diperlukan hanya jika repo akan dipublikasikan.
