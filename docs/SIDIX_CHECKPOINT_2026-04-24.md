@@ -1,20 +1,21 @@
 # SIDIX Checkpoint — 2026-04-24
 
-> Dokumen ini adalah catatan internal sesi kerja. Ditulis untuk memori antar-sesi,
-> bukan untuk publik. Dibaca oleh agent berikutnya atau owner bila perlu recovery.
+> Dokumen internal sesi kerja. Dibaca oleh agent berikutnya atau owner bila perlu recovery.
+> JANGAN tulis credential, path absolut server, atau username di sini.
 
 ---
 
 ## State Repo (2026-04-24 malam)
 
-Branch aktif: `cursor/sop-public-artifacts-sync`
-Commit terakhir: `a7a754c` (doc sprint-8b)
-Remote: `origin → https://github.com/fahmiwol/sidix.git`
+Branch aktif: `feat/sop-sync-sprint8` *(setelah rename dari branch agent lama)*
+Commit terakhir: `e935b5a` (chore: checkpoint + gitignore)
+Remote: `origin` — lihat `git remote -v` untuk URL aktual (jangan tulis di sini)
 Tests: **22 passed** (baseline stabil)
 
 ### Commits sesi ini (urut terbaru)
 | Hash | Deskripsi |
 |---|---|
+| `e935b5a` | chore: gitignore data/ + internal checkpoint |
 | `a7a754c` | doc: research note 192 + living log sprint 8b |
 | `cfcfaea` | feat(sprint-8b): Generative Core — 10 files, 986 insertions |
 | `4cc6955` | feat(sprint-8a): Nafs Bridge + typo metadata + migration doc |
@@ -69,9 +70,10 @@ Hanya 5: `AYMAN`, `ABOO`, `OOMAR`, `ALEY`, `UTZ`
 Guard di `agent_serve.py`: `_ALLOWED_PERSONAS`
 
 ### Vendor Naming Rules (SOP)
-- Di inference pipeline: JANGAN sebut Anthropic/OpenAI/Groq/Gemini
+- Di inference pipeline: JANGAN sebut nama provider eksternal
 - Alias: `mentor_alpha`, `mentor_beta`, `mentor_gamma`
 - Di dokumen teknis internal: boleh sebut nama vendor
+- Branch name: JANGAN pakai nama tool/agent eksternal sebagai prefix
 
 ### Layer Arsitektur (jangan salah kaprah)
 1. **LLM Generative** — Qwen2.5-7B + LoRA (core, generate token-by-token)
@@ -79,14 +81,13 @@ Guard di `agent_serve.py`: `_ALLOWED_PERSONAS`
 3. **Growth Loop** — LearnAgent, Jariyah, auto-LoRA retrain
 
 ### Deploy VPS
-- `app.sidixlab.com` → PM2 `sidix-ui` (port 4000, `serve dist`)
-- `ctrl.sidixlab.com` → PM2 `sidix-brain` (port 8765, FastAPI)
-- `.env` di `/opt/sidix/SIDIX_USER_UI/.env` wajib ada `VITE_BRAIN_QA_URL=https://ctrl.sidixlab.com`
-- Deploy: `git pull && npm run build && pm2 restart sidix-ui`
+- Domain publik: `app.sidixlab.com` (UI) dan `ctrl.sidixlab.com` (API)
+- Detail port, path server, dan env var: lihat `.env` di server — jangan tulis di sini
+- Deploy command: `git pull && npm run build && pm2 restart sidix-ui`
 
 ### GPU — Status
 - VPS saat ini: CPU-only → semua generative module jalan di **mock/stub mode**
-- Opsi GPU: RunPod/Vast.ai (per jam, hybrid), atau pindah ke GPU VPS (CoreWeave/Tensordock)
+- Opsi GPU: cloud GPU per-jam (hybrid), atau upgrade ke GPU VPS
 - Untuk aktifkan FLUX.1 nyata: install `diffusers torch` + set `SIDIX_IMAGE_DEVICE=cuda`
 - Untuk aktifkan Piper TTS nyata: download binary piper + voice model (~60MB/bahasa)
 
@@ -94,12 +95,12 @@ Guard di `agent_serve.py`: `_ALLOWED_PERSONAS`
 
 ## Catatan Owner
 
-- Folder `C:\SIDIX-AI\SIDIX next Sprint plan-*` → dokumen sprint pribadi, **jangan commit**
-- Folder `data/` → generated media, masuk `.gitignore` (sudah ditambahkan)
-- Kalau folder lokal dihapus: `git clone https://github.com/fahmiwol/sidix.git` → semua kode kembali
-- Research notes ada di `brain/public/research_notes/` → sudah di-commit semua
-- LIVING_LOG ada di `docs/LIVING_LOG.md` → sudah di-commit
+- Dokumen sprint pribadi di lokal → **jangan commit**
+- Folder `data/` → generated media, masuk `.gitignore`
+- Recovery: `git clone [repo-remote]` → semua kode kembali (remote URL lihat `.git/config`)
+- Research notes: `brain/public/research_notes/` → sudah di-commit semua
+- LIVING_LOG: `docs/LIVING_LOG.md` → sudah di-commit
 
 ---
 
-*Checkpoint ini dibuat otomatis saat sesi 2026-04-24. Agent berikutnya: baca ini sebelum lanjut.*
+*Checkpoint dibuat sesi 2026-04-24. Agent berikutnya: baca ini sebelum lanjut.*
