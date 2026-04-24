@@ -17,6 +17,12 @@ Referensi: D:\\BG maker\\06_Prompt-Engineering.md, D:\\Mighan\\server\\agency-pi
   c. Divergence enforced    — 3 alt harus orthogonal archetype
   d. System cached, user small
   e. Structured output atau retry
+
+Prinsip Creative Thinking (Bisnizy.com):
+  - Suspend Judgment: Jangan menilai ide terlalu cepat (fokus kuantitas)
+  - Question Reframing: Ubah masalah jadi pertanyaan "Bagaimana jika..."
+  - Divergence: Hasilkan banyak ide sebelum sintesis
+  - Sintesis: Hubungkan ide tak relevan jadi solusi orisinal
 """
 
 from __future__ import annotations
@@ -267,7 +273,26 @@ def _infer_template(prompt: str) -> str:
     return "ig_feed"  # default
 
 
-# ── Divergence-3 Pattern (untuk future use: generate 3 orthogonal variants) ────
+# ── Phase 2: Creative Thinking Principles (Bisnizy.com) ─────────────────────
+271: 
+272: def reframe_problem(problem: str) -> str:
+273:     """Mengubah masalah statis menjadi pertanyaan terbuka 'Bagaimana jika...'."""
+274:     p = problem.strip().lower()
+275:     if p.startswith(("bagaimana", "mengapa", "apa")):
+276:         return problem
+277:     return f"Bagaimana jika kita melihat '{problem}' dari sudut pandang yang berbeda?"
+278: 
+279: def brainstorm_divergent_ideas(problem: str, n: int = 3) -> list[str]:
+280:     """Simulasi menghasilkan banyak ide (kuantitas) tanpa penilaian awal."""
+281:     # Placeholder untuk LLM call nanti, saat ini berbasis rule/template
+282:     reframed = reframe_problem(problem)
+283:     return [
+284:         f"Opsi 1 (Konvensional): Solusi standar untuk '{problem}'",
+285:         f"Opsi 2 (Out-of-the-box): {reframed} — dengan pendekatan radikal.",
+286:         f"Opsi 3 (Sintesis): Gabungkan '{problem}' dengan elemen yang tak terduga."
+287:     ]
+288: 
+289: # ── Divergence-3 Pattern (untuk future use: generate 3 orthogonal variants) ────
 
 def suggest_divergent_archetypes(primary: ArchetypeName) -> list[ArchetypeName]:
     """

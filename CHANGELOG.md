@@ -235,3 +235,17 @@ Backward compatible — nama lama diterima via `_PERSONA_ALIAS`.
 
 *SIDIX adalah proyek open source dengan tujuan membangun AI yang mandiri, jujur, dan bisa diverifikasi.*
 *Kontribusi: [CONTRIBUTING.md](CONTRIBUTING.md) · Issues: [GitHub Issues](https://github.com/fahmiwol/sidix/issues)*
+
+### [2026-04-25] - Embodied SIDIX & Wisdom-Creative Sprint
+#### Added
+- Multi-Agent Council (MoA-lite): Parallel persona execution (ABOO, OOMAR, ALEY) with AYMAN synthesis.
+- Parallel Tool Executor: Simultaneous execution of corpus and web search for low latency.
+- Sensory Health Probes: Real-time monitoring for RAG, Vision, and Image Gen senses.
+- Wisdom Gate: "Think Before You Act" logic (Mirror Method, Pareto 80/20).
+- Creative Thinking Engine: Question reframing ("How might we...") and divergent ideation.
+- PDF Ingestion: "TEORI KREATIVITAS DAN PRINSIP-PRINSIPNYA SERTA INOVASI" added to long-term memory.
+
+#### Updated
+- gent_react.py: Main loop upgraded with Wisdom Gate and Parallel Executor.
+- gent_serve.py: New endpoints /sidix/senses/status and /agent/council.
+- creative_framework.py: Upgraded with formal innovation methodologies.

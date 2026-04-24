@@ -44,6 +44,8 @@ from .local_llm import adapter_fingerprint, adapter_weights_exist, find_adapter_
 from . import rate_limit
 from . import social_radar
 from . import memory_store
+from .sensor_hub import probe_all
+from .council import run_council
 
 _PROCESS_STARTED = time.time()
 _ALLOWED_PERSONAS = {"AYMAN", "ABOO", "OOMAR", "ALEY", "UTZ"}
@@ -416,6 +418,10 @@ def create_app() -> "FastAPI":
         except Exception:
             pass
 
+        # Embodied: Add senses summary
+        senses = probe_all()
+        active_senses = [s["name"] for s in senses if s["status"] == "active"]
+
         # PUBLIC-FACING: identitas backbone di-mask via identity_mask
         # SIDIX harus terlihat standing-alone dari sudut pandang luar.
         raw_payload = {
@@ -439,6 +445,11 @@ def create_app() -> "FastAPI":
             "ok": True,
             "version": "0.1.0",
             "corpus_doc_count": chunk_count,
+            "senses": {
+                "total": len(senses),
+                "active": len(active_senses),
+                "list": active_senses
+            }
         }
         try:
             from .identity_mask import mask_health_payload
@@ -447,6 +458,45 @@ def create_app() -> "FastAPI":
             # Fallback safe: hilangkan field provider-specific
             raw_payload.pop("ollama", None)
             return raw_payload
+
+    @app.get("/sidix/senses/status")
+    async def senses_status(request: Request):
+        """Real-time health dashboard for SIDIX senses."""
+        _enforce_rate(request)
+        return {
+            "ok": True,
+            "timestamp": time.time(),
+            "senses": probe_all()
+        }
+
+    class CouncilRequest(BaseModel):
+        question: str
+        personas: list[str] | None = None
+        allow_restricted: bool = False
+
+    @app.post("/agent/council")
+    async def agent_council(req: CouncilRequest, request: Request):
+        """Multi-Agent Council (MoA-lite) reasoning."""
+        _enforce_rate(request)
+        _enforce_daily(request)
+        
+        synth_answer, sessions = run_council(
+            question=req.question,
+            personas=req.personas,
+            allow_restricted=req.allow_restricted,
+            client_id=request.headers.get("x-client-id", ""),
+        )
+        
+        # Store sessions for trace
+        for s in sessions:
+            _store_session(s)
+            
+        return {
+            "ok": True,
+            "answer": synth_answer,
+            "sessions": [s.session_id for s in sessions],
+            "citations": [c for s in sessions for c in s.citations][:10]
+        }
 
     # ── POST /agent/chat ──────────────────────────────────────────────────────
     @app.post("/agent/chat", response_model=ChatResponse)
@@ -2882,6 +2932,33 @@ h1{{color:#0af}}p{{color:#aaa}}a{{color:#0af}}</style></head>
         try:
             from .multi_modal_router import get_modality_availability
             return {"ok": True, "availability": get_modality_availability()}
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    @app.get("/sidix/senses/status", tags=["MultiModal"])
+    def senses_status():
+        """
+        Dashboard lengkap semua INDRA SIDIX (Embodied AI, 2026-04-25).
+
+        Return status per sense: ear/eye/mouth/hand/heart/mind.
+        Digunakan UI untuk tampilin "SIDIX body diagram" — apa yang hidup, apa yang mati.
+        """
+        try:
+            from .sensor_hub import probe_all, health_summary
+            return {
+                "ok": True,
+                "summary": health_summary(),
+                "detail": probe_all(),
+            }
+        except Exception as e:
+            return {"ok": False, "error": f"{type(e).__name__}: {e}"}
+
+    @app.get("/sidix/senses/summary", tags=["MultiModal"])
+    def senses_summary():
+        """Versi ringkas dari senses/status — one-liner untuk polling cepat."""
+        try:
+            from .sensor_hub import health_summary
+            return {"ok": True, **health_summary()}
         except Exception as e:
             return {"ok": False, "error": str(e)}
 

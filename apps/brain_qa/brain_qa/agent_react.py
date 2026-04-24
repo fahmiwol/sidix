@@ -35,6 +35,8 @@ from .agent_tools import call_tool, list_available_tools, ToolResult
 from .branch_manager import get_manager as _get_branch_manager
 from .orchestration import agent_build_intent
 from .user_intelligence import analyze_user, get_response_instructions, UserProfile
+from .parallel_executor import execute_parallel, merge_observations
+from .wisdom_gate import WisdomGate
 
 # ── Coding Planner (Phase 1: LLM-based planner for coding tasks) ─────────────
 try:
@@ -340,13 +342,10 @@ def _rule_based_plan(
     *,
     corpus_only: bool,
     allow_web_fallback: bool,
-) -> tuple[str, str, dict]:
+) -> tuple[str, str, dict] | list[dict[str, Any]]:
     """
-    Returns (thought, action_name, action_args).
-    action_name = "" berarti Final Answer sekarang.
-
-    Rule-based planner — diganti LLM call saat Inference Engine siap.
-    Untuk coding intents, delegasi ke coding_planner (LLM-based).
+    Returns (thought, action_name, action_args) OR a list of tool calls for parallel execution.
+    Each tool call in list: {"thought": str, "name": str, "args": dict}
     """
     q_lower = question.lower()
 
@@ -527,6 +526,20 @@ def _rule_based_plan(
 
         # Default routing: corpus untuk topik SIDIX, model untuk topik umum.
         if _should_prioritize_corpus(question, corpus_only=corpus_only):
+            # EMBODIED: Parallelize search_corpus and web_search if allow_web_fallback
+            if allow_web_fallback and _needs_web_search(question):
+                return [
+                    {
+                        "thought": f"Topik SIDIX + butuh data terkini. Cari di korpus paralel dengan web: '{question}'",
+                        "name": "search_corpus",
+                        "args": {"query": question, "k": 5, "persona": persona}
+                    },
+                    {
+                        "thought": "Cari data terkini di web paralel dengan korpus.",
+                        "name": "web_search",
+                        "args": {"query": question, "max_results": 5}
+                    }
+                ]
             return (
                 f"Topik terkait SIDIX/sumber internal. Gunakan search_corpus dengan query: '{question}'.",
                 "search_corpus",
@@ -1425,6 +1438,7 @@ def run_react(
     allow_web_fallback: bool = True,
     simple_mode: bool = False,
     conversation_context: list[dict] | None = None,
+    is_council: bool = False,  # Prevent recursive council calls
 ) -> AgentSession:
     """
     Jalankan ReAct loop untuk satu pertanyaan.
@@ -1675,6 +1689,33 @@ def run_react(
     try:
         from .cot_engine import get_cot_scaffold, get_complexity
         _cot_complexity = get_complexity(working_question)
+        
+        # ── COUNCIL TRIGGER (MoA-lite) ──────────────────────────────────────────
+        # Jika kompleksitas HIGH dan bukan anggota council, panggil council.
+        if _cot_complexity == "high" and not is_council and not simple_mode:
+            try:
+                from .council import run_council
+                _log_fp.getLogger(__name__).info(f"[Council] Spawning council for complex query: {working_question[:50]}...")
+                synth_answer, council_sessions = run_council(
+                    question=working_question,
+                    client_id=client_id,
+                    agency_id=agency_id,
+                    conversation_id=conversation_id,
+                    allow_restricted=allow_restricted,
+                    max_steps=max_steps
+                )
+                
+                # Build dummy session to return council results
+                session.final_answer = synth_answer
+                session.finished = True
+                session.confidence = "council synthesized"
+                # Combine citations from all sessions
+                for s in council_sessions:
+                    session.citations.extend(s.citations)
+                return session
+            except Exception as _c_err:
+                _log_fp.getLogger(__name__).warning(f"[Council] failed, falling back to single agent: {_c_err}")
+
         _cot_scaffold = get_cot_scaffold(working_question, persona)
         if _cot_scaffold:
             _pre_step_cot = ReActStep(
@@ -1708,7 +1749,7 @@ def run_react(
     eff_max = _effective_max_steps(working_question, max_steps)
     for step_num in range(eff_max):
         # 1. THINK
-        thought, action_name, action_args = _rule_based_plan(
+        plan = _rule_based_plan(
             question=working_question,
             persona=persona,
             history=session.steps,
@@ -1717,10 +1758,73 @@ def run_react(
             allow_web_fallback=allow_web_fallback,
         )
 
+        if isinstance(plan, list):
+            # Parallel execution path
+            thought = plan[0].get("thought", "Menjalankan beberapa aksi secara paralel.")
+            action_name = "parallel_tools" # virtual name for logging
+            action_args = {"calls": plan}
+            
+            if verbose:
+                print(f"\n[Step {step_num}] Parallel Thought: {thought}")
+                for i, p in enumerate(plan):
+                    print(f"  - Action {i+1}: {p['name']}({p['args']})")
+                    
+            # 3. ACT (Parallel)
+            parallel_results = execute_parallel(
+                tool_calls=[{"name": p["name"], "args": p["args"]} for p in plan],
+                session_id=session_id,
+                step=step_num,
+                allow_restricted=allow_restricted
+            )
+            
+            observation = merge_observations(parallel_results)
+            
+            # Combine citations
+            citations_merged = []
+            for _, res in parallel_results:
+                if res.citations:
+                    citations_merged.extend(res.citations)
+            
+            # Record step
+            step = ReActStep(
+                step=step_num,
+                thought=thought,
+                action_name=action_name,
+                action_args={"calls": plan, "_citations": citations_merged},
+                observation=observation[:MAX_TOKENS_PER_OBS * 3], # allow more for parallel
+            )
+            session.steps.append(step)
+            continue # Next step in ReAct loop
+
+        # Single action path (original logic)
+        thought, action_name, action_args = plan
+
         if verbose:
             print(f"\n[Step {step_num}] Thought: {thought}")
 
         # 2. Final Answer check
+        if not action_name:
+            # [WISDOM GATE] Final check before speaking
+            # Berpikir seribu kali sebelum berbicara
+            pass
+        else:
+            # [WISDOM GATE] Pre-Action Reflection
+            is_wise, suggestion = WisdomGate.evaluate_intent(
+                question=working_question,
+                proposed_action=f"{action_name}({action_args})",
+                context={"step_count": step_num, "history": session.steps}
+            )
+            
+            if not is_wise:
+                if verbose:
+                    print(f"  [WisdomGate] HOLD: {suggestion}")
+                # Intervensi: Jika gegabah, paksa cari konteks tambahan (Socratic Probe spirit)
+                thought = f"Sadar bahwa tindakan sebelumnya mungkin gegabah. {suggestion}"
+                action_name = "search_corpus" # Fallback aman
+                action_args = {"query": working_question, "k": 3}
+                # Lanjut dengan tindakan yang sudah direvisi
+        
+        # 2. Final Answer check (lanjutan)
         if not action_name:
             final_answer, citations, conf_score, atype = _compose_final_answer(
                 question=working_question,

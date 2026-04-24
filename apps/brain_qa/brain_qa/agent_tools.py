@@ -2331,6 +2331,130 @@ def _tool_text_to_image(args: dict) -> ToolResult:
         return ToolResult(success=False, output="", error=f"image_gen gagal: {e}")
 
 
+# ── Audio Tools (Jiwa Sprint Phase 4) ────────────────────────────────────────
+
+def _tool_text_to_speech(args: dict) -> ToolResult:
+    """TTS: teks → file audio (Coqui-TTS / pyttsx3). Params: text, voice, lang, out_path."""
+    text = str(args.get("text", "")).strip()
+    if not text:
+        return ToolResult(success=False, output="", error="text wajib diisi")
+    voice = str(args.get("voice", "default")).strip()
+    lang = str(args.get("lang", "id")).strip()
+    out_path = str(args.get("out_path", "tts_out.wav")).strip()
+
+    try:
+        from .audio_capability import synthesize_speech
+        result = synthesize_speech(text=text, voice=voice, lang=lang, out_path=out_path)
+    except Exception as e:
+        return ToolResult(success=False, output="", error=f"TTS error: {e}")
+
+    if not result.get("ok"):
+        return ToolResult(
+            success=False,
+            output="",
+            error=result.get("fallback_instructions", "TTS gagal"),
+        )
+
+    data = result.get("data", {})
+    lines = [
+        "# Text-to-Speech",
+        f"- Backend: {data.get('backend', 'unknown')}",
+        f"- Output: `{data.get('out_path', out_path)}`",
+        f"- Text length: {data.get('text_len', len(text))} chars",
+    ]
+    note = data.get("note", "")
+    if note:
+        lines.append(f"- Note: {note}")
+    return ToolResult(
+        success=True,
+        output="\n".join(lines),
+        citations=[{"type": "text_to_speech", "backend": data.get("backend", ""), "path": data.get("out_path", "")}],
+    )
+
+
+def _tool_speech_to_text(args: dict) -> ToolResult:
+    """ASR: audio → teks (faster-whisper / openai-whisper). Params: path, lang."""
+    path = str(args.get("path", "")).strip()
+    if not path:
+        return ToolResult(success=False, output="", error="path file audio wajib diisi")
+    lang = str(args.get("lang", "id")).strip()
+
+    try:
+        from .audio_capability import transcribe_audio
+        result = transcribe_audio(path=path, lang=lang)
+    except Exception as e:
+        return ToolResult(success=False, output="", error=f"ASR error: {e}")
+
+    if not result.get("ok"):
+        return ToolResult(
+            success=False,
+            output="",
+            error=result.get("fallback_instructions", "ASR gagal"),
+        )
+
+    data = result.get("data", {})
+    segments = data.get("segments", [])
+    lines = [
+        "# Speech-to-Text",
+        f"- Backend: {data.get('backend', 'unknown')}",
+        f"- Language: {data.get('language', lang)}",
+        f"- Duration: {data.get('duration', 'N/A')}s" if "duration" in data else "",
+        "",
+        "## Transcription",
+        data.get("text", ""),
+    ]
+    if segments:
+        lines.append("\n## Segments")
+        for seg in segments[:10]:
+            start = seg.get("start", "")
+            end = seg.get("end", "")
+            text_seg = seg.get("text", "")
+            lines.append(f"[{start}-{end}] {text_seg}")
+    return ToolResult(
+        success=True,
+        output="\n".join(l for l in lines if l),
+        citations=[{"type": "speech_to_text", "backend": data.get("backend", ""), "path": path}],
+    )
+
+
+def _tool_analyze_audio(args: dict) -> ToolResult:
+    """MIR: analisis audio (pitch, tempo, spectral, RMS). Params: path."""
+    path = str(args.get("path", "")).strip()
+    if not path:
+        return ToolResult(success=False, output="", error="path file audio wajib diisi")
+
+    try:
+        from .audio_capability import analyze_audio
+        result = analyze_audio(path=path)
+    except Exception as e:
+        return ToolResult(success=False, output="", error=f"MIR error: {e}")
+
+    if not result.get("ok"):
+        return ToolResult(
+            success=False,
+            output="",
+            error=result.get("fallback_instructions", "MIR gagal"),
+        )
+
+    data = result.get("data", {})
+    lines = [
+        "# Audio Analysis (MIR)",
+        f"- Backend: {data.get('backend', 'unknown')}",
+        f"- Sample rate: {data.get('sample_rate', 'N/A')} Hz",
+        f"- Duration: {data.get('duration_sec', 'N/A')} s",
+        f"- Tempo: {data.get('tempo_bpm', 'N/A')} BPM",
+        f"- Beats: {data.get('n_beats', 'N/A')}",
+        f"- Spectral centroid: {data.get('spectral_centroid_mean', 'N/A')}",
+        f"- RMS energy: {data.get('rms_mean', 'N/A')}",
+        f"- Zero-crossing rate: {data.get('zcr_mean', 'N/A')}",
+    ]
+    return ToolResult(
+        success=True,
+        output="\n".join(l for l in lines if l),
+        citations=[{"type": "analyze_audio", "backend": data.get("backend", ""), "path": path}],
+    )
+
+
 # ── Registry ──────────────────────────────────────────────────────────────────
 
 # ── code_analyze — static AST analysis ───────────────────────────────────────
@@ -3139,6 +3263,37 @@ TOOL_REGISTRY: dict[str, ToolSpec] = {
         params=["path", "style"],
         permission="open",
         fn=_tool_git_commit_helper,
+    ),
+    # ── Audio Tools (Jiwa Sprint Phase 4) ────────────────────────────────────
+    "text_to_speech": ToolSpec(
+        name="text_to_speech",
+        description=(
+            "Sintesis teks menjadi file audio (TTS). Prioritas: Coqui-TTS XTTS v2 → pyttsx3 fallback. "
+            "Params: text (str, wajib), voice (str, default 'default'), lang (str, default 'id'), out_path (str, default 'tts_out.wav')."
+        ),
+        params=["text", "voice", "lang", "out_path"],
+        permission="open",
+        fn=_tool_text_to_speech,
+    ),
+    "speech_to_text": ToolSpec(
+        name="speech_to_text",
+        description=(
+            "Transkripsi audio menjadi teks (ASR). Prioritas: faster-whisper → openai-whisper. "
+            "Params: path (str, wajib — path file audio), lang (str, default 'id')."
+        ),
+        params=["path", "lang"],
+        permission="open",
+        fn=_tool_speech_to_text,
+    ),
+    "analyze_audio": ToolSpec(
+        name="analyze_audio",
+        description=(
+            "Analisis fitur audio (MIR): tempo, pitch, spectral centroid, RMS, zero-crossing rate. "
+            "Butuh librosa. Params: path (str, wajib — path file audio)."
+        ),
+        params=["path"],
+        permission="open",
+        fn=_tool_analyze_audio,
     ),
 }
 
