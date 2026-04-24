@@ -22,7 +22,11 @@ Domain-specific rubrics (tambahan, tidak override universal):
 
 from __future__ import annotations
 from dataclasses import dataclass, field, asdict
+import json
+import logging
 from typing import Literal, Optional
+
+log = logging.getLogger("sidix.cqf")
 
 DomainName = Literal["content", "design", "video", "marketing", "writing", "ecommerce", "generic"]
 
@@ -214,19 +218,93 @@ def heuristic_score(output: str, brief: str, domain: DomainName = "generic") -> 
     return score
 
 
-# ── LLM-as-Judge scorer (Sprint 5 akan wire ke Qwen ReAct) ────────────────────
+# ── LLM-as-Judge scorer (Ollama-backed dengan fallback heuristic) ─────────────
+
+_JUDGE_SYSTEM = """Kamu adalah judge AI untuk SIDIX Creative Quality Framework (CQF).
+Tugasmu: menilai output kreatif berdasarkan brief dan 5 dimensi universal.
+
+Rules:
+1. Nilai setiap dimensi 0.0–10.0 (presisi 1 desimal).
+2. Berikan reasoning singkat (max 20 kata per dimensi).
+3. Output HANYA JSON valid — tidak ada teks di luar JSON.
+
+JSON schema:
+{
+  "relevance": {"score": 0.0, "reason": "string"},
+  "quality": {"score": 0.0, "reason": "string"},
+  "creativity": {"score": 0.0, "reason": "string"},
+  "brand_alignment": {"score": 0.0, "reason": "string"},
+  "actionability": {"score": 0.0, "reason": "string"}
+}"""
+
+
+def _parse_judge_json(text: str) -> CQFScore | None:
+    """Parse JSON judge response — toleran terhadap markdown fences."""
+    raw = text.strip()
+    if raw.startswith("```"):
+        lines = raw.splitlines()
+        # Hapus fences pertama dan terakhir
+        if lines[0].startswith("```"):
+            lines = lines[1:]
+        if lines and lines[-1].startswith("```"):
+            lines = lines[:-1]
+        raw = "\n".join(lines).strip()
+    try:
+        data = json.loads(raw)
+        kwargs: dict[str, Any] = {}
+        for dim in ("relevance", "quality", "creativity", "brand_alignment", "actionability"):
+            val = data.get(dim, {})
+            if isinstance(val, dict):
+                score_val = float(val.get("score", 0.0))
+            elif isinstance(val, (int, float)):
+                score_val = float(val)
+            else:
+                score_val = 0.0
+            kwargs[dim] = max(0.0, min(10.0, score_val))
+        return CQFScore(**kwargs)
+    except Exception:
+        return None
+
 
 def llm_judge_score(output: str, brief: str, domain: DomainName = "generic",
                     brand_context: Optional[dict] = None) -> CQFScore:
     """
-    LLM-as-Judge scoring — placeholder untuk Sprint 5 implementation.
-    Akan call Qwen dengan structured JSON output.
-
-    Sekarang fallback ke heuristic_score supaya agent baru tetap jalan.
+    LLM-as-Judge scoring via Ollama (local).
+    Fallback ke heuristic_score kalau Ollama offline atau JSON invalid.
     """
-    # TODO Sprint 5: wire ke local_llm.generate() dengan system prompt khusus judge
-    # + parse JSON response dengan Zod-like validation + retry kalau invalid
-    return heuristic_score(output, brief, domain)
+    try:
+        from .ollama_llm import ollama_available, ollama_generate
+    except ImportError:
+        return heuristic_score(output, brief, domain)
+
+    if not ollama_available():
+        return heuristic_score(output, brief, domain)
+
+    user_prompt = (
+        f"[BRIEF]\n{brief}\n\n"
+        f"[OUTPUT YANG DINILAI]\n{output[:2000]}\n\n"
+        "Beri penilaian JSON sesuai schema."
+    )
+    try:
+        text, mode = ollama_generate(
+            prompt=user_prompt,
+            system=_JUDGE_SYSTEM,
+            max_tokens=512,
+            temperature=0.2,
+        )
+        if mode == "mock_error" or not text:
+            return heuristic_score(output, brief, domain)
+        parsed = _parse_judge_json(text)
+        if parsed is None:
+            log.warning("Judge JSON parse failed — fallback heuristic")
+            return heuristic_score(output, brief, domain)
+        # Domain rubric: tetap default 7.0 (placeholder)
+        if domain in DOMAIN_RUBRICS:
+            parsed.domain_scores = {dim: 7.0 for dim in DOMAIN_RUBRICS[domain]}
+        return parsed
+    except Exception as e:
+        log.warning(f"LLM judge error: {e} — fallback heuristic")
+        return heuristic_score(output, brief, domain)
 
 
 # ── Quality Gate (main API) ───────────────────────────────────────────────────

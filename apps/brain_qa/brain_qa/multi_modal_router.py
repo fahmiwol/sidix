@@ -10,9 +10,14 @@ Standing Alone rule:
 from __future__ import annotations
 
 import base64
+import logging
 import os
 import time
 from pathlib import Path
+
+from .ollama_llm import ollama_available, ollama_generate_vision
+
+log = logging.getLogger("sidix.multimodal")
 
 
 def analyze_image(
@@ -33,12 +38,22 @@ def analyze_image(
     if not img_bytes:
         return {"ok": False, "error": "empty image data"}
 
-    # TODO(Sprint 8b/8c): implement local vision via Ollama multimodal model
-    # (contoh: llava) tanpa vendor API.
-    _ = prompt
-    _ = max_tokens
-    _ = prefer_local
-    return {"ok": False, "error": "local vision provider not implemented yet"}
+    if not ollama_available():
+        return {"ok": False, "error": "Ollama offline — vision tidak tersedia. Install: https://ollama.ai"}
+
+    b64 = base64.b64encode(img_bytes).decode("utf-8")
+    try:
+        text, mode = ollama_generate_vision(
+            image_b64=b64,
+            prompt=prompt,
+            max_tokens=max_tokens,
+        )
+        if mode == "mock_error":
+            return {"ok": False, "error": text}
+        return {"ok": True, "text": text, "mode": mode}
+    except Exception as e:
+        log.exception("Vision error")
+        return {"ok": False, "error": str(e)}
 
 
 def ocr_image(image_data: bytes | str) -> dict:

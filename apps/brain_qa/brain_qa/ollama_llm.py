@@ -121,6 +121,7 @@ def ollama_generate(
     max_tokens: int = 512,
     temperature: float = 0.7,
     corpus_context: str = "",
+    images: Optional[list[str]] = None,
 ) -> tuple[str, str]:
     """
     Generate teks via Ollama.
@@ -156,9 +157,12 @@ def ollama_generate(
             f"{prompt}"
         )
 
+    user_msg: dict[str, Any] = {"role": "user", "content": user_message}
+    if images:
+        user_msg["images"] = images
     messages = [
         {"role": "system", "content": combined_system},
-        {"role": "user", "content": user_message},
+        user_msg,
     ]
 
     payload = {
@@ -208,6 +212,69 @@ def ollama_generate(
     except Exception as e:
         log.error(f"Ollama error: {e}")
         return f"⚠ Ollama error: {e}", "mock_error"
+
+
+def ollama_generate_vision(
+    image_b64: str,
+    prompt: str = "Describe this image in Indonesian.",
+    *,
+    model: Optional[str] = None,
+    max_tokens: int = 500,
+) -> tuple[str, str]:
+    """
+    Generate vision-to-text via Ollama multimodal model (e.g. llava, llama3.2-vision).
+    Returns (generated_text, mode) — mode = "ollama" or "mock_error".
+    """
+    used_model = model or ollama_best_available_model()
+    # prefer vision model if available
+    vision_candidates = ["llava", "llama3.2-vision", "bakllava", "moondream"]
+    models = ollama_list_models()
+    if models:
+        for vc in vision_candidates:
+            for m in models:
+                if vc in m.lower():
+                    used_model = m
+                    break
+            else:
+                continue
+            break
+
+    messages = [
+        {"role": "system", "content": SIDIX_SYSTEM},
+        {"role": "user", "content": prompt, "images": [image_b64]},
+    ]
+    payload = {
+        "model": used_model,
+        "messages": messages,
+        "stream": False,
+        "options": {
+            "num_predict": max_tokens,
+            "temperature": 0.3,
+            "top_p": 0.9,
+        },
+    }
+    try:
+        r = requests.post(
+            f"{OLLAMA_URL}/api/chat",
+            json=payload,
+            timeout=OLLAMA_TIMEOUT,
+        )
+        r.raise_for_status()
+        data = r.json()
+        text = data.get("message", {}).get("content", "").strip()
+        if not text:
+            log.warning("Ollama vision returned empty response")
+            return "⚠ Ollama vision mengembalikan respons kosong.", "mock_error"
+        return text, "ollama"
+    except requests.exceptions.Timeout:
+        log.error(f"Ollama vision timeout ({OLLAMA_TIMEOUT}s)")
+        return f"⚠ Ollama vision timeout ({OLLAMA_TIMEOUT}s).", "mock_error"
+    except requests.exceptions.ConnectionError:
+        log.warning("Ollama vision tidak bisa dihubungi")
+        return "⚠ Ollama offline — vision tidak tersedia.", "mock_error"
+    except Exception as e:
+        log.error(f"Ollama vision error: {e}")
+        return f"⚠ Ollama vision error: {e}", "mock_error"
 
 
 def ollama_status() -> dict:

@@ -3123,11 +3123,12 @@ h1{{color:#0af}}p{{color:#aaa}}a{{color:#0af}}</style></head>
             return {"ok": False, "error": str(e)}
 
     @app.post("/sidix/skills/{skill_id}/run", tags=["Skills"])
-    def skills_run(skill_id: str):
-        """Jalankan skill tertentu (TODO: pass kwargs via body)."""
+    def skills_run(skill_id: str, body: dict = None):
+        """Jalankan skill tertentu dengan kwargs via JSON body."""
         try:
             from .skill_builder import run_skill
-            return run_skill(skill_id)
+            kwargs = body or {}
+            return run_skill(skill_id, **kwargs)
         except Exception as e:
             return {"ok": False, "error": str(e)}
 
