@@ -15,12 +15,16 @@ from __future__ import annotations
 
 import json
 import re
+import threading
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
 from .paths import default_data_dir, workspace_root
+
+# Thread-safe write lock for parallel execution (Jiwa Sprint 3)
+_WRITE_LOCK = threading.Lock()
 
 _PRAXIS_SAFE = re.compile(r"(?i)(api[_-]?key|token|password|secret|bearer\s+)\s*[:=]\s*\S+")
 
@@ -67,8 +71,9 @@ def record_praxis_event(session_id: str, kind: str, data: dict[str, Any]) -> Non
     }
     line = json.dumps(row, ensure_ascii=False) + "\n"
     try:
-        with open(path, "a", encoding="utf-8") as fh:
-            fh.write(line)
+        with _WRITE_LOCK:
+            with open(path, "a", encoding="utf-8") as fh:
+                fh.write(line)
     except OSError:
         pass
 

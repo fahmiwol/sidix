@@ -31,6 +31,7 @@ from __future__ import annotations
 
 import json
 import re
+import threading
 import time
 import uuid
 from dataclasses import dataclass, field, asdict
@@ -39,6 +40,9 @@ from pathlib import Path
 from typing import Optional
 
 from .paths import default_data_dir, workspace_root
+
+# Thread-safe write lock for parallel execution (Jiwa Sprint 3)
+_EXP_WRITE_LOCK = threading.Lock()
 
 # ── Paths ──────────────────────────────────────────────────────────────────────
 
@@ -251,8 +255,9 @@ class ExperienceStore:
 
     def add(self, record: ExperienceRecord) -> str:
         """Append satu record. Return id."""
-        with open(self._path, "a", encoding="utf-8") as f:
-            f.write(json.dumps(record.to_dict(), ensure_ascii=False) + "\n")
+        with _EXP_WRITE_LOCK:
+            with open(self._path, "a", encoding="utf-8") as f:
+                f.write(json.dumps(record.to_dict(), ensure_ascii=False) + "\n")
         return record.id
 
     def load_all(self) -> list[ExperienceRecord]:
