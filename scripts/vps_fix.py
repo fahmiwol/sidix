@@ -25,6 +25,9 @@ def ssh_run(client, cmd, timeout=60, show_cmd=True):
 
 
 def main():
+    if not HOST or not PASS:
+        print("Set SIDIX_VPS_HOST dan SIDIX_VPS_PASS env var")
+        sys.exit(1)
     client = paramiko.SSHClient()
     client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     print(f"Connecting to {HOST}...")

@@ -4340,3 +4340,17 @@ Branch System, berjiwa IHOS. Pilot pertama: Tiranyx Digital Agency.
 [2026-04-24] [SECURITY] Password VPS di-rotate oleh owner setelah credentials lama ditemukan hardcoded di scripts/vps_*.py (commit d9668b2). File sudah disanitize ke env var. Repo masih private — git history cleanup (filter-repo) opsional, diperlukan hanya jika repo akan dipublikasikan.
 
 [2026-04-24] [DEPLOY] VPS clean: sidix-dashboard dihapus (pm2 delete + pm2 save). sidix-brain online (22m, pid 83146), sidix-ui online (21h). Semua proses SIDIX normal.
+
+[2026-04-24] [IMPL] Distillation pipeline scripts dibuat: generate_synthetic_data.py, distill_sidix.py, export_to_gguf.sh, sidix_modelfile.txt + research note 195. Pipeline: corpus notes → synthetic Q&A pairs (mock/API) → QLoRA student (0.5B-3B Qwen) → GGUF Q4_K_M → Ollama VPS CPU. Target latency <5s di VPS tanpa GPU. Semua config via env var / argparse, tanpa hardcode credentials.
+
+[2026-04-24] [IMPL] jariyah_exporter.py dibuat — konversi feedback pairs ke format LoRA training. Fungsi: get_exportable_pairs() (filter thumbs_up + score>=0.7), export_to_lora_jsonl() (output jsonl dengan system/user/assistant messages), get_export_stats(). ready_for_lora=True jika exported >= 500. Semua path via PAIRS_PATH constant, no hardcode credentials.
+
+[2026-04-24] [IMPL] Endpoint baru di agent_serve.py: GET /jariyah/stats (merge stats collector + exporter), POST /jariyah/export (trigger export ke LoRA JSONL). Keduanya ditambahkan setelah endpoint /agent/feedback.
+
+[2026-04-24] [IMPL] scripts/db_migrate.py dibuat — apply apps/brain_qa/brain_qa/db/schema.sql ke PostgreSQL via psycopg2. Config via env SIDIX_DB_URL. Idempoten (CREATE TABLE IF NOT EXISTS). Verifikasi tabel setelah apply. Error handling graceful + exit code 1 jika gagal.
+
+[2026-04-24] [FIX] [SECURITY] scripts/vps_*.py — ditambah guard `if not HOST or not PASS: sys.exit(1)` di awal setiap main(). Semua credentials sudah pakai os.getenv() sejak commit 29e9c6d. Ditambahkan juga entries SIDIX_VPS_HOST / SIDIX_VPS_USER / SIDIX_VPS_PASS ke .env.sample.
+
+[2026-04-24] [NOTE] REMINDER KRITIS: Credentials VPS lama (HOST IP + password) pernah hardcoded di git history sebelum commit 29e9c6d. Meski repo saat ini private, owner WAJIB: (1) jalankan `git filter-repo --path scripts/vps_check.py --invert-paths` atau BFG Repo Cleaner untuk hapus history sensitif sebelum repo dipublikasikan; (2) pastikan password VPS sudah di-rotate (sudah dilakukan per 2026-04-24).
+
+[2026-04-24] [TEST] apps/brain_qa/tests/test_jariyah_exporter.py dibuat — 4 test class, 14 test case total. test_export_empty (file tidak ada/kosong → exported=0), test_export_filters_by_score (filter score+thumbsup+empty), test_export_lora_format (struktur messages, roles, content, system message), test_get_export_stats (keys, counts, threshold, ready_for_lora). Semua pakai tmp_path pytest, tidak menyentuh data real.
