@@ -111,6 +111,9 @@ class AgentSession:
     question_normalized: str = ""     # kosong jika sama dengan question
     typo_script_hint: str = ""         # latin | arabic | mixed_arab_latin | ...
     typo_substitutions: int = 0
+    # ── Nafs Layer B (brain/nafs/response_orchestrator) ──────────────────────────
+    nafs_topic: str = ""              # topic dari NafsOrchestrator (umum|kreatif|koding|agama|...)
+    nafs_layers_used: str = ""        # "parametric,dynamic,static" (layer yang aktif)
 
 
 # ── Rule-based "LLM" (offline planner) ───────────────────────────────────────
@@ -218,7 +221,16 @@ def _response_blend_profile(
                 "emotion_tag": profile.emotion_tag,
             }
         except Exception:
-            pass  # fallback ke logika lama
+            pass  # fallback ke Layer B
+
+    # ── Layer B: NafsOrchestrator standalone (brain/nafs/) ────────────────────
+    try:
+        from .nafs_bridge import blend_from_nafs
+        _nb = blend_from_nafs(question, persona, corpus_only=corpus_only)
+        if _nb:
+            return _nb
+    except Exception:
+        pass  # fallback ke heuristik lama
 
     # ── Fallback lama ──────────────────────────────────────────────────────
     if _should_prioritize_corpus(question, corpus_only=corpus_only):
@@ -1020,6 +1032,16 @@ def run_react(
 
         _log.getLogger(__name__).debug(f"[TypoPipeline] skip — {_typo_err}")
         working_question = question
+
+    # ── Nafs Layer B: capture topic + layer metadata ke session ──────────────────
+    try:
+        from .nafs_bridge import blend_from_nafs
+        _nb = blend_from_nafs(working_question, persona, corpus_only=corpus_only)
+        if _nb:
+            session.nafs_topic = _nb.get("topic", "")
+            session.nafs_layers_used = _nb.get("nafs_layers_used", "")
+    except Exception:
+        pass
 
     cached = answer_dedup.get_cached_answer(persona, working_question)
     if cached is not None:

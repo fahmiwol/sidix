@@ -147,6 +147,13 @@ class ChatResponse(BaseModel):
     orchestration_digest: str = ""  # ringkasan OrchestrationPlan (modul orchestration.py)
     case_frame_ids: str = ""  # id kerangka Praxis runtime (case_frames.json), dipisah koma
     praxis_matched_frame_ids: str = ""  # urutan match awal sesi (planner L0)
+    # ── Typo observability (Sprint 8a — checklist A1) ─────────────────────────
+    question_normalized: str = ""   # pertanyaan setelah typo correction (kosong jika tidak berubah)
+    typo_script_hint: str = ""      # latin | arabic | mixed_arab_latin | ...
+    typo_substitutions: int = 0     # jumlah koreksi yang diterapkan
+    # ── Nafs Layer B metadata (Sprint 8a — checklist D1) ─────────────────────
+    nafs_topic: str = ""            # topic yang dideteksi (umum|kreatif|koding|agama|...)
+    nafs_layers_used: str = ""      # layer aktif, misal "parametric,dynamic"
 
 
 class GenerateRequest(BaseModel):
@@ -454,6 +461,13 @@ def create_app() -> "FastAPI":
             orchestration_digest=getattr(session, "orchestration_digest", ""),
             case_frame_ids=getattr(session, "case_frame_ids", ""),
             praxis_matched_frame_ids=getattr(session, "praxis_matched_frame_ids", ""),
+            # ── Typo observability ───────────────────────────────────────────
+            question_normalized=getattr(session, "question_normalized", ""),
+            typo_script_hint=getattr(session, "typo_script_hint", ""),
+            typo_substitutions=getattr(session, "typo_substitutions", 0),
+            # ── Nafs Layer B metadata ────────────────────────────────────────
+            nafs_topic=getattr(session, "nafs_topic", ""),
+            nafs_layers_used=getattr(session, "nafs_layers_used", ""),
         )
 
     # ── GET /agent/orchestration ───────────────────────────────────────────────

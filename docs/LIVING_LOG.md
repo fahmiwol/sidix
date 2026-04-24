@@ -62,6 +62,16 @@ Contoh:
 - NOTE: Alignment cek: Landing (`v0.8.0` Latest, Sprint 8a In Progress) ✅ — UI (5 persona AYMAN/ABOO/OOMAR/ALEY/UTZ) ✅ — Backend (local-only, no cloud vendor) ✅ — sesuai `AGENTS_MANDATORY_SOP.md`.
 - NOTE: TODO Sprint 8a yang belum diimplementasi: Typo Bridge wiring ke `agent_react.py` (A1/A2), Nafs 3-layer wire dari `brain/nafs/response_orchestrator.py` (D1), PostgreSQL migration strategy (H2).
 
+### 2026-04-24 (lanjut — Sprint 8a sisa: Nafs Layer B wire + typo metadata + migration doc)
+
+- IMPL: `apps/brain_qa/brain_qa/nafs_bridge.py` — dynamic loader untuk `brain/nafs/response_orchestrator.py` (NafsOrchestrator Layer B), pola mirip `typo_bridge.py`. Dikontrol env `SIDIX_NAFS_LAYER_B` (default on). Ekspor `blend_from_nafs()` → dict: topic, skip_corpus, hayat_enabled, nafs_layers_used, weight per layer.
+- IMPL: `agent_react.py` — (1) Tambah `nafs_topic` + `nafs_layers_used` ke `AgentSession`; (2) `_response_blend_profile` kini punya 3-layer: A (jiwa thin adapter) → B (NafsOrchestrator via nafs_bridge) → fallback heuristik lama; (3) Capture nafs metadata ke session setelah typo normalisasi.
+- IMPL: `agent_serve.py` — `ChatResponse` diperluas: `question_normalized`, `typo_script_hint`, `typo_substitutions` (observability A1), `nafs_topic`, `nafs_layers_used` (D1). Semua diisi dari session via `getattr(session, ...)`.
+- DOC: `docs/schema/MIGRATION_STRATEGY.md` — strategi migrasi PostgreSQL Sprint 8a: tooling psql manual, urutan dependency tabel, env vars, rencana bertahap 8a-8d (checklist H2).
+- TEST: `python -m pytest tests/ -q` → **22 passed** (tidak ada regresi).
+- TEST: `python -c "from brain_qa.nafs_bridge import blend_from_nafs; b=blend_from_nafs('jelaskan cara deploy docker','OOMAR'); assert b['topic']=='koding'"` → OK. Topic detection benar.
+- NOTE: Sprint 8a checklist status: A1✅ A2✅ B1✅ B2✅ C1✅ C2✅ D1✅ D2✅ D3✅ E1✅ E2✅ F1✅ F2✅ G1✅ H1✅ H2✅ — semua item Foundation Hardening selesai di level kode+doc.
+
 ### 2026-04-23 (Agent 4 — update dokumentasi publik v0.8.0)
 
 - DOC: `README.md` diupdate — section `What's New in v0.8.0` ditambahkan (Jiwa 7-Pilar, Typo Resilient Framework, Kimi Plugin, MCP Ecosystem); Roadmap diperbarui ke format sprint 7b/7c/8a-8d menggantikan tabel BABY-ADULT.
