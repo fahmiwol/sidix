@@ -86,26 +86,43 @@ def _score_persona(question: str) -> dict[str, int]:
             scores[forced] += 100
         return scores
 
-    # ALEY = developer / coding (formerly HAYFAR)
+    # Pivot 2026-04-25: ALIGNED dengan cot_system_prompts.py persona descriptions.
+    # Sebelumnya mapping di file ini conflict dengan PERSONA_DESCRIPTIONS —
+    # sekarang disinkronkan dengan research_notes/208_pivot_liberation_sprint.md.
+
+    # ABOO = engineer / technical / coding
     if _CODING_RE.search(q):
-        scores["ALEY"] += 3
-    # AYMAN = creative / design (formerly MIGHAN)
-    if _CREATIVE_RE.search(q):
-        scores["AYMAN"] += 3
-    # OOMAR = research / analysis (formerly FACH)
-    if _RESEARCH_RE.search(q):
-        scores["OOMAR"] += 3
-    # ABOO = planning / strategy (formerly TOARD)
-    if _PLAN_RE.search(q):
         scores["ABOO"] += 3
+    # UTZ = creative / design / content
+    if _CREATIVE_RE.search(q):
+        scores["UTZ"] += 3
+    # ALEY = research / academic / analysis
+    if _RESEARCH_RE.search(q):
+        scores["ALEY"] += 3
+    # OOMAR = strategic / planning / business
+    if _PLAN_RE.search(q):
+        scores["OOMAR"] += 3
+    # Stronger bias kalau ada kata explicit "strategi/strategy/bisnis/startup"
+    # — menang atas UTZ (creative) di overlap kasus ("strategi marketing startup")
+    if re.search(r"\b(strategi|strategy|bisnis|business|startup|B2B|B2C|saas|go-to-market|gtm)\b", q, re.I):
+        scores["OOMAR"] += 2
 
-    # If user asks explicitly for "cepet"/"singkat", bias to UTZ unless another intent is strong.
+    # Singkat/casual bias → AYMAN (general hangat), bukan UTZ (creative)
     if re.search(r"\b(cepet|cepat|singkat|ringkas|tl;dr|tldr)\b", q, re.I):
-        scores["UTZ"] += 1
+        scores["AYMAN"] += 1
 
-    # If nothing matched, default light bias to UTZ (formerly INAN).
+    # Islamic topics → AYMAN (hangat, bisa ngobrol fiqh casual)
+    if re.search(
+        r"\b(islam|fiqh|syariah|sholat|shalat|zakat|puasa|haji|umrah|"
+        r"quran|hadits|hadith|sunnah|riba|halal|haram|nikah|aqidah|"
+        r"allah|nabi|rasul|sahabat|khulafa|khalifah)\b",
+        q, re.I,
+    ):
+        scores["AYMAN"] += 3
+
+    # Default: AYMAN (general hangat), bukan UTZ lagi — karena UTZ = creative specific
     if max(scores.values()) == 0:
-        scores["UTZ"] = 1
+        scores["AYMAN"] = 1
 
     return scores
 
@@ -130,21 +147,24 @@ def _confidence_from_scores(scores: dict[str, int]) -> float:
 # Pemetaan gaya antarmuka → persona yang paling sesuai.
 # "pembimbing" = orientasi dialog, membantu pengguna berproses (MIGHAN).
 # "faktual"    = jawaban presisi, minimalis, berbasis data (HAYFAR).
+# Pivot 2026-04-25: ALIGNED dengan cot_system_prompts.py PERSONA_DESCRIPTIONS
 _STYLE_MAP: dict[str, Persona] = {
-    "pembimbing": "AYMAN",   # Strategic Sage — visioner, reflektif
+    "pembimbing": "AYMAN",   # general hangat, chat umum
     "guide":      "AYMAN",
-    "faktual":    "ALEY",    # The Learner — presisi, berbasis data
+    "faktual":    "ALEY",    # researcher rigor
     "factual":    "ALEY",
-    "teknis":     "ALEY",
-    "technical":  "ALEY",
-    "kreatif":    "AYMAN",   # AYMAN juga punya mode IJTIHAD yg kreatif
-    "creative":   "AYMAN",
-    "akademik":   "OOMAR",   # The Craftsman — riset + implementasi
-    "academic":   "OOMAR",
-    "rencana":    "ABOO",    # The Analyst — strategis + logis
-    "plan":       "ABOO",
-    "singkat":    "UTZ",     # The Generalist — ringkas, sederhana
-    "simple":     "UTZ",
+    "teknis":     "ABOO",    # engineer, code-first (BUKAN ALEY lagi)
+    "technical":  "ABOO",
+    "kreatif":    "UTZ",     # creative partner (BUKAN AYMAN lagi)
+    "creative":   "UTZ",
+    "akademik":   "ALEY",    # researcher (BUKAN OOMAR lagi)
+    "academic":   "ALEY",
+    "rencana":    "OOMAR",   # strategist (BUKAN ABOO lagi)
+    "plan":       "OOMAR",
+    "strategi":   "OOMAR",
+    "strategy":   "OOMAR",
+    "singkat":    "AYMAN",   # casual (BUKAN UTZ lagi)
+    "simple":     "AYMAN",
 }
 
 

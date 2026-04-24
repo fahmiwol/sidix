@@ -123,6 +123,8 @@ class AgentSession:
     typo_substitutions: int = 0
     # ── Pivot 2026-04-25: Follow-up awareness ───────────────────────────────────
     is_followup: bool = False          # True kalau question detect sebagai follow-up
+    # ── Pivot 2026-04-25: Cognitive Self-Check warnings ─────────────────────────
+    csc_warnings: str = ""             # comma-sep warnings dari _cognitive_self_check
     # ── Nafs Layer B (brain/nafs/response_orchestrator) ──────────────────────────
     nafs_topic: str = ""              # topic dari NafsOrchestrator (umum|kreatif|koding|agama|...)
     nafs_layers_used: str = ""        # "parametric,dynamic,static" (layer yang aktif)
@@ -1094,6 +1096,114 @@ def _strip_leaked_block(text: str, marker: str) -> str:
     return text
 
 
+# ── Pivot 2026-04-25 (Brain Upgrade): Cognitive Self-Check ────────────────────
+# Inspired oleh Chain-of-Verification (Dhuliawala et al., Meta 2023) +
+# epistemic calibration research. Sebelum answer final dikirim, cek:
+#   - Apakah klaim faktual (angka, tanggal, "adalah X") punya evidence?
+#   - Ada confidence marker kuat ("pasti", "selalu", "tidak pernah") tanpa dukungan?
+#   - Ada contradiction internal di draft?
+# Kalau ya → downgrade label atau tambah caveat "(belum terverifikasi)".
+#
+# Novelty untuk SIDIX: ini BUKAN LLM-based verification (terlalu mahal/lambat),
+# tapi rule-based yang memanfaatkan session.citations yang sudah ada.
+
+_CSC_CLAIM_MARKERS = _re_hygiene.compile(
+    r"\b("
+    r"adalah\s+\w+|merupakan|didefinisikan\s+sebagai|"
+    r"sebanyak\s+\d+|sekitar\s+\d+|\d{4}\s+(tahun|M|H)|"
+    r"tahun\s+\d{4}|pada\s+\d{4}"
+    r")\b",
+    _re_hygiene.IGNORECASE,
+)
+
+_CSC_OVER_CONFIDENCE = _re_hygiene.compile(
+    r"\b("
+    r"pasti(nya)?|selalu|tidak\s+pernah|never|always|definitely|certainly|"
+    r"tentu\s+saja|jelas(nya)?|sudah\s+pasti"
+    r")\b",
+    _re_hygiene.IGNORECASE,
+)
+
+# Klaim angka-spesifik (suka halusinasi).
+# Word boundary di akhir optional (kalau unit = %, \b tidak cocok karena % bukan word char).
+_CSC_NUMERIC_CLAIM = _re_hygiene.compile(
+    r"\b(\d{1,3}(?:[.,]\d{3})*(?:[.,]\d+)?)\s*(%|persen|miliar|juta|ribu|milion|billion|ton|km|kg|tahun|jam)(?:\b|(?=[^\w]))",
+    _re_hygiene.IGNORECASE,
+)
+
+
+def _cognitive_self_check(
+    draft: str,
+    citations: list,
+    question: str,
+    persona: str = "AYMAN",
+) -> tuple[str, list[str]]:
+    """
+    Pivot 2026-04-25 Brain Upgrade — Cognitive Self-Check.
+
+    Verifikasi rule-based draft terhadap evidence. Returns (revised_draft, warnings).
+
+    Logic:
+      1. Hitung klaim faktual (adalah X, angka+unit, tanggal, tahun)
+      2. Hitung evidence: len(citations) + presence of corpus/web step
+      3. Kalau claims > 2 * evidence → under-evidenced, tambah soft caveat
+      4. Over-confidence markers tanpa evidence → strip atau soften
+      5. Jangan touch kalau persona = UTZ (creative, tidak cocok di-critique angka)
+
+    Non-blocking — kalau error, return draft + [].
+
+    Pivot 2026-04-25 refinement: CSC hanya aktif untuk persona "evidence-heavy"
+    (ALEY researcher, OOMAR strategist, ABOO engineer). Skip untuk AYMAN (casual
+    hangat) dan UTZ (creative playful) — karena user mau SIDIX open-minded,
+    bisa ngobrol kosong, terima hal baru tanpa auto-critique.
+    """
+    if not draft or persona in ("UTZ", "AYMAN"):
+        return draft, []
+
+    warnings: list[str] = []
+
+    try:
+        # Count claims
+        num_claims = len(_CSC_CLAIM_MARKERS.findall(draft))
+        numeric_claims = _CSC_NUMERIC_CLAIM.findall(draft)
+        num_numeric = len(numeric_claims)
+        over_confident = _CSC_OVER_CONFIDENCE.findall(draft)
+
+        # Count evidence
+        has_citations = bool(citations) and len(citations) > 0
+        cite_count = len(citations) if citations else 0
+
+        revised = draft
+
+        # Rule 1: Numeric claims tanpa citation = halusinasi suspect
+        if num_numeric >= 2 and not has_citations:
+            warnings.append(f"numeric_claims_without_citation (n={num_numeric})")
+            # Tambah caveat kecil di akhir — bukan rewrite karena itu butuh LLM
+            if "(belum terverifikasi)" not in revised and "[TIDAK TAHU]" not in revised:
+                revised += "\n\n_Catatan: angka-angka di atas belum terverifikasi via sumber. Cross-check jika perlu._"
+
+        # Rule 2: Over-confidence markers tanpa evidence = soften
+        if len(over_confident) >= 2 and cite_count == 0:
+            warnings.append(f"over_confidence_without_evidence (n={len(over_confident)})")
+            # Ganti 2 occurrence pertama: "pasti" → "kemungkinan besar"
+            replacements = [
+                (r"\bpasti(nya)?\b", "kemungkinan besar"),
+                (r"\bselalu\b", "umumnya"),
+                (r"\btidak pernah\b", "jarang"),
+                (r"\btentu saja\b", "biasanya"),
+            ]
+            for pattern, replacement in replacements:
+                revised = _re_hygiene.sub(pattern, replacement, revised, count=1, flags=_re_hygiene.IGNORECASE)
+
+        # Rule 3: Klaim banyak (>5) tapi tidak ada citations = panjang-tapi-kosong suspicious
+        if num_claims > 5 and cite_count == 0:
+            warnings.append(f"many_claims_zero_citations (claims={num_claims})")
+
+        return revised, warnings
+    except Exception as _e:
+        return draft, [f"csc_error:{type(_e).__name__}"]
+
+
 def _self_critique_lite(
     final_answer: str,
     question: str,
@@ -1648,6 +1758,10 @@ def run_react(
             final_answer = _apply_maqashid_mode_gate(session, working_question, persona, final_answer)
             final_answer = _apply_constitution(final_answer)
             final_answer = _self_critique_lite(final_answer, working_question, persona)  # Pivot 2026-04-25
+            # Brain upgrade: cognitive self-check (CoVe-inspired)
+            final_answer, _csc_warnings = _cognitive_self_check(final_answer, citations, working_question, persona)
+            if _csc_warnings:
+                session.csc_warnings = ",".join(_csc_warnings)[:300]
             final_answer = _apply_hygiene(final_answer)  # Pivot 2026-04-25
 
             # ── Jiwa Pilar 5: Hayat — Self-Iteration ─────────────────────────
@@ -1800,6 +1914,9 @@ def run_react(
         )
         final_answer = _apply_maqashid_mode_gate(session, working_question, persona, final_answer)
         final_answer = _apply_constitution(final_answer)
+        final_answer, _csc_warnings = _cognitive_self_check(final_answer, citations, working_question, persona)
+        if _csc_warnings:
+            session.csc_warnings = ",".join(_csc_warnings)[:300]
         final_answer = _apply_hygiene(final_answer)  # Pivot 2026-04-25
         session.final_answer = final_answer
         # ─────────────────────────────────────────────────────────────────────
