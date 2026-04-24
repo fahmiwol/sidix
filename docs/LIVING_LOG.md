@@ -4370,3 +4370,5 @@ Branch System, berjiwa IHOS. Pilot pertama: Tiranyx Digital Agency.
 [2026-04-24] [TEST] test_social_radar.py direwrite — 23 unit test isolated (sebelumnya integration test butuh server). Coverage: detect_sentiment (7), extract_keywords (4), extract_hashtags (2), analyze_social_signals (6), format_report (4). 61 total tests passing.
 [2026-04-24] [DOC] brain/public/research_notes/196_sociometer_social_radar.md — dokumentasi social radar tool: apa, mengapa, bagaimana, keterbatasan, roadmap (integrasi Kimi Agent untuk Instagram public data).
 [2026-04-24] [DOC] docs/sprints/2026-04-25_sprint-9_plan.md — Sprint 9 plan: 5 priority items (sociometer, jariyah→LoRA export, distilasi model pertama, Tiranyx pilot, PostgreSQL live).
+
+[2026-04-24] [DEPLOY] VPS git pull e3c0a26 berhasil (31 files, 3336 insertions). pm2 restart sidix-brain OK — pid 84431, online. sidix-ui online 22h. Sprint 9 live di VPS.
