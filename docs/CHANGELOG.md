@@ -4,6 +4,18 @@ Format: `[YYYY-MM-DD] — Ringkasan perubahan`
 
 ---
 
+## [Sprint 10 — 2026-04-25] GraphRAG + Tiranyx Pilot
+
+### GraphRAG + Sanad Ranking
+**ID:** Graph konsep dari 196 research notes, ranking jawaban dengan chain sumber epistemik [FACT]/[OPINION]/[SPECULATION]/[UNKNOWN]
+**EN:** Concept graph from 196 research notes, answer ranking with epistemic source chain [FACT]/[OPINION]/[SPECULATION]/[UNKNOWN]
+
+### Tiranyx Pilot — Agency OS
+**ID:** Client pertama SIDIX Agency OS — 2 branch (AYMAN + ABOO), endpoint /branch/create + /branch/list + /branch/get
+**EN:** First SIDIX Agency OS client — 2 branches (AYMAN + ABOO), /branch/create + /branch/list + /branch/get endpoints
+
+---
+
 ## [Sprint 9 — 2026-04-24] Distillation + Jariyah Export + Social Radar
 
 ### Distillation Pipeline

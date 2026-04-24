@@ -1987,6 +1987,65 @@ def _tool_social_radar(args: dict) -> ToolResult:
     )
 
 
+def _tool_graph_search(args: dict) -> ToolResult:
+    """
+    Cari konsep terkait via GraphRAG + rank hasil dengan sanad chain.
+
+    Graph dibangun dari co-occurrence konsep di research notes (heading + bold text).
+    Hasil di-rank berdasarkan sanad score (cross-reference + note maturity + epistemic label).
+
+    Params:
+      query (str, wajib) — topik atau konsep yang dicari
+      top_k (int, default 5) — jumlah konsep terkait yang dikembalikan
+    """
+    query = str(args.get("query", "")).strip()
+    if not query:
+        return ToolResult(success=False, output="", error="query wajib diisi")
+    top_k = max(1, min(int(args.get("top_k", 5)), 20))
+
+    try:
+        from .graph_rag import load_or_build_graph, find_related_concepts, format_sanad_chain
+        from pathlib import Path as _Path
+    except ImportError as e:
+        return ToolResult(success=False, output="", error=f"graph_rag tidak tersedia: {e}")
+
+    corpus_dir = _Path(__file__).parent.parent.parent.parent / "brain" / "public" / "research_notes"
+
+    try:
+        graph = load_or_build_graph(corpus_dir)
+    except Exception as e:
+        return ToolResult(success=False, output="", error=f"gagal load graph: {e}")
+
+    related = find_related_concepts(query, graph, top_k=top_k)
+
+    if not related:
+        return ToolResult(
+            success=True,
+            output=f"[UNKNOWN] Tidak ditemukan konsep terkait '{query}' di graph corpus.",
+        )
+
+    result_dicts = [
+        {
+            "concept": c.concept,
+            "sources": c.source_notes,
+            "frequency": c.frequency,
+        }
+        for c in related
+    ]
+
+    output = format_sanad_chain(result_dicts)
+    citations = [
+        {
+            "type": "graph_search",
+            "concept": c.concept,
+            "frequency": c.frequency,
+            "source_count": len(c.source_notes),
+        }
+        for c in related
+    ]
+    return ToolResult(success=True, output=output, citations=citations)
+
+
 TOOL_REGISTRY: dict[str, ToolSpec] = {
     "search_corpus": ToolSpec(
         name="search_corpus",
@@ -2389,6 +2448,19 @@ TOOL_REGISTRY: dict[str, ToolSpec] = {
         params=["query", "max_results"],
         permission="open",
         fn=_tool_social_radar,
+    ),
+    "graph_search": ToolSpec(
+        name="graph_search",
+        description=(
+            "Cari konsep terkait via GraphRAG — graph co-occurrence konsep dari 196+ research notes SIDIX. "
+            "Hasil di-rank berdasarkan sanad chain: cross-reference antar note + maturity score + "
+            "epistemic label (FACT/OPINION/SPECULATION/UNKNOWN). "
+            "Differensiator utama SIDIX: jawaban punya chain of sources yang bisa diverifikasi. "
+            "Params: query (str, wajib), top_k (int, default 5, max 20)."
+        ),
+        params=["query", "top_k"],
+        permission="open",
+        fn=_tool_graph_search,
     ),
 }
 

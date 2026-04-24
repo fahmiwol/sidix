@@ -4372,3 +4372,14 @@ Branch System, berjiwa IHOS. Pilot pertama: Tiranyx Digital Agency.
 [2026-04-24] [DOC] docs/sprints/2026-04-25_sprint-9_plan.md — Sprint 9 plan: 5 priority items (sociometer, jariyah→LoRA export, distilasi model pertama, Tiranyx pilot, PostgreSQL live).
 
 [2026-04-24] [DEPLOY] VPS git pull e3c0a26 berhasil (31 files, 3336 insertions). pm2 restart sidix-brain OK — pid 84431, online. sidix-ui online 22h. Sprint 9 live di VPS.
+
+[2026-04-25] [DOC] Sprint 10 plan dibuat, research notes 197 (GraphRAG+Sanad) dan 198 (Tiranyx Agency OS), CHANGELOG updated
+
+[2026-04-24] [IMPL] Sprint 10: tiranyx_config.py (Agency OS client pertama), branch endpoints /branch/create + /branch/list + /branch/get, tests tiranyx (11 tests all pass)
+
+[2026-04-24] [IMPL] Sprint 10: graph_rag.py + sanad_ranker.py dibuat, tool graph_search (38 total), 45 tests all passed.
+- graph_rag.py: build_graph (co-occurrence dari heading+bold+UPPERCASE di 196+ research notes), load_or_build_graph (cache JSON), find_related_concepts, expand_search_context, rank_by_sanad, format_sanad_chain. Pure Python, no networkx.
+- sanad_ranker.py: EPISTEMIC_KEYWORDS (4 label), SanadScore dataclass, classify_epistemic, score_result, rank_results, format_sanad_summary.
+- agent_tools.py: _tool_graph_search + entry 'graph_search' di TOOL_REGISTRY. Total 38 tools.
+- tests/test_graph_rag.py: 45 unit tests (TestExtractConcepts x8, TestBuildGraph x5, TestFindRelatedConcepts x5, TestRankBySanad x3, TestFormatSanadChain x4, TestClassifyEpistemic x9, TestScoreResult x3, TestRankResults x4, TestFormatSanadSummary x2, TestEpistemicKeywordsMap x2). 45/45 PASSED.
+- research_notes/197_graph_rag_sanad.md diupdate dengan detail implementasi.

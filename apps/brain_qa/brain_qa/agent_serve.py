@@ -239,6 +239,14 @@ class TTSResponse(BaseModel):
     duration_estimate: float
 
 
+class BranchCreateRequest(BaseModel):
+    agency_id: str
+    client_id: str
+    persona: str = "UTZ"
+    corpus_filter: list[str] = Field(default_factory=list)
+    tool_whitelist: list[str] = Field(default_factory=list)
+
+
 # ── LLM generate function (Standing Alone) ────────────────────────────────────
 # Priority: 1) Ollama (local)  2) LoRA (local)  3) Mock
 
@@ -732,6 +740,64 @@ def create_app() -> "FastAPI":
         from .jariyah_exporter import export_to_lora_jsonl
         result = export_to_lora_jsonl(min_score=min_score)
         return result
+
+    # ── Branch Management ──────────────────────────────────────────────────────
+
+    @app.post("/branch/create")
+    async def branch_create(req: BranchCreateRequest, request: Request):
+        """Buat atau update branch config (admin only)."""
+        if not _admin_ok(request):
+            raise HTTPException(status_code=403, detail="Akses ditolak")
+        from .branch_manager import get_manager as _get_manager
+        branch = _get_manager().create_branch(
+            agency_id=req.agency_id,
+            client_id=req.client_id,
+            persona=req.persona,
+            corpus_filter=req.corpus_filter,
+            tool_whitelist=req.tool_whitelist,
+        )
+        return {
+            "ok": True,
+            "branch": {
+                "agency_id": branch.agency_id,
+                "client_id": branch.client_id,
+                "persona": branch.persona,
+                "active": branch.active,
+            },
+        }
+
+    @app.get("/branch/list")
+    async def branch_list(agency_id: str = ""):
+        """List semua branch, opsional filter per agency."""
+        from .branch_manager import get_manager as _get_manager
+        branches = _get_manager().list_branches(agency_id or None)
+        return {
+            "branches": [
+                {
+                    "agency_id": b.agency_id,
+                    "client_id": b.client_id,
+                    "persona": b.persona,
+                    "active": b.active,
+                    "corpus_filter": b.corpus_filter,
+                    "tool_whitelist": b.tool_whitelist,
+                }
+                for b in branches
+            ]
+        }
+
+    @app.get("/branch/get")
+    async def branch_get(agency_id: str, client_id: str):
+        """Get branch config untuk agency + client tertentu."""
+        from .branch_manager import get_manager as _get_manager
+        branch = _get_manager().get_branch(agency_id, client_id)
+        return {
+            "agency_id": branch.agency_id,
+            "client_id": branch.client_id,
+            "persona": branch.persona,
+            "corpus_filter": branch.corpus_filter,
+            "tool_whitelist": branch.tool_whitelist,
+            "active": branch.active,
+        }
 
     @app.delete("/agent/session/{session_id}")
     def agent_session_forget(session_id: str):
@@ -3441,6 +3507,14 @@ h1{{color:#0af}}p{{color:#aaa}}a{{color:#0af}}</style></head>
             "error": result.error,
             "citations": result.citations,
         }
+
+    # ── Agency OS: Tiranyx pilot client ──────────────────────────────────────
+    try:
+        from .tiranyx_config import setup_tiranyx as _setup_tiranyx
+        _setup_tiranyx()
+    except Exception as _e:  # pragma: no cover
+        import logging as _logging
+        _logging.getLogger(__name__).warning("Tiranyx setup gagal: %s", _e)
 
     return app
 
