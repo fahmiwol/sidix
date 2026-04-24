@@ -24,6 +24,26 @@ Format: `[YYYY-MM-DD] — Ringkasan perubahan`
 
 ---
 
+## [Sprint 12 — 2026-04-24] Auto-Training Flywheel + Eval Harness + Ollama Deploy
+
+### Auto-Training Flywheel
+**ID:** `scripts/auto_train_flywheel.py` — orchestrator 6-step: CHECK (data availability) → EXPORT (jariyah + synthetic + DPO + memory) → TRAIN (QLoRA mock/local/kaggle) → EVAL (before/after benchmark) → DEPLOY (GGUF → Ollama) → LOG (checkpoint + versioning). Config via env var.
+**EN:** `scripts/auto_train_flywheel.py` — 6-step orchestrator: CHECK → EXPORT → TRAIN → EVAL → DEPLOY → LOG. Config via env vars.
+
+### Evaluation Harness
+**ID:** `apps/brain_qa/brain_qa/eval_harness.py` — benchmark 4 metrik: epistemic accuracy, source coverage (sanad), ROUGE-L relevance, honesty rate. Static benchmark seed + extensible JSONL format.
+**EN:** `apps/brain_qa/brain_qa/eval_harness.py` — 4-metric benchmark: epistemic accuracy, source coverage, ROUGE-L relevance, honesty rate.
+
+### Ollama Deploy Script
+**ID:** `scripts/ollama_deploy.py` — LoRA adapter merge → HF → GGUF convert → Ollama create → hot reload verify. System prompt sync dengan `ollama_llm.py` conversational variant.
+**EN:** `scripts/ollama_deploy.py` — adapter merge → GGUF → Ollama create → verify. System prompt synced with conversational variant.
+
+### Research Note
+**ID:** Research note 205: arsitektur auto-training flywheel, eval harness design, Ollama deployment pipeline
+**EN:** Research note 205: auto-training flywheel architecture, eval harness design, Ollama deployment pipeline
+
+---
+
 ## [Research — 2026-04-24] Frontier AI Architecture + Constitutional AI
 
 ### Arsitektur AI Frontier dan Roadmap SIDIX ke Frontier
