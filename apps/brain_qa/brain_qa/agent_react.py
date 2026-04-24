@@ -928,6 +928,23 @@ def _apply_maqashid_mode_gate(
         return final_answer
 
 
+# ── Constitutional AI Gate ────────────────────────────────────────────────────
+
+def _apply_constitution(final_answer: str) -> str:
+    """
+    Jalankan Constitutional AI critique + auto-fix sebelum jawaban dikirim ke user.
+    Non-blocking — jika gagal, kembalikan jawaban asli.
+    """
+    try:
+        from .sidix_constitution import critique_response, apply_rule_fixes
+        critique = critique_response(final_answer)
+        if critique.violations:
+            final_answer = apply_rule_fixes(final_answer, critique)
+        return final_answer
+    except Exception:
+        return final_answer
+
+
 # ── Main ReAct runner ─────────────────────────────────────────────────────────
 
 def _attach_orchestration_digest(session: AgentSession, question: str, persona: str) -> None:
@@ -1242,6 +1259,7 @@ def run_react(
                 persona=persona,
             )
             final_answer = _apply_maqashid_mode_gate(session, working_question, persona, final_answer)
+            final_answer = _apply_constitution(final_answer)
 
             # ── Jiwa Pilar 5: Hayat — Self-Iteration ─────────────────────────
             if _JIWA_ENABLED and _jiwa is not None and not simple_mode:
@@ -1358,6 +1376,7 @@ def run_react(
             persona=persona,
         )
         final_answer = _apply_maqashid_mode_gate(session, working_question, persona, final_answer)
+        final_answer = _apply_constitution(final_answer)
         session.final_answer = final_answer
         # ─────────────────────────────────────────────────────────────────────
         answer_dedup.set_cached_answer(persona, working_question, final_answer)
