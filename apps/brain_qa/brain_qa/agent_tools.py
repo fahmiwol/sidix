@@ -423,26 +423,44 @@ def _tool_muhasabah_refine(args: dict) -> ToolResult:
 # ── Implementasi tools ────────────────────────────────────────────────────────
 
 def _tool_search_corpus(args: dict) -> ToolResult:
-    """BM25 search ke corpus brain_qa. Returns top-k chunks + citations."""
+    """BM25 search ke corpus brain_qa. Returns top-k chunks + citations.
+    _corpus_filter: list[str] — hanya kembalikan dokumen yang path-nya mengandung salah satu tag.
+    """
     query = args.get("query", "").strip()
     k = int(args.get("k", 5))
     persona = args.get("persona", "INAN")
+    corpus_filter: list[str] = args.get("_corpus_filter", [])
 
     if not query:
         return ToolResult(success=False, output="", error="query wajib diisi")
 
     try:
+        # Fetch lebih banyak bila ada filter (agar setelah filter tetap ada hasil)
+        fetch_k = k * 3 if corpus_filter else k
         answer, citations = answer_query_and_citations(
             question=query,
             index_dir_override=None,
-            k=k,
+            k=fetch_k,
             max_snippet_chars=400,
             persona=persona,
             persona_reason="agent_tool_call",
         )
-        # Cukup panjang agar planner melihat "Ringkasan" / struktur jawaban
+        # Apply corpus_filter: pertahankan hanya citation yang source_path mengandung salah satu tag
+        if corpus_filter:
+            filtered = [
+                c for c in citations
+                if any(tag.lower() in c.get("source_path", "").lower() for tag in corpus_filter)
+            ]
+            if filtered:
+                citations = filtered[:k]
+                # Rebuild answer summary dari filtered citations
+                snippets = "\n\n".join(
+                    f"[{c.get('n','?')}] {c.get('source_title','?')}: {c.get('snippet','')}"
+                    for c in citations
+                )
+                answer = snippets
         summary = answer[:1400]
-        return ToolResult(success=True, output=summary, citations=citations)
+        return ToolResult(success=True, output=summary, citations=citations[:k])
     except Exception as e:
         return ToolResult(success=False, output="", error=str(e))
 
@@ -803,6 +821,249 @@ def _tool_workspace_write(args: dict) -> ToolResult:
     return ToolResult(
         success=True,
         output=f"OK: wrote {len(encoded)} bytes to {rel}",
+        citations=[{"type": "agent_workspace", "path": rel}],
+    )
+
+
+# ── Patch / Diff Application ─────────────────────────────────────────────────
+
+def _parse_unified_diff(patch_text: str) -> list[dict]:
+    """
+    Parse unified diff text menjadi list of hunks.
+    Each hunk: {old_start, old_count, new_start, new_count, lines:[(tag, text)]}
+    tag: ' ' context, '-' old, '+' new, '\\' no-newline
+    """
+    hunks: list[dict] = []
+    current_hunk: dict | None = None
+    lines = patch_text.splitlines(keepends=False)
+
+    i = 0
+    while i < len(lines):
+        line = lines[i]
+        # Hunk header: @@ -old_start,old_count +new_start,new_count @@
+        if line.startswith("@@"):
+            m = re.match(r"@@ -(\d+)(?:,(\d+))? \+(\d+)(?:,(\d+))? @@", line)
+            if m:
+                old_start = int(m.group(1))
+                old_count = int(m.group(2)) if m.group(2) else 1
+                new_start = int(m.group(3))
+                new_count = int(m.group(4)) if m.group(4) else 1
+                current_hunk = {
+                    "old_start": old_start,
+                    "old_count": old_count,
+                    "new_start": new_start,
+                    "new_count": new_count,
+                    "lines": [],
+                }
+                hunks.append(current_hunk)
+            i += 1
+            continue
+
+        if current_hunk is not None:
+            if line.startswith("-"):
+                current_hunk["lines"].append(("-", line[1:]))
+            elif line.startswith("+"):
+                current_hunk["lines"].append(("+", line[1:]))
+            elif line.startswith(" "):
+                current_hunk["lines"].append((" ", line[1:]))
+            elif line.startswith("\\"):
+                current_hunk["lines"].append(("\\", ""))
+            else:
+                # Empty line in diff = context line
+                current_hunk["lines"].append((" ", ""))
+        i += 1
+
+    return hunks
+
+
+def _apply_hunk(original_lines: list[str], hunk: dict) -> list[str]:
+    """
+    Apply single hunk to original_lines.
+    Returns new list of lines.
+    Raises ValueError jika context tidak match.
+    """
+    old_start = hunk["old_start"]
+    old_count = hunk["old_count"]
+    lines = hunk["lines"]
+
+    # old_start is 1-based
+    idx = old_start - 1
+    if idx < 0:
+        idx = 0
+
+    # Validate context: extract old lines from patch and compare with original
+    old_lines_from_patch = [text for tag, text in lines if tag == "-"]
+    context_before = []
+    context_after = []
+
+    # Simple approach: find the block in original that matches context
+    # For robustness, we use a sliding window around idx
+    best_match = -1
+    best_score = -1
+
+    search_start = max(0, idx - 5)
+    search_end = min(len(original_lines), idx + old_count + 5)
+
+    for start in range(search_start, search_end - old_count + 1):
+        candidate = original_lines[start:start + old_count]
+        score = sum(1 for a, b in zip(candidate, old_lines_from_patch) if a == b)
+        if score > best_score:
+            best_score = score
+            best_match = start
+
+    if best_match == -1 or best_score < max(1, len(old_lines_from_patch) // 2):
+        raise ValueError(
+            f"Cannot find matching context for hunk at line {old_start}. "
+            f"Expected {old_count} lines starting near line {old_start}."
+        )
+
+    idx = best_match
+
+    # Build new lines
+    result = original_lines[:idx]
+    old_consumed = 0
+
+    for tag, text in lines:
+        if tag == " ":
+            # Context line — verify match
+            if idx + old_consumed < len(original_lines):
+                if original_lines[idx + old_consumed] != text:
+                    pass  # tolerate minor mismatch
+                old_consumed += 1
+            result.append(text)
+        elif tag == "-":
+            # Remove line — consume from original
+            old_consumed += 1
+        elif tag == "+":
+            # Add line
+            result.append(text)
+        elif tag == "\\":
+            pass  # no newline at end of file marker
+
+    # Append remaining lines after the consumed block
+    result.extend(original_lines[idx + old_consumed:])
+    return result
+
+
+def _apply_unified_diff(original_lines: list[str], patch_text: str) -> tuple[list[str], dict]:
+    """
+    Apply unified diff to original lines.
+    Returns (new_lines, stats).
+    stats = {"added": N, "removed": N, "changed": N}
+    Raises ValueError jika patch tidak bisa di-apply.
+    """
+    hunks = _parse_unified_diff(patch_text)
+    if not hunks:
+        raise ValueError("No valid hunks found in patch")
+
+    current = list(original_lines)
+    total_added = 0
+    total_removed = 0
+
+    for hunk in hunks:
+        added = sum(1 for tag, _ in hunk["lines"] if tag == "+")
+        removed = sum(1 for tag, _ in hunk["lines"] if tag == "-")
+        total_added += added
+        total_removed += removed
+        current = _apply_hunk(current, hunk)
+
+    stats = {
+        "added": total_added,
+        "removed": total_removed,
+        "changed": min(total_added, total_removed),
+    }
+    return current, stats
+
+
+def _tool_workspace_patch(args: dict) -> ToolResult:
+    """
+    Apply unified diff/patch ke file existing di sandbox.
+    RESTRICTED (butuh allow_restricted).
+    Params: path (wajib), patch (wajib, unified diff format).
+    """
+    rel = (args.get("path") or "").strip()
+    patch_text = args.get("patch")
+    if not rel:
+        return ToolResult(success=False, output="", error="path wajib")
+    if patch_text is None or not isinstance(patch_text, str):
+        return ToolResult(success=False, output="", error="patch wajib (string unified diff)")
+
+    p = _workspace_safe_path(rel)
+    if p is None:
+        return ToolResult(success=False, output="", error="path tidak valid atau di luar workspace")
+    if not _workspace_suffix_ok(p):
+        return ToolResult(success=False, output="", error=f"ekstensi tidak diizinkan: {p.suffix}")
+
+    # File harus sudah ada
+    if not p.is_file():
+        return ToolResult(success=False, output="", error=f"file tidak ditemukan: {rel}")
+
+    # Read original
+    try:
+        original_text = p.read_text(encoding="utf-8")
+    except OSError as e:
+        return ToolResult(success=False, output="", error=str(e))
+
+    original_lines = original_text.splitlines(keepends=False)
+
+    # Validate patch sebelum apply
+    try:
+        preview_lines, preview_stats = _apply_unified_diff(original_lines, patch_text)
+    except ValueError as e:
+        return ToolResult(
+            success=False,
+            output="",
+            error=f"Patch validation failed: {e}",
+        )
+
+    # Backup file asli
+    bak = p.with_suffix(p.suffix + ".bak")
+    try:
+        bak.write_text(original_text, encoding="utf-8")
+    except OSError:
+        pass  # backup gagal = non-fatal
+
+    # Apply patch
+    new_text = "\n".join(preview_lines)
+    # Preserve trailing newline jika original punya
+    if original_text.endswith("\n") and not new_text.endswith("\n"):
+        new_text += "\n"
+
+    encoded = new_text.encode("utf-8")
+    if len(encoded) > _WORKSPACE_MAX_WRITE_BYTES:
+        return ToolResult(
+            success=False,
+            output="",
+            error=f"hasil patch terlalu besar (>{_WORKSPACE_MAX_WRITE_BYTES} bytes)",
+        )
+
+    tmp = p.with_suffix(p.suffix + ".tmp")
+    try:
+        tmp.write_bytes(encoded)
+        tmp.replace(p)
+    except OSError as e:
+        if tmp.exists():
+            try:
+                tmp.unlink()
+            except OSError:
+                pass
+        # Restore backup kalau ada
+        if bak.exists():
+            try:
+                bak.replace(p)
+            except OSError:
+                pass
+        return ToolResult(success=False, output="", error=f"Apply patch failed: {e}")
+
+    return ToolResult(
+        success=True,
+        output=(
+            f"OK: patched {rel}\n"
+            f"  +{preview_stats['added']} lines added\n"
+            f"  -{preview_stats['removed']} lines removed\n"
+            f"  ~{preview_stats['changed']} lines changed\n"
+            f"Backup: {bak.name}"
+        ),
         citations=[{"type": "agent_workspace", "path": rel}],
     )
 
@@ -1425,6 +1686,345 @@ def _tool_code_sandbox(args: dict) -> ToolResult:
         output="\n\n".join(combined) if combined else "(tidak ada output)",
         citations=[{"type": "code_sandbox", "exit_code": proc.returncode}],
     )
+
+
+# ── Shell Execution (Coding Agent Phase 2) ───────────────────────────────────
+
+_SHELL_TIMEOUT = 60
+_SHELL_MAX_OUTPUT = 16_000
+
+
+def _tool_shell_run(args: dict) -> ToolResult:
+    """
+    Jalankan shell command dengan security scanner.
+    RESTRICTED (butuh allow_restricted=true).
+    Params: command (wajib), cwd (opsional, relatif ke agent_workspace).
+    """
+    import subprocess
+
+    command = str(args.get("command", "")).strip()
+    if not command:
+        return ToolResult(success=False, output="", error="command wajib diisi")
+
+    # Security scan
+    try:
+        from .code_security import scan_command
+        scan = scan_command(command)
+        if scan.blocked:
+            return ToolResult(success=False, output="", error=f"Security block: {scan.reason}")
+        if scan.hitl_required:
+            return ToolResult(
+                success=False,
+                output="",
+                error=(
+                    f"Approval required: {scan.reason}\n"
+                    f"Command: {scan.sanitized_command}\n"
+                    "Set allow_restricted=true DAN konfirmasi manual untuk menjalankan."
+                ),
+            )
+    except Exception as e:
+        return ToolResult(success=False, output="", error=f"Security scan failed: {e}")
+
+    # Resolve CWD
+    cwd = _agent_workspace_root()
+    rel_cwd = (args.get("cwd") or "").strip()
+    if rel_cwd:
+        p = _workspace_safe_path(rel_cwd)
+        if p is not None and p.exists():
+            cwd = p if p.is_dir() else p.parent
+
+    try:
+        proc = subprocess.run(
+            command,
+            shell=True,
+            cwd=str(cwd),
+            capture_output=True,
+            text=True,
+            timeout=_SHELL_TIMEOUT,
+            env={"PATH": os.environ.get("PATH", ""), "LANG": "C.UTF-8"},
+        )
+    except subprocess.TimeoutExpired:
+        return ToolResult(
+            success=False,
+            output="",
+            error=f"Shell timeout ({_SHELL_TIMEOUT}s). Command terlalu lama.",
+        )
+    except Exception as e:
+        return ToolResult(success=False, output="", error=f"Shell error: {type(e).__name__}: {e}")
+
+    stdout = (proc.stdout or "")[:_SHELL_MAX_OUTPUT]
+    stderr = (proc.stderr or "")[:_SHELL_MAX_OUTPUT // 2]
+    combined = []
+    if stdout:
+        combined.append(f"STDOUT:\n{stdout}")
+    if stderr:
+        combined.append(f"STDERR:\n{stderr}")
+    combined.append(f"(exit code: {proc.returncode})")
+    return ToolResult(
+        success=(proc.returncode == 0),
+        output="\n\n".join(combined) if combined else "(tidak ada output)",
+        citations=[{"type": "shell_run", "command": command[:200], "exit_code": proc.returncode}],
+    )
+
+
+def _tool_test_run(args: dict) -> ToolResult:
+    """
+    Jalankan test suite (auto-detect framework).
+    Params: path (opsional, folder/file test), framework (opsional: pytest/unittest/jest/vitest/cargo/go).
+    """
+    import subprocess
+
+    path = (args.get("path") or "").strip()
+    framework = (args.get("framework") or "").strip().lower()
+
+    # Resolve CWD
+    cwd = _agent_workspace_root()
+    if path:
+        p = _workspace_safe_path(path)
+        if p is not None and p.exists():
+            cwd = p if p.is_dir() else p.parent
+        else:
+            test_p = cwd / path
+            if test_p.exists():
+                cwd = test_p if test_p.is_dir() else test_p.parent
+
+    # Auto-detect framework
+    if not framework:
+        if (cwd / "pytest.ini").exists() or (cwd / "pyproject.toml").exists() or list(cwd.glob("test_*.py")) or list(cwd.glob("*_test.py")):
+            framework = "pytest"
+        elif (cwd / "package.json").exists():
+            framework = "jest"
+        elif (cwd / "Cargo.toml").exists():
+            framework = "cargo"
+        elif (cwd / "go.mod").exists():
+            framework = "go"
+        elif list(cwd.glob("test*.py")):
+            framework = "unittest"
+        else:
+            framework = "pytest"
+
+    # Build command
+    if framework == "pytest":
+        cmd = f"python -m pytest {path or '.'} -v --tb=short"
+    elif framework == "unittest":
+        cmd = f"python -m unittest discover -s {path or '.'} -v"
+    elif framework == "jest":
+        cmd = f"npx jest {path or ''} --verbose"
+    elif framework == "vitest":
+        cmd = f"npx vitest run {path or ''}"
+    elif framework == "cargo":
+        cmd = "cargo test"
+    elif framework == "go":
+        cmd = f"go test {path or './...'} -v"
+    else:
+        return ToolResult(success=False, output="", error=f"Framework '{framework}' tidak didukung. Pilih: pytest/unittest/jest/vitest/cargo/go")
+
+    try:
+        proc = subprocess.run(
+            cmd,
+            shell=True,
+            cwd=str(cwd),
+            capture_output=True,
+            text=True,
+            timeout=_SHELL_TIMEOUT,
+            env={"PATH": os.environ.get("PATH", ""), "LANG": "C.UTF-8"},
+        )
+    except subprocess.TimeoutExpired:
+        return ToolResult(success=False, output="", error=f"Test timeout ({_SHELL_TIMEOUT}s)")
+    except Exception as e:
+        return ToolResult(success=False, output="", error=f"Test error: {type(e).__name__}: {e}")
+
+    stdout = (proc.stdout or "")[:_SHELL_MAX_OUTPUT]
+    stderr = (proc.stderr or "")[:_SHELL_MAX_OUTPUT // 2]
+
+    # Parse summary
+    summary = f"Framework: {framework}\nExit code: {proc.returncode}\n"
+    if framework == "pytest":
+        passed = stdout.count(" passed") + stdout.count(" PASSED")
+        failed = stdout.count(" failed") + stdout.count(" FAILED")
+        summary += f"Tests passed: {passed}\nTests failed: {failed}\n"
+    elif framework in ("jest", "vitest"):
+        passed = stdout.count("PASS") + stdout.count("OK")
+        failed = stdout.count("FAIL") + stdout.count("FAILED")
+        summary += f"Tests passed: {passed}\nTests failed: {failed}\n"
+
+    combined = [summary]
+    if stdout:
+        combined.append(f"STDOUT:\n{stdout}")
+    if stderr:
+        combined.append(f"STDERR:\n{stderr}")
+
+    return ToolResult(
+        success=(proc.returncode == 0),
+        output="\n\n".join(combined),
+        citations=[{"type": "test_run", "framework": framework, "exit_code": proc.returncode}],
+    )
+
+
+# ── Git Tools (read-only + helper) ───────────────────────────────────────────
+
+
+def _tool_git_status(args: dict) -> ToolResult:
+    """Lihat git status. Params: path (opsional, relatif ke workspace)."""
+    import subprocess
+
+    cwd = _agent_workspace_root()
+    path = (args.get("path") or "").strip()
+    if path:
+        p = _workspace_safe_path(path)
+        if p is not None and p.exists():
+            cwd = p if p.is_dir() else p.parent
+
+    try:
+        proc = subprocess.run(
+            ["git", "status", "-sb"],
+            cwd=str(cwd),
+            capture_output=True,
+            text=True,
+            timeout=15,
+        )
+    except Exception as e:
+        return ToolResult(success=False, output="", error=f"git status error: {e}")
+
+    out = proc.stdout or ""
+    err = proc.stderr or ""
+    if "not a git repository" in err.lower():
+        return ToolResult(success=False, output="", error="Bukan git repository. Jalankan 'git init' dulu.")
+    return ToolResult(success=True, output=out or "(clean)")
+
+
+def _tool_git_diff(args: dict) -> ToolResult:
+    """Lihat git diff. Params: path (opsional), staged (bool, default False)."""
+    import subprocess
+
+    cwd = _agent_workspace_root()
+    path = (args.get("path") or "").strip()
+    staged = bool(args.get("staged", False))
+
+    if path:
+        p = _workspace_safe_path(path)
+        if p is not None and p.exists():
+            cwd = p if p.is_dir() else p.parent
+
+    cmd = ["git", "diff", "--stat"]
+    if staged:
+        cmd.insert(2, "--staged")
+
+    try:
+        proc = subprocess.run(cmd, cwd=str(cwd), capture_output=True, text=True, timeout=15)
+    except Exception as e:
+        return ToolResult(success=False, output="", error=f"git diff error: {e}")
+
+    out = proc.stdout or ""
+    err = proc.stderr or ""
+    if "not a git repository" in err.lower():
+        return ToolResult(success=False, output="", error="Bukan git repository.")
+
+    # Kalau stat pendek, tambahkan diff lengkap
+    if len(out) < 500 and not args.get("stat_only"):
+        cmd_full = ["git", "diff"]
+        if staged:
+            cmd_full.insert(2, "--staged")
+        try:
+            proc_full = subprocess.run(cmd_full, cwd=str(cwd), capture_output=True, text=True, timeout=15)
+            out = proc_full.stdout or ""
+        except Exception:
+            pass
+
+    # Cap output
+    if len(out) > 8000:
+        out = out[:8000] + "\n... [truncated]"
+    return ToolResult(success=True, output=out or "(no changes)")
+
+
+def _tool_git_log(args: dict) -> ToolResult:
+    """Lihat git log. Params: path (opsional), n (int, default 10)."""
+    import subprocess
+
+    cwd = _agent_workspace_root()
+    path = (args.get("path") or "").strip()
+    n = int(args.get("n", 10))
+    n = max(1, min(50, n))
+
+    if path:
+        p = _workspace_safe_path(path)
+        if p is not None and p.exists():
+            cwd = p if p.is_dir() else p.parent
+
+    try:
+        proc = subprocess.run(
+            ["git", "log", f"--max-count={n}", "--oneline", "--decorate"],
+            cwd=str(cwd),
+            capture_output=True,
+            text=True,
+            timeout=15,
+        )
+    except Exception as e:
+        return ToolResult(success=False, output="", error=f"git log error: {e}")
+
+    out = proc.stdout or ""
+    err = proc.stderr or ""
+    if "not a git repository" in err.lower():
+        return ToolResult(success=False, output="", error="Bukan git repository.")
+    return ToolResult(success=True, output=out or "(no commits)")
+
+
+def _tool_git_commit_helper(args: dict) -> ToolResult:
+    """
+    Generate commit message dari git diff menggunakan LLM.
+    Params: path (opsional), style (opsional: conventional/semantic/simple, default conventional).
+    """
+    from .ollama_llm import ollama_generate
+
+    cwd = _agent_workspace_root()
+    path = (args.get("path") or "").strip()
+    style = (args.get("style") or "conventional").strip().lower()
+
+    if path:
+        p = _workspace_safe_path(path)
+        if p is not None and p.exists():
+            cwd = p if p.is_dir() else p.parent
+
+    # Ambil diff staged + unstaged
+    import subprocess
+    try:
+        proc = subprocess.run(["git", "diff", "--staged"], cwd=str(cwd), capture_output=True, text=True, timeout=15)
+        staged = proc.stdout or ""
+        proc2 = subprocess.run(["git", "diff"], cwd=str(cwd), capture_output=True, text=True, timeout=15)
+        unstaged = proc2.stdout or ""
+    except Exception as e:
+        return ToolResult(success=False, output="", error=f"git diff error: {e}")
+
+    diff_text = staged + "\n" + unstaged
+    if not diff_text.strip():
+        return ToolResult(success=False, output="", error="Tidak ada perubahan untuk dicommit.")
+
+    # Truncate diff untuk prompt
+    diff_truncated = diff_text[:4000]
+
+    style_hint = {
+        "conventional": "Format: type(scope): description (feat/fix/docs/refactor/test/chore)",
+        "semantic": "Format: type: description (gunakan emoji + type)",
+        "simple": "Format: deskripsi singkat perubahan",
+    }.get(style, "Format: type(scope): description")
+
+    prompt = f"""Berikut adalah git diff dari project. Buatkan commit message yang jelas dan informatif.
+
+{style_hint}
+
+Diff:
+{diff_truncated}
+
+Commit message (hanya 1 baris, maks 72 karakter):"""
+
+    try:
+        text, mode = ollama_generate(prompt=prompt, max_tokens=64, temperature=0.3)
+        if mode == "mock_error":
+            return ToolResult(success=False, output="", error="LLM tidak tersedia untuk generate commit message.")
+        msg = text.strip().split("\n")[0][:72]
+        return ToolResult(success=True, output=f"Suggested commit message:\n{msg}")
+    except Exception as e:
+        return ToolResult(success=False, output="", error=f"Generate commit message failed: {e}")
 
 
 # ── web_search — own wrapper DuckDuckGo HTML (no API, no vendor) ──────────────
@@ -2141,6 +2741,18 @@ TOOL_REGISTRY: dict[str, ToolSpec] = {
         permission="restricted",
         fn=_tool_workspace_write,
     ),
+    "workspace_patch": ToolSpec(
+        name="workspace_patch",
+        description=(
+            "Apply unified diff/patch ke file existing di sandbox agen. "
+            "Lebih aman dari workspace_write untuk edit sebagian kecil file (refactor, fix bug, tambah fungsi). "
+            "RESTRICTED — klien harus set allow_restricted=true. "
+            "Params: path (wajib, relatif), patch (wajib, unified diff format)."
+        ),
+        params=["path", "patch"],
+        permission="restricted",
+        fn=_tool_workspace_patch,
+    ),
     "roadmap_list": ToolSpec(
         name="roadmap_list",
         description=(
@@ -2461,6 +3073,72 @@ TOOL_REGISTRY: dict[str, ToolSpec] = {
         params=["query", "top_k"],
         permission="open",
         fn=_tool_graph_search,
+    ),
+    # ── Coding Agent Phase 2: shell / test / git ─────────────────────────────
+    "shell_run": ToolSpec(
+        name="shell_run",
+        description=(
+            "Jalankan shell command di agent_workspace (sandbox). "
+            "RESTRICTED — butuh allow_restricted=true. "
+            "Security scanner aktif: command destruktif / credential-leaking diblokir. "
+            "Params: command (str, wajib), cwd (str, opsional — relatif ke workspace)."
+        ),
+        params=["command", "cwd"],
+        permission="restricted",
+        fn=_tool_shell_run,
+    ),
+    "test_run": ToolSpec(
+        name="test_run",
+        description=(
+            "Jalankan test suite di project (auto-detect: pytest/unittest/jest/vitest/cargo/go test). "
+            "Berguna untuk verifikasi kode sebelum commit. "
+            "Params: path (str, opsional), framework (str, opsional)."
+        ),
+        params=["path", "framework"],
+        permission="open",
+        fn=_tool_test_run,
+    ),
+    "git_status": ToolSpec(
+        name="git_status",
+        description=(
+            "Lihat git status di workspace — file mana yang berubah, staged, untracked. "
+            "Read-only, aman digunakan tanpa allow_restricted. "
+            "Params: path (str, opsional)."
+        ),
+        params=["path"],
+        permission="open",
+        fn=_tool_git_status,
+    ),
+    "git_diff": ToolSpec(
+        name="git_diff",
+        description=(
+            "Lihat git diff di workspace — perubahan yang belum di-commit. "
+            "Params: path (str, opsional), staged (bool, default False), stat_only (bool, default False)."
+        ),
+        params=["path", "staged", "stat_only"],
+        permission="open",
+        fn=_tool_git_diff,
+    ),
+    "git_log": ToolSpec(
+        name="git_log",
+        description=(
+            "Lihat git log (commit history). "
+            "Params: path (str, opsional), n (int, default 10, max 50)."
+        ),
+        params=["path", "n"],
+        permission="open",
+        fn=_tool_git_log,
+    ),
+    "git_commit_helper": ToolSpec(
+        name="git_commit_helper",
+        description=(
+            "Generate commit message yang tepat dari git diff menggunakan LLM lokal. "
+            "Membantu developer buat commit message berkualitas secara otomatis. "
+            "Params: path (str, opsional), style (str: conventional/semantic/simple, default conventional)."
+        ),
+        params=["path", "style"],
+        permission="open",
+        fn=_tool_git_commit_helper,
     ),
 }
 

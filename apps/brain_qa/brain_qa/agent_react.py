@@ -32,8 +32,17 @@ from datetime import datetime, timezone
 from typing import Any
 
 from .agent_tools import call_tool, list_available_tools, ToolResult
+from .branch_manager import get_manager as _get_branch_manager
 from .orchestration import agent_build_intent
 from .user_intelligence import analyze_user, get_response_instructions, UserProfile
+
+# ── Coding Planner (Phase 1: LLM-based planner for coding tasks) ─────────────
+try:
+    from . import coding_planner as _coding_planner
+    _CODING_PLANNER_ENABLED = True
+except Exception:
+    _coding_planner = None  # type: ignore[assignment]
+    _CODING_PLANNER_ENABLED = False
 
 # ── Jiwa: 7-Pilar Kemandirian ──────────────────────────────────────────────
 try:
@@ -46,7 +55,7 @@ except Exception:
 
 # ── Config ────────────────────────────────────────────────────────────────────
 MAX_STEPS = 6           # max ReAct loop iterations (default)
-MAX_STEPS_BUILD = 12    # lebih panjang bila intent implementasi / app / game
+MAX_STEPS_BUILD = 18    # lebih panjang bila intent implementasi / app / game / coding
 MAX_TOKENS_PER_OBS = 600  # potong observation supaya tidak bloat context
 
 # Anti-loop (Sprint hardening 2026-04)
@@ -73,6 +82,7 @@ class AgentSession:
     question: str
     persona: str
     client_id: str = ""            # branch context (Agency OS)
+    agency_id: str = ""            # agency context (multi-tenant)
     conversation_id: str = ""      # optional conversation threading
     steps: list[ReActStep] = field(default_factory=list)
     final_answer: str = ""
@@ -263,6 +273,13 @@ def _effective_max_steps(question: str, max_steps: int | None) -> int:
         return max(2, min(24, int(max_steps)))
     if agent_build_intent(question):
         return MAX_STEPS_BUILD
+    # Coding tasks butuh lebih banyak step (read → analyze → patch → test → fix)
+    if _CODING_PLANNER_ENABLED and _coding_planner is not None:
+        try:
+            if _coding_planner.is_coding_intent(question):
+                return MAX_STEPS_BUILD
+        except Exception:
+            pass
     return MAX_STEPS
 
 
@@ -303,8 +320,21 @@ def _rule_based_plan(
     action_name = "" berarti Final Answer sekarang.
 
     Rule-based planner — diganti LLM call saat Inference Engine siap.
+    Untuk coding intents, delegasi ke coding_planner (LLM-based).
     """
     q_lower = question.lower()
+
+    # ── Coding Planner (Phase 1) — routing untuk SEMUA step coding ───────────
+    if _CODING_PLANNER_ENABLED and _coding_planner is not None:
+        try:
+            if _coding_planner.is_coding_intent(question):
+                return _coding_planner.plan_coding_step(
+                    question=question,
+                    history=history,
+                    step=step,
+                )
+        except Exception:
+            pass
 
     # Step 0: klasifikasi intent
     if step == 0:
@@ -325,6 +355,18 @@ def _rule_based_plan(
                 return _ps0
         except Exception:
             pass
+
+        # ── Coding Planner (Phase 1) ───────────────────────────────────────────
+        if _CODING_PLANNER_ENABLED and _coding_planner is not None:
+            try:
+                if _coding_planner.is_coding_intent(question):
+                    return _coding_planner.plan_coding_step(
+                        question=question,
+                        history=history,
+                        step=step,
+                    )
+            except Exception:
+                pass
 
         if _ORCH_META_RE.search(question):
             return (
@@ -980,6 +1022,7 @@ def run_react(
     question: str,
     persona: str = "UTZ",
     client_id: str = "",
+    agency_id: str = "",
     conversation_id: str = "",
     allow_restricted: bool = False,
     max_steps: int | None = None,
@@ -997,13 +1040,25 @@ def run_react(
     from . import answer_dedup
 
     session_id = str(uuid.uuid4())[:8]
+    _agency_id = (agency_id or "").strip()
+    _client_id = (client_id or "").strip()
     session = AgentSession(
         session_id=session_id,
         question=question,
         persona=persona,
-        client_id=client_id or "",
+        client_id=_client_id,
+        agency_id=_agency_id,
         conversation_id=conversation_id or "",
     )
+
+    # ── Branch gating: corpus_filter + tool_whitelist ─────────────────────────
+    try:
+        _bm = _get_branch_manager()
+        _corpus_filter: list[str] = _bm.get_corpus_filter(_agency_id, _client_id)
+    except Exception:
+        _bm = None
+        _corpus_filter = []
+    # ─────────────────────────────────────────────────────────────────────────
 
     from . import praxis as _praxis
 
@@ -1213,6 +1268,24 @@ def run_react(
             observation=_skill_context[:MAX_TOKENS_PER_OBS],
         )
         session.steps.insert(len(session.steps), _pre_step_skill)
+
+    # ── CoT Engine: inject reasoning scaffold untuk pertanyaan kompleks ───────
+    try:
+        from .cot_engine import get_cot_scaffold, get_complexity
+        _cot_complexity = get_complexity(working_question)
+        _cot_scaffold = get_cot_scaffold(working_question, persona)
+        if _cot_scaffold:
+            _pre_step_cot = ReActStep(
+                step=-3,
+                thought=f"[CoT] Kompleksitas={_cot_complexity}. Terapkan kerangka penalaran sistematis.",
+                action_name="cot_scaffold",
+                action_args={"complexity": _cot_complexity, "persona": persona},
+                observation=_cot_scaffold,
+            )
+            session.steps.insert(0, _pre_step_cot)
+    except Exception as _cot_err:
+        import logging as _log_cot
+        _log_cot.getLogger(__name__).debug("[CoT] skip — %s", _cot_err)
     # ─────────────────────────────────────────────────────────────────────────
 
     if verbose:
@@ -1343,9 +1416,43 @@ def run_react(
         if verbose:
             print(f"[Step {step_num}] Action: {action_name}({json.dumps(action_args)})")
 
+        # ── Tool whitelist enforcement ────────────────────────────────────────
+        if _bm is not None and (_agency_id or _client_id):
+            if not _bm.is_tool_allowed(_agency_id, _client_id, action_name):
+                import logging as _log_tw
+                _log_tw.getLogger(__name__).warning(
+                    "[BranchGate] tool '%s' diblokir untuk agency=%s client=%s",
+                    action_name, _agency_id, _client_id,
+                )
+                result = ToolResult(
+                    success=False,
+                    output="",
+                    error=f"Tool '{action_name}' tidak diizinkan untuk branch ini.",
+                    citations=[],
+                )
+                observation = f"[BLOCKED] {result.error}"
+                observation = observation[:MAX_TOKENS_PER_OBS]
+                react_step = ReActStep(
+                    step=step_num,
+                    thought=thought,
+                    action_name=action_name,
+                    action_args=action_args,
+                    observation=observation,
+                )
+                session.steps.append(react_step)
+                _praxis.record_react_step(session_id, react_step)
+                continue
+        # ─────────────────────────────────────────────────────────────────────
+
+        # ── Corpus filter injection (search_corpus / graph_search) ────────────
+        _effective_args = dict(action_args)
+        if _corpus_filter and action_name in ("search_corpus", "graph_search"):
+            _effective_args.setdefault("_corpus_filter", _corpus_filter)
+        # ─────────────────────────────────────────────────────────────────────
+
         result: ToolResult = call_tool(
             tool_name=action_name,
-            args=action_args,
+            args=_effective_args,
             session_id=session_id,
             step=step_num,
             allow_restricted=allow_restricted,

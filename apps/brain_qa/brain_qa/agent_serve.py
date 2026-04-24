@@ -113,6 +113,7 @@ class ChatRequest(BaseModel):
     allow_web_fallback: bool = True
     simple_mode: bool = False
     client_id: str = ""        # Branch context (Agency OS)
+    agency_id: str = ""        # Agency / tenant context (Agency OS)
     conversation_id: str = ""  # Optional thread id (client-side)
     user_id: str = "anon"      # User identifier for memory/personalization
     max_steps: int | None = Field(
@@ -481,12 +482,14 @@ def create_app() -> "FastAPI":
             effective_persona = (effective_persona or "UTZ").strip().upper()
             if effective_persona not in _ALLOWED_PERSONAS:
                 effective_persona = "UTZ"
-            # Branch context: prefer body override, fallback ke header x-client-id
+            # Branch context: prefer body override, fallback ke header x-client-id / x-agency-id
             effective_client_id = (req.client_id or "").strip() or request.headers.get("x-client-id", "").strip()
+            effective_agency_id = (req.agency_id or "").strip() or request.headers.get("x-agency-id", "").strip()
             session = run_react(
                 question=req.question,
                 persona=effective_persona,
                 client_id=effective_client_id,
+                agency_id=effective_agency_id,
                 conversation_id=effective_conversation_id,
                 allow_restricted=req.allow_restricted,
                 max_steps=req.max_steps,
