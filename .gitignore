@@ -75,6 +75,11 @@ logs/
 .backups/
 *.tmp
 
+# ── Internal context docs (jangan push — hanya lokal) ────────
+docs/LIVING_LOG.md
+docs/HANDOFF_*.md
+docs/SIDIX_CHECKPOINT_*.md
+
 
 .data/download_adapter.py
 .data/kaggle_upload_cell.py

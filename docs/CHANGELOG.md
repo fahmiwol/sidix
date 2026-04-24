@@ -4,6 +4,18 @@ Format: `[YYYY-MM-DD] — Ringkasan perubahan`
 
 ---
 
+## [Research — 2026-04-24] Frontier AI Architecture + Constitutional AI
+
+### Arsitektur AI Frontier dan Roadmap SIDIX ke Frontier
+**ID:** Research notes 199-201: arsitektur model frontier (Transformer, scaling law, SFT, DPO, inference optimization, agentic capability), gap analysis SIDIX vs frontier (14 dimensi), roadmap 4 phase realistis, 20 prinsip Constitutional AI SIDIX
+**EN:** Research notes 199-201: frontier model architecture (Transformer, scaling law, SFT, DPO, inference optimization, agentic capability), SIDIX vs frontier gap analysis (14 dimensions), 4-phase realistic roadmap, 20 SIDIX Constitutional AI principles
+
+### Constitutional AI Implementation
+**ID:** `sidix_constitution.py` — 20 prinsip eksplisit, rule-based critique (8 checks), auto-fix, PreferencePair untuk DPO training, system prompt generator, full pipeline constitutional_pipeline()
+**EN:** `sidix_constitution.py` — 20 explicit principles, rule-based critique (8 checks), auto-fix, PreferencePair for DPO training, system prompt generator, full constitutional_pipeline()
+
+---
+
 ## [Sprint 10 — 2026-04-25] GraphRAG + Tiranyx Pilot
 
 ### GraphRAG + Sanad Ranking
