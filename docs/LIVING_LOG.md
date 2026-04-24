@@ -4294,3 +4294,13 @@ Branch System, berjiwa IHOS. Pilot pertama: Tiranyx Digital Agency.
 - TEST: 22 passed (no regressions). Smoke test: code validator, scaffold gen, TTS stub, FLUX mock semua OK.
 - DOC: Research note 192 — `brain/public/research_notes/192_sprint8b_generative_core_flux_tts_validator_scaffold.md`
 - DECISION: Semua modul Sprint 8b menggunakan strategi graceful degradation — tidak ada fitur yang crash jika dependency tidak terinstall. VPS (CPU-only, tanpa GPU) tetap bisa berjalan dalam mock/stub mode.
+
+### 2026-04-24 — Sprint 8c: Jariyah Collector + DB Module
+
+- IMPL: `apps/brain_qa/brain_qa/jariyah_collector.py` — modul mandiri capture training pairs. `capture_feedback(query, response, rating, persona, session_id)` → append ke `data/jariyah_pairs.jsonl`. `get_pairs_stats()` → statistik thumbs_up/down. No PII.
+- UPDATE: `agent_serve.py` — `/agent/feedback` endpoint kini pakai `jariyah_collector.capture_feedback()` menggantikan inline JSONL writer lama.
+- IMPL: `apps/brain_qa/brain_qa/db/__init__.py` + `db/schema.sql` + `db/connection.py` — async PostgreSQL pool via asyncpg. Lazy-init, graceful fallback jika `SIDIX_DB_URL` tidak di-set. `execute()`, `fetch()`, `fetchrow()` helper functions.
+- DOC: Sprint 6 rescue — 4 dokumen (research note 183, 184, handoff Sprint6) diselamatkan dari branch agent lama sebelum dihapus.
+- CHORE: Repo cleanup — 36 branch → 2 branch (main + feat). 27 Dependabot PR di-close. Branch naming SOP: hapus prefix vendor/tool.
+- TEST: 22 passed (baseline stabil).
+- DEPLOY: Merge feat/sop-sync-sprint8 → main + push. VPS: `git pull && pm2 restart sidix-brain`.
