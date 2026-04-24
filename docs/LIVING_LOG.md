@@ -4338,3 +4338,5 @@ Branch System, berjiwa IHOS. Pilot pertama: Tiranyx Digital Agency.
 - DOC: Laporan lengkap di `docs/sprints/2026-04-24_vps_process_investigation.md`.
 
 [2026-04-24] [SECURITY] Password VPS di-rotate oleh owner setelah credentials lama ditemukan hardcoded di scripts/vps_*.py (commit d9668b2). File sudah disanitize ke env var. Repo masih private — git history cleanup (filter-repo) opsional, diperlukan hanya jika repo akan dipublikasikan.
+
+[2026-04-24] [DEPLOY] VPS clean: sidix-dashboard dihapus (pm2 delete + pm2 save). sidix-brain online (22m, pid 83146), sidix-ui online (21h). Semua proses SIDIX normal.
