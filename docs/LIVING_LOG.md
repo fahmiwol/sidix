@@ -4274,3 +4274,23 @@ Branch System, berjiwa IHOS. Pilot pertama: Tiranyx Digital Agency.
   - persist event ke JSONL lokal, dan
   - `thumbs_up` memicu capture training pair (Jariyah) via `jiwa.post_response(... user_feedback="thumbs_up")`.
 - DOC: Research note baru untuk keputusan desain & wiring: `brain/public/research_notes/191_sprint8a_standing_alone_feedback_jariyah.md`
+
+### 2026-04-24 — Sprint 8a Completion: Nafs Bridge + Typo Metadata + Migration Doc
+
+- IMPL: `apps/brain_qa/brain_qa/nafs_bridge.py` — dynamic loader untuk NafsOrchestrator (Layer B). Disambung sebagai intermediate fallback di `_response_blend_profile` (Layer A → Layer B → old fallback).
+- UPDATE: `agent_react.py` — AgentSession mendapat `nafs_topic` dan `nafs_layers_used` fields.
+- UPDATE: `agent_serve.py` — ChatResponse mendapat 5 field metadata baru: `question_normalized`, `typo_script_hint`, `typo_substitutions`, `nafs_topic`, `nafs_layers_used`.
+- DOC: `docs/schema/MIGRATION_STRATEGY.md` — strategi manual psql untuk deployment schema PostgreSQL (dependency order, env vars, phased plan 8a-8d).
+- TEST: 22 passed (baseline stabil setelah semua perubahan Sprint 8a).
+
+### 2026-04-24 — Sprint 8b: Generative Core
+
+- IMPL: `apps/image_gen/flux_pipeline.py` — FLUX.1-schnell pipeline (lazy load, mock SVG fallback, CUDA/MPS/CPU auto-detect, singleton). Menggantikan `_tool_text_to_image` lama yang butuh SDXL URL eksternal.
+- IMPL: `apps/audio/tts_engine.py` + `apps/audio/__init__.py` — Piper TTS engine (4 bahasa: id/en/ar/ms). Fallback: stub WAV valid (RIFF header) agar player tidak crash.
+- IMPL: `brain/tools/code_validator.py` — multi-language code validator (Python AST, node JS, tsc TS, SQL quote-balance, HTML tag-stack) + security scan pattern berbahaya.
+- IMPL: `brain/tools/scaffold_generator.py` — project scaffold generator (template: fastapi, react_ts, landing). Return `ScaffoldResult` dataclass, tidak langsung tulis disk.
+- UPDATE: `agent_tools.py` — `_tool_text_to_image` upgrade ke FluxPipeline; `_tool_code_validate` upgrade ke multi-lang; `_tool_scaffold_project` tool baru ditambahkan. Total: 36 tools di registry.
+- IMPL: `agent_serve.py` — endpoint baru: `POST /generate/image` dan `POST /tts/synthesize`.
+- TEST: 22 passed (no regressions). Smoke test: code validator, scaffold gen, TTS stub, FLUX mock semua OK.
+- DOC: Research note 192 — `brain/public/research_notes/192_sprint8b_generative_core_flux_tts_validator_scaffold.md`
+- DECISION: Semua modul Sprint 8b menggunakan strategi graceful degradation — tidak ada fitur yang crash jika dependency tidak terinstall. VPS (CPU-only, tanpa GPU) tetap bisa berjalan dalam mock/stub mode.
