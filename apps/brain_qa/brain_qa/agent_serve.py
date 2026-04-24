@@ -679,29 +679,19 @@ def create_app() -> "FastAPI":
             _METRICS["feedback_up"] = _METRICS.get("feedback_up", 0) + 1
         else:
             _METRICS["feedback_down"] = _METRICS.get("feedback_down", 0) + 1
-        # Persist feedback (local-only, append JSONL). Jangan simpan PII.
+        # Persist feedback via jariyah_collector (local-only, no PII).
         try:
             from . import g1_policy
+            from .jariyah_collector import capture_feedback
 
             session = _sessions.get(req.session_id)
-            payload = {
-                "session_id": req.session_id,
-                "vote": req.vote,
-                "client_id": (getattr(session, "client_id", "") if session else "")[:120],
-                "conversation_id": (getattr(session, "conversation_id", "") if session else "")[:120],
-                "question": g1_policy.redact_pii_for_export(getattr(session, "question", ""))[:2000] if session else "",
-                "answer": g1_policy.redact_pii_for_export(getattr(session, "final_answer", ""))[:4000] if session else "",
-                "created_at": time.time(),
-            }
-
-            data_dir = Path(__file__).resolve().parent.parent / "data"
-            data_dir.mkdir(parents=True, exist_ok=True)
-            fpath = data_dir / "feedback.jsonl"
-            fpath.write_text(
-                (fpath.read_text(encoding="utf-8") if fpath.exists() else "")
-                + json.dumps(payload, ensure_ascii=False)
-                + "\n",
-                encoding="utf-8",
+            rating = 1 if req.vote == "up" else -1
+            capture_feedback(
+                query=g1_policy.redact_pii_for_export(getattr(session, "question", ""))[:2000] if session else "",
+                response=g1_policy.redact_pii_for_export(getattr(session, "final_answer", ""))[:4000] if session else "",
+                rating=rating,
+                persona=getattr(session, "persona", "UTZ") if session else "UTZ",
+                session_id=req.session_id,
             )
         except Exception:
             pass
