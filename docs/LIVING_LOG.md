@@ -44,6 +44,40 @@ Contoh:
 
 ## Log
 
+### 2026-04-24 (Claude — audit Sprint 8a, verifikasi Standing Alone, commit untracked)
+
+- TEST: `python -m pytest tests/ -q` dari `apps/brain_qa` → **22 passed** (10.11s). Tidak ada regresi setelah perubahan Standing Alone oleh Cursor agent.
+- DECISION: Branch `cursor/sop-public-artifacts-sync` — perubahan Cursor agent di-audit dan di-commit: (1) Standing Alone enforcement, (2) Branch System foundation, (3) Feedback→Jariyah hook, (4) Persona validation guard.
+- IMPL: `apps/brain_qa/brain_qa/multi_llm_router.py` — rewrite total ke local-only router (Ollama → LoRA → Mock); hapus semua jalur cloud vendor (591 baris net dikurangi).
+- IMPL: `apps/brain_qa/brain_qa/multi_modal_router.py` — simplified ke local-only interface; jalur cloud dihapus.
+- DELETE: `apps/brain_qa/brain_qa/anthropic_llm.py` — file cloud wrapper dihapus (170 baris). Tidak ada lagi jalur fallback ke Anthropic API di inference pipeline.
+- FIX: `apps/brain_qa/brain_qa/agent_react.py` — hapus 2 blok fallback Anthropic Haiku (`_compose_final_answer`); tambah `client_id` + `conversation_id` ke `AgentSession`.
+- IMPL: `apps/brain_qa/brain_qa/agent_serve.py` — `_ALLOWED_PERSONAS` guard; `client_id` dipropagasi dari body atau header `x-client-id`; feedback endpoint: persist ke `data/feedback.jsonl` + trigger Jariyah hook ke `jiwa.post_response(user_feedback="thumbs_up")`.
+- IMPL: `apps/brain_qa/brain_qa/jiwa/aql.py` — terima `user_feedback` di `post_response()`; capture training pair jika `thumbs_up` walau CQF rendah.
+- DOC: `brain/public/research_notes/191_sprint8a_standing_alone_feedback_jariyah.md` — rationale + kontrak data Sprint 8a.
+- DOC: `docs/schema/SIDIX_AGENCY_OS_CORE.sql` — blueprint PostgreSQL: agencies, clients, conversations, messages, training_pairs, kg_nodes, health_checks, audit_logs.
+- DOC: `docs/sprints/2026-04-23_sprint-8a_implementation_checklist.md` — checklist implementasi Sprint 8a (Typo Bridge, Persona, Branch, Jiwa, Feedback, Epistemic, Sanad, Schema).
+- DOC: `docs/_imports/` — 7 dokumen spec diimport dari Sprint Plan (11_LOGIC, 12_INPUT_OUTPUT, 13_ALGORITHMS, BRIEF_FOR_AGENT, PRD v2, SIDIX_AGENCY_OS_TIRANYX_PILOT, Dokumen_tanpa_judul).
+- DOC: `docs/HANDOFF_2026-04-23_FINAL_SYNC.md` + `docs/MASTER_SPRINT_PLAN_2026.md` — handoff master + SSoT sprint plan v0.8.0→Agency OS v1.0.
+- NOTE: Alignment cek: Landing (`v0.8.0` Latest, Sprint 8a In Progress) ✅ — UI (5 persona AYMAN/ABOO/OOMAR/ALEY/UTZ) ✅ — Backend (local-only, no cloud vendor) ✅ — sesuai `AGENTS_MANDATORY_SOP.md`.
+- NOTE: TODO Sprint 8a yang belum diimplementasi: Typo Bridge wiring ke `agent_react.py` (A1/A2), Nafs 3-layer wire dari `brain/nafs/response_orchestrator.py` (D1), PostgreSQL migration strategy (H2).
+
+### 2026-04-24 (lanjut — Sprint 8a sisa: Nafs Layer B wire + typo metadata + migration doc)
+
+- IMPL: `apps/brain_qa/brain_qa/nafs_bridge.py` — dynamic loader untuk `brain/nafs/response_orchestrator.py` (NafsOrchestrator Layer B), pola mirip `typo_bridge.py`. Dikontrol env `SIDIX_NAFS_LAYER_B` (default on). Ekspor `blend_from_nafs()` → dict: topic, skip_corpus, hayat_enabled, nafs_layers_used, weight per layer.
+- IMPL: `agent_react.py` — (1) Tambah `nafs_topic` + `nafs_layers_used` ke `AgentSession`; (2) `_response_blend_profile` kini punya 3-layer: A (jiwa thin adapter) → B (NafsOrchestrator via nafs_bridge) → fallback heuristik lama; (3) Capture nafs metadata ke session setelah typo normalisasi.
+- IMPL: `agent_serve.py` — `ChatResponse` diperluas: `question_normalized`, `typo_script_hint`, `typo_substitutions` (observability A1), `nafs_topic`, `nafs_layers_used` (D1). Semua diisi dari session via `getattr(session, ...)`.
+- DOC: `docs/schema/MIGRATION_STRATEGY.md` — strategi migrasi PostgreSQL Sprint 8a: tooling psql manual, urutan dependency tabel, env vars, rencana bertahap 8a-8d (checklist H2).
+- TEST: `python -m pytest tests/ -q` → **22 passed** (tidak ada regresi).
+- TEST: `python -c "from brain_qa.nafs_bridge import blend_from_nafs; b=blend_from_nafs('jelaskan cara deploy docker','OOMAR'); assert b['topic']=='koding'"` → OK. Topic detection benar.
+- NOTE: Sprint 8a checklist status: A1✅ A2✅ B1✅ B2✅ C1✅ C2✅ D1✅ D2✅ D3✅ E1✅ E2✅ F1✅ F2✅ G1✅ H1✅ H2✅ — semua item Foundation Hardening selesai di level kode+doc.
+
+### 2026-04-23 (Agent 4 — update dokumentasi publik v0.8.0)
+
+- DOC: `README.md` diupdate — section `What's New in v0.8.0` ditambahkan (Jiwa 7-Pilar, Typo Resilient Framework, Kimi Plugin, MCP Ecosystem); Roadmap diperbarui ke format sprint 7b/7c/8a-8d menggantikan tabel BABY-ADULT.
+- DOC: `SIDIX_LANDING/index.html` diupdate — entry v0.8.0 changelog bilingual (ID+EN) diperluas: Jiwa 7-Pilar, brain/jiwa/ standalone, Typo Framework, MCP, Kimi Plugin, WA Bridge; section Features ditambah 3 kartu baru (Typo/Bahasa Informal, Plugin MCP, 7 Pilar Jiwa); section Roadmap ditambah Sprint 8a sebagai "In Progress" dan Sprint 8b-8d sebagai "Planned".
+- DOC: `CHANGELOG.md` (root) — entry semver `[0.8.0] — 2026-04-23` ditambahkan di atas entry narasi lama; mencakup Added (Jiwa, Typo, Kimi, MCP), Fixed (Nafs routing), Infrastructure.
+
 ### 2026-04-23 (kontinuitas agen ? QA, SOP wajib, artefak DOCX luar repo)
 
 - DOC: `docs/HANDOFF_2026-04-23_QA_KONTINUITAS_DOK.md` ? handoff tinjauan QA, artefak `.docx` lokal vs Markdown kanonis, checklist agen berikutnya.
@@ -4175,3 +4209,98 @@ Fokus pada "what architecture of knowledge means, not volume of knowledge."
   Verified: commit bf904d4, push, VPS pull + restart
 - TEST: re-run test_jiwa_final.py setelah fix ? T2 nafs routing: 7/7 correct
 - DECISION: Jiwa Sprint DONE ? 7/7 routing correct, training pairs aktif, health monitor online
+
+---
+
+### 2026-04-23 � Selaras Ulang Semua Agent + Baca Sprint Plan Baru
+
+#### Narasi Sesi Ini
+
+Sesi ini dimulai dengan fakta bahwa banyak agent berbeda (Cursor, Kimi, Gemini, Codex) telah
+bekerja secara paralel tanpa koordinasi yang baik � sehingga terjadi konteks yang terputus-putus.
+Tugas pertama adalah membaca semua dokumen terbaru, menyinkronkan kondisi nyata di repo dan VPS,
+lalu merancang sprint berikutnya secara terstruktur agar tidak lagi kehilangan konteks.
+
+Status VPS saat pengecekan:
+- v0.8.0 live, sidix-brain online, sidix-ui online
+- Jiwa 7-pilar (Layer A) aktif � 7/7 routing correct, training pairs berjalan
+- 22 pytest lokal pass, QA review selesai (commit 6e593dc)
+- brain/jiwa/, brain/typo/, kimi-plugin/ ada di repo tapi belum di-deploy ke VPS
+
+Folder baru 'SIDIX next Sprint plan-20260423T131632Z-3-001' dibaca dan diekstrak penuh:
+- SIDIX_GENERATIVE_ROADMAP_2026-04-25.docx: roadmap 4 fase (Apr2026 - Mar2027)
+- SIDIX_PRD_V2_AGENCY_VISION.docx: PRD lengkap agency vision + stack teknis
+- BRIEF_FOR_AGENT.docx: brief implementasi + filosofi IHOS
+- SIDIX_AGENCY_OS_TIRANYX_PILOT.docx: pilot agency Tiranyx + branch system + sidebar tools
+- 11_LOGIC.docx: state machine, decision tree, business logic
+- 12_INPUT_OUTPUT.docx: API contract + WebSocket schema
+- 13_ALGORITHMS.docx: algoritma Jiwa/Raudah/Jariyah/CQF/Nafs/Sanad/Naskh
+
+Kesimpulan: SIDIX bukan sekadar chatbot. Target final adalah **AI Creative Agency** � self-hosted,
+self-evolving, mampu generate image/video/audio/code/3D, multi-agent via Raudah, multi-client via
+Branch System, berjiwa IHOS. Pilot pertama: Tiranyx Digital Agency.
+
+#### Entri Log
+
+- NOTE: Pembacaan sprint plan selesai � 8 dokumen .docx diekstrak dan dianalisis
+- DECISION: Visi diklarifikasi � SIDIX = AI Creative Agency (al-Amin + Jariyah), bukan sekadar chatbot
+- DECISION: Sprint 8 dibagi menjadi 4 sub-sprint (8a/8b/8c/8d) untuk menghindari context limit
+- DOC: docs/MASTER_SPRINT_PLAN_2026.md � dibuat sebagai SSOT sprint planning ke depan
+- DOC: HANDOFF_2026-04-23_FINAL_SYNC.md � handoff lengkap untuk semua agent
+- NOTE: Aturan baru dari AGENTS_MANDATORY_SOP.md sudah dibaca dan diterapkan dalam sesi ini
+
+### 2026-04-23 — Sinkron status repo + sanitasi artefak publik (SOP)
+
+- STATUS: Repo dalam keadaan **dirty** (perubahan belum di-commit). Fokus sesi ini: menyelaraskan artefak publik agar patuh SOP.
+- FIX: `README.md` — hapus penyebutan host/vendor/assistant, hapus instruksi path lokal, dan tegaskan integrasi plugin sebagai **opsional** (mode default standing alone).
+- FIX: `SIDIX_LANDING/index.html` — hapus analytics & endpoint eksternal, netralkan copy “plugin untuk X”, ganti klaim model spesifik menjadi “local-first + offline adaptation”, serta jadikan kanal kontribusi vendor-neutral.
+- FIX: `CHANGELOG.md` — rapikan narasi QA agar vendor-neutral dan tetap bilingual (ID internal + EN public).
+- NOTE: Semua perubahan di atas mengikuti `docs/AGENTS_MANDATORY_SOP.md` (tanpa path lokal, tanpa nama host/vendor/asisten, standing alone sebagai default).
+
+### 2026-04-23 — Koreksi boundary: vendor naming teknis vs publik
+
+- FIX: Interpretasi SOP diperjelas: penyebutan vendor/host **boleh** di dokumen integrasi yang teknis-operasional, tetapi **wajib netral/metafora** di area publik/marketing.
+- DOC: `docs/AGENTS_MANDATORY_SOP.md` ditambah bagian “Batas Teknis vs Publik (Vendor/Host Naming)” agar agent lain tidak menghapus info teknis yang memang dibutuhkan.
+
+### 2026-04-23 — Sprint 8a: checklist implementasi + standing-alone hardening
+
+- DOC: `docs/sprints/2026-04-23_sprint-8a_implementation_checklist.md` — checklist implementasi Sprint 8a yang 100% merujuk kontrak dokumen (13/05/04/12), tanpa nambah scope.
+- DOC: `docs/schema/SIDIX_AGENCY_OS_CORE.sql` — blueprint schema PostgreSQL minimal (branch system, chat+feedback, training_pairs, KG, observability).
+- FIX: Hardening “standing alone” (no vendor AI API) di `apps/brain_qa`:
+  - `agent_react.py`: hapus jalur synthesis via cloud fallback; tambah metadata branch context (`client_id`, `conversation_id`).
+  - `multi_llm_router.py`: router lokal saja (Ollama → LoRA → Mock).
+  - `multi_modal_router.py`: interface multi-modal local-only (vision/ASR/TTS belum terpasang).
+- IMPL: Feedback loop `POST /agent/feedback` sekarang:
+  - persist event ke JSONL lokal, dan
+  - `thumbs_up` memicu capture training pair (Jariyah) via `jiwa.post_response(... user_feedback="thumbs_up")`.
+- DOC: Research note baru untuk keputusan desain & wiring: `brain/public/research_notes/191_sprint8a_standing_alone_feedback_jariyah.md`
+
+### 2026-04-24 — Sprint 8a Completion: Nafs Bridge + Typo Metadata + Migration Doc
+
+- IMPL: `apps/brain_qa/brain_qa/nafs_bridge.py` — dynamic loader untuk NafsOrchestrator (Layer B). Disambung sebagai intermediate fallback di `_response_blend_profile` (Layer A → Layer B → old fallback).
+- UPDATE: `agent_react.py` — AgentSession mendapat `nafs_topic` dan `nafs_layers_used` fields.
+- UPDATE: `agent_serve.py` — ChatResponse mendapat 5 field metadata baru: `question_normalized`, `typo_script_hint`, `typo_substitutions`, `nafs_topic`, `nafs_layers_used`.
+- DOC: `docs/schema/MIGRATION_STRATEGY.md` — strategi manual psql untuk deployment schema PostgreSQL (dependency order, env vars, phased plan 8a-8d).
+- TEST: 22 passed (baseline stabil setelah semua perubahan Sprint 8a).
+
+### 2026-04-24 — Sprint 8b: Generative Core
+
+- IMPL: `apps/image_gen/flux_pipeline.py` — FLUX.1-schnell pipeline (lazy load, mock SVG fallback, CUDA/MPS/CPU auto-detect, singleton). Menggantikan `_tool_text_to_image` lama yang butuh SDXL URL eksternal.
+- IMPL: `apps/audio/tts_engine.py` + `apps/audio/__init__.py` — Piper TTS engine (4 bahasa: id/en/ar/ms). Fallback: stub WAV valid (RIFF header) agar player tidak crash.
+- IMPL: `brain/tools/code_validator.py` — multi-language code validator (Python AST, node JS, tsc TS, SQL quote-balance, HTML tag-stack) + security scan pattern berbahaya.
+- IMPL: `brain/tools/scaffold_generator.py` — project scaffold generator (template: fastapi, react_ts, landing). Return `ScaffoldResult` dataclass, tidak langsung tulis disk.
+- UPDATE: `agent_tools.py` — `_tool_text_to_image` upgrade ke FluxPipeline; `_tool_code_validate` upgrade ke multi-lang; `_tool_scaffold_project` tool baru ditambahkan. Total: 36 tools di registry.
+- IMPL: `agent_serve.py` — endpoint baru: `POST /generate/image` dan `POST /tts/synthesize`.
+- TEST: 22 passed (no regressions). Smoke test: code validator, scaffold gen, TTS stub, FLUX mock semua OK.
+- DOC: Research note 192 — `brain/public/research_notes/192_sprint8b_generative_core_flux_tts_validator_scaffold.md`
+- DECISION: Semua modul Sprint 8b menggunakan strategi graceful degradation — tidak ada fitur yang crash jika dependency tidak terinstall. VPS (CPU-only, tanpa GPU) tetap bisa berjalan dalam mock/stub mode.
+
+### 2026-04-24 — Sprint 8c: Jariyah Collector + DB Module
+
+- IMPL: `apps/brain_qa/brain_qa/jariyah_collector.py` — modul mandiri capture training pairs. `capture_feedback(query, response, rating, persona, session_id)` → append ke `data/jariyah_pairs.jsonl`. `get_pairs_stats()` → statistik thumbs_up/down. No PII.
+- UPDATE: `agent_serve.py` — `/agent/feedback` endpoint kini pakai `jariyah_collector.capture_feedback()` menggantikan inline JSONL writer lama.
+- IMPL: `apps/brain_qa/brain_qa/db/__init__.py` + `db/schema.sql` + `db/connection.py` — async PostgreSQL pool via asyncpg. Lazy-init, graceful fallback jika `SIDIX_DB_URL` tidak di-set. `execute()`, `fetch()`, `fetchrow()` helper functions.
+- DOC: Sprint 6 rescue — 4 dokumen (research note 183, 184, handoff Sprint6) diselamatkan dari branch agent lama sebelum dihapus.
+- CHORE: Repo cleanup — 36 branch → 2 branch (main + feat). 27 Dependabot PR di-close. Branch naming SOP: hapus prefix vendor/tool.
+- TEST: 22 passed (baseline stabil).
+- DEPLOY: Merge feat/sop-sync-sprint8 → main + push. VPS: `git pull && pm2 restart sidix-brain`.

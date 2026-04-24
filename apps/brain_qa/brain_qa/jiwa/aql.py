@@ -23,6 +23,7 @@ def aql_on_response(
     topic: str = "umum",
     platform: str = "direct",
     cqf_score: float = 0.0,
+    user_feedback: str = "",
 ) -> None:
     """
     Fire-and-forget learning hook.
@@ -30,7 +31,7 @@ def aql_on_response(
     """
     thread = threading.Thread(
         target=_learn_sync,
-        args=(question, answer, persona, topic, platform, cqf_score),
+        args=(question, answer, persona, topic, platform, cqf_score, user_feedback),
         daemon=True,
     )
     thread.start()
@@ -43,6 +44,7 @@ def _learn_sync(
     topic: str,
     platform: str,
     cqf_score: float,
+    user_feedback: str,
 ) -> None:
     """Background learning — score dan simpan ke qna_recorder."""
     try:
@@ -58,7 +60,7 @@ def _learn_sync(
             cqf_score = gate.get("total", 0.0)
 
         # Hanya simpan kalau kualitas cukup
-        if cqf_score < 7.0:
+        if cqf_score < 7.0 and user_feedback != "thumbs_up":
             log.debug(f"Aql skip (CQF={cqf_score:.1f} < 7.0): {content_hash}")
             return
 
@@ -75,7 +77,7 @@ def _learn_sync(
             pass
 
         # Tambahkan ke training pairs queue (file-based)
-        _append_training_pair(question, answer, persona, cqf_score, content_hash)
+        _append_training_pair(question, answer, persona, cqf_score, content_hash, user_feedback=user_feedback)
 
         log.info(f"Aql learned — hash={content_hash} cqf={cqf_score:.1f} persona={persona}")
 
@@ -89,6 +91,8 @@ def _append_training_pair(
     persona: str,
     cqf_score: float,
     content_hash: str,
+    *,
+    user_feedback: str = "",
 ) -> None:
     """Append ke JSONL training file untuk LoRA retrain batch."""
     import json
@@ -109,6 +113,7 @@ def _append_training_pair(
         "cqf_score": round(cqf_score, 2),
         "source": "jiwa_aql_auto",
         "hash": content_hash,
+        "user_feedback": user_feedback or "",
         "created_at": datetime.utcnow().isoformat(),
     }
 

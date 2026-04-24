@@ -22,6 +22,10 @@ apps/brain_qa/.data/
 apps/brain_qa/agent_workspace/
 apps/brain_qa/qa_output.txt
 
+# ── Generated media (audio, images, video — rebuilt on demand) ───────────────
+data/generated/
+data/
+
 # ── Secrets & config lokal ───────────────────────────────────
 .env
 .env.*

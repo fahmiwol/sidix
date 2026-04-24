@@ -18,11 +18,9 @@
     <a href="https://sidixlab.com"><img src="https://img.shields.io/badge/Live-sidixlab.com-brightgreen" alt="Live" /></a>
     <a href="https://github.com/fahmiwol/sidix/stargazers"><img src="https://img.shields.io/github/stars/fahmiwol/sidix?color=gold" alt="Stars" /></a>
     <a href="https://github.com/fahmiwol/sidix/issues"><img src="https://img.shields.io/github/issues/fahmiwol/sidix" alt="Issues" /></a>
-    <img src="https://img.shields.io/badge/Model-Qwen2.5--7B + QLoRA-blue" alt="Model" />
+    <img src="https://img.shields.io/badge/Model-Local%20LLM-blue" alt="Model" />
     <img src="https://img.shields.io/badge/Tools-44 active-orange" alt="Tools" />
-    <a href="https://huggingface.co/Tiranyx"><img src="https://img.shields.io/badge/HuggingFace-Tiranyx-FFD21E?logo=huggingface&logoColor=000" alt="HuggingFace" /></a>
     <a href="./docs/sidix-hafidz-ledger-whitepaper.pdf"><img src="https://img.shields.io/badge/Whitepaper-Proof--of--Hifdz-darkblue" alt="Whitepaper" /></a>
-    <a href="https://t.me/sidixlab_bot"><img src="https://img.shields.io/badge/Telegram-Train%20SIDIX-2AABEE?logo=telegram" alt="Telegram Bot" /></a>
   <hr/>
 
 <h2>📄 Whitepaper</h2>
@@ -48,10 +46,8 @@
     <a href="https://sidixlab.com">🌐 Website</a> ·
     <a href="https://app.sidixlab.com">🚀 Try SIDIX Free</a> ·
     <a href="#-quick-start">⚡ Quick Start</a> ·
-    <a href="#-sidix-socio-bot-mcp--ai-plugin-for-claude--gpt--cursor--kimi">🔌 MCP Plugin</a> ·
     <a href="#-the-ihos-foundation">🧠 The Foundation</a> ·
     <a href="#-architecture">🏗️ Architecture</a> ·
-    <a href="https://huggingface.co/Tiranyx/sidix-lora">🤗 HuggingFace</a> ·
     <a href="CONTRIBUTING.md">🤝 Contribute</a>
   </p>
 </div>
@@ -59,7 +55,7 @@
 ---
 
 > **SIDIX is a free, open-source AI agent you can run entirely on your own server.**
-> No OpenAI. No Anthropic. No Gemini. No monthly subscription. Your data stays with you.
+> Default mode runs without any third-party hosted model API. Your data stays with you.
 
 > *"The measure of intelligence is not how much you know,*
 > *but how precisely you know what you don't know — and how honestly you say so."*
@@ -148,9 +144,9 @@ SIDIX is not a chatbot with a nice UI. It's a **three-layer cognitive agent** ru
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                    LAYER 1 — BRAIN (LLM)                    │
-│  Qwen2.5-7B-Instruct + QLoRA SIDIX adapter                  │
+│  Local LLM + optional adapter                               │
 │  Generative inference — token by token, own stack           │
-│  No OpenAI. No Anthropic. No Gemini. No API fees. Ever.     │
+│  No vendor API required for default mode                    │
 └─────────────────────────┬───────────────────────────────────┘
                           │ ReAct loop (agent_react.py)
 ┌─────────────────────────▼───────────────────────────────────┐
@@ -168,7 +164,7 @@ SIDIX is not a chatbot with a nice UI. It's a **three-layer cognitive agent** ru
 ┌─────────────────────────▼───────────────────────────────────┐
 │              LAYER 3 — MEMORY (Growth Loop)                 │
 │  50+ open sources → corpus queue → curation → JSONL        │
-│  → QLoRA retrain (Kaggle T4) → adapter deploy              │
+│  → adapter retrain (offline pipeline) → adapter deploy     │
 │  SIDIX gets smarter every quarter. Structurally.            │
 └─────────────────────────────────────────────────────────────┘
 ```
@@ -196,32 +192,25 @@ print(result.jawaban_final)   # synthesized consensus
 print(result.durasi_s)        # e.g. 45.2s on RTX 3060
 ```
 
-### 🔌 SIDIX Socio Bot MCP — AI Plugin for Claude / GPT / Cursor / Kimi
+### 🔌 Optional plugin ecosystem
 
-**Sprint 7b** ships a full [Model Context Protocol](https://modelcontextprotocol.io) server that lets Claude Desktop, Cursor, Kimi, and any MCP-compatible client call SIDIX's social intelligence tools directly.
+SIDIX can optionally expose a local plugin server for **compatible clients** (e.g., Claude Desktop, Cursor, GPT Actions, Codex). This is **not required** for the default standing-alone mode.
 
 ```
-Claude/GPT/Cursor/Kimi
+Compatible client
         │  MCP (stdio)
         ▼
 apps/sidix-mcp/src/index.js        ← 13 tools total
         │
-        ├── http://localhost:8765   ← SIDIX brain backend
-        ├── http://localhost:7788   ← Extension Bridge (Chrome ↔ MCP)
-        └── http://localhost:7789   ← WA Bridge (WhatsApp Web via Baileys)
+        ├── SIDIX brain backend
+        ├── Extension bridge (optional)
+        └── Messaging bridge (optional)
 ```
 
-**Install in Claude Desktop:**
-```bash
-# Copy config
-cp apps/sidix-mcp/claude_desktop_config.json %APPDATA%\Claude\claude_desktop_config.json
+**Install & run (optional):**
+See integration docs under `docs/` for client-specific setup. This is an **adapter path**, not a dependency.
 
-# Start bridges (two terminals)
-cd apps/sidix-extension-bridge && npm install && npm start   # port 7788
-cd apps/sidix-wa-bridge        && npm install && npm start   # port 7789 → scan QR
-```
-
-**9 Social Tools available:**
+**Social tools (example):**
 
 | Tool | What it does |
 |---|---|
@@ -232,8 +221,8 @@ cd apps/sidix-wa-bridge        && npm install && npm start   # port 7789 → sca
 | `analyze_social` | Analisis mendalam dari URL apapun |
 | `compare_social_accounts` | Banding 2+ akun lintas platform |
 | `social_post_threads` | Auto-post ke Threads (butuh token) |
-| `wa_send` | Kirim pesan WhatsApp via bridge |
-| `wa_receive` | Baca inbox WA terbaru (ring buffer 50) |
+| `wa_send` | Kirim pesan via messaging bridge (opsional) |
+| `wa_receive` | Baca inbox via messaging bridge (opsional) |
 
 ---
 
@@ -250,15 +239,15 @@ cd apps/sidix-wa-bridge        && npm install && npm start   # port 7789 → sca
 | **Campaign** | `plan_campaign` (AARRR funnel + KPI) | ✅ Live |
 | **Ads** | `generate_ads` (FB/Google/TikTok copy) | ✅ Live |
 | **Quality Gate** | `muhasabah_refine` (CQF ≥ 7.0 loop) | ✅ Live |
-| **Multi-Agent** | Raudah Protocol v0.1 (parallel specialists, Ollama backbone) | ✅ Live |
+| **Multi-Agent** | Raudah Protocol v0.1 (parallel specialists, local backbone) | ✅ Live |
 | **Knowledge Conflict** | Naskh Handler (sanad-tier based resolution) | ✅ Live |
 | **Maqashid Filter** | v2 mode-based: CREATIVE/ACADEMIC/IJTIHAD/GENERAL | ✅ Live |
 | **Self-Evolution** | `prompt_optimizer` — L1 flywheel, weekly improvement | ✅ Live |
 | **Knowledge** | BM25 corpus · Wikipedia · web_search · web_fetch | ✅ Live |
-| **Image** | SDXL self-hosted (RTX 3060 / RunPod fallback) | ✅ Live |
+| **Image** | Image generation (local-first) | ✅ Live |
 | **Social Intelligence** | `scan_instagram_profile` · `scan_threads` · `scan_youtube` · `scan_twitter` · `analyze_social` · `compare_social_accounts` | ✅ Live |
-| **WA Automation** | `wa_send` · `wa_receive` (Baileys bridge, port 7789) | ✅ Live |
-| **MCP Plugin** | Claude/GPT/Cursor/Kimi/Codex — 13 tools via stdio MCP | ✅ Live |
+| **Messaging Automation** | `wa_send` · `wa_receive` (optional bridge) | ✅ Live |
+| **Plugin Server** | Optional plugin server (13 tools via stdio MCP) | ✅ Live |
 | **Chrome Extension** | Social Radar MV3 — DOM scrape + background service worker | ✅ Live |
 | **Voice / Video** | Whisper + TTS + FFmpeg | 🗓 Sprint 8 |
 | **3D / Gaming** | Hunyuan3D + Blender API | 🗓 Sprint 9 |
@@ -290,14 +279,13 @@ from brain_qa.agent_react import run_react
 session = run_react(question="audit this Python function", persona="ABOO")
 ```
 
-> **Backward compatible:** Old names (MIGHAN, TOARD, FACH, HAYFAR, INAN) are still accepted
-> and automatically translated to the new names.
+> **Backward compatible:** legacy persona aliases are accepted internally, but never surfaced in public UI/content.
 
 ---
 
 ## ⚡ Quick Start
 
-> **Requirements:** Python 3.11+ · Node 18+ · 8 GB RAM (4 GB minimum with swap) · [Ollama](https://ollama.com) for local inference
+> **Requirements:** Python 3.11+ · Node 18+ · 8 GB RAM (4 GB minimum with swap)
 
 ```bash
 # 1. Clone
@@ -307,9 +295,8 @@ cd sidix
 # 2. Install Python deps
 pip install -r apps/brain_qa/requirements.txt
 
-# 3. Pull the SIDIX model (via Ollama)
-ollama pull qwen2.5:7b          # base model
-# LoRA adapter loads automatically from apps/brain_qa/models/
+# 3. Prepare your local model runtime
+# See `docs/` for supported runtimes and model setup.
 
 # 4. Build knowledge index
 python -m brain_qa index
@@ -342,44 +329,74 @@ print(r.jawaban_final)
 
 ---
 
-## 🤗 HuggingFace
+---
 
-The SIDIX LoRA adapter (fine-tuned on Qwen2.5-7B-Instruct) is publicly available:
+## 🆕 What's New in v0.8.0
 
-```python
-from peft import PeftModel
-from transformers import AutoModelForCausalLM, AutoTokenizer
+### Jiwa 7-Pillar Architecture (Live)
+SIDIX now has a soul — 7-pillar self-awareness system:
+- **Nafs** (Pilar 1): 7-topic routing with persona character injection
+- **Aql** (Pilar 2): Self-learning — every good interaction becomes training data (CQF ≥7.0)
+- **Qalb** (Pilar 3): Health monitoring — auto-heals on degradation
+- **Hayat** (Pilar 5): Self-iteration — refines answers when quality is low
 
-base = AutoModelForCausalLM.from_pretrained("Qwen/Qwen2.5-7B-Instruct")
-model = PeftModel.from_pretrained(base, "Tiranyx/sidix-lora")
-tokenizer = AutoTokenizer.from_pretrained("Qwen/Qwen2.5-7B-Instruct")
-```
+### Optional plugin server (13 tools)
+Optional local plugin server for compatible clients (disabled by default).
 
-👉 [huggingface.co/Tiranyx/sidix-lora](https://huggingface.co/Tiranyx/sidix-lora)
+### Jiwa Standalone Architecture (brain/)
+Complete 7-pillar standalone modules in `brain/` directory:
+- `brain/nafs/` — 3-layer knowledge fusion (60% parametric + 30% KG + 10% static)
+- `brain/aql/` — Jariyah v2: capture→CQF→validate→store
+- `brain/qalb/` — SyifaHealer: 4-level health monitoring
+- `brain/hayat/` — generate→evaluate→refine loop
+- `brain/ruh/` — weekly evaluation + improvement planning
+- `brain/ilm/` — knowledge gap detection + auto-crawl
+- `brain/hikmah/` — QLoRA retrain trigger
+
+### Typo Resilient Framework (brain/typo/)
+SIDIX understands Indonesian slang, abbreviations, and typos gracefully.
+4-layer stack: Normalizer → Semantic Matcher → Confidence Scorer → Context Responder
+
+### Host integration bridge (optional)
+Host integration bridge (optional).
 
 ---
 
 ## 🗺️ Roadmap
 
-```
-BABY (now)         CHILD (Q3 '26)    ADOLESCENT (Q4)   ADULT (Q2 '27)
-──────────────     ──────────────    ───────────────    ──────────────
-✅ RAG + ReAct     🗓 Voice/ASR      🗓 Video pipeline  🗓 Distributed
-✅ Fine-tune v1    🗓 TTS/Piper      🗓 LoRA auto-      🗓 Hafidz (IPFS
-✅ 35 tools        🗓 Skill library    retrain weekly     + BFT ledger)
-✅ 6 creative      🗓 Multi-agent    🗓 Self-authoring  🗓 Multi-node
-   agents            debate ring       (Voyager)          federation
-✅ Image gen       🗓 Agency Kit     🗓 SEM L2→L3       🗓 SEM L4→L5
-✅ Code intel      🗓 3D / NPC gen
-✅ Raudah v0.1
-   (multi-agent)
-✅ Naskh Handler
-✅ Maqashid v2
-✅ Self-evolution
-   (L1 flywheel)
-```
+### ✅ Sprint 7b (April 2026) — SIDIX Socio Bot MCP
+- 13 tools: 4 core (query, capture, learn, status) + 9 social intelligence
+- Chrome Extension + WA Bridge + Extension Bridge
+- OpenAPI spec (tooling integration)
 
-**v0.2 beta target:** June 2026 — Agency Kit 1-click + Raudah v0.2 + multimodal parity
+### ✅ Sprint 7c (April 2026) — Jiwa 7-Pillar
+- 7-topic routing (ngobrol/umum/kreatif/koding/sidix_internal/agama/etika)
+- Persona character injection per response
+- Self-learning training pairs (Aql)
+- Health monitoring (Qalb)
+
+### 🚧 Sprint 8a (Mei 2026) — Foundation Hardening
+- Nafs 3-layer wire to main agent
+- Jariyah v3 real-time capture (thumbs feedback)
+- Branch system (multi-client)
+- PostgreSQL schema
+
+### 📅 Sprint 8b — Generative Core
+- FLUX.1 image generation
+- TTS (Piper)
+- Code validator
+
+### 📅 Sprint 8c — Agency OS UI
+- Sidebar UI Framework
+- Image Editor v1
+- Branch selector
+
+### 📅 Sprint 8d — Intelligence Layer
+- Raudah v2 multi-agent
+- Brand Guidelines Maker
+- Auto-retrain trigger
+
+**v0.9 beta target:** Q3 2026 — Agency Kit + Raudah v2 + multimodal parity
 
 ---
 
@@ -431,7 +448,7 @@ See **[CONTRIBUTING.md](CONTRIBUTING.md)** for the full guide.
 
 1. **📚 Add knowledge** — open a PR with a `.md` file in `brain/public/research_notes/`. Any topic, any language. No coding required.
 2. **🔧 Build tools** — add new tools/agents to `apps/brain_qa/brain_qa/`. See [CONTRIBUTING.md](CONTRIBUTING.md#code-contribution).
-3. **🤖 Train via Telegram** — send knowledge to [@sidixlab_bot](https://t.me/sidixlab_bot). It enters the corpus queue directly.
+3. **🧠 Contribute input** — share notes, examples, or corrections through the project's contribution channels (see `CONTRIBUTING.md`).
 
 ---
 
@@ -456,7 +473,7 @@ MIT License — see [LICENSE](LICENSE).
 
 <div align="center">
 
-**Built by [Tiranyx](https://tiranyx.co.id) · [sidixlab.com](https://sidixlab.com)**
+**Project website:** [sidixlab.com](https://sidixlab.com)
 
 *"We don't build AI that replaces human judgment.*
 *We build AI that makes human judgment more informed."*
@@ -465,6 +482,4 @@ MIT License — see [LICENSE](LICENSE).
 
 [![Try SIDIX Free](https://img.shields.io/badge/Try%20SIDIX-Free%20%7C%20app.sidixlab.com-brightgreen?style=for-the-badge)](https://app.sidixlab.com)
 [![Star this repo](https://img.shields.io/github/stars/fahmiwol/sidix?style=for-the-badge&color=gold)](https://github.com/fahmiwol/sidix/stargazers)
-[![HuggingFace](https://img.shields.io/badge/HuggingFace-Tiranyx-FFD21E?style=for-the-badge&logo=huggingface&logoColor=000)](https://huggingface.co/Tiranyx/sidix-lora)
-
 </div>

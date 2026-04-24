@@ -45,6 +45,7 @@ from . import rate_limit
 from . import social_radar
 
 _PROCESS_STARTED = time.time()
+_ALLOWED_PERSONAS = {"AYMAN", "ABOO", "OOMAR", "ALEY", "UTZ"}
 
 # ── In-memory session store (ganti Redis nanti kalau scale) ──────────────────
 _sessions: dict[str, AgentSession] = {}
@@ -102,7 +103,7 @@ def _enforce_daily(request: Request) -> None:
 
 class ChatRequest(BaseModel):
     question: str
-    persona: str = "INAN"
+    persona: str = "UTZ"
     persona_style: str = ""   # Task 22: "pembimbing"|"faktual"|"kreatif"|"akademik"|"rencana"|"singkat"
     output_lang: str = "auto" # Task 26: "auto"|"id"|"en"|"ar"
     allow_restricted: bool = False
@@ -110,6 +111,8 @@ class ChatRequest(BaseModel):
     corpus_only: bool = False
     allow_web_fallback: bool = True
     simple_mode: bool = False
+    client_id: str = ""        # Branch context (Agency OS)
+    conversation_id: str = ""  # Optional thread id (client-side)
     max_steps: int | None = Field(
         default=None,
         ge=2,
@@ -144,6 +147,13 @@ class ChatResponse(BaseModel):
     orchestration_digest: str = ""  # ringkasan OrchestrationPlan (modul orchestration.py)
     case_frame_ids: str = ""  # id kerangka Praxis runtime (case_frames.json), dipisah koma
     praxis_matched_frame_ids: str = ""  # urutan match awal sesi (planner L0)
+    # ── Typo observability (Sprint 8a — checklist A1) ─────────────────────────
+    question_normalized: str = ""   # pertanyaan setelah typo correction (kosong jika tidak berubah)
+    typo_script_hint: str = ""      # latin | arabic | mixed_arab_latin | ...
+    typo_substitutions: int = 0     # jumlah koreksi yang diterapkan
+    # ── Nafs Layer B metadata (Sprint 8a — checklist D1) ─────────────────────
+    nafs_topic: str = ""            # topic yang dideteksi (umum|kreatif|koding|agama|...)
+    nafs_layers_used: str = ""      # layer aktif, misal "parametric,dynamic"
 
 
 class GenerateRequest(BaseModel):
@@ -190,7 +200,7 @@ class RadarScanRequest(BaseModel):
 
 class AskRequest(BaseModel):
     question: str
-    persona: str = "MIGHAN"
+    persona: str = "UTZ"
     persona_style: str = ""   # Task 22: style shorthand
     output_lang: str = "auto" # Task 26: output language override
     k: int = 5
@@ -199,9 +209,38 @@ class AskRequest(BaseModel):
     simple_mode: bool = False
 
 
-# ── LLM generate function ─────────────────────────────────────────────────────
-# Priority: 1) Ollama (local)  2) LoRA (GPU)  3) Groq (free)  4) Gemini (free)
-#           5) Anthropic Haiku/Sonnet (cheap/paid)  6) Mock
+class ImageGenRequest(BaseModel):
+    prompt: str
+    width: int = 1024
+    height: int = 1024
+    steps: int = 4
+    seed: int | None = None
+
+
+class ImageGenResponse(BaseModel):
+    path: str
+    url: str
+    mode: str
+    model: str
+
+
+class TTSRequest(BaseModel):
+    text: str
+    language: str = "id"
+    voice: str | None = None
+    speed: float = 1.0
+
+
+class TTSResponse(BaseModel):
+    path: str
+    mode: str
+    language: str
+    voice: str
+    duration_estimate: float
+
+
+# ── LLM generate function (Standing Alone) ────────────────────────────────────
+# Priority: 1) Ollama (local)  2) LoRA (local)  3) Mock
 
 def _llm_generate(
     prompt: str,
@@ -213,8 +252,7 @@ def _llm_generate(
 ) -> tuple[str, str]:
     """
     Returns (generated_text, mode).
-    mode = "ollama" | "local_lora" | "groq_llama3" | "gemini_flash"
-           | "anthropic_haiku" | "anthropic_sonnet" | "mock"
+    mode = "ollama" | "local_lora" | "mock"
 
     Delegasikan ke multi_llm_router — satu routing engine untuk semua.
     preferred_model: override model (misal dari quota tier untuk sponsored user).
@@ -347,31 +385,6 @@ def create_app() -> "FastAPI":
         except Exception:
             pass
 
-        # Multi-LLM router status
-        anthropic_ready = False
-        groq_ready = False
-        gemini_ready = False
-        try:
-            from .anthropic_llm import anthropic_available
-            anthropic_ready = anthropic_available()
-        except Exception:
-            pass
-        try:
-            from .multi_llm_router import groq_available, gemini_available
-            groq_ready = groq_available()
-            gemini_ready = gemini_available()
-        except Exception:
-            pass
-
-        # Update effective_mode berdasarkan provider yang tersedia
-        if not ollama_info.get("available") and not model_ready:
-            if groq_ready:
-                effective_mode = "groq_llama3"
-            elif gemini_ready:
-                effective_mode = "gemini_flash"
-            elif anthropic_ready:
-                effective_mode = "anthropic_haiku"
-
         # QnA stats
         qna_today = 0
         try:
@@ -400,11 +413,6 @@ def create_app() -> "FastAPI":
             "anon_daily_quota_cap": rate_limit.daily_quota_cap(),
             "engine_build": os.environ.get("BRAIN_QA_ENGINE_BUILD", "0.1.0").strip() or "0.1.0",
             "threads_alert": threads_alert,
-            "llm_providers": {
-                "groq": groq_ready,
-                "gemini": gemini_ready,
-                "anthropic": anthropic_ready,
-            },
             "qna_recorded_today": qna_today,
             "ok": True,
             "version": "0.1.0",
@@ -415,7 +423,6 @@ def create_app() -> "FastAPI":
             return mask_health_payload(raw_payload)
         except Exception:
             # Fallback safe: hilangkan field provider-specific
-            raw_payload.pop("llm_providers", None)
             raw_payload.pop("ollama", None)
             return raw_payload
 
@@ -432,9 +439,17 @@ def create_app() -> "FastAPI":
         try:
             from .persona import resolve_style_persona
             effective_persona = resolve_style_persona(req.persona_style, req.persona)
+            effective_persona = (effective_persona or "UTZ").strip().upper()
+            if effective_persona not in _ALLOWED_PERSONAS:
+                effective_persona = "UTZ"
+            # Branch context: prefer body override, fallback ke header x-client-id
+            effective_client_id = (req.client_id or "").strip() or request.headers.get("x-client-id", "").strip()
+            effective_conversation_id = (req.conversation_id or "").strip() or request.headers.get("x-conversation-id", "").strip()
             session = run_react(
                 question=req.question,
                 persona=effective_persona,
+                client_id=effective_client_id,
+                conversation_id=effective_conversation_id,
                 allow_restricted=req.allow_restricted,
                 max_steps=req.max_steps,
                 verbose=req.verbose,
@@ -476,18 +491,27 @@ def create_app() -> "FastAPI":
             orchestration_digest=getattr(session, "orchestration_digest", ""),
             case_frame_ids=getattr(session, "case_frame_ids", ""),
             praxis_matched_frame_ids=getattr(session, "praxis_matched_frame_ids", ""),
+            # ── Typo observability ───────────────────────────────────────────
+            question_normalized=getattr(session, "question_normalized", ""),
+            typo_script_hint=getattr(session, "typo_script_hint", ""),
+            typo_substitutions=getattr(session, "typo_substitutions", 0),
+            # ── Nafs Layer B metadata ────────────────────────────────────────
+            nafs_topic=getattr(session, "nafs_topic", ""),
+            nafs_layers_used=getattr(session, "nafs_layers_used", ""),
         )
 
     # ── GET /agent/orchestration ───────────────────────────────────────────────
     @app.get("/agent/orchestration")
-    def agent_orchestration(q: str, persona: str = "INAN"):
+    def agent_orchestration(q: str, persona: str = "UTZ"):
         """Bangun OrchestrationPlan deterministik tanpa menjalankan loop ReAct penuh."""
         qq = (q or "").strip()
         if not qq:
             raise HTTPException(status_code=400, detail="q tidak boleh kosong")
         from .orchestration import build_orchestration_plan, format_plan_text
 
-        p = (persona or "INAN").strip().upper() or "INAN"
+        p = (persona or "UTZ").strip().upper() or "UTZ"
+        if p not in _ALLOWED_PERSONAS:
+            p = "UTZ"
         plan = build_orchestration_plan(qq, request_persona=p)
         return {
             "persona": p,
@@ -655,6 +679,44 @@ def create_app() -> "FastAPI":
             _METRICS["feedback_up"] = _METRICS.get("feedback_up", 0) + 1
         else:
             _METRICS["feedback_down"] = _METRICS.get("feedback_down", 0) + 1
+        # Persist feedback via jariyah_collector (local-only, no PII).
+        try:
+            from . import g1_policy
+            from .jariyah_collector import capture_feedback
+
+            session = _sessions.get(req.session_id)
+            rating = 1 if req.vote == "up" else -1
+            capture_feedback(
+                query=g1_policy.redact_pii_for_export(getattr(session, "question", ""))[:2000] if session else "",
+                response=g1_policy.redact_pii_for_export(getattr(session, "final_answer", ""))[:4000] if session else "",
+                rating=rating,
+                persona=getattr(session, "persona", "UTZ") if session else "UTZ",
+                session_id=req.session_id,
+            )
+        except Exception:
+            pass
+
+        # Jariyah hook: thumbs-up bisa memicu capture training pair (non-blocking).
+        try:
+            if req.vote == "up":
+                session = _sessions.get(req.session_id)
+                if session and getattr(session, "final_answer", ""):
+                    try:
+                        from .jiwa.orchestrator import jiwa as _jiwa
+                        _topic = getattr(session, "user_intent", "") or "umum"
+                        _jiwa.post_response(
+                            getattr(session, "question", ""),
+                            getattr(session, "final_answer", ""),
+                            getattr(session, "persona", "UTZ"),
+                            topic=_topic,
+                            platform="feedback_up",
+                            cqf_score=float(getattr(session, "confidence_score", 0.0)) * 10,
+                            user_feedback="thumbs_up",
+                        )
+                    except Exception:
+                        pass
+        except Exception:
+            pass
         return {"ok": True, "session_id": req.session_id, "vote": req.vote}
 
     @app.delete("/agent/session/{session_id}")
@@ -707,6 +769,8 @@ def create_app() -> "FastAPI":
         session = run_react(
             question=req.question,
             persona=req.persona,
+            client_id=request.headers.get("x-client-id", "").strip(),
+            conversation_id=request.headers.get("x-conversation-id", "").strip(),
             corpus_only=req.corpus_only,
             allow_web_fallback=req.allow_web_fallback,
             simple_mode=req.simple_mode,
@@ -3288,6 +3352,59 @@ h1{{color:#0af}}p{{color:#aaa}}a{{color:#0af}}</style></head>
             return get_optimizer_stats()
         except Exception as e:
             return {"ok": False, "error": str(e)}
+
+    # ── Sprint 8b: Image Generation endpoint ────────────────────────────────
+    @app.post("/generate/image", response_model=ImageGenResponse, tags=["Generate"])
+    async def generate_image_endpoint(req: ImageGenRequest):
+        """Generate gambar via FLUX.1 (local) atau mock fallback."""
+        try:
+            import sys
+            from pathlib import Path
+            sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
+            from apps.image_gen.flux_pipeline import generate_image
+            result = generate_image(
+                prompt=req.prompt,
+                width=req.width,
+                height=req.height,
+                steps=req.steps,
+                seed=req.seed,
+            )
+            fname = Path(result["path"]).name
+            return ImageGenResponse(
+                path=str(result["path"]),
+                url=f"/generated/images/{fname}",
+                mode=result["mode"],
+                model=result["model"],
+            )
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=str(e))
+
+    # ── Sprint 8b: TTS Synthesize endpoint ──────────────────────────────────
+    @app.post("/tts/synthesize", response_model=TTSResponse, tags=["Generate"])
+    async def tts_synthesize_endpoint(req: TTSRequest):
+        """Convert teks ke audio WAV via Piper TTS atau stub WAV fallback."""
+        if not req.text.strip():
+            raise HTTPException(status_code=400, detail="text kosong")
+        try:
+            import sys
+            from pathlib import Path
+            sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
+            from apps.audio.tts_engine import synthesize
+            result = synthesize(
+                text=req.text,
+                language=req.language,
+                voice=req.voice,
+                speed=req.speed,
+            )
+            return TTSResponse(
+                path=str(result["path"]),
+                mode=result["mode"],
+                language=result["language"],
+                voice=result["voice"],
+                duration_estimate=result["duration_estimate"],
+            )
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=str(e))
 
     # ── Concept graph endpoint (Sprint 1 T1.4) ───────────────────────────────
     @app.get("/concept_graph/query")

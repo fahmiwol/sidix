@@ -18,6 +18,7 @@ import hashlib
 import json
 import os
 import re
+import sys
 import urllib.parse
 import urllib.request
 from dataclasses import dataclass, asdict, field
@@ -1701,72 +1702,33 @@ def _tool_concept_graph(args: dict) -> ToolResult:
     return ToolResult(success=True, output="\n".join(lines), citations=citations)
 
 
-# ── Text-to-image tool (via SDXL server atau RunPod) ─────────────────────────
+# ── Text-to-image tool (via FLUX.1 local pipeline) ───────────────────────────
 def _tool_text_to_image(args: dict) -> ToolResult:
-    """Call external SDXL server (local atau RunPod). Env: SIDIX_IMAGE_GEN_URL."""
+    """Generate gambar via FLUX.1 (local) atau mock fallback jika model belum tersedia."""
     prompt = str(args.get("prompt", "")).strip()
     if not prompt:
         return ToolResult(success=False, output="", error="prompt kosong")
-    # Try env var first, fallback ke .env file (buat PM2 yang tidak load dotenv)
-    endpoint = os.environ.get("SIDIX_IMAGE_GEN_URL", "").rstrip("/")
-    if not endpoint:
-        try:
-            from dotenv import load_dotenv
-            env_path = Path(__file__).resolve().parent.parent / ".env"
-            if env_path.exists():
-                load_dotenv(env_path, override=False)
-                endpoint = os.environ.get("SIDIX_IMAGE_GEN_URL", "").rstrip("/")
-        except Exception:
-            pass
-    # Last resort: parse .env manual kalau python-dotenv belum terinstall
-    if not endpoint:
-        env_path = Path(__file__).resolve().parent.parent / ".env"
-        if env_path.exists():
-            try:
-                for line in env_path.read_text(encoding="utf-8").splitlines():
-                    line = line.strip()
-                    if line.startswith("SIDIX_IMAGE_GEN_URL="):
-                        endpoint = line.split("=", 1)[1].strip().strip('"').strip("'").rstrip("/")
-                        break
-            except Exception:
-                pass
-    if not endpoint:
-        return ToolResult(success=False, output="",
-                          error="SIDIX_IMAGE_GEN_URL belum di-set (env var). Set ke URL SDXL server (ngrok/RunPod).")
-    steps = max(10, min(int(args.get("steps", 20)), 50))
-    width = max(512, min(int(args.get("width", 768)), 1536))
-    height = max(512, min(int(args.get("height", 768)), 1536))
-    payload = json.dumps({"prompt": prompt, "steps": steps, "width": width, "height": height}).encode()
-    req = urllib.request.Request(f"{endpoint}/generate", data=payload,
-                                 headers={"Content-Type": "application/json"}, method="POST")
+    width = max(512, min(int(args.get("width", 1024)), 1536))
+    height = max(512, min(int(args.get("height", 1024)), 1536))
+    steps = max(1, min(int(args.get("steps", 4)), 50))
+    seed_raw = args.get("seed")
+    seed = int(seed_raw) if seed_raw is not None else None
     try:
-        with urllib.request.urlopen(req, timeout=360) as resp:
-            data = json.loads(resp.read().decode())
+        sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
+        from apps.image_gen.flux_pipeline import generate_image
+        result = generate_image(prompt=prompt, width=width, height=height, steps=steps, seed=seed)
+        path = result["path"]
+        mode = result["mode"]
+        fname = Path(path).name
+        image_url = f"/generated/images/{fname}"
+        suffix = " *(mock placeholder — install diffusers+torch untuk FLUX.1 nyata)*" if mode == "mock" else f" *(FLUX.1 · {result['model']})*"
+        return ToolResult(
+            success=True,
+            output=f"![Generated image]({image_url})\n\n*Prompt: {prompt}*{suffix}",
+            citations=[{"type": "text_to_image", "url": image_url, "prompt": prompt, "mode": mode}],
+        )
     except Exception as e:
-        return ToolResult(success=False, output="", error=f"image_gen request failed: {e}")
-    if not data.get("ok"):
-        return ToolResult(success=False, output="", error=str(data.get("error", "unknown")))
-    # Save to workspace so user bisa download
-    out_dir = default_index_dir().parent / "generated_images"
-    out_dir.mkdir(parents=True, exist_ok=True)
-    import base64
-    h = hashlib.sha256(prompt.encode()).hexdigest()[:12]
-    fname = f"{h}.png"
-    fpath = out_dir / fname
-    fpath.write_bytes(base64.b64decode(data["image_b64"]))
-    # URL publik via endpoint /generated/{fname} di brain_qa
-    image_url = f"/generated/{fname}"
-    return ToolResult(
-        success=True,
-        output=f"![Generated image]({image_url})\n\n*Prompt: {prompt}*\n*Generated in {data.get('took_s')}s on SIDIX local GPU (RTX 3060)*",
-        citations=[{
-            "type": "text_to_image",
-            "url": image_url,
-            "prompt": prompt,
-            "steps": steps,
-            "took_s": data.get("took_s"),
-        }],
-    )
+        return ToolResult(success=False, output="", error=f"image_gen gagal: {e}")
 
 
 # ── Registry ──────────────────────────────────────────────────────────────────
@@ -1802,26 +1764,39 @@ def _tool_code_analyze(args: dict) -> ToolResult:
 
 
 def _tool_code_validate(args: dict) -> ToolResult:
-    """Validasi sintaks Python tanpa menjalankan. Safe dan cepat."""
+    """Validasi syntax + security scan untuk Python/JS/TS/SQL/HTML."""
     code = str(args.get("code", "")).strip()
+    lang = str(args.get("lang", "python")).strip().lower()
     if not code:
         return ToolResult(success=False, output="", error="code wajib diisi")
-
     try:
-        from .code_intelligence import validate_python
-        result = validate_python(code)
-        if result["ok"]:
-            return ToolResult(
-                success=True,
-                output="Syntax OK — kode bisa dijalankan / disimpan.",
-                citations=[{"type": "code_validate", "ok": True}],
-            )
+        sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
+        from brain.tools.code_validator import validate_code
+        result = validate_code(code, lang)
+        lines_out: list[str] = [f"## Code Validation — {lang.upper()}\n"]
+        if result.get("valid") is True:
+            lines_out.append("**Status: VALID** — tidak ada syntax error")
+        elif result.get("valid") is False:
+            lines_out.append("**Status: INVALID** — ada error:")
+            for err in result.get("errors", []):
+                ln = f"baris {err['line']}: " if err.get("line") else ""
+                lines_out.append(f"- {ln}{err.get('msg', err)}")
         else:
-            return ToolResult(
-                success=False,
-                output=f"Syntax ERROR baris {result['line']}: {result['error']}",
-                error=f"SyntaxError: {result['error']} (baris {result['line']})",
-            )
+            lines_out.append("**Status: SKIP** — validator tidak tersedia untuk bahasa ini")
+        if result.get("warnings"):
+            lines_out.append("\n**Warnings:**")
+            for w in result["warnings"]:
+                lines_out.append(f"- {w}")
+        if result.get("security"):
+            lines_out.append("\n**Security Scan — ada pola berbahaya:**")
+            for s in result["security"]:
+                lines_out.append(f"- [{s['severity'].upper()}] `{s['pattern']}` — {s['msg']}")
+        return ToolResult(
+            success=result.get("valid") is not False,
+            output="\n".join(lines_out),
+            citations=[{"type": "code_validate", "lang": lang, "valid": result.get("valid"),
+                        "errors": len(result.get("errors", [])), "security_flags": len(result.get("security", []))}],
+        )
     except Exception as e:
         return ToolResult(success=False, output="", error=f"code_validate gagal: {e}")
 
@@ -1891,6 +1866,44 @@ def _tool_self_inspect(args: dict) -> ToolResult:
         output="\n".join(lines),
         citations=[{"type": "self_inspect", "target": target}],
     )
+
+
+def _tool_scaffold_project(args: dict) -> ToolResult:
+    """Generate scaffold folder + file boilerplate untuk project baru."""
+    project_name = str(args.get("project_name", "")).strip()
+    template = str(args.get("template", "fastapi")).strip().lower()
+    if not project_name:
+        return ToolResult(success=False, output="", error="project_name wajib diisi")
+    try:
+        sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
+        from brain.tools.scaffold_generator import scaffold, list_templates
+        result = scaffold(project_name, template)
+        lines_out: list[str] = [
+            f"# Scaffold: {project_name} ({template})\n",
+            f"**{len(result.files)} file akan dibuat:**\n",
+        ]
+        for f in result.files:
+            desc = f" — {f.description}" if f.description else ""
+            lines_out.append(f"- `{f.path}`{desc}")
+        if result.setup_commands:
+            lines_out.append("\n**Setup commands:**")
+            for cmd in result.setup_commands:
+                lines_out.append(f"```\n{cmd}\n```")
+        if result.notes:
+            lines_out.append("\n**Notes:**")
+            for note in result.notes:
+                lines_out.append(f"- {note}")
+        lines_out.append(f"\n*Template tersedia: {', '.join(list_templates())}*")
+        return ToolResult(
+            success=True,
+            output="\n".join(lines_out),
+            citations=[{"type": "scaffold", "template": template, "project": project_name,
+                        "file_count": len(result.files), "files": [f.path for f in result.files]}],
+        )
+    except ValueError as e:
+        return ToolResult(success=False, output="", error=str(e))
+    except Exception as e:
+        return ToolResult(success=False, output="", error=f"scaffold gagal: {e}")
 
 
 TOOL_REGISTRY: dict[str, ToolSpec] = {
@@ -2090,12 +2103,11 @@ TOOL_REGISTRY: dict[str, ToolSpec] = {
     "text_to_image": ToolSpec(
         name="text_to_image",
         description=(
-            "Generate gambar dari prompt teks via external SDXL server (local laptop atau RunPod). "
-            "Butuh SIDIX_IMAGE_GEN_URL env var. Output disimpan di /generated/<hash>.png. "
-            "Params: prompt (str wajib), steps (int 10-50 default 25), "
-            "width/height (int 512-1536 default 1024)."
+            "Generate gambar dari prompt teks via FLUX.1-schnell (local, no GPU needed for mock). "
+            "Graceful degradation: FLUX.1 → mock SVG placeholder. "
+            "Params: prompt (str wajib), steps (int 1-50 default 4), width/height (int 512-1536 default 1024), seed (int opsional)."
         ),
-        params=["prompt", "steps", "width", "height"],
+        params=["prompt", "steps", "width", "height", "seed"],
         permission="open",
         fn=_tool_text_to_image,
     ),
@@ -2183,13 +2195,23 @@ TOOL_REGISTRY: dict[str, ToolSpec] = {
     "code_validate": ToolSpec(
         name="code_validate",
         description=(
-            "Validasi sintaks Python tanpa menjalankan. "
-            "Gunakan sebelum workspace_write untuk pastikan kode tidak ada syntax error. "
-            "Params: code (str Python wajib). Return: ok/error + baris error."
+            "Validasi syntax kode + security scan. Bahasa: python (AST), javascript (node), typescript (tsc), sql (quote balance), html (tag balance). "
+            "Params: code (str wajib), lang (str: python|javascript|typescript|sql|html, default python)."
         ),
-        params=["code"],
+        params=["code", "lang"],
         permission="open",
         fn=_tool_code_validate,
+    ),
+    "scaffold_project": ToolSpec(
+        name="scaffold_project",
+        description=(
+            "Generate scaffold struktur folder + file boilerplate untuk project baru. "
+            "Templates: fastapi (Python FastAPI), react_ts (React+TypeScript+Tailwind), landing (static HTML). "
+            "Params: project_name (str wajib), template (str: fastapi|react_ts|landing, default fastapi)."
+        ),
+        params=["project_name", "template"],
+        permission="open",
+        fn=_tool_scaffold_project,
     ),
     "project_map": ToolSpec(
         name="project_map",

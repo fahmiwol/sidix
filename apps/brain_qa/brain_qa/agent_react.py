@@ -72,6 +72,8 @@ class AgentSession:
     session_id: str
     question: str
     persona: str
+    client_id: str = ""            # branch context (Agency OS)
+    conversation_id: str = ""      # optional conversation threading
     steps: list[ReActStep] = field(default_factory=list)
     final_answer: str = ""
     citations: list[dict] = field(default_factory=list)
@@ -109,6 +111,9 @@ class AgentSession:
     question_normalized: str = ""     # kosong jika sama dengan question
     typo_script_hint: str = ""         # latin | arabic | mixed_arab_latin | ...
     typo_substitutions: int = 0
+    # ── Nafs Layer B (brain/nafs/response_orchestrator) ──────────────────────────
+    nafs_topic: str = ""              # topic dari NafsOrchestrator (umum|kreatif|koding|agama|...)
+    nafs_layers_used: str = ""        # "parametric,dynamic,static" (layer yang aktif)
 
 
 # ── Rule-based "LLM" (offline planner) ───────────────────────────────────────
@@ -216,7 +221,16 @@ def _response_blend_profile(
                 "emotion_tag": profile.emotion_tag,
             }
         except Exception:
-            pass  # fallback ke logika lama
+            pass  # fallback ke Layer B
+
+    # ── Layer B: NafsOrchestrator standalone (brain/nafs/) ────────────────────
+    try:
+        from .nafs_bridge import blend_from_nafs
+        _nb = blend_from_nafs(question, persona, corpus_only=corpus_only)
+        if _nb:
+            return _nb
+    except Exception:
+        pass  # fallback ke heuristik lama
 
     # ── Fallback lama ──────────────────────────────────────────────────────
     if _should_prioritize_corpus(question, corpus_only=corpus_only):
@@ -629,27 +643,6 @@ def _compose_final_answer(
         import logging as _log
         _log.getLogger("sidix.react").warning(f"Ollama synthesis failed: {_ollama_err}")
 
-    # ── Coba Anthropic Haiku (fallback cloud, hemat) ──────────────────────────
-    try:
-        from .anthropic_llm import anthropic_available, anthropic_generate
-        if anthropic_available():
-            corpus_ctx_snippets = obs_blocks[:max_obs_blocks] if obs_blocks else None
-            max_tok = 500 if not simple_mode else 200
-            text, mode = anthropic_generate(
-                prompt=question,
-                max_tokens=max_tok,
-                temperature=0.7,
-                context_snippets=corpus_ctx_snippets,
-            )
-            if mode == "anthropic_haiku" and text:
-                import logging as _log
-                _log.getLogger("sidix.react").info("Anthropic Haiku synthesis OK")
-                return (text, all_citations, 0.82, "fakta")
-    except Exception as _anth_err:
-        import logging as _log
-        _log.getLogger("sidix.react").warning(f"Anthropic synthesis failed: {_anth_err}")
-    # ── End cloud fallback ────────────────────────────────────────────────────
-
     # Greeting special case (fallback kalau Ollama off)
     if _GREETING_RE.match(question.strip()):
         return (
@@ -663,20 +656,6 @@ def _compose_final_answer(
         )
 
     if not obs_blocks:
-        # Kalau Ollama off dan tidak ada corpus → coba Anthropic Haiku
-        try:
-            from .anthropic_llm import anthropic_available, anthropic_generate
-            if anthropic_available():
-                text, mode = anthropic_generate(
-                    prompt=question,
-                    max_tokens=500,
-                    temperature=0.7,
-                )
-                if mode == "anthropic_haiku" and text:
-                    return (text, [], 0.75, "fakta")
-        except Exception:
-            pass
-
         # Fallback: coba Ollama juga
         try:
             from .ollama_llm import ollama_available, ollama_generate
@@ -967,6 +946,8 @@ def run_react(
     *,
     question: str,
     persona: str = "UTZ",
+    client_id: str = "",
+    conversation_id: str = "",
     allow_restricted: bool = False,
     max_steps: int | None = None,
     verbose: bool = False,
@@ -986,6 +967,8 @@ def run_react(
         session_id=session_id,
         question=question,
         persona=persona,
+        client_id=client_id or "",
+        conversation_id=conversation_id or "",
     )
 
     from . import praxis as _praxis
@@ -1049,6 +1032,16 @@ def run_react(
 
         _log.getLogger(__name__).debug(f"[TypoPipeline] skip — {_typo_err}")
         working_question = question
+
+    # ── Nafs Layer B: capture topic + layer metadata ke session ──────────────────
+    try:
+        from .nafs_bridge import blend_from_nafs
+        _nb = blend_from_nafs(working_question, persona, corpus_only=corpus_only)
+        if _nb:
+            session.nafs_topic = _nb.get("topic", "")
+            session.nafs_layers_used = _nb.get("nafs_layers_used", "")
+    except Exception:
+        pass
 
     cached = answer_dedup.get_cached_answer(persona, working_question)
     if cached is not None:

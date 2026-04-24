@@ -38,6 +38,27 @@ Hanya gunakan 5 persona ini. Jangan gunakan nama lama (Mighan, Toard, dll.) di U
 - **Kode Sumber (Code):** Gunakan **English** (standar teknis global).
 - **Bilingual:** Update status di Git & Landing Page wajib bilingual (Inggris untuk publik, Indonesia untuk transparansi lokal).
 
+### 4.1 Batas “Teknis” vs “Publik” (Vendor/Host Naming)
+
+**Tujuan aturan ini:** mencegah konten publik terlihat “menumpang”/promosi pihak ketiga, sambil tetap menjaga dokumentasi teknis mudah dipakai.
+
+- **Boleh eksplisit (teknis):**
+  - Dokumen setup/integrasi yang sifatnya **operasional** (mis. panduan “install plugin untuk <client platform>”, konfigurasi klien, troubleshooting).
+  - Kode, nama folder historis, dan kontrak teknis yang memang relevan untuk kompatibilitas.
+  - Prinsip: *jelas, langsung bisa dipakai, tidak “jualan”.*
+
+- **Boleh eksplisit (publik, sebagai kompatibilitas):**
+  - Penyebutan **platform/klien yang kompatibel** untuk membantu orang menemukan jalur instalasi (contoh: “SIDIX dapat diintegrasikan ke Claude Desktop / Cursor / GPT Actions / Codex”).
+  - Syaratnya: jelas bahwa itu **opsional** (adapter), bukan dependensi utama.
+
+- **Wajib metafora/netral (publik, sebagai narasi/asal-usul):**
+  - Klaim asal-usul riset/skrip/kerangka yang “dibuat oleh <vendor/host>” atau “meniru cara kerja <vendor/host>”.
+  - Prefix framework/branding yang bisa terbaca sebagai endorsement atau “nebeng nama”.
+  - Prinsip: *vendor-neutral, fokus ke kapabilitas SIDIX, bukan nama host.*
+
+- **Larangan tetap berlaku di semua konteks:**
+  - Jangan bocorkan **path lokal** atau detail sensitif (server paths, user paths, secrets).
+
 ## 5. Workflow Pasca-Task (Wajib)
 Setiap selesai menyelesaikan Task atau Sprint, agen wajib melakukan:
 
