@@ -43,6 +43,7 @@ from .agent_tools import list_available_tools, call_tool, get_agent_workspace_ro
 from .local_llm import adapter_fingerprint, adapter_weights_exist, find_adapter_dir, generate_sidix
 from . import rate_limit
 from . import social_radar
+from . import memory_store
 
 _PROCESS_STARTED = time.time()
 _ALLOWED_PERSONAS = {"AYMAN", "ABOO", "OOMAR", "ALEY", "UTZ"}
@@ -113,6 +114,7 @@ class ChatRequest(BaseModel):
     simple_mode: bool = False
     client_id: str = ""        # Branch context (Agency OS)
     conversation_id: str = ""  # Optional thread id (client-side)
+    user_id: str = "anon"      # User identifier for memory/personalization
     max_steps: int | None = Field(
         default=None,
         ge=2,
@@ -154,6 +156,9 @@ class ChatResponse(BaseModel):
     # ── Nafs Layer B metadata (Sprint 8a — checklist D1) ─────────────────────
     nafs_topic: str = ""            # topic yang dideteksi (umum|kreatif|koding|agama|...)
     nafs_layers_used: str = ""      # layer aktif, misal "parametric,dynamic"
+    # ── Memory layer ───────────────────────────────────────────────────────────
+    user_id: str = "anon"
+    conversation_id: str = ""
 
 
 class GenerateRequest(BaseModel):
@@ -321,6 +326,12 @@ def create_app() -> "FastAPI":
 
     app.add_middleware(TraceMiddleware)
 
+    # Init conversational memory (SQLite, lightweight, non-blocking)
+    try:
+        memory_store.init_db()
+    except Exception as e:
+        log.warning("Memory store init skipped: %s", e)
+
     # Task 49 — Al-Kafirun: Security headers middleware (hardening WebUI)
     class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         async def dispatch(self, request: Request, call_next):  # type: ignore[override]
@@ -444,6 +455,24 @@ def create_app() -> "FastAPI":
             raise HTTPException(status_code=400, detail="question tidak boleh kosong")
 
         t0 = time.time()
+        effective_user_id = (req.user_id or "").strip() or request.headers.get("x-user-id", "anon").strip()
+        effective_conversation_id = (req.conversation_id or "").strip() or request.headers.get("x-conversation-id", "").strip()
+
+        # Ensure conversation exists
+        if not effective_conversation_id:
+            effective_conversation_id = memory_store.create_conversation(
+                user_id=effective_user_id,
+                title=req.question[:60],
+                persona=req.persona,
+            )
+
+        # Load previous context for injection (best-effort)
+        conversation_context: list[dict] = []
+        try:
+            conversation_context = memory_store.get_recent_context(effective_conversation_id)
+        except Exception:
+            pass
+
         try:
             from .persona import resolve_style_persona
             effective_persona = resolve_style_persona(req.persona_style, req.persona)
@@ -452,7 +481,6 @@ def create_app() -> "FastAPI":
                 effective_persona = "UTZ"
             # Branch context: prefer body override, fallback ke header x-client-id
             effective_client_id = (req.client_id or "").strip() or request.headers.get("x-client-id", "").strip()
-            effective_conversation_id = (req.conversation_id or "").strip() or request.headers.get("x-conversation-id", "").strip()
             session = run_react(
                 question=req.question,
                 persona=effective_persona,
@@ -464,6 +492,7 @@ def create_app() -> "FastAPI":
                 corpus_only=req.corpus_only,
                 allow_web_fallback=req.allow_web_fallback,
                 simple_mode=req.simple_mode,
+                conversation_context=conversation_context,
             )
         except Exception as e:
             raise HTTPException(status_code=500, detail=str(e))
@@ -472,6 +501,12 @@ def create_app() -> "FastAPI":
 
         _store_session(session)
         rate_limit.record_daily_use(_daily_client_key(request))
+
+        # Persist to memory (best-effort, non-blocking)
+        try:
+            memory_store.save_session(session, conv_id=effective_conversation_id, user_id=effective_user_id)
+        except Exception as e:
+            log.warning("Memory save failed: %s", e)
 
         return ChatResponse(
             session_id=session.session_id,
@@ -506,6 +541,8 @@ def create_app() -> "FastAPI":
             # ── Nafs Layer B metadata ────────────────────────────────────────
             nafs_topic=getattr(session, "nafs_topic", ""),
             nafs_layers_used=getattr(session, "nafs_layers_used", ""),
+            user_id=effective_user_id,
+            conversation_id=effective_conversation_id,
         )
 
     # ── GET /agent/orchestration ───────────────────────────────────────────────
@@ -834,6 +871,39 @@ def create_app() -> "FastAPI":
         from .session_summary import build_session_summary
 
         return build_session_summary(session)
+
+    # ── Memory Layer endpoints (conversational persistence) ─────────────────────
+    @app.get("/memory/conversations")
+    def memory_list_conversations(user_id: str = "anon", limit: int = 50):
+        try:
+            rows = memory_store.list_conversations(user_id=user_id, limit=limit)
+            return {"ok": True, "conversations": rows}
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=str(e))
+
+    @app.get("/memory/conversations/{conv_id}/messages")
+    def memory_get_messages(conv_id: str, limit: int = 100):
+        try:
+            rows = memory_store.get_messages(conv_id, limit=limit)
+            return {"ok": True, "messages": rows}
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=str(e))
+
+    @app.post("/memory/conversations/{conv_id}/rename")
+    def memory_rename_conversation(conv_id: str, title: str):
+        try:
+            ok = memory_store.rename_conversation(conv_id, title)
+            return {"ok": ok}
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=str(e))
+
+    @app.delete("/memory/conversations/{conv_id}")
+    def memory_delete_conversation(conv_id: str):
+        try:
+            ok = memory_store.delete_conversation(conv_id)
+            return {"ok": ok}
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=str(e))
 
     # ══════════════════════════════════════════════════════════════════════════
     # UI-COMPATIBLE ENDPOINTS (format lama dari serve.py — agar SIDIX_USER_UI

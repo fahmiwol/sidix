@@ -959,6 +959,22 @@ def _attach_orchestration_digest(session: AgentSession, question: str, persona: 
         session.orchestration_digest = ""
 
 
+def _inject_conversation_context(question: str, context: list[dict]) -> str:
+    """Format previous turns untuk injection ke prompt."""
+    if not context:
+        return question
+    lines = ["[KONTEKS PERCAKAPAN SEBELUMNYA]"]
+    for turn in context:
+        role = turn.get("role", "")
+        content = turn.get("content", "")
+        label = "User" if role == "user" else "Assistant" if role == "assistant" else role.capitalize()
+        lines.append(f"{label}: {content[:500]}")
+    lines.append("[AKHIR KONTEKS]")
+    lines.append("")
+    lines.append(f"[PERTANYAAN SAAT INI]\n{question}")
+    return "\n".join(lines)
+
+
 def run_react(
     *,
     question: str,
@@ -971,6 +987,7 @@ def run_react(
     corpus_only: bool = False,
     allow_web_fallback: bool = True,
     simple_mode: bool = False,
+    conversation_context: list[dict] | None = None,
 ) -> AgentSession:
     """
     Jalankan ReAct loop untuk satu pertanyaan.
@@ -1049,6 +1066,11 @@ def run_react(
 
         _log.getLogger(__name__).debug(f"[TypoPipeline] skip — {_typo_err}")
         working_question = question
+
+    # ── Inject conversational memory context ────────────────────────────────────
+    if conversation_context:
+        working_question = _inject_conversation_context(working_question, conversation_context)
+        session.question_normalized = working_question
 
     # ── Nafs Layer B: capture topic + layer metadata ke session ──────────────────
     try:
