@@ -5698,3 +5698,66 @@ Tidak menyentuh: agent_react.py JIWA INTEGRATION section, agent_memory.py, paral
 - Backend: PID changed setelah 2 restart, online, model_ready=true
 - 3 endpoints baru terdaftar di FastAPI router (visible di /docs OpenAPI)
 - VPS RAM: 12 GB free → bisa upgrade qwen2.5:7b nanti
+
+## 2026-04-26 — SIDIX 2.0 Launch-Ready Sprint (Claude)
+
+### USER MANDATE
+> "kalo sanad jangan jadi metode utama, ubah sanad chain jadi opsional ke 2-3,
+>  jadiin utamanya seperti GPT, claude dan lainnya. epistemology juga matiin"
+> "Lanjut aja! ... Gas!"
+
+### ROOT CAUSE: Filter Logic Inversion (4 spots)
+Pivot 2026-04-25 mengatakan default agent_mode bypass filters, tapi 4 if-statement
+pakai `if not _strict:` (= filter fire by DEFAULT). Bertentangan dengan intent.
+
+| Line | Component | Effect of bug |
+|---|---|---|
+| 1793 | Experience+Skill enrichment | pre-context bloat default |
+| 1843 | Council MoA-lite trigger | high-complexity bypass main ReAct (no web_search) |
+| 2005 | Wisdom Gate pre-action | OVERRIDE planner action → search_corpus |
+| 2049, 2226 | Filter pipeline (epist+maqa+const+CSC+CC) | adds [EXPLORATORY], [Berdasarkan], etc. |
+
+Fix: flip semua → `if _strict:` (opt-in). Hygiene tetap on (label dedup + leak strip).
+
+### ROOT CAUSE: web_search ConnectTimeout intermittent
+DuckDuckGo HTML endpoint timeout dari VPS. Single-engine = factual queries fail random.
+
+Fix: multi-engine fallback chain di `_tool_web_search`:
+1. DuckDuckGo HTML  (12s timeout, primary)
+2. DuckDuckGo Lite  (10s timeout, fallback)
+3. Wikipedia API   (10s timeout, factual last resort — sangat reliable)
+
+### CONFIG: model upgrade
+- `ollama pull qwen2.5:7b` di VPS (4.7 GB)
+- `/opt/sidix/.env`: `OLLAMA_MODEL=qwen2.5:7b`, `OLLAMA_TIMEOUT=180`
+- `start_brain.sh` source `.env` → PM2 pickup
+
+### IMPL: Frontend timeout 60s → 240s
+qwen 7b di CPU butuh ~30-180s untuk complex reasoning. Dengan streaming,
+long timeout tidak terasa "patah".
+
+### TEST: Quality eval suite (10 golden tests)
+File baru: `apps/brain_qa/tests/test_sidix2_quality.py`. End-to-end behaviour
+yang dijanjikan ke user (casual clean / regex / Supermodel modules / persona map).
+
+### DEPLOY STATUS LIVE
+- HEAD: `3646df3` di origin/main + VPS
+- sidix-brain: online, PID baru, env OLLAMA_MODEL=qwen2.5:7b confirmed
+- sidix-ui: online, dist baru built
+- Landing: synced, sidixlab.com showing v2.0 + new triad
+
+### SMOKE TEST RESULT
+| Test | Hasil |
+|---|---|
+| Casual "halo, kamu bisa bantu apa aja?" | ✅ Natural response 354 chars, no [EXPLORATORY], setara ChatGPT |
+| Factual "presiden indonesia 2025 prabowo wakilnya" | ✅ web_search FIRED, citations: 5 (sebelumnya 0) |
+| Code "tulis fungsi reverse linked list" | ⏱ Timeout 200s (CPU 7b bottleneck — perlu GPU upgrade) |
+
+### VERDICT (jujur)
+- **Casual chat**: setara ChatGPT/Claude tone ✅
+- **Factual via web_search**: infrastructure working, model masih kadang abaikan tool result
+- **Complex reasoning/code**: CPU 7b bottleneck — perlu streaming UX (sudah 240s) atau GPU
+- **3 Supermodel endpoints unik**: Burst/Two-Eyed/Foresight — tidak ada di Claude/GPT/Gemini/KIMI
+- **Tests**: 520 passed, 1 deselected
+
+**Launch readiness**: Opsi B (Beta launch dengan honest positioning) — feasible HARI INI.
