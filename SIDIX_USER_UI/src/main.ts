@@ -843,8 +843,9 @@ onAuthChange(async (user) => {
   currentAuthUser = user;
 
   if (user) {
-    // Simpan user_id ke localStorage untuk quota tracking
+    // Simpan user_id + email ke localStorage untuk quota tracking + whitelist
     localStorage.setItem('sidix_user_id', user.id);
+    if (user.email) localStorage.setItem('sidix_user_email', user.email);
 
     // Update auth button
     const name = user.user_metadata?.full_name ?? user.email ?? '';
@@ -882,8 +883,9 @@ onAuthChange(async (user) => {
       console.warn('[SIDIX] onboarding failed:', e);
     }
   } else {
-    // Logout — hapus user_id dari localStorage
+    // Logout — hapus user_id + email dari localStorage
     localStorage.removeItem('sidix_user_id');
+    localStorage.removeItem('sidix_user_email');
     updateAuthButton(false);
     // Reset quota badge ke guest state
     updateQuotaBadge(0, 3, 'guest');

@@ -332,11 +332,13 @@ export async function askStream(
   // sambil generate, jadi long timeout tidak terasa "patah".
   const timer = setTimeout(() => controller.abort(), 240_000);
 
-  // Kirim user-id jika sudah login (untuk quota tracking & tier model)
+  // Kirim user-id + email jika sudah login (untuk quota tracking, whitelist, tier model)
   const headers: Record<string, string> = { 'Content-Type': 'application/json' };
   try {
     const uid = opts?.userId ?? localStorage.getItem('sidix_user_id') ?? '';
     if (uid) headers['x-user-id'] = uid;
+    const email = localStorage.getItem('sidix_user_email') ?? '';
+    if (email) headers['x-user-email'] = email;
     if (opts?.conversationId) headers['x-conversation-id'] = opts.conversationId;
   } catch { /* ignore */ }
 

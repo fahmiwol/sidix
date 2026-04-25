@@ -72,7 +72,36 @@ def _client_ip(request: Request) -> str:
     return c.host if c else "unknown"
 
 
+def _is_whitelisted(request: Request) -> bool:
+    """
+    Bypass rate limit + daily quota untuk whitelist user (owner / dev / tester).
+    Identifikasi via header x-user-email atau x-user-id.
+
+    Whitelist source: env var SIDIX_WHITELIST_EMAILS (comma-separated)
+    + SIDIX_WHITELIST_USER_IDS.
+
+    Contoh env:
+      SIDIX_WHITELIST_EMAILS=fahmiwol@gmail.com,dev@sidixlab.com
+      SIDIX_WHITELIST_USER_IDS=user_abc123,user_xyz789
+    """
+    raw_emails = os.environ.get("SIDIX_WHITELIST_EMAILS", "").strip().lower()
+    raw_uids = os.environ.get("SIDIX_WHITELIST_USER_IDS", "").strip()
+    if not raw_emails and not raw_uids:
+        return False
+    whitelist_emails = {e.strip() for e in raw_emails.split(",") if e.strip()}
+    whitelist_uids = {u.strip() for u in raw_uids.split(",") if u.strip()}
+    user_email = request.headers.get("x-user-email", "").strip().lower()
+    user_id = request.headers.get("x-user-id", "").strip()
+    if user_email and user_email in whitelist_emails:
+        return True
+    if user_id and user_id in whitelist_uids:
+        return True
+    return False
+
+
 def _enforce_rate(request: Request) -> None:
+    if _is_whitelisted(request):
+        return
     ok, msg = rate_limit.check_rate_limit(_client_ip(request))
     if not ok:
         raise HTTPException(status_code=429, detail=msg)
@@ -135,6 +164,8 @@ def _daily_client_key(request: Request) -> str:
 
 
 def _enforce_daily(request: Request) -> None:
+    if _is_whitelisted(request):
+        return
     ok, msg = rate_limit.check_daily_quota_headroom(_daily_client_key(request))
     if not ok:
         raise HTTPException(status_code=429, detail=msg)
@@ -712,7 +743,7 @@ def create_app() -> "FastAPI":
         duration_ms = int((time.time() - t0) * 1000)
 
         _store_session(session)
-        rate_limit.record_daily_use(_daily_client_key(request))
+        (None if _is_whitelisted(request) else rate_limit.record_daily_use(_daily_client_key(request)))
 
         # Persist to memory (best-effort, non-blocking)
         try:
@@ -1061,7 +1092,7 @@ def create_app() -> "FastAPI":
             temperature=req.temperature,
         )
         duration_ms = int((time.time() - t0) * 1000)
-        rate_limit.record_daily_use(_daily_client_key(request))
+        (None if _is_whitelisted(request) else rate_limit.record_daily_use(_daily_client_key(request)))
 
         return GenerateResponse(
             text=text,
@@ -1407,7 +1438,7 @@ def create_app() -> "FastAPI":
             strict_mode=req.strict_mode,
         )
         _store_session(session)
-        rate_limit.record_daily_use(_daily_client_key(request))
+        (None if _is_whitelisted(request) else rate_limit.record_daily_use(_daily_client_key(request)))
         # Konversi citations ke format UI
         ui_citations = []
         for cit in session.citations:
