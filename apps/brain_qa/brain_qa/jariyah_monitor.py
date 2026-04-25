@@ -316,6 +316,89 @@ def cron_check() -> dict:
     return result
 
 
+# ── GEPA-lite Integration ────────────────────────────────────────────────────
+
+def gepa_recommend(
+    base_prompt: str | None = None,
+    pairs_path: Path = PAIRS_PATH,
+) -> dict:
+    """
+    Auto-trigger GEPA-lite analysis kalau Jariyah metrics menunjukkan masalah.
+
+    Args:
+        base_prompt: system prompt SIDIX saat ini (default: None = skip GEPA)
+        pairs_path: path ke jariyah_pairs.jsonl
+
+    Returns:
+        dict dengan keys: triggered, reason, gepa_run (kalau triggered)
+    """
+    result = monitor(pairs_path)
+    alerts = result.get("alerts", [])
+
+    # Trigger GEPA kalau ada alert kritis
+    trigger_types = {"low_approval", "quality_drop", "high_rejection"}
+    should_trigger = any(a["type"] in trigger_types for a in alerts)
+
+    if not should_trigger:
+        return {
+            "triggered": False,
+            "reason": "No critical alerts — quality OK",
+            "snapshot": result.get("snapshot", {}),
+        }
+
+    if base_prompt is None:
+        return {
+            "triggered": False,
+            "reason": "Alert detected but no base_prompt provided for GEPA",
+            "alerts": alerts,
+        }
+
+    # Build feedback items dari thumbs_down pairs
+    feedback_items = []
+    try:
+        with pairs_path.open(encoding="utf-8") as f:
+            for line in f:
+                line = line.strip()
+                if not line:
+                    continue
+                p = json.loads(line)
+                if p.get("rating", 0) < 0:  # thumbs_down
+                    feedback_items.append(p)
+    except FileNotFoundError:
+        pass
+
+    if len(feedback_items) < 3:
+        return {
+            "triggered": False,
+            "reason": f"Only {len(feedback_items)} thumbs_down — too few for GEPA",
+            "alerts": alerts,
+        }
+
+    # Run GEPA-lite
+    try:
+        from .gepa_optimizer import run_gepa_lite
+
+        gepa_run = run_gepa_lite(
+            base_prompt=base_prompt,
+            feedback_items=feedback_items,
+            mock_eval=True,
+        )
+        return {
+            "triggered": True,
+            "reason": f"GEPA triggered by {len(alerts)} alert(s)",
+            "winner_variant_id": gepa_run.winner_variant_id,
+            "improvement_delta": gepa_run.improvement_delta,
+            "failure_patterns": [p.pattern_id for p in gepa_run.failure_patterns],
+        }
+    except Exception as e:
+        logger.warning("[GEPA] Integration error: %s", e)
+        return {
+            "triggered": False,
+            "reason": f"GEPA integration error: {e}",
+            "alerts": alerts,
+        }
+
+
 # ── Self-test ────────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
@@ -337,5 +420,11 @@ if __name__ == "__main__":
 
     for alert in result["alerts"]:
         print(f"  [{alert['severity'].upper()}] {alert['type']}: {alert['message']}")
+
+    # Test GEPA integration (will not trigger with 0 pairs)
+    print("\n--- GEPA Integration Test ---")
+    gepa_result = gepa_recommend(base_prompt="Kamu adalah SIDIX.")
+    print(f"GEPA triggered: {gepa_result['triggered']}")
+    print(f"Reason: {gepa_result['reason']}")
 
     print("\n[OK] Self-test complete")
