@@ -6172,3 +6172,109 @@ Kalau localStorage kosong → belum login Supabase, klik tombol Sign In + selesa
 - pytest: 520 passed, 1 deselected
 - Syntax: 2 backend files OK
 - vite build: 49 KB HTML, 114 KB JS bundle
+
+---
+
+## 2026-04-26 — OWN AUTH MIGRATION (Supabase → Google Identity Services)
+
+**Trigger user**: "kenapa nggak bikin halaman login sendiri buat user? trus ada
+pilihann login with google atau login with sosmed... jadi nggak usah pake
+supabase. dan juga kita ppunya database user, dan activity log user, log
+pertanyaaan jgua buat sidix belajar."
+
+### IMPL — Own auth via Google Identity Services (commit 27cda76)
+
+**Backend** (`apps/brain_qa/brain_qa/`):
+- `auth_google.py` (NEW, ~280 lines): verify Google ID token via tokeninfo
+  endpoint, upsert user ke `.data/users.json` (JSON store), HMAC-SHA256
+  session JWT (30-day TTL), activity_log JSONL append, helpers
+  (get_user_by_id/email, list_users, stats, log_activity, list_activity).
+- `agent_serve.py`: 6 endpoint baru
+  - `GET /auth/config` — expose Google Client ID ke frontend
+  - `POST /auth/google` — verify credential + issue session JWT
+  - `GET /auth/me` — Bearer JWT auth, return user info
+  - `POST /auth/logout` — stateless (frontend clear localStorage)
+  - `GET /admin/users` — admin token, list user database
+  - `GET /admin/activity` — admin token, view activity log
+
+**Frontend** (`SIDIX_USER_UI/`):
+- `public/login.html` (NEW, ~250 lines): dedicated login page sesuai Codelabs
+  reference. Fetch Client ID dari /auth/config, render g_id_signin button
+  pill + filled_black theme, callback `handleGoogleCredential` POST credential
+  ke backend, simpan JWT + user info di localStorage, redirect ke ?next=...
+- `src/main.ts`: ownAuth helpers (`ownAuthIsSignedIn`, `ownAuthLogout`,
+  `loadOwnAuthUser`), Sign In button redirect ke /login.html?next=<current>,
+  page-load restore session via /auth/me untuk persist avatar/name across
+  reloads.
+
+### DEPLOY (production VPS)
+
+```
+1. git push (claude/zen-yalow-8d0745 → main)        ✓ commit 27cda76
+2. ssh sidix-vps cd /opt/sidix && git pull          ✓ 4 files changed
+3. Append /opt/sidix/.env:
+   GOOGLE_OAUTH_CLIENT_ID=741499346289-...
+   SIDIX_JWT_SECRET=<64-char-hex>                   ✓
+4. cd SIDIX_USER_UI && npm run build                ✓ 1.57s, dist/login.html ada
+5. pm2 restart sidix-brain (pickup env vars)        ✓ online 73 MB
+6. pm2 restart sidix-ui (serve new dist)            ✓ online
+```
+
+### TEST — smoke test endpoint
+
+```
+✓ GET  /auth/config              → 200 {"google_client_id":"741499346289-..."}
+✓ POST /auth/google {invalid}    → 401 {"detail":"ID token tidak valid"}
+✓ GET  /auth/me (no auth)        → 401 {"detail":"not authenticated"}
+✓ GET  /auth/me (bad bearer)     → 401 {"detail":"not authenticated"}
+✓ GET  /login.html               → 200 (7975 bytes, gsi/client script ada)
+```
+
+### DECISION — Why own auth?
+
+1. **No vendor lock-in** (Supabase down/policy = login mati)
+2. **Activity log per-user** untuk SIDIX learning corpus (training pair)
+3. **Database user di SIDIX** untuk tier upgrade flow + analytics
+4. **Trigger error fixed** (Supabase handle_new_user bug skipped, no SQL fix)
+5. **Lighter** (1 module Python vs 3 file Supabase + auth state mgmt)
+
+### DECISION — JSON store (not SQLite)
+
+- < 1000 user → file <100KB, fits in memory
+- Atomic write via threading.Lock
+- Easy backup/inspect/migrate
+- Migrate ke SQL kalau scale issue muncul (>10k user)
+
+### DECISION — JWT 30-day TTL
+
+ChatGPT/Claude pattern. Trade-off: token compromise window 30d, mitigated by
+HTTPS only + future httpOnly cookie migration.
+
+### SECURITY — User leaked Client Secret di chat
+
+User paste Client Secret (`GOCSPX-...`) di transkrip. Warned user:
+- ID token flow tidak butuh Client Secret
+- Recommended rotation di Google Cloud Console
+- SIDIX hanya pakai Client ID (publik, di-embed frontend)
+
+### DOCUMENTATION
+
+- `research_notes/219_own_auth_google_identity_services.md` — full analysis:
+  GIS flow, why pivot dari Supabase, architecture (verify, store, JWT,
+  activity log), security considerations, next iterations, lessons learned
+
+### NEXT (P1)
+
+- [ ] User manual test: open app.sidixlab.com → Sign In → Google popup
+      → callback → avatar muncul → reload → session persist
+- [ ] Hook `log_activity()` ke /ask + /agent/* endpoints (capture per-user
+      pertanyaan + jawaban + latency)
+- [ ] Admin tab di ctrl.sidixlab.com: User Database + Activity Logs viewer
+- [ ] Phase out Supabase auth code di main.ts (deprecation, lalu hapus)
+
+### Validation summary
+
+- 4 endpoint baru wired correctly (401 untuk invalid input)
+- Login page accessible di app.sidixlab.com/login.html
+- Backend pickup `GOOGLE_OAUTH_CLIENT_ID` env var (verified via /auth/config)
+- Build: 49 KB HTML, 114 KB JS, login.html 7.9 KB

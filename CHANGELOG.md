@@ -30,6 +30,14 @@ Semua perubahan signifikan dicatat di sini. Format: `[versi] — tanggal — rin
 - Modal di chat UI dengan drag/drop, paste from clipboard, file picker untuk screenshot (max 5 MB)
 - Backend persistent JSON store + 4 admin endpoints
 
+### Added — Own Auth (Google Identity Services, no Supabase)
+- Migrasi dari Supabase Auth → own auth via Google Identity Services (GIS) — full control data user, no vendor lock-in
+- `apps/brain_qa/brain_qa/auth_google.py` (NEW): verify Google ID token via tokeninfo, JSON user store, HMAC-SHA256 session JWT (30-day TTL), activity log JSONL
+- 6 endpoint baru: `/auth/config`, `/auth/google`, `/auth/me`, `/auth/logout`, `/admin/users`, `/admin/activity`
+- `SIDIX_USER_UI/public/login.html` (NEW): dedicated login page (Codelabs pattern), Google Sign-In button pill + filled_black theme, callback simpan JWT di localStorage
+- `main.ts`: ownAuth helpers (isSignedIn/logout/loadOwnAuthUser), Sign In button redirect ke /login.html?next=<current>, page-load session restore via /auth/me
+- Activity log akan dipakai untuk SIDIX learning corpus (training pair generation)
+
 ### Added — UX Improvements
 - Avatar profile saat login (Google avatar atau fallback initial-letter SVG)
 - Help/Bantuan modal dengan penjelasan 5 persona, 4 mode Supermodel, 3 opsi chat
