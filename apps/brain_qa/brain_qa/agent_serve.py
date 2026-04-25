@@ -1378,8 +1378,14 @@ def create_app() -> "FastAPI":
         ui_citations = []
         for cit in session.citations:
             ui_citations.append({
-                "filename": cit.get("source_path", cit.get("source_title", "corpus")),
-                "snippet": "",
+                "filename": (
+                    cit.get("source_path")
+                    or cit.get("source_title")
+                    or cit.get("title")
+                    or cit.get("url")
+                    or ("web search" if cit.get("type") == "web_search" else "corpus")
+                ),
+                "snippet": cit.get("snippet", ""),
                 "score": 1.0,
             })
         # Ambil citations dari steps juga

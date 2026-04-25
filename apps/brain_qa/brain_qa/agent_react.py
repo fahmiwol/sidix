@@ -260,6 +260,40 @@ def _needs_web_search(question: str) -> bool:
     return bool(_CURRENT_EVENTS_RE.search(question or ""))
 
 
+def _extract_web_search_query(question: str) -> str:
+    """
+    Pivot 2026-04-26: extract concise web_search query dari user prompt panjang.
+
+    User sering tanya panjang ("Coba buatkan aplikasi standart aja, kalkulator
+    sederhana. buat digunakan oleh wakil presiden indonesia sekarang, kamu tau
+    kan siapa namanya?") — kalau kita kirim VERBATIM ke DuckDuckGo, hasil
+    pencarian jadi tentang 'kalkulator' bukan 'wakil presiden indonesia'.
+
+    Heuristik:
+      1. Cari segmen yang punya kata kunci current-event (presiden/menteri/dll)
+      2. Kalau ada, return segmen itu saja (max 80 chars)
+      3. Kalau tidak, return original question (truncated)
+    """
+    q = (question or "").strip()
+    if not q:
+        return q
+    # Split per koma / titik / tanya supaya isolate factual segment
+    segments = re.split(r"[,\.\?!;]\s*", q)
+    factual_keywords = re.compile(
+        r"\b(presi(?:d|den)t|presiden|menteri|minister|gubernur|governor|"
+        r"ceo|founder|raja|king|ratu|queen|sultan|paus|pope|champion|juara|"
+        r"berita|news|harga|kurs|cuaca|weather|"
+        r"siapa|who\s+is)\b",
+        re.IGNORECASE,
+    )
+    for seg in segments:
+        seg = seg.strip()
+        if 5 <= len(seg) <= 120 and factual_keywords.search(seg):
+            return seg
+    # Fallback: full question, truncated
+    return q[:120]
+
+
 def _should_prioritize_corpus(question: str, *, corpus_only: bool) -> bool:
     """Putuskan kapan RAG harus dominan (topik SIDIX atau user minta sumber eksplisit)."""
     if corpus_only:
@@ -572,12 +606,15 @@ def _rule_based_plan(
                 }
             ]
 
-        # 2. Data terkini saja (bukan topik SIDIX) → web_search aggressive default
+        # 2. Data terkini saja (bukan topik SIDIX) → web_search aggressive default.
+        #    Pivot 2026-04-26: extract concise factual query (jangan pass full prompt
+        #    panjang — DuckDuckGo akan match keyword dominan yang salah).
         if needs_web and allow_web_fallback and not corpus_only:
+            _web_q = _extract_web_search_query(question)
             return (
-                f"Pertanyaan menyangkut data terkini/real-time. Langsung web_search: '{question}'.",
+                f"Pertanyaan menyangkut data terkini/real-time. web_search: '{_web_q}'.",
                 "web_search",
-                {"query": question, "max_results": 5},
+                {"query": _web_q, "max_results": 5},
             )
 
         # 3. Topik SIDIX saja → corpus
@@ -1720,9 +1757,15 @@ def run_react(
                     "thumbnail", "konten", "banner", "feed", "story", "reels", "cover", "wallpaper", "logo", "sticker")
     _has_verb = any(v in _q_lower for v in _image_verbs)
     _has_noun = any(n in _q_lower for n in _image_nouns)
+    # Meta-question detector: "bisa bikin gambar?" / "kamu bisa generate?" / "ga"
+    # adalah question tentang KAPABILITAS, bukan request. Jangan trigger image gen.
+    _is_meta_question = bool(re.search(
+        r"\b(bisa(kah)?|dapat|mampu|can|could|able)\b.*\b(bikin|buat|generate|create|gambar)\b.*[\?]?\s*(ga|gak|tidak|nggak|enggak|engga|nda|ya)?\s*\??$",
+        _q_lower,
+    )) or _q_lower.strip().endswith(("ga?", "ga", "gak?", "gak", "ngga?", "ngga"))
     import logging as _log_fp
-    _log_fp.getLogger(__name__).warning(f"[ImageFastPath] check q={_q_lower[:80]!r} has_verb={_has_verb} has_noun={_has_noun}")
-    if _has_verb and _has_noun:
+    _log_fp.getLogger(__name__).warning(f"[ImageFastPath] check q={_q_lower[:80]!r} has_verb={_has_verb} has_noun={_has_noun} meta={_is_meta_question}")
+    if _has_verb and _has_noun and not _is_meta_question:
         _log_fp.getLogger(__name__).warning("[ImageFastPath] TRIGGERED, calling text_to_image")
         try:
             from .agent_tools import call_tool as _call_tool
@@ -1868,16 +1911,22 @@ def run_react(
             except Exception as _c_err:
                 _log_fp.getLogger(__name__).warning(f"[Council] failed, falling back to single agent: {_c_err}")
 
-        _cot_scaffold = get_cot_scaffold(working_question, persona)
-        if _cot_scaffold:
-            _pre_step_cot = ReActStep(
-                step=-3,
-                thought=f"[CoT] Kompleksitas={_cot_complexity}. Terapkan kerangka penalaran sistematis.",
-                action_name="cot_scaffold",
-                action_args={"complexity": _cot_complexity, "persona": persona},
-                observation=_cot_scaffold,
-            )
-            session.steps.insert(0, _pre_step_cot)
+        # CoT scaffold pre-step — Pivot 2026-04-26: opt-in via strict mode.
+        # Sebelumnya CoT scaffold (### Context / ### Solusi Utama / ### Contoh
+        # Kode) ALWAYS injected → LLM ikuti literal jadi response kaku
+        # template-driven. Bertentangan dengan visi SIDIX bebas seperti
+        # GPT/Claude. Sekarang hanya inject kalau strict_mode opt-in.
+        if _strict:
+            _cot_scaffold = get_cot_scaffold(working_question, persona)
+            if _cot_scaffold:
+                _pre_step_cot = ReActStep(
+                    step=-3,
+                    thought=f"[CoT] Kompleksitas={_cot_complexity}. Terapkan kerangka penalaran sistematis.",
+                    action_name="cot_scaffold",
+                    action_args={"complexity": _cot_complexity, "persona": persona},
+                    observation=_cot_scaffold,
+                )
+                session.steps.insert(0, _pre_step_cot)
     except Exception as _cot_err:
         import logging as _log_cot
         _log_cot.getLogger(__name__).debug("[CoT] skip — %s", _cot_err)
