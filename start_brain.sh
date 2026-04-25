@@ -16,6 +16,21 @@ set -e
 REPO_DIR="${REPO_DIR:-/opt/sidix}"
 cd "$REPO_DIR"
 
+# Source .env kalau ada — biar OLLAMA_MODEL/SUPABASE_URL/etc ter-pickup PM2.
+# `set -a` auto-export setiap variable yang di-set di .env.
+if [ -f "$REPO_DIR/.env" ]; then
+  set -a
+  # shellcheck disable=SC1091
+  source "$REPO_DIR/.env"
+  set +a
+fi
+if [ -f "$REPO_DIR/apps/brain_qa/.env" ]; then
+  set -a
+  # shellcheck disable=SC1091
+  source "$REPO_DIR/apps/brain_qa/.env"
+  set +a
+fi
+
 # Aktifkan venv kalau ada (.venv atau venv)
 if [ -f ".venv/bin/activate" ]; then
   source .venv/bin/activate

@@ -5510,3 +5510,24 @@ Akses `C:\Users\ASUS\.kimi\sessions\.../wire.jsonl` (9.9MB, 4083 events) konfirm
 - #4075: "handoff dulu, buat claude biar ngga salah konteks" (KIMI rate-limited di sini)
 
 KIMI rate-limited sebelum sempat handoff. Saya selesaikan pivot yang belum tuntas — ini bukan revert KIMI's work, tapi melengkapi.
+
+## 2026-04-25 (lanjutan 4) — Address KIMI Handoff Open Issues
+
+KIMI's `docs/HANDOFF_KIMI_TO_CLAUDE_20260425.md` (rate-limited sebelum sempat commit, ditemukan di `C:\SIDIX-AI\docs\` lokal user). 5 open issues — status sebelum & sesudah saya:
+
+| Issue | Severity | Status sebelum | Setelah commit Claude |
+|---|---|---|---|
+| #1 Response format lama [EXPLORATORY] | 🔴 HIGH | OPEN | ✅ FIXED (commit c99415d — casual gate) |
+| #2 Ollama timeout 90s sidix-lora | 🔴 HIGH | OPEN | ✅ MITIGATED (env OLLAMA_MODEL=qwen2.5:1.5b + start_brain.sh source .env) |
+| #3 Backend crash | 🟡 MED | OPEN | ✅ FIXED earlier (e111c2a start_brain.sh + 85695f6 GenerateRequest schema) |
+| #4 Coding planner spam | 🟡 LOW | OPEN | ✅ FIXED (downgrade empty-action to DEBUG, warn only for non-empty unrecognized) |
+| #5 Landing/UI belum sync | 🟡 MED | OPEN | ✅ FIXED (9a3bf0c rebuild + sync, 0009378 soften framing) |
+
+### IMPL: start_brain.sh source .env
+PM2 ecosystem.config.js cuma set SIDIX_TYPO_PIPELINE — tidak load `.env`. Update start_brain.sh: `set -a; source .env; set +a` untuk auto-export semua env vars (OLLAMA_MODEL, SUPABASE_URL, dll). Source `/opt/sidix/.env` + `/opt/sidix/apps/brain_qa/.env` kalau ada.
+
+### CONFIG: VPS .env
+Append `OLLAMA_MODEL=qwen2.5:1.5b` ke `/opt/sidix/.env`. Alasan: model `sidix-lora:latest` 4.7 GB pada CPU-only VPS terlalu lambat → 90s timeout. `qwen2.5:1.5b` (1 GB) sudah loaded di `ollama ps`. Trade-off: kapasitas reasoning lebih kecil, tapi latency manageable. Untuk prod-quality, perlu GPU upgrade.
+
+### DOC: docs/HANDOFF_KIMI_TO_CLAUDE_20260425.md
+KIMI's handoff doc copy dari `C:\SIDIX-AI\docs\` ke worktree, akan di-commit bersama Claude's response sebagai dokumentasi continuity. Format: 5 open issues, deploy status table, anti-bentrok rules, key file list, test commands.

@@ -285,7 +285,12 @@ def _parse_planner_output(
         return (thought or "Saya sudah punya cukup informasi untuk menjawab.", "", args)
 
     if action not in tools:
-        log.warning(f"Coding planner chose invalid action: {action}")
+        # Empty action = LLM didn't follow ACTION: format. Common, downgrade to debug
+        # to avoid log spam. Only warn for non-empty unrecognized action names.
+        if action:
+            log.warning(f"Coding planner chose invalid action: {action!r}")
+        else:
+            log.debug("Coding planner output missing ACTION: line, using heuristic fallback")
         return _heuristic_fallback("", [], 0)
 
     return thought or f"Plan: gunakan {action}", action, args
