@@ -5761,3 +5761,40 @@ yang dijanjikan ke user (casual clean / regex / Supermodel modules / persona map
 - **Tests**: 520 passed, 1 deselected
 
 **Launch readiness**: Opsi B (Beta launch dengan honest positioning) — feasible HARI INI.
+
+## 2026-04-26 — 5-Bug Fix Wave (live test feedback dari user)
+
+### USER FEEDBACK SCREENSHOTS
+1. Response template kaku '### Context / ### Solusi Utama / ### Contoh Kode'
+2. Citations 'corpus corpus corpus corpus corpus' di footer
+3. Image gen trigger untuk pertanyaan meta 'kamu bisa bikin gambar ga'
+4. Factual hallucination: 'Saifullah Yusuf' / 'Ma'ruf Amin' / 'Mr. Kaesang Panjaitan' sebagai wakil presiden saat ini
+
+### ROOT CAUSES (5)
+
+| # | Root cause | File | Fix |
+|---|---|---|---|
+| 1 | CoT scaffold pre-step ALWAYS injected | agent_react.py:1872 | Gate dengan `if _strict:` (5th `not _strict` bug) |
+| 2 | Citation transformer cuma cek source_path/source_title | agent_serve.py:1381,1389,1586 | Chain fallback: source_path→source_title→title→url→'web search'/'corpus' |
+| 3 | Image FAST PATH trigger meta-question | agent_react.py:1722 | Tambah `_is_meta_question` regex (bisa+verb+noun+?/ga) |
+| 4 | web_search query verbatim long prompt | agent_react.py:580 | `_extract_web_search_query()` split per koma, pilih segmen factual |
+| 5a | Regex `_CURRENT_EVENTS_RE` butuh 'siapa' adjacent ke 'presiden' | agent_react.py:_CURRENT_EVENTS_RE | Tambah 'wakil presiden indonesia' tanpa wajib 'siapa' prefix |
+| 5b | Model 7b ignore web observation, fallback ke training data | agent_react.py:_compose_final_answer | Append explicit instruksi 'pakai observation, jangan training cutoff' kalau web_search ada di steps |
+| 5c | Search hasil tua | agent_react.py | Append current year ke query kalau ada 'sekarang/now' marker |
+
+Plus housekeeping: hapus 1 contaminated praxis lesson yang re-inject "Saifullah Yusuf" sebagai memory.
+
+### SMOKE TEST — final state
+| Q | A | Status |
+|---|---|---|
+| "halo, kamu bisa bantu apa aja?" | natural casual response 354 chars | ✅ |
+| "kamu bisa bikin gambar ga?" | "Tentu saja! Saya bisa membantu Anda membuat konsep..." (no SVG mock) | ✅ Fix #3 |
+| "siapa wakil presiden indonesia sekarang" | "**Gibran Rakabuming** adalah Wakil Presiden Indonesia" + 5 citations | ✅ Fix #5 |
+
+### COMMITS DEPLOYED
+- `f1efd33` — 4 critical bug fixes (template leak, citation, image meta, query extract)
+- `6be4f0c` — regex extension wakil presiden
+- `cdb8431` — year-augmented query + observation-priority instruction
+
+### TESTS: 520 passed, 1 deselected
+### LIVE URL: https://app.sidixlab.com (siap retest)
