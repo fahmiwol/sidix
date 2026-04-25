@@ -5649,3 +5649,26 @@ rsync -av --delete /opt/sidix/SIDIX_LANDING/ /www/wwwroot/sidixlab.com/
 2. Test factual query: "siapa presiden indonesia sekarang"
 3. Kalau model 1.5B masih lemah → rekomendasi upgrade ke 7B + GPU
 
+
+
+### 2026-04-25 — DOC: Blueprint Optimasi SIDIX 2.0 untuk Claude
+
+**DOC:** `docs/PLAN_CLAUDE_SIDIX2_OPTIMIZATION.md` — Blueprint lengkap 400+ baris untuk Claude eksekusi.
+
+**Isi blueprint:**
+1. **Visi v2.0** — summary semua yang sudah didiskusikan hari ini
+2. **Root cause analysis** — 5 masalah dengan proof dan baris kode yang relevan
+3. **Rencana eksekusi** — 6 fase (A=Validasi, B=Web Search, C=Model Decision, D=Streaming, E=Post-processing, F=Evaluation)
+4. **Decision matrix** — kapan keep 1.5B vs upgrade 7B
+5. **File yang perlu disentuh** — tabel high/medium priority
+6. **Checklist** — 11 langkah Claude mulai dari mana
+7. **Anti-bentrok note** — override: Claude = executor, Kimi = architect untuk optimasi ini
+
+**Commit:** `0588876` — sudah push origin/main
+
+**Status akhir hari ini:**
+- 11 commits ke main (termasuk Claude's 8 + Kimi's 3)
+- Deploy VPS berhasil (backend + UI + landing)
+- Dokumentasi: handoff, validasi checklist, blueprint — semua tersedia untuk Claude
+- Sisa: eksekusi optimasi (web search fix, model decision, streaming, evaluation)
+
