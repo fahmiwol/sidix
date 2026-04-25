@@ -2080,7 +2080,7 @@ def create_app() -> "FastAPI":
             try:
                 from .token_quota import record_usage
                 quota_after = record_usage(
-                    user_id=user_id,
+                    user_id=effective_user_id,  # FIX: was undefined `user_id`
                     ip=client_ip,
                     tokens_in=tokens_in_est,
                     tokens_out=tokens_out_est,
@@ -2162,6 +2162,24 @@ def create_app() -> "FastAPI":
                 )
             except Exception as e:
                 log.debug("Memory save in stream skipped: %s", e)
+
+            # ── 9b. Activity log per-user (untuk SIDIX learning) ───────────────
+            # Hook di /ask/stream (sebelumnya cuma di /ask). User chat di app
+            # frontend pakai stream, bukan /ask, jadi tanpa hook ini activity
+            # log selalu kosong walau user sudah sign-in.
+            citations_for_log = []
+            for step in session.steps:
+                citations_for_log.extend(step.action_args.get("_citations", []))
+            _log_user_activity(
+                request,
+                action="ask/stream",
+                question=req.question,
+                answer=answer,
+                persona=session.persona,
+                mode=("strict" if req.strict_mode else ("simple" if req.simple_mode else "agent")),
+                citations_count=len(citations_for_log),
+                latency_ms=int((time.time() - t_start) * 1000),
+            )
 
             # ── 10. Done event ─────────────────────────────────────────────────
             event = _json.dumps({

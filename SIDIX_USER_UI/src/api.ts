@@ -27,6 +27,29 @@ function detectBrainQABase(): string {
 
 export const BRAIN_QA_BASE = detectBrainQABase();
 
+/**
+ * Auth headers helper — Pivot 2026-04-26 (own auth via Google Identity Services).
+ *
+ * Inject headers untuk request yang authenticated:
+ *   - Authorization: Bearer <jwt>  → backend extract user via auth_google.extract_user_from_request()
+ *   - x-user-id, x-user-email      → quota tracking + whitelist auto-detect
+ *
+ * Dipanggil di setiap fetch ke /ask, /ask/stream, /agent/* — supaya backend
+ * tahu siapa user dan capture activity log per-user (untuk SIDIX learning).
+ */
+function _authHeaders(): Record<string, string> {
+  const h: Record<string, string> = {};
+  try {
+    const token = localStorage.getItem('sidix_session_jwt') ?? '';
+    if (token) h['Authorization'] = `Bearer ${token}`;
+    const uid = localStorage.getItem('sidix_user_id') ?? '';
+    if (uid) h['x-user-id'] = uid;
+    const email = localStorage.getItem('sidix_user_email') ?? '';
+    if (email) h['x-user-email'] = email;
+  } catch { /* ignore localStorage error */ }
+  return h;
+}
+
 // ── Types ────────────────────────────────────────────────────────────────────
 
 export interface Citation {
@@ -332,13 +355,14 @@ export async function askStream(
   // sambil generate, jadi long timeout tidak terasa "patah".
   const timer = setTimeout(() => controller.abort(), 240_000);
 
-  // Kirim user-id + email jika sudah login (untuk quota tracking, whitelist, tier model)
-  const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+  // Kirim user-id + email + Bearer JWT jika sudah login.
+  // - x-user-id, x-user-email → quota tracking + whitelist auto-detect
+  // - Authorization: Bearer    → backend capture activity log per-user (SIDIX learning)
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+    ..._authHeaders(),
+  };
   try {
-    const uid = opts?.userId ?? localStorage.getItem('sidix_user_id') ?? '';
-    if (uid) headers['x-user-id'] = uid;
-    const email = localStorage.getItem('sidix_user_email') ?? '';
-    if (email) headers['x-user-email'] = email;
     if (opts?.conversationId) headers['x-conversation-id'] = opts.conversationId;
   } catch { /* ignore */ }
 
@@ -429,7 +453,7 @@ export async function agentBurst(
 ): Promise<BurstResponse> {
   const res = await fetch(`${BRAIN_QA_BASE}/agent/burst`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ..._authHeaders() },
     body: JSON.stringify({
       prompt,
       n: opts?.n ?? 3,
@@ -456,7 +480,7 @@ export interface TwoEyedResponse {
 export async function agentTwoEyed(prompt: string): Promise<TwoEyedResponse> {
   const res = await fetch(`${BRAIN_QA_BASE}/agent/two-eyed`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ..._authHeaders() },
     body: JSON.stringify({ prompt }),
   });
   if (!res.ok) throw new BrainQAError(`Two-eyed error: ${res.status}`, 'http');
@@ -492,7 +516,7 @@ export async function agentResurrect(
 ): Promise<ResurrectResponse> {
   const res = await fetch(`${BRAIN_QA_BASE}/agent/resurrect`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ..._authHeaders() },
     body: JSON.stringify({
       topic,
       n_gems: opts?.nGems ?? 3,
@@ -513,7 +537,7 @@ export async function agentForesight(
 ): Promise<ForesightResponse> {
   const res = await fetch(`${BRAIN_QA_BASE}/agent/foresight`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ..._authHeaders() },
     body: JSON.stringify({
       topic,
       horizon: opts?.horizon ?? '1y',

@@ -6377,3 +6377,96 @@ Penyebab penurunan: Supabase Auth flow + GoTrue client + auth state mgmt + 110-l
 ### DOCUMENTATION
 
 - `research_notes/220_activity_log_user_database_design.md` — design rationale + privacy considerations
+
+---
+
+## 2026-04-26 (vol 3) — POST-USER-TEST FIXES
+
+User feedback after first chat went through (test query "buatkan resep obat batuk herbal"):
+
+> "gimana yah biar respondnya lebih cepat?
+> trus mana menu yang tutorial di nav? tentang persona, tentang mode burst dll
+> Backend sering tidak terhubung
+> di proses saat sedag berfikir, kasih durasi berfikrinya juga, masukin ke log
+> belum masuk tuh log yang saya nanya obat batuk."
+
+### BUG FIXED — Activity log empty meskipun user sudah sign-in
+
+**Root cause**: Frontend `fetch /ask/stream` + `/agent/*` TIDAK kirim header
+`Authorization: Bearer <jwt>`. Backend `auth_google.extract_user_from_request()`
+return None untuk anonymous → `_log_user_activity()` skip.
+
+**Plus**: `/ask/stream` tidak punya hook `_log_user_activity` (cuma `/ask`),
+padahal frontend pakai stream.
+
+**Fix**:
+1. `api.ts`: helper baru `_authHeaders()` — inject `Authorization: Bearer <jwt>`
+   + `x-user-id` + `x-user-email` dari localStorage. Dipakai di `/ask/stream`,
+   `/agent/burst`, `/agent/two-eyed`, `/agent/resurrect`, `/agent/foresight`.
+2. `agent_serve.py`: tambah hook `_log_user_activity()` di `/ask/stream`
+   (sebelum done event), capture action="ask/stream", question, answer,
+   persona, mode (strict/simple/agent), citations_count, latency_ms.
+3. Bonus fix: bug `record_usage(user_id=user_id, ...)` undefined variable
+   diubah ke `effective_user_id`.
+
+### IMPL — Real-time Thinking Timer + Latency Badge
+
+**Problem**: User tidak tahu kenapa respond lama (cold start GPU 60-90s feel
+seperti "stuck" tanpa feedback).
+
+**Solution** (`main.ts`):
+- Thinking indicator dapat span `#thinking-timer` yang update setiap 100ms
+  dengan format `0.0s` (tabular-nums supaya tidak jitter).
+- Hint label escalates berdasarkan elapsed:
+  - 0-5s: "Sedang berpikir..."
+  - 5-15s: "Mencari konteks relevan..."
+  - 15-30s: "Menyusun jawaban..."
+  - 30-60s: "Riset multi-langkah, sabar ya..."
+  - >60s: "Mikir lebih dalam... (mungkin perlu web search)"
+- `stopThinkingTimer()` dipanggil di onToken (first token), onError, onDone,
+  onQuotaLimit — supaya timer berhenti saat selesai/error.
+- onDone tambah footer "⏱ X.Xs · ✓ normal" (atau ⚡ cepat / 🐢 lama / ⏳ sangat
+  lama tergantung ms): user paham latency setiap chat, transparan.
+- onError tampilkan elapsed: "SIDIX sedang offline atau timeout (45.2s). GPU
+  mungkin sedang cold-start (~60s)."
+
+### IMPL — Tutorial Menu di Header
+
+**Problem**: User tidak tahu kalau ada tombol Bantuan di footer (kecil + jauh).
+"mana menu yang tutorial di nav?"
+
+**Solution**: Tambah pill button "Tutorial" di header (sebelah Tentang SIDIX
++ Feedback). Icon: graduation-cap. Klik → buka help modal yang sudah ada
+(berisi penjelasan 5 persona + 4 mode supermodel + checkbox opsi).
+
+`index.html`: tambah `<button id="btn-tutorial">` di header section.
+`main.ts`: wire `btn-tutorial` click → `openHelpModal()`.
+
+### Build size
+
+- index-9ddDDBOk.js: **115.71 kB** (gzip 31.05 kB) — naik tipis 1 KB karena
+  thinking timer code. Masih 64% lebih kecil dari pre-pivot 321 KB.
+
+### NEXT PERF investigation (P2)
+
+User: "iterasi optimasi cari biar respondnya lebih cepet, tetep relevant".
+
+Backend stable (uptime 48m, 0 unstable restarts), jadi "backend tidak
+terhubung" yang sempat user lihat kemungkinan transient (cold start RunPod
+~60s). Yang bisa di-optimize untuk perceived speed:
+
+- [ ] Streaming token first-byte target <2s (sekarang ~5-15s saat ReAct loop).
+      Kemungkinan: stream "thinking" mid-process bukan tunggu loop selesai.
+- [ ] Cache response untuk pertanyaan umum (recipe, fact lookup) — Redis
+      atau in-memory LRU.
+- [ ] RunPod warmup ping otomatis tiap 50 detik supaya GPU stay warm
+      (cron sederhana: `curl /health` setiap 30s).
+- [ ] Reduce `max_tool_iter` di ReAct dari 6 ke 4 untuk simple questions.
+- [ ] Persistent connection pool ke RunPod (re-use HTTP keepalive).
+
+### Validation
+
+- Build: vite 1.88s, 0 TS errors
+- Bundle: 115.71 kB (gzip 31.05 kB)
+- Backend syntax: agent_serve.py valid AST after hook addition
+- /ask/stream hook deployed = first chat user setelah deploy ini akan tercatat di activity log

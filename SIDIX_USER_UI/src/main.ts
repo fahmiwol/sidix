@@ -1236,6 +1236,8 @@ helpClose?.addEventListener('click', closeHelpModal);
 helpModalBackdrop?.addEventListener('click', (e) => {
   if (e.target === helpModalBackdrop) closeHelpModal();
 });
+// Tutorial button di header — sama-sama buka help modal (tutorial = bantuan)
+document.getElementById('btn-tutorial')?.addEventListener('click', openHelpModal);
 
 // ── Feedback modal ─────────────────────────────────────────────────────────
 const feedbackBtn = document.getElementById('btn-feedback');
@@ -1529,27 +1531,41 @@ async function handleSend() {
 
   appendMessage('user', question);
 
-  // Thinking indicator — dengan hint khusus kalau minta gambar
+  // Thinking indicator — dengan hint khusus kalau minta gambar + REAL-TIME TIMER
   const q_lower = question.toLowerCase();
   const isImageIntent = /(bikin|buat|generate|create|gambarkan|render|lukiskan).*?(gambar|foto|ilustrasi|image|picture|visual|artwork|poster|lukisan|desain)|(gambar|foto|ilustrasi|image|artwork).*?(bikin|buat|generate|create)/i.test(q_lower);
   const thinking = document.createElement('div');
   thinking.className = 'flex justify-start';
   thinking.id = 'sidix-thinking-indicator';
-  thinking.innerHTML = isImageIntent
-    ? `<div class="msg-ai px-5 py-4 flex items-center gap-3">
-        <div class="thinking-dot"></div>
-        <div class="thinking-dot"></div>
-        <div class="thinking-dot"></div>
-        <span class="text-xs text-parchment-400">🎨 Menggambar... (~90 detik di SIDIX local GPU)</span>
-      </div>`
-    : `<div class="msg-ai px-5 py-4 flex items-center gap-3">
-        <div class="thinking-dot"></div>
-        <div class="thinking-dot"></div>
-        <div class="thinking-dot"></div>
-        <span class="text-xs text-parchment-400">Sedang berpikir...</span>
-      </div>`;
+  const thinkingLabel = isImageIntent ? '🎨 Menggambar...' : 'Sedang berpikir...';
+  thinking.innerHTML = `<div class="msg-ai px-5 py-4 flex items-center gap-3">
+    <div class="thinking-dot"></div>
+    <div class="thinking-dot"></div>
+    <div class="thinking-dot"></div>
+    <span class="text-xs text-parchment-400" id="thinking-text">${thinkingLabel}</span>
+    <span class="text-[10px] text-parchment-500" id="thinking-timer" style="font-variant-numeric: tabular-nums;">0.0s</span>
+  </div>`;
   chatMessages.appendChild(thinking);
   chatMessages.scrollTop = chatMessages.scrollHeight;
+
+  // ── Live thinking timer + escalating hints ─────────────────────────────
+  // User feedback 2026-04-26: butuh feedback durasi saat berpikir.
+  // Update setiap 100ms supaya feel snappy. Hint escalates: 5s → 15s → 30s → 60s
+  // supaya user tahu kalau lama itu wajar (cold start GPU 60-90s).
+  const thinkStart = Date.now();
+  const timerEl = thinking.querySelector('#thinking-timer') as HTMLSpanElement | null;
+  const labelEl = thinking.querySelector('#thinking-text') as HTMLSpanElement | null;
+  const thinkingTimerInterval = setInterval(() => {
+    if (!timerEl || !labelEl) return;
+    const elapsed = (Date.now() - thinkStart) / 1000;
+    timerEl.textContent = `${elapsed.toFixed(1)}s`;
+    // Escalate hint biar user tahu kenapa lama
+    if (elapsed > 60 && !isImageIntent) labelEl.textContent = 'Mikir lebih dalam... (mungkin perlu web search)';
+    else if (elapsed > 30 && !isImageIntent) labelEl.textContent = 'Riset multi-langkah, sabar ya...';
+    else if (elapsed > 15 && !isImageIntent) labelEl.textContent = 'Menyusun jawaban...';
+    else if (elapsed > 5 && !isImageIntent) labelEl.textContent = 'Mencari konteks relevan...';
+  }, 100);
+  const stopThinkingTimer = () => clearInterval(thinkingTimerInterval);
 
   const persona = (personaSel?.value ?? 'AYMAN') as Persona;
 
@@ -1585,6 +1601,7 @@ async function handleSend() {
     onToken: (text) => {
       if (!firstTokenReceived) {
         firstTokenReceived = true;
+        stopThinkingTimer();
         thinking.remove();
         streamWrap.style.display = '';
       }
@@ -1597,12 +1614,16 @@ async function handleSend() {
     },
     onQuotaLimit: (info) => {
       // Hapus thinking indicator + stream bubble
+      stopThinkingTimer();
       thinking.remove();
       streamWrap.remove();
       // Tampilkan Waiting Room interaktif (quiz, gacha, motivasi, tools)
       initWaitingRoom(LANG, info);
     },
     onDone: (_persona, meta) => {
+      // Hentikan timer dan capture total durasi (thinking + streaming)
+      stopThinkingTimer();
+      const totalMs = Date.now() - thinkStart;
       if (meta?.session_id) setLastSessionId(meta.session_id);
       // Persist conversation_id untuk chat berikutnya
       if ((meta as any)?.conversation_id) {
@@ -1655,6 +1676,14 @@ async function handleSend() {
         streamBubble.appendChild(citeRow);
         initIcons();
       }
+      // Latency footer — kasih tau user durasi total (transparency + UX feel)
+      const latencySec = (totalMs / 1000).toFixed(1);
+      const speedHint = totalMs < 5000 ? '⚡ cepat' : totalMs < 15000 ? '✓ normal' : totalMs < 45000 ? '🐢 lama (mungkin web search/cold start)' : '⏳ sangat lama';
+      const latencyRow = document.createElement('div');
+      latencyRow.className = 'mt-2 pt-2 flex items-center gap-2 text-[10px] text-parchment-500';
+      latencyRow.style.borderTop = '1px dashed rgba(212,168,83,0.1)';
+      latencyRow.innerHTML = `<span style="font-variant-numeric: tabular-nums;">⏱ ${latencySec}s</span><span>·</span><span>${speedHint}</span>`;
+      streamBubble.appendChild(latencyRow);
       // SIDIX 2.0: hide confidence & feedback untuk agent mode (conversational)
       // Metadata epistemic hanya ditampilkan di strict_mode / research — nanti bisa
       // di-enable via flag dari backend. Untuk sekarang, biarkan conversation bersih.
@@ -1663,12 +1692,15 @@ async function handleSend() {
       // if (meta?.session_id) { ... }
     },
     onError: (msg) => {
+      stopThinkingTimer();
+      thinking.remove();
       streamWrap.remove();
       const m = msg.toLowerCase();
+      const elapsed = ((Date.now() - thinkStart) / 1000).toFixed(1);
       if (m.includes('fetch') || m.includes('network') || m.includes('failed') || m.includes('timeout') || m.includes('abort')) {
-        appendError('SIDIX sedang offline. Hubungi administrator atau coba lagi nanti.');
+        appendError(`SIDIX sedang offline atau timeout (${elapsed}s). GPU mungkin sedang cold-start (~60s). Coba lagi sebentar.`);
       } else {
-        appendError('Terjadi kesalahan. Silakan coba lagi.');
+        appendError(`Terjadi kesalahan (${elapsed}s): ${msg.slice(0, 120)}`);
       }
     },
   }, collectAskOpts());
