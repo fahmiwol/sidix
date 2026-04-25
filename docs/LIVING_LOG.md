@@ -6076,3 +6076,55 @@ Plus include `url` + `type` field di response supaya frontend bisa render web ci
 - Syntax: 3 files OK
 - pytest: 520 passed, 1 deselected
 - vite build: 49 KB HTML, 114 KB JS
+
+## 2026-04-26 (lanjutan 6) — Cost optimize GPU + Burst parser robust
+
+### COST ANALYSIS (dari user screenshot RunPod console)
+- Wallet: $10 → $8.14 setelah ~1 hari testing intensif (~$1.86 spent)
+- Run rate: ~$0.07/request average (range $0.01–$0.20 tergantung cold start)
+- ⚠️ **GPU yang dipilih RunPod auto: A100 80GB** (`ADA_80_PRO,AMPERE_80`)
+  - Cost: ~$0.0008-0.0012/sec × cold start + inference
+  - **Overkill** untuk qwen2.5:7b yang cuma butuh ~15 GB VRAM
+
+### OPTIMIZATION 1: Switch GPU pool
+Via RunPod GraphQL mutation:
+```
+gpuIds: ADA_80_PRO,AMPERE_80  →  ADA_24,AMPERE_24
+```
+- ADA_24 = RTX 4090 24GB (primary)
+- AMPERE_24 = RTX 3090 24GB (fallback kalau 4090 sold out di pool community)
+- **Cost turun ~60-70%** (~$0.0003/sec)
+- VRAM cukup untuk qwen2.5:7b FP16 (15GB) — masih ada 9GB headroom buat KV cache
+
+Estimated monthly cost di rate similar ~$15-20/bulan (vs ~$30-50 di A100). Aman untuk budget $30/bulan.
+
+### OPTIMIZATION 2: Burst parser robust (5 strategies)
+User test sebelumnya: `n_candidates: 1` padahal request `n: 3`. Parser hanya pakai 1 strategy (regex `=== ANGLE N: <key> ===`).
+
+LLM 7b sering tidak ikuti format ekstrem itu — output bisa:
+- Markdown bold heading: `**Angle: contrarian**\n...`
+- Numbered list: `1. **contrarian** — ...`
+- Paragraf blocks tanpa heading
+- Single paragraph saja (worst case)
+
+Fix di `burst_single_call`: 5 strategi parsing fallback berurutan:
+1. `=== ANGLE N: <key> ===` (preferred)
+2. `**Angle: <key>**\n[content]`
+3. `1. **<key>** — [content]` (numbered list)
+4. Paragraph blocks (split `\n\n`, filter min 80 chars)
+5. Last resort: full text as single angle
+
+Unit test 4/4 strategy: PASS — semua format LLM common ter-handle.
+
+### Validation
+- Syntax: agent_burst.py OK
+- pytest: 520 passed, 1 deselected
+- Unit test parser: 4/4 strategies parse correctly
+- GraphQL mutation: gpuIds confirmed `ADA_24,AMPERE_24`
+
+### CATATAN BUDGET
+Tracking actual cost per-day di RunPod console:
+- Day 1 (today): $1.86 used
+- Projected monthly at current rate (with cheaper GPU): $10-15/month
+- Budget headroom: $15-20/month for traffic growth
+- ⚠️ Set hard cap di RunPod Settings → Billing → Spending Limit = $25 supaya auto-pause saat capai limit

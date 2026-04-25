@@ -274,23 +274,58 @@ def burst_single_call(
     if not text or mode == "mock_error":
         return [{"angle": k, "text": "", "mode": mode, "ok": False} for k, _ in angles]
 
-    # Parse: split by "=== ANGLE N: <key> ===" markers
     import re as _re
+
+    candidates: list[dict[str, Any]] = []
+
+    # Strategy 1: parse "=== ANGLE N: <key> ===" markers (preferred format)
     parts = _re.split(r"={3,}\s*ANGLE\s+\d+:\s*([\w_]+)\s*={3,}", text)
-    # parts = [prefix, key1, content1, key2, content2, ...]
-    candidates = []
     for i in range(1, len(parts) - 1, 2):
         key = parts[i].strip().lower()
         content = parts[i + 1].strip()
-        if content:
+        if content and len(content) > 30:
             candidates.append({"angle": key, "text": content, "mode": mode, "ok": True})
-    # Kalau parsing gagal (LLM tidak ikuti format), fallback: split by paragraph
-    if not candidates and text:
-        chunks = [c.strip() for c in text.split("\n\n") if c.strip()]
+
+    # Strategy 2: parse "**Angle: <key>**" markdown bold heading (LLM common output)
+    if not candidates:
+        for match in _re.finditer(
+            r"\*{1,2}Angle:?\s*([\w_]+)\*{1,2}\s*\n+(.+?)(?=\*{1,2}Angle:?|\Z)",
+            text, _re.DOTALL | _re.IGNORECASE,
+        ):
+            key = match.group(1).strip().lower()
+            content = match.group(2).strip()
+            if content and len(content) > 30:
+                candidates.append({"angle": key, "text": content, "mode": mode, "ok": True})
+
+    # Strategy 3: parse numbered list "1. **<key>**" / "**1. <key>**" (also common)
+    if not candidates:
+        for match in _re.finditer(
+            r"\*{0,2}(\d+)\.\s*\*{1,2}([\w_]+)\*{1,2}\s*[\n:—-]+(.+?)(?=\*{0,2}\d+\.\s*\*{1,2}[\w_]+|\Z)",
+            text, _re.DOTALL,
+        ):
+            key = match.group(2).strip().lower()
+            content = match.group(3).strip()
+            if content and len(content) > 30:
+                candidates.append({"angle": key, "text": content, "mode": mode, "ok": True})
+
+    # Strategy 4 (fallback): split by paragraph blocks (groups of 2+ sentences)
+    if not candidates:
+        chunks = [c.strip() for c in text.split("\n\n") if c.strip() and len(c.strip()) > 80]
         for i, chunk in enumerate(chunks[:n]):
             angle_key = angles[i][0] if i < len(angles) else f"angle_{i + 1}"
             candidates.append({"angle": angle_key, "text": chunk, "mode": mode, "ok": True})
-    return candidates
+
+    # Strategy 5 (last resort): kalau cuma 1 paragraf besar, treat sebagai single angle
+    if not candidates and text.strip():
+        candidates.append({
+            "angle": angles[0][0] if angles else "default",
+            "text": text.strip(),
+            "mode": mode,
+            "ok": True,
+        })
+
+    # Truncate ke max n
+    return candidates[:n]
 
 
 def burst_refine(
