@@ -308,6 +308,32 @@ class BranchCreateRequest(BaseModel):
     tool_whitelist: list[str] = Field(default_factory=list)
 
 
+# ── SIDIX 2.0 Supermodel — request schemas ────────────────────────────────────
+
+class BurstRequest(BaseModel):
+    """Burst+Refinement (Gaga method) — multi-angle creative pipeline."""
+    prompt: str
+    n: int = 6                  # jumlah angle (max 8)
+    top_k: int = 2              # winners di Pareto front
+    burst_temperature: float = 0.95
+    refine_temperature: float = 0.4
+    return_all: bool = False    # kalau True, kirim semua kandidat
+
+
+class TwoEyedRequest(BaseModel):
+    """Two-Eyed Seeing (Mi'kmaq Etuaptmumk) — scientific + maqashid eye."""
+    prompt: str
+    system: str = ""
+
+
+class ForesightRequest(BaseModel):
+    """Foresight (visionary scenario planning) — web + corpus + 3 scenarios."""
+    topic: str
+    horizon: str = "1y"             # 3mo / 6mo / 1y / 5y
+    with_scenarios: bool = True
+    return_intermediate: bool = False
+
+
 # ── LLM generate function (Standing Alone) ────────────────────────────────────
 # Priority: 1) Ollama (local)  2) LoRA (local)  3) Mock
 
@@ -883,16 +909,11 @@ def create_app() -> "FastAPI":
     # ════════════════════════════════════════════════════════════════════════
     # SIDIX 2.0 SUPERMODEL ENDPOINTS — Differentiator vs Claude/Gemini/KIMI
     # ════════════════════════════════════════════════════════════════════════
+    # NOTE: BurstRequest / TwoEyedRequest / ForesightRequest didefinisikan
+    # di module top-level supaya FastAPI Pydantic introspection mendeteksi
+    # mereka sebagai body model (bukan query param).
 
     # ── POST /agent/burst — Burst+Refinement Pipeline (Gaga method) ──────────
-    class BurstRequest(BaseModel):
-        prompt: str
-        n: int = 6                  # jumlah angle (max 8)
-        top_k: int = 2              # winners di Pareto front
-        burst_temperature: float = 0.95
-        refine_temperature: float = 0.4
-        return_all: bool = False    # kalau True, kirim semua kandidat
-
     @app.post("/agent/burst", tags=["Supermodel"])
     def agent_burst(req: BurstRequest, request: Request):
         """
@@ -922,10 +943,6 @@ def create_app() -> "FastAPI":
         return result
 
     # ── POST /agent/two-eyed — Two-Eyed Seeing (Mi'kmaq dual-perspective) ────
-    class TwoEyedRequest(BaseModel):
-        prompt: str
-        system: str = ""
-
     @app.post("/agent/two-eyed", tags=["Supermodel"])
     def agent_two_eyed(req: TwoEyedRequest, request: Request):
         """
@@ -947,12 +964,6 @@ def create_app() -> "FastAPI":
         return two_eyed_view(req.prompt, system=req.system)
 
     # ── POST /agent/foresight — Visionary Foresight (web + corpus + scenario)
-    class ForesightRequest(BaseModel):
-        topic: str
-        horizon: str = "1y"             # 3mo / 6mo / 1y / 5y
-        with_scenarios: bool = True
-        return_intermediate: bool = False
-
     @app.post("/agent/foresight", tags=["Supermodel"])
     def agent_foresight(req: ForesightRequest, request: Request):
         """
