@@ -35,20 +35,86 @@ import {
   type UserRole, type OnboardingAnswers,
 } from './lib/supabase';
 
-// ── Clear auth errors from URL (Supabase redirect noise) ────────────────────
-(function clearAuthErrors() {
+// ── Auth error handler (URL hash + searchParams) ────────────────────────────
+// Supabase OAuth pakai URL hash fragment (#error=...&error_description=...) untuk
+// callback errors, BUKAN searchParams. Sebelumnya code hanya cek searchParams →
+// error tidak ke-detect → user bingung kenapa login gagal. Sekarang handle dua-duanya.
+(function handleAuthErrors() {
   try {
-    const url = new URL(window.location.href);
-    const hasAuthError = url.searchParams.has('error') && url.searchParams.has('error_description');
-    if (hasAuthError) {
-      // Hapus error params dari URL tanpa reload
-      url.searchParams.delete('error');
-      url.searchParams.delete('error_code');
-      url.searchParams.delete('error_description');
-      window.history.replaceState({}, document.title, url.toString());
-      console.warn('[SIDIX] Auth error cleared from URL:', url.searchParams.get('error_description'));
+    let errCode = '';
+    let errDesc = '';
+
+    // Strategy 1: URL hash fragment (#error=...&error_description=...)
+    const hash = window.location.hash || '';
+    if (hash.includes('error=')) {
+      const params = new URLSearchParams(hash.replace(/^#/, ''));
+      errCode = params.get('error_code') || params.get('error') || '';
+      errDesc = params.get('error_description') || '';
     }
-  } catch { /* ignore */ }
+
+    // Strategy 2: searchParams (?error=...) — fallback
+    if (!errCode) {
+      const url = new URL(window.location.href);
+      if (url.searchParams.has('error')) {
+        errCode = url.searchParams.get('error_code') || url.searchParams.get('error') || '';
+        errDesc = url.searchParams.get('error_description') || '';
+      }
+    }
+
+    if (!errCode) return;
+
+    console.warn('[SIDIX auth] OAuth callback error:', { code: errCode, description: errDesc });
+
+    // Decode the description (Supabase sends URL-encoded with + for spaces)
+    const friendlyDesc = decodeURIComponent(errDesc.replace(/\+/g, ' '));
+
+    // Build user-facing banner
+    const banner = document.createElement('div');
+    banner.id = 'auth-error-banner';
+    banner.style.cssText = `
+      position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+      background: linear-gradient(135deg, #d97a5a, #b85a3a);
+      color: #fff; padding: 12px 16px; font-size: 13px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      display: flex; align-items: start; gap: 12px; justify-content: space-between;
+    `;
+
+    let helpText = '';
+    if (friendlyDesc.toLowerCase().includes('database error') || friendlyDesc.toLowerCase().includes('saving new user')) {
+      helpText = 'Backend SIDIX sedang ada glitch saat simpan akun baru. Tim sudah dapat alert otomatis. Coba lagi 1-2 menit, atau lapor via tombol Feedback.';
+    } else if (friendlyDesc.toLowerCase().includes('access denied') || errCode === 'access_denied') {
+      helpText = 'Login dibatalkan. Klik Sign In lagi kalau mau coba sekali lagi.';
+    } else {
+      helpText = 'Login gagal. Coba refresh + Sign In lagi. Kalau tetap, lapor via tombol Feedback dengan screenshot URL ini.';
+    }
+
+    banner.innerHTML = `
+      <div style="flex:1; line-height:1.5">
+        <strong style="display:block; margin-bottom:4px;">⚠️ Login error: ${errCode}</strong>
+        <div style="font-size:12px; opacity:0.95;">${helpText}</div>
+        <div style="font-size:10px; margin-top:4px; opacity:0.7; font-family: monospace;">${friendlyDesc}</div>
+      </div>
+      <button onclick="document.getElementById('auth-error-banner')?.remove()"
+              style="background:transparent; border:1px solid rgba(255,255,255,0.4); color:#fff; padding:4px 12px; border-radius:6px; cursor:pointer; font-size:12px; flex-shrink:0;">Tutup</button>
+    `;
+    document.body.appendChild(banner);
+
+    // Auto-dismiss after 15 seconds
+    setTimeout(() => {
+      document.getElementById('auth-error-banner')?.remove();
+    }, 15000);
+
+    // Clean URL — hapus error params + hash
+    const cleanUrl = new URL(window.location.href);
+    cleanUrl.hash = '';
+    cleanUrl.searchParams.delete('error');
+    cleanUrl.searchParams.delete('error_code');
+    cleanUrl.searchParams.delete('error_description');
+    cleanUrl.searchParams.delete('sb');
+    window.history.replaceState({}, document.title, cleanUrl.toString());
+  } catch (e) {
+    console.warn('[SIDIX] auth error handler exception:', e);
+  }
 })();
 
 // ── Bootstrap icons ──────────────────────────────────────────────────────────

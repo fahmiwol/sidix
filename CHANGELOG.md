@@ -6,6 +6,76 @@ Semua perubahan signifikan dicatat di sini. Format: `[versi] — tanggal — rin
 
 ---
 
+## [2.0.0] — 2026-04-26 — Beta Launch Sprint
+
+### Added — Supermodel Endpoints (4 unique features)
+- 🌌 **Burst Mode** (Lady Gaga method) — generate 6 angle paralel, Pareto-pilih top 2, synthesize. Single-call optimization 5-10x lebih cepat dari N parallel calls.
+- 👁 **Two-Eyed Seeing** (Mi'kmaq Etuaptmumk) — dual perspective scientific + maqashid + sintesis (titik temu)
+- 🔮 **Foresight Engine** (Tetlock super-forecaster) — scan web+corpus → leading/lagging signals → 3 skenario (base/bull/bear) → narasi visioner
+- 🌿 **Hidden Knowledge Resurrection** (Noether method) — surface ide/tokoh/metode yang dulu brilliant tapi sekarang dilupakan tren
+
+### Added — Hybrid GPU Infrastructure
+- RunPod Serverless integration — qwen2.5:7b di RTX 4090 24GB
+- Backend tetap Hostinger CPU (router/RAG/tools), LLM inference offloaded ke GPU
+- 3-format response parser (vLLM list, OpenAI dict, plain string)
+- idleTimeout 60s + Flash Boot ON (cold start ~5-15s)
+
+### Added — Admin Panel (`ctrl.sidixlab.com/admin`)
+- Single-page dashboard dengan sidebar menu (Whitelist, Feedback, System Health, Admin Token)
+- Login overlay (token-based auth, sessionStorage)
+- Whitelist Manager — 2-layer (env + JSON store), 8 kategori (owner/dev/sponsor/researcher/contributor/beta_tester/vip/other)
+- Feedback inbox — list submissions, screenshot inline, status update flow
+
+### Added — Feedback Feature
+- Modal di chat UI dengan drag/drop, paste from clipboard, file picker untuk screenshot (max 5 MB)
+- Backend persistent JSON store + 4 admin endpoints
+
+### Added — UX Improvements
+- Avatar profile saat login (Google avatar atau fallback initial-letter SVG)
+- Help/Bantuan modal dengan penjelasan 5 persona, 4 mode Supermodel, 3 opsi chat
+- Auto mode-hint footer (kontekstual saran berdasarkan keyword question)
+- Tooltip help di setiap checkbox
+- OAuth callback error banner (handle URL hash error_description dengan friendly message)
+
+### Changed — Liberation Sprint
+- Default `agent_mode=True` — bypass 7-layer filter (Wisdom Gate, Council MoA, Epistemology, Maqashid, Constitution, Self-Critique, CoT scaffold). User dapat chat natural seperti GPT/Claude/Gemini.
+- Persona = "ways of being", bukan epistemic mode (AYMAN→GENERAL, OOMAR→GENERAL, ALEY→ACADEMIC)
+- Epistemic labels CONTEXTUAL — hanya untuk topik sensitif (fiqh/medis/data), bukan blanket per response
+- Web search multi-engine fallback: DuckDuckGo HTML → DDG Lite → Wikipedia API
+- Web search regex extended — EN+ID variants, year markers, factual segment extraction
+- Adaptive `max_tokens`: code 1200, reasoning 1000, default 600
+- Citation render — web URL clickable dengan icon globe (vs corpus chunk dengan book-open)
+
+### Changed — Quota / Rate Limit
+- Tier limits naik: guest 3→5, free 10→30, sponsored 100→200
+- New "whitelist" tier (unlimited) untuk owner/dev/sponsor/researcher/contributor
+- `/quota/status` accept x-user-email header untuk whitelist auto-detect
+- Frontend hide quota badge untuk unlimited tier
+
+### Fixed
+- `start_brain.sh` recovery (file hilang dari main branch)
+- `GenerateRequest` schema missing fields (persona, persona_style, agent_mode, strict_mode, user_id)
+- Citation merge bug (web search results tampil sebagai "corpus" 5x)
+- Burst response parsing (5 fallback strategies untuk handle berbagai LLM output formats)
+- Image fast-path triggered untuk meta-question ("kamu bisa bikin gambar ga?")
+- CoT scaffold pre-step "### Context / ### Solusi" template leak ke casual response
+- Coding planner spam log saat empty action
+
+### Infrastructure
+- RunPod GPU: A100 80GB → RTX 4090 24GB (60-70% cost saving via GraphQL config update)
+- Frontend timeout: 60s → 240s (untuk handle GPU cold start)
+- 520 tests passed, 1 deselected (perf-flaky parallel test)
+- Cost projected ~$10-15/month at current rate
+
+### Documentation
+- `docs/HANDOFF_CLAUDE_20260426.md` — handoff state dokumen lengkap
+- `docs/TASK_LOG_20260426.md` — comprehensive task tracking (49 done + P1/P2/P3 + bugs)
+- `docs/LIVING_LOG.md` — 8 sections daily log
+- 3 research notes baru (Liberation Sprint, Supermodel signature moves, Rate Limit Strategy)
+- `deploy-scripts/setup-runpod-serverless.md` — guide setup RunPod end-to-end
+
+---
+
 ## [0.8.0] — 2026-04-23
 
 ### Added — Jiwa Architecture
