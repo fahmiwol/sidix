@@ -85,6 +85,44 @@ def _store_session(session: AgentSession) -> None:
     _sessions[session.session_id] = session
 
 
+def _build_steps_trace(steps: list) -> list[dict]:
+    """
+    Jiwa Sprint 4 — ReAct Trace Builder.
+    Konversi list[ReActStep] ke list[dict] yang aman untuk JSON response.
+    Observation dipotong supaya response tidak bloat (max 300 chars preview).
+    """
+    trace = []
+    for s in steps:
+        trace.append({
+            "step": s.step,
+            "thought": (s.thought or "")[:200],
+            "action": s.action_name,
+            "args_summary": _summarize_args(s.action_args),
+            "observation_preview": (s.observation or "")[:300],
+            "is_final": s.is_final,
+        })
+    return trace
+
+
+def _summarize_args(args: dict) -> str:
+    """Ringkas args supaya tidak bocor data sensitif di trace."""
+    if not args:
+        return ""
+    safe = {}
+    for k, v in args.items():
+        if k.startswith("_"):          # private keys skip
+            continue
+        if isinstance(v, str):
+            safe[k] = v[:80] + "…" if len(v) > 80 else v
+        elif isinstance(v, (int, float, bool)):
+            safe[k] = v
+        elif isinstance(v, list):
+            safe[k] = f"[{len(v)} items]"
+        else:
+            safe[k] = str(type(v).__name__)
+    return str(safe)
+
+
 def _admin_ok(request: Request) -> bool:
     secret = os.environ.get("BRAIN_QA_ADMIN_TOKEN", "").strip()
     if not secret:
@@ -162,6 +200,10 @@ class ChatResponse(BaseModel):
     # ── Memory layer ───────────────────────────────────────────────────────────
     user_id: str = "anon"
     conversation_id: str = ""
+    # ── ReAct Trace (Jiwa Sprint 4 — observability) ────────────────────────────
+    steps_trace: list[dict] = []    # [{step, thought, action, args_summary, observation_preview, is_final}]
+    planner_used: bool = False      # True jika parallel_planner aktif pada sesi ini
+    planner_savings: float = 0.0    # estimated savings dari parallel execution (0.0–1.0)
 
 
 class GenerateRequest(BaseModel):
@@ -498,6 +540,72 @@ def create_app() -> "FastAPI":
             "citations": [c for s in sessions for c in s.citations][:10]
         }
 
+    # ── POST /agent/multimodal (Jiwa Sprint 4) ───────────────────────────────
+    @app.post("/agent/multimodal")
+    async def agent_multimodal(request: Request):
+        """
+        Multimodal endpoint — terima text + image_path + audio_path dalam JSON body.
+        Gunakan SensorFusion → ReAct loop → return ChatResponse-like dict.
+
+        Body: { "text": "...", "image_path": "...", "audio_path": "...",
+                "persona": "AYMAN", "metadata": {} }
+        """
+        _enforce_rate(request)
+        _enforce_daily(request)
+        _bump_metric("agent_multimodal")
+
+        try:
+            body = await request.json()
+        except Exception:
+            raise HTTPException(status_code=400, detail="body JSON tidak valid")
+
+        text = (body.get("text") or "").strip()
+        image_path = (body.get("image_path") or "").strip()
+        audio_path = (body.get("audio_path") or "").strip()
+        persona = (body.get("persona") or "UTZ").strip().upper()
+        metadata = body.get("metadata") or {}
+
+        if not text and not image_path and not audio_path:
+            raise HTTPException(status_code=400, detail="minimal satu input (text/image_path/audio_path) wajib diisi")
+
+        try:
+            from .multimodal_input import MultimodalInputHandler, MultimodalInput
+            handler = MultimodalInputHandler()
+            result = handler.process(
+                MultimodalInput(
+                    text=text,
+                    image_path=image_path,
+                    audio_path=audio_path,
+                    persona=persona,
+                    metadata=metadata,
+                ),
+                client_id=request.headers.get("x-client-id", ""),
+                agency_id=request.headers.get("x-agency-id", ""),
+                conversation_id=request.headers.get("x-conversation-id", ""),
+            )
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"multimodal processing error: {e}")
+
+        session = result.session
+        _store_session(session)
+
+        return {
+            "ok": True,
+            "session_id": session.session_id,
+            "answer": session.final_answer,
+            "persona": session.persona,
+            "steps": len(session.steps),
+            "steps_trace": _build_steps_trace(session.steps),
+            "fused_context": result.fused_context,
+            "emotional_state": result.emotional_state,
+            "vision_caption": result.vision_caption,
+            "audio_transcript": result.audio_transcript,
+            "citations": session.citations,
+            "planner_used": getattr(session, "planner_used", False),
+            "planner_savings": getattr(session, "planner_savings", 0.0),
+            "finished": session.finished,
+        }
+
     # ── POST /agent/chat ──────────────────────────────────────────────────────
     @app.post("/agent/chat", response_model=ChatResponse)
     def agent_chat(req: ChatRequest, request: Request):
@@ -598,6 +706,10 @@ def create_app() -> "FastAPI":
             nafs_layers_used=getattr(session, "nafs_layers_used", ""),
             user_id=effective_user_id,
             conversation_id=effective_conversation_id,
+            # ── ReAct Trace (Jiwa Sprint 4) ──────────────────────────────────
+            steps_trace=_build_steps_trace(session.steps),
+            planner_used=getattr(session, "planner_used", False),
+            planner_savings=getattr(session, "planner_savings", 0.0),
         )
 
     # ── GET /agent/orchestration ───────────────────────────────────────────────

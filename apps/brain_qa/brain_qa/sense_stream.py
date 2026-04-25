@@ -110,6 +110,12 @@ class SenseStream:
                 ],
             }
 
+    def event_count(self) -> int:
+        """Return jumlah events aktif (setelah prune). Jiwa Sprint 4."""
+        with self._lock:
+            self._prune_old()
+            return len(self._events)
+
     def clear(self) -> None:
         """Clear semua events."""
         with self._lock:

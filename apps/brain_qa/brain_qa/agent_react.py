@@ -130,6 +130,9 @@ class AgentSession:
     # ── Nafs Layer B (brain/nafs/response_orchestrator) ──────────────────────────
     nafs_topic: str = ""              # topic dari NafsOrchestrator (umum|kreatif|koding|agama|...)
     nafs_layers_used: str = ""        # "parametric,dynamic,static" (layer yang aktif)
+    # ── Jiwa Sprint 4: Parallel Planner observability ────────────────────────────
+    planner_used: bool = False        # True jika parallel_planner aktif sesi ini
+    planner_savings: float = 0.0      # estimated savings dari parallel execution (0.0–1.0)
 
 
 # ── Rule-based "LLM" (offline planner) ───────────────────────────────────────
@@ -1759,24 +1762,58 @@ def run_react(
         )
 
         if isinstance(plan, list):
-            # Parallel execution path
+            # Parallel execution path — wire through parallel_planner for dependency-aware grouping
             thought = plan[0].get("thought", "Menjalankan beberapa aksi secara paralel.")
-            action_name = "parallel_tools" # virtual name for logging
+            action_name = "parallel_tools"  # virtual name for logging
             action_args = {"calls": plan}
-            
-            if verbose:
-                print(f"\n[Step {step_num}] Parallel Thought: {thought}")
+
+            # ── Jiwa Sprint 4 Fase B: parallel_planner WIRED to executor ─────
+            try:
+                from .parallel_planner import ParallelPlanner, ExecutionPlan
+                from .parallel_executor import execute_plan as _execute_plan
+
+                planner = ParallelPlanner()
+                raw_calls = [{"name": p["name"], "args": p["args"]} for p in plan]
+                execution_plan = planner.plan_from_tool_names(raw_calls)
+                session.planner_used = True
+                session.planner_savings = execution_plan.estimated_parallel_savings
+
+                if verbose:
+                    print(f"\n[Step {step_num}] Parallel Thought: {thought}")
+                    print(f"  [Planner] {len(execution_plan.bundles)} bundle(s), "
+                          f"savings={session.planner_savings:.0%}")
+                    for b in execution_plan.bundles:
+                        print(f"    Bundle {b.bundle_id}: {[n.tool_name for n in b.nodes]}")
+
+                # Execute bundle-by-bundle (respects deps / WRITE-sequentiality)
+                plan_result = _execute_plan(
+                    execution_plan,
+                    session_id=session_id,
+                    step=step_num,
+                    allow_restricted=allow_restricted,
+                    verbose=verbose,
+                )
+                parallel_results = plan_result["results"]
+
+            except Exception as _pe:
+                # Fallback: flat parallel blast (legacy behavior)
+                if verbose:
+                    print(f"\n[Step {step_num}] Parallel Thought: {thought}")
+                    print(f"  [Planner] FALLBACK flat blast (error: {_pe})")
+                parallel_results = execute_parallel(
+                    tool_calls=[{"name": p["name"], "args": p["args"]} for p in plan],
+                    session_id=session_id,
+                    step=step_num,
+                    allow_restricted=allow_restricted,
+                )
+                session.planner_used = False
+                session.planner_savings = 0.0
+            # ─────────────────────────────────────────────────────────────────
+
+            if verbose and not session.planner_used:
                 for i, p in enumerate(plan):
                     print(f"  - Action {i+1}: {p['name']}({p['args']})")
-                    
-            # 3. ACT (Parallel)
-            parallel_results = execute_parallel(
-                tool_calls=[{"name": p["name"], "args": p["args"]} for p in plan],
-                session_id=session_id,
-                step=step_num,
-                allow_restricted=allow_restricted
-            )
-            
+
             observation = merge_observations(parallel_results)
             
             # Combine citations
