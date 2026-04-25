@@ -1875,6 +1875,50 @@ def create_app() -> "FastAPI":
             raise HTTPException(status_code=500, detail=f"snapshot lora fail: {e}")
 
     # ════════════════════════════════════════════════════════════════════════
+    # PROACTIVE TRIGGER (vol 9, Pilar 4 BEBAS): AI gerak sendiri
+    # User vision: "AI Agent with initiative, opinions, creativity. Brainstorms
+    # with you, builds for you, grows from every conversation."
+    # ════════════════════════════════════════════════════════════════════════
+
+    @app.post("/admin/proactive/scan", tags=["Proactive"])
+    def proactive_scan_endpoint(request: Request):
+        """Hourly anomaly scan: pattern clusters + aspiration themes + activity
+        anomalies. Cheap (no LLM). Returns list of anomalies + log entry."""
+        if not _admin_ok(request):
+            raise HTTPException(status_code=403, detail="Akses ditolak")
+        try:
+            from . import proactive_trigger
+            return {"anomalies": proactive_trigger.scan_anomalies()}
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"scan fail: {e}")
+
+    @app.post("/admin/proactive/digest", tags=["Proactive"])
+    def proactive_digest_endpoint(request: Request):
+        """Daily morning digest: anomalies + memory snapshot + recent aspirations.
+        Save markdown ke brain/proactive_outputs/."""
+        if not _admin_ok(request):
+            raise HTTPException(status_code=403, detail="Akses ditolak")
+        try:
+            from . import proactive_trigger
+            return proactive_trigger.build_morning_digest()
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"digest fail: {e}")
+
+    @app.get("/admin/proactive/triggers", tags=["Proactive"])
+    def proactive_triggers_list(request: Request, limit: int = 50):
+        """List recent trigger events (anomaly + digest history)."""
+        if not _admin_ok(request):
+            raise HTTPException(status_code=403, detail="Akses ditolak")
+        try:
+            from . import proactive_trigger
+            return {
+                "triggers": proactive_trigger.list_recent_triggers(limit=limit),
+                "digests": proactive_trigger.list_digests(limit=20),
+            }
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"list fail: {e}")
+
+    # ════════════════════════════════════════════════════════════════════════
     # RELEVANCE SCORE — metric kualitas jawaban (untuk SIDIX learning loop)
     # ════════════════════════════════════════════════════════════════════════
 
