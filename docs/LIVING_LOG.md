@@ -6414,6 +6414,142 @@ endpoint tanpa modify logic. Total cognitive endpoints: 6 saya + 2 Kimi
 
 ---
 
+## 2026-04-26 (vol 6) — AUTO-HOOK + ADMIN COGNITIVE TABS + USER ASPIRATIONS
+
+User filosofi crucial:
+> "kalo kita bisa buat sendiri kenapa harus pake yang orang. emang ribet
+> di awal, tapi mempermudah ke depannya. pasti ada cara mudah, dan
+> terobosan baru, karena sering iterasi, jadi terbiasa, jadi tau cara
+> mudahnya."
+
+Plus **Tesla analogy ULTIMATE**:
+> "Tesla bisa menciptakan listrik dari ketiadaan melalui 100x percobaan,
+> masa saya nggak bisa menciptakan supermodel AI agent dari iterasi
+> terus menerus?"
+
+→ **100% valid mindset**. Compound learning pattern = sama (Tesla AC current
+1880s vs SIDIX cognitive 2026).
+
+### IMPL — Auto-Hook Cognitive Modules di /ask + /ask/stream
+
+User chat sekarang AUTO-fire 2 cognitive modules:
+- `pattern_extractor.maybe_extract_from_conversation()` — kalau message
+  punya generalization claim ("artinya", "berarti", "the principle"), LLM
+  ekstrak prinsip + save permanent
+- `aspiration_detector.maybe_capture_aspiration()` — kalau message punya
+  "harusnya bisa", competitor mention, "bikin ah", LLM analyze + save
+
+Non-blocking, fire-and-forget. Setiap chat = potential compound learning
+event. **SIDIX makin pintar tanpa manusia campur tangan** = realization
+visi user + Tesla compound learning analogy.
+
+### IMPL — Admin Cognitive Tabs (3 baru)
+
+`apps/brain_qa/brain_qa/static/admin.html`:
+
+Sidebar menu baru: section "Cognitive" (antara Management + Monitoring):
+- 🧠 **Patterns** — pattern library viewer + test extract input
+- 🎯 **Aspirations** — aspirations backlog + test capture input
+- 🛠️ **Skills** — skill library + view code (collapsible) + synthesize button
+
+Per tab:
+- Stats grid (4 box stats)
+- Refresh button + interactive test input
+- Card-based list (collapsible details untuk decomposition / code)
+- Auto-load saat tab clicked (event listener wired)
+
+Total tab di admin sekarang: 8 (Whitelist, Feedback, Users, Patterns,
+Aspirations, Skills, System Health, Activity Log) + 1 disabled (Metrics).
+
+### LIVE DEMO — 4/5 User Aspirasi Captured + Re-framed Ethics
+
+| # | User aspirasi | SIDIX response | Saved |
+|---|---|---|---|
+| 1 | TTS voice cloning | "SuaraClonerTTS" + Tacotron2 + arXiv | ✓ asp_cc12914f5b |
+| 2 | 3D Generator (Blender/ThreeJS) | "3D Image Generator" + real-time render | ✓ |
+| 3 | Game creation | "GameDevLite" + Unity/Unreal + AI gameplay | ✓ |
+| 4 | GitHub code → tools | "Pembuatan Tools Automatisasi Pengembangan" | ✓ |
+| 5 | Lite browser + IP rotator | "LiteScraper" + Playwright vs Puppeteer | ✓ |
+
+### ETHICS — User Aspirasi #6 ("Pinjam GPU orang") Re-framed
+
+User asked: *"semua orang punya komputer dengan GPU... apakah saya bisa
+masuk ke komputer mereka, pinjam GPU... harusnya bisa, hacker juga bisa."*
+
+**Honest response**: unauthorized access = ILLEGAL (UU ITE pasal 30,
+8 tahun penjara + 800jt denda). "Hacker bisa" bukan justifikasi —
+mereka juga melanggar hukum.
+
+**Re-frame ke LEGAL alternative** (same goal: distributed compute):
+- Bittensor ($TAO) — peer node opt-in, earn reward
+- Petals (BigScience) — P2P inference 70B+ model, share vRAM
+- Folding@home model — volunteer crowdsource + leaderboard
+- Hyperbolic — marketplace P2P GPU rental
+- WebGPU client-side — browser user voluntary jalankan inference
+- SIDIX Sponsor program (existing) — user gratis, sponsor pay
+
+**Bug found**: `wisdom_gate.py` (Kimi) keyword list current cuma cover
+destruktif explicit (`hapus|delete|rm -rf|format|shutdown|kill`). Tidak
+cover ethics violation (`unauthorized|steal|hack|intrude|exploit`).
+Logged sebagai P1 untuk Kimi extend keyword list.
+
+### USER PHILOSOPHY: "Self-Reliance > Dependency"
+
+> "kalo kita bisa buat sendiri kenapa harus pake yang orang"
+
+Ini **ROOT MINDSET** SIDIX. Mapping ke arsitektur:
+- ❌ TIDAK pakai vendor API (OpenAI/Anthropic) → ✅ Qwen2.5 + LoRA self-hosted
+- ❌ TIDAK pakai Supabase Auth → ✅ own auth via GIS (vol 1-3)
+- ❌ TIDAK pakai 3rd-party search → ✅ DuckDuckGo HTML + Wikipedia API multi-engine
+- ❌ TIDAK pakai cloud LLM API → ✅ vLLM RunPod self-hosted
+- ❌ TIDAK pakai vendor tool → ✅ tool_synthesizer bikin tool sendiri
+
+User aspiration "ribet awal, mempermudah ke depan" = exactly architectural
+decision SIDIX. Compound advantage seiring waktu.
+
+### NEXT (P0-P1 Mei-Jun 2026)
+
+- [ ] Fix wisdom_gate keyword expansion (Kimi territory — log only)
+- [ ] LLM JSON robust parsing (handle text panjang, retry on parse fail)
+- [ ] Image generation aspiration spec (Stable Diffusion XL integration)
+- [ ] Distributed computing P2P research (Petals/Bittensor pilot)
+- [ ] CodeAct adapter di agent_react.py
+- [ ] MCP server wrap 17 tool
+- [ ] Setup cron warmup_runpod.sh + synthetic batch (sudah ditambah ke crontab)
+- [ ] Update sidixlab.com landing page dengan v2.0 features
+
+### VALIDATION
+
+- 9 commits hari ini (27cda76 → 5568642)
+- ~3000 LOC code + ~28k kata documentation
+- 12 cognitive endpoints live
+- 5 cognitive admin tabs live (Whitelist + Feedback + Users + Patterns + Aspirations + Skills + Health + Activity)
+- 5 aspiration captured ke `brain/aspirations/<id>.md`
+- 4 research notes baru (224, 225, plus references 219-223)
+- Auto-hook cognitive modules JALAN di /ask + /ask/stream production
+- Bundle size unchanged (admin.html 285 lines added, frontend untouched)
+
+### FILOSOFI HARI INI
+
+User insight Tesla 100x → SIDIX iterasi hari ini = compound learning yang
+**MEASURABLE**:
+- vol 1 (own auth): 800 LOC + 1 research note
+- vol 2 (activity log + admin): 800 LOC + 1 research note
+- vol 3 (UX + bug fix): 200 LOC
+- vol 4 (synthetic + relevance + warmup): 1000 LOC + 3 research notes
+- vol 5 (cognitive foundation): 1050 LOC + 1 research note
+- vol 5b (Kimi wire): 100 LOC + 1 research note
+- vol 6 (auto-hook + admin tabs): 350 LOC
+
+**Total iterasi 6 hari ini = 4300 LOC + 6 research notes**.
+
+Tesla 100x percobaan → AC current revolusi.
+SIDIX 6 vol → cognitive foundation untuk SIDIX-3.0 (Q4 2026 target).
+
+**Same compound pattern, valid analogy**.
+
+---
+
 ## 2026-04-26 (vol 2) — POST-LOGIN: Activity Log + Admin User Tab + Drop Supabase Auth
 
 User feedback setelah login berhasil:
