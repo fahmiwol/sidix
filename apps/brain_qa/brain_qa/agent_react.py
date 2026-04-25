@@ -213,20 +213,44 @@ _FORCE_CORPUS_RE = re.compile(
     re.IGNORECASE,
 )
 
-# Pivot 2026-04-25: current-events → web_search aggressive default.
-# Bila user menanyakan hal terkini/berita/tokoh/harga/event → langsung web_search.
+# Pivot 2026-04-25 (v2 — Supermodel launch): web_search aggressive default
+# diperluas. Cover EN/ID variants, typo, tahun spesifik, kata kunci real-time
+# tanpa wajib waktu modifier. Tidak pakai \b di pattern karena beberapa
+# alternatif punya non-word boundary. Cek case-insensitive.
 _CURRENT_EVENTS_RE = re.compile(
-    r"\b("
-    r"hari\s+ini|sekarang|saat\s+ini|terkini|terbaru|"
-    r"berita|news|update\s+terbaru|"
-    r"harga\s+(saham|bitcoin|btc|emas|dollar|rupiah|usd|idr)|"
-    r"kurs\s+(dollar|usd|rupiah|idr|euro)|"
-    r"cuaca|weather|"
-    r"presiden\s+(amerika|indonesia|rusia|china)\s+(saat|sekarang|sekarang)|"
-    r"siapa\s+(presiden|menteri|gubernur|ceo|juara)\s+.*(saat|sekarang|terkini)|"
-    r"kapan\s+(event|pemilu|piala|olimpiade|konser)|"
-    r"tanggal\s+berapa\s+(hari\s+ini|sekarang)"
-    r")\b",
+    r"("
+    # waktu modifier umum
+    r"\bhari\s+ini\b|\bsekarang\b|\bsaat\s+ini\b|\bterkini\b|\bterbaru\b|"
+    r"\btoday\b|\bnow\b|\bcurrent(?:ly)?\b|\blatest\b|\brecent(?:ly)?\b|"
+    # tahun eksplisit (2023+) → biasanya butuh data live
+    r"\b(?:202[3-9]|20[3-9]\d)\b|"
+    # berita / news
+    r"\bberita\b|\bnews\b|\bupdate(?:s|d)?\b|\bbreaking\b|\bheadline\b|"
+    # finance / harga real-time
+    r"\bharga\s+(?:saham|bitcoin|btc|eth|emas|dollar|rupiah|usd|idr|crypto|nft|gold|oil|minyak)\b|"
+    r"\bkurs\s+(?:dollar|usd|rupiah|idr|euro|eur|yen|sgd)\b|"
+    r"\b(?:stock|forex|crypto)\s+(?:price|harga|rate)\b|"
+    # cuaca
+    r"\bcuaca\b|\bweather\b|\bsuhu\b|\btemperature\b|\bforecast\b|"
+    # tokoh saat ini (EN + ID, typo-tolerant: presi(d)?ent)
+    r"\bsiapa(?:kah)?\s+(?:presi?(?:d|den)t|presiden|menteri|minister|gubernur|governor|"
+    r"ceo|founder|juara|champion|pemenang|winner|rektor|kapolri|panglima|gov(?:ernor)?|"
+    r"raja|king|ratu|queen|sultan|paus|pope)\b|"
+    r"\bwho\s+is\s+(?:the\s+)?(?:current\s+)?(?:president|presi?(?:d|den)t|prime\s+minister|"
+    r"pm|ceo|founder|king|queen|pope|champion|winner|leader|governor)\b|"
+    r"\b(?:presiden|presi?(?:d|den)t|prime\s+minister|pm|perdana\s+menteri)\s+(?:amerika|usa|us|"
+    r"indonesia|ri|rusia|russia|china|cina|jepang|japan|korea|india|inggris|uk|prancis|france|"
+    r"jerman|germany|brazil|brasil|saudi|arab|iran|israel|palestina|palestine)\b|"
+    # event timing
+    r"\bkapan\s+(?:event|pemilu|election|piala|cup|olimpiade|olympic|konser|concert|rilis|release|launch|peluncuran)\b|"
+    r"\bwhen\s+(?:is|was|will|did)\s+(?:the\s+)?(?:election|cup|launch|release|event|happen)\b|"
+    r"\btanggal\s+berapa\s+(?:hari\s+ini|sekarang|today)\b|"
+    # state-of-X / what's happening
+    r"\bapa\s+(?:yang\s+)?(?:terjadi|sedang\s+terjadi|baru)\b|"
+    r"\bwhat\s+(?:is|was|are)\s+(?:happening|going\s+on|new)\b|"
+    r"\bwhat[''']s\s+(?:happening|new|going\s+on)\b|"
+    r"\bstate\s+of\s+(?:the\s+)?(?:art|industry|economy|world|market)\b"
+    r")",
     re.IGNORECASE,
 )
 

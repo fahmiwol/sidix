@@ -880,6 +880,105 @@ def create_app() -> "FastAPI":
             headers={"Cache-Control": "no-cache", "Connection": "keep-alive"},
         )
 
+    # ════════════════════════════════════════════════════════════════════════
+    # SIDIX 2.0 SUPERMODEL ENDPOINTS — Differentiator vs Claude/Gemini/KIMI
+    # ════════════════════════════════════════════════════════════════════════
+
+    # ── POST /agent/burst — Burst+Refinement Pipeline (Gaga method) ──────────
+    class BurstRequest(BaseModel):
+        prompt: str
+        n: int = 6                  # jumlah angle (max 8)
+        top_k: int = 2              # winners di Pareto front
+        burst_temperature: float = 0.95
+        refine_temperature: float = 0.4
+        return_all: bool = False    # kalau True, kirim semua kandidat
+
+    @app.post("/agent/burst", tags=["Supermodel"])
+    def agent_burst(req: BurstRequest, request: Request):
+        """
+        Burst + Refinement (Lady Gaga method): generate N divergent ideas,
+        Pareto-select top_k, synthesize jadi 1 answer polished.
+
+        Differentiator: chatbot biasa linear single-pass. SIDIX explore
+        N angle paralel dulu, lalu kawin-silang yang terbaik.
+        """
+        _enforce_rate(request)
+        _enforce_daily(request)
+        _bump_metric("agent_burst")
+        if not req.prompt.strip():
+            raise HTTPException(status_code=400, detail="prompt tidak boleh kosong")
+        try:
+            from .agent_burst import burst_refine
+        except Exception as e:
+            raise HTTPException(status_code=503, detail=f"burst module unavailable: {e}")
+        result = burst_refine(
+            req.prompt,
+            n=max(1, min(req.n, 8)),
+            top_k=max(1, min(req.top_k, 4)),
+            burst_temperature=req.burst_temperature,
+            refine_temperature=req.refine_temperature,
+            return_all=req.return_all,
+        )
+        return result
+
+    # ── POST /agent/two-eyed — Two-Eyed Seeing (Mi'kmaq dual-perspective) ────
+    class TwoEyedRequest(BaseModel):
+        prompt: str
+        system: str = ""
+
+    @app.post("/agent/two-eyed", tags=["Supermodel"])
+    def agent_two_eyed(req: TwoEyedRequest, request: Request):
+        """
+        Two-Eyed Seeing: dual-perspective analysis paralel (scientific eye +
+        maqashid eye) lalu sintesis. Bukan "mana yang menang" — cari titik temu.
+
+        Differentiator: chatbot biasa monolog satu sudut pandang. SIDIX bikin
+        dual lens explicit untuk pertanyaan etis/strategis.
+        """
+        _enforce_rate(request)
+        _enforce_daily(request)
+        _bump_metric("agent_two_eyed")
+        if not req.prompt.strip():
+            raise HTTPException(status_code=400, detail="prompt tidak boleh kosong")
+        try:
+            from .agent_two_eyed import two_eyed_view
+        except Exception as e:
+            raise HTTPException(status_code=503, detail=f"two_eyed module unavailable: {e}")
+        return two_eyed_view(req.prompt, system=req.system)
+
+    # ── POST /agent/foresight — Visionary Foresight (web + corpus + scenario)
+    class ForesightRequest(BaseModel):
+        topic: str
+        horizon: str = "1y"             # 3mo / 6mo / 1y / 5y
+        with_scenarios: bool = True
+        return_intermediate: bool = False
+
+    @app.post("/agent/foresight", tags=["Supermodel"])
+    def agent_foresight(req: ForesightRequest, request: Request):
+        """
+        Foresight Engine: scan web+corpus → extract leading/lagging signals →
+        project 3 scenarios (base/bull/bear) → synthesize visionary narrative.
+
+        Differentiator: chatbot biasa halusinasi soal masa depan tanpa data.
+        SIDIX baca sinyal terkini, reasoning terstruktur ala Tetlock
+        super-forecasters + Carlota Perez technological revolutions.
+        """
+        _enforce_rate(request)
+        _enforce_daily(request)
+        _bump_metric("agent_foresight")
+        if not req.topic.strip():
+            raise HTTPException(status_code=400, detail="topic tidak boleh kosong")
+        try:
+            from .agent_foresight import foresight
+        except Exception as e:
+            raise HTTPException(status_code=503, detail=f"foresight module unavailable: {e}")
+        return foresight(
+            req.topic,
+            horizon=req.horizon,
+            with_scenarios=req.with_scenarios,
+            return_intermediate=req.return_intermediate,
+        )
+
     # ── GET /agent/orchestration ───────────────────────────────────────────────
     @app.get("/agent/orchestration")
     def agent_orchestration(q: str, persona: str = "UTZ"):
