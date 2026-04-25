@@ -5331,3 +5331,29 @@ Branch System, berjiwa IHOS. Pilot pertama: Tiranyx Digital Agency.
 
 **DEPLOY:** SSH timeout ke VPS (72.62.125.6) — butuh retry manual atau GitHub Actions CD.
 
+
+
+### 2026-04-25 — DEPLOY SIDIX 2.0 LIVE! 🚀
+
+**DEPLOY:** SIDIX 2.0 berhasil deploy ke VPS production!
+
+**Masalah ditemukan & di-fix:**
+1. `/opt/sidix` ada di branch `cursor/sop-public-artifacts-sync` — bukan `main`
+2. `/opt/sidix` ketinggalan 194 commit dari `origin/main`
+3. User melakukan `git pull` di `~/sidix` (folder berbeda dari produksi)
+
+**Fix:**
+```bash
+cd /opt/sidix
+git checkout main
+git pull origin main  # 535 files, 124,742 insertions, 4,705 deletions
+pm2 restart sidix-brain
+```
+
+**Verifikasi:**
+- `sidix-brain` — online, PID 219989, memory 88.4mb, uptime fresh
+- Health endpoint: `{"status":"ok","engine":"SIDIX Inference Engine v0.1","model_mode":"sidix_local","model_ready":true,...}`
+- Uvicorn running on `http://0.0.0.0:8765`
+
+**SIDIX 2.0 sekarang LIVE!** 🎉
+
