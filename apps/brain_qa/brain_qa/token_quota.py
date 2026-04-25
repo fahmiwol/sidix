@@ -27,12 +27,15 @@ from typing import Optional, Literal
 
 # ── Config ─────────────────────────────────────────────────────────────────────
 
-QuotaTier = Literal["guest", "free", "sponsored", "admin"]
+QuotaTier = Literal["guest", "free", "sponsored", "whitelist", "admin"]
 
+# Pivot 2026-04-26: limits naik supaya UX free tier lebih enak.
+# Strategy: guest cukup buat try, login dapat substantial value, whitelist/admin unlimited.
 QUOTA_LIMITS: dict[QuotaTier, int] = {
-    "guest":     3,    # IP-based, tanpa login
-    "free":      10,   # login gratis
-    "sponsored": 100,  # sudah top up
+    "guest":     5,    # IP-based, tanpa login (was 3, naik 5 supaya bisa try lebih)
+    "free":      30,   # login gratis (was 10, naik 30 supaya casual user puas)
+    "sponsored": 200,  # sudah top up (was 100, naik 200 untuk power user)
+    "whitelist": 9999, # owner / dev / sponsor / researcher / contributor (admin-managed)
     "admin":     9999, # unlimited efektif
 }
 
@@ -42,6 +45,7 @@ TIER_MODELS: dict[QuotaTier, str] = {
     "guest":     "local",
     "free":      "local",
     "sponsored": "local",
+    "whitelist": "local",
     "admin":     "local",
 }
 
@@ -109,30 +113,71 @@ def _get_tier(user_id: Optional[str], is_admin: bool = False) -> QuotaTier:
     return "free"
 
 
+def _is_whitelisted_user(user_id: Optional[str], email: Optional[str] = None) -> bool:
+    """
+    Pivot 2026-04-26: cek whitelist 2-layer (env + JSON store).
+
+    Email > user_id checking. Owner/dev/sponsor/researcher/contributor di whitelist
+    bypass quota limits.
+    """
+    import os
+    raw_emails = os.environ.get("SIDIX_WHITELIST_EMAILS", "").strip().lower()
+    raw_uids = os.environ.get("SIDIX_WHITELIST_USER_IDS", "").strip()
+    if email:
+        em = email.strip().lower()
+        if em and raw_emails:
+            env_emails = {e.strip() for e in raw_emails.split(",") if e.strip()}
+            if em in env_emails:
+                return True
+    if user_id and raw_uids:
+        env_uids = {u.strip() for u in raw_uids.split(",") if u.strip()}
+        if user_id in env_uids:
+            return True
+    # JSON store layer
+    try:
+        from . import whitelist_store
+        if email and whitelist_store.is_email_whitelisted(email):
+            return True
+        if user_id and whitelist_store.is_user_id_whitelisted(user_id):
+            return True
+    except Exception:
+        pass
+    return False
+
+
 # ── Core Functions ─────────────────────────────────────────────────────────────
 
 def check_quota(
     user_id: Optional[str],
     ip: str = "unknown",
     is_admin: bool = False,
+    email: Optional[str] = None,
 ) -> dict:
     """
     Cek apakah user masih punya quota.
 
+    Pivot 2026-04-26: tambah `email` param + cek whitelist (2-layer env+JSON).
+    Whitelist user → tier 'whitelist' (unlimited efektif).
+
     Returns:
     {
       "ok": True/False,
-      "tier": "guest"|"free"|"sponsored"|"admin",
+      "tier": "guest"|"free"|"sponsored"|"whitelist"|"admin",
       "used": int,
       "limit": int,
       "remaining": int,
       "model": str,          ← model yang boleh dipakai
       "reset_at": str,       ← kapan quota reset (UTC midnight)
       "topup_url": str,      ← jika limit, link untuk top up
-      "message": str,        ← pesan untuk user (bilingual nanti)
+      "message": str,        ← pesan untuk user
+      "unlimited": bool,     ← True untuk whitelist/admin (frontend hide counter)
     }
     """
-    tier = _get_tier(user_id, is_admin)
+    # Whitelist check pertama (tertinggi prioritas)
+    if _is_whitelisted_user(user_id, email):
+        tier: QuotaTier = "whitelist"
+    else:
+        tier = _get_tier(user_id, is_admin)
     limit = QUOTA_LIMITS[tier]
     model = TIER_MODELS[tier]
     key = _user_key(user_id, ip)

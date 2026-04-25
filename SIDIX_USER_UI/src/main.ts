@@ -429,6 +429,16 @@ document.getElementById('quota-btn-topup')?.addEventListener('click', () => {
 
 // ── Auth Button (Header + Mobile) ────────────────────────────────────────────
 
+function _initialAvatarDataURL(name: string, bg = '#d4a853'): string {
+  // Generate SVG circle dengan initial letter (untuk user tanpa Google avatar)
+  const initial = (name?.[0] || '?').toUpperCase();
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+    <rect width="64" height="64" rx="32" fill="${bg}"/>
+    <text x="50%" y="50%" font-family="-apple-system,BlinkMacSystemFont,sans-serif" font-size="28" font-weight="600" fill="#0a0908" text-anchor="middle" dominant-baseline="central">${initial}</text>
+  </svg>`;
+  return 'data:image/svg+xml;base64,' + btoa(svg);
+}
+
 function updateAuthButton(isSignedIn: boolean, displayName?: string, avatarUrl?: string) {
   const btnAuth = document.getElementById('btn-auth');
   const labelAuth = document.getElementById('label-auth');
@@ -440,9 +450,16 @@ function updateAuthButton(isSignedIn: boolean, displayName?: string, avatarUrl?:
     btnAuth.classList.toggle('signed-in', isSignedIn);
   }
 
-  // Show avatar image kalau login + ada avatar URL, fallback icon kalau tidak.
-  if (isSignedIn && avatarUrl && authAvatar && authIcon) {
-    authAvatar.src = avatarUrl;
+  // Pivot 2026-04-26: kalau login, ALWAYS tampilkan avatar (Google URL atau
+  // fallback initial letter SVG). Icon user generic hanya tampil kalau logout.
+  if (isSignedIn && authAvatar && authIcon) {
+    const url = avatarUrl || _initialAvatarDataURL(displayName || 'U');
+    authAvatar.src = url;
+    authAvatar.onerror = () => {
+      // Avatar URL gagal load (CORS, rate limit, dll) → fallback ke initial
+      authAvatar.src = _initialAvatarDataURL(displayName || 'U');
+      authAvatar.onerror = null;
+    };
     authAvatar.classList.remove('hidden');
     authIcon.classList.add('hidden');
   } else if (authAvatar && authIcon) {
@@ -860,10 +877,18 @@ onAuthChange(async (user) => {
     localStorage.setItem('sidix_user_id', user.id);
     if (user.email) localStorage.setItem('sidix_user_email', user.email);
 
-    // Update auth button — pakai avatar Google + first name
-    const name = user.user_metadata?.full_name ?? user.email ?? '';
-    const avatarUrl = user.user_metadata?.avatar_url || user.user_metadata?.picture || '';
+    // Update auth button — pakai avatar Google + first name (fallback initial)
+    const name = user.user_metadata?.full_name
+      ?? user.user_metadata?.name
+      ?? user.email?.split('@')[0]
+      ?? 'User';
+    const avatarUrl = user.user_metadata?.avatar_url
+      || user.user_metadata?.picture
+      || user.user_metadata?.photo_url
+      || '';
     updateAuthButton(true, name, avatarUrl);
+    // Diagnostic log (helpful kalau user lapor "avatar nggak muncul")
+    console.log('[SIDIX auth] login:', { name, hasAvatar: !!avatarUrl, email: user.email });
 
     // Refresh quota status setelah login (mungkin upgrade tier)
     void fetch(`${BRAIN_QA_BASE}/quota/status`, {
