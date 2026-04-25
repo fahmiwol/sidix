@@ -28,7 +28,7 @@ import os
 import time
 import uuid
 from pathlib import Path
-from typing import Any
+from typing import Any, Optional
 
 try:
     from fastapi import FastAPI, HTTPException, Request
@@ -212,6 +212,11 @@ class GenerateRequest(BaseModel):
     prompt: str
     max_tokens: int = 256
     temperature: float = 0.7
+    persona: Optional[str] = None
+    persona_style: Optional[str] = None
+    agent_mode: bool = True
+    strict_mode: bool = False
+    user_id: str = "anon"
     system: str = (
         "Kamu adalah SIDIX, AI multipurpose yang dibangun di atas prinsip "
         "kejujuran (sidq), sitasi (sanad), dan verifikasi (tabayyun). "
