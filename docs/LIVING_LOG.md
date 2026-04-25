@@ -5357,3 +5357,49 @@ pm2 restart sidix-brain
 
 **SIDIX 2.0 sekarang LIVE!** 🎉
 
+
+---
+
+## 2026-04-25 — Frontend Deploy Helper + UI Footer v2.0 (Claude)
+
+### IMPL: deploy-scripts/deploy-frontend.sh
+Helper otomasi deploy frontend (landing + app) di VPS — 5 langkah:
+1. `git pull --ff-only origin main`
+2. Build `SIDIX_USER_UI` (`npm ci`/`install` + `npm run build`)
+3. PM2 restart `sidix-ui` (atau start kalau belum ada)
+4. `rsync -av --delete SIDIX_LANDING/ /www/wwwroot/sidixlab.com/`
+5. Curl verify 3 endpoint (landing/app/health)
+
+Mengisi gap deploy.sh existing yang fokus backend. Script auto-create `.env` dengan `VITE_BRAIN_QA_URL=https://ctrl.sidixlab.com` kalau belum ada.
+
+### UPDATE: SIDIX_USER_UI/index.html footer v1.0.4 → v2.0
+Footer chat (line 390): `SIDIX v1.0.4 · Self-hosted · Free` → `SIDIX v2.0 · Autonomous AI Agent · Self-hosted · Free`. Konsisten dengan pivot 2.0. Bukan perubahan struktur (aman dari UI LOCK 2026-04-19).
+
+Sisa string `v0.8.0` di `src/main.ts` About modal — out-of-scope, perlu sweep terpisah.
+
+### TEST: vite build local QA
+- `npm install` → 187 packages, 10s
+- `npm run build` → 1753 modules, 1.7s, ✅ no error
+- `dist/index.html` mengandung "SIDIX v2.0 · Autonomous AI Agent" ✅
+- Warning non-blocking: `supabase.ts` static+dynamic import overlap (existing, not introduced)
+
+### DOC: research_notes/100_frontend_deploy_topology_sidix2.md
+Dokumentasi lengkap topology deploy frontend (kenapa rsync manual landing, kenapa rebuild app, kontrak `.env`, lesson learned). 7 sections.
+
+### NOTE: VPS git state observation (perlu cleanup)
+Pasca deploy KIMI 2026-04-25, VPS `/opt/sidix` git log menunjukkan HEAD di branch `cursor/sop-public-artifacts-sync` @ `63446ca` — bukan `main` @ `90ab07b`. Working tree files menunjukkan v2.0 (landing live confirm), tapi git tracking branch masih stale. Recovery: `git fetch && git checkout main && git pull --ff-only origin main` di VPS.
+
+### NOTE: backend crash log dari pm2 sidix-brain (KIMI investigating)
+Log error pm2 menunjukkan:
+- `TypeError: string indices must be integers` (sudah fixed di `63446ca`, masih muncul = code lama belum di-pull)
+- `Ollama timeout (90s) — model=sidix-lora:latest`
+- `Coding planner LLM failed, falling back to heuristic`
+- `Coding planner chose invalid action:` (kosong, banyak pengulangan)
+- `[Epistemologi] Output perlu review`
+
+KIMI sedang diagnose via SSH. Saat note ini ditulis, KIMI rate-limited. Saya hold off touching backend per anti-bentrok protocol.
+
+### DECISION: Hold backend changes, push frontend-only
+Per `CLAUDE.md` anti-bentrok rule:
+- ❌ Saya TIDAK touch `agent_memory.py`, `agent_react.py`, `parallel_*.py`, `jiwa/*` (KIMI/SHARED territory)
+- ✅ Saya commit hanya: `SIDIX_USER_UI/index.html`, `deploy-scripts/deploy-frontend.sh`, `brain/public/research_notes/100_*.md`, `docs/LIVING_LOG.md` (Claude territory)
