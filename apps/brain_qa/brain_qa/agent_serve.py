@@ -1626,6 +1626,149 @@ def create_app() -> "FastAPI":
             raise HTTPException(status_code=500, detail=f"synthetic stats fail: {e}")
 
     # ════════════════════════════════════════════════════════════════════════
+    # COGNITIVE FOUNDATION ENDPOINTS (Vol 5):
+    #   - pattern_extractor: induktif generalization ("batok kelapa → kayu")
+    #   - aspiration_detector: capability gap ("GPT bisa, saya juga bisa")
+    #   - tool_synthesizer: bikin tools baru autonomous
+    #   - problem_decomposer: Polya 4-phase problem solving
+    # ════════════════════════════════════════════════════════════════════════
+
+    @app.get("/admin/patterns/stats", tags=["Cognitive"])
+    def patterns_stats(request: Request):
+        """Stats pattern library (induktif generalisasi)."""
+        if not _admin_ok(request):
+            raise HTTPException(status_code=403, detail="Akses ditolak")
+        try:
+            from . import pattern_extractor
+            return {"stats": pattern_extractor.stats(),
+                    "recent": pattern_extractor.list_patterns(limit=20)}
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"patterns stats fail: {e}")
+
+    @app.post("/agent/patterns/extract", tags=["Cognitive"])
+    async def patterns_extract(request: Request):
+        """Manual extract pattern dari teks (test/admin tool).
+        Body: {text: "observation klaim", session_id?: "..."}"""
+        if not _admin_ok(request):
+            raise HTTPException(status_code=403, detail="Akses ditolak")
+        try:
+            body = await request.json()
+        except Exception:
+            body = {}
+        text = (body.get("text") or "").strip()
+        if not text:
+            raise HTTPException(status_code=400, detail="text wajib")
+        try:
+            from . import pattern_extractor
+            p = pattern_extractor.extract_pattern_from_text(
+                text,
+                source_example=text,
+                derived_from=body.get("session_id", "manual"),
+            )
+            if not p:
+                return {"ok": False, "reason": "tidak ada generalization detected"}
+            pattern_extractor.save_pattern(p)
+            from dataclasses import asdict
+            return {"ok": True, "pattern": asdict(p)}
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"extract fail: {e}")
+
+    @app.get("/admin/aspirations/stats", tags=["Cognitive"])
+    def aspirations_stats(request: Request):
+        """Stats aspiration library (capability gap detection)."""
+        if not _admin_ok(request):
+            raise HTTPException(status_code=403, detail="Akses ditolak")
+        try:
+            from . import aspiration_detector
+            return {"stats": aspiration_detector.stats(),
+                    "recent": aspiration_detector.list_aspirations(limit=30)}
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"aspirations stats fail: {e}")
+
+    @app.post("/agent/aspirations/analyze", tags=["Cognitive"])
+    async def aspirations_analyze(request: Request):
+        """Manual capture aspiration dari user message.
+        Body: {text: "user message", session_id?: "..."}"""
+        if not _admin_ok(request):
+            raise HTTPException(status_code=403, detail="Akses ditolak")
+        try:
+            body = await request.json()
+        except Exception:
+            body = {}
+        text = (body.get("text") or "").strip()
+        if not text:
+            raise HTTPException(status_code=400, detail="text wajib")
+        try:
+            from . import aspiration_detector
+            asp = aspiration_detector.maybe_capture_aspiration(
+                text, session_id=body.get("session_id", "manual")
+            )
+            if not asp:
+                return {"ok": False, "reason": "tidak ada aspiration keyword detected"}
+            from dataclasses import asdict
+            return {"ok": True, "aspiration": asdict(asp)}
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"aspiration analyze fail: {e}")
+
+    @app.get("/admin/skills/stats", tags=["Cognitive"])
+    def skills_stats(request: Request):
+        """Stats tool synthesizer skill library."""
+        if not _admin_ok(request):
+            raise HTTPException(status_code=403, detail="Akses ditolak")
+        try:
+            from . import tool_synthesizer
+            return {"stats": tool_synthesizer.stats(),
+                    "skills": tool_synthesizer.list_skills()}
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"skills stats fail: {e}")
+
+    @app.post("/agent/skills/synthesize", tags=["Cognitive"])
+    async def skills_synthesize(request: Request):
+        """Synthesize skill baru (admin gated, expensive — calls LLM 2x + sandbox).
+        Body: {task_description: "...", auto_test?: true, derived_from?: "asp_id"}"""
+        if not _admin_ok(request):
+            raise HTTPException(status_code=403, detail="Akses ditolak")
+        try:
+            body = await request.json()
+        except Exception:
+            body = {}
+        task = (body.get("task_description") or "").strip()
+        if not task:
+            raise HTTPException(status_code=400, detail="task_description wajib")
+        try:
+            from . import tool_synthesizer
+            spec = tool_synthesizer.synthesize_skill(
+                task,
+                derived_from=body.get("derived_from", "manual"),
+                auto_test=bool(body.get("auto_test", True)),
+            )
+            if not spec:
+                return {"ok": False, "reason": "spec generation gagal"}
+            from dataclasses import asdict
+            return {"ok": True, "skill": asdict(spec)}
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"synthesize fail: {e}")
+
+    @app.post("/agent/decompose", tags=["Cognitive"])
+    async def problem_decompose(request: Request):
+        """Polya 4-phase decomposition (Phase 1+2 only, Phase 3 ReAct, Phase 4 review).
+        Body: {problem: "...", review?: false}"""
+        try:
+            body = await request.json()
+        except Exception:
+            body = {}
+        problem = (body.get("problem") or "").strip()
+        if not problem:
+            raise HTTPException(status_code=400, detail="problem wajib")
+        try:
+            from . import problem_decomposer
+            sol = problem_decomposer.decompose_problem(problem)
+            from dataclasses import asdict
+            return {"ok": True, "solution": asdict(sol)}
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"decompose fail: {e}")
+
+    # ════════════════════════════════════════════════════════════════════════
     # RELEVANCE SCORE — metric kualitas jawaban (untuk SIDIX learning loop)
     # ════════════════════════════════════════════════════════════════════════
 
