@@ -461,8 +461,11 @@ def create_app() -> "FastAPI":
             pass
 
         # Embodied: Add senses summary
-        senses = probe_all()
-        active_senses = [s["name"] for s in senses if s["status"] == "active"]
+        # probe_all() returns dict: {total, active, inactive, broken, senses: [...]}
+        # each sense dict has "slug" (not "name") + "status"
+        senses_result = probe_all()
+        senses_list = senses_result.get("senses", [])
+        active_senses = [s["slug"] for s in senses_list if s.get("status") == "active"]
 
         # PUBLIC-FACING: identitas backbone di-mask via identity_mask
         # SIDIX harus terlihat standing-alone dari sudut pandang luar.
@@ -488,9 +491,11 @@ def create_app() -> "FastAPI":
             "version": "0.1.0",
             "corpus_doc_count": chunk_count,
             "senses": {
-                "total": len(senses),
-                "active": len(active_senses),
-                "list": active_senses
+                "total": senses_result.get("total", len(senses_list)),
+                "active": senses_result.get("active", len(active_senses)),
+                "inactive": senses_result.get("inactive", 0),
+                "broken": senses_result.get("broken", 0),
+                "list": active_senses,
             }
         }
         try:
