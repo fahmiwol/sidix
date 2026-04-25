@@ -1590,6 +1590,128 @@ def create_app() -> "FastAPI":
         }
 
     # ════════════════════════════════════════════════════════════════════════
+    # SYNTHETIC QUESTION AGENT — agent dummy bikin Q untuk latih SIDIX
+    # ════════════════════════════════════════════════════════════════════════
+
+    @app.post("/agent/synthetic/batch", tags=["Synthetic"])
+    async def synthetic_batch(request: Request):
+        """
+        Trigger batch synthetic questions (agent dummy untuk training signal).
+        Body: {n: int (default 10, max 50), mode: "corpus"|"persona" (default corpus)}.
+        Admin-only — long running, expensive.
+        """
+        if not _admin_ok(request):
+            raise HTTPException(status_code=403, detail="Akses ditolak")
+        try:
+            body = await request.json()
+        except Exception:
+            body = {}
+        n = max(1, min(int(body.get("n", 10)), 50))
+        mode = body.get("mode", "corpus")
+        try:
+            from .synthetic_question_agent import run_synthetic_batch
+            return run_synthetic_batch(n=n, mode=mode)
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"synthetic batch fail: {e}")
+
+    @app.get("/admin/synthetic/stats", tags=["Synthetic"])
+    def synthetic_stats(request: Request):
+        """Stats agent dummy: total Q, avg score, by grade/mode/persona."""
+        if not _admin_ok(request):
+            raise HTTPException(status_code=403, detail="Akses ditolak")
+        try:
+            from .synthetic_question_agent import stats, list_recent
+            return {"stats": stats(), "recent": list_recent(limit=20)}
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"synthetic stats fail: {e}")
+
+    # ════════════════════════════════════════════════════════════════════════
+    # RELEVANCE SCORE — metric kualitas jawaban (untuk SIDIX learning loop)
+    # ════════════════════════════════════════════════════════════════════════
+
+    @app.get("/admin/relevance/summary", tags=["Metrics"])
+    def relevance_summary(request: Request, hours: int = 24):
+        """
+        Aggregate relevance metrics dari activity_log.jsonl untuk N jam terakhir.
+        Komponen score per chat:
+          - 0.4 × confidence (tidak ada di activity log → estimate dari latency+citations)
+          - 0.3 × citations_normalized (cap 5 → 1.0)
+          - 0.2 × latency_score (<5s=1.0, <15s=0.7, <30s=0.4)
+          - 0.1 × not_error
+        Dipakai admin untuk track quality drift seiring waktu.
+        """
+        if not _admin_ok(request):
+            raise HTTPException(status_code=403, detail="Akses ditolak")
+        try:
+            from . import auth_google
+            entries = auth_google.list_activity(limit=1000)
+            from datetime import datetime, timezone, timedelta
+            now = datetime.now(timezone.utc)
+            cutoff = now - timedelta(hours=max(1, min(hours, 720)))
+
+            scores: list[float] = []
+            lats: list[int] = []
+            cits: list[int] = []
+            errors = 0
+            by_action: dict[str, list[float]] = {}
+            by_persona: dict[str, list[float]] = {}
+
+            for e in entries:
+                try:
+                    ts = datetime.fromisoformat(e.get("ts", "").replace("Z", "+00:00"))
+                except Exception:
+                    continue
+                if ts < cutoff:
+                    continue
+                lat_ms = int(e.get("latency_ms", 0) or 0)
+                cit_n = int(e.get("citations", 0) or 0)
+                is_err = bool(e.get("error", "").strip())
+
+                # Estimate score (no confidence in activity log)
+                cit_part = min(1.0, cit_n / 5.0)
+                if lat_ms <= 5000: lat_part = 1.0
+                elif lat_ms <= 15000: lat_part = 0.7
+                elif lat_ms <= 30000: lat_part = 0.4
+                elif lat_ms <= 60000: lat_part = 0.2
+                else: lat_part = 0.0
+                err_part = 0.0 if is_err else 1.0
+                # Tanpa confidence: weight redistribute (0.5 cit + 0.4 lat + 0.1 not_err)
+                score = 0.5 * cit_part + 0.4 * lat_part + 0.1 * err_part
+                scores.append(score)
+                lats.append(lat_ms)
+                cits.append(cit_n)
+                if is_err:
+                    errors += 1
+
+                action = e.get("action", "?")
+                by_action.setdefault(action, []).append(score)
+                persona = e.get("persona", "?") or "?"
+                by_persona.setdefault(persona, []).append(score)
+
+            n = len(scores)
+            avg = (sum(scores) / n) if n else 0.0
+            return {
+                "window_hours": hours,
+                "total_chats": n,
+                "errors": errors,
+                "avg_relevance_score": round(avg, 3),
+                "avg_latency_ms": int(sum(lats) / n) if n else 0,
+                "avg_citations": round(sum(cits) / n, 2) if n else 0.0,
+                "p50_latency_ms": sorted(lats)[n // 2] if n else 0,
+                "p95_latency_ms": sorted(lats)[int(n * 0.95)] if n else 0,
+                "by_action": {
+                    a: {"n": len(s), "avg_score": round(sum(s) / len(s), 3)}
+                    for a, s in by_action.items()
+                },
+                "by_persona": {
+                    p: {"n": len(s), "avg_score": round(sum(s) / len(s), 3)}
+                    for p, s in by_persona.items()
+                },
+            }
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"relevance summary fail: {e}")
+
+    # ════════════════════════════════════════════════════════════════════════
     # FEEDBACK ENDPOINTS — public submit + admin list/manage
     # ════════════════════════════════════════════════════════════════════════
 

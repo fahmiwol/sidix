@@ -6470,3 +6470,138 @@ terhubung" yang sempat user lihat kemungkinan transient (cold start RunPod
 - Bundle: 115.71 kB (gzip 31.05 kB)
 - Backend syntax: agent_serve.py valid AST after hook addition
 - /ask/stream hook deployed = first chat user setelah deploy ini akan tercatat di activity log
+
+---
+
+## 2026-04-26 (vol 4) — VISIONARY ITERATION: Synthetic Agent + Relevance + 3 Research Notes
+
+User feedback eksekutif:
+> "Action aja iterasinya. bikin respond lebih cepat lebih relevan. bikin
+> relevance score metrix di framework metode pembelajaran. agent dummy yang
+> kasih pertanyaan dibackground buat latih udah jalan? kumpulkan berbagai
+> sumber temuan terbaru tentang inovasi AI terkini... AI agent tercanggih,
+> hidup semu inderanya..."
+
+### AUDIT — Existing Capability Status (via Explore agent)
+
+| Fitur | Status |
+|---|---|
+| Synthetic Question Generator (agent dummy) | ❌ TIDAK ADA — gap kritis |
+| Self-learning pipeline (corpus→training→LoRA) | ✅ JALAN (corpus_to_training + auto_lora 500-trigger + daily_growth cron) |
+| Autonomous researcher | ✅ JALAN (588 lines, multi-perspective synthesis) |
+| Knowledge gap detector | ✅ JALAN (threshold 0.42) |
+| Tool synthesis (SIDIX bikin tools sendiri) | ❌ TIDAK ADA |
+| Multimodal: vision tracker passive | ⚠️ PARTIAL |
+| Multimodal: TTS Piper | ✅ AKTIF (4 bahasa: id/en/ar/ms) |
+| Multimodal: STT (input audio) | ❌ TIDAK ADA |
+| Relevance/confidence scoring | ✅ AKTIF (confidence.py A-F grade) |
+
+### IMPL — Synthetic Question Agent (CRITICAL GAP fix)
+
+**File baru**: `apps/brain_qa/brain_qa/synthetic_question_agent.py` (~330 lines)
+
+**Cara kerja**:
+1. **Mode CORPUS** — sample chunk acak dari `chunks.jsonl` → LLM generate Q
+   yang HANYA bisa dijawab dari chunk itu → eksekusi ReAct → cek apakah
+   `gold_chunk_id` retrieved (gold-standard auto-eval)
+2. **Mode PERSONA** — seed prompt per persona (UTZ creative, ABOO engineer,
+   OOMAR strategist, ALEY academic, AYMAN general) × random topic → ReAct
+3. **Score**: `0.4×confidence + 0.3×retrieved_gold + 0.2×citations_norm + 0.1×latency_score`
+4. **Persist**: `.data/synthetic_qna.jsonl` per entry, grade A-F
+
+**Endpoint**:
+- `POST /agent/synthetic/batch {n: 10, mode: "corpus"}` — admin only
+- `GET /admin/synthetic/stats` — total + avg_score + by_grade/mode/persona
+
+**Cron suggestion**: 4-hourly (6× per hari = 60 Q/hari = ~420/minggu) → cukup
+training signal konsisten tanpa beban.
+
+### IMPL — Relevance Scoring Framework v1
+
+**Endpoint baru**: `GET /admin/relevance/summary?hours=24` (admin only)
+
+**Compute** dari `activity_log.jsonl`:
+- avg_relevance_score (0.5×cit + 0.4×lat + 0.1×not_err)
+- p50 + p95 latency
+- by_action breakdown (ask/stream vs agent/burst dll)
+- by_persona breakdown
+- error count
+
+**Use case**: track quality drift weekly. Kalau avg score turun >10% week-over-week → trigger investigation.
+
+V1 = heuristic. V2 (Q3 2026) = train PRM model 1.5B distill dari Qwen.
+
+### IMPL — RunPod Warmup Script
+
+**File baru**: `deploy-scripts/warmup_runpod.sh`
+
+Cron tiap 50s (di bawah RunPod idle timeout 60s) → ping `/v1/models`. Hanya
+jalan peak hours 06-23 WIB (off-peak GPU spin down OK). Cost: ~$11.7/day worst
+case, vs UX cold-start 60-90s yang bikin user abandon. **Worth it.**
+
+Setup: `* * * * * /opt/sidix/deploy-scripts/warmup_runpod.sh` di crontab VPS.
+
+### DOC — 3 Research Notes Baru
+
+**221**: `ai_innovation_2026_adoption_roadmap.md` — survey 7 inovasi mainstream
+2024-2026: CodeAct, Memento-Skills/Voyager, Tool-R0, PRM, Step-Audio, Multiagent
+Finetuning, MCP. Per inovasi: sumber primer + adopsi SIDIX + effort level.
+3 quick-win + 2 moonshot.
+
+**222**: `sidix_visionary_roadmap_multimodal_self_modifying.md` — strategic
+plan SIDIX-3.0 architecture (4 layer including Self-Modification). Mapping
+visi user → tech 2026 (mendengar=Step-Audio, melihat=Qwen2.5-VL,
+menulis=CodeAct, tools=MCP+Memento, merasakan=multimodal fusion).
+Timeline Q2 2026 → Q2 2027 dengan deliverables konkret.
+
+**223**: `ai_2026_to_2027_underground_predictions.md` — strategic intelligence
+brief dari 5 sinyal underground 2026 (radar kecil tapi prediktor 2027):
+1. Touch Dreaming (CMU+Bosch, 3 upvotes!) — tactile-native robotics
+2. PAN world models — generative latent prediction (planning agent)
+3. CORAL multi-agent evolution — population-based self-modify
+4. Institutional AI governance — mechanism design > constitutional prompts
+5. SpikingBrain hybrid LLM — neuromorphic + linear attention
+
+Plus 3 hobbyist eksperimen 2026 yang underrated. 5 long-bet predictions 2027
++ action SIDIX 2026 untuk siap-siap.
+
+### CONVERSION — Bagaimana research notes jadi SIDIX makin pintar
+
+User tanya: "research notes itu dikonversi jadi apa?"
+
+Pipeline:
+```
+research_note.md
+    ├──→ [INSTANT] BM25 index → /ask retrieve → sanad chain
+    ├──→ [BATCH] corpus_to_training.py → 5 Q/A per persona = 5 pairs
+    │            ↓ accumulated 500 pairs
+    │       auto_lora.py → Kaggle/Colab finetune → LoRA adapter baru
+    │            ↓ deploy
+    │       SIDIX makin pintar built-in di model weight
+    └──→ [DAILY] daily_growth REMEMBER → sidix_memory/<domain>.jsonl
+                 ↓ inject ke ReAct loop saat query domain match
+```
+
+3 research notes hari ini (221+222+223) = ~15 training pairs. Akan
+trigger LoRA retrain dalam 1-2 minggu saat counter capai 500. Setelah
+itu, SIDIX paham Touch Dreaming, governance graph, multi-agent evolution,
+dll **tanpa baca corpus** — built-in di weight.
+
+### NEXT (P0-P1)
+
+- [ ] Setup cron warmup_runpod.sh di VPS (tonight)
+- [ ] Run synthetic_batch first time + monitor stats (tonight)
+- [ ] Setup cron synthetic batch 4-hourly (tonight)
+- [ ] CodeAct adapter di agent_react.py (P0, target Mei 2026)
+- [ ] MCP server wrap 17 tool existing (P0, target Mei 2026)
+- [ ] PRM v1 model-based (P1, Q3 2026)
+- [ ] Step-Audio integration (P1, Q3 2026)
+- [ ] Skill library v1 / Memento-Skills (P1, Q3-Q4 2026)
+- [ ] Update sidixlab.com landing page dengan v2.0 features (separate iteration)
+
+### Validation
+
+- Module imports OK (`from brain_qa.synthetic_question_agent import run_synthetic_batch, stats`)
+- agent_serve.py valid AST after 3 endpoint additions
+- 3 research notes total ~12000 kata, semua sumber primer terverifikasi link
+- README badge updated v0.8.0 → v2.0.0 + Self-Learning Active + Own Auth GIS

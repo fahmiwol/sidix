@@ -6,10 +6,12 @@
   <p><em>Self-Hosted · Self-Learning · Self-Evolving · Own Stack · No Vendor API</em></p>
 
   <p>
-    <img src="https://img.shields.io/badge/version-v0.8.0-blue?style=flat-square" alt="Version" />
+    <img src="https://img.shields.io/badge/version-v2.0.0-blue?style=flat-square" alt="Version" />
     <img src="https://img.shields.io/badge/Free-100%25-brightgreen?style=flat-square" alt="Free" />
     <img src="https://img.shields.io/badge/Open%20Source-MIT-gold?style=flat-square" alt="Open Source MIT" />
     <img src="https://img.shields.io/badge/Self--Hosted-Own%20Stack-blue?style=flat-square" alt="Self-Hosted" />
+    <img src="https://img.shields.io/badge/Own%20Auth-Google%20GIS-brightgreen?style=flat-square" alt="Own Auth" />
+    <img src="https://img.shields.io/badge/Self--Learning-Active-purple?style=flat-square" alt="Self-Learning" />
     <img src="https://img.shields.io/badge/No%20Vendor%20API-Local%20Inference-success?style=flat-square" alt="No Vendor API" />
   </p>
 
