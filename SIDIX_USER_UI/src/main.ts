@@ -517,6 +517,60 @@ function _initialAvatarDataURL(name: string, bg = '#d4a853'): string {
   return 'data:image/svg+xml;base64,' + btoa(svg);
 }
 
+// ── Own Auth (Pivot 2026-04-26): Google Identity Services + JWT session ──
+function ownAuthIsSignedIn(): boolean {
+  return !!localStorage.getItem('sidix_session_jwt');
+}
+
+function ownAuthLogout(): void {
+  ['sidix_session_jwt', 'sidix_user_id', 'sidix_user_email', 'sidix_user_name', 'sidix_user_picture']
+    .forEach(k => localStorage.removeItem(k));
+  updateAuthButton(false);
+  window.location.reload();
+}
+
+async function loadOwnAuthUser(): Promise<void> {
+  const token = localStorage.getItem('sidix_session_jwt');
+  if (!token) return;
+  try {
+    const res = await fetch(`${BRAIN_QA_BASE}/auth/me`, {
+      headers: { 'Authorization': `Bearer ${token}` },
+    });
+    if (!res.ok) {
+      // Token expired / invalid → silent clear
+      ['sidix_session_jwt', 'sidix_user_id', 'sidix_user_email', 'sidix_user_name', 'sidix_user_picture']
+        .forEach(k => localStorage.removeItem(k));
+      updateAuthButton(false);
+      return;
+    }
+    const user = await res.json();
+    // Update localStorage dengan latest data
+    localStorage.setItem('sidix_user_id', user.id);
+    localStorage.setItem('sidix_user_email', user.email);
+    localStorage.setItem('sidix_user_name', user.name || '');
+    localStorage.setItem('sidix_user_picture', user.picture || '');
+    updateAuthButton(true, user.name || user.email, user.picture);
+    console.log('[SIDIX auth] own auth restored:', { name: user.name, email: user.email });
+    // Refresh quota status (mungkin tier berubah, e.g. whitelist auto-detected)
+    fetch(`${BRAIN_QA_BASE}/quota/status`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'x-user-email': user.email,
+        'x-user-id': user.id,
+      },
+    }).then(r => r.json()).then((q: any) => {
+      if (q) updateQuotaBadge(q.used ?? 0, q.limit ?? 30, q.tier ?? 'free', q.unlimited);
+    }).catch(() => {});
+  } catch (e) {
+    console.warn('[SIDIX auth] /auth/me fail:', e);
+  }
+}
+
+// On page load, restore session kalau ada
+if (typeof window !== 'undefined') {
+  void loadOwnAuthUser();
+}
+
 function updateAuthButton(isSignedIn: boolean, displayName?: string, avatarUrl?: string) {
   const btnAuth = document.getElementById('btn-auth');
   const labelAuth = document.getElementById('label-auth');
@@ -550,14 +604,24 @@ function updateAuthButton(isSignedIn: boolean, displayName?: string, avatarUrl?:
   if (mobAuth) mobAuth.textContent = isSignedIn ? '✓' : t('signIn');
 }
 
+// Pivot 2026-04-26: own auth via Google Identity Services (bukan Supabase modal).
+// Kalau sudah login → show profile mini menu (logout option). Kalau belum → redirect /login.html.
 document.getElementById('btn-auth')?.addEventListener('click', () => {
-  if (isLoggedIn()) {
-    // Already signed in → show options (sign out or profile)
-    openLoginModal(); // reuse modal — will show signed-in state
+  if (ownAuthIsSignedIn()) {
+    showProfileMenu();
   } else {
-    openLoginModal();
+    const next = encodeURIComponent(window.location.pathname + window.location.search);
+    window.location.href = `/login.html?next=${next}`;
   }
 });
+
+function showProfileMenu() {
+  const name = localStorage.getItem('sidix_user_name') || localStorage.getItem('sidix_user_email') || 'User';
+  const email = localStorage.getItem('sidix_user_email') || '';
+  if (confirm(`Login sebagai: ${name}\n${email}\n\nKlik OK untuk logout, Cancel untuk tutup.`)) {
+    ownAuthLogout();
+  }
+}
 
 document.getElementById('mob-nav-auth')?.addEventListener('click', () => {
   openLoginModal();

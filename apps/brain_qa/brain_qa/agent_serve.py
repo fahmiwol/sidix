@@ -1402,6 +1402,107 @@ def create_app() -> "FastAPI":
             raise HTTPException(status_code=500, detail=f"whitelist add fail: {e}")
 
     # ════════════════════════════════════════════════════════════════════════
+    # AUTH ENDPOINTS — Google Identity Services (Pivot 2026-04-26)
+    # ════════════════════════════════════════════════════════════════════════
+    # Migrasi dari Supabase ke own auth. Flow:
+    #   1. Frontend: Google Sign-In button → ID token JWT
+    #   2. POST /auth/google {credential: <id_token>} → verify + upsert user
+    #   3. Return session JWT (HMAC-signed, TTL 30 hari)
+    #   4. Frontend simpan JWT, kirim sebagai Authorization: Bearer <jwt>
+    #   5. /auth/me return user info untuk display avatar/name di UI
+
+    @app.get("/auth/config", tags=["Auth"], include_in_schema=False)
+    def auth_config():
+        """Return public Client ID untuk frontend (safe to expose)."""
+        return {
+            "google_client_id": os.environ.get("GOOGLE_OAUTH_CLIENT_ID", ""),
+            "auth_provider": "google",
+        }
+
+    @app.post("/auth/google", tags=["Auth"])
+    async def auth_google_login(request: Request):
+        """
+        Verify Google ID token + create/update user + issue session JWT.
+        Body: {credential: "<id_token_from_google>"}
+        """
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+            id_token = (body.get("credential") or "").strip()
+            if not id_token:
+                raise HTTPException(status_code=400, detail="credential wajib")
+            from . import auth_google
+            info = auth_google.verify_google_id_token(id_token)
+            if not info:
+                raise HTTPException(status_code=401, detail="ID token tidak valid")
+            user = auth_google.upsert_user(info)
+            session_jwt = auth_google.issue_session_jwt(
+                user_id=user["id"],
+                email=user["email"],
+            )
+            return {
+                "ok": True,
+                "session_jwt": session_jwt,
+                "user": {
+                    "id": user["id"],
+                    "email": user["email"],
+                    "name": user.get("name", ""),
+                    "picture": user.get("picture", ""),
+                    "tier": user.get("tier", "free"),
+                },
+            }
+        except HTTPException:
+            raise
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"auth fail: {e}")
+
+    @app.get("/auth/me", tags=["Auth"])
+    def auth_me(request: Request):
+        """Return user info dari session JWT. 401 kalau invalid/expired."""
+        from . import auth_google
+        payload = auth_google.extract_user_from_request(request)
+        if not payload:
+            raise HTTPException(status_code=401, detail="not authenticated")
+        user = auth_google.get_user_by_id(payload["sub"])
+        if not user:
+            raise HTTPException(status_code=404, detail="user not found")
+        return {
+            "id": user["id"],
+            "email": user["email"],
+            "name": user.get("name", ""),
+            "picture": user.get("picture", ""),
+            "tier": user.get("tier", "free"),
+            "created_at": user.get("created_at", ""),
+            "login_count": user.get("login_count", 1),
+        }
+
+    @app.post("/auth/logout", tags=["Auth"])
+    def auth_logout():
+        """Stateless JWT — logout cuma frontend remove token. Endpoint untuk audit."""
+        return {"ok": True, "message": "Hapus token di frontend localStorage."}
+
+    @app.get("/admin/users", tags=["Admin"])
+    def admin_list_users(request: Request):
+        """List semua users (admin only)."""
+        if not _admin_ok(request):
+            raise HTTPException(status_code=403, detail="Akses ditolak")
+        from . import auth_google
+        return {
+            "users": auth_google.list_users(limit=500),
+            "stats": auth_google.stats(),
+        }
+
+    @app.get("/admin/activity", tags=["Admin"])
+    def admin_activity_log(request: Request, user_id: Optional[str] = None, limit: int = 200):
+        """Read activity log (admin only). Filter optional by user_id."""
+        if not _admin_ok(request):
+            raise HTTPException(status_code=403, detail="Akses ditolak")
+        from . import auth_google
+        return {
+            "entries": auth_google.list_activity(limit=max(1, min(limit, 1000)), user_id=user_id),
+        }
+
+    # ════════════════════════════════════════════════════════════════════════
     # FEEDBACK ENDPOINTS — public submit + admin list/manage
     # ════════════════════════════════════════════════════════════════════════
 
