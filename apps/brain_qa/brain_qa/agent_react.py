@@ -1837,10 +1837,14 @@ def run_react(
         from .cot_engine import get_cot_scaffold, get_complexity
         _cot_complexity = get_complexity(working_question)
         
-        # ── COUNCIL TRIGGER (MoA-lite) ──────────────────────────────────────────
-        # Jika kompleksitas HIGH dan bukan anggota council, panggil council.
-        # Skip council kalau agent_mode.
-        if _cot_complexity == "high" and not is_council and not simple_mode and not _strict:
+        # ── COUNCIL TRIGGER (MoA-lite) — Pivot 2026-04-26 ──────────────────────
+        # SEBELUMNYA `not _strict` → council fire by DEFAULT untuk high-complexity
+        # query, bypass main ReAct + web_search. Bug: factual current-event
+        # query yang complex (eg "siapa president 2026") di-route ke council
+        # synthesis tanpa data live.
+        # SEKARANG: council hanya fire kalau strict_mode opt-in (research-grade).
+        # Default agent_mode = single agent + tool use direct (seperti GPT/Claude).
+        if _cot_complexity == "high" and not is_council and not simple_mode and _strict:
             try:
                 from .council import run_council
                 _log_fp.getLogger(__name__).info(f"[Council] Spawning council for complex query: {working_question[:50]}...")
