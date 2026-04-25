@@ -4,6 +4,30 @@ Proyek: **SIDIX / Mighan Model**
 
 ---
 
+## 🔒 DIRECTION LOCK 2026-04-26 (BACA PERTAMA — IMMUTABLE)
+
+User directive eksplisit: *"gaaaaaaasssssssssssss!!!! catat!! jangan berubah-ubah lagi arah sidix"*
+
+**WAJIB BACA SEBELUM APA-APA**: [`docs/DIRECTION_LOCK_20260426.md`](docs/DIRECTION_LOCK_20260426.md)
+
+### Quick lock summary:
+- **Tagline**: *"Autonomous AI Agent — Thinks, Learns & Creates"*
+- **Direction**: AI Agent yang **BEBAS dan TUMBUH**
+- **Arsitektur**: 4-pilar (Memory + Multi-Agent + Continuous Learning + Proactive)
+- **License**: MIT, self-hosted, no vendor LLM API
+- **5 persona LOCKED**: UTZ / ABOO / OOMAR / ALEY / AYMAN
+- **Sanad chain + epistemic 4-label**: mandatory
+
+### Yang TIDAK BOLEH BERUBAH (tanpa user explicit):
+❌ Tagline · ❌ klaim spiritual entity · ❌ vendor API · ❌ filter strict (Liberation Sprint pivot LOCK) · ❌ 5 persona · ❌ MIT license
+
+### Yang BOLEH:
+✅ Add fitur baru, optimize, improve performance, build on top vol 1-9
+
+**Vol 10+ = BUILD ON TOP, NO PIVOT**.
+
+---
+
 ## 🚦 ANTI-BENTROK: CLAUDE × KIMI (WAJIB BACA SEBELUM EDIT FILE APAPUN)
 
 Proyek ini dikerjakan oleh DUA agent AI secara bersamaan: **Claude** (otak/deploy) dan **Kimi** (jiwa/kreatif).
