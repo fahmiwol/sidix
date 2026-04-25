@@ -234,6 +234,7 @@
     <nav>
       <div class="nav-section">Management</div>
       <a class="nav-item active" data-tab="whitelist"><span class="icon">🎟️</span><span>Whitelist</span></a>
+      <a class="nav-item" data-tab="feedback"><span class="icon">💬</span><span>Feedback</span></a>
       <a class="nav-item disabled"><span class="icon">👥</span><span>Users</span><span class="badge">soon</span></a>
       <a class="nav-item disabled"><span class="icon">🧰</span><span>Tool Permissions</span><span class="badge">soon</span></a>
 
@@ -332,6 +333,41 @@
       <button onclick="loadList()" class="ghost">🔄 Refresh</button>
     </div>
 
+    <!-- ── TAB: Feedback ── -->
+    <div class="tab-pane" id="tab-feedback">
+      <div class="page-header">
+        <h2>💬 User Feedback</h2>
+        <p>Bug report, kritik & saran dari user. Kelola status: new → in_progress → resolved.</p>
+      </div>
+
+      <div class="card">
+        <h3>📊 Statistik</h3>
+        <div class="stats-grid" id="fb-stats">
+          <div class="stat-box"><div class="stat-num">—</div><div class="stat-label">Total</div></div>
+          <div class="stat-box"><div class="stat-num">—</div><div class="stat-label">New</div></div>
+          <div class="stat-box"><div class="stat-num">—</div><div class="stat-label">In Progress</div></div>
+          <div class="stat-box"><div class="stat-num">—</div><div class="stat-label">Resolved</div></div>
+        </div>
+        <div style="margin-top: 14px;">
+          <button onclick="loadFeedback()">🔄 Refresh</button>
+          <select id="fb-filter" onchange="loadFeedback()" style="display: inline-block; width: auto; margin-left: 8px;">
+            <option value="">All status</option>
+            <option value="new">New</option>
+            <option value="in_progress">In Progress</option>
+            <option value="resolved">Resolved</option>
+            <option value="dismissed">Dismissed</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>📋 Daftar Feedback</h3>
+        <div id="fb-list">
+          <div class="empty">Belum dimuat. Klik Refresh.</div>
+        </div>
+      </div>
+    </div>
+
     <!-- ── TAB: System Health ── -->
     <div class="tab-pane" id="tab-health">
       <div class="page-header">
@@ -361,7 +397,14 @@
       try { history.replaceState(null, '', `#${name}`); } catch {}
     }
     document.querySelectorAll('.nav-item[data-tab]').forEach(item => {
-      item.addEventListener('click', () => switchTab(item.dataset.tab));
+      item.addEventListener('click', () => {
+        const t = item.dataset.tab;
+        switchTab(t);
+        // Auto-load data per tab
+        if (t === 'whitelist') loadList();
+        else if (t === 'feedback') loadFeedback();
+        else if (t === 'health') loadHealth();
+      });
     });
 
     // ── Auth state ──
@@ -536,6 +579,94 @@
         });
         if (!res.ok) { alert(`Error: ${await res.text()}`); return; }
         loadList();
+      } catch (e) { alert(`Network: ${e.message}`); }
+    }
+
+    // ── Feedback (admin) ──
+    async function loadFeedback() {
+      const tok = getToken();
+      if (!tok) { showLogin(); return; }
+      const filter = document.getElementById('fb-filter').value;
+      const url = filter ? `${API_BASE}/admin/feedback?status=${encodeURIComponent(filter)}` : `${API_BASE}/admin/feedback`;
+      try {
+        const res = await fetch(url, { headers: { 'x-admin-token': tok } });
+        if (res.status === 403) { sessionStorage.removeItem('sidix_admin_token'); showLogin(); return; }
+        if (!res.ok) { document.getElementById('fb-list').innerHTML = `<div class="empty">Error ${res.status}</div>`; return; }
+        const data = await res.json();
+        renderFeedback(data);
+      } catch (e) {
+        document.getElementById('fb-list').innerHTML = `<div class="empty">Network error: ${e.message}</div>`;
+      }
+    }
+
+    function renderFeedback(data) {
+      const stats = data.stats || { total: 0, by_status: {} };
+      document.getElementById('fb-stats').innerHTML = `
+        <div class="stat-box"><div class="stat-num">${stats.total ?? 0}</div><div class="stat-label">Total</div></div>
+        <div class="stat-box"><div class="stat-num" style="color: var(--blue)">${stats.by_status?.new ?? 0}</div><div class="stat-label">New</div></div>
+        <div class="stat-box"><div class="stat-num" style="color: var(--gold)">${stats.by_status?.in_progress ?? 0}</div><div class="stat-label">In Progress</div></div>
+        <div class="stat-box"><div class="stat-num" style="color: var(--green)">${stats.by_status?.resolved ?? 0}</div><div class="stat-label">Resolved</div></div>
+      `;
+
+      const list = document.getElementById('fb-list');
+      const items = data.items || [];
+      if (items.length === 0) {
+        list.innerHTML = `<div class="empty">Belum ada feedback dengan filter ini.</div>`;
+        return;
+      }
+      list.innerHTML = items.map(it => {
+        const dt = (it.created_at || '').slice(0, 16).replace('T', ' ');
+        const userInfo = it.user_email ? `<code>${it.user_email}</code>` : (it.user_id ? `<code>${it.user_id.slice(0, 12)}…</code>` : '<span style="color:var(--text-dim)">anon</span>');
+        const screenshot = it.screenshot
+          ? `<a href="${API_BASE}/feedback/image/${it.screenshot}" target="_blank"><img src="${API_BASE}/feedback/image/${it.screenshot}" alt="screenshot" style="max-width: 200px; max-height: 120px; border-radius: 6px; border: 1px solid var(--border); margin-top: 8px; cursor: pointer;" /></a>`
+          : '';
+        const statusColor = { new: 'var(--blue)', in_progress: 'var(--gold)', resolved: 'var(--green)', dismissed: 'var(--text-dim)' }[it.status || 'new'];
+        return `
+          <div style="border: 1px solid var(--border); border-radius: 10px; padding: 14px; margin-bottom: 10px; background: var(--bg-input);">
+            <div style="display: flex; justify-content: space-between; align-items: start; gap: 12px; margin-bottom: 6px;">
+              <strong style="color: var(--text);">${escapeHtml(it.title)}</strong>
+              <span class="badge" style="background: ${statusColor}33; color: ${statusColor}">${it.status || 'new'}</span>
+            </div>
+            <div style="font-size: 11px; color: var(--text-dim); margin-bottom: 8px;">
+              ${dt} · ${userInfo} ${it.session_id ? `· session <code>${it.session_id.slice(0, 8)}</code>` : ''}
+            </div>
+            <p style="font-size: 13px; color: var(--text-dim); white-space: pre-wrap; margin: 8px 0;">${escapeHtml(it.body)}</p>
+            ${screenshot}
+            <div style="margin-top: 10px; display: flex; gap: 6px; flex-wrap: wrap;">
+              <button onclick="updateFbStatus('${it.id}', 'in_progress')" style="font-size: 11px; padding: 4px 10px;">→ In Progress</button>
+              <button onclick="updateFbStatus('${it.id}', 'resolved')" style="font-size: 11px; padding: 4px 10px;">✓ Resolved</button>
+              <button onclick="updateFbStatus('${it.id}', 'dismissed')" class="ghost" style="font-size: 11px; padding: 4px 10px;">Dismiss</button>
+              <button onclick="deleteFb('${it.id}')" class="danger" style="font-size: 11px; padding: 4px 10px; margin-left: auto;">Hapus</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function escapeHtml(s) {
+      return (s || '').replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+    }
+
+    async function updateFbStatus(id, status) {
+      const tok = getToken();
+      try {
+        const res = await fetch(`${API_BASE}/admin/feedback/${id}/status?status=${status}`, {
+          method: 'POST', headers: { 'x-admin-token': tok },
+        });
+        if (!res.ok) { alert(`Error: ${await res.text()}`); return; }
+        loadFeedback();
+      } catch (e) { alert(`Network: ${e.message}`); }
+    }
+
+    async function deleteFb(id) {
+      if (!confirm('Hapus feedback ini? Tidak bisa undo.')) return;
+      const tok = getToken();
+      try {
+        const res = await fetch(`${API_BASE}/admin/feedback/${id}`, {
+          method: 'DELETE', headers: { 'x-admin-token': tok },
+        });
+        if (!res.ok) { alert(`Error: ${await res.text()}`); return; }
+        loadFeedback();
       } catch (e) { alert(`Network: ${e.message}`); }
     }
 

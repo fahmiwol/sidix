@@ -1399,6 +1399,138 @@ def create_app() -> "FastAPI":
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"whitelist add fail: {e}")
 
+    # ════════════════════════════════════════════════════════════════════════
+    # FEEDBACK ENDPOINTS — public submit + admin list/manage
+    # ════════════════════════════════════════════════════════════════════════
+
+    @app.post("/feedback", tags=["Feedback"])
+    async def submit_feedback_endpoint(request: Request):
+        """
+        Submit feedback dari user (public).
+        Multipart form:
+          - title (str, wajib)
+          - body (str, wajib)
+          - user_email (str, opsional)
+          - user_id (str, opsional)
+          - session_id (str, opsional)
+          - screenshot (file, opsional, max 5MB image)
+        """
+        _enforce_rate(request)
+        try:
+            from . import feedback_store
+            form = await request.form()
+            title = str(form.get("title", "")).strip()
+            body = str(form.get("body", "")).strip()
+            if not title or not body:
+                raise HTTPException(status_code=400, detail="title dan body wajib")
+
+            user_email = str(form.get("user_email", "")).strip()
+            user_id = str(form.get("user_id", "")).strip()
+            session_id = str(form.get("session_id", "")).strip()
+
+            screenshot_filename: Optional[str] = None
+            screenshot = form.get("screenshot")
+            if screenshot is not None and hasattr(screenshot, "filename"):
+                # Limit 5 MB
+                content = await screenshot.read()
+                if len(content) > 5 * 1024 * 1024:
+                    raise HTTPException(status_code=413, detail="screenshot > 5 MB")
+                if content:
+                    import uuid as _uuid
+                    ext = (screenshot.content_type or "image/png").split("/")[-1].lower()
+                    if ext not in ("png", "jpeg", "jpg", "webp", "gif"):
+                        ext = "png"
+                    screenshot_filename = f"{_uuid.uuid4().hex}.{ext}"
+                    (feedback_store.image_dir() / screenshot_filename).write_bytes(content)
+
+            item = feedback_store.add_feedback(
+                title=title, body=body,
+                user_email=user_email, user_id=user_id, session_id=session_id,
+                screenshot_filename=screenshot_filename,
+            )
+            return {"ok": True, "id": item["id"]}
+        except HTTPException:
+            raise
+        except ValueError as ve:
+            raise HTTPException(status_code=400, detail=str(ve))
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"feedback submit fail: {e}")
+
+    @app.get("/feedback/image/{filename}", include_in_schema=False)
+    def serve_feedback_image(filename: str):
+        """Serve screenshot file (admin only — but public for simplicity, filename uuid hard to guess)."""
+        from fastapi.responses import FileResponse
+        from . import feedback_store
+        # Sanitize: hanya nama file simple, no path traversal
+        if "/" in filename or ".." in filename or "\\" in filename:
+            raise HTTPException(status_code=400, detail="invalid filename")
+        path = feedback_store.image_dir() / filename
+        if not path.exists():
+            raise HTTPException(status_code=404, detail="not found")
+        return FileResponse(str(path))
+
+    @app.get("/admin/feedback", tags=["Admin"])
+    def admin_feedback_list(request: Request, status: Optional[str] = None, limit: int = 200):
+        """List semua feedback (admin only). Filter optional by status."""
+        if not _admin_ok(request):
+            raise HTTPException(status_code=403, detail="Akses ditolak")
+        try:
+            from . import feedback_store
+            items = feedback_store.list_all(limit=max(1, min(limit, 500)), status_filter=status)
+            return {"items": items, "stats": feedback_store.stats()}
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"feedback list fail: {e}")
+
+    @app.post("/admin/feedback/{fb_id}/status", tags=["Admin"])
+    def admin_feedback_status(fb_id: str, request: Request):
+        """Update status feedback (admin only). Body: {status: 'in_progress'/'resolved'/'dismissed'}."""
+        if not _admin_ok(request):
+            raise HTTPException(status_code=403, detail="Akses ditolak")
+        try:
+            from . import feedback_store
+            import json as _json
+            # Read JSON body manually
+            async def _get_status():
+                return None  # placeholder
+            # FastAPI sync route doesn't await, accept query param fallback
+            new_status = request.query_params.get("status", "")
+            if not new_status:
+                # Try parse body
+                try:
+                    raw = request.scope.get("body_bytes") or b""
+                    if raw:
+                        new_status = _json.loads(raw).get("status", "")
+                except Exception:
+                    pass
+            if not new_status:
+                raise HTTPException(status_code=400, detail="status param wajib (?status=resolved)")
+            item = feedback_store.update_status(fb_id, new_status)
+            if not item:
+                raise HTTPException(status_code=404, detail="feedback not found")
+            return {"ok": True, "item": item}
+        except HTTPException:
+            raise
+        except ValueError as ve:
+            raise HTTPException(status_code=400, detail=str(ve))
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"status update fail: {e}")
+
+    @app.delete("/admin/feedback/{fb_id}", tags=["Admin"])
+    def admin_feedback_delete(fb_id: str, request: Request):
+        """Delete feedback by id (admin only)."""
+        if not _admin_ok(request):
+            raise HTTPException(status_code=403, detail="Akses ditolak")
+        try:
+            from . import feedback_store
+            ok = feedback_store.delete_feedback(fb_id)
+            if not ok:
+                raise HTTPException(status_code=404, detail="not found")
+            return {"ok": True}
+        except HTTPException:
+            raise
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"delete fail: {e}")
+
     @app.delete("/admin/whitelist", tags=["Admin"])
     def admin_whitelist_remove(req: WhitelistRemoveRequest, request: Request):
         """Hapus email atau user_id dari whitelist (admin only)."""

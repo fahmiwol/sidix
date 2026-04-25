@@ -770,6 +770,68 @@ def _rule_based_plan(
     )
 
 
+def _append_mode_hint(question: str, text: str, persona: str) -> str:
+    """
+    Pivot 2026-04-26: append kontekstual saran mode/persona di akhir response.
+
+    Filosofi: jangan suruh user PILIH dulu. Jawab dulu (immediate value),
+    lalu kasih hint mode yang lebih relevan untuk eksplorasi lanjut.
+
+    Returns text + footer dengan suggestion (atau text apa adanya kalau
+    pertanyaan tidak match keyword).
+    """
+    if not text or not text.strip():
+        return text
+    q_lc = (question or "").lower().strip()
+    if len(q_lc) < 8:
+        return text  # greeting / sapaan singkat, jangan tambah hint
+
+    suggestions: list[str] = []
+
+    # Creative / brainstorm → Burst
+    if any(t in q_lc for t in (
+        "ide ", "saran ", "brainstorm", "kreatif", "creative", "konsep",
+        "marketing", "campaign", "naming", "tagline", "design",
+    )):
+        suggestions.append("🌌 **Burst** — explore 6 angle paralel, Pareto-pilih yang terbaik")
+
+    # Etis / strategis / dilemma → Two Eyes
+    if any(t in q_lc for t in (
+        "haruskah", "should i", "dilema", "etis", "moral", "hukum",
+        "halal haram", "syariah", "fiqh", "memilih antara",
+    )):
+        suggestions.append("👁 **Two Eyes** — analisa dual perspective: data + maqashid + sintesis")
+
+    # Future / prediksi → Foresight
+    if any(t in q_lc for t in (
+        "masa depan", "trend", "prediksi", "5 tahun ke depan", "10 tahun",
+        "forecast", "outlook", "scenario", "akan jadi apa", "future of",
+    )):
+        suggestions.append("🔮 **Foresight** — scan web+corpus → 3 skenario (base/bull/bear) → narasi visioner")
+
+    # Research / hidden insight → Resurrect
+    if any(t in q_lc for t in (
+        "tokoh", "researcher", "underrated", "overlooked", "klasik",
+        "sejarah", "pioneer", "history of", "founding", "method lama",
+    )):
+        suggestions.append("🌿 **Resurrect** — surface ide/tokoh yang dilupakan tren (Noether method)")
+
+    # Strict / academic / sanad → strict_mode
+    if any(t in q_lc for t in (
+        "fatwa", "sumber primer", "peer review", "akademik", "citation lengkap",
+        "verifikasi data", "research mode",
+    )):
+        suggestions.append("🔬 **Strict mode** (toggle) — RAG-first, sanad tier wajib, epistemic label")
+
+    if not suggestions:
+        return text
+
+    # Max 2 suggestions supaya tidak overwhelming
+    suggestions = suggestions[:2]
+    hint_block = "\n\n---\n💡 _Mau eksplorasi lebih dalam?_\n" + "\n".join(f"• {s}" for s in suggestions)
+    return text.rstrip() + hint_block
+
+
 def _compose_final_answer(
     question: str,
     persona: str,
@@ -884,6 +946,31 @@ def _compose_final_answer(
     # ── Coba LLM generative — Pivot 2026-04-26: hybrid (RunPod GPU + Ollama) ─
     # SIDIX_LLM_BACKEND=runpod_serverless di env aktifin GPU offload.
     # Fallback otomatis ke Ollama lokal CPU kalau RunPod fail.
+    #
+    # Pivot 2026-04-26 (v2): adaptive max_tokens berdasarkan intent question:
+    # - Code question (def/function/class/algoritma) → 1200 tokens (cukup full code)
+    # - Multi-step reasoning (jelaskan/analisa/bandingkan + multi paragraf) → 1000
+    # - Default → 600
+    # - simple_mode → 200
+    _q_lc = question.lower()
+    _is_code_q = any(t in _q_lc for t in (
+        "tulis fungsi", "tulis function", "buat kode", "buat code", "implementasi",
+        "function for", "code for", "algoritma", "algorithm", "tulis script",
+        "def ", "class ", "react component", "python script", "bash script",
+    ))
+    _is_long_reasoning = any(t in _q_lc for t in (
+        "jelaskan", "analisa", "analisis", "bandingkan", "trade-off", "trade off",
+        "kelebihan dan", "perbedaan antara", "explain", "compare",
+    ))
+    if simple_mode:
+        _max_tokens = 200
+    elif _is_code_q:
+        _max_tokens = 1200
+    elif _is_long_reasoning:
+        _max_tokens = 1000
+    else:
+        _max_tokens = 600
+
     try:
         corpus_ctx = "\n\n---\n\n".join(obs_blocks[:max_obs_blocks]) if obs_blocks else ""
         # Smart router via runpod_serverless.hybrid_generate
@@ -892,7 +979,7 @@ def _compose_final_answer(
             text, mode = _hybrid_generate(
                 prompt=question,
                 system=_combined_system,
-                max_tokens=600 if not simple_mode else 200,
+                max_tokens=_max_tokens,
                 temperature=0.7,
                 corpus_context=corpus_ctx,
             )
@@ -904,7 +991,7 @@ def _compose_final_answer(
                     prompt=question,
                     system=_combined_system,
                     corpus_context=corpus_ctx,
-                    max_tokens=600 if not simple_mode else 200,
+                    max_tokens=_max_tokens,
                     temperature=0.7,
                 )
             else:
@@ -913,6 +1000,8 @@ def _compose_final_answer(
         if mode in ("runpod", "ollama") and text and text.strip():
             import logging as _log
             _log.getLogger("sidix.react").info(f"LLM synthesis OK via {mode} — persona={persona}")
+            # Pivot 2026-04-26: append kontekstual mode suggestion
+            text = _append_mode_hint(question, text, persona)
             return (text, all_citations, 0.85, "fakta")
     except Exception as _llm_err:
         import logging as _log

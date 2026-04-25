@@ -429,14 +429,27 @@ document.getElementById('quota-btn-topup')?.addEventListener('click', () => {
 
 // ── Auth Button (Header + Mobile) ────────────────────────────────────────────
 
-function updateAuthButton(isSignedIn: boolean, displayName?: string) {
+function updateAuthButton(isSignedIn: boolean, displayName?: string, avatarUrl?: string) {
   const btnAuth = document.getElementById('btn-auth');
   const labelAuth = document.getElementById('label-auth');
   const mobAuth = document.getElementById('mob-label-auth');
+  const authAvatar = document.getElementById('auth-avatar') as HTMLImageElement | null;
+  const authIcon = document.getElementById('auth-icon');
 
   if (btnAuth) {
     btnAuth.classList.toggle('signed-in', isSignedIn);
   }
+
+  // Show avatar image kalau login + ada avatar URL, fallback icon kalau tidak.
+  if (isSignedIn && avatarUrl && authAvatar && authIcon) {
+    authAvatar.src = avatarUrl;
+    authAvatar.classList.remove('hidden');
+    authIcon.classList.add('hidden');
+  } else if (authAvatar && authIcon) {
+    authAvatar.classList.add('hidden');
+    authIcon.classList.remove('hidden');
+  }
+
   const txt = isSignedIn ? (displayName ? displayName.split(' ')[0] : t('signedIn')) : t('signIn');
   if (labelAuth) labelAuth.textContent = txt;
   if (mobAuth) mobAuth.textContent = isSignedIn ? '✓' : t('signIn');
@@ -847,9 +860,10 @@ onAuthChange(async (user) => {
     localStorage.setItem('sidix_user_id', user.id);
     if (user.email) localStorage.setItem('sidix_user_email', user.email);
 
-    // Update auth button
+    // Update auth button — pakai avatar Google + first name
     const name = user.user_metadata?.full_name ?? user.email ?? '';
-    updateAuthButton(true, name);
+    const avatarUrl = user.user_metadata?.avatar_url || user.user_metadata?.picture || '';
+    updateAuthButton(true, name, avatarUrl);
 
     // Refresh quota status setelah login (mungkin upgrade tier)
     void fetch(`${BRAIN_QA_BASE}/quota/status`, {
@@ -1182,6 +1196,144 @@ modeResurrectBtn?.addEventListener('click', async () => {
   } catch (e) {
     thinking.remove();
     appendMessage('ai', `⚠️ Resurrect gagal: ${(e as Error).message}`);
+  }
+});
+
+// ── Help modal (Bantuan) ─────────────────────────────────────────────────
+const helpModalBackdrop = document.getElementById('help-modal-backdrop');
+const helpBtn = document.getElementById('btn-help-modes');
+const helpClose = document.getElementById('help-modal-close');
+
+function openHelpModal() {
+  helpModalBackdrop?.classList.remove('hidden');
+  helpModalBackdrop?.classList.add('flex');
+}
+function closeHelpModal() {
+  helpModalBackdrop?.classList.add('hidden');
+  helpModalBackdrop?.classList.remove('flex');
+}
+helpBtn?.addEventListener('click', openHelpModal);
+helpClose?.addEventListener('click', closeHelpModal);
+helpModalBackdrop?.addEventListener('click', (e) => {
+  if (e.target === helpModalBackdrop) closeHelpModal();
+});
+
+// ── Feedback modal ─────────────────────────────────────────────────────────
+const feedbackBtn = document.getElementById('btn-feedback');
+const feedbackBackdrop = document.getElementById('feedback-modal-backdrop');
+const feedbackClose = document.getElementById('feedback-modal-close');
+const feedbackSubmit = document.getElementById('feedback-submit') as HTMLButtonElement | null;
+const feedbackTitle = document.getElementById('feedback-title') as HTMLInputElement | null;
+const feedbackBody = document.getElementById('feedback-body') as HTMLTextAreaElement | null;
+const feedbackDropzone = document.getElementById('feedback-dropzone');
+const feedbackFile = document.getElementById('feedback-file') as HTMLInputElement | null;
+const feedbackPreview = document.getElementById('feedback-preview');
+const feedbackPreviewImg = document.getElementById('feedback-preview-img') as HTMLImageElement | null;
+const feedbackPreviewClear = document.getElementById('feedback-preview-clear');
+const feedbackStatus = document.getElementById('feedback-status');
+
+let feedbackImageBlob: Blob | null = null;
+
+function openFeedbackModal() {
+  feedbackBackdrop?.classList.remove('hidden');
+  feedbackBackdrop?.classList.add('flex');
+  if (feedbackTitle) feedbackTitle.value = '';
+  if (feedbackBody) feedbackBody.value = '';
+  feedbackImageBlob = null;
+  feedbackPreview?.classList.add('hidden');
+  if (feedbackStatus) feedbackStatus.innerHTML = '';
+}
+function closeFeedbackModal() {
+  feedbackBackdrop?.classList.add('hidden');
+  feedbackBackdrop?.classList.remove('flex');
+}
+feedbackBtn?.addEventListener('click', openFeedbackModal);
+feedbackClose?.addEventListener('click', closeFeedbackModal);
+feedbackBackdrop?.addEventListener('click', (e) => {
+  if (e.target === feedbackBackdrop) closeFeedbackModal();
+});
+
+function setFeedbackImage(blob: Blob) {
+  feedbackImageBlob = blob;
+  if (feedbackPreviewImg) {
+    feedbackPreviewImg.src = URL.createObjectURL(blob);
+    feedbackPreview?.classList.remove('hidden');
+  }
+}
+
+feedbackPreviewClear?.addEventListener('click', () => {
+  feedbackImageBlob = null;
+  feedbackPreview?.classList.add('hidden');
+  if (feedbackFile) feedbackFile.value = '';
+});
+
+feedbackFile?.addEventListener('change', (e) => {
+  const file = (e.target as HTMLInputElement).files?.[0];
+  if (file) setFeedbackImage(file);
+});
+
+// Drag & drop
+['dragenter', 'dragover'].forEach(ev => {
+  feedbackDropzone?.addEventListener(ev, (e) => {
+    e.preventDefault();
+    feedbackDropzone?.classList.add('drag-active');
+  });
+});
+['dragleave', 'drop'].forEach(ev => {
+  feedbackDropzone?.addEventListener(ev, (e) => {
+    e.preventDefault();
+    feedbackDropzone?.classList.remove('drag-active');
+  });
+});
+feedbackDropzone?.addEventListener('drop', (e) => {
+  const dt = (e as DragEvent).dataTransfer;
+  const file = dt?.files?.[0];
+  if (file && file.type.startsWith('image/')) setFeedbackImage(file);
+});
+
+// Paste from clipboard
+document.addEventListener('paste', (e) => {
+  if (feedbackBackdrop?.classList.contains('hidden')) return;
+  const items = e.clipboardData?.items;
+  if (!items) return;
+  for (const item of items) {
+    if (item.type.startsWith('image/')) {
+      const blob = item.getAsFile();
+      if (blob) setFeedbackImage(blob);
+      e.preventDefault();
+      break;
+    }
+  }
+});
+
+feedbackSubmit?.addEventListener('click', async () => {
+  const title = feedbackTitle?.value.trim() || '';
+  const body = feedbackBody?.value.trim() || '';
+  if (!title || !body) {
+    if (feedbackStatus) feedbackStatus.innerHTML = '<div class="text-xs text-status-error mt-2">Judul dan deskripsi wajib diisi.</div>';
+    return;
+  }
+  if (feedbackSubmit) { feedbackSubmit.disabled = true; feedbackSubmit.textContent = 'Mengirim...'; }
+  try {
+    const fd = new FormData();
+    fd.append('title', title);
+    fd.append('body', body);
+    fd.append('user_email', localStorage.getItem('sidix_user_email') ?? '');
+    fd.append('user_id', localStorage.getItem('sidix_user_id') ?? '');
+    fd.append('session_id', lastServerSessionId ?? '');
+    if (feedbackImageBlob) fd.append('screenshot', feedbackImageBlob, 'screenshot.png');
+
+    const res = await fetch(`${BRAIN_QA_BASE}/feedback`, { method: 'POST', body: fd });
+    if (!res.ok) {
+      const txt = await res.text();
+      throw new Error(`${res.status}: ${txt.slice(0, 120)}`);
+    }
+    if (feedbackStatus) feedbackStatus.innerHTML = '<div class="text-xs text-status-ready mt-2">✓ Terima kasih! Feedback kamu udah masuk.</div>';
+    setTimeout(closeFeedbackModal, 1500);
+  } catch (err) {
+    if (feedbackStatus) feedbackStatus.innerHTML = `<div class="text-xs text-status-error mt-2">Gagal kirim: ${(err as Error).message}</div>`;
+  } finally {
+    if (feedbackSubmit) { feedbackSubmit.disabled = false; feedbackSubmit.textContent = 'Kirim Feedback'; }
   }
 });
 

@@ -5992,3 +5992,54 @@ plus placeholder untuk future admin tools. Avoid duplicate page.
 ### Validation
 - pytest: 520 passed
 - Syntax check OK
+
+## 2026-04-26 (lanjutan 4) — UX overhaul + Feedback feature (post user-test)
+
+### USER FINDINGS dari live test (5 skenario + admin)
+1. Sign In tombol meskipun login Google (whitelisted) — auth state UI bug
+2. Checkbox `Korpus saja/Fallback web/Mode ringkas` tanpa penjelasan
+3. Belum ada menu Help di nav
+4. Backend timeout intermittent (cold start RunPod)
+5. Code response terpotong (max_tokens=600 terlalu kecil)
+6. Citations tampil "corpus 5x" untuk query factual (web hasil tidak ke-citation)
+7. Burst lama (~40-100s untuk 6 paralel call + 1 refine — bukan magic GPU)
+8. UX request: jangan suruh user pilih dulu — jawab dulu, baru saran mode
+
+### USER REQUEST tambahan
+> "tambahan ada menu feedback / kritik dan saran di nav bar, bisa masukin
+>  judul, gambar upload drag and drop atau copas, buat laporin respond.
+>  ada text area buat ngumpulin feedback user beta. di admin (ctrl) juga
+>  tambahin hasil submission dari menu kritik dan saran itu."
+
+### IMPL FILES
+
+| File | Status | Change |
+|---|---|---|
+| `SIDIX_USER_UI/index.html` | M | Avatar `<img>` di auth pill + Feedback nav button + Help modal + Feedback modal (drag/drop/paste image upload) + tooltip per checkbox |
+| `SIDIX_USER_UI/src/main.ts` | M | `updateAuthButton(isSignedIn, displayName, avatarUrl)` — show Google avatar saat login. Help modal handler. Feedback modal handler dengan FormData upload + drag/drop/paste support |
+| `apps/brain_qa/brain_qa/agent_react.py` | M | Adaptive `max_tokens`: code 1200 / reasoning 1000 / default 600. New helper `_append_mode_hint(question, text, persona)` — append kontekstual saran 🌌🌿👁🔮 mode di akhir response (max 2 saran) |
+| `apps/brain_qa/brain_qa/feedback_store.py` | NEW | JSON store persistent (5000 max items), schema id/title/body/screenshot/user/status/timestamps |
+| `apps/brain_qa/brain_qa/agent_serve.py` | M | 4 endpoints baru: POST /feedback (multipart, public), GET /feedback/image/{filename} (serve screenshot), GET /admin/feedback (list + stats), POST /admin/feedback/{id}/status, DELETE /admin/feedback/{id} |
+| `apps/brain_qa/brain_qa/static/admin.html` | M | New tab "💬 Feedback" di sidebar dengan stats grid + list cards (status badge, status update buttons, screenshot inline, delete) |
+
+### NEW STORAGE
+- Feedback JSON: `apps/brain_qa/.data/feedback.json`
+- Screenshot files: `apps/brain_qa/.data/feedback_images/<uuid>.<ext>` (max 5MB per upload)
+
+### UX KEY INSIGHT (dari user)
+> "kalo terlalu banyak user suruh milih, bingung. mendingan jawab dulu
+>  secara casual, tapi ada tambahan rekomendasi mode/persona yang pas"
+
+Implementasi: `_append_mode_hint()` di agent_react.py scan keyword di question.
+- Brainstorm/ide → suggest 🌌 Burst
+- Etis/dilemma → suggest 👁 Two Eyes
+- Future/prediksi → suggest 🔮 Foresight
+- Tokoh/research → suggest 🌿 Resurrect
+- Sanad/peer review → suggest strict_mode toggle
+
+Default = jawaban natural + footer dengan 1-2 saran kontekstual. User dapat value langsung tanpa harus memilih dulu.
+
+### Validation
+- pytest: 520 passed, 1 deselected
+- Syntax check: OK 3 files
+- vite build: 49 KB index.html, 113 KB JS bundle

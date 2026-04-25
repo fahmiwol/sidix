@@ -231,12 +231,17 @@
               <i data-lucide="info" class="w-3 h-3"></i>
               <span id="label-about">Tentang SIDIX</span>
             </button>
+            <button id="btn-feedback" class="contrib-pill hidden md:flex" title="Lapor bug, kritik & saran">
+              <i data-lucide="message-square-warning" class="w-3 h-3"></i>
+              <span>Feedback</span>
+            </button>
           </div>
 
           <!-- CENTER: Sign In / Sign Up pill + quota badge -->
           <div class="flex items-center justify-center gap-2 flex-1 px-2 md:px-4">
             <button id="btn-auth" class="auth-pill" title="Masuk atau daftar">
-              <i data-lucide="user" class="w-3 h-3"></i>
+              <img id="auth-avatar" class="w-5 h-5 rounded-full hidden" alt="" />
+              <i id="auth-icon" data-lucide="user" class="w-3 h-3"></i>
               <span id="label-auth">Sign In</span>
             </button>
             <!-- Quota counter badge — muncul saat quota tersisa sedikit -->
@@ -406,20 +411,29 @@
               </button>
             </div>
 
-            <!-- Options row (hidden on mobile for space) -->
+            <!-- Options row (hidden on mobile for space) — dengan tooltip help -->
             <div class="hidden md:flex flex-wrap justify-center gap-x-5 gap-y-1 mt-2 text-[11px] text-parchment-400 select-none">
-              <label class="inline-flex items-center gap-1.5 cursor-pointer hover:text-parchment-200">
+              <label class="inline-flex items-center gap-1.5 cursor-pointer hover:text-parchment-200"
+                     title="Hanya cari di knowledge base SIDIX (corpus). Web search dimatikan. Cocok untuk topik yang sudah ada di dokumen lokal.">
                 <input type="checkbox" id="opt-corpus-only" class="rounded border-warm-500" />
                 <span>Korpus saja</span>
               </label>
-              <label class="inline-flex items-center gap-1.5 cursor-pointer hover:text-parchment-200">
+              <label class="inline-flex items-center gap-1.5 cursor-pointer hover:text-parchment-200"
+                     title="SIDIX boleh fetch data live dari web (DuckDuckGo, Wikipedia) untuk pertanyaan factual / current events. Default: ON.">
                 <input type="checkbox" id="opt-allow-web" checked class="rounded border-warm-500" />
                 <span>Fallback web</span>
               </label>
-              <label class="inline-flex items-center gap-1.5 cursor-pointer hover:text-parchment-200">
+              <label class="inline-flex items-center gap-1.5 cursor-pointer hover:text-parchment-200"
+                     title="Response lebih pendek (200 token max). Cocok kalau butuh jawaban cepat. Default: OFF (response normal 600-1200 tokens).">
                 <input type="checkbox" id="opt-simple" class="rounded border-warm-500" />
                 <span>Mode ringkas</span>
               </label>
+              <button type="button" id="btn-help-modes"
+                      class="inline-flex items-center gap-1.5 hover:text-gold-400 cursor-pointer"
+                      title="Penjelasan persona, mode Supermodel, dan opsi chat">
+                <i data-lucide="circle-help" class="w-3 h-3"></i>
+                <span>Bantuan</span>
+              </button>
             </div>
 
             <p class="text-[10px] text-center text-parchment-600 mt-1.5 uppercase tracking-widest font-medium select-none">
@@ -429,6 +443,116 @@
           </div>
         </footer>
       </section>
+
+      <!-- ──────────────────────────────────────────────────
+           FEEDBACK MODAL — bug report / kritik & saran
+      ────────────────────────────────────────────────── -->
+      <div id="feedback-modal-backdrop" class="fixed inset-0 hidden items-center justify-center z-[60] p-4"
+           style="background:rgba(10,9,8,0.88);backdrop-filter:blur(8px)">
+        <div class="glass max-w-xl w-full rounded-2xl p-6 md:p-7 max-h-[88vh] overflow-y-auto">
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="text-lg font-display font-bold text-gold-400">💬 Feedback / Kritik & Saran</h2>
+            <button id="feedback-modal-close" class="text-parchment-400 hover:text-parchment-100 text-xl leading-none">&times;</button>
+          </div>
+          <p class="text-xs text-parchment-500 mb-4 leading-relaxed">
+            Lapor bug, kasih saran, atau kritik untuk SIDIX. Lampirkan screenshot kalau perlu.
+            Semua submission masuk ke admin panel buat ditindaklanjuti.
+          </p>
+
+          <label class="block text-[11px] text-parchment-400 mb-1 mt-2 uppercase tracking-wider">Judul</label>
+          <input id="feedback-title" type="text" maxlength="120"
+                 placeholder="Contoh: Response factual masih salah / mode Burst lambat"
+                 class="w-full bg-warm-800 border border-warm-600 rounded-lg px-3 py-2 text-sm text-parchment-100 placeholder:text-parchment-600 focus:outline-none focus:border-gold-500/40" />
+
+          <label class="block text-[11px] text-parchment-400 mb-1 mt-3 uppercase tracking-wider">Deskripsi</label>
+          <textarea id="feedback-body" rows="5"
+                    placeholder="Ceritakan detail: apa yang kamu coba, apa yang terjadi, apa yang kamu harapkan."
+                    class="w-full bg-warm-800 border border-warm-600 rounded-lg px-3 py-2 text-sm text-parchment-100 placeholder:text-parchment-600 focus:outline-none focus:border-gold-500/40 resize-none"></textarea>
+
+          <label class="block text-[11px] text-parchment-400 mb-1 mt-3 uppercase tracking-wider">Screenshot (opsional)</label>
+          <div id="feedback-dropzone"
+               class="border-2 border-dashed border-warm-600 rounded-lg p-5 text-center cursor-pointer hover:border-gold-500/40 transition-colors"
+               onclick="document.getElementById('feedback-file').click()">
+            <i data-lucide="image-plus" class="w-6 h-6 mx-auto text-parchment-500 mb-2"></i>
+            <p class="text-xs text-parchment-400">Drag & drop, paste (Ctrl+V), atau klik untuk pilih file</p>
+            <p class="text-[10px] text-parchment-600 mt-1">PNG / JPG / WebP, max 5 MB</p>
+          </div>
+          <input id="feedback-file" type="file" accept="image/*" class="hidden" />
+
+          <div id="feedback-preview" class="hidden mt-3 relative">
+            <img id="feedback-preview-img" alt="Screenshot preview" class="w-full max-h-48 object-contain rounded-lg border border-warm-600 bg-ink-950" />
+            <button id="feedback-preview-clear"
+                    class="absolute top-2 right-2 bg-warm-900/90 hover:bg-status-error/30 rounded-full w-7 h-7 flex items-center justify-center text-parchment-200 text-xs">
+              ×
+            </button>
+          </div>
+
+          <div class="flex items-center justify-end gap-2 mt-5">
+            <button id="feedback-submit" class="btn-gold px-4 py-2 text-sm font-semibold rounded-lg">Kirim Feedback</button>
+          </div>
+          <div id="feedback-status"></div>
+        </div>
+      </div>
+
+      <!-- Drag & drop visual feedback -->
+      <style>
+        #feedback-dropzone.drag-active { border-color: #d4a853; background: rgba(212, 168, 83, 0.05); }
+      </style>
+
+      <!-- ──────────────────────────────────────────────────
+           HELP MODAL — Mode + Persona explanation
+      ────────────────────────────────────────────────── -->
+      <div id="help-modal-backdrop" class="fixed inset-0 hidden items-center justify-center z-[60] p-4"
+           style="background:rgba(10,9,8,0.88);backdrop-filter:blur(8px)">
+        <div class="glass max-w-2xl w-full rounded-2xl p-6 md:p-8 max-h-[88vh] overflow-y-auto">
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="text-xl font-display font-bold text-gold-400">📖 Cara Pakai SIDIX</h2>
+            <button id="help-modal-close" class="text-parchment-400 hover:text-parchment-100 text-xl leading-none">&times;</button>
+          </div>
+          <div class="space-y-5 text-sm text-parchment-300 leading-relaxed">
+            <section>
+              <h3 class="text-gold-400 font-semibold text-sm mb-2 uppercase tracking-wider">🎭 5 Persona</h3>
+              <ul class="space-y-1.5 ml-1">
+                <li><strong class="text-parchment-100">AYMAN</strong> — Empathic Integrator. Hangat, casual, bisa diskusi galau / brainstorm santai. <em>Default.</em></li>
+                <li><strong class="text-parchment-100">ABOO</strong> — Systems Builder. Engineering rigorous, code, arsitektur teknis.</li>
+                <li><strong class="text-parchment-100">OOMAR</strong> — Strategic Architect. Bisnis, strategi, framework multi-domain.</li>
+                <li><strong class="text-parchment-100">ALEY</strong> — Polymath Researcher. Akademik, riset, sanad-heavy, transdisiplin.</li>
+                <li><strong class="text-parchment-100">UTZ</strong> — Creative Director. Branding, copywriting, ide divergen.</li>
+              </ul>
+            </section>
+
+            <section>
+              <h3 class="text-gold-400 font-semibold text-sm mb-2 uppercase tracking-wider">🛠️ 4 Mode Supermodel</h3>
+              <ul class="space-y-2 ml-1">
+                <li>🌌 <strong class="text-parchment-100">Burst</strong> — Generate 6 ide divergen paralel, Pareto-pilih 2 terbaik, synthesize jadi 1 jawaban kreatif. <em>Cocok: brainstorm, naming, design choice.</em></li>
+                <li>👁 <strong class="text-parchment-100">Two Eyes</strong> — Dual perspective: scientific (data, mekanisme) + maqashid (etis, hikmah) → sintesis. <em>Cocok: pertanyaan etis/strategis.</em></li>
+                <li>🔮 <strong class="text-parchment-100">Foresight</strong> — Scan web+corpus → leading/lagging signals → 3 skenario (base/bull/bear) → narasi visioner. <em>Cocok: prediksi trend, market, technology.</em></li>
+                <li>🌿 <strong class="text-parchment-100">Resurrect</strong> — Surface ide/tokoh/metode yang DULU brilliant tapi sekarang dilupakan tren. <em>Cocok: research, fresh angle, mental model.</em></li>
+              </ul>
+              <p class="text-[11px] text-parchment-500 mt-2">⏱️ Mode ini butuh 30-90 detik (multi-step LLM call). Kalau cepat, pakai chat biasa.</p>
+            </section>
+
+            <section>
+              <h3 class="text-gold-400 font-semibold text-sm mb-2 uppercase tracking-wider">⚙️ Opsi Chat</h3>
+              <ul class="space-y-1.5 ml-1">
+                <li><strong class="text-parchment-100">Korpus saja</strong> — Hanya cari di knowledge base lokal SIDIX, web search OFF.</li>
+                <li><strong class="text-parchment-100">Fallback web</strong> (default ON) — Boleh fetch live dari DuckDuckGo + Wikipedia untuk pertanyaan factual.</li>
+                <li><strong class="text-parchment-100">Mode ringkas</strong> — Response pendek (max 200 token). Untuk jawaban cepat.</li>
+              </ul>
+            </section>
+
+            <section>
+              <h3 class="text-gold-400 font-semibold text-sm mb-2 uppercase tracking-wider">💡 Tips</h3>
+              <ul class="space-y-1.5 ml-1 list-disc list-inside">
+                <li>Tanya casual seperti ngobrol — SIDIX ngerti typo dan bahasa campur.</li>
+                <li>Untuk factual yang butuh data terkini ("siapa presiden sekarang"), biarkan Fallback web ON.</li>
+                <li>Pakai mode Supermodel hanya kalau butuh deeper analysis.</li>
+                <li>Login Google di pojok atas untuk save history + persona preferences.</li>
+              </ul>
+            </section>
+          </div>
+        </div>
+      </div>
 
       <!-- ──────────────────────────────────────────────────
            SCREEN: Knowledge Base
