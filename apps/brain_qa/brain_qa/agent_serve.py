@@ -1819,6 +1819,62 @@ def create_app() -> "FastAPI":
             raise HTTPException(status_code=500, detail=f"wisdom_gate fail: {e}")
 
     # ════════════════════════════════════════════════════════════════════════
+    # CONTINUAL MEMORY (vol 7) — anti catastrophic forgetting
+    # User insight: "bayi belajar bicara tidak pernah lupa, semakin handal"
+    # ════════════════════════════════════════════════════════════════════════
+
+    @app.get("/admin/memory/snapshot", tags=["Memory"])
+    def memory_snapshot_endpoint(request: Request):
+        """Snapshot semua memory layer (immutable accumulation):
+        patterns + skills + research_notes + activity_log + aspirations + LoRA snapshots.
+        Jawab: 'apa yang SIDIX ingat permanent?'"""
+        if not _admin_ok(request):
+            raise HTTPException(status_code=403, detail="Akses ditolak")
+        try:
+            from . import continual_memory
+            return continual_memory.memory_snapshot()
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"memory snapshot fail: {e}")
+
+    @app.post("/admin/memory/consolidate", tags=["Memory"])
+    def memory_consolidate_endpoint(request: Request):
+        """Trigger daily consolidation manual: promote high-conf patterns
+        → core_memory, archive low-conf+unused 60d, promote stable skills."""
+        if not _admin_ok(request):
+            raise HTTPException(status_code=403, detail="Akses ditolak")
+        try:
+            from . import continual_memory
+            return continual_memory.daily_consolidation()
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"consolidate fail: {e}")
+
+    @app.get("/admin/memory/rehearsal", tags=["Memory"])
+    def memory_rehearsal_endpoint(request: Request, samples: int = 100):
+        """Preview rehearsal buffer untuk LoRA retrain prep:
+        50% high-conf patterns + 30% deployed skills + 20% activity log."""
+        if not _admin_ok(request):
+            raise HTTPException(status_code=403, detail="Akses ditolak")
+        try:
+            from . import continual_memory
+            buffer = continual_memory.prepare_rehearsal_buffer(max_samples=samples)
+            # Return only summary, not full samples (untuk compactness)
+            buffer["samples"] = buffer.get("samples", [])[:5]  # preview 5 first
+            return buffer
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"rehearsal fail: {e}")
+
+    @app.post("/admin/memory/snapshot-lora", tags=["Memory"])
+    def memory_snapshot_lora_endpoint(request: Request):
+        """Snapshot adapter LoRA SIDIX sebelum retrain (rollback safety)."""
+        if not _admin_ok(request):
+            raise HTTPException(status_code=403, detail="Akses ditolak")
+        try:
+            from . import continual_memory
+            return continual_memory.snapshot_lora_weights()
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"snapshot lora fail: {e}")
+
+    # ════════════════════════════════════════════════════════════════════════
     # RELEVANCE SCORE — metric kualitas jawaban (untuk SIDIX learning loop)
     # ════════════════════════════════════════════════════════════════════════
 
