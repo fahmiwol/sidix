@@ -749,13 +749,21 @@ def create_app() -> "FastAPI":
         if p not in _ALLOWED_PERSONAS:
             p = "UTZ"
 
-        # Build system prompt: base SIDIX_SYSTEM + persona way-of-being
+        # Build system prompt: base SIDIX_SYSTEM + persona way-of-being + memory
         _system = ""
         try:
             from .ollama_llm import SIDIX_SYSTEM
             from .cot_system_prompts import PERSONA_DESCRIPTIONS
             _persona_hint = PERSONA_DESCRIPTIONS.get(p, "")
             _system = f"{SIDIX_SYSTEM}\n\n{_persona_hint}".strip() if _persona_hint else SIDIX_SYSTEM
+        except Exception:
+            pass
+
+        # Inject multi-layer memory (SIDIX 2.0)
+        try:
+            from .agent_memory import build_multi_layer_memory, inject_memory_to_system_prompt
+            _mem = build_multi_layer_memory(query=req.prompt, persona=p)
+            _system = inject_memory_to_system_prompt(_system, _mem, max_chars=2000)
         except Exception:
             pass
 
@@ -792,6 +800,79 @@ def create_app() -> "FastAPI":
             text="⚠ Tidak ada engine inference yang tersedia (Ollama offline & local LLM tidak ter-load).",
             mode="mock",
             persona=p,
+        )
+
+    # ── POST /agent/generate/stream ───────────────────────────────────────────
+    # Streaming SSE untuk real-time token generation dari Ollama.
+    @app.post("/agent/generate/stream")
+    def agent_generate_stream(req: GenerateRequest, request: Request):
+        _enforce_rate(request)
+        _enforce_daily(request)
+        _bump_metric("agent_generate_stream")
+        if not req.prompt.strip():
+            raise HTTPException(status_code=400, detail="prompt tidak boleh kosong")
+
+        p = (req.persona or "UTZ").strip().upper() or "UTZ"
+        if p not in _ALLOWED_PERSONAS:
+            p = "UTZ"
+
+        # Build system prompt + memory
+        _system = ""
+        try:
+            from .ollama_llm import SIDIX_SYSTEM
+            from .cot_system_prompts import PERSONA_DESCRIPTIONS
+            _persona_hint = PERSONA_DESCRIPTIONS.get(p, "")
+            _system = f"{SIDIX_SYSTEM}\n\n{_persona_hint}".strip() if _persona_hint else SIDIX_SYSTEM
+        except Exception:
+            pass
+        try:
+            from .agent_memory import build_multi_layer_memory, inject_memory_to_system_prompt
+            _mem = build_multi_layer_memory(query=req.prompt, persona=p)
+            _system = inject_memory_to_system_prompt(_system, _mem, max_chars=1500)
+        except Exception:
+            pass
+
+        def _event_generator():
+            try:
+                from .ollama_llm import ollama_available, ollama_generate_stream
+                if ollama_available():
+                    for chunk in ollama_generate_stream(
+                        prompt=req.prompt,
+                        system=_system,
+                        max_tokens=req.max_tokens,
+                        temperature=req.temperature,
+                    ):
+                        yield f"data: {json.dumps({'type': 'token', 'text': chunk})}\n\n"
+                    yield f"data: {json.dumps({'type': 'done', 'mode': 'ollama', 'persona': p})}\n\n"
+                    return
+            except Exception as e:
+                yield f"data: {json.dumps({'type': 'error', 'message': str(e)})}\n\n"
+                return
+
+            # Fallback: non-streaming local_llm (yield as single chunk)
+            try:
+                from .local_llm import generate_sidix
+                text, mode = generate_sidix(
+                    prompt=req.prompt,
+                    system=_system,
+                    max_tokens=req.max_tokens,
+                    temperature=req.temperature,
+                )
+                if mode == "local_lora":
+                    yield f"data: {json.dumps({'type': 'token', 'text': text})}\n\n"
+                    yield f"data: {json.dumps({'type': 'done', 'mode': 'local_lora', 'persona': p})}\n\n"
+                    return
+            except Exception as e:
+                yield f"data: {json.dumps({'type': 'error', 'message': str(e)})}\n\n"
+                return
+
+            yield f"data: {json.dumps({'type': 'error', 'message': 'No inference engine available'})}\n\n"
+
+        from fastapi.responses import StreamingResponse as _SR
+        return _SR(
+            _event_generator(),
+            media_type="text/event-stream",
+            headers={"Cache-Control": "no-cache", "Connection": "keep-alive"},
         )
 
     # ── GET /agent/orchestration ───────────────────────────────────────────────

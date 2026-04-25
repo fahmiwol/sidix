@@ -24,6 +24,7 @@ SIDIX System Prompt di-inject otomatis — setiap response selalu:
 
 from __future__ import annotations
 
+import json
 import os
 import logging
 from pathlib import Path
@@ -292,6 +293,66 @@ def ollama_generate_vision(
     except Exception as e:
         log.error(f"Ollama vision error: {e}")
         return f"⚠ Ollama vision error: {e}", "mock_error"
+
+
+def ollama_generate_stream(
+    prompt: str,
+    system: str = "",
+    *,
+    model: Optional[str] = None,
+    max_tokens: int = 512,
+    temperature: float = 0.7,
+):
+    """
+    Generate teks via Ollama dengan STREAMING.
+    Yields token chunks satu per satu.
+
+    Usage:
+        for chunk in ollama_generate_stream("Halo", system="..."):
+            print(chunk, end="")
+    """
+    used_model = model or ollama_best_available_model()
+    combined_system = f"{SIDIX_SYSTEM}\n\n{system.strip()}".strip() if system.strip() else SIDIX_SYSTEM
+
+    messages = [
+        {"role": "system", "content": combined_system},
+        {"role": "user", "content": prompt},
+    ]
+    payload = {
+        "model": used_model,
+        "messages": messages,
+        "stream": True,
+        "options": {
+            "num_predict": max_tokens,
+            "temperature": temperature,
+            "top_p": 0.9,
+            "repeat_penalty": 1.1,
+        },
+    }
+
+    try:
+        r = requests.post(
+            f"{OLLAMA_URL}/api/chat",
+            json=payload,
+            stream=True,
+            timeout=OLLAMA_TIMEOUT,
+        )
+        r.raise_for_status()
+        for line in r.iter_lines():
+            if not line:
+                continue
+            try:
+                data = json.loads(line)
+                chunk = data.get("message", {}).get("content", "")
+                if chunk:
+                    yield chunk
+                if data.get("done"):
+                    break
+            except Exception:
+                pass
+    except Exception as e:
+        log.error(f"Ollama stream error: {e}")
+        yield f"[stream error: {e}]"
 
 
 def ollama_status() -> dict:
