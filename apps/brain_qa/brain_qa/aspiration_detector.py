@@ -96,6 +96,26 @@ _ASPIRATION_PATTERNS = [
 _COMPILED_ASP = re.compile("|".join(_ASPIRATION_PATTERNS), re.IGNORECASE)
 
 
+# ── LLM helper (unified) ──────────────────────────────────────────────────────
+
+def _call_llm(prompt: str, *, max_tokens: int = 256, temperature: float = 0.5) -> str:
+    try:
+        from .ollama_llm import ollama_generate
+        text, mode = ollama_generate(prompt, system="", max_tokens=max_tokens, temperature=temperature)
+        if text and not mode.startswith("mock_error"):
+            return text
+    except Exception as e:
+        log.debug("[aspiration] ollama_generate fail: %s", e)
+    try:
+        from .local_llm import generate_sidix
+        text, mode = generate_sidix(prompt, system="", max_tokens=max_tokens, temperature=temperature)
+        if text:
+            return text
+    except Exception as e:
+        log.debug("[aspiration] generate_sidix fail: %s", e)
+    return ""
+
+
 def detect_aspiration_keywords(text: str) -> tuple[bool, list[str]]:
     """
     Quick pre-filter: ada keyword aspiration?
@@ -129,15 +149,6 @@ def analyze_aspiration(
     Disebut saat detect_aspiration_keywords return True. Output Aspiration
     yang bisa dipajang ke admin atau langsung di-feed ke tool_synthesizer.
     """
-    try:
-        try:
-            from .ollama_llm import generate as llm_gen
-        except Exception:
-            from .local_llm import generate_sidix as llm_gen
-    except Exception:
-        log.warning("[aspiration] LLM not available")
-        return None
-
     prompt = f"""User mengekspresikan keinginan untuk build/implement capability baru:
 
 "{user_text}"
@@ -160,13 +171,11 @@ Kamu adalah AI engineer yang membantu decompose ide ini. Jawab ONLY JSON:
 
 Jangan sok yakin. Kalau effort high atau moonshot, bilang jujur. Output ONLY JSON:"""
 
-    try:
-        out = llm_gen(prompt, max_tokens=600, temperature=0.5)
-        if isinstance(out, dict):
-            response = out.get("text") or out.get("response") or ""
-        else:
-            response = out or ""
+    response = _call_llm(prompt, max_tokens=600, temperature=0.5)
+    if not response:
+        return None
 
+    try:
         response = response.strip()
         response = re.sub(r"^```(?:json)?\s*", "", response)
         response = re.sub(r"\s*```$", "", response)

@@ -90,6 +90,26 @@ def _skills_index() -> Path:
     return _skills_dir() / "_index.json"
 
 
+# ── LLM helper (unified) ──────────────────────────────────────────────────────
+
+def _call_llm(prompt: str, *, max_tokens: int = 256, temperature: float = 0.5) -> str:
+    try:
+        from .ollama_llm import ollama_generate
+        text, mode = ollama_generate(prompt, system="", max_tokens=max_tokens, temperature=temperature)
+        if text and not mode.startswith("mock_error"):
+            return text
+    except Exception as e:
+        log.debug("[tool_synth] ollama_generate fail: %s", e)
+    try:
+        from .local_llm import generate_sidix
+        text, mode = generate_sidix(prompt, system="", max_tokens=max_tokens, temperature=temperature)
+        if text:
+            return text
+    except Exception as e:
+        log.debug("[tool_synth] generate_sidix fail: %s", e)
+    return ""
+
+
 # ── Spec generation (LLM) ──────────────────────────────────────────────────────
 
 def generate_skill_spec(
@@ -101,14 +121,8 @@ def generate_skill_spec(
     LLM generate spec untuk tool baru berdasarkan task description.
     Spec = pre-code blueprint, supaya LLM gen code-nya focused.
     """
-    try:
-        try:
-            from .ollama_llm import generate as llm_gen
-        except Exception:
-            from .local_llm import generate_sidix as llm_gen
-    except Exception:
-        log.warning("[tool_synth] LLM not available")
-        return None
+    # LLM call via unified helper (handles ollama + local_llm signatures)
+    pass  # marker
 
     prompt = f"""Task: bikin Python function (single file) untuk capability:
 
@@ -133,12 +147,11 @@ Rules:
 
 Output ONLY JSON:"""
 
+    response = _call_llm(prompt, max_tokens=400, temperature=0.5)
+    if not response:
+        return None
+
     try:
-        out = llm_gen(prompt, max_tokens=400, temperature=0.5)
-        if isinstance(out, dict):
-            response = out.get("text") or out.get("response") or ""
-        else:
-            response = out or ""
         response = response.strip()
         response = re.sub(r"^```(?:json)?\s*", "", response)
         response = re.sub(r"\s*```$", "", response)
@@ -177,14 +190,6 @@ def generate_skill_code(spec: SkillSpec) -> str:
     LLM generate Python source dari spec. Output is full module text
     (imports + function + docstring).
     """
-    try:
-        try:
-            from .ollama_llm import generate as llm_gen
-        except Exception:
-            from .local_llm import generate_sidix as llm_gen
-    except Exception:
-        return ""
-
     deps_str = ", ".join(spec.dependencies) or "(stdlib only)"
     inp_str = json.dumps(spec.input_schema, ensure_ascii=False)
     out_str = json.dumps(spec.output_schema, ensure_ascii=False)
@@ -223,13 +228,11 @@ Rules:
 - Output FULL Python module text, including imports.
 """
 
-    try:
-        out = llm_gen(prompt, max_tokens=900, temperature=0.4)
-        if isinstance(out, dict):
-            response = out.get("text") or out.get("response") or ""
-        else:
-            response = out or ""
+    response = _call_llm(prompt, max_tokens=900, temperature=0.4)
+    if not response:
+        return ""
 
+    try:
         # Extract code from markdown fence
         match = re.search(r"```(?:python)?\s*(.+?)```", response, re.DOTALL)
         if match:

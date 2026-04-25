@@ -42,6 +42,26 @@ from typing import Optional
 log = logging.getLogger(__name__)
 
 
+# ── LLM helper (unified) ──────────────────────────────────────────────────────
+
+def _call_llm(prompt: str, *, max_tokens: int = 256, temperature: float = 0.5) -> str:
+    try:
+        from .ollama_llm import ollama_generate
+        text, mode = ollama_generate(prompt, system="", max_tokens=max_tokens, temperature=temperature)
+        if text and not mode.startswith("mock_error"):
+            return text
+    except Exception as e:
+        log.debug("[decompose] ollama_generate fail: %s", e)
+    try:
+        from .local_llm import generate_sidix
+        text, mode = generate_sidix(prompt, system="", max_tokens=max_tokens, temperature=temperature)
+        if text:
+            return text
+    except Exception as e:
+        log.debug("[decompose] generate_sidix fail: %s", e)
+    return ""
+
+
 # ── Data ───────────────────────────────────────────────────────────────────────
 
 @dataclass
@@ -81,14 +101,6 @@ def understand_problem(problem: str) -> dict:
     Decompose problem statement → given/unknown/constraints.
     LLM-based, prompted dengan Polya framework.
     """
-    try:
-        try:
-            from .ollama_llm import generate as llm_gen
-        except Exception:
-            from .local_llm import generate_sidix as llm_gen
-    except Exception:
-        return {"given_data": [], "unknown_target": "", "constraints": []}
-
     prompt = f"""Problem: "{problem}"
 
 Decompose dengan framework Polya. Output ONLY JSON:
@@ -100,12 +112,10 @@ Decompose dengan framework Polya. Output ONLY JSON:
 
 Jangan filler. Pendek tapi spesifik. Output JSON:"""
 
+    response = _call_llm(prompt, max_tokens=300, temperature=0.3)
+    if not response:
+        return {"given_data": [], "unknown_target": problem[:200], "constraints": []}
     try:
-        out = llm_gen(prompt, max_tokens=300, temperature=0.3)
-        if isinstance(out, dict):
-            response = out.get("text") or out.get("response") or ""
-        else:
-            response = out or ""
         response = re.sub(r"^```(?:json)?\s*", "", response.strip())
         response = re.sub(r"\s*```$", "", response)
         return json.loads(response)
@@ -148,15 +158,7 @@ def plan_strategy(
     except Exception:
         pass
 
-    # Fallback: LLM gen
-    try:
-        try:
-            from .ollama_llm import generate as llm_gen
-        except Exception:
-            from .local_llm import generate_sidix as llm_gen
-    except Exception:
-        return {"strategy": "", "sub_goals": [], "tools_needed": []}
-
+    # Fallback: LLM gen via unified helper
     pat_summary = ""
     if patterns:
         pat_summary = "\n\nRelated patterns (induktif yang mungkin applicable):\n" + \
@@ -177,12 +179,10 @@ Strategi pemecahan masalah. Output ONLY JSON:
 
 Output JSON:"""
 
+    response = _call_llm(prompt, max_tokens=500, temperature=0.4)
+    if not response:
+        return {"strategy": "", "sub_goals": [], "tools_needed": []}
     try:
-        out = llm_gen(prompt, max_tokens=500, temperature=0.4)
-        if isinstance(out, dict):
-            response = out.get("text") or out.get("response") or ""
-        else:
-            response = out or ""
         response = re.sub(r"^```(?:json)?\s*", "", response.strip())
         response = re.sub(r"\s*```$", "", response)
         return json.loads(response)
@@ -200,15 +200,6 @@ def review_solution(
     """
     Critical review: apakah solusi benar? bisa generalize? lessons?
     """
-    try:
-        try:
-            from .ollama_llm import generate as llm_gen
-        except Exception:
-            from .local_llm import generate_sidix as llm_gen
-    except Exception:
-        return {"correctness_check": "", "confidence": 0.5,
-                "generalizable_insight": "", "lessons": []}
-
     prompt = f"""Problem original: "{problem}"
 Solusi: "{solution.final_answer[:600]}"
 
@@ -222,12 +213,11 @@ Review kritis. Output ONLY JSON:
 
 Output JSON:"""
 
+    response = _call_llm(prompt, max_tokens=400, temperature=0.4)
+    if not response:
+        return {"correctness_check": "", "confidence": 0.5,
+                "generalizable_insight": "", "lessons": []}
     try:
-        out = llm_gen(prompt, max_tokens=400, temperature=0.4)
-        if isinstance(out, dict):
-            response = out.get("text") or out.get("response") or ""
-        else:
-            response = out or ""
         response = re.sub(r"^```(?:json)?\s*", "", response.strip())
         response = re.sub(r"\s*```$", "", response)
         data = json.loads(response)

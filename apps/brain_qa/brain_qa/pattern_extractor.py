@@ -92,6 +92,44 @@ _TRIGGER_PHRASES = [
 _COMPILED_TRIGGERS = re.compile("|".join(_TRIGGER_PHRASES), re.IGNORECASE)
 
 
+# ── LLM helper (unified — handle ollama_llm + local_llm signature differences) ─
+
+def _call_llm(prompt: str, *, max_tokens: int = 256, temperature: float = 0.5) -> str:
+    """
+    Unified LLM call yang handle 2 backend (ollama production / local_llm fallback).
+    Return string response atau "" kalau gagal.
+    """
+    # Try ollama (production) dulu — signature: ollama_generate(prompt, system, ...)
+    try:
+        from .ollama_llm import ollama_generate
+        text, mode = ollama_generate(
+            prompt,
+            system="",
+            max_tokens=max_tokens,
+            temperature=temperature,
+        )
+        if text and not mode.startswith("mock_error"):
+            return text
+    except Exception as e:
+        log.debug("[pattern_extractor] ollama_generate fail: %s", e)
+
+    # Fallback ke local_llm (kalau ada adapter LoRA)
+    try:
+        from .local_llm import generate_sidix
+        text, mode = generate_sidix(
+            prompt,
+            system="",
+            max_tokens=max_tokens,
+            temperature=temperature,
+        )
+        if text:
+            return text
+    except Exception as e:
+        log.debug("[pattern_extractor] generate_sidix fail: %s", e)
+
+    return ""
+
+
 def looks_like_inductive_claim(text: str) -> bool:
     """
     Cepat detect apakah text mengandung klaim induktif (ada generalization).
@@ -121,16 +159,6 @@ def extract_pattern_from_text(
     if not text or len(text) < 20:
         return None
 
-    try:
-        # Reuse local LLM (own stack, no vendor API)
-        try:
-            from .ollama_llm import generate as llm_gen
-        except Exception:
-            from .local_llm import generate_sidix as llm_gen
-    except Exception:
-        log.warning("[pattern_extractor] LLM not available")
-        return None
-
     prompt = f"""Berikut adalah pengamatan / klaim:
 
 "{text}"
@@ -144,13 +172,11 @@ Output JSON pendek (maks 6 baris) dengan key:
 
 Jangan generic. Yang spesifik tapi applicable. Output ONLY JSON:"""
 
-    try:
-        out = llm_gen(prompt, max_tokens=200, temperature=0.4)
-        if isinstance(out, dict):
-            response = out.get("text") or out.get("response") or ""
-        else:
-            response = out or ""
+    response = _call_llm(prompt, max_tokens=200, temperature=0.4)
+    if not response:
+        return None
 
+    try:
         # Strip markdown code fence
         response = response.strip()
         response = re.sub(r"^```(?:json)?\s*", "", response)
