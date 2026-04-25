@@ -133,24 +133,67 @@ def runpod_generate(
         log.error(f"[RunPod] request fail: {type(e).__name__}: {e}")
         return ("", f"runpod_error: {type(e).__name__}")
 
-    # vLLM response format: {"output": {"choices": [{"message": {"content": "..."}}]}}
-    output = data.get("output") or {}
+    # RunPod vLLM response punya 2 format kemungkinan:
+    #
+    # Format A (RunPod runpod-workers/worker-vllm — vLLM + Worker wrapper):
+    #   {"output": [{"choices": [{"tokens": ["..."]}]}]}
+    #
+    # Format B (OpenAI-compatible chat completion):
+    #   {"output": {"choices": [{"message": {"content": "..."}}]}}
+    #
+    # Format C (plain text):
+    #   {"output": "..."}  atau  {"output": {"text": "..."}}
+
+    output = data.get("output")
+
+    # Format A: list of {choices: [{tokens: [...]}]}
+    if isinstance(output, list) and output:
+        first = output[0]
+        if isinstance(first, dict):
+            choices = first.get("choices") or []
+            if choices and isinstance(choices, list):
+                ch0 = choices[0] or {}
+                # tokens (list) — vLLM worker default
+                tokens = ch0.get("tokens")
+                if isinstance(tokens, list) and tokens:
+                    return ("".join(str(t) for t in tokens), "runpod")
+                # message.content (OpenAI format)
+                msg = ch0.get("message") or {}
+                msg_text = msg.get("content")
+                if msg_text:
+                    return (str(msg_text), "runpod")
+                # text key
+                tx = ch0.get("text")
+                if tx:
+                    return (str(tx), "runpod")
+
+    # Format B: dict with choices
     if isinstance(output, dict):
         choices = output.get("choices") or []
         if choices and isinstance(choices, list):
-            msg = (choices[0] or {}).get("message") or {}
-            text = msg.get("content", "")
+            ch0 = choices[0] or {}
+            msg = ch0.get("message") or {}
+            text = msg.get("content")
             if text:
-                return (text, "runpod")
-        # Fallback: text/result key
+                return (str(text), "runpod")
+            # tokens at choice level
+            tokens = ch0.get("tokens")
+            if isinstance(tokens, list) and tokens:
+                return ("".join(str(t) for t in tokens), "runpod")
+            tx = ch0.get("text")
+            if tx:
+                return (str(tx), "runpod")
+        # Format C: dict with text/result
         for k in ("text", "result", "generated_text"):
             v = output.get(k)
             if v:
                 return (str(v), "runpod")
-    elif isinstance(output, str) and output:
+
+    # Format C: plain string
+    if isinstance(output, str) and output:
         return (output, "runpod")
 
-    log.warning(f"[RunPod] empty/unparseable response: {str(data)[:200]}")
+    log.warning(f"[RunPod] empty/unparseable response: {str(data)[:300]}")
     return ("", "runpod_error: empty response")
 
 
