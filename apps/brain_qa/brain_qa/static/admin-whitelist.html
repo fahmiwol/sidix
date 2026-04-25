@@ -134,7 +134,9 @@
   </div>
 
   <script>
-    const API_BASE = 'https://ctrl.sidixlab.com';
+    // Relative — page ini di-serve langsung dari sidix-brain FastAPI
+    // (ctrl.sidixlab.com → :8765), jadi semua /admin/* pakai same-origin.
+    const API_BASE = '';
 
     function getToken() {
       const tok = (document.getElementById('admin-token').value || '').trim();

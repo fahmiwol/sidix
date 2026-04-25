@@ -5915,3 +5915,37 @@ BRAIN_QA_ADMIN_TOKEN=7f820b893eda388332a2ad44dcf3de2cf361ded67c8215fd
 - pytest full suite: 520 passed, 1 deselected
 - vite build: 110 KB JS bundle, admin-whitelist.html bundled di dist/
 - Admin UI: standalone HTML + vanilla JS, akses via `app.sidixlab.com/admin-whitelist.html`
+
+## 2026-04-26 (lanjutan 2) — Admin UI pindah ke ctrl.sidixlab.com
+
+### USER REQUEST
+> "pindahin kesitu aja fitur whitelistnya" (screenshot menunjukkan ctrl.sidixlab.com)
+
+### REASONING
+Admin UI sebelumnya di `app.sidixlab.com/admin-whitelist` — bercampur dengan
+user-facing chat app. Pindah ke `ctrl.sidixlab.com` (domain control/admin)
+supaya:
+1. Surface terpisah antara user app vs admin tools
+2. Konsisten dengan konvensi: ctrl/admin/api subdomain untuk control plane
+3. Path bersih, mudah ingat: `https://ctrl.sidixlab.com/admin/ui`
+
+### IMPL
+- File pindah: `SIDIX_USER_UI/public/admin-whitelist.html` →
+  `apps/brain_qa/brain_qa/static/admin-whitelist.html`
+- `API_BASE` di HTML: `https://ctrl.sidixlab.com` → `''` (relative, same-origin)
+- FastAPI route baru di `agent_serve.py`:
+  - `GET /admin/ui` (alias)
+  - `GET /admin/whitelist/ui` (full path)
+  - Read HTML dari `static/admin-whitelist.html`, return HTMLResponse
+  - `include_in_schema=False` (tidak di OpenAPI docs publik)
+- Cleanup: hapus admin file dari sidix-ui public/ supaya tidak duplicate
+
+### ACCESS
+**URL baru**: https://ctrl.sidixlab.com/admin/ui
+**Auth**: header `x-admin-token` = env `BRAIN_QA_ADMIN_TOKEN`
+
+Token disimpan di sessionStorage browser — hilang saat tab ditutup.
+
+### Validation
+- pytest: 520 passed
+- Syntax check OK
