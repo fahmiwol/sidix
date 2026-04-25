@@ -66,30 +66,30 @@ class TestRoutePersona:
         assert isinstance(result, PersonaDecision)
         assert result.persona in _PERSONA_SET
 
-    def test_coding_question_routes_aley(self):
-        """Coding → ALEY (formerly HAYFAR)."""
+    def test_coding_question_routes_aboo(self):
+        """Coding → ABOO (engineer/technical)."""
         result = route_persona("bagaimana cara debug bug ini di python?")
-        assert result.persona == "ALEY"
-
-    def test_creative_question_routes_ayman(self):
-        """Creative → AYMAN (formerly MIGHAN)."""
-        result = route_persona("bantu desain poster untuk acara")
-        assert result.persona == "AYMAN"
-
-    def test_research_question_routes_oomar(self):
-        """Research → OOMAR (formerly FACH)."""
-        result = route_persona("tolong bantu riset literatur untuk tesis ini")
-        assert result.persona == "OOMAR"
-
-    def test_planning_question_routes_aboo(self):
-        """Planning → ABOO (formerly TOARD)."""
-        result = route_persona("buat roadmap dan strategi untuk proyek")
         assert result.persona == "ABOO"
 
-    def test_simple_question_routes_utz(self):
-        """Default/simple → UTZ (formerly INAN)."""
-        result = route_persona("apa kabar?")
+    def test_creative_question_routes_utz(self):
+        """Creative → UTZ (creative/design)."""
+        result = route_persona("bantu desain poster untuk acara")
         assert result.persona == "UTZ"
+
+    def test_research_question_routes_aley(self):
+        """Research → ALEY (research/academic)."""
+        result = route_persona("tolong bantu riset literatur untuk tesis ini")
+        assert result.persona == "ALEY"
+
+    def test_planning_question_routes_oomar(self):
+        """Planning → OOMAR (strategic/planning)."""
+        result = route_persona("buat roadmap dan strategi untuk proyek")
+        assert result.persona == "OOMAR"
+
+    def test_simple_question_routes_ayman(self):
+        """Default/simple → AYMAN (general/warm)."""
+        result = route_persona("apa kabar?")
+        assert result.persona == "AYMAN"
 
     def test_explicit_prefix_new_name(self):
         """Explicit prefix dengan nama baru."""

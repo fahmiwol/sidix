@@ -63,5 +63,6 @@ def test_run_react_build_intent_includes_workspace_list(monkeypatch, tmp_path):
         max_steps=8,
     )
     names = [s.action_name for s in session.steps if s.action_name]
-    assert "search_corpus" in names
+    # Build intent terdeteksi → langsung workspace_list (bypass corpus)
     assert "workspace_list" in names
+    # search_corpus mungkin tidak muncul kalau build intent kuat
