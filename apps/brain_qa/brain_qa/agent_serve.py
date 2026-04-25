@@ -186,6 +186,54 @@ def _enforce_daily(request: Request) -> None:
         raise HTTPException(status_code=429, detail=msg)
 
 
+def _log_user_activity(
+    request: Request,
+    *,
+    action: str,
+    question: str = "",
+    answer: str = "",
+    persona: str = "",
+    mode: str = "",
+    citations_count: int = 0,
+    latency_ms: int = 0,
+    error: str = "",
+) -> None:
+    """
+    Log activity per-user (non-blocking, best-effort).
+
+    Skip kalau user belum sign-in (anonymous). Untuk user yang sign-in,
+    activity log akan jadi corpus learning untuk SIDIX (per-user pertanyaan
+    + jawaban + persona + latency).
+
+    Disebut di endpoint /ask dan /agent/* setelah generate jawaban.
+    """
+    try:
+        from . import auth_google
+        payload = auth_google.extract_user_from_request(request)
+        if not payload:
+            return  # anonymous user, skip
+        ip = ""
+        try:
+            ip = (request.client.host if request.client else "") or ""
+        except Exception:
+            pass
+        auth_google.log_activity(
+            user_id=payload.get("sub", ""),
+            email=payload.get("email", ""),
+            action=action,
+            question=question,
+            answer_preview=answer,
+            persona=persona,
+            mode=mode,
+            citations_count=citations_count,
+            latency_ms=latency_ms,
+            ip=ip,
+            error=error,
+        )
+    except Exception:
+        pass  # never block main flow
+
+
 # ── Pydantic models ───────────────────────────────────────────────────────────
 
 class ChatRequest(BaseModel):
@@ -1000,6 +1048,7 @@ def create_app() -> "FastAPI":
             from .agent_burst import burst_refine
         except Exception as e:
             raise HTTPException(status_code=503, detail=f"burst module unavailable: {e}")
+        _t_burst_start = time.time()
         result = burst_refine(
             req.prompt,
             n=max(1, min(req.n, 6)),
@@ -1008,6 +1057,14 @@ def create_app() -> "FastAPI":
             refine_temperature=req.refine_temperature,
             return_all=req.return_all,
             fast_mode=req.fast_mode,
+        )
+        _log_user_activity(
+            request,
+            action="agent/burst",
+            question=req.prompt,
+            answer=str(result.get("final", "") if isinstance(result, dict) else result)[:160],
+            mode="burst",
+            latency_ms=int((time.time() - _t_burst_start) * 1000),
         )
         return result
 
@@ -1030,7 +1087,17 @@ def create_app() -> "FastAPI":
             from .agent_two_eyed import two_eyed_view
         except Exception as e:
             raise HTTPException(status_code=503, detail=f"two_eyed module unavailable: {e}")
-        return two_eyed_view(req.prompt, system=req.system)
+        _t_te_start = time.time()
+        result = two_eyed_view(req.prompt, system=req.system)
+        _log_user_activity(
+            request,
+            action="agent/two-eyed",
+            question=req.prompt,
+            answer=str(result.get("synthesis", "") if isinstance(result, dict) else result)[:160],
+            mode="two_eyed",
+            latency_ms=int((time.time() - _t_te_start) * 1000),
+        )
+        return result
 
     # ── POST /agent/resurrect — Hidden Knowledge Resurrection (Noether method) ─
     @app.post("/agent/resurrect", tags=["Supermodel"])
@@ -1053,11 +1120,21 @@ def create_app() -> "FastAPI":
             from .agent_resurrect import resurrect
         except Exception as e:
             raise HTTPException(status_code=503, detail=f"resurrect module unavailable: {e}")
-        return resurrect(
+        _t_rs_start = time.time()
+        result = resurrect(
             req.topic,
             n_gems=max(1, min(req.n_gems, 5)),
             return_intermediate=req.return_intermediate,
         )
+        _log_user_activity(
+            request,
+            action="agent/resurrect",
+            question=req.topic,
+            answer=str(result.get("narrative", "") if isinstance(result, dict) else result)[:160],
+            mode="resurrect",
+            latency_ms=int((time.time() - _t_rs_start) * 1000),
+        )
+        return result
 
     # ── POST /agent/foresight — Visionary Foresight (web + corpus + scenario)
     @app.post("/agent/foresight", tags=["Supermodel"])
@@ -1079,12 +1156,22 @@ def create_app() -> "FastAPI":
             from .agent_foresight import foresight
         except Exception as e:
             raise HTTPException(status_code=503, detail=f"foresight module unavailable: {e}")
-        return foresight(
+        _t_fs_start = time.time()
+        result = foresight(
             req.topic,
             horizon=req.horizon,
             with_scenarios=req.with_scenarios,
             return_intermediate=req.return_intermediate,
         )
+        _log_user_activity(
+            request,
+            action="agent/foresight",
+            question=req.topic,
+            answer=str(result.get("narrative", "") if isinstance(result, dict) else result)[:160],
+            mode="foresight",
+            latency_ms=int((time.time() - _t_fs_start) * 1000),
+        )
+        return result
 
     # ── GET /agent/orchestration ───────────────────────────────────────────────
     @app.get("/agent/orchestration")
@@ -1790,6 +1877,7 @@ def create_app() -> "FastAPI":
         _enforce_rate(request)
         _enforce_daily(request)
         _bump_metric("ask")
+        _t_ask_start = time.time()
         session = run_react(
             question=req.question,
             persona=req.persona,
@@ -1860,6 +1948,18 @@ def create_app() -> "FastAPI":
             on_low_confidence(req.question, session.persona, conf_score, domain)
         except Exception:
             pass  # jangan crash hanya karena initiative error
+
+        # ── Activity log per-user (untuk SIDIX learning) ──────────────────────
+        _log_user_activity(
+            request,
+            action="ask",
+            question=req.question,
+            answer=session.final_answer,
+            persona=session.persona,
+            mode=("strict" if req.strict_mode else ("simple" if req.simple_mode else "agent")),
+            citations_count=len(ui_citations),
+            latency_ms=int((time.time() - _t_ask_start) * 1000),
+        )
 
         return {
             "answer": session.final_answer,

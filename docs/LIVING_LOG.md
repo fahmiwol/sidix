@@ -6278,3 +6278,102 @@ User paste Client Secret (`GOCSPX-...`) di transkrip. Warned user:
 - Login page accessible di app.sidixlab.com/login.html
 - Backend pickup `GOOGLE_OAUTH_CLIENT_ID` env var (verified via /auth/config)
 - Build: 49 KB HTML, 114 KB JS, login.html 7.9 KB
+
+---
+
+## 2026-04-26 (vol 2) — POST-LOGIN: Activity Log + Admin User Tab + Drop Supabase Auth
+
+User feedback setelah login berhasil:
+> "yeay berhasil! sekarang pastikan user yang daftar
+> 1. tercatat di database dan tampilkan listnya di admin
+> 2. Log aktivtas user di app, masing-mmasing buat belajar sidix
+> 3. jadi sudah nggak pelru supabase dong?"
+
+### IMPL — Activity Log Hook (untuk SIDIX learning)
+
+**Backend `agent_serve.py`**:
+- Helper baru `_log_user_activity(request, action, question, answer, persona, mode, citations_count, latency_ms, error)` — extract user dari Bearer JWT via `auth_google.extract_user_from_request()`, anonymous user di-skip, append entry ke `.data/activity_log.jsonl` (non-blocking).
+- Hook di 5 endpoint:
+  - `/ask` — action="ask", mode="strict|simple|agent", citations_count, latency
+  - `/agent/burst` — action="agent/burst", mode="burst"
+  - `/agent/two-eyed` — action="agent/two-eyed", mode="two_eyed"
+  - `/agent/resurrect` — action="agent/resurrect", mode="resurrect"
+  - `/agent/foresight` — action="agent/foresight", mode="foresight"
+
+**Use cases**:
+1. **SIDIX learning corpus** — high-quality Q/A pairs feed ke training dataset → LoRA retrain pipeline
+2. **Per-user history** — user lihat percakapan lama (future)
+3. **Quality monitoring** — detect low-confidence patterns per user/persona
+4. **Anti-abuse** — IP + frequency pattern untuk spam detection
+
+### IMPL — Admin Tabs: Users + Activity Log
+
+**`apps/brain_qa/brain_qa/static/admin.html`**:
+- Replace 2 placeholder "soon" badge entries dengan tab aktif:
+  - 👥 **Users** (sidebar Management section)
+  - 📜 **Activity Log** (sidebar Monitoring section)
+
+**Tab Users (`#tab-users`)**:
+- Stats grid: Total User · Aktif Hari Ini · Free Tier · Whitelist
+- Search bar: filter email/nama/user_id
+- Table: Foto avatar (Google img dengan fallback initial-letter SVG, `referrerpolicy=no-referrer` untuk hindari Google rate-limit), Nama + created_at, Email + user_id, Tier badge, login_count, last_login, action button "Lihat" → switchTab('activity') + filter user_id
+
+**Tab Activity Log (`#tab-activity`)**:
+- Filter form: user_id (kosong = semua) + limit (10-1000)
+- Card-based render: timestamp + action + user_id + ok/error + latency + persona + mode di header, Q + A preview di body, error highlight merah
+- HTML escape via `escapeHtml()` (anti-XSS karena render dari DB)
+
+**Tab routing**: tambah cases `users` + `activity` ke event listener auto-load.
+
+**API**: `/admin/users` + `/admin/activity` sudah ada (dibuild di vol 1), tinggal frontend wiring.
+
+### IMPL — Drop Supabase Auth (Bundle Reduction Win)
+
+**`SIDIX_USER_UI/src/main.ts` refactor**:
+
+1. **Imports** — drop `signInWithGoogle, signInWithEmail, getCurrentUser, signOut, onAuthChange, upsertUserProfile, getUserProfile, saveOnboarding, trackBetaTester, UserRole, OnboardingAnswers` types. Keep `subscribeNewsletter, submitFeedbackDB, FeedbackType, saveDeveloperProfile`.
+2. **`currentAuthUser` type** — `import('@supabase/supabase-js').User` → custom `OwnAuthUser { id, email, name, picture }` interface lokal.
+3. **`isLoggedIn()`** — return `ownAuthIsSignedIn()` (cek localStorage JWT).
+4. **`injectLoginModal()`** — dihapus (~110 baris HTML Supabase OAuth + email OTP modal). Diganti `openLoginModal()` → redirect `/login.html?next=<current>`.
+5. **`onAuthChange()` listener** — dihapus. Diganti `_syncCurrentAuthUserFromOwnAuth()` yang baca localStorage + `loadOwnAuthUser()` di page-load yang fetch `/auth/me`.
+6. **Onboarding** — `saveOnboarding/trackBetaTester` calls dihapus (Supabase tables di-deprecate). Onboarding tetap jalan tapi tidak persist ke DB sementara — bisa di-revive nanti via own endpoint.
+7. **Contributor signup** — `getCurrentUser()` diganti baca localStorage `sidix_user_id`. Form tetap save ke `contributors` table via `lib/supabase.ts` (legacy DB call, bukan auth).
+
+**Bundle size impact**:
+- JS bundle: **321.65 kB → 114.58 kB** (drop 207 kB / 64% reduction)
+- gzip: **85.64 kB → 30.56 kB** (drop 55 kB / 64% reduction)
+
+Penyebab penurunan: Supabase Auth flow + GoTrue client + auth state mgmt + 110-line modal HTML semua dihapus dari main bundle. `lib/supabase.ts` masih ada (untuk newsletter/feedback/contributors) tapi sekarang dynamic-imported saja.
+
+### TEST
+
+```
+✓ pytest: 520 passed, 1 deselected (test_sensor_hub_parallel flaky perf, microsecond noise)
+✓ vite build: 1.62s, no TS errors
+✓ Bundle: 114.58 kB (vs 321.65 kB sebelumnya)
+✓ Backend syntax: agent_serve.py valid AST
+✓ Module import: auth_google OK
+```
+
+### DECISION — Apa yang TETAP pakai Supabase
+
+`lib/supabase.ts` tidak dihapus karena masih dipakai untuk:
+- **`subscribeNewsletter()`** — newsletter signup
+- **`submitFeedbackDB()`** — feedback fallback (kalau backend `/feedback` endpoint down)
+- **`saveDeveloperProfile()` + `contributors` table** — kontributor signup form di sidixlab.com#contributor
+- **`supabase.from('contributors').upsert(...)`** — direct insert untuk landing form
+
+**Rationale**: ketiga fitur di atas tidak critical untuk app utama, dan migrasi-nya butuh effort terpisah (perlu endpoint backend baru `/newsletter`, `/contributors`, dll). Phase out di iterasi berikutnya kalau perlu.
+
+### NEXT (P2 sesudah deploy)
+
+- [ ] Deploy: pull + rebuild + restart sidix-ui (push pertama, lalu trigger di VPS)
+- [ ] Test full flow: chat satu pertanyaan → cek `.data/activity_log.jsonl` ada entry
+- [ ] Test admin: open ctrl.sidixlab.com → Users tab → tiranyx muncul → Activity tab → entries muncul
+- [ ] Phase out `lib/supabase.ts` newsletter+contributors → backend endpoints sendiri
+- [ ] Activity log tab: live polling refresh (setiap 30s auto-update)
+- [ ] User profile page (di app): user lihat history pribadi
+
+### DOCUMENTATION
+
+- `research_notes/220_activity_log_user_database_design.md` — design rationale + privacy considerations

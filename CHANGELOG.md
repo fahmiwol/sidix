@@ -36,7 +36,24 @@ Semua perubahan signifikan dicatat di sini. Format: `[versi] — tanggal — rin
 - 6 endpoint baru: `/auth/config`, `/auth/google`, `/auth/me`, `/auth/logout`, `/admin/users`, `/admin/activity`
 - `SIDIX_USER_UI/public/login.html` (NEW): dedicated login page (Codelabs pattern), Google Sign-In button pill + filled_black theme, callback simpan JWT di localStorage
 - `main.ts`: ownAuth helpers (isSignedIn/logout/loadOwnAuthUser), Sign In button redirect ke /login.html?next=<current>, page-load session restore via /auth/me
-- Activity log akan dipakai untuk SIDIX learning corpus (training pair generation)
+
+### Added — Activity Log (per-user, untuk SIDIX learning)
+- Helper `_log_user_activity()` di `agent_serve.py`: extract user dari Bearer JWT, log JSONL ke `.data/activity_log.jsonl` (non-blocking, anonymous user di-skip)
+- Hook di endpoint `/ask` + 4 Supermodel agent (`/agent/burst`, `/agent/two-eyed`, `/agent/resurrect`, `/agent/foresight`): capture pertanyaan + jawaban preview + persona + mode + latency_ms + IP
+- Activity log akan dipakai untuk: (1) corpus learning (training pair generation), (2) per-user history, (3) quality monitoring (low-confidence answer detection), (4) anti-abuse pattern detection
+
+### Added — Admin Tabs (User Database + Activity Log)
+- 2 tab baru di `ctrl.sidixlab.com/admin`: 👥 Users, 📜 Activity Log
+- **Users tab**: stats (total, aktif hari ini, free, whitelist), search bar email/nama/id, table dengan foto avatar Google, tier badge, login_count, last_login. Tombol "Lihat" → buka activity log filter per-user.
+- **Activity Log tab**: filter by user_id + limit (max 1000), card view dengan timestamp + action + persona + mode + latency, Q/A preview truncated 200/160 chars, error highlight merah.
+
+### Changed — Drop Supabase Auth (LIB tetap untuk legacy DB calls)
+- `main.ts`: hapus import `signInWithGoogle/signInWithEmail/getCurrentUser/signOut/onAuthChange/upsertUserProfile/getUserProfile/saveOnboarding/trackBetaTester` dari `lib/supabase`
+- Hapus `injectLoginModal()` (~110 baris HTML modal Supabase) — diganti redirect ke `/login.html`
+- Hapus `onAuthChange()` listener Supabase — diganti `_syncCurrentAuthUserFromOwnAuth()` + `loadOwnAuthUser()` di page-load
+- `currentAuthUser` type: `import('@supabase/supabase-js').User` → `OwnAuthUser` (interface lokal)
+- `lib/supabase.ts` SISA: hanya `subscribeNewsletter`, `submitFeedbackDB`, `saveDeveloperProfile`, `supabase` (untuk contributors table di sidixlab.com landing)
+- **JS bundle: 321.65 kB → 114.58 kB** (drop 207 kB / 64% dari Supabase auth + modal HTML)
 
 ### Added — UX Improvements
 - Avatar profile saat login (Google avatar atau fallback initial-letter SVG)

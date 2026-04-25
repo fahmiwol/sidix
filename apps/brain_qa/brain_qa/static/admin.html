@@ -235,13 +235,13 @@
       <div class="nav-section">Management</div>
       <a class="nav-item active" data-tab="whitelist"><span class="icon">🎟️</span><span>Whitelist</span></a>
       <a class="nav-item" data-tab="feedback"><span class="icon">💬</span><span>Feedback</span></a>
-      <a class="nav-item disabled"><span class="icon">👥</span><span>Users</span><span class="badge">soon</span></a>
+      <a class="nav-item" data-tab="users"><span class="icon">👥</span><span>Users</span></a>
       <a class="nav-item disabled"><span class="icon">🧰</span><span>Tool Permissions</span><span class="badge">soon</span></a>
 
       <div class="nav-section">Monitoring</div>
       <a class="nav-item" data-tab="health"><span class="icon">💚</span><span>System Health</span></a>
+      <a class="nav-item" data-tab="activity"><span class="icon">📜</span><span>Activity Log</span></a>
       <a class="nav-item disabled"><span class="icon">📊</span><span>Metrics</span><span class="badge">soon</span></a>
-      <a class="nav-item disabled"><span class="icon">📜</span><span>Logs</span><span class="badge">soon</span></a>
 
       <div class="nav-section">System</div>
       <a class="nav-item" href="/docs" target="_blank"><span class="icon">📘</span><span>API Docs</span></a>
@@ -381,6 +381,79 @@
       </div>
     </div>
 
+    <!-- ── TAB: Users (own auth database) ── -->
+    <div class="tab-pane" id="tab-users">
+      <div class="page-header">
+        <h2>👥 User Database</h2>
+        <p>Daftar user yang sign-in via Google ke SIDIX (own auth, no Supabase).</p>
+      </div>
+
+      <div class="card">
+        <h3>📊 Statistik User</h3>
+        <div class="stats-grid" id="users-stats">
+          <div class="stat-box"><div class="stat-num">—</div><div class="stat-label">Total User</div></div>
+          <div class="stat-box"><div class="stat-num">—</div><div class="stat-label">Aktif Hari Ini</div></div>
+          <div class="stat-box"><div class="stat-num">—</div><div class="stat-label">Free Tier</div></div>
+          <div class="stat-box"><div class="stat-num">—</div><div class="stat-label">Whitelist</div></div>
+        </div>
+        <div style="margin-top: 14px;">
+          <button onclick="loadUsers()">🔄 Refresh</button>
+          <input id="users-search" type="text" placeholder="Cari email/nama..." oninput="renderUsers()" style="display: inline-block; width: 240px; margin-left: 8px;" />
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>📋 Daftar User</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Foto</th>
+              <th>Nama</th>
+              <th>Email</th>
+              <th>Tier</th>
+              <th>Login</th>
+              <th>Last Login</th>
+              <th>Activity</th>
+            </tr>
+          </thead>
+          <tbody id="users-tbody">
+            <tr><td colspan="7" class="empty">Belum dimuat. Klik Refresh.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── TAB: Activity Log ── -->
+    <div class="tab-pane" id="tab-activity">
+      <div class="page-header">
+        <h2>📜 Activity Log</h2>
+        <p>Setiap pertanyaan user di SIDIX (untuk learning corpus + quality monitoring).</p>
+      </div>
+
+      <div class="card">
+        <h3>🔍 Filter</h3>
+        <div class="row">
+          <div>
+            <label>User ID (opsional)</label>
+            <input id="activity-user-id" type="text" placeholder="u_xxxxxxxxxxxx (kosong = semua)" />
+          </div>
+          <div>
+            <label>Limit (max 1000)</label>
+            <input id="activity-limit" type="number" value="200" min="10" max="1000" />
+          </div>
+        </div>
+        <button onclick="loadActivity()" style="margin-top: 16px;">🔄 Load Activity Log</button>
+      </div>
+
+      <div class="card">
+        <h3>📋 Aktivitas Terbaru</h3>
+        <p id="activity-info" style="font-size: 12px; color: var(--text-dim); margin-bottom: 12px;">Belum dimuat.</p>
+        <div id="activity-list">
+          <div class="empty">Belum dimuat. Klik Load Activity Log.</div>
+        </div>
+      </div>
+    </div>
+
   </main>
 
   <script>
@@ -404,6 +477,8 @@
         if (t === 'whitelist') loadList();
         else if (t === 'feedback') loadFeedback();
         else if (t === 'health') loadHealth();
+        else if (t === 'users') loadUsers();
+        else if (t === 'activity') loadActivity();
       });
     });
 
@@ -681,6 +756,145 @@
       } catch (e) {
         out.textContent = `Error: ${e.message}`;
       }
+    }
+
+    // ── Users (own auth database) ──
+    let _allUsers = [];
+    async function loadUsers() {
+      const tok = getToken();
+      if (!tok) { showLogin(); return; }
+      try {
+        const res = await fetch(`${API_BASE}/admin/users`, { headers: { 'x-admin-token': tok } });
+        if (res.status === 403) {
+          sessionStorage.removeItem('sidix_admin_token');
+          showLogin();
+          return;
+        }
+        if (!res.ok) {
+          document.getElementById('users-tbody').innerHTML = `<tr><td colspan="7" class="empty">Error ${res.status}</td></tr>`;
+          return;
+        }
+        const data = await res.json();
+        _allUsers = data.users || [];
+        const stats = data.stats || {};
+        document.getElementById('users-stats').innerHTML = `
+          <div class="stat-box"><div class="stat-num">${stats.total_users ?? 0}</div><div class="stat-label">Total User</div></div>
+          <div class="stat-box"><div class="stat-num">${stats.active_today ?? 0}</div><div class="stat-label">Aktif Hari Ini</div></div>
+          <div class="stat-box"><div class="stat-num">${(stats.by_tier || {}).free ?? 0}</div><div class="stat-label">Free Tier</div></div>
+          <div class="stat-box"><div class="stat-num">${(stats.by_tier || {}).whitelist ?? 0}</div><div class="stat-label">Whitelist</div></div>
+        `;
+        renderUsers();
+      } catch (e) {
+        document.getElementById('users-tbody').innerHTML = `<tr><td colspan="7" class="empty">Network: ${e.message}</td></tr>`;
+      }
+    }
+
+    function renderUsers() {
+      const q = (document.getElementById('users-search').value || '').toLowerCase().trim();
+      const filtered = q
+        ? _allUsers.filter(u =>
+            (u.email || '').toLowerCase().includes(q) ||
+            (u.name || '').toLowerCase().includes(q) ||
+            (u.id || '').toLowerCase().includes(q)
+          )
+        : _allUsers;
+
+      const tbody = document.getElementById('users-tbody');
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" class="empty">${q ? 'Tidak ada user yang match.' : 'Belum ada user yang sign-in.'}</td></tr>`;
+        return;
+      }
+      tbody.innerHTML = filtered.map(u => {
+        const last = (u.last_login_at || '').slice(0, 16).replace('T', ' ');
+        const created = (u.created_at || '').slice(0, 10);
+        const tierBadge = `<span class="badge badge-${u.tier || 'other'}">${u.tier || 'free'}</span>`;
+        const pic = u.picture
+          ? `<img src="${u.picture}" alt="" style="width:32px;height:32px;border-radius:50%;object-fit:cover;" referrerpolicy="no-referrer" />`
+          : `<div style="width:32px;height:32px;border-radius:50%;background:var(--bg-input);display:flex;align-items:center;justify-content:center;color:var(--gold);font-size:14px;">${(u.name || u.email || '?')[0].toUpperCase()}</div>`;
+        return `
+          <tr>
+            <td>${pic}</td>
+            <td><strong>${u.name || '<span style="color:var(--text-dim)">—</span>'}</strong><br/><span style="font-size:10px;color:var(--text-dim)">created ${created}</span></td>
+            <td><code>${u.email}</code><br/><span style="font-size:10px;color:var(--text-dim)">${u.id}</span></td>
+            <td>${tierBadge}</td>
+            <td style="text-align:center"><strong>${u.login_count || 0}</strong>×</td>
+            <td style="color:var(--text-dim);font-size:11px;">${last}</td>
+            <td><button class="ghost" onclick="viewUserActivity('${u.id}')">📜 Lihat</button></td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function viewUserActivity(userId) {
+      switchTab('activity');
+      document.getElementById('activity-user-id').value = userId;
+      loadActivity();
+    }
+
+    // ── Activity Log ──
+    async function loadActivity() {
+      const tok = getToken();
+      if (!tok) { showLogin(); return; }
+      const userId = (document.getElementById('activity-user-id').value || '').trim();
+      const limit = parseInt(document.getElementById('activity-limit').value || '200', 10);
+      const q = new URLSearchParams();
+      if (userId) q.set('user_id', userId);
+      q.set('limit', String(limit));
+      const list = document.getElementById('activity-list');
+      list.innerHTML = '<div class="empty">Loading...</div>';
+      try {
+        const res = await fetch(`${API_BASE}/admin/activity?${q.toString()}`, {
+          headers: { 'x-admin-token': tok },
+        });
+        if (res.status === 403) {
+          sessionStorage.removeItem('sidix_admin_token');
+          showLogin();
+          return;
+        }
+        if (!res.ok) {
+          list.innerHTML = `<div class="empty">Error ${res.status}</div>`;
+          return;
+        }
+        const data = await res.json();
+        const entries = data.entries || [];
+        document.getElementById('activity-info').textContent =
+          `${entries.length} entries · ${userId ? 'filter: ' + userId : 'all users'} · limit ${limit}`;
+        if (entries.length === 0) {
+          list.innerHTML = '<div class="empty">Belum ada aktivitas (atau user belum sign-in saat chat).</div>';
+          return;
+        }
+        list.innerHTML = entries.map(e => {
+          const ts = (e.ts || '').slice(0, 19).replace('T', ' ');
+          const action = e.action || '?';
+          const isErr = !!(e.error || '').trim();
+          return `
+            <div style="padding:10px 12px;border:1px solid var(--border);border-radius:8px;margin-bottom:8px;background:var(--bg-input)">
+              <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:11px;color:var(--text-dim);margin-bottom:6px;">
+                <span style="color:var(--gold);font-weight:600;">${action}</span>
+                <span>·</span>
+                <span>${ts} UTC</span>
+                <span>·</span>
+                <code style="font-size:10px;">${e.user_id || '-'}</code>
+                <span style="margin-left:auto;color:${isErr ? 'var(--red)' : 'var(--green)'}">${isErr ? '⚠️ error' : '✓ ok'}</span>
+                ${e.latency_ms ? `<span>· ${e.latency_ms}ms</span>` : ''}
+                ${e.persona ? `<span>· persona: <code>${e.persona}</code></span>` : ''}
+                ${e.mode ? `<span>· mode: <code>${e.mode}</code></span>` : ''}
+              </div>
+              ${e.question ? `<div style="font-size:13px;color:var(--text);margin-bottom:4px;"><strong>Q:</strong> ${escapeHtml(e.question)}</div>` : ''}
+              ${e.answer_preview ? `<div style="font-size:12px;color:var(--text-dim);"><strong>A:</strong> ${escapeHtml(e.answer_preview)}…</div>` : ''}
+              ${e.error ? `<div style="font-size:12px;color:var(--red);margin-top:4px;"><strong>Error:</strong> ${escapeHtml(e.error)}</div>` : ''}
+            </div>
+          `;
+        }).join('');
+      } catch (e) {
+        list.innerHTML = `<div class="empty">Network: ${e.message}</div>`;
+      }
+    }
+
+    function escapeHtml(s) {
+      return String(s || '').replace(/[&<>"']/g, c => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+      }[c]));
     }
 
     // ── Auto load — cek token, kalau ada langsung dashboard, kalau tidak: login ──

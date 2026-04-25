@@ -27,12 +27,13 @@ import {
 
 import { initWaitingRoom } from './waiting-room';
 
+// Pivot 2026-04-26: drop Supabase auth, pakai own auth via Google Identity
+// Services (lib/auth_google.py + /login.html). Supabase HANYA dipakai untuk
+// newsletter + feedback DB fallback + contributor signup form (legacy, bisa
+// diphase out di iterasi berikutnya).
 import {
   subscribeNewsletter, submitFeedbackDB, type FeedbackType,
-  signInWithGoogle, signInWithEmail, getCurrentUser, signOut, onAuthChange,
-  upsertUserProfile, getUserProfile, saveOnboarding, saveDeveloperProfile,
-  trackBetaTester,
-  type UserRole, type OnboardingAnswers,
+  saveDeveloperProfile,
 } from './lib/supabase';
 
 // ── Auth error handler (URL hash + searchParams) ────────────────────────────
@@ -341,12 +342,12 @@ document.getElementById('contrib-submit')?.addEventListener('click', async () =>
       await subscribeNewsletter(email).catch(() => {});
     }
 
-    // Save contributor profile
-    const user = await getCurrentUser();
-    if (user) {
+    // Save contributor profile (own auth state)
+    const ownUserId = localStorage.getItem('sidix_user_id') || '';
+    if (ownUserId) {
       const { saveDeveloperProfile } = await import('./lib/supabase');
       await saveDeveloperProfile({
-        user_id: user.id,
+        user_id: ownUserId,
         skills: selectedContribRole,
         availability: 'TBD',
         motivation: interest,
@@ -549,6 +550,13 @@ async function loadOwnAuthUser(): Promise<void> {
     localStorage.setItem('sidix_user_email', user.email);
     localStorage.setItem('sidix_user_name', user.name || '');
     localStorage.setItem('sidix_user_picture', user.picture || '');
+    // Sync in-memory state (digunakan oleh isLoggedIn / onboarding)
+    currentAuthUser = {
+      id: user.id,
+      email: user.email,
+      name: user.name || '',
+      picture: user.picture || '',
+    };
     updateAuthButton(true, user.name || user.email, user.picture);
     console.log('[SIDIX auth] own auth restored:', { name: user.name, email: user.email });
     // Refresh quota status (mungkin tier berubah, e.g. whitelist auto-detected)
@@ -774,12 +782,18 @@ const USER_ONBOARDED_KEY = 'sidix_onboarded';
 // kalau ingin lanjut.
 const FREE_CHAT_LIMIT = 5;
 
-/** State current user (null = belum login) */
-let currentAuthUser: import('@supabase/supabase-js').User | null = null;
+/** State current user (null = belum login) — own auth via JWT in localStorage */
+interface OwnAuthUser {
+  id: string;
+  email: string;
+  name: string;
+  picture: string;
+}
+let currentAuthUser: OwnAuthUser | null = null;
 
 /** Step onboarding: 0 = belum mulai, 1-7 = pertanyaan, 8 = selesai */
 let onboardingStep = 0;
-let onboardingAnswers: Partial<OnboardingAnswers> = {};
+let onboardingAnswers: Record<string, string> = {};
 
 const ONBOARDING_QUESTIONS = [
   "Hei! Senang kamu mau coba SIDIX 🎉\n\nSebelum mulai, boleh bantu kami berkembang? Ada beberapa pertanyaan singkat.\n\n**Pertanyaan 1/5:** Fitur AI apa yang paling kamu butuhkan sehari-hari? (contoh: nulis, coding, riset, ngobrol, dll)",
@@ -802,7 +816,7 @@ function incrementChatCount(): number {
 }
 
 function isLoggedIn(): boolean {
-  return currentAuthUser !== null;
+  return ownAuthIsSignedIn();
 }
 
 function isOnboarded(): boolean {
@@ -813,124 +827,16 @@ function markOnboarded(): void {
   localStorage.setItem(USER_ONBOARDED_KEY, '1');
 }
 
-// ── Inject Login Modal HTML ───────────────────────────────────────────────────
-function injectLoginModal(): void {
-  if (document.getElementById('login-modal')) return; // sudah ada
-  const modal = document.createElement('div');
-  modal.id = 'login-modal';
-  modal.className = 'fixed inset-0 z-50 hidden flex items-center justify-center p-4';
-  modal.style.background = 'rgba(10,8,5,0.92)';
-  modal.style.backdropFilter = 'blur(12px)';
-  modal.innerHTML = `
-    <div class="academic-card w-full max-w-sm space-y-6 animate-fsu" style="border-color:rgba(204,152,49,0.3)">
-      <div class="text-center space-y-2">
-        <div class="w-14 h-14 mx-auto rounded-2xl flex items-center justify-center overflow-hidden"
-             style="background:rgba(20,15,8,0.95);border:1px solid rgba(204,152,49,0.35)">
-          <img src="/sidix-logo.svg" alt="SIDIX" class="w-10 h-10 object-contain" />
-        </div>
-        <h2 class="font-display text-2xl font-bold glow-gold">Lanjut dengan SIDIX</h2>
-        <p class="text-sm text-parchment-400">
-          Kamu sudah coba 1 chat gratis 🎉<br>
-          Login untuk lanjut — dan bantu kami berkembang!
-        </p>
-      </div>
-
-      <div class="space-y-3">
-        <button id="login-google-btn" type="button"
-          class="w-full flex items-center justify-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold
-                 bg-white text-gray-800 hover:bg-gray-100 transition-all border border-warm-600/20">
-          <svg class="w-5 h-5" viewBox="0 0 24 24">
-            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-          </svg>
-          Lanjut dengan Google (Gmail)
-        </button>
-
-        <div class="relative flex items-center gap-3">
-          <div class="flex-1 h-px bg-warm-600/40"></div>
-          <span class="text-[11px] text-parchment-500 flex-shrink-0">atau</span>
-          <div class="flex-1 h-px bg-warm-600/40"></div>
-        </div>
-
-        <div class="space-y-2">
-          <input id="login-email-input" type="email" placeholder="email@kamu.com"
-            class="w-full px-3 py-2.5 rounded-xl bg-warm-900/60 border border-warm-600/50 text-sm
-                   text-parchment-100 focus:border-gold-500/50 focus:outline-none placeholder:text-parchment-600" />
-          <button id="login-email-btn" type="button"
-            class="w-full px-4 py-2.5 rounded-xl text-sm font-semibold bg-warm-700 border border-warm-600
-                   text-parchment-100 hover:bg-warm-600 transition-all disabled:opacity-50">
-            Kirim Magic Link
-          </button>
-          <p id="login-email-status" class="hidden text-xs text-center text-parchment-400"></p>
-        </div>
-      </div>
-
-      <p class="text-[11px] text-parchment-500 text-center leading-relaxed">
-        Data kamu aman. SIDIX tidak menjual data ke pihak ketiga.<br>
-        Login = kamu setuju bantu kami dengan feedback ringan.
-      </p>
-
-      <button id="login-skip-btn" type="button"
-        class="w-full text-[11px] text-parchment-600 hover:text-parchment-400 transition-colors py-1">
-        Lewati dulu — coba 1x lagi (terbatas)
-      </button>
-    </div>`;
-  document.body.appendChild(modal);
-
-  // Wire up buttons
-  document.getElementById('login-google-btn')?.addEventListener('click', async () => {
-    const btn = document.getElementById('login-google-btn') as HTMLButtonElement;
-    btn.disabled = true;
-    btn.textContent = 'Mengarahkan ke Google…';
-    await signInWithGoogle();
-    // akan redirect, tidak perlu handle result di sini
-  });
-
-  document.getElementById('login-email-btn')?.addEventListener('click', async () => {
-    const email = (document.getElementById('login-email-input') as HTMLInputElement)?.value.trim();
-    const status = document.getElementById('login-email-status');
-    const btn = document.getElementById('login-email-btn') as HTMLButtonElement;
-    if (!email || !email.includes('@')) {
-      (document.getElementById('login-email-input') as HTMLInputElement)?.focus();
-      return;
-    }
-    btn.disabled = true;
-    btn.textContent = 'Mengirim…';
-    const { ok, error } = await signInWithEmail(email);
-    if (status) {
-      status.classList.remove('hidden');
-      if (ok) {
-        status.textContent = '✓ Cek inbox kamu! Klik link di email untuk lanjut.';
-        status.className = 'text-xs text-center text-status-ready';
-      } else {
-        status.textContent = `Gagal: ${error}`;
-        status.className = 'text-xs text-center text-status-failed';
-        btn.disabled = false;
-        btn.textContent = 'Kirim Magic Link';
-      }
-    }
-  });
-
-  document.getElementById('login-skip-btn')?.addEventListener('click', () => {
-    closeLoginModal();
-    // Reset count ke FREE_CHAT_LIMIT saja — masih bisa 1 lagi sebelum modal ulang
-    localStorage.setItem(CHAT_COUNT_KEY, '0');
-  });
-}
-
+// ── Login redirect (Pivot 2026-04-26: own auth, no modal) ───────────────────
+// Old modal removed — kita pakai dedicated /login.html dengan Google Identity
+// Services button. Redirect dengan ?next=<current-url> untuk return setelah login.
 function openLoginModal(): void {
-  injectLoginModal();
-  const modal = document.getElementById('login-modal');
-  if (modal) modal.classList.remove('hidden');
-  // Disable send button while modal open
-  if (sendBtn) sendBtn.disabled = true;
+  const next = encodeURIComponent(window.location.pathname + window.location.search);
+  window.location.href = `/login.html?next=${next}`;
 }
 
 function closeLoginModal(): void {
-  const modal = document.getElementById('login-modal');
-  if (modal) modal.classList.add('hidden');
+  // No-op untuk backward compat. /login.html adalah full page.
   if (sendBtn) sendBtn.disabled = false;
 }
 
@@ -939,7 +845,8 @@ async function startOnboardingIfNeeded(): Promise<void> {
   if (!isLoggedIn() || isOnboarded()) return;
 
   onboardingStep = 0;
-  onboardingAnswers = { user_id: currentAuthUser!.id };
+  const userId = localStorage.getItem('sidix_user_id') || (currentAuthUser?.id ?? '');
+  onboardingAnswers = { user_id: userId };
 
   // Tunda 800ms biar UI settle
   await new Promise(r => setTimeout(r, 800));
@@ -963,8 +870,8 @@ async function handleOnboardingReply(userText: string): Promise<boolean> {
     case 4: onboardingAnswers.ai_frustrations = userText; break;
     case 5: onboardingAnswers.one_feature_request = userText; break;
     case 6:
-      // Parse role dari angka
-      const roleMap: Record<string, UserRole> = { '1': 'user', '2': 'developer', '3': 'researcher' };
+      // Parse role dari angka (UserRole type di-deprecate; pakai literal string)
+      const roleMap: Record<string, 'user' | 'developer' | 'researcher'> = { '1': 'user', '2': 'developer', '3': 'researcher' };
       const roleKey = userText.trim().charAt(0);
       onboardingAnswers.role = roleMap[roleKey] || 'user';
       onboardingAnswers.contribute_interest = userText;
@@ -982,96 +889,41 @@ async function handleOnboardingReply(userText: string): Promise<boolean> {
     return true;
   }
 
-  // Selesai — simpan ke Supabase
-  try {
-    await saveOnboarding(onboardingAnswers as OnboardingAnswers);
-    await trackBetaTester(currentAuthUser!.id);
-    if (onboardingAnswers.role === 'developer' || onboardingAnswers.role === 'researcher') {
-      // Tunjukkan info kontribusi
-      setTimeout(() => {
-        appendMessage('ai',
-          `🛠 Karena kamu memilih sebagai **${onboardingAnswers.role}**, SIDIX senang sekali!\n\n` +
-          `**Cara berkontribusi:**\n` +
-          `• Repo opensource SIDIX (lihat tombol GitHub di header)\n` +
-          `• Baca CONTRIBUTING.md untuk panduan arsitektur\n` +
-          `• Buka Issue atau PR — semua kontribusi diterima!\n` +
-          `• Hubungi tim SIDIX: @sidixlab di Threads / Issues GitHub\n\n` +
-          `Terima kasih sudah bergabung! 🙏`
-        );
-      }, 800);
-    }
-  } catch (_e) {
-    // silently fail — jangan ganggu UX
-  }
-
+  // Pivot 2026-04-26: onboarding storage di-pause sementara (Supabase tables
+  // di-deprecate). Bisa di-revive nanti kalau perlu, simpan ke /admin/onboarding
+  // endpoint baru atau aktivitas log JSONL. Untuk sekarang, tandai selesai supaya
+  // gak loop lagi.
   markOnboarded();
   // Tampilkan pesan terima kasih
   setTimeout(() => sendOnboardingMessage(ONBOARDING_QUESTIONS[ONBOARDING_QUESTIONS.length - 1]), 600);
   return true;
 }
 
-// ── Auth state listener ───────────────────────────────────────────────────────
-onAuthChange(async (user) => {
-  currentAuthUser = user;
-
-  if (user) {
-    // Simpan user_id + email ke localStorage untuk quota tracking + whitelist
-    localStorage.setItem('sidix_user_id', user.id);
-    if (user.email) localStorage.setItem('sidix_user_email', user.email);
-
-    // Update auth button — pakai avatar Google + first name (fallback initial)
-    const name = user.user_metadata?.full_name
-      ?? user.user_metadata?.name
-      ?? user.email?.split('@')[0]
-      ?? 'User';
-    const avatarUrl = user.user_metadata?.avatar_url
-      || user.user_metadata?.picture
-      || user.user_metadata?.photo_url
-      || '';
-    updateAuthButton(true, name, avatarUrl);
-    // Diagnostic log (helpful kalau user lapor "avatar nggak muncul")
-    console.log('[SIDIX auth] login:', { name, hasAvatar: !!avatarUrl, email: user.email });
-
-    // Refresh quota status setelah login (mungkin upgrade tier)
-    void fetch(`${BRAIN_QA_BASE}/quota/status`, {
-      headers: { 'x-user-id': user.id },
-    }).then(r => r.json()).then((q: any) => {
-      if (q) updateQuotaBadge(q.used ?? 0, q.limit ?? 30, q.tier ?? "free", q.unlimited);
-    }).catch(() => {});
-
-    // User baru login
-    closeLoginModal();
-
-    // Upsert profil — jangan crash kalau DB error
-    try {
-      await upsertUserProfile({
-        id: user.id,
-        email: user.email ?? '',
-        full_name: user.user_metadata?.full_name ?? user.email ?? 'User',
-        avatar_url: user.user_metadata?.avatar_url,
-        role: 'user',
-        onboarding_done: isOnboarded(),
-        created_at: new Date().toISOString(),
-      });
-    } catch (e) {
-      console.warn('[SIDIX] upsertUserProfile failed:', e);
-    }
-
-    // Start onboarding jika belum
-    try {
-      await startOnboardingIfNeeded();
-    } catch (e) {
-      console.warn('[SIDIX] onboarding failed:', e);
-    }
-  } else {
-    // Logout — hapus user_id + email dari localStorage
-    localStorage.removeItem('sidix_user_id');
-    localStorage.removeItem('sidix_user_email');
-    updateAuthButton(false);
-    // Reset quota badge ke guest state
-    updateQuotaBadge(0, 3, 'guest');
+// ── Auth state listener (Pivot 2026-04-26: own auth, no Supabase) ───────────
+// onAuthChange listener Supabase di-replace dengan loadOwnAuthUser() yang
+// dipanggil di page-load (lihat line ~571). Listener tidak perlu karena flow
+// own auth: redirect /login.html → callback simpan ke localStorage → reload →
+// loadOwnAuthUser() restore session.
+//
+// Untuk sync currentAuthUser state setelah login.html callback, kita hook ke
+// loadOwnAuthUser:
+async function _syncCurrentAuthUserFromOwnAuth(): Promise<void> {
+  if (!ownAuthIsSignedIn()) {
+    currentAuthUser = null;
+    return;
   }
-});
+  const id = localStorage.getItem('sidix_user_id') || '';
+  const email = localStorage.getItem('sidix_user_email') || '';
+  const name = localStorage.getItem('sidix_user_name') || '';
+  const picture = localStorage.getItem('sidix_user_picture') || '';
+  if (!id) {
+    currentAuthUser = null;
+    return;
+  }
+  currentAuthUser = { id, email, name, picture };
+}
+// Run sync immediately on module load
+void _syncCurrentAuthUserFromOwnAuth();
 
 // ── Elements ─────────────────────────────────────────────────────────────────
 const $  = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
