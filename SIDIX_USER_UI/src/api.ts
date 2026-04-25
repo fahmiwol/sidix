@@ -400,3 +400,124 @@ export async function askStream(
     callbacks.onError((e as Error).message ?? 'Stream error');
   }
 }
+
+// ════════════════════════════════════════════════════════════════════════
+// SIDIX 2.0 SUPERMODEL ENDPOINTS — Burst / Two-Eyed / Foresight
+// ════════════════════════════════════════════════════════════════════════
+
+export interface BurstResponse {
+  final: string;
+  winners: Array<{
+    angle: string;
+    score: { novelty: number; feasibility: number; depth: number; alignment: number; total: number };
+    text_preview: string;
+  }>;
+  n_candidates: number;
+  n_ok: number;
+  all_candidates?: Array<{ angle: string; text: string; mode: string; ok: boolean }>;
+}
+
+/**
+ * POST /agent/burst — Burst+Refinement Pipeline (Lady Gaga method).
+ * Generate N divergent ideas in parallel, Pareto-select top-K, synthesize final.
+ */
+export async function agentBurst(
+  prompt: string,
+  opts?: { n?: number; topK?: number; returnAll?: boolean },
+): Promise<BurstResponse> {
+  const res = await fetch(`${BRAIN_QA_BASE}/agent/burst`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      prompt,
+      n: opts?.n ?? 6,
+      top_k: opts?.topK ?? 2,
+      return_all: opts?.returnAll ?? false,
+    }),
+  });
+  if (!res.ok) throw new BrainQAError(`Burst error: ${res.status}`, 'http');
+  return res.json();
+}
+
+export interface TwoEyedResponse {
+  scientific_eye: { text: string; mode: string; ok: boolean };
+  maqashid_eye: { text: string; mode: string; ok: boolean };
+  synthesis: { text: string; mode: string; ok: boolean };
+  ok: boolean;
+}
+
+/**
+ * POST /agent/two-eyed — Two-Eyed Seeing (Mi'kmaq Etuaptmumk).
+ * Dual-perspective parallel: scientific + maqashid → synthesis.
+ */
+export async function agentTwoEyed(prompt: string): Promise<TwoEyedResponse> {
+  const res = await fetch(`${BRAIN_QA_BASE}/agent/two-eyed`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ prompt }),
+  });
+  if (!res.ok) throw new BrainQAError(`Two-eyed error: ${res.status}`, 'http');
+  return res.json();
+}
+
+export interface ForesightResponse {
+  topic: string;
+  horizon: string;
+  final: string;
+  scenarios: string | null;
+  signals_raw?: { web_signals: string; corpus_signals: string };
+  signals_extracted?: string;
+}
+
+export interface ResurrectResponse {
+  topic: string;
+  n_gems: number;
+  gems: string;
+  bridge: string;
+  final: string;
+  scan_corpus?: string;
+  scan_web?: string;
+}
+
+/**
+ * POST /agent/resurrect — Hidden Knowledge Resurrection (Noether method).
+ * Surface overlooked ideas/figures/methods + bridge to user problem.
+ */
+export async function agentResurrect(
+  topic: string,
+  opts?: { nGems?: number; returnIntermediate?: boolean },
+): Promise<ResurrectResponse> {
+  const res = await fetch(`${BRAIN_QA_BASE}/agent/resurrect`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      topic,
+      n_gems: opts?.nGems ?? 3,
+      return_intermediate: opts?.returnIntermediate ?? false,
+    }),
+  });
+  if (!res.ok) throw new BrainQAError(`Resurrect error: ${res.status}`, 'http');
+  return res.json();
+}
+
+/**
+ * POST /agent/foresight — Visionary scenario planning (web + corpus + 3 scenarios).
+ * Pipeline: scan → extract → project (base/bull/bear) → synthesize.
+ */
+export async function agentForesight(
+  topic: string,
+  opts?: { horizon?: string; withScenarios?: boolean; returnIntermediate?: boolean },
+): Promise<ForesightResponse> {
+  const res = await fetch(`${BRAIN_QA_BASE}/agent/foresight`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      topic,
+      horizon: opts?.horizon ?? '1y',
+      with_scenarios: opts?.withScenarios ?? true,
+      return_intermediate: opts?.returnIntermediate ?? false,
+    }),
+  });
+  if (!res.ok) throw new BrainQAError(`Foresight error: ${res.status}`, 'http');
+  return res.json();
+}

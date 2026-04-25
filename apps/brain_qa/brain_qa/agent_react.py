@@ -881,25 +881,42 @@ def _compose_final_answer(
             + "info eksplisit di pencarian, paling baru yang saya dapat: ...'"
         )
 
-    # ── Coba Ollama generative ───────────────────────────────────────────────
+    # ── Coba LLM generative — Pivot 2026-04-26: hybrid (RunPod GPU + Ollama) ─
+    # SIDIX_LLM_BACKEND=runpod_serverless di env aktifin GPU offload.
+    # Fallback otomatis ke Ollama lokal CPU kalau RunPod fail.
     try:
-        from .ollama_llm import ollama_available, ollama_generate
-        if ollama_available():
-            corpus_ctx = "\n\n---\n\n".join(obs_blocks[:max_obs_blocks]) if obs_blocks else ""
-            text, mode = ollama_generate(
+        corpus_ctx = "\n\n---\n\n".join(obs_blocks[:max_obs_blocks]) if obs_blocks else ""
+        # Smart router via runpod_serverless.hybrid_generate
+        try:
+            from .runpod_serverless import hybrid_generate as _hybrid_generate
+            text, mode = _hybrid_generate(
                 prompt=question,
                 system=_combined_system,
-                corpus_context=corpus_ctx,
                 max_tokens=600 if not simple_mode else 200,
                 temperature=0.7,
+                corpus_context=corpus_ctx,
             )
-            if mode == "ollama":
-                import logging as _log
-                _log.getLogger("sidix.react").info(f"Ollama synthesis OK — persona={persona}")
-                return (text, all_citations, 0.85, "fakta")
-    except Exception as _ollama_err:
+        except ImportError:
+            # Fallback: direct ollama (kalau runpod_serverless module belum ter-deploy)
+            from .ollama_llm import ollama_available, ollama_generate
+            if ollama_available():
+                text, mode = ollama_generate(
+                    prompt=question,
+                    system=_combined_system,
+                    corpus_context=corpus_ctx,
+                    max_tokens=600 if not simple_mode else 200,
+                    temperature=0.7,
+                )
+            else:
+                text, mode = "", "no_llm"
+
+        if mode in ("runpod", "ollama") and text and text.strip():
+            import logging as _log
+            _log.getLogger("sidix.react").info(f"LLM synthesis OK via {mode} — persona={persona}")
+            return (text, all_citations, 0.85, "fakta")
+    except Exception as _llm_err:
         import logging as _log
-        _log.getLogger("sidix.react").warning(f"Ollama synthesis failed: {_ollama_err}")
+        _log.getLogger("sidix.react").warning(f"LLM synthesis failed: {_llm_err}")
 
     # ── Fallback: local_llm.py (Qwen2.5-7B + LoRA) ───────────────────────────
     try:

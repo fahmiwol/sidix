@@ -370,8 +370,36 @@
               </div>
             </div>
 
+            <!-- Supermodel mode buttons (SIDIX 2.0 differentiator) -->
+            <div class="flex flex-wrap justify-center gap-2 mt-2.5">
+              <button id="mode-burst"
+                class="text-[11px] px-3 py-1 rounded-full border border-warm-600/40
+                       bg-warm-700/30 text-parchment-300 hover:bg-warm-600/50
+                       hover:border-gold-500/40 hover:text-gold-400 transition-all
+                       cursor-pointer select-none flex items-center gap-1"
+                title="Burst Mode — generate 6 ide divergen, Pareto-pilih 2 terbaik, synthesize jadi 1 jawaban kreatif">
+                <span>🌌</span><span>Burst</span>
+              </button>
+              <button id="mode-twoeyed"
+                class="text-[11px] px-3 py-1 rounded-full border border-warm-600/40
+                       bg-warm-700/30 text-parchment-300 hover:bg-warm-600/50
+                       hover:border-gold-500/40 hover:text-gold-400 transition-all
+                       cursor-pointer select-none flex items-center gap-1"
+                title="Two-Eyed Seeing — analisis dual perspective: scientific + maqashid + sintesis">
+                <span>👁</span><span>Two Eyes</span>
+              </button>
+              <button id="mode-foresight"
+                class="text-[11px] px-3 py-1 rounded-full border border-warm-600/40
+                       bg-warm-700/30 text-parchment-300 hover:bg-warm-600/50
+                       hover:border-gold-500/40 hover:text-gold-400 transition-all
+                       cursor-pointer select-none flex items-center gap-1"
+                title="Foresight — prediksi terstruktur: scan web+corpus → 3 skenario (base/bull/bear) → narasi visioner">
+                <span>🔮</span><span>Foresight</span>
+              </button>
+            </div>
+
             <!-- Options row (hidden on mobile for space) -->
-            <div class="hidden md:flex flex-wrap justify-center gap-x-5 gap-y-1 mt-2.5 text-[11px] text-parchment-400 select-none">
+            <div class="hidden md:flex flex-wrap justify-center gap-x-5 gap-y-1 mt-2 text-[11px] text-parchment-400 select-none">
               <label class="inline-flex items-center gap-1.5 cursor-pointer hover:text-parchment-200">
                 <input type="checkbox" id="opt-corpus-only" class="rounded border-warm-500" />
                 <span>Korpus saja</span>

@@ -334,6 +334,13 @@ class ForesightRequest(BaseModel):
     return_intermediate: bool = False
 
 
+class ResurrectRequest(BaseModel):
+    """Hidden Knowledge Resurrection (Noether method) — surface overlooked ideas."""
+    topic: str
+    n_gems: int = 3
+    return_intermediate: bool = False
+
+
 # ── LLM generate function (Standing Alone) ────────────────────────────────────
 # Priority: 1) Ollama (local)  2) LoRA (local)  3) Mock
 
@@ -962,6 +969,33 @@ def create_app() -> "FastAPI":
         except Exception as e:
             raise HTTPException(status_code=503, detail=f"two_eyed module unavailable: {e}")
         return two_eyed_view(req.prompt, system=req.system)
+
+    # ── POST /agent/resurrect — Hidden Knowledge Resurrection (Noether method) ─
+    @app.post("/agent/resurrect", tags=["Supermodel"])
+    def agent_resurrect(req: ResurrectRequest, request: Request):
+        """
+        Hidden Knowledge Resurrection: scan corpus + web untuk ide/tokoh/
+        metode yang DULU brilliant tapi sekarang overlooked → 2-3 hidden
+        gem → bridge ke problem user.
+
+        Differentiator: chatbot biasa kasih jawaban mainstream/SOTA. SIDIX
+        ngangkat orang & ide yang dilupakan tren — Lise Meitner, Henrietta
+        Leavitt, classical methods, dll. Maria Popova vibe meets agent AI.
+        """
+        _enforce_rate(request)
+        _enforce_daily(request)
+        _bump_metric("agent_resurrect")
+        if not req.topic.strip():
+            raise HTTPException(status_code=400, detail="topic tidak boleh kosong")
+        try:
+            from .agent_resurrect import resurrect
+        except Exception as e:
+            raise HTTPException(status_code=503, detail=f"resurrect module unavailable: {e}")
+        return resurrect(
+            req.topic,
+            n_gems=max(1, min(req.n_gems, 5)),
+            return_intermediate=req.return_intermediate,
+        )
 
     # ── POST /agent/foresight — Visionary Foresight (web + corpus + scenario)
     @app.post("/agent/foresight", tags=["Supermodel"])

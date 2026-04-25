@@ -19,6 +19,7 @@ import {
 import {
   checkHealth, askStream, listCorpus, uploadDocument, deleteDocument,
   triggerReindex, getReindexStatus, agentGenerate, submitFeedback, forgetAgentSession,
+  agentBurst, agentTwoEyed, agentForesight,
   BrainQAError, BRAIN_QA_BASE,
   type Persona, type CorpusDocument, type Citation, type HealthResponse,
   type AskInferenceOpts, type QuotaInfo,
@@ -1056,6 +1057,111 @@ chatInput?.addEventListener('keydown', (e) => {
   if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); }
 });
 sendBtn?.addEventListener('click', handleSend);
+
+// ════════════════════════════════════════════════════════════════════════
+// SIDIX 2.0 SUPERMODEL — 3 Mode Buttons (Burst / Two-Eyes / Foresight)
+// ════════════════════════════════════════════════════════════════════════
+
+const modeBurstBtn     = document.getElementById('mode-burst') as HTMLButtonElement | null;
+const modeTwoEyedBtn   = document.getElementById('mode-twoeyed') as HTMLButtonElement | null;
+const modeForesightBtn = document.getElementById('mode-foresight') as HTMLButtonElement | null;
+
+function getInputOrPrompt(modeName: string, hint: string): string | null {
+  const v = chatInput?.value.trim() ?? '';
+  if (v) return v;
+  // Empty input → prompt user
+  const prompted = window.prompt(`${modeName}\n\n${hint}\n\nKetik prompt:`);
+  if (prompted && prompted.trim()) return prompted.trim();
+  return null;
+}
+
+function appendThinkingPlaceholder(label: string): HTMLDivElement {
+  chatEmpty?.classList.add('hidden');
+  const wrap = document.createElement('div');
+  wrap.className = 'flex justify-start animate-fsu';
+  const bubble = document.createElement('div');
+  bubble.className = 'msg-ai max-w-[78%] px-5 py-4 text-parchment-300 text-sm';
+  bubble.innerHTML = `
+    <div class="flex items-center gap-2">
+      <span class="thinking-dot"></span>
+      <span class="thinking-dot"></span>
+      <span class="thinking-dot"></span>
+      <span class="ml-2">${label}</span>
+    </div>
+  `;
+  wrap.appendChild(bubble);
+  chatMessages?.appendChild(wrap);
+  if (chatMessages) chatMessages.scrollTop = chatMessages.scrollHeight;
+  return wrap;
+}
+
+modeBurstBtn?.addEventListener('click', async () => {
+  const prompt = getInputOrPrompt(
+    '🌌 Burst Mode',
+    'Generate 6 ide divergen lalu Pareto-pilih 2 terbaik, synthesize jadi 1 jawaban kreatif. Cocok untuk brainstorm, design choices, strategic positioning.',
+  );
+  if (!prompt) return;
+  appendMessage('user', prompt);
+  if (chatInput) { chatInput.value = ''; chatInput.dispatchEvent(new Event('input')); }
+  const thinking = appendThinkingPlaceholder('🌌 Burst — exploring 6 angles...');
+  try {
+    const r = await agentBurst(prompt, { n: 6, topK: 2 });
+    thinking.remove();
+    const winnersList = r.winners.map(w =>
+      `**${w.angle}** (score ${w.score.total.toFixed(2)})`
+    ).join(' · ');
+    const out = `${r.final}\n\n_— Burst pipeline: ${r.n_ok}/${r.n_candidates} candidates, top angles: ${winnersList}_`;
+    appendMessage('ai', out);
+  } catch (e) {
+    thinking.remove();
+    appendMessage('ai', `⚠️ Burst gagal: ${(e as Error).message}`);
+  }
+});
+
+modeTwoEyedBtn?.addEventListener('click', async () => {
+  const prompt = getInputOrPrompt(
+    '👁 Two-Eyed Seeing',
+    'Analisis dual perspective: scientific (data, mekanisme, falsifiability) + maqashid (etis, hikmah, dampak komunal) → sintesis. Cocok untuk pertanyaan etis/strategis.',
+  );
+  if (!prompt) return;
+  appendMessage('user', prompt);
+  if (chatInput) { chatInput.value = ''; chatInput.dispatchEvent(new Event('input')); }
+  const thinking = appendThinkingPlaceholder('👁 Two-Eyed — running dual analysis...');
+  try {
+    const r = await agentTwoEyed(prompt);
+    thinking.remove();
+    const out = [
+      `### 🔬 Mata Scientific\n${r.scientific_eye.text || '(gagal)'}`,
+      `### 🌿 Mata Maqashid\n${r.maqashid_eye.text || '(gagal)'}`,
+      `### 🤝 Sintesis\n${r.synthesis.text || '(gagal)'}`,
+    ].join('\n\n');
+    appendMessage('ai', out);
+  } catch (e) {
+    thinking.remove();
+    appendMessage('ai', `⚠️ Two-Eyed gagal: ${(e as Error).message}`);
+  }
+});
+
+modeForesightBtn?.addEventListener('click', async () => {
+  const topic = getInputOrPrompt(
+    '🔮 Foresight',
+    'Prediksi terstruktur: scan web+corpus → leading/lagging signals → 3 skenario (base/bull/bear) → narasi visioner. Cocok untuk strategi, market trend, technology forecast.',
+  );
+  if (!topic) return;
+  appendMessage('user', topic);
+  if (chatInput) { chatInput.value = ''; chatInput.dispatchEvent(new Event('input')); }
+  const thinking = appendThinkingPlaceholder('🔮 Foresight — scanning signals + projecting scenarios...');
+  try {
+    const r = await agentForesight(topic, { horizon: '1y' });
+    thinking.remove();
+    const parts = [`### 🔮 Foresight: ${r.topic} (horizon ${r.horizon})\n\n${r.final}`];
+    if (r.scenarios) parts.push(`---\n\n### Skenario\n${r.scenarios}`);
+    appendMessage('ai', parts.join('\n\n'));
+  } catch (e) {
+    thinking.remove();
+    appendMessage('ai', `⚠️ Foresight gagal: ${(e as Error).message}`);
+  }
+});
 
 // Quick prompts
 document.querySelectorAll<HTMLButtonElement>('.quick-prompt').forEach(btn => {
