@@ -5866,3 +5866,52 @@ Fix: `runpod_serverless.py` handle 3 format A/B/C.
 - ⚠️ Budget: depends on usage pattern, ~$5-25/bulan untuk early beta
 
 **SIDIX 2.0 SIAP LAUNCH BETA.**
+
+## 2026-04-26 (lanjutan) — Whitelist Manager (Admin)
+
+### USER REQUEST
+> "whitelist dulu deh gmail saya biar bisa test banyak chat fahmiwol@gmail.com"
+> "Iyah jadi di admin, ada saya buat nambahin email whitelist, buat kontributor atau buat sponsor atau buat researcher, jadi mereka nggak kena limit"
+
+### IMPL: Whitelist 2-layer (env + JSON store)
+
+**Layer 1 — env var (immutable defaults)**:
+- `SIDIX_WHITELIST_EMAILS=fahmiwol@gmail.com,...`
+- `SIDIX_WHITELIST_USER_IDS=user_xxx,...`
+- Untuk owner/dev hardcoded — tidak bisa dihapus via UI.
+
+**Layer 2 — JSON store** (`apps/brain_qa/.data/whitelist.json`):
+- Admin-managed dynamic via REST endpoints
+- Schema: `{emails: [{email, category, note, added_at}], user_ids: [...]}`
+- 8 kategori: `owner / dev / sponsor / researcher / contributor / beta_tester / vip / other`
+
+### IMPL FILES
+
+| File | Status |
+|---|---|
+| `apps/brain_qa/brain_qa/whitelist_store.py` | NEW — persistent JSON store dengan thread lock + cache invalidation by mtime |
+| `apps/brain_qa/brain_qa/agent_serve.py` | `_is_whitelisted()` combine layer 1+2; 3 admin endpoints; 2 Pydantic schemas (`WhitelistAddRequest`, `WhitelistRemoveRequest`); `record_daily_use()` 3 call site di-wrap dengan whitelist check |
+| `SIDIX_USER_UI/public/admin-whitelist.html` | NEW — standalone admin UI (akses via `https://app.sidixlab.com/admin-whitelist.html`) — token disimpan di `sessionStorage` |
+| `SIDIX_USER_UI/src/api.ts` | askStream kirim header `x-user-email` |
+| `SIDIX_USER_UI/src/main.ts` | onAuthChange simpan `sidix_user_email` ke localStorage |
+
+### ENDPOINTS BARU
+
+| Method | Path | Auth | Function |
+|---|---|---|---|
+| GET | `/admin/whitelist` | x-admin-token | List semua + stats + env layer info |
+| POST | `/admin/whitelist` | x-admin-token | Add email/user_id (body: email, user_id, category, note) |
+| DELETE | `/admin/whitelist` | x-admin-token | Remove email/user_id |
+
+### CONFIG: VPS .env (NOT committed)
+```
+SIDIX_WHITELIST_EMAILS=fahmiwol@gmail.com
+BRAIN_QA_ADMIN_TOKEN=7f820b893eda388332a2ad44dcf3de2cf361ded67c8215fd
+```
+
+### VALIDATION
+
+- `whitelist_store` unit test: add/check/remove email + user_id all PASS
+- pytest full suite: 520 passed, 1 deselected
+- vite build: 110 KB JS bundle, admin-whitelist.html bundled di dist/
+- Admin UI: standalone HTML + vanilla JS, akses via `app.sidixlab.com/admin-whitelist.html`

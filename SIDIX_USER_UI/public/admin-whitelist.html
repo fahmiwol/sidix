@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SIDIX Admin · Whitelist Manager</title>
+  <meta name="robots" content="noindex,nofollow" />
+  <style>
+    :root {
+      --bg: #0a0908;
+      --bg-card: #16130f;
+      --bg-input: #1f1c17;
+      --border: #3a342c;
+      --text: #f5e6c4;
+      --text-dim: #b8a888;
+      --gold: #d4a853;
+      --green: #6eae7c;
+      --red: #d97a5a;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; padding: 24px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+      background: var(--bg); color: var(--text);
+      max-width: 980px; margin-inline: auto;
+    }
+    h1 { color: var(--gold); margin: 0 0 4px; font-size: 24px; }
+    p.lead { color: var(--text-dim); margin: 0 0 24px; }
+    .card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 12px; padding: 20px; margin-bottom: 20px;
+    }
+    .card h2 { margin: 0 0 12px; font-size: 16px; color: var(--gold); }
+    label { display: block; font-size: 12px; color: var(--text-dim); margin: 8px 0 4px; }
+    input, select, textarea {
+      width: 100%; padding: 10px 12px;
+      background: var(--bg-input); border: 1px solid var(--border);
+      border-radius: 8px; color: var(--text); font-size: 14px;
+      font-family: inherit;
+    }
+    input:focus, select:focus, textarea:focus { outline: none; border-color: var(--gold); }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    @media (max-width: 600px) { .row { grid-template-columns: 1fr; } }
+    button {
+      padding: 10px 16px; background: var(--gold); color: #0a0908;
+      border: 0; border-radius: 8px; font-weight: 600; cursor: pointer;
+      font-size: 14px;
+    }
+    button:hover { opacity: 0.9; }
+    button.danger { background: var(--red); color: #0a0908; }
+    button.ghost { background: transparent; color: var(--text); border: 1px solid var(--border); }
+    table { width: 100%; border-collapse: collapse; margin-top: 8px; }
+    th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--border); font-size: 13px; }
+    th { color: var(--text-dim); font-weight: 600; font-size: 11px; text-transform: uppercase; }
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 11px; }
+    .badge-owner { background: rgba(212, 168, 83, 0.2); color: var(--gold); }
+    .badge-dev { background: rgba(110, 174, 124, 0.2); color: var(--green); }
+    .badge-sponsor { background: rgba(217, 122, 90, 0.2); color: var(--red); }
+    .badge-researcher { background: rgba(107, 148, 196, 0.2); color: #6b94c4; }
+    .badge-other { background: rgba(184, 168, 136, 0.2); color: var(--text-dim); }
+    .alert { padding: 12px 16px; border-radius: 8px; margin: 12px 0; font-size: 13px; }
+    .alert-ok { background: rgba(110, 174, 124, 0.1); border: 1px solid rgba(110, 174, 124, 0.3); color: var(--green); }
+    .alert-err { background: rgba(217, 122, 90, 0.1); border: 1px solid rgba(217, 122, 90, 0.3); color: var(--red); }
+    .stats { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 12px; }
+    .stat { background: var(--bg-input); padding: 8px 14px; border-radius: 8px; font-size: 12px; }
+    .stat strong { color: var(--gold); font-size: 18px; display: block; }
+    code { background: var(--bg-input); padding: 2px 6px; border-radius: 4px; font-size: 12px; color: var(--gold); }
+  </style>
+</head>
+<body>
+  <h1>🛡️ SIDIX Whitelist Manager</h1>
+  <p class="lead">Manage bypass list (rate limit + daily quota) untuk owner / dev / sponsor / researcher / contributor / beta tester.</p>
+
+  <div class="card">
+    <h2>🔑 Admin Authentication</h2>
+    <label>Admin Token (env <code>BRAIN_QA_ADMIN_TOKEN</code>)</label>
+    <input type="password" id="admin-token" placeholder="masukkan admin token..." autocomplete="off" />
+    <p style="font-size: 12px; color: var(--text-dim); margin-top: 8px;">
+      Token disimpan di sessionStorage — hilang saat tab ditutup. Tidak dikirim ke server kecuali via header <code>x-admin-token</code>.
+    </p>
+    <button onclick="loadList()" style="margin-top: 12px;">Load Whitelist</button>
+    <div id="auth-status"></div>
+  </div>
+
+  <div class="card">
+    <h2>➕ Tambah ke Whitelist</h2>
+    <div class="row">
+      <div>
+        <label>Email (atau user_id)</label>
+        <input id="add-email" type="email" placeholder="user@example.com" />
+      </div>
+      <div>
+        <label>User ID (opsional, supabase auth ID)</label>
+        <input id="add-user-id" type="text" placeholder="user_xxxxxxxxxxxx" />
+      </div>
+    </div>
+    <div class="row">
+      <div>
+        <label>Kategori</label>
+        <select id="add-category">
+          <option value="owner">👑 Owner</option>
+          <option value="dev">🛠️ Dev</option>
+          <option value="sponsor">💰 Sponsor</option>
+          <option value="researcher">🔬 Researcher</option>
+          <option value="contributor">🤝 Contributor</option>
+          <option value="beta_tester">🧪 Beta Tester</option>
+          <option value="vip">⭐ VIP</option>
+          <option value="other" selected>📋 Other</option>
+        </select>
+      </div>
+      <div>
+        <label>Catatan (opsional)</label>
+        <input id="add-note" type="text" placeholder="contoh: PhD AI MIT, sponsor Tier 3" maxlength="240" />
+      </div>
+    </div>
+    <button onclick="addEntry()" style="margin-top: 12px;">+ Tambahkan</button>
+    <div id="add-status"></div>
+  </div>
+
+  <div class="card">
+    <h2>📋 Daftar Whitelist</h2>
+    <div id="stats" class="stats"></div>
+    <div id="env-info" style="font-size: 12px; color: var(--text-dim); margin-bottom: 12px;"></div>
+    <h3 style="font-size: 14px; color: var(--text-dim); margin-top: 20px;">By Email</h3>
+    <table>
+      <thead><tr><th>Email</th><th>Kategori</th><th>Catatan</th><th>Ditambahkan</th><th></th></tr></thead>
+      <tbody id="emails-tbody"><tr><td colspan="5" style="text-align:center; color: var(--text-dim);">Belum dimuat</td></tr></tbody>
+    </table>
+    <h3 style="font-size: 14px; color: var(--text-dim); margin-top: 20px;">By User ID</h3>
+    <table>
+      <thead><tr><th>User ID</th><th>Kategori</th><th>Catatan</th><th>Ditambahkan</th><th></th></tr></thead>
+      <tbody id="uids-tbody"><tr><td colspan="5" style="text-align:center; color: var(--text-dim);">Belum dimuat</td></tr></tbody>
+    </table>
+  </div>
+
+  <script>
+    const API_BASE = 'https://ctrl.sidixlab.com';
+
+    function getToken() {
+      const tok = (document.getElementById('admin-token').value || '').trim();
+      if (tok) sessionStorage.setItem('sidix_admin_token', tok);
+      return tok || sessionStorage.getItem('sidix_admin_token') || '';
+    }
+
+    function showStatus(elId, msg, ok = true) {
+      const el = document.getElementById(elId);
+      el.innerHTML = `<div class="alert ${ok ? 'alert-ok' : 'alert-err'}">${msg}</div>`;
+      setTimeout(() => { el.innerHTML = ''; }, 5000);
+    }
+
+    async function loadList() {
+      const tok = getToken();
+      if (!tok) {
+        showStatus('auth-status', '⚠️ Masukkan admin token dulu.', false);
+        return;
+      }
+      try {
+        const res = await fetch(`${API_BASE}/admin/whitelist`, {
+          headers: { 'x-admin-token': tok },
+        });
+        if (res.status === 403) {
+          showStatus('auth-status', '❌ Token salah atau tidak ada akses (403).', false);
+          return;
+        }
+        if (!res.ok) {
+          showStatus('auth-status', `⚠️ Error ${res.status}: ${await res.text()}`, false);
+          return;
+        }
+        const data = await res.json();
+        renderTables(data);
+        showStatus('auth-status', `✓ Loaded ${data.emails.length} emails + ${data.user_ids.length} user_ids.`);
+      } catch (e) {
+        showStatus('auth-status', `Network error: ${e.message}`, false);
+      }
+    }
+
+    function renderTables(data) {
+      // Stats
+      const stats = data.stats || {};
+      document.getElementById('stats').innerHTML = `
+        <div class="stat"><strong>${stats.total_emails ?? 0}</strong>Email</div>
+        <div class="stat"><strong>${stats.total_user_ids ?? 0}</strong>User ID</div>
+        <div class="stat"><strong>${(data.env_emails || []).length}</strong>Env Emails</div>
+      `;
+      document.getElementById('env-info').innerHTML = data.env_emails?.length
+        ? `Env-locked: <code>${data.env_emails.join(', ')}</code>`
+        : '';
+
+      // Emails table
+      const emailsBody = document.getElementById('emails-tbody');
+      if (data.emails.length === 0) {
+        emailsBody.innerHTML = `<tr><td colspan="5" style="text-align:center; color: var(--text-dim);">Belum ada email di whitelist.</td></tr>`;
+      } else {
+        emailsBody.innerHTML = data.emails.map(e => `
+          <tr>
+            <td><code>${e.email}</code></td>
+            <td><span class="badge badge-${e.category || 'other'}">${e.category || 'other'}</span></td>
+            <td>${e.note || '<span style="color:var(--text-dim)">—</span>'}</td>
+            <td style="color: var(--text-dim); font-size: 11px;">${(e.added_at || '').slice(0, 10)}</td>
+            <td><button class="danger" onclick="removeEntry('email', '${e.email}')">Hapus</button></td>
+          </tr>
+        `).join('');
+      }
+
+      // User IDs table
+      const uidsBody = document.getElementById('uids-tbody');
+      if (data.user_ids.length === 0) {
+        uidsBody.innerHTML = `<tr><td colspan="5" style="text-align:center; color: var(--text-dim);">Belum ada user ID di whitelist.</td></tr>`;
+      } else {
+        uidsBody.innerHTML = data.user_ids.map(u => `
+          <tr>
+            <td><code>${u.id}</code></td>
+            <td><span class="badge badge-${u.category || 'other'}">${u.category || 'other'}</span></td>
+            <td>${u.note || '<span style="color:var(--text-dim)">—</span>'}</td>
+            <td style="color: var(--text-dim); font-size: 11px;">${(u.added_at || '').slice(0, 10)}</td>
+            <td><button class="danger" onclick="removeEntry('user_id', '${u.id}')">Hapus</button></td>
+          </tr>
+        `).join('');
+      }
+    }
+
+    async function addEntry() {
+      const tok = getToken();
+      if (!tok) { showStatus('add-status', '⚠️ Token dulu.', false); return; }
+      const email = document.getElementById('add-email').value.trim();
+      const userId = document.getElementById('add-user-id').value.trim();
+      const category = document.getElementById('add-category').value;
+      const note = document.getElementById('add-note').value.trim();
+      if (!email && !userId) {
+        showStatus('add-status', '⚠️ Email atau User ID wajib.', false);
+        return;
+      }
+      try {
+        const res = await fetch(`${API_BASE}/admin/whitelist`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'x-admin-token': tok },
+          body: JSON.stringify({ email: email || null, user_id: userId || null, category, note }),
+        });
+        if (!res.ok) {
+          showStatus('add-status', `⚠️ Error: ${await res.text()}`, false);
+          return;
+        }
+        const r = await res.json();
+        showStatus('add-status', `✓ Berhasil ditambahkan.`);
+        document.getElementById('add-email').value = '';
+        document.getElementById('add-user-id').value = '';
+        document.getElementById('add-note').value = '';
+        loadList();
+      } catch (e) {
+        showStatus('add-status', `Network error: ${e.message}`, false);
+      }
+    }
+
+    async function removeEntry(type, value) {
+      if (!confirm(`Hapus ${type} "${value}" dari whitelist?`)) return;
+      const tok = getToken();
+      try {
+        const body = type === 'email' ? { email: value } : { user_id: value };
+        const res = await fetch(`${API_BASE}/admin/whitelist`, {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json', 'x-admin-token': tok },
+          body: JSON.stringify(body),
+        });
+        if (!res.ok) { alert(`Error: ${await res.text()}`); return; }
+        loadList();
+      } catch (e) {
+        alert(`Network error: ${e.message}`);
+      }
+    }
+
+    // Auto-load token from session
+    window.addEventListener('DOMContentLoaded', () => {
+      const saved = sessionStorage.getItem('sidix_admin_token');
+      if (saved) {
+        document.getElementById('admin-token').value = saved;
+        loadList();
+      }
+    });
+  </script>
+</body>
+</html>

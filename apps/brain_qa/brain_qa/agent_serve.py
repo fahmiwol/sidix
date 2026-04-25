@@ -84,18 +84,33 @@ def _is_whitelisted(request: Request) -> bool:
       SIDIX_WHITELIST_EMAILS=fahmiwol@gmail.com,dev@sidixlab.com
       SIDIX_WHITELIST_USER_IDS=user_abc123,user_xyz789
     """
-    raw_emails = os.environ.get("SIDIX_WHITELIST_EMAILS", "").strip().lower()
-    raw_uids = os.environ.get("SIDIX_WHITELIST_USER_IDS", "").strip()
-    if not raw_emails and not raw_uids:
-        return False
-    whitelist_emails = {e.strip() for e in raw_emails.split(",") if e.strip()}
-    whitelist_uids = {u.strip() for u in raw_uids.split(",") if u.strip()}
     user_email = request.headers.get("x-user-email", "").strip().lower()
     user_id = request.headers.get("x-user-id", "").strip()
-    if user_email and user_email in whitelist_emails:
-        return True
-    if user_id and user_id in whitelist_uids:
-        return True
+    if not user_email and not user_id:
+        return False
+
+    # Layer 1: env var (immutable defaults — owner/dev hardcode)
+    raw_emails = os.environ.get("SIDIX_WHITELIST_EMAILS", "").strip().lower()
+    raw_uids = os.environ.get("SIDIX_WHITELIST_USER_IDS", "").strip()
+    if raw_emails:
+        env_emails = {e.strip() for e in raw_emails.split(",") if e.strip()}
+        if user_email and user_email in env_emails:
+            return True
+    if raw_uids:
+        env_uids = {u.strip() for u in raw_uids.split(",") if u.strip()}
+        if user_id and user_id in env_uids:
+            return True
+
+    # Layer 2: JSON store (admin-managed via /admin/whitelist endpoints)
+    try:
+        from . import whitelist_store
+        if user_email and whitelist_store.is_email_whitelisted(user_email):
+            return True
+        if user_id and whitelist_store.is_user_id_whitelisted(user_id):
+            return True
+    except Exception:
+        pass
+
     return False
 
 
@@ -370,6 +385,20 @@ class ResurrectRequest(BaseModel):
     topic: str
     n_gems: int = 3
     return_intermediate: bool = False
+
+
+class WhitelistAddRequest(BaseModel):
+    """Tambahkan email atau user_id ke whitelist (admin only)."""
+    email: Optional[str] = None
+    user_id: Optional[str] = None
+    category: str = "other"   # owner / dev / sponsor / researcher / contributor / beta_tester / vip / other
+    note: str = ""
+
+
+class WhitelistRemoveRequest(BaseModel):
+    """Hapus email atau user_id dari whitelist (admin only)."""
+    email: Optional[str] = None
+    user_id: Optional[str] = None
 
 
 # ── LLM generate function (Standing Alone) ────────────────────────────────────
@@ -1287,6 +1316,76 @@ def create_app() -> "FastAPI":
         from .jariyah_exporter import export_to_lora_jsonl
         result = export_to_lora_jsonl(min_score=min_score)
         return result
+
+    # ════════════════════════════════════════════════════════════════════════
+    # WHITELIST ADMIN ENDPOINTS — manage bypass list (rate limit + daily quota)
+    # ════════════════════════════════════════════════════════════════════════
+    # Auth: header `x-admin-token` harus match env BRAIN_QA_ADMIN_TOKEN.
+    # Storage: apps/brain_qa/.data/whitelist.json (persistent).
+
+    @app.get("/admin/whitelist", tags=["Admin"])
+    def admin_whitelist_list(request: Request):
+        """List semua email + user_id yang ada di whitelist (admin only)."""
+        if not _admin_ok(request):
+            raise HTTPException(status_code=403, detail="Akses ditolak")
+        try:
+            from . import whitelist_store
+            data = whitelist_store.list_all()
+            return {
+                "emails": data.get("emails", []),
+                "user_ids": data.get("user_ids", []),
+                "stats": whitelist_store.stats(),
+                "env_emails": [
+                    e.strip() for e in os.environ.get("SIDIX_WHITELIST_EMAILS", "").split(",") if e.strip()
+                ],
+                "env_user_ids": [
+                    u.strip() for u in os.environ.get("SIDIX_WHITELIST_USER_IDS", "").split(",") if u.strip()
+                ],
+            }
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"whitelist read fail: {e}")
+
+    @app.post("/admin/whitelist", tags=["Admin"])
+    def admin_whitelist_add(req: WhitelistAddRequest, request: Request):
+        """Tambah email atau user_id ke whitelist (admin only)."""
+        if not _admin_ok(request):
+            raise HTTPException(status_code=403, detail="Akses ditolak")
+        if not req.email and not req.user_id:
+            raise HTTPException(status_code=400, detail="email atau user_id wajib diisi")
+        try:
+            from . import whitelist_store
+            results: dict[str, Any] = {}
+            if req.email:
+                results["email"] = whitelist_store.add_email(
+                    req.email, category=req.category, note=req.note,
+                )
+            if req.user_id:
+                results["user_id"] = whitelist_store.add_user_id(
+                    req.user_id, category=req.category, note=req.note,
+                )
+            return {"ok": True, "added": results}
+        except ValueError as ve:
+            raise HTTPException(status_code=400, detail=str(ve))
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"whitelist add fail: {e}")
+
+    @app.delete("/admin/whitelist", tags=["Admin"])
+    def admin_whitelist_remove(req: WhitelistRemoveRequest, request: Request):
+        """Hapus email atau user_id dari whitelist (admin only)."""
+        if not _admin_ok(request):
+            raise HTTPException(status_code=403, detail="Akses ditolak")
+        if not req.email and not req.user_id:
+            raise HTTPException(status_code=400, detail="email atau user_id wajib diisi")
+        try:
+            from . import whitelist_store
+            removed = {}
+            if req.email:
+                removed["email"] = whitelist_store.remove_email(req.email)
+            if req.user_id:
+                removed["user_id"] = whitelist_store.remove_user_id(req.user_id)
+            return {"ok": True, "removed": removed}
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"whitelist remove fail: {e}")
 
     # ── Branch Management ──────────────────────────────────────────────────────
 
