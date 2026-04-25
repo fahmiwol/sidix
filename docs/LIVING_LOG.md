@@ -5286,3 +5286,48 @@ Branch System, berjiwa IHOS. Pilot pertama: Tiranyx Digital Agency.
 - **Constitutional Kaizen**: GEPA-lite evolves constitutional rules themselves.
 - **Wabi-Sabi Mode**: `?mode=wabi-sabi` — embraces imperfection, simplicity, transience.
 
+
+
+### 2026-04-24 (Jiwa Sprint: Supermodel AI Agent — Multi-Layer Memory + Streaming)
+
+**IMPL:** Implementasi fitur Supermodel AI Agent berdasarkan riset framework terbaik 2026.
+
+**1. Multi-Layer Memory System (`agent_memory.py`)**
+- Arsitektur terinspirasi Hermes Agent + neuroscience:
+  - **Working Memory** — current session context (conversation turns)
+  - **Episodic Memory** — praxis lessons + experience_engine patterns
+  - **Semantic Memory** — corpus BM25 hits + knowledge graph
+  - **Procedural Memory** — skill_library patterns
+- `build_multi_layer_memory()` — construct memory layers per query
+- `inject_memory_to_system_prompt()` — inject memory ke LLM system prompt
+- Integrated ke ReAct loop: memory built pre-session, injected ke `_compose_final_answer()`
+- Integrated ke `/agent/generate`: memory injection untuk pure generation
+
+**2. Self-Learning (`learn_from_session()`)**
+- Auto-extract pattern dari sesi sukses dan simpan ke skill_library
+- Threshold: success_indicator ≥ 0.5 (dari confidence score + citations)
+- Skill auto-tagged: persona, auto_learned, pattern
+- Triggered post-response di `run_react()`
+
+**3. Streaming Endpoint (`/agent/generate/stream`)**
+- Server-Sent Events (SSE) untuk real-time token generation
+- `ollama_generate_stream()` — yield token chunks dari Ollama streaming API
+- Event format: `{type: token|done|error, text, mode, persona}`
+- Fallback ke local_llm (single chunk) kalau Ollama offline
+- Memory injection juga aktif di streaming
+
+**4. Riset: AI Agent Frameworks 2026**
+- File: `docs/RESEARCH_AI_AGENT_FRAMEWORKS_2026.md`
+- Comparison 8+ framework: LangGraph, CrewAI, AutoGen, Hermes Agent, OpenAI SDK, Anthropic SDK, Google ADK, AutoGPT, OpenDevin
+- 10 best practices identified: persistent memory, self-learning, multi-agent, graph workflow, MCP, streaming, observability, human-in-the-loop, state persistence, local models
+- Decision framework untuk SIDIX positioning
+
+**5. Legacy KIMI (`docs/LEGACY_KIMI_FOR_SIDIX.md`)**
+- Dokumentasi komprehensif: riset, arsitektur, kode, roadmap 4 fase
+- Pesan filosofis: "Murid harus lebih hebat dari gurunya"
+- Cara melanjutkan warisan untuk kontributor masa depan
+
+**TEST:** 110 passed, 0 failed.
+
+**DEPLOY:** SSH timeout ke VPS (72.62.125.6) — butuh retry manual atau GitHub Actions CD.
+
