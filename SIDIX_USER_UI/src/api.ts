@@ -9,8 +9,23 @@
  * lihat AGENTS.md rule "ATURAN KERAS Arsitektur & Inference".
  */
 
-export const BRAIN_QA_BASE =
-  (import.meta as any).env?.VITE_BRAIN_QA_URL ?? 'http://localhost:8765';
+function detectBrainQABase(): string {
+  const env = (import.meta as any).env?.VITE_BRAIN_QA_URL;
+  if (env) return env;
+
+  // Production: kalau di-host di domain publik, pakai same-origin (nginx proxy)
+  // Local dev: localhost → backend lokal
+  if (typeof window !== 'undefined') {
+    const host = window.location.hostname;
+    const isLocal = host === 'localhost' || host === '127.0.0.1' || host === '';
+    if (!isLocal) {
+      return ''; // same-origin relative URL
+    }
+  }
+  return 'http://localhost:8765';
+}
+
+export const BRAIN_QA_BASE = detectBrainQABase();
 
 // ── Types ────────────────────────────────────────────────────────────────────
 

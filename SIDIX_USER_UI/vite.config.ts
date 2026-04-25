@@ -6,13 +6,9 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, '.', '');
   return {
     plugins: [tailwindcss()],
-    define: {
-      // brain_qa backend URL — default localhost:8765
-      // Set VITE_BRAIN_QA_URL di .env.local untuk override
-      'import.meta.env.VITE_BRAIN_QA_URL': JSON.stringify(
-        env.VITE_BRAIN_QA_URL ?? 'http://localhost:8765',
-      ),
-    },
+    // BRAIN_QA_BASE ditentukan runtime di src/api.ts —
+    // local dev = http://localhost:8765, production = same-origin (nginx proxy)
+    // Jangan override di sini supaya deteksi hostname berfungsi.
     resolve: {
       alias: {
         '@': path.resolve(__dirname, '.'),

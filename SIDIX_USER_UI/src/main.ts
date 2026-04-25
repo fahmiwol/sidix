@@ -34,6 +34,22 @@ import {
   type UserRole, type OnboardingAnswers,
 } from './lib/supabase';
 
+// ── Clear auth errors from URL (Supabase redirect noise) ────────────────────
+(function clearAuthErrors() {
+  try {
+    const url = new URL(window.location.href);
+    const hasAuthError = url.searchParams.has('error') && url.searchParams.has('error_description');
+    if (hasAuthError) {
+      // Hapus error params dari URL tanpa reload
+      url.searchParams.delete('error');
+      url.searchParams.delete('error_code');
+      url.searchParams.delete('error_description');
+      window.history.replaceState({}, document.title, url.toString());
+      console.warn('[SIDIX] Auth error cleared from URL:', url.searchParams.get('error_description'));
+    }
+  } catch { /* ignore */ }
+})();
+
 // ── Bootstrap icons ──────────────────────────────────────────────────────────
 function initIcons() {
   createIcons({
@@ -843,19 +859,27 @@ onAuthChange(async (user) => {
     // User baru login
     closeLoginModal();
 
-    // Upsert profil
-    await upsertUserProfile({
-      id: user.id,
-      email: user.email ?? '',
-      full_name: user.user_metadata?.full_name ?? user.email ?? 'User',
-      avatar_url: user.user_metadata?.avatar_url,
-      role: 'user',
-      onboarding_done: isOnboarded(),
-      created_at: new Date().toISOString(),
-    });
+    // Upsert profil — jangan crash kalau DB error
+    try {
+      await upsertUserProfile({
+        id: user.id,
+        email: user.email ?? '',
+        full_name: user.user_metadata?.full_name ?? user.email ?? 'User',
+        avatar_url: user.user_metadata?.avatar_url,
+        role: 'user',
+        onboarding_done: isOnboarded(),
+        created_at: new Date().toISOString(),
+      });
+    } catch (e) {
+      console.warn('[SIDIX] upsertUserProfile failed:', e);
+    }
 
     // Start onboarding jika belum
-    await startOnboardingIfNeeded();
+    try {
+      await startOnboardingIfNeeded();
+    } catch (e) {
+      console.warn('[SIDIX] onboarding failed:', e);
+    }
   } else {
     // Logout — hapus user_id dari localStorage
     localStorage.removeItem('sidix_user_id');
@@ -1342,7 +1366,8 @@ async function handleSend() {
     },
     onError: (msg) => {
       streamWrap.remove();
-      if (msg.includes('fetch') || msg.includes('network') || msg.includes('Failed')) {
+      const m = msg.toLowerCase();
+      if (m.includes('fetch') || m.includes('network') || m.includes('failed') || m.includes('timeout') || m.includes('abort')) {
         appendError('SIDIX sedang offline. Hubungi administrator atau coba lagi nanti.');
       } else {
         appendError('Terjadi kesalahan. Silakan coba lagi.');
