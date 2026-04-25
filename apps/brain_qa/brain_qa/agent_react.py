@@ -235,9 +235,12 @@ _CURRENT_EVENTS_RE = re.compile(
     # tokoh saat ini (EN + ID, typo-tolerant: presi(d)?ent)
     r"\bsiapa(?:kah)?\s+(?:presi?(?:d|den)t|presiden|menteri|minister|gubernur|governor|"
     r"ceo|founder|juara|champion|pemenang|winner|rektor|kapolri|panglima|gov(?:ernor)?|"
-    r"raja|king|ratu|queen|sultan|paus|pope)\b|"
+    r"raja|king|ratu|queen|sultan|paus|pope|wakil(?:\s+presiden)?|wapres)\b|"
+    # Cover: "wakil presiden indonesia sekarang siapa", "presiden RI saat ini",
+    # tanpa wajib "siapa" di depan
+    r"\b(?:wakil\s+presiden|wapres|presi?(?:d|den)t|presiden)\s+(?:republik\s+)?(?:indonesia|ri|amerika|usa)\b|"
     r"\bwho\s+is\s+(?:the\s+)?(?:current\s+)?(?:president|presi?(?:d|den)t|prime\s+minister|"
-    r"pm|ceo|founder|king|queen|pope|champion|winner|leader|governor)\b|"
+    r"pm|ceo|founder|king|queen|pope|champion|winner|leader|governor|vice\s+president)\b|"
     r"\b(?:presiden|presi?(?:d|den)t|prime\s+minister|pm|perdana\s+menteri)\s+(?:amerika|usa|us|"
     r"indonesia|ri|rusia|russia|china|cina|jepang|japan|korea|india|inggris|uk|prancis|france|"
     r"jerman|germany|brazil|brasil|saudi|arab|iran|israel|palestina|palestine)\b|"
