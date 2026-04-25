@@ -5403,3 +5403,20 @@ KIMI sedang diagnose via SSH. Saat note ini ditulis, KIMI rate-limited. Saya hol
 Per `CLAUDE.md` anti-bentrok rule:
 - ❌ Saya TIDAK touch `agent_memory.py`, `agent_react.py`, `parallel_*.py`, `jiwa/*` (KIMI/SHARED territory)
 - ✅ Saya commit hanya: `SIDIX_USER_UI/index.html`, `deploy-scripts/deploy-frontend.sh`, `brain/public/research_notes/100_*.md`, `docs/LIVING_LOG.md` (Claude territory)
+
+## 2026-04-25 (lanjutan) — FIX: Recover start_brain.sh
+
+### ERROR: sidix-brain stopped, PM2 restart loop
+Setelah `git checkout main` di VPS, `start_brain.sh` hilang dari working tree (file ini ada di branch `cursor/sop-public-artifacts-sync` lama, tidak ada di main). PM2 `sidix-brain` restart count 25 → stopped, log: `bash: /opt/sidix/start_brain.sh: No such file or directory`. Nginx `ctrl.sidixlab.com` 502 Bad Gateway.
+
+Akar: `deploy-scripts/ecosystem.config.js` line `script: './start_brain.sh'` referensi file yang tidak pernah masuk main.
+
+### FIX: Tambah start_brain.sh ke main
+File baru di root repo:
+- Aktifkan venv (.venv atau venv) kalau ada
+- Set `PYTHONPATH=apps/brain_qa`
+- Exec `python3 -m brain_qa serve --host 0.0.0.0 --port 8765`
+- Mode 755 (executable via `git update-index --chmod=+x`)
+
+Kompatibel dengan ecosystem.config.js existing (cwd=/opt/sidix, script=./start_brain.sh, interpreter=bash).
+
