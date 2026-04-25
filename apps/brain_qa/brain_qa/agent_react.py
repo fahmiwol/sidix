@@ -267,34 +267,41 @@ def _extract_web_search_query(question: str) -> str:
     """
     Pivot 2026-04-26: extract concise web_search query dari user prompt panjang.
 
-    User sering tanya panjang ("Coba buatkan aplikasi standart aja, kalkulator
-    sederhana. buat digunakan oleh wakil presiden indonesia sekarang, kamu tau
-    kan siapa namanya?") — kalau kita kirim VERBATIM ke DuckDuckGo, hasil
-    pencarian jadi tentang 'kalkulator' bukan 'wakil presiden indonesia'.
-
     Heuristik:
-      1. Cari segmen yang punya kata kunci current-event (presiden/menteri/dll)
-      2. Kalau ada, return segmen itu saja (max 80 chars)
-      3. Kalau tidak, return original question (truncated)
+      1. Cari segmen yang punya kata kunci current-event
+      2. Append tahun current bila query mengandung kata "sekarang/saat ini/now"
+         (supaya search engine bias ke hasil terbaru, bukan halaman lama)
+      3. Fallback: full question (truncated)
     """
+    import datetime as _dt
     q = (question or "").strip()
     if not q:
         return q
-    # Split per koma / titik / tanya supaya isolate factual segment
     segments = re.split(r"[,\.\?!;]\s*", q)
     factual_keywords = re.compile(
         r"\b(presi(?:d|den)t|presiden|menteri|minister|gubernur|governor|"
         r"ceo|founder|raja|king|ratu|queen|sultan|paus|pope|champion|juara|"
-        r"berita|news|harga|kurs|cuaca|weather|"
+        r"berita|news|harga|kurs|cuaca|weather|wakil|wapres|"
         r"siapa|who\s+is)\b",
         re.IGNORECASE,
     )
+    has_now_marker = bool(re.search(
+        r"\b(sekarang|saat\s+ini|terkini|terbaru|now|current|today|latest)\b",
+        q, re.IGNORECASE,
+    ))
+    current_year = _dt.datetime.utcnow().year
+    chosen: str = ""
     for seg in segments:
         seg = seg.strip()
         if 5 <= len(seg) <= 120 and factual_keywords.search(seg):
-            return seg
-    # Fallback: full question, truncated
-    return q[:120]
+            chosen = seg
+            break
+    if not chosen:
+        chosen = q[:120]
+    # Append year supaya search bias ke latest (kalau belum ada year di query)
+    if has_now_marker and not re.search(r"\b20\d{2}\b", chosen):
+        chosen = f"{chosen} {current_year}".strip()
+    return chosen
 
 
 def _should_prioritize_corpus(question: str, *, corpus_only: bool) -> bool:
@@ -847,6 +854,32 @@ def _compose_final_answer(
         except Exception as _mem_inj_err:
             import logging as _log
             _log.getLogger(__name__).debug(f"[MemoryInject] skip — {_mem_inj_err}")
+
+    # ── Pivot 2026-04-26: deteksi web_search di steps → instruksi prioritas ──
+    # Model 7b training cutoff sering bias ke training data (misal "Ma'ruf
+    # Amin" sebagai VP padahal data web menunjukkan Gibran). Append explicit
+    # instruction: PAKAI observation web_search sebagai sumber utama, JANGAN
+    # fallback ke training data.
+    _has_web_obs = False
+    try:
+        for st in (steps or []):
+            if str(getattr(st, "action_name", "")) == "web_search":
+                _has_web_obs = True
+                break
+    except Exception:
+        pass
+    if _has_web_obs:
+        _combined_system = (
+            (_combined_system or "").rstrip()
+            + "\n\n[ATURAN PRIORITAS DATA — web_search aktif]\n"
+            + "Konteks di bawah adalah hasil web_search REAL-TIME. Kalau "
+            + "informasi di konteks ini bertabrakan dengan pengetahuan "
+            + "training kamu (yang mungkin sudah outdated), PAKAI konteks. "
+            + "Untuk fakta tokoh saat ini (presiden, menteri, juara, dll.), "
+            + "jawab BERDASARKAN konteks. Jangan sebutkan training cutoff date. "
+            + "Kalau konteks tidak punya jawaban eksplisit, akui 'tidak ada "
+            + "info eksplisit di pencarian, paling baru yang saya dapat: ...'"
+        )
 
     # ── Coba Ollama generative ───────────────────────────────────────────────
     try:
