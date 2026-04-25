@@ -1789,8 +1789,11 @@ def run_react(
         u_profile = None
     # ─────────────────────────────────────────────────────────────────────────
 
-    # ── Experience + Skill enrichment (skip kalau agent_mode) ────────────────
-    if not _strict:
+    # ── Experience + Skill enrichment — Pivot 2026-04-26: opt-in via strict ──
+    # SEBELUMNYA `if not _strict` → enrichment justru fire by DEFAULT (bug).
+    # SEKARANG agent_mode default = no pre-context bloat, ngobrol natural
+    # seperti GPT/Claude. Strict_mode opt-in untuk research-grade enrichment.
+    if _strict:
         _experience_context: str = ""
         _skill_context: str = ""
         try:
@@ -2001,20 +2004,23 @@ def run_react(
         if not action_name:
             pass  # Langsung ke final answer
         else:
-            # [WISDOM GATE] Pre-Action Reflection (skip kalau agent_mode)
-            if not _strict:
+            # [WISDOM GATE] Pre-Action Reflection — Pivot 2026-04-26: opt-in.
+            # SEBELUMNYA `if not _strict` → Wisdom Gate override action planner
+            # by DEFAULT (bug). Akibatnya: planner pilih web_search → Wisdom Gate
+            # HOLD → action di-replace ke search_corpus → factual query gagal.
+            # SEKARANG: Wisdom Gate hanya fire kalau strict_mode opt-in.
+            if _strict:
                 is_wise, suggestion = WisdomGate.evaluate_intent(
                     question=working_question,
                     proposed_action=f"{action_name}({action_args})",
                     context={"step_count": step_num, "history": session.steps}
                 )
-                
+
                 if not is_wise:
                     if verbose:
                         print(f"  [WisdomGate] HOLD: {suggestion}")
-                    # Intervensi: Jika gegabah, paksa cari konteks tambahan (Socratic Probe spirit)
                     thought = f"Sadar bahwa tindakan sebelumnya mungkin gegabah. {suggestion}"
-                    action_name = "search_corpus" # Fallback aman
+                    action_name = "search_corpus"  # Fallback aman
                     action_args = {"query": working_question, "k": 3}
         
         # 2. Final Answer check (lanjutan)
@@ -2045,8 +2051,13 @@ def run_react(
             session.confidence_score = conf_score
             session.answer_type = atype
 
-            # ── Filter pipeline (skip kalau agent_mode) ───────────────────────
-            if not _strict:
+            # ── Filter pipeline — Pivot 2026-04-26 LOGIC FIX ──────────────────
+            # SEBELUMNYA bug: `if not _strict` → filter justru aktif by DEFAULT.
+            # SEKARANG: pipeline epistemology+maqashid+constitution+self-critique+
+            # cognitive-check HANYA fire kalau strict_mode=True (opt-in eksplisit).
+            # Default agent_mode = chat bebas, dinamis, seperti GPT/Claude/KIMI.
+            # Hygiene (label dedup, leak strip) tetap jalan supaya output bersih.
+            if _strict:
                 final_answer = _apply_epistemology(
                     session=session,
                     question=working_question,
@@ -2060,7 +2071,9 @@ def run_react(
                 final_answer, _csc_warnings = _cognitive_self_check(final_answer, citations, working_question, persona)
                 if _csc_warnings:
                     session.csc_warnings = ",".join(_csc_warnings)[:300]
-                final_answer = _apply_hygiene(final_answer)
+            # Hygiene (dedup label + strip context leak) selalu jalan — agnostik
+            # ke strict/agent mode supaya output tidak punya boilerplate residu.
+            final_answer = _apply_hygiene(final_answer)
             # ───────────────────────────────────────────────────────────────────
 
             # ── Jiwa Pilar 5: Hayat — Self-Iteration ─────────────────────────
@@ -2222,8 +2235,10 @@ def run_react(
         session.confidence = confidence_label(conf_score)
         session.confidence_score = conf_score  # type: ignore[attr-defined]
         session.answer_type = atype            # type: ignore[attr-defined]
-        # ── Filter pipeline (skip kalau agent_mode) ───────────────────────────
-        if not _strict:
+        # ── Filter pipeline — Pivot 2026-04-26 LOGIC FIX (max-steps branch) ──
+        # Sama seperti branch utama: epistemology+maqashid+constitution+CSC
+        # HANYA fire kalau _strict opt-in. Default = chat bebas + hygiene saja.
+        if _strict:
             final_answer = _apply_epistemology(
                 session=session,
                 question=working_question,
@@ -2236,7 +2251,7 @@ def run_react(
             final_answer, _csc_warnings = _cognitive_self_check(final_answer, citations, working_question, persona)
             if _csc_warnings:
                 session.csc_warnings = ",".join(_csc_warnings)[:300]
-            final_answer = _apply_hygiene(final_answer)
+        final_answer = _apply_hygiene(final_answer)
         session.final_answer = final_answer
         # ─────────────────────────────────────────────────────────────────────
         answer_dedup.set_cached_answer(persona, working_question, final_answer)
