@@ -2031,11 +2031,122 @@ Commit message (hanya 1 baris, maks 72 karakter):"""
 _WEB_SEARCH_MAX_RESULTS = 8
 
 
+def _ddg_search(query: str, max_results: int, timeout: float = 12.0) -> list[dict]:
+    """DuckDuckGo HTML — primary engine."""
+    import httpx
+    from bs4 import BeautifulSoup
+    with httpx.Client(
+        follow_redirects=True, timeout=timeout,
+        headers={"User-Agent": "Mozilla/5.0 (compatible; SIDIX-Agent/2.0)"},
+    ) as client:
+        r = client.post(
+            "https://html.duckduckgo.com/html/",
+            data={"q": query, "kl": "id-id"},
+        )
+        r.raise_for_status()
+    soup = BeautifulSoup(r.text, "html.parser")
+    results: list[dict] = []
+    for node in soup.select("div.result, div.web-result")[: max_results * 2]:
+        a = node.select_one("a.result__a, h2 a")
+        snippet_el = node.select_one(".result__snippet, .result__body")
+        if not a:
+            continue
+        title = a.get_text(" ", strip=True)
+        href = a.get("href", "").strip()
+        snippet = snippet_el.get_text(" ", strip=True) if snippet_el else ""
+        if href.startswith("//duckduckgo.com/l/") or "duckduckgo.com/l/?uddg=" in href:
+            import urllib.parse as _up
+            qs = _up.parse_qs(_up.urlparse(href if href.startswith("http") else "https:" + href).query)
+            if "uddg" in qs:
+                href = qs["uddg"][0]
+        if title and href.startswith("http"):
+            results.append({"title": title, "url": href, "snippet": snippet[:280], "engine": "ddg"})
+        if len(results) >= max_results:
+            break
+    return results
+
+
+def _ddg_lite_search(query: str, max_results: int, timeout: float = 10.0) -> list[dict]:
+    """DuckDuckGo Lite — fallback ringan."""
+    import httpx
+    from bs4 import BeautifulSoup
+    with httpx.Client(
+        follow_redirects=True, timeout=timeout,
+        headers={"User-Agent": "Mozilla/5.0 (compatible; SIDIX-Agent/2.0)"},
+    ) as client:
+        r = client.get(
+            "https://lite.duckduckgo.com/lite/",
+            params={"q": query},
+        )
+        r.raise_for_status()
+    soup = BeautifulSoup(r.text, "html.parser")
+    results: list[dict] = []
+    # DDG Lite: results di rows alternasi <a class="result-link">
+    for a in soup.select("a.result-link")[:max_results]:
+        title = a.get_text(" ", strip=True)
+        href = a.get("href", "").strip()
+        if title and href.startswith("http"):
+            results.append({"title": title, "url": href, "snippet": "", "engine": "ddg_lite"})
+    return results
+
+
+def _wikipedia_search(query: str, max_results: int, timeout: float = 10.0) -> list[dict]:
+    """Wikipedia API — fallback factual paling reliable.
+
+    Pakai opensearch endpoint (Wikipedia public, no auth, very stable).
+    """
+    import httpx
+    out: list[dict] = []
+    # Coba ID dan EN
+    for lang in ("id", "en"):
+        try:
+            with httpx.Client(timeout=timeout) as client:
+                r = client.get(
+                    f"https://{lang}.wikipedia.org/w/api.php",
+                    params={
+                        "action": "opensearch",
+                        "search": query,
+                        "limit": max_results,
+                        "namespace": 0,
+                        "format": "json",
+                    },
+                    headers={"User-Agent": "SIDIX-Agent/2.0 (https://sidixlab.com)"},
+                )
+                r.raise_for_status()
+                data = r.json()
+                # opensearch returns: [query, [titles], [descriptions], [urls]]
+                if isinstance(data, list) and len(data) >= 4:
+                    titles = data[1] or []
+                    descs = data[2] or []
+                    urls = data[3] or []
+                    for i, title in enumerate(titles):
+                        if i >= max_results:
+                            break
+                        out.append({
+                            "title": f"{title} - Wikipedia ({lang})",
+                            "url": urls[i] if i < len(urls) else "",
+                            "snippet": (descs[i] if i < len(descs) else "")[:280],
+                            "engine": f"wiki_{lang}",
+                        })
+                if out:
+                    break
+        except Exception:
+            continue
+    return out
+
+
 def _tool_web_search(args: dict) -> ToolResult:
     """
-    Search web via DuckDuckGo HTML endpoint — parse hasil own stack.
-    Standing-alone: tidak pakai Google/Bing/SerpAPI. Hanya fetch HTML publik dari
-    html.duckduckgo.com dan extract result (judul, snippet, URL) dengan BeautifulSoup.
+    Multi-engine web search untuk SIDIX 2.0 Supermodel reliability:
+
+      Primary  : DuckDuckGo HTML  (12s timeout)
+      Fallback : DuckDuckGo Lite  (10s timeout)
+      Last     : Wikipedia API    (10s timeout, factual fallback)
+
+    Standing-alone: tidak pakai Google/Bing/SerpAPI. Public endpoints saja.
+    Tujuan multi-engine: ConnectTimeout di salah satu engine tidak bikin
+    seluruh query gagal — fallback otomatis ke engine berikutnya.
+
     Params: query (str, wajib), max_results (int, default 8, max 15).
     """
     query = str(args.get("query", "")).strip()
@@ -2045,58 +2156,50 @@ def _tool_web_search(args: dict) -> ToolResult:
     max_results = max(1, min(max_results, 15))
 
     try:
-        import httpx
-        from bs4 import BeautifulSoup
+        import httpx  # noqa: F401
+        from bs4 import BeautifulSoup  # noqa: F401
     except ImportError as e:
         return ToolResult(success=False, output="", error=f"dependency tidak terpasang: {e}")
 
-    try:
-        with httpx.Client(
-            follow_redirects=True, timeout=20.0,
-            headers={"User-Agent": "SIDIX-Agent/1.0 (mighan-brain-qa; standing-alone)"},
-        ) as client:
-            r = client.post(
-                "https://html.duckduckgo.com/html/",
-                data={"q": query, "kl": "id-id"},
-            )
-            r.raise_for_status()
-    except Exception as e:
-        return ToolResult(success=False, output="", error=f"gagal search: {type(e).__name__}: {e}")
+    results: list[dict] = []
+    errors: list[str] = []
 
+    # 1. DuckDuckGo HTML (primary)
     try:
-        soup = BeautifulSoup(r.text, "html.parser")
-        results: list[dict] = []
-        for node in soup.select("div.result, div.web-result")[: max_results * 2]:
-            a = node.select_one("a.result__a, h2 a")
-            snippet_el = node.select_one(".result__snippet, .result__body")
-            if not a:
-                continue
-            title = a.get_text(" ", strip=True)
-            href = a.get("href", "").strip()
-            snippet = snippet_el.get_text(" ", strip=True) if snippet_el else ""
-            # DuckDuckGo kadang bungkus URL dengan redirect ?uddg=
-            if href.startswith("//duckduckgo.com/l/") or "duckduckgo.com/l/?uddg=" in href:
-                import urllib.parse as _up
-                qs = _up.parse_qs(_up.urlparse(href if href.startswith("http") else "https:" + href).query)
-                if "uddg" in qs:
-                    href = qs["uddg"][0]
-            if title and href.startswith("http"):
-                results.append({"title": title, "url": href, "snippet": snippet[:280]})
-            if len(results) >= max_results:
-                break
+        results = _ddg_search(query, max_results, timeout=12.0)
     except Exception as e:
-        return ToolResult(success=False, output="", error=f"parse gagal: {e}")
+        errors.append(f"ddg: {type(e).__name__}")
+
+    # 2. DuckDuckGo Lite (fallback)
+    if not results:
+        try:
+            results = _ddg_lite_search(query, max_results, timeout=10.0)
+        except Exception as e:
+            errors.append(f"ddg_lite: {type(e).__name__}")
+
+    # 3. Wikipedia (last resort, sangat reliable untuk factual)
+    if not results:
+        try:
+            results = _wikipedia_search(query, max_results, timeout=10.0)
+        except Exception as e:
+            errors.append(f"wiki: {type(e).__name__}")
 
     if not results:
-        return ToolResult(success=True, output=f"(tidak ada hasil untuk '{query}')")
-    lines = [f"# Hasil pencarian: {query}", ""]
+        err_summary = " | ".join(errors) if errors else "no results"
+        return ToolResult(success=False, output="", error=f"semua engine gagal: {err_summary}")
+
+    engine_used = results[0].get("engine", "?")
+    lines = [f"# Hasil pencarian: {query}  _(engine: {engine_used})_", ""]
     for i, r in enumerate(results, 1):
         lines.append(f"{i}. **{r['title']}**")
         lines.append(f"   {r['url']}")
-        if r["snippet"]:
+        if r.get("snippet"):
             lines.append(f"   {r['snippet']}")
         lines.append("")
-    citations = [{"type": "web_search", "url": r["url"], "title": r["title"]} for r in results]
+    citations = [
+        {"type": "web_search", "url": r["url"], "title": r["title"]}
+        for r in results
+    ]
     return ToolResult(success=True, output="\n".join(lines), citations=citations)
 
 
