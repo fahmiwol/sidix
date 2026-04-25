@@ -1919,6 +1919,97 @@ def create_app() -> "FastAPI":
             raise HTTPException(status_code=500, detail=f"list fail: {e}")
 
     # ════════════════════════════════════════════════════════════════════════
+    # CRITIC + TADABBUR (vol 10, Pilar 2 closure):
+    # Innovator-Critic loop + 3-persona convergence.
+    # Per DIRECTION_LOCK_20260426 P1 Q3 2026 roadmap.
+    # ════════════════════════════════════════════════════════════════════════
+
+    @app.post("/agent/critique", tags=["Cognitive"])
+    async def agent_critique_endpoint(request: Request):
+        """Single-shot critique LLM output. Modes: devil_advocate |
+        quality_check (default) | destruction_test.
+        Body: {output, mode?, context?}"""
+        try:
+            body = await request.json()
+        except Exception:
+            body = {}
+        output = (body.get("output") or "").strip()
+        if not output:
+            raise HTTPException(status_code=400, detail="output wajib")
+        mode = body.get("mode", "quality_check")
+        context = body.get("context", "")
+        try:
+            from . import agent_critic
+            crit = agent_critic.critique_output(output, mode=mode, context=context)
+            if not crit:
+                return {"ok": False, "reason": "LLM gagal generate critique"}
+            from dataclasses import asdict
+            return {"ok": True, "critique": asdict(crit)}
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"critique fail: {e}")
+
+    @app.post("/agent/innovator-critic", tags=["Cognitive"])
+    async def innovator_critic_endpoint(request: Request):
+        """Innovator-Critic loop (Pilar 2 closure).
+        Burst → Critic → Refine (max 2 iter) → final + critique trail.
+        Body: {prompt, max_iterations?: 2, critic_mode?: "quality_check"}"""
+        try:
+            body = await request.json()
+        except Exception:
+            body = {}
+        prompt = (body.get("prompt") or "").strip()
+        if not prompt:
+            raise HTTPException(status_code=400, detail="prompt wajib")
+        try:
+            from . import agent_critic
+            return agent_critic.innovator_critic_loop(
+                prompt,
+                max_iterations=int(body.get("max_iterations", 2)),
+                critic_mode=body.get("critic_mode", "quality_check"),
+                persona=body.get("persona", "AYMAN"),
+            )
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"innovator-critic fail: {e}")
+
+    @app.post("/agent/tadabbur", tags=["Cognitive"])
+    async def tadabbur_endpoint(request: Request):
+        """Tadabbur Mode — 3 persona iterate same query → konvergensi.
+        Round 1 diversification + Round 2 cross-eval + Round 3 synthesis.
+        7 LLM calls. Untuk pertanyaan deep, tidak casual chat.
+        Body: {prompt, personas?: [3 names]}"""
+        try:
+            body = await request.json()
+        except Exception:
+            body = {}
+        prompt = (body.get("prompt") or "").strip()
+        if not prompt:
+            raise HTTPException(status_code=400, detail="prompt wajib")
+        try:
+            from . import tadabbur_mode
+            from dataclasses import asdict
+            result = tadabbur_mode.tadabbur(
+                prompt,
+                personas=body.get("personas"),
+            )
+            return {"ok": True, "result": asdict(result)}
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"tadabbur fail: {e}")
+
+    @app.get("/admin/critic/stats", tags=["Cognitive"])
+    def critic_stats(request: Request):
+        """Stats agent_critic + tadabbur_mode."""
+        if not _admin_ok(request):
+            raise HTTPException(status_code=403, detail="Akses ditolak")
+        try:
+            from . import agent_critic, tadabbur_mode
+            return {
+                "critic": agent_critic.stats(),
+                "tadabbur": tadabbur_mode.stats(),
+            }
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"stats fail: {e}")
+
+    # ════════════════════════════════════════════════════════════════════════
     # RELEVANCE SCORE — metric kualitas jawaban (untuk SIDIX learning loop)
     # ════════════════════════════════════════════════════════════════════════
 
