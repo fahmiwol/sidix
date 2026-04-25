@@ -5572,3 +5572,41 @@ KIMI's handoff doc copy dari `C:\SIDIX-AI\docs\` ke worktree, akan di-commit ber
 **Catatan:** TypeScript pre-existing errors (api.ts quota, main.ts conversationId, catch, QuotaInfo) — tidak di-fix karena teritori Otak / bukan dari edit ini.
 
 **TODO rebuild UI:** `cd /opt/sidix/SIDIX_USER_UI && npm install && npm run build && pm2 restart sidix-ui`
+
+
+### 2026-04-25 — FIX: Error obs filter + Persona compact + Frontend UX (Jiwa+Otak)
+
+**FIX:** `_compose_final_answer()` di `agent_react.py` — filter error observation blocks.
+- Masalah: web_search gagal → error text masuk ke `corpus_context` → model 1.5B generate "aku sedang mengalami masalah..." dari error message
+- Solusi: Skip observation yang mengandung keyword error (`gagal`, `timeout`, `tidak ada hasil`, `failed`, `connection`) dan panjang < 300 char
+- Hasil: Kalau tool gagal, LLM generate dari knowledge sendiri (bukan parrot error message)
+
+**FIX:** `PERSONA_DESCRIPTIONS` di `cot_system_prompts.py` — compact version untuk model kecil.
+- Masalah: Persona descriptions lama ~300-400 token — model 1.5B ignore/overwhelmed → fallback ke training default (formal)
+- Solusi: Compact ke ~80-100 token per persona, fokus essence: siapa + gimana + pakai kata ganti apa
+- AYMAN: "pendengar hangat, analogi sederhana, nanya balik, pakai aku/kita"
+- ABOO: "engineer praktis, pecah masalah, cepat, pakai gue"
+- OOMAR: "strategist, big picture, tegas tapi kasih alternatif, pakai saya"
+- ALEY: "researcher penasaran, cross-domain, fun fact, pakai saya/aku"
+- UTZ: "creative director, burst ide liar, visual playful, pakai aku"
+
+**FIX (sebelumnya):** Greeting persona-aware + Frontend thinking indicator + Hide confidence/feedback.
+
+**TODO Claude:** Rebuild UI di VPS — `cd /opt/sidix/SIDIX_USER_UI && npm install && npm run build && pm2 restart sidix-ui`
+
+**TODO Claude:** Test web_search di VPS — DuckDuckGo mungkin blocked/timeout di server China:
+```bash
+ssh root@72.62.125.6
+cd /opt/sidix && source .venv/bin/activate
+python -c "from brain_qa.agent_tools import _tool_web_search; print(_tool_web_search({'query':'presiden indonesia 2024'}).output[:300])"
+```
+Kalau gagal → fix network/proxy atau ganti search engine.
+
+**TODO Claude:** Test factual query setelah rebuild:
+```bash
+curl -X POST http://72.62.125.6:8765/agent/chat \
+  -H "Content-Type: application/json" \
+  -d '{"question":"siapa presiden indonesia sekarang","persona":"AYMAN","strict_mode":false}'
+```
+Harusnya: jawaban dari web_search atau model knowledge, BUKAN "aku sedang mengalami masalah"
+

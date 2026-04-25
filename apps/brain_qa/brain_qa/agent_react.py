@@ -736,6 +736,21 @@ def _compose_final_answer(
             obs_blocks.append(s.observation)
         all_citations.extend(s.action_args.get("_citations", []))
 
+    # ── SIDIX 2.0: Filter out error/pure-failure observations ────────────────
+    # Kalau tool gagal (web_search timeout, corpus error), jangan kirim error text
+    # ke LLM sebagai "context" — model kecil akan generate "aku sedang mengalami masalah"
+    # dari error message. Filter: observation yang mengandung keyword error/failure.
+    _ERROR_MARKERS = ("gagal", "error:", "timeout", "tidak ada hasil", "(tidak ada hasil", "failed", "connection")
+    _clean_obs = []
+    for ob in obs_blocks:
+        ob_lower = ob.lower().strip()
+        if any(m in ob_lower for m in _ERROR_MARKERS) and len(ob_lower) < 300:
+            # Ini pure error message, skip dari corpus context
+            continue
+        _clean_obs.append(ob)
+    obs_blocks = _clean_obs
+    # ─────────────────────────────────────────────────────────────────────────
+
     blend = _response_blend_profile(question, persona)
     max_obs_blocks = int(blend.get("max_obs_blocks", 2))
     system_hint = str(blend.get("system_hint", ""))
