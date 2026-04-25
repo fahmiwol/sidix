@@ -19,7 +19,7 @@ import {
 import {
   checkHealth, askStream, listCorpus, uploadDocument, deleteDocument,
   triggerReindex, getReindexStatus, agentGenerate, submitFeedback, forgetAgentSession,
-  agentBurst, agentTwoEyed, agentForesight,
+  agentBurst, agentTwoEyed, agentForesight, agentResurrect,
   BrainQAError, BRAIN_QA_BASE,
   type Persona, type CorpusDocument, type Citation, type HealthResponse,
   type AskInferenceOpts, type QuotaInfo,
@@ -1065,6 +1065,7 @@ sendBtn?.addEventListener('click', handleSend);
 const modeBurstBtn     = document.getElementById('mode-burst') as HTMLButtonElement | null;
 const modeTwoEyedBtn   = document.getElementById('mode-twoeyed') as HTMLButtonElement | null;
 const modeForesightBtn = document.getElementById('mode-foresight') as HTMLButtonElement | null;
+const modeResurrectBtn = document.getElementById('mode-resurrect') as HTMLButtonElement | null;
 
 function getInputOrPrompt(modeName: string, hint: string): string | null {
   const v = chatInput?.value.trim() ?? '';
@@ -1160,6 +1161,25 @@ modeForesightBtn?.addEventListener('click', async () => {
   } catch (e) {
     thinking.remove();
     appendMessage('ai', `⚠️ Foresight gagal: ${(e as Error).message}`);
+  }
+});
+
+modeResurrectBtn?.addEventListener('click', async () => {
+  const topic = getInputOrPrompt(
+    '🌿 Hidden Knowledge Resurrection',
+    'Surface ide/tokoh/metode yang DULU brilliant tapi sekarang overlooked → 2-3 hidden gem → bridge ke problem kamu. Cocok untuk research, fresh angle, mental model.',
+  );
+  if (!topic) return;
+  appendMessage('user', topic);
+  if (chatInput) { chatInput.value = ''; chatInput.dispatchEvent(new Event('input')); }
+  const thinking = appendThinkingPlaceholder('🌿 Resurrect — digging overlooked gems...');
+  try {
+    const r = await agentResurrect(topic, { nGems: 3 });
+    thinking.remove();
+    appendMessage('ai', r.final);
+  } catch (e) {
+    thinking.remove();
+    appendMessage('ai', `⚠️ Resurrect gagal: ${(e as Error).message}`);
   }
 });
 
