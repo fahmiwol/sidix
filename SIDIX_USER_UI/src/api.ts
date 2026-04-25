@@ -425,16 +425,17 @@ export interface BurstResponse {
  */
 export async function agentBurst(
   prompt: string,
-  opts?: { n?: number; topK?: number; returnAll?: boolean },
+  opts?: { n?: number; topK?: number; returnAll?: boolean; fastMode?: boolean },
 ): Promise<BurstResponse> {
   const res = await fetch(`${BRAIN_QA_BASE}/agent/burst`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       prompt,
-      n: opts?.n ?? 6,
+      n: opts?.n ?? 3,
       top_k: opts?.topK ?? 2,
       return_all: opts?.returnAll ?? false,
+      fast_mode: opts?.fastMode ?? true,
     }),
   });
   if (!res.ok) throw new BrainQAError(`Burst error: ${res.status}`, 'http');

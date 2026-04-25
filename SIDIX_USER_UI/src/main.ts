@@ -1120,9 +1120,9 @@ modeBurstBtn?.addEventListener('click', async () => {
   if (!prompt) return;
   appendMessage('user', prompt);
   if (chatInput) { chatInput.value = ''; chatInput.dispatchEvent(new Event('input')); }
-  const thinking = appendThinkingPlaceholder('🌌 Burst — exploring 6 angles...');
+  const thinking = appendThinkingPlaceholder('🌌 Burst — exploring 3 angles...');
   try {
-    const r = await agentBurst(prompt, { n: 6, topK: 2 });
+    const r = await agentBurst(prompt, { n: 3, topK: 2 });
     thinking.remove();
     const winnersList = r.winners.map(w =>
       `**${w.angle}** (score ${w.score.total.toFixed(2)})`
@@ -1422,11 +1422,28 @@ function appendMessage(
     citeRow.className = 'mt-3 pt-3 border-t border-gold-500/10 flex flex-wrap gap-2';
 
     textCitations.forEach(c => {
-      const chip = document.createElement('span');
-      chip.className = 'citation-chip';
-      chip.title = c.snippet ?? '';
-      chip.innerHTML = `<i data-lucide="book-open" class="w-3 h-3"></i><span>${c.filename}</span>`;
-      citeRow.appendChild(chip);
+      // Pivot 2026-04-26: web_search citations clickable, icon globe.
+      // Corpus citations: book-open icon, no link.
+      const isWeb = c.type === 'web_search' || (c.url && c.url.startsWith('http'));
+      const icon = isWeb ? 'globe' : 'book-open';
+      const filenameText = (c.filename ?? '').slice(0, 60);
+
+      if (isWeb && c.url) {
+        const link = document.createElement('a');
+        link.href = c.url;
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        link.className = 'citation-chip hover:text-gold-400 transition-colors';
+        link.title = c.snippet || c.url || '';
+        link.innerHTML = `<i data-lucide="${icon}" class="w-3 h-3"></i><span>${filenameText}</span>`;
+        citeRow.appendChild(link);
+      } else {
+        const chip = document.createElement('span');
+        chip.className = 'citation-chip';
+        chip.title = c.snippet ?? '';
+        chip.innerHTML = `<i data-lucide="${icon}" class="w-3 h-3"></i><span>${filenameText}</span>`;
+        citeRow.appendChild(chip);
+      }
     });
 
     bubble.appendChild(citeRow);

@@ -229,23 +229,102 @@ def refine(
     return text
 
 
+def burst_single_call(
+    base_prompt: str,
+    *,
+    n: int = 3,
+    system: str = "",
+    temperature: float = 0.85,
+    max_tokens: int = 1200,
+) -> list[dict[str, Any]]:
+    """
+    Pivot 2026-04-26: optimasi single LLM call replace N parallel calls.
+
+    Daripada N×LLM calls (mahal, lambat di RunPod Serverless karena cold
+    start tiap call), kita pakai 1 prompt yang minta LLM generate N
+    angle sekaligus. Lebih cepat 5-10x karena hanya 1 cold start total.
+
+    Trade-off: kurang divergence dibanding true parallel (model bisa
+    "kontaminasi" antar angle dalam single context). Tapi cukup buat
+    99% use case.
+    """
+    n = max(1, min(n, 6))
+    angles = _BURST_ANGLES[:n]
+    angle_block = "\n".join(
+        f"{i + 1}. **Angle: {key}** — {hint}"
+        for i, (key, hint) in enumerate(angles)
+    )
+    prompt = (
+        f"Berikut {n} sudut pandang berbeda untuk eksplorasi divergen:\n\n"
+        f"{angle_block}\n\n"
+        f"PERTANYAAN/TOPIK:\n{base_prompt}\n\n"
+        f"Tugasmu: untuk MASING-MASING angle di atas, tulis 2-3 paragraf "
+        f"eksplorasi (jangan filter diri sendiri, ini bukan jawaban final). "
+        f"Format output:\n\n"
+        f"=== ANGLE 1: {angles[0][0]} ===\n[isi]\n\n"
+        f"=== ANGLE 2: ...\n[isi]\n\n"
+        f"...dan seterusnya."
+    )
+    text, mode = ollama_generate(
+        prompt,
+        system=system,
+        max_tokens=max_tokens,
+        temperature=temperature,
+    )
+    if not text or mode == "mock_error":
+        return [{"angle": k, "text": "", "mode": mode, "ok": False} for k, _ in angles]
+
+    # Parse: split by "=== ANGLE N: <key> ===" markers
+    import re as _re
+    parts = _re.split(r"={3,}\s*ANGLE\s+\d+:\s*([\w_]+)\s*={3,}", text)
+    # parts = [prefix, key1, content1, key2, content2, ...]
+    candidates = []
+    for i in range(1, len(parts) - 1, 2):
+        key = parts[i].strip().lower()
+        content = parts[i + 1].strip()
+        if content:
+            candidates.append({"angle": key, "text": content, "mode": mode, "ok": True})
+    # Kalau parsing gagal (LLM tidak ikuti format), fallback: split by paragraph
+    if not candidates and text:
+        chunks = [c.strip() for c in text.split("\n\n") if c.strip()]
+        for i, chunk in enumerate(chunks[:n]):
+            angle_key = angles[i][0] if i < len(angles) else f"angle_{i + 1}"
+            candidates.append({"angle": angle_key, "text": chunk, "mode": mode, "ok": True})
+    return candidates
+
+
 def burst_refine(
     base_prompt: str,
     *,
-    n: int = 6,
+    n: int = 3,                        # Pivot 2026-04-26: default 3 (turun dari 6)
     system: str = "",
-    burst_temperature: float = 0.95,
+    burst_temperature: float = 0.85,   # turun dari 0.95 supaya fokus
     refine_temperature: float = 0.4,
     top_k: int = 2,
     return_all: bool = False,
+    fast_mode: bool = True,            # NEW: pakai single-call optimization
 ) -> dict[str, Any]:
-    """Full pipeline: burst (n divergent) → pareto select (top_k) → refine (1 final)."""
-    candidates = burst(
-        base_prompt,
-        n=n,
-        system=system,
-        temperature=burst_temperature,
-    )
+    """
+    Full pipeline: burst (n divergent) → pareto select (top_k) → refine (1 final).
+
+    fast_mode=True (default): pakai burst_single_call (1 LLM call, ~10-20s warm)
+    fast_mode=False: legacy parallel (N LLM calls, ~30-90s, lebih divergent)
+    """
+    if fast_mode:
+        candidates = burst_single_call(
+            base_prompt,
+            n=n,
+            system=system,
+            temperature=burst_temperature,
+            max_tokens=1200,
+        )
+    else:
+        candidates = burst(
+            base_prompt,
+            n=n,
+            system=system,
+            temperature=burst_temperature,
+        )
 
     winners = pareto_select(candidates, top_k=top_k)
     final = refine(
@@ -253,6 +332,7 @@ def burst_refine(
         winners,
         system=system,
         temperature=refine_temperature,
+        max_tokens=400,                # turun dari 512 supaya cepat refine
     )
 
     out: dict[str, Any] = {
@@ -263,6 +343,7 @@ def burst_refine(
         ],
         "n_candidates": len(candidates),
         "n_ok": sum(1 for c in candidates if c.get("ok")),
+        "fast_mode": fast_mode,
     }
     if return_all:
         out["all_candidates"] = candidates

@@ -359,11 +359,12 @@ class BranchCreateRequest(BaseModel):
 class BurstRequest(BaseModel):
     """Burst+Refinement (Gaga method) — multi-angle creative pipeline."""
     prompt: str
-    n: int = 6                  # jumlah angle (max 8)
+    n: int = 3                  # Pivot 2026-04-26: default turun ke 3 (max 6)
     top_k: int = 2              # winners di Pareto front
-    burst_temperature: float = 0.95
+    burst_temperature: float = 0.85
     refine_temperature: float = 0.4
     return_all: bool = False    # kalau True, kirim semua kandidat
+    fast_mode: bool = True      # single-call optimization (10-20s vs 30-90s)
 
 
 class TwoEyedRequest(BaseModel):
@@ -1001,11 +1002,12 @@ def create_app() -> "FastAPI":
             raise HTTPException(status_code=503, detail=f"burst module unavailable: {e}")
         result = burst_refine(
             req.prompt,
-            n=max(1, min(req.n, 8)),
+            n=max(1, min(req.n, 6)),
             top_k=max(1, min(req.top_k, 4)),
             burst_temperature=req.burst_temperature,
             refine_temperature=req.refine_temperature,
             return_all=req.return_all,
+            fast_mode=req.fast_mode,
         )
         return result
 
@@ -1703,24 +1705,38 @@ def create_app() -> "FastAPI":
         # Konversi citations ke format UI
         ui_citations = []
         for cit in session.citations:
+            ctype = cit.get("type", "")
             ui_citations.append({
                 "filename": (
                     cit.get("source_path")
                     or cit.get("source_title")
                     or cit.get("title")
                     or cit.get("url")
-                    or ("web search" if cit.get("type") == "web_search" else "corpus")
+                    or ("web search" if ctype == "web_search" else "corpus")
                 ),
                 "snippet": cit.get("snippet", ""),
                 "score": 1.0,
+                "url": cit.get("url", ""),
+                "type": ctype,
             })
-        # Ambil citations dari steps juga
+        # Ambil citations dari steps juga (web_search, search_corpus, dll)
+        # Pivot 2026-04-26 (v2): chain fallback url/title supaya web hasil
+        # tampil sebagai "Wikipedia: ..." bukan "corpus".
         for step in session.steps:
             for cit in step.action_args.get("_citations", []):
+                ctype = cit.get("type", "")
                 ui_citations.append({
-                    "filename": cit.get("source_path", cit.get("source_title", "corpus")),
-                    "snippet": "",
+                    "filename": (
+                        cit.get("source_path")
+                        or cit.get("source_title")
+                        or cit.get("title")
+                        or cit.get("url")
+                        or ("web search" if ctype == "web_search" else "corpus")
+                    ),
+                    "snippet": cit.get("snippet", ""),
                     "score": 1.0,
+                    "url": cit.get("url", ""),  # supaya UI bisa render link
+                    "type": ctype,
                 })
 
         # ── Initiative hooks ──────────────────────────────────────────────────

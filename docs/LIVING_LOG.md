@@ -6043,3 +6043,36 @@ Default = jawaban natural + footer dengan 1-2 saran kontekstual. User dapat valu
 - pytest: 520 passed, 1 deselected
 - Syntax check: OK 3 files
 - vite build: 49 KB index.html, 113 KB JS bundle
+
+## 2026-04-26 (lanjutan 5) — Citation merge bug + Burst optimization
+
+### Bug #1: Citations dari steps tampil "corpus" semua
+**Root cause:** `agent_serve.py` line 1721 (second loop yang ambil citations dari `step.action_args._citations`) hanya cek `source_path` + `source_title`, fallback ke literal "corpus". Web search citations punya field `url` + `title` (bukan source_path), jadi semua jadi "corpus".
+
+**Fix:** Apply chain fallback yang sama di second loop:
+```
+source_path → source_title → title → url → ('web search' if type=web_search else 'corpus')
+```
+
+Plus include `url` + `type` field di response supaya frontend bisa render web citation sebagai clickable link.
+
+**Frontend (main.ts:1419):** detect citation type — kalau `web_search` atau URL http, render sebagai `<a target="_blank">` dengan icon `globe` (vs `book-open` untuk corpus).
+
+### Bug #2: Burst lama (40-100s)
+**Root cause:** Burst 6 paralel LLM calls. Di RunPod Serverless workers_max=3 → 3 concurrent + 3 antri. Tiap call kena cold start individual. Total 40-100s.
+
+**Fix:** Optimization `burst_single_call()` — single LLM call dengan prompt yang minta N angle sekaligus dalam format `=== ANGLE 1: <key> ===\n[isi]`. Parse response dengan regex split. Trade-off: slight loss of true divergence (model bisa "kontaminasi" antar angle dalam single context), tapi 5-10x lebih cepat.
+
+**Default config baru:**
+- `n=3` (turun dari 6)
+- `fast_mode=True` (single-call default)
+- `burst_temperature=0.85` (turun dari 0.95 supaya fokus)
+- `refine max_tokens=400` (turun dari 512)
+- Total estimasi: ~10-20s warm, ~30-50s cold (vs 40-100s sebelumnya)
+
+**Backward compat:** `fast_mode=false` di request → tetap pakai true parallel (legacy behavior).
+
+### Validation
+- Syntax: 3 files OK
+- pytest: 520 passed, 1 deselected
+- vite build: 49 KB HTML, 114 KB JS
