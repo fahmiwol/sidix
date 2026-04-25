@@ -238,6 +238,11 @@
       <a class="nav-item" data-tab="users"><span class="icon">👥</span><span>Users</span></a>
       <a class="nav-item disabled"><span class="icon">🧰</span><span>Tool Permissions</span><span class="badge">soon</span></a>
 
+      <div class="nav-section">Cognitive</div>
+      <a class="nav-item" data-tab="patterns"><span class="icon">🧠</span><span>Patterns</span></a>
+      <a class="nav-item" data-tab="aspirations"><span class="icon">🎯</span><span>Aspirations</span></a>
+      <a class="nav-item" data-tab="skills"><span class="icon">🛠️</span><span>Skills</span></a>
+
       <div class="nav-section">Monitoring</div>
       <a class="nav-item" data-tab="health"><span class="icon">💚</span><span>System Health</span></a>
       <a class="nav-item" data-tab="activity"><span class="icon">📜</span><span>Activity Log</span></a>
@@ -423,6 +428,91 @@
       </div>
     </div>
 
+    <!-- ── TAB: Patterns (induktif generalisasi) ── -->
+    <div class="tab-pane" id="tab-patterns">
+      <div class="page-header">
+        <h2>🧠 Pattern Library</h2>
+        <p>Induktif generalisasi dari conversation. Setiap chat berpotensi menambah pattern baru. Ini "memory" SIDIX yang tumbuh — saat query domain match, pattern di-inject sebagai context ke ReAct.</p>
+      </div>
+
+      <div class="card">
+        <h3>📊 Statistik</h3>
+        <div class="stats-grid" id="patterns-stats">
+          <div class="stat-box"><div class="stat-num">—</div><div class="stat-label">Total</div></div>
+          <div class="stat-box"><div class="stat-num">—</div><div class="stat-label">Avg Confidence</div></div>
+          <div class="stat-box"><div class="stat-num">—</div><div class="stat-label">High Conf (≥0.75)</div></div>
+          <div class="stat-box"><div class="stat-num">—</div><div class="stat-label">Low Conf (&lt;0.4)</div></div>
+        </div>
+        <p id="patterns-domains" style="font-size: 11px; color: var(--text-dim); margin-top: 10px;"></p>
+        <div style="margin-top: 14px;">
+          <button onclick="loadPatterns()">🔄 Refresh</button>
+          <input id="patterns-test-text" type="text" placeholder='Test pattern extraction (e.g. "kalo X jadi Y, artinya Z juga jadi Y")' style="width: 60%; margin-left: 8px;" />
+          <button onclick="testPatternExtract()">⚗️ Test Extract</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>📋 Patterns Library</h3>
+        <div id="patterns-list"><div class="empty">Klik Refresh.</div></div>
+      </div>
+    </div>
+
+    <!-- ── TAB: Aspirations (capability gap detection) ── -->
+    <div class="tab-pane" id="tab-aspirations">
+      <div class="page-header">
+        <h2>🎯 Aspiration Library</h2>
+        <p>Capability gap dari user message ("GPT bisa, saya juga bisa"). Auto-decompose jadi spec implementasi: target, competitors, decomposition, resources, novel angle. Roadmap untuk SIDIX bikin tools baru.</p>
+      </div>
+
+      <div class="card">
+        <h3>📊 Statistik</h3>
+        <div class="stats-grid" id="aspirations-stats">
+          <div class="stat-box"><div class="stat-num">—</div><div class="stat-label">Total</div></div>
+          <div class="stat-box"><div class="stat-num">—</div><div class="stat-label">Draft</div></div>
+          <div class="stat-box"><div class="stat-num">—</div><div class="stat-label">In Progress</div></div>
+          <div class="stat-box"><div class="stat-num">—</div><div class="stat-label">Shipped</div></div>
+        </div>
+        <div style="margin-top: 14px;">
+          <button onclick="loadAspirations()">🔄 Refresh</button>
+          <input id="aspirations-test-text" type="text" placeholder='Test aspiration capture (e.g. "harusnya saya bisa bikin X")' style="width: 60%; margin-left: 8px;" />
+          <button onclick="testAspiration()">⚗️ Test Capture</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>📋 Aspirations Backlog</h3>
+        <div id="aspirations-list"><div class="empty">Klik Refresh.</div></div>
+      </div>
+    </div>
+
+    <!-- ── TAB: Skills (tool synthesis) ── -->
+    <div class="tab-pane" id="tab-skills">
+      <div class="page-header">
+        <h2>🛠️ Skills Library</h2>
+        <p>Tools yang SIDIX bikin sendiri (autonomous tool synthesis). Saat task baru muncul, SIDIX generate Python code → AST validate → sandbox test → save sebagai permanent skill. Compound capability seiring waktu.</p>
+      </div>
+
+      <div class="card">
+        <h3>📊 Statistik</h3>
+        <div class="stats-grid" id="skills-stats">
+          <div class="stat-box"><div class="stat-num">—</div><div class="stat-label">Total</div></div>
+          <div class="stat-box"><div class="stat-num">—</div><div class="stat-label">Tested ✓</div></div>
+          <div class="stat-box"><div class="stat-num">—</div><div class="stat-label">Deployed</div></div>
+          <div class="stat-box"><div class="stat-num">—</div><div class="stat-label">Pass Rate</div></div>
+        </div>
+        <div style="margin-top: 14px;">
+          <button onclick="loadSkills()">🔄 Refresh</button>
+          <input id="skills-task-text" type="text" placeholder='Synthesize new skill (e.g. "convert HTML table to CSV")' style="width: 60%; margin-left: 8px;" />
+          <button onclick="testSynthesize()">🤖 Synthesize</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>📋 Skills Registry</h3>
+        <div id="skills-list"><div class="empty">Klik Refresh.</div></div>
+      </div>
+    </div>
+
     <!-- ── TAB: Activity Log ── -->
     <div class="tab-pane" id="tab-activity">
       <div class="page-header">
@@ -479,6 +569,9 @@
         else if (t === 'health') loadHealth();
         else if (t === 'users') loadUsers();
         else if (t === 'activity') loadActivity();
+        else if (t === 'patterns') loadPatterns();
+        else if (t === 'aspirations') loadAspirations();
+        else if (t === 'skills') loadSkills();
       });
     });
 
@@ -895,6 +988,198 @@
       return String(s || '').replace(/[&<>"']/g, c => ({
         '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
       }[c]));
+    }
+
+    // ════════════════════════════════════════════════════════════════════════
+    // COGNITIVE TABS — Patterns + Aspirations + Skills (vol 5b)
+    // ════════════════════════════════════════════════════════════════════════
+
+    async function loadPatterns() {
+      const tok = getToken();
+      if (!tok) { showLogin(); return; }
+      try {
+        const res = await fetch(`${API_BASE}/admin/patterns/stats`, { headers: { 'x-admin-token': tok } });
+        if (res.status === 403) { sessionStorage.removeItem('sidix_admin_token'); showLogin(); return; }
+        const data = await res.json();
+        const s = data.stats || {};
+        document.getElementById('patterns-stats').innerHTML = `
+          <div class="stat-box"><div class="stat-num">${s.total ?? 0}</div><div class="stat-label">Total</div></div>
+          <div class="stat-box"><div class="stat-num">${s.avg_confidence ?? 0}</div><div class="stat-label">Avg Conf</div></div>
+          <div class="stat-box"><div class="stat-num">${s.high_conf ?? 0}</div><div class="stat-label">High Conf (≥0.75)</div></div>
+          <div class="stat-box"><div class="stat-num">${s.low_conf ?? 0}</div><div class="stat-label">Low Conf (&lt;0.4)</div></div>
+        `;
+        const domains = Object.entries(s.by_domain || {}).map(([k,v]) => `<code>${k}</code>:${v}`).join(' · ');
+        document.getElementById('patterns-domains').innerHTML = domains ? `Domains: ${domains}` : '';
+        const recent = data.recent || [];
+        const list = document.getElementById('patterns-list');
+        if (recent.length === 0) {
+          list.innerHTML = '<div class="empty">Belum ada pattern. Pattern akan auto-extracted dari conversation atau bisa di-test via "Test Extract".</div>';
+        } else {
+          list.innerHTML = recent.map(p => `
+            <div style="padding:10px 12px;border:1px solid var(--border);border-radius:8px;margin-bottom:8px;background:var(--bg-input)">
+              <div style="display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text-dim);margin-bottom:6px;">
+                <code style="font-size:10px;">${p.id || '?'}</code>
+                <span style="color:var(--gold);">conf ${(p.confidence ?? 0).toFixed(2)}</span>
+                <span>·</span>
+                <span>corroborated ${p.corroborations || 0}× · falsified ${p.falsifications || 0}×</span>
+              </div>
+              <div style="font-size:13px;color:var(--text);margin-bottom:6px;"><strong>Principle:</strong> ${escapeHtml(p.extracted_principle || '')}</div>
+              <div style="font-size:11px;color:var(--text-dim);margin-bottom:4px;"><strong>Source:</strong> ${escapeHtml((p.source_example || '').slice(0, 200))}</div>
+              <div style="font-size:10px;color:var(--text-dim);">domain: <code>${(p.applicable_domain || []).join(', ')}</code> · keywords: <code>${(p.keywords || []).join(', ')}</code></div>
+            </div>
+          `).join('');
+        }
+      } catch (e) {
+        document.getElementById('patterns-list').innerHTML = `<div class="empty">Network: ${e.message}</div>`;
+      }
+    }
+
+    async function testPatternExtract() {
+      const tok = getToken();
+      const text = document.getElementById('patterns-test-text').value.trim();
+      if (!text) return alert('Isi text dulu');
+      try {
+        const res = await fetch(`${API_BASE}/agent/patterns/extract`, {
+          method: 'POST',
+          headers: { 'x-admin-token': tok, 'content-type': 'application/json' },
+          body: JSON.stringify({ text }),
+        });
+        const data = await res.json();
+        if (data.ok) {
+          showStatus('add-status', '✓ Pattern extracted: ' + (data.pattern.extracted_principle || '').slice(0, 80), true);
+          loadPatterns();
+        } else {
+          alert('Gagal: ' + (data.reason || 'unknown'));
+        }
+      } catch (e) {
+        alert('Network: ' + e.message);
+      }
+    }
+
+    async function loadAspirations() {
+      const tok = getToken();
+      if (!tok) { showLogin(); return; }
+      try {
+        const res = await fetch(`${API_BASE}/admin/aspirations/stats`, { headers: { 'x-admin-token': tok } });
+        if (res.status === 403) { sessionStorage.removeItem('sidix_admin_token'); showLogin(); return; }
+        const data = await res.json();
+        const s = data.stats || {};
+        const bs = s.by_status || {};
+        document.getElementById('aspirations-stats').innerHTML = `
+          <div class="stat-box"><div class="stat-num">${s.total ?? 0}</div><div class="stat-label">Total</div></div>
+          <div class="stat-box"><div class="stat-num">${bs.draft ?? 0}</div><div class="stat-label">Draft</div></div>
+          <div class="stat-box"><div class="stat-num">${bs.in_progress ?? 0}</div><div class="stat-label">In Progress</div></div>
+          <div class="stat-box"><div class="stat-num">${bs.shipped ?? 0}</div><div class="stat-label">Shipped</div></div>
+        `;
+        const recent = data.recent || [];
+        const list = document.getElementById('aspirations-list');
+        if (recent.length === 0) {
+          list.innerHTML = '<div class="empty">Belum ada aspiration. Akan auto-captured saat user message match trigger ("harusnya bisa", "GPT bisa", "bikin ah").</div>';
+        } else {
+          list.innerHTML = recent.reverse().map(a => `
+            <div style="padding:12px;border:1px solid var(--border);border-radius:8px;margin-bottom:10px;background:var(--bg-input)">
+              <div style="display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text-dim);margin-bottom:8px;flex-wrap:wrap;">
+                <strong style="color:var(--gold);font-size:13px;">${escapeHtml(a.capability_target || 'Untitled')}</strong>
+                <span class="badge badge-${a.estimated_effort || 'medium'}">${a.estimated_effort || 'medium'}</span>
+                <span class="badge badge-${a.status || 'draft'}">${a.status || 'draft'}</span>
+                <code style="font-size:9px;margin-left:auto;">${a.id || '?'}</code>
+              </div>
+              <div style="font-size:11px;color:var(--text-dim);margin-bottom:6px;font-style:italic;">"${escapeHtml((a.user_message || '').slice(0, 160))}"</div>
+              ${a.novel_angle ? `<div style="font-size:12px;color:var(--text);margin-bottom:6px;"><strong>Novel angle:</strong> ${escapeHtml(a.novel_angle)}</div>` : ''}
+              ${(a.competitors_mentioned || []).length ? `<div style="font-size:10px;color:var(--text-dim);">vs ${(a.competitors_mentioned || []).map(c => `<code>${escapeHtml(c)}</code>`).join(', ')}</div>` : ''}
+              ${(a.decomposition || []).length ? `<details style="margin-top:6px;font-size:11px;"><summary style="cursor:pointer;color:var(--gold);">Decomposition (${(a.decomposition || []).length} steps)</summary><ol style="margin:6px 0 0 18px;color:var(--text-dim);">${(a.decomposition || []).map(s => `<li>${escapeHtml(s)}</li>`).join('')}</ol></details>` : ''}
+            </div>
+          `).join('');
+        }
+      } catch (e) {
+        document.getElementById('aspirations-list').innerHTML = `<div class="empty">Network: ${e.message}</div>`;
+      }
+    }
+
+    async function testAspiration() {
+      const tok = getToken();
+      const text = document.getElementById('aspirations-test-text').value.trim();
+      if (!text) return alert('Isi text dulu');
+      try {
+        const res = await fetch(`${API_BASE}/agent/aspirations/analyze`, {
+          method: 'POST',
+          headers: { 'x-admin-token': tok, 'content-type': 'application/json' },
+          body: JSON.stringify({ text }),
+        });
+        const data = await res.json();
+        if (data.ok) {
+          alert('✓ Aspiration captured!\n\nTarget: ' + (data.aspiration.capability_target || '?') + '\nEffort: ' + (data.aspiration.estimated_effort || '?'));
+          loadAspirations();
+        } else {
+          alert('Gagal: ' + (data.reason || 'unknown'));
+        }
+      } catch (e) {
+        alert('Network: ' + e.message);
+      }
+    }
+
+    async function loadSkills() {
+      const tok = getToken();
+      if (!tok) { showLogin(); return; }
+      try {
+        const res = await fetch(`${API_BASE}/admin/skills/stats`, { headers: { 'x-admin-token': tok } });
+        if (res.status === 403) { sessionStorage.removeItem('sidix_admin_token'); showLogin(); return; }
+        const data = await res.json();
+        const s = data.stats || {};
+        const bs = s.by_status || {};
+        document.getElementById('skills-stats').innerHTML = `
+          <div class="stat-box"><div class="stat-num">${s.total ?? 0}</div><div class="stat-label">Total</div></div>
+          <div class="stat-box"><div class="stat-num">${bs.tested ?? 0}</div><div class="stat-label">Tested ✓</div></div>
+          <div class="stat-box"><div class="stat-num">${bs.deployed ?? 0}</div><div class="stat-label">Deployed</div></div>
+          <div class="stat-box"><div class="stat-num">${((s.tested_pass_rate ?? 0) * 100).toFixed(0)}%</div><div class="stat-label">Pass Rate</div></div>
+        `;
+        const skills = data.skills || [];
+        const list = document.getElementById('skills-list');
+        if (skills.length === 0) {
+          list.innerHTML = '<div class="empty">Belum ada skill. Trigger via "Synthesize" — SIDIX akan generate Python code, validate AST, test sandbox.</div>';
+        } else {
+          list.innerHTML = skills.reverse().map(sk => `
+            <div style="padding:12px;border:1px solid var(--border);border-radius:8px;margin-bottom:10px;background:var(--bg-input)">
+              <div style="display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text-dim);margin-bottom:6px;flex-wrap:wrap;">
+                <code style="color:var(--gold);font-size:13px;">${escapeHtml(sk.name || '?')}</code>
+                <span class="badge badge-${sk.status || 'draft'}">${sk.status || 'draft'}</span>
+                ${sk.test_runs ? `<span>tests: ${sk.test_passes}/${sk.test_runs}</span>` : ''}
+                <code style="font-size:9px;margin-left:auto;">${sk.id || '?'}</code>
+              </div>
+              <div style="font-size:12px;color:var(--text);margin-bottom:6px;">${escapeHtml(sk.description || '')}</div>
+              ${sk.last_error ? `<div style="font-size:11px;color:var(--red);"><strong>Last error:</strong> ${escapeHtml(sk.last_error)}</div>` : ''}
+              ${sk.code ? `<details style="margin-top:6px;"><summary style="cursor:pointer;font-size:11px;color:var(--gold);">View code (${sk.code.split('\\n').length} lines)</summary><pre style="margin:6px 0 0;padding:8px;background:rgba(0,0,0,0.4);border-radius:4px;font-size:10px;overflow-x:auto;color:var(--text-dim);max-height:300px;">${escapeHtml(sk.code)}</pre></details>` : ''}
+            </div>
+          `).join('');
+        }
+      } catch (e) {
+        document.getElementById('skills-list').innerHTML = `<div class="empty">Network: ${e.message}</div>`;
+      }
+    }
+
+    async function testSynthesize() {
+      const tok = getToken();
+      const task = document.getElementById('skills-task-text').value.trim();
+      if (!task) return alert('Isi task description dulu');
+      const list = document.getElementById('skills-list');
+      list.innerHTML = '<div class="empty">⏳ Synthesizing... LLM gen spec → code → validate → sandbox test (~30-60s)</div>';
+      try {
+        const res = await fetch(`${API_BASE}/agent/skills/synthesize`, {
+          method: 'POST',
+          headers: { 'x-admin-token': tok, 'content-type': 'application/json' },
+          body: JSON.stringify({ task_description: task, auto_test: true }),
+        });
+        const data = await res.json();
+        if (data.ok) {
+          alert('✓ Skill synthesized!\n\nName: ' + (data.skill.name || '?') + '\nStatus: ' + (data.skill.status || '?') + '\nTest pass: ' + (data.skill.test_passes || 0) + '/' + (data.skill.test_runs || 0));
+          loadSkills();
+        } else {
+          alert('Gagal: ' + (data.reason || 'unknown'));
+          loadSkills();
+        }
+      } catch (e) {
+        alert('Network: ' + e.message);
+      }
     }
 
     // ── Auto load — cek token, kalau ada langsung dashboard, kalau tidak: login ──

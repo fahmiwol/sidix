@@ -2276,6 +2276,29 @@ def create_app() -> "FastAPI":
             latency_ms=int((time.time() - _t_ask_start) * 1000),
         )
 
+        # ── Cognitive auto-hooks (vol 5b) ─────────────────────────────────────
+        # Setiap chat = potential pattern (induktif) + aspiration capture.
+        # Non-blocking, best-effort. Fire-and-forget — kalau LLM busy, skip.
+        # Filosofi: "compound learning dari setiap interaksi" — SIDIX makin
+        # pintar tanpa manusia campur tangan.
+        try:
+            from . import pattern_extractor as _pe
+            _pe.maybe_extract_from_conversation(
+                user_message=req.question,
+                assistant_response=session.final_answer,
+                session_id=session.session_id,
+            )
+        except Exception:
+            pass  # cognitive hook never blocks main flow
+        try:
+            from . import aspiration_detector as _ad
+            _ad.maybe_capture_aspiration(
+                req.question,
+                session_id=session.session_id,
+            )
+        except Exception:
+            pass
+
         return {
             "answer": session.final_answer,
             "citations": ui_citations[: min(5, req.k)],
@@ -2495,6 +2518,26 @@ def create_app() -> "FastAPI":
                 citations_count=len(citations_for_log),
                 latency_ms=int((time.time() - t_start) * 1000),
             )
+
+            # ── 9c. Cognitive auto-hooks (vol 5b) ──────────────────────────────
+            # Pattern + Aspiration capture per chat. Non-blocking, best-effort.
+            try:
+                from . import pattern_extractor as _pe
+                _pe.maybe_extract_from_conversation(
+                    user_message=req.question,
+                    assistant_response=answer,
+                    session_id=session.session_id,
+                )
+            except Exception:
+                pass
+            try:
+                from . import aspiration_detector as _ad
+                _ad.maybe_capture_aspiration(
+                    req.question,
+                    session_id=session.session_id,
+                )
+            except Exception:
+                pass
 
             # ── 10. Done event ─────────────────────────────────────────────────
             event = _json.dumps({
