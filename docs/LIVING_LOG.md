@@ -6128,3 +6128,47 @@ Tracking actual cost per-day di RunPod console:
 - Projected monthly at current rate (with cheaper GPU): $10-15/month
 - Budget headroom: $15-20/month for traffic growth
 - ⚠️ Set hard cap di RunPod Settings → Billing → Spending Limit = $25 supaya auto-pause saat capai limit
+
+## 2026-04-26 (lanjutan 7) — Whitelist tier wired + comprehensive TASK_LOG
+
+### USER REQUEST
+> "limit chatnya naikini aja buat yg free.. atau gimana metode limitationnya biar user free enak pakenya."
+> "semuanya, jangan lupa catat. semua yang udah kamu kerjakan, yang sedang, dan yang akan."
+
+### IMPL
+**Backend `agent_serve.py`**:
+- `/quota/status` endpoint: accept `x-user-email` header, pass ke `check_quota`
+- Response include `unlimited: bool` flag (true untuk whitelist/admin tier)
+- `/ask/stream` endpoint: extract email dari `x-user-email` header → `effective_user_email`, pass ke `check_quota`
+
+**Backend `token_quota.py`** (sudah commit `3c0172d`):
+- `QuotaTier` literal include `"whitelist"`
+- `QUOTA_LIMITS`: guest 5 / free 30 / sponsored 200 / whitelist 9999 / admin 9999
+- `_is_whitelisted_user(user_id, email)` helper — 2-layer (env + JSON store)
+- `check_quota()` accept `email` param, prioritas whitelist check di awal
+
+**Frontend `main.ts`**:
+- `updateQuotaBadge(used, limit, tier, unlimited?)` — accept new param
+- Hide badge kalau tier in (whitelist/admin/sponsored) atau unlimited=true
+- 4 call sites di-update untuk pass `q.unlimited` dari API response
+
+### DOCUMENTATION
+- `research_notes/218_rate_limit_strategy_free_tier.md` — analisa 5 strategi (daily counter, rolling 24h, hourly throttle, token bucket, time-based session) + rekomendasi 3 phase
+- `docs/TASK_LOG_20260426.md` — comprehensive continuity log:
+  - DONE: 49 tasks (security, backend pivot, frontend UX, supermodel, infra, docs)
+  - IN-PROGRESS: A1/A2/A3/C
+  - NEXT: P1 (5), P2 (7), P3 (7) + 5 known bugs
+  - Statistik sprint: 30+ commits, ~50 files, 520 tests pass, 7 LIVING_LOG sections, 3 research notes
+
+### UNTUK USER (DEBUG AVATAR)
+3 langkah cek auth:
+1. Hard refresh `Ctrl+Shift+R`
+2. DevTools Console → reload → cari log `[SIDIX auth] login: { name, hasAvatar, email }`
+3. DevTools Application → LocalStorage → cek `sidix_user_id` + `sidix_user_email`
+
+Kalau localStorage kosong → belum login Supabase, klik tombol Sign In + selesaikan Google OAuth flow.
+
+### Validation
+- pytest: 520 passed, 1 deselected
+- Syntax: 2 backend files OK
+- vite build: 49 KB HTML, 114 KB JS bundle

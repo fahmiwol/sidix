@@ -1796,6 +1796,7 @@ def create_app() -> "FastAPI":
 
         # ── Quota check ────────────────────────────────────────────────────────
         effective_user_id = (req.user_id or "").strip() or request.headers.get("x-user-id", "anon").strip()
+        effective_user_email = request.headers.get("x-user-email", "").strip() or None
         is_admin = _admin_ok(request)
         client_ip = _client_ip(request)
         effective_conversation_id = (req.conversation_id or "").strip() or request.headers.get("x-conversation-id", "").strip()
@@ -1825,7 +1826,7 @@ def create_app() -> "FastAPI":
             # ── 1. Cek quota sebelum proses ────────────────────────────────────
             try:
                 from .token_quota import check_quota, record_usage
-                quota = check_quota(user_id=effective_user_id, ip=client_ip, is_admin=is_admin)
+                quota = check_quota(user_id=effective_user_id, ip=client_ip, is_admin=is_admin, email=effective_user_email)
                 if not quota["ok"]:
                     event = _json.dumps({
                         "type": "quota_limit",
@@ -3232,18 +3233,24 @@ h1{{color:#0af}}p{{color:#aaa}}a{{color:#0af}}</style></head>
     def quota_status(request: Request):
         """
         Cek quota user saat ini.
-        Header: x-user-id (optional, jika sudah login).
-        Dipakai frontend untuk tampilkan counter quota.
+        Headers: x-user-id (optional), x-user-email (optional, untuk whitelist check).
+        Pivot 2026-04-26: cek 2-layer whitelist (env + JSON store) → tier='whitelist'
+        unlimited untuk owner/dev/sponsor/researcher/contributor.
         """
         try:
             from .token_quota import check_quota
-            uid  = request.headers.get("x-user-id", "").strip() or None
-            ip   = _client_ip(request)
-            adm  = _admin_ok(request)
-            return check_quota(user_id=uid, ip=ip, is_admin=adm)
+            uid    = request.headers.get("x-user-id", "").strip() or None
+            email  = request.headers.get("x-user-email", "").strip() or None
+            ip     = _client_ip(request)
+            adm    = _admin_ok(request)
+            result = check_quota(user_id=uid, ip=ip, is_admin=adm, email=email)
+            # Add 'unlimited' flag supaya frontend bisa hide badge
+            tier = result.get("tier", "guest")
+            result["unlimited"] = tier in ("whitelist", "admin")
+            return result
         except Exception as e:
-            return {"ok": True, "tier": "guest", "used": 0, "limit": 3,
-                    "remaining": 3, "error": str(e)}
+            return {"ok": True, "tier": "guest", "used": 0, "limit": 5,
+                    "remaining": 5, "unlimited": False, "error": str(e)}
 
     @app.get("/quota/stats", tags=["Quota"])
     def quota_stats(request: Request, date: str = ""):

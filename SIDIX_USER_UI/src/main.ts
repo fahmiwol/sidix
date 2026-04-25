@@ -326,21 +326,33 @@ document.getElementById('contrib-submit')?.addEventListener('click', async () =>
 
 // ── Quota Counter + Limit Overlay ────────────────────────────────────────────
 
-function updateQuotaBadge(used: number, limit: number, tier: string) {
+function updateQuotaBadge(used: number, limit: number, tier: string, unlimited?: boolean) {
   const badge = document.getElementById('quota-badge');
   const badgeText = document.getElementById('quota-badge-text');
   if (!badge || !badgeText) return;
 
-  const remaining = Math.max(0, limit - used);
-  badgeText.textContent = `${remaining}/${limit}`;
-  badge.title = LANG === 'id'
-    ? `Sisa pesan gratis hari ini: ${remaining} dari ${limit}`
-    : `Remaining free messages today: ${remaining} of ${limit}`;
+  // Pivot 2026-04-26: hide badge untuk unlimited tier (whitelist / admin / sponsored).
+  // Display logic:
+  //   guest    → tampil "5/5", warna kuning saat ≤2, merah saat 0
+  //   free     → tampil "30/30"
+  //   sponsored/whitelist/admin → hidden (no need lihat counter)
+  const isUnlimited = unlimited === true || tier === 'whitelist' || tier === 'admin' || tier === 'sponsored';
+  const showBadge = !isUnlimited && (tier === 'guest' || tier === 'free');
 
-  // Tampilkan badge hanya untuk guest/free (sponsored & admin tidak perlu lihat ini)
-  const showBadge = tier === 'guest' || tier === 'free';
+  if (showBadge) {
+    const remaining = Math.max(0, limit - used);
+    badgeText.textContent = `${remaining}/${limit}`;
+    badge.title = LANG === 'id'
+      ? `Sisa pesan gratis hari ini: ${remaining} dari ${limit}`
+      : `Remaining free messages today: ${remaining} of ${limit}`;
+  }
+
   badge.classList.toggle('hidden', !showBadge);
   badge.style.display = showBadge ? 'flex' : 'none';
+
+  // Untuk unlimited tier, tidak perlu set warna — badge hidden anyway
+  if (!showBadge) return;
+  const remaining = Math.max(0, limit - used);
 
   // Warna badge berubah saat hampir habis
   if (remaining === 0) {
@@ -416,7 +428,7 @@ document.getElementById('quota-badge')?.addEventListener('click', () => {
     })(),
   }).then(r => r.json()).then((q: any) => {
     if (q && !q.ok && q.remaining === 0) showQuotaOverlay(q);
-    else if (q) updateQuotaBadge(q.used ?? 0, q.limit ?? 3, q.tier ?? 'guest');
+    else if (q) updateQuotaBadge(q.used ?? 0, q.limit ?? 5, q.tier ?? "guest", q.unlimited);
   }).catch(() => {});
 });
 document.getElementById('quota-btn-login')?.addEventListener('click', () => {
@@ -894,7 +906,7 @@ onAuthChange(async (user) => {
     void fetch(`${BRAIN_QA_BASE}/quota/status`, {
       headers: { 'x-user-id': user.id },
     }).then(r => r.json()).then((q: any) => {
-      if (q) updateQuotaBadge(q.used ?? 0, q.limit ?? 10, q.tier ?? 'free');
+      if (q) updateQuotaBadge(q.used ?? 0, q.limit ?? 30, q.tier ?? "free", q.unlimited);
     }).catch(() => {});
 
     // User baru login
@@ -1585,7 +1597,7 @@ async function handleSend() {
       // Update quota badge dari meta event
       if (meta.quota) {
         const q = meta.quota as unknown as QuotaInfo & { used: number; limit: number; remaining: number; tier: string };
-        updateQuotaBadge(q.used ?? 0, q.limit ?? 3, q.tier ?? 'guest');
+        updateQuotaBadge(q.used ?? 0, q.limit ?? 5, q.tier ?? "guest", q.unlimited);
       }
     },
     onToken: (text) => {
@@ -1617,7 +1629,7 @@ async function handleSend() {
       // Update quota badge dari done event
       if ((meta as any)?.quota) {
         const q = (meta as any).quota as { used: number; limit: number; remaining: number; tier: string };
-        updateQuotaBadge(q.used ?? 0, q.limit ?? 3, q.tier ?? 'guest');
+        updateQuotaBadge(q.used ?? 0, q.limit ?? 5, q.tier ?? "guest", q.unlimited);
       }
 
       // Epistemic tag badge (FACT/OPINION/UNKNOWN/SPECULATION)
