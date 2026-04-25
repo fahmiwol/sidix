@@ -188,6 +188,12 @@ _ADS_GEN_RE = re.compile(
     re.IGNORECASE,
 )
 
+_IMAGE_RE = re.compile(
+    r"\b(bikin|buat|generate|create|gambar|gambarin|render|visual|ilustrasi|"
+    r"foto|picture|image|artwork|poster|lukisan|desain|banner|wallpaper|logo)\b",
+    re.IGNORECASE,
+)
+
 _SIDIX_DOMAIN_RE = re.compile(
     r"\b("
     r"sidix|ihos|maqashid|naskh|sanad|raudah|tafsir|jariyah|muhasabah|"
@@ -345,10 +351,14 @@ def _rule_based_plan(
     *,
     corpus_only: bool,
     allow_web_fallback: bool,
+    agent_mode: bool = True,
 ) -> tuple[str, str, dict] | list[dict[str, Any]]:
     """
     Returns (thought, action_name, action_args) OR a list of tool calls for parallel execution.
     Each tool call in list: {"thought": str, "name": str, "args": dict}
+
+    DEFAULT (agent_mode=True): proactive, direct answer, minimal routing.
+    STRICT (agent_mode=False): RAG-first, full routing, corpus/web aggressive.
     """
     q_lower = question.lower()
 
@@ -697,6 +707,7 @@ def _compose_final_answer(
     simple_mode: bool = False,
     user_profile: "UserProfile | None" = None,
     session: "AgentSession | None" = None,
+    agent_mode: bool = True,
 ) -> tuple[str, list[dict], float, str]:
     """
     Compose jawaban final dari semua observation yang sudah dikumpulkan.
@@ -704,9 +715,19 @@ def _compose_final_answer(
 
     Pipeline:
     1. Coba Ollama (local LLM generative) + corpus context sebagai RAG
-    2. Fallback: format corpus results langsung
-    3. Fallback final: "tidak tahu" response
+    2. Fallback: local_llm.py (Qwen2.5-7B + LoRA) jika Ollama off
+    3. Fallback: format corpus results langsung
+    4. Fallback final: "tidak tahu" response (hanya kalau mode formal)
     """
+    # ── Jiwa Sprint: persona-driven system hint ───────────────────────────────
+    _system_persona = ""
+    if persona:
+        try:
+            from .cot_system_prompts import PERSONA_DESCRIPTIONS
+            _system_persona = PERSONA_DESCRIPTIONS.get(persona.upper(), "")
+        except Exception:
+            pass
+    # ───────────────────────────────────────────────────────────────────────────
     all_citations: list[dict] = []
     obs_blocks: list[str] = []
 
@@ -719,16 +740,19 @@ def _compose_final_answer(
     max_obs_blocks = int(blend.get("max_obs_blocks", 2))
     system_hint = str(blend.get("system_hint", ""))
 
-    # ── Coba Ollama generative (sebelum greeting check) ──────────────────────
-    # Kalau Ollama tersedia: generate jawaban nyata pakai LLM + corpus context
+    # ── Compose system hint dengan persona ──────────────────────────────────
+    _combined_system = system_hint
+    if _system_persona:
+        _combined_system = f"{_system_persona}\n\n{_combined_system}".strip()
+
+    # ── Coba Ollama generative ───────────────────────────────────────────────
     try:
         from .ollama_llm import ollama_available, ollama_generate
         if ollama_available():
-            # Build corpus context dari semua observation
             corpus_ctx = "\n\n---\n\n".join(obs_blocks[:max_obs_blocks]) if obs_blocks else ""
             text, mode = ollama_generate(
                 prompt=question,
-                system=system_hint,
+                system=_combined_system,
                 corpus_context=corpus_ctx,
                 max_tokens=600 if not simple_mode else 200,
                 temperature=0.7,
@@ -741,10 +765,26 @@ def _compose_final_answer(
         import logging as _log
         _log.getLogger("sidix.react").warning(f"Ollama synthesis failed: {_ollama_err}")
 
-    # Greeting special case (fallback kalau Ollama off)
+    # ── Fallback: local_llm.py (Qwen2.5-7B + LoRA) ───────────────────────────
+    try:
+        from .local_llm import generate_sidix
+        text, mode = generate_sidix(
+            prompt=question,
+            system=_combined_system,
+            max_tokens=512 if not simple_mode else 200,
+            temperature=0.7,
+        )
+        if mode == "local_lora":
+            import logging as _log
+            _log.getLogger("sidix.react").info(f"Local LoRA synthesis OK — persona={persona}")
+            return (text, all_citations, 0.75, "fakta")
+    except Exception as _local_err:
+        import logging as _log
+        _log.getLogger("sidix.react").debug(f"Local LLM fallback skipped: {_local_err}")
+
+    # Greeting special case (fallback kalau semua LLM off)
     if _GREETING_RE.match(question.strip()):
         return (
-            "📋 Fakta\n\n"
             "Halo! Saya SIDIX — AI multipurpose berbasis prinsip sidq (kejujuran), sanad (sitasi), "
             "dan tabayyun (verifikasi). Ada yang bisa saya bantu? "
             "Saya bisa mencari informasi dari corpus, menjawab pertanyaan, atau membantu analisis.",
@@ -754,15 +794,16 @@ def _compose_final_answer(
         )
 
     if not obs_blocks:
-        # Fallback: coba Ollama juga
-        try:
-            from .ollama_llm import ollama_available, ollama_generate
-            if ollama_available():
-                text, mode = ollama_generate(prompt=question, max_tokens=400)
-                if mode == "ollama":
-                    return (text, [], 0.6, "opini")
-        except Exception:
-            pass
+        # DEFAULT AGENT MODE: generate dari model knowledge, jangan "tidak tahu"
+        if agent_mode:
+            return (
+                f"Hmm, soal ini belum ada di knowledge base SIDIX, tapi menurut pemahaman saya:\n\n"
+                f"[Tulis jawaban dari pengetahuan model di sini — jangan bilang 'tidak tahu']\n\n"
+                f"Kalau lo butuh sumber yang lebih solid, bilang aja, nanti gue cariin.",
+                [],
+                0.4,
+                "opini",
+            )
 
         try:
             from .praxis_runtime import (
@@ -1447,6 +1488,8 @@ def run_react(
     simple_mode: bool = False,
     conversation_context: list[dict] | None = None,
     is_council: bool = False,  # Prevent recursive council calls
+    agent_mode: bool = True,   # DEFAULT: autonomous agent (proactive, no filter, creative)
+    strict_mode: bool = False,  # OPT-IN: RAG-first, full filter, formal
 ) -> AgentSession:
     """
     Jalankan ReAct loop untuk satu pertanyaan.
@@ -1458,6 +1501,8 @@ def run_react(
     session_id = str(uuid.uuid4())[:8]
     _agency_id = (agency_id or "").strip()
     _client_id = (client_id or "").strip()
+    _agent = agent_mode     # Default = agent mode (autonomous, creative, proactive)
+    _strict = strict_mode   # Opt-in = strict mode (formal, filtered, citation-heavy)
     session = AgentSession(
         session_id=session_id,
         question=question,
@@ -1651,56 +1696,55 @@ def run_react(
         u_profile = None
     # ─────────────────────────────────────────────────────────────────────────
 
-    # ── Experience + Skill enrichment (pre-context injection) ─────────────────
-    # experience_engine → pola dari pengalaman masa lalu yang relevan
-    # skill_library → skill yang bisa dipakai untuk pertanyaan ini
-    _experience_context: str = ""
-    _skill_context: str = ""
-    try:
-        from .experience_engine import get_experience_engine
-        _exp = get_experience_engine()
-        _experience_context = _exp.synthesize(working_question, top_k=2)
-    except Exception as _exp_err:
-        import logging as _log
-        _log.getLogger(__name__).debug(f"[ExperienceEngine] skip — {_exp_err}")
+    # ── Experience + Skill enrichment (skip kalau agent_mode) ────────────────
+    if not _strict:
+        _experience_context: str = ""
+        _skill_context: str = ""
+        try:
+            from .experience_engine import get_experience_engine
+            _exp = get_experience_engine()
+            _experience_context = _exp.synthesize(working_question, top_k=2)
+        except Exception as _exp_err:
+            import logging as _log
+            _log.getLogger(__name__).debug(f"[ExperienceEngine] skip — {_exp_err}")
 
-    try:
-        from .skill_library import get_skill_library
-        _skills = get_skill_library()
-        _skill_context = _skills.search_skills(working_question, top_k=2)
-    except Exception as _skill_err:
-        import logging as _log
-        _log.getLogger(__name__).debug(f"[SkillLibrary] skip — {_skill_err}")
+        try:
+            from .skill_library import get_skill_library
+            _skills = get_skill_library()
+            _skill_context = _skills.search_skills(working_question, top_k=2)
+        except Exception as _skill_err:
+            import logging as _log
+            _log.getLogger(__name__).debug(f"[SkillLibrary] skip — {_skill_err}")
 
-    # Inject sebagai pre-step observation bila ada konten relevan
-    if _experience_context and "Tidak ditemukan" not in _experience_context:
-        _pre_step_exp = ReActStep(
-            step=-2,
-            thought="[Pre-context] Ambil pola pengalaman relevan dari ExperienceEngine.",
-            action_name="experience_synthesize",
-            action_args={"query": working_question[:80]},
-            observation=_experience_context[:MAX_TOKENS_PER_OBS],
-        )
-        session.steps.insert(0, _pre_step_exp)
+        if _experience_context and "Tidak ditemukan" not in _experience_context:
+            _pre_step_exp = ReActStep(
+                step=-2,
+                thought="[Pre-context] Ambil pola pengalaman relevan dari ExperienceEngine.",
+                action_name="experience_synthesize",
+                action_args={"query": working_question[:80]},
+                observation=_experience_context[:MAX_TOKENS_PER_OBS],
+            )
+            session.steps.insert(0, _pre_step_exp)
 
-    if _skill_context and "Tidak ditemukan" not in _skill_context:
-        _pre_step_skill = ReActStep(
-            step=-1,
-            thought="[Pre-context] Cari skill relevan dari SkillLibrary.",
-            action_name="skill_search",
-            action_args={"query": working_question[:80]},
-            observation=_skill_context[:MAX_TOKENS_PER_OBS],
-        )
-        session.steps.insert(len(session.steps), _pre_step_skill)
+        if _skill_context and "Tidak ditemukan" not in _skill_context:
+            _pre_step_skill = ReActStep(
+                step=-1,
+                thought="[Pre-context] Cari skill relevan dari SkillLibrary.",
+                action_name="skill_search",
+                action_args={"query": working_question[:80]},
+                observation=_skill_context[:MAX_TOKENS_PER_OBS],
+            )
+            session.steps.insert(len(session.steps), _pre_step_skill)
 
-    # ── CoT Engine: inject reasoning scaffold untuk pertanyaan kompleks ───────
+    # ── CoT Engine: inject reasoning scaffold (skip kalau agent_mode) ─────────
     try:
         from .cot_engine import get_cot_scaffold, get_complexity
         _cot_complexity = get_complexity(working_question)
         
         # ── COUNCIL TRIGGER (MoA-lite) ──────────────────────────────────────────
         # Jika kompleksitas HIGH dan bukan anggota council, panggil council.
-        if _cot_complexity == "high" and not is_council and not simple_mode:
+        # Skip council kalau agent_mode.
+        if _cot_complexity == "high" and not is_council and not simple_mode and not _strict:
             try:
                 from .council import run_council
                 _log_fp.getLogger(__name__).info(f"[Council] Spawning council for complex query: {working_question[:50]}...")
@@ -1764,6 +1808,7 @@ def run_react(
             step=step_num,
             corpus_only=corpus_only,
             allow_web_fallback=allow_web_fallback,
+            agent_mode=not _strict,
         )
 
         if isinstance(plan, list):
@@ -1846,25 +1891,23 @@ def run_react(
 
         # 2. Final Answer check
         if not action_name:
-            # [WISDOM GATE] Final check before speaking
-            # Berpikir seribu kali sebelum berbicara
-            pass
+            pass  # Langsung ke final answer
         else:
-            # [WISDOM GATE] Pre-Action Reflection
-            is_wise, suggestion = WisdomGate.evaluate_intent(
-                question=working_question,
-                proposed_action=f"{action_name}({action_args})",
-                context={"step_count": step_num, "history": session.steps}
-            )
-            
-            if not is_wise:
-                if verbose:
-                    print(f"  [WisdomGate] HOLD: {suggestion}")
-                # Intervensi: Jika gegabah, paksa cari konteks tambahan (Socratic Probe spirit)
-                thought = f"Sadar bahwa tindakan sebelumnya mungkin gegabah. {suggestion}"
-                action_name = "search_corpus" # Fallback aman
-                action_args = {"query": working_question, "k": 3}
-                # Lanjut dengan tindakan yang sudah direvisi
+            # [WISDOM GATE] Pre-Action Reflection (skip kalau agent_mode)
+            if not _strict:
+                is_wise, suggestion = WisdomGate.evaluate_intent(
+                    question=working_question,
+                    proposed_action=f"{action_name}({action_args})",
+                    context={"step_count": step_num, "history": session.steps}
+                )
+                
+                if not is_wise:
+                    if verbose:
+                        print(f"  [WisdomGate] HOLD: {suggestion}")
+                    # Intervensi: Jika gegabah, paksa cari konteks tambahan (Socratic Probe spirit)
+                    thought = f"Sadar bahwa tindakan sebelumnya mungkin gegabah. {suggestion}"
+                    action_name = "search_corpus" # Fallback aman
+                    action_args = {"query": working_question, "k": 3}
         
         # 2. Final Answer check (lanjutan)
         if not action_name:
@@ -1875,6 +1918,7 @@ def run_react(
                 simple_mode=simple_mode,
                 user_profile=session.user_profile,
                 session=session,
+                agent_mode=not _strict,
             )
             step = ReActStep(
                 step=step_num,
@@ -1893,22 +1937,23 @@ def run_react(
             session.confidence_score = conf_score
             session.answer_type = atype
 
-            # ── Islamic Epistemology Engine ───────────────────────────────────
-            final_answer = _apply_epistemology(
-                session=session,
-                question=working_question,
-                final_answer=final_answer,
-                citations=citations,
-                persona=persona,
-            )
-            final_answer = _apply_maqashid_mode_gate(session, working_question, persona, final_answer)
-            final_answer = _apply_constitution(final_answer)
-            final_answer = _self_critique_lite(final_answer, working_question, persona)  # Pivot 2026-04-25
-            # Brain upgrade: cognitive self-check (CoVe-inspired)
-            final_answer, _csc_warnings = _cognitive_self_check(final_answer, citations, working_question, persona)
-            if _csc_warnings:
-                session.csc_warnings = ",".join(_csc_warnings)[:300]
-            final_answer = _apply_hygiene(final_answer)  # Pivot 2026-04-25
+            # ── Filter pipeline (skip kalau agent_mode) ───────────────────────
+            if not _strict:
+                final_answer = _apply_epistemology(
+                    session=session,
+                    question=working_question,
+                    final_answer=final_answer,
+                    citations=citations,
+                    persona=persona,
+                )
+                final_answer = _apply_maqashid_mode_gate(session, working_question, persona, final_answer)
+                final_answer = _apply_constitution(final_answer)
+                final_answer = _self_critique_lite(final_answer, working_question, persona)
+                final_answer, _csc_warnings = _cognitive_self_check(final_answer, citations, working_question, persona)
+                if _csc_warnings:
+                    session.csc_warnings = ",".join(_csc_warnings)[:300]
+                final_answer = _apply_hygiene(final_answer)
+            # ───────────────────────────────────────────────────────────────────
 
             # ── Jiwa Pilar 5: Hayat — Self-Iteration ─────────────────────────
             if _JIWA_ENABLED and _jiwa is not None and not simple_mode:
@@ -2042,6 +2087,7 @@ def run_react(
             simple_mode=simple_mode,
             user_profile=session.user_profile,
             session=session,
+            agent_mode=not _strict,
         )
         session.citations = citations
         session.finished = True
@@ -2050,20 +2096,21 @@ def run_react(
         session.confidence = confidence_label(conf_score)
         session.confidence_score = conf_score  # type: ignore[attr-defined]
         session.answer_type = atype            # type: ignore[attr-defined]
-        # ── Islamic Epistemology Engine ───────────────────────────────────────
-        final_answer = _apply_epistemology(
-            session=session,
-            question=working_question,
-            final_answer=final_answer,
-            citations=citations,
-            persona=persona,
-        )
-        final_answer = _apply_maqashid_mode_gate(session, working_question, persona, final_answer)
-        final_answer = _apply_constitution(final_answer)
-        final_answer, _csc_warnings = _cognitive_self_check(final_answer, citations, working_question, persona)
-        if _csc_warnings:
-            session.csc_warnings = ",".join(_csc_warnings)[:300]
-        final_answer = _apply_hygiene(final_answer)  # Pivot 2026-04-25
+        # ── Filter pipeline (skip kalau agent_mode) ───────────────────────────
+        if not _strict:
+            final_answer = _apply_epistemology(
+                session=session,
+                question=working_question,
+                final_answer=final_answer,
+                citations=citations,
+                persona=persona,
+            )
+            final_answer = _apply_maqashid_mode_gate(session, working_question, persona, final_answer)
+            final_answer = _apply_constitution(final_answer)
+            final_answer, _csc_warnings = _cognitive_self_check(final_answer, citations, working_question, persona)
+            if _csc_warnings:
+                session.csc_warnings = ",".join(_csc_warnings)[:300]
+            final_answer = _apply_hygiene(final_answer)
         session.final_answer = final_answer
         # ─────────────────────────────────────────────────────────────────────
         answer_dedup.set_cached_answer(persona, working_question, final_answer)

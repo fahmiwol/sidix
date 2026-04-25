@@ -152,6 +152,8 @@ class ChatRequest(BaseModel):
     corpus_only: bool = False
     allow_web_fallback: bool = True
     simple_mode: bool = False
+    agent_mode: bool = True    # DEFAULT: autonomous agent (proactive, creative, no filter)
+    strict_mode: bool = False  # OPT-IN: RAG-first, full filter, formal citations
     client_id: str = ""        # Branch context (Agency OS)
     agency_id: str = ""        # Agency / tenant context (Agency OS)
     conversation_id: str = ""  # Optional thread id (client-side)
@@ -257,6 +259,8 @@ class AskRequest(BaseModel):
     corpus_only: bool = False
     allow_web_fallback: bool = True
     simple_mode: bool = False
+    agent_mode: bool = True    # DEFAULT: autonomous agent (proactive, creative, no filter)
+    strict_mode: bool = False  # OPT-IN: RAG-first, full filter, formal citations
     conversation_id: str = ""  # Thread id untuk memory persistence
     user_id: str = "anon"
 
@@ -660,6 +664,8 @@ def create_app() -> "FastAPI":
                 corpus_only=req.corpus_only,
                 allow_web_fallback=req.allow_web_fallback,
                 simple_mode=req.simple_mode,
+                agent_mode=req.agent_mode,
+                strict_mode=req.strict_mode,
                 conversation_context=conversation_context,
             )
         except Exception as e:
@@ -715,6 +721,77 @@ def create_app() -> "FastAPI":
             steps_trace=_build_steps_trace(session.steps),
             planner_used=getattr(session, "planner_used", False),
             planner_savings=getattr(session, "planner_savings", 0.0),
+        )
+
+    # ── POST /agent/generate ──────────────────────────────────────────────────
+    # Jiwa Sprint: pure general chat tanpa ReAct loop / tool / corpus overhead.
+    # Direct generation dari Ollama/local_llm dengan persona hint.
+    class GenerateRequest(BaseModel):
+        prompt: str
+        persona: str = "UTZ"
+        max_tokens: int = 600
+        temperature: float = 0.7
+
+    class GenerateResponse(BaseModel):
+        text: str
+        mode: str  # "ollama" | "local_lora" | "mock"
+        persona: str
+
+    @app.post("/agent/generate", response_model=GenerateResponse)
+    def agent_generate(req: GenerateRequest, request: Request):
+        _enforce_rate(request)
+        _enforce_daily(request)
+        _bump_metric("agent_generate")
+        if not req.prompt.strip():
+            raise HTTPException(status_code=400, detail="prompt tidak boleh kosong")
+
+        p = (req.persona or "UTZ").strip().upper() or "UTZ"
+        if p not in _ALLOWED_PERSONAS:
+            p = "UTZ"
+
+        # Build system prompt: base SIDIX_SYSTEM + persona way-of-being
+        _system = ""
+        try:
+            from .ollama_llm import SIDIX_SYSTEM
+            from .cot_system_prompts import PERSONA_DESCRIPTIONS
+            _persona_hint = PERSONA_DESCRIPTIONS.get(p, "")
+            _system = f"{SIDIX_SYSTEM}\n\n{_persona_hint}".strip() if _persona_hint else SIDIX_SYSTEM
+        except Exception:
+            pass
+
+        # 1. Coba Ollama dulu
+        try:
+            from .ollama_llm import ollama_available, ollama_generate
+            if ollama_available():
+                text, mode = ollama_generate(
+                    prompt=req.prompt,
+                    system=_system,
+                    max_tokens=req.max_tokens,
+                    temperature=req.temperature,
+                )
+                if mode == "ollama":
+                    return GenerateResponse(text=text, mode="ollama", persona=p)
+        except Exception:
+            pass
+
+        # 2. Fallback ke local_llm.py
+        try:
+            from .local_llm import generate_sidix
+            text, mode = generate_sidix(
+                prompt=req.prompt,
+                system=_system,
+                max_tokens=req.max_tokens,
+                temperature=req.temperature,
+            )
+            if mode == "local_lora":
+                return GenerateResponse(text=text, mode="local_lora", persona=p)
+        except Exception:
+            pass
+
+        return GenerateResponse(
+            text="⚠ Tidak ada engine inference yang tersedia (Ollama offline & local LLM tidak ter-load).",
+            mode="mock",
+            persona=p,
         )
 
     # ── GET /agent/orchestration ───────────────────────────────────────────────
@@ -1096,6 +1173,8 @@ def create_app() -> "FastAPI":
             corpus_only=req.corpus_only,
             allow_web_fallback=req.allow_web_fallback,
             simple_mode=req.simple_mode,
+            agent_mode=req.agent_mode,
+            strict_mode=req.strict_mode,
         )
         _store_session(session)
         rate_limit.record_daily_use(_daily_client_key(request))
@@ -1232,6 +1311,8 @@ def create_app() -> "FastAPI":
                     corpus_only=req.corpus_only,
                     allow_web_fallback=req.allow_web_fallback,
                     simple_mode=req.simple_mode,
+                    agent_mode=req.agent_mode,
+                strict_mode=req.strict_mode,
                     conversation_id=effective_conversation_id,
                     conversation_context=conversation_context,
                 )
