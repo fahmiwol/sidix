@@ -740,10 +740,34 @@ def _compose_final_answer(
     max_obs_blocks = int(blend.get("max_obs_blocks", 2))
     system_hint = str(blend.get("system_hint", ""))
 
-    # ── Compose system hint dengan persona ──────────────────────────────────
+    # ── Compose system hint dengan persona + multi-layer memory ─────────────
     _combined_system = system_hint
     if _system_persona:
         _combined_system = f"{_system_persona}\n\n{_combined_system}".strip()
+
+    # Inject multi-layer memory dari session (SIDIX 2.0)
+    if session is not None:
+        try:
+            from .agent_memory import MultiLayerMemory, MemoryLayer, inject_memory_to_system_prompt
+            _mem_dict = getattr(session, "multi_layer_memory", None)
+            if _mem_dict:
+                mem = MultiLayerMemory()
+                for key in ["working", "episodic", "semantic", "procedural"]:
+                    for item in _mem_dict.get(key, []):
+                        mem.__getattribute__(key).append(MemoryLayer(
+                            name=item.get("name", ""),
+                            content=item.get("content", ""),
+                            relevance_score=item.get("score", 0.0),
+                            source=item.get("source", ""),
+                        ))
+                _combined_system = inject_memory_to_system_prompt(
+                    base_system=_combined_system,
+                    memory=mem,
+                    max_chars=2500,
+                )
+        except Exception as _mem_inj_err:
+            import logging as _log
+            _log.getLogger(__name__).debug(f"[MemoryInject] skip — {_mem_inj_err}")
 
     # ── Coba Ollama generative ───────────────────────────────────────────────
     try:
@@ -1783,6 +1807,21 @@ def run_react(
         _log_cot.getLogger(__name__).debug("[CoT] skip — %s", _cot_err)
     # ─────────────────────────────────────────────────────────────────────────
 
+    # ── Multi-Layer Memory: build & inject (SIDIX 2.0) ────────────────────────
+    _multi_layer_memory = None
+    try:
+        from .agent_memory import build_multi_layer_memory
+        _multi_layer_memory = build_multi_layer_memory(
+            query=working_question,
+            conversation_context=conversation_context,
+            persona=persona,
+        )
+        session.multi_layer_memory = _multi_layer_memory.to_dict()
+    except Exception as _mem_err:
+        import logging as _log_mem
+        _log_mem.getLogger(__name__).debug(f"[Memory] skip — {_mem_err}")
+    # ───────────────────────────────────────────────────────────────────────────
+
     if verbose:
         print(f"\n{'='*50}")
         print(f"[SIDIX Agent] Session: {session_id}")
@@ -1993,6 +2032,24 @@ def run_react(
                     )
                 except Exception:
                     pass  # Aql non-blocking
+            # ─────────────────────────────────────────────────────────────────
+
+            # ── SIDIX 2.0: Self-learning from session ─────────────────────────
+            try:
+                from .agent_memory import learn_from_session
+                _success = float(conf_score or 0.6)
+                if session.citations:
+                    _success = min(1.0, _success + 0.1)
+                learn_from_session(
+                    session_id=session_id,
+                    question=working_question,
+                    final_answer=final_answer,
+                    steps=session.steps,
+                    persona=persona,
+                    success_indicator=_success,
+                )
+            except Exception:
+                pass  # Self-learning non-blocking
             # ─────────────────────────────────────────────────────────────────
 
             session.final_answer = final_answer
