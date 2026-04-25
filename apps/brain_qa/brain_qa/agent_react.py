@@ -518,31 +518,36 @@ def _rule_based_plan(
                 {"slug": slug, "n": 10},
             )
 
-        # Pivot 2026-04-25: current-events routing — web_search aggressive default.
-        # Bila pertanyaan butuh data terkini, langsung web_search sebelum corpus.
-        if _needs_web_search(question) and allow_web_fallback and not corpus_only:
+        # ── Routing dengan pengkondisian hierarkis ────────────────────────────
+        # 1. Topik SIDIX + butuh data terkini → PARALLEL corpus + web (Jiwa Sprint 4)
+        #    Ini diletakkan DI ATAS web_search aggressive default supaya parallel
+        #    path benar-benar tercapai.
+        needs_corpus = _should_prioritize_corpus(question, corpus_only=corpus_only)
+        needs_web = _needs_web_search(question)
+        if needs_corpus and needs_web and allow_web_fallback and not corpus_only:
+            return [
+                {
+                    "thought": f"Topik SIDIX + butuh data terkini. Cari di korpus paralel dengan web: '{question}'",
+                    "name": "search_corpus",
+                    "args": {"query": question, "k": 5, "persona": persona}
+                },
+                {
+                    "thought": "Cari data terkini di web paralel dengan korpus.",
+                    "name": "web_search",
+                    "args": {"query": question, "max_results": 5}
+                }
+            ]
+
+        # 2. Data terkini saja (bukan topik SIDIX) → web_search aggressive default
+        if needs_web and allow_web_fallback and not corpus_only:
             return (
                 f"Pertanyaan menyangkut data terkini/real-time. Langsung web_search: '{question}'.",
                 "web_search",
                 {"query": question, "max_results": 5},
             )
 
-        # Default routing: corpus untuk topik SIDIX, model untuk topik umum.
-        if _should_prioritize_corpus(question, corpus_only=corpus_only):
-            # EMBODIED: Parallelize search_corpus and web_search if allow_web_fallback
-            if allow_web_fallback and _needs_web_search(question):
-                return [
-                    {
-                        "thought": f"Topik SIDIX + butuh data terkini. Cari di korpus paralel dengan web: '{question}'",
-                        "name": "search_corpus",
-                        "args": {"query": question, "k": 5, "persona": persona}
-                    },
-                    {
-                        "thought": "Cari data terkini di web paralel dengan korpus.",
-                        "name": "web_search",
-                        "args": {"query": question, "max_results": 5}
-                    }
-                ]
+        # 3. Topik SIDIX saja → corpus
+        if needs_corpus:
             return (
                 f"Topik terkait SIDIX/sumber internal. Gunakan search_corpus dengan query: '{question}'.",
                 "search_corpus",
