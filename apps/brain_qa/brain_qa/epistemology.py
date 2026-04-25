@@ -657,6 +657,7 @@ def format_for_register(
     register: AudienceRegister,
     yaqin_level: YaqinLevel,
     citations: Optional[List[str]] = None,
+    user_query: str = "",
 ) -> str:
     """
     Format jawaban sesuai register audiens tanpa mendistorsi substansi.
@@ -664,10 +665,33 @@ def format_for_register(
     BURHAN    → teknis penuh + citation + epistemic markers
     JADAL     → analitis + ringkasan + citation minimal
     KHITABAH  → naratif sederhana + analogi + tanpa jargon
+
+    Pivot 2026-04-25: disclaimer (`_Berdasarkan referensi yang tersedia_`)
+    JANGAN ditempel untuk casual / non-sensitive query — itu kaku dan
+    bikin output greeting/coding terasa boilerplate.
     """
     citations = citations or []
 
-    # Confidence disclaimer berdasarkan yaqin level
+    # Casual-topic gate: greeting/sapaan/non-sensitive → return as-is
+    try:
+        from .maqashid_profiles import is_casual_query, is_sensitive_topic
+        _is_casual = is_casual_query(user_query)
+        _is_sensitive = is_sensitive_topic(user_query, answer)
+    except Exception:
+        _is_casual = False
+        _is_sensitive = True
+
+    if _is_casual or not _is_sensitive:
+        # Untuk casual chat / coding / brainstorm — output natural tanpa disclaimer.
+        # Citation block tetap ditampilkan kalau ada (tidak distortif).
+        if register == AudienceRegister.BURHAN and citations:
+            cites = "\n".join(f"  [{i + 1}] {c}" for i, c in enumerate(citations))
+            return f"{answer}\n\n**Sumber:**\n{cites}"
+        if register == AudienceRegister.JADAL and citations:
+            return f"{answer}\n\n*(Sumber: {', '.join(citations[:3])})*"
+        return answer
+
+    # Confidence disclaimer berdasarkan yaqin level — HANYA untuk sensitive topic
     yaqin_disclaimer = {
         YaqinLevel.ILM_AL_YAQIN:  "Berdasarkan referensi yang tersedia",
         YaqinLevel.AIN_AL_YAQIN:  "Berdasarkan data yang diobservasi",
@@ -676,7 +700,6 @@ def format_for_register(
     disclaimer = yaqin_disclaimer.get(yaqin_level, "")
 
     if register == AudienceRegister.BURHAN:
-        # Format teknis lengkap
         citation_block = ""
         if citations:
             cites = "\n".join(f"  [{i+1}] {c}" for i, c in enumerate(citations))
@@ -685,16 +708,13 @@ def format_for_register(
         return f"{disclaimer}: {answer}{citation_block}\n\n{epistemic}"
 
     elif register == AudienceRegister.JADAL:
-        # Format analitis + citation sederhana
         citation_note = ""
         if citations:
             citation_note = f"\n\n*(Sumber: {', '.join(citations[:3])})*"
         return f"{answer}{citation_note}"
 
     else:  # KHITABAH
-        # Format naratif, hilangkan jargon teknis
         simplified = answer
-        # Hapus code blocks dalam mode khitabah
         simplified = re.sub(r"```[\s\S]*?```", "[lihat dokumentasi teknis]", simplified)
         return f"{simplified}\n\n_{disclaimer}_" if disclaimer else simplified
 
@@ -963,6 +983,7 @@ class IjtihadLoop:
             register=result.audience_register,
             yaqin_level=result.yaqin_level,
             citations=result.citations,
+            user_query=question,
         )
 
         result.final_answer = formatted

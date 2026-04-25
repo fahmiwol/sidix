@@ -107,21 +107,77 @@ _DANGEROUS_INTENTS: dict[str, list[str]] = {
 # ── Persona → Mode Mapping ─────────────────────────────────────────────────────
 
 _PERSONA_MODE_MAP: dict[str, MaqashidMode] = {
-    # Nama persona baru (2026-04-23)
-    "AYMAN":  MaqashidMode.IJTIHAD,   # Strategic Sage — deep thinking, visioner
-    "ABOO":   MaqashidMode.ACADEMIC,  # The Analyst — strict, logis, sanad
-    "OOMAR":  MaqashidMode.IJTIHAD,   # The Craftsman — technical exploration
-    "ALEY":   MaqashidMode.GENERAL,   # The Learner — general, beginner-friendly
-    "UTZ":    MaqashidMode.CREATIVE,  # The Generalist — creative default
+    # Nama persona baru — selaras dengan PIVOT 2026-04-25 Liberation Sprint:
+    #   AYMAN  = general/chat hangat   → GENERAL  (bukan IJTIHAD lagi)
+    #   ABOO   = engineer/technical    → ACADEMIC
+    #   OOMAR  = strategist/bisnis     → GENERAL  (bukan IJTIHAD — strategi pakai data, bukan eksplorasi spekulatif)
+    #   ALEY   = researcher/akademik   → ACADEMIC (bukan GENERAL — peneliti perlu sanad)
+    #   UTZ    = creative/visual       → CREATIVE
+    "AYMAN":  MaqashidMode.GENERAL,
+    "ABOO":   MaqashidMode.ACADEMIC,
+    "OOMAR":  MaqashidMode.GENERAL,
+    "ALEY":   MaqashidMode.ACADEMIC,
+    "UTZ":    MaqashidMode.CREATIVE,
     # Alias nama lama (backward compat — deprecated, pakai nama baru)
-    "MIGHAN": MaqashidMode.IJTIHAD,
+    "MIGHAN": MaqashidMode.GENERAL,
     "TOARD":  MaqashidMode.ACADEMIC,
-    "FACH":   MaqashidMode.IJTIHAD,
-    "HAYFAR": MaqashidMode.GENERAL,
+    "FACH":   MaqashidMode.GENERAL,
+    "HAYFAR": MaqashidMode.ACADEMIC,
     "INAN":   MaqashidMode.CREATIVE,
     # fallback
     "DEFAULT": MaqashidMode.GENERAL,
 }
+
+
+# ── Casual / Sensitive Topic Detection ────────────────────────────────────────
+# Pivot 2026-04-25 (Liberation Sprint): label epistemik & disclaimer JANGAN
+# di-tempel ke output untuk topik casual (greeting, coding, brainstorm umum).
+# Hanya topik sensitif (fiqh/medis/data/berita/statistik) yang dapat tag.
+
+_CASUAL_GREETING_RE = __import__("re").compile(
+    r"^\s*(halo+w*|hai+|hi+|hey+|hello+|p+\s*$|test+|coba|ping|"
+    r"selamat\s+(pagi|siang|sore|malam)|assalamu'?alaikum|"
+    r"apa\s*kabar|gimana\s*kabarnya|good\s+(morning|afternoon|evening|night))"
+    r"[\s!\.\?]*$",
+    __import__("re").IGNORECASE,
+)
+
+_SENSITIVE_TOPIC_TERMS = {
+    # Fiqh / syariah
+    "fiqh", "syariah", "halal", "haram", "fatwa", "ijtihad", "mazhab", "ibadah",
+    "shalat", "puasa", "zakat", "haji", "umroh", "nikah", "talak", "warisan",
+    "muamalah", "ribawi", "riba",
+    # Medis
+    "obat", "dosis", "diagnosis", "penyakit", "gejala", "vaksin", "operasi",
+    "kanker", "diabetes", "hipertensi", "anti-biotik", "antibiotik",
+    # Klaim data / statistik / berita
+    "statistik", "persentase", "berita", "menurut data", "menurut riset",
+    "menurut studi", "menurut penelitian", "menurut penelitia",
+}
+
+
+def is_casual_query(query: str) -> bool:
+    """True kalau query casual (greeting/sapaan singkat tanpa substansi sensitif)."""
+    if not query:
+        return True
+    q = query.strip()
+    if len(q) < 3:
+        return True
+    if _CASUAL_GREETING_RE.match(q):
+        return True
+    # Query sangat pendek tanpa sensitive term → casual
+    lower = q.lower()
+    if any(term in lower for term in _SENSITIVE_TOPIC_TERMS):
+        return False
+    if len(q.split()) <= 4 and "?" not in q:
+        return True
+    return False
+
+
+def is_sensitive_topic(query: str, output: str = "") -> bool:
+    """True kalau query atau output mengandung term topik sensitif (fiqh/medis/data)."""
+    blob = (query + " " + output).lower()
+    return any(term in blob for term in _SENSITIVE_TOPIC_TERMS)
 
 
 def get_mode_by_persona(persona_name: str) -> MaqashidMode:
@@ -214,7 +270,16 @@ def evaluate_maqashid(
         }
 
     elif mode == MaqashidMode.ACADEMIC:
-        # Academic: sanad label wajib
+        # Pivot 2026-04-25: epistemik label CONTEXTUAL — wajib hanya untuk
+        # topik sensitif. Casual greeting / coding di mode academic pun
+        # tidak butuh sanad missing warning.
+        if is_casual_query(user_query) or not is_sensitive_topic(user_query, generated_output):
+            return {
+                "status": "pass",
+                "mode": mode.value,
+                "reasons": [],
+                "tagged_output": generated_output,
+            }
         has_label = any(
             label in generated_output
             for label in ["[FACT]", "[FAKTA]", "[OPINION]", "[OPINI]",
@@ -235,7 +300,15 @@ def evaluate_maqashid(
         }
 
     elif mode == MaqashidMode.IJTIHAD:
-        # Ijtihad: tag [EXPLORATORY], bukan [FATWA]
+        # Pivot 2026-04-25: [EXPLORATORY] tag HANYA untuk topik sensitif
+        # (fiqh/syariah/medis), bukan blanket per response.
+        if is_casual_query(user_query) or not is_sensitive_topic(user_query, generated_output):
+            return {
+                "status": "pass",
+                "mode": mode.value,
+                "reasons": [],
+                "tagged_output": generated_output,
+            }
         tagged = generated_output
         if "[EXPLORATORY]" not in generated_output and "[FATWA]" not in generated_output:
             tagged += "\n\n[EXPLORATORY — ini adalah eksplorasi ijtihad, bukan fatwa]"
