@@ -807,14 +807,44 @@ def _compose_final_answer(
         _log.getLogger("sidix.react").debug(f"Local LLM fallback skipped: {_local_err}")
 
     # Greeting special case (fallback kalau semua LLM off)
+    # ── Jiwa Sprint fix: persona-aware greeting, bukan hardcoded formal ──────
     if _GREETING_RE.match(question.strip()):
+        _greeting_by_persona = {
+            "AYMAN": (
+                "Halo! Senang ketemu kamu hari ini. Aku SIDIX — biasanya aku bantu orang-orang "
+                "ngehubungin ide-ide yang sepertinya nggak nyambung, atau jelasin hal kompleks "
+                "pakai cerita sederhana. Ada yang lagi dipikirin? Cerita aja, kita obrolin bareng."
+            ),
+            "ABOO": (
+                "Yo. SIDIX here. Lagi mikirin sistem apa nih? Kalau ada yang rusak, lambat, "
+                "atau bikin pusing — langsung aja, gue suka bongkar-bongkar bottleneck. "
+                "Nggak usah basa-basi."
+            ),
+            "OOMAR": (
+                "Halo. SIDIX. Lagi lihat big picture dari sesuatu, atau butuh strategi? "
+                "Aku biasanya ngebantu orang connect the dots di level tinggi. "
+                "Apa yang jadi concern utama lo sekarang?"
+            ),
+            "ALEY": (
+                "Hai! Aku SIDIX — penasaran sama banyak hal. Lagi riset apa nih? "
+                "Aku suka nyambungin knowledge dari domain yang beda-beda. "
+                "Tanya aja, atau kita eksplorasi bareng."
+            ),
+            "UTZ": (
+                "Halo halo! 🎨 SIDIX di sini. Lagi butuh ide liar, creative burst, "
+                "atau mau refine sesuatu yang udah ada? Aku mode: vomit ide dulu, "
+                "baru pilih yang gems. Vibe apa hari ini?"
+            ),
+        }
+        _greeting = _greeting_by_persona.get(
+            (persona or "UTZ").upper(),
+            _greeting_by_persona["AYMAN"],
+        )
         return (
-            "Halo! Saya SIDIX — AI multipurpose berbasis prinsip sidq (kejujuran), sanad (sitasi), "
-            "dan tabayyun (verifikasi). Ada yang bisa saya bantu? "
-            "Saya bisa mencari informasi dari corpus, menjawab pertanyaan, atau membantu analisis.",
+            _greeting,
             [],
             0.5,
-            "fakta",
+            "opini",
         )
 
     if not obs_blocks:

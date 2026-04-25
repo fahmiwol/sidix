@@ -1218,6 +1218,7 @@ async function handleSend() {
   const isImageIntent = /(bikin|buat|generate|create|gambarkan|render|lukiskan).*?(gambar|foto|ilustrasi|image|picture|visual|artwork|poster|lukisan|desain)|(gambar|foto|ilustrasi|image|artwork).*?(bikin|buat|generate|create)/i.test(q_lower);
   const thinking = document.createElement('div');
   thinking.className = 'flex justify-start';
+  thinking.id = 'sidix-thinking-indicator';
   thinking.innerHTML = isImageIntent
     ? `<div class="msg-ai px-5 py-4 flex items-center gap-3">
         <div class="thinking-dot"></div>
@@ -1225,20 +1226,21 @@ async function handleSend() {
         <div class="thinking-dot"></div>
         <span class="text-xs text-parchment-400">🎨 Menggambar... (~90 detik di SIDIX local GPU)</span>
       </div>`
-    : `<div class="msg-ai px-5 py-4 flex items-center gap-2">
+    : `<div class="msg-ai px-5 py-4 flex items-center gap-3">
         <div class="thinking-dot"></div>
         <div class="thinking-dot"></div>
         <div class="thinking-dot"></div>
+        <span class="text-xs text-parchment-400">Sedang berpikir...</span>
       </div>`;
   chatMessages.appendChild(thinking);
   chatMessages.scrollTop = chatMessages.scrollHeight;
 
   const persona = (personaSel?.value ?? 'AYMAN') as Persona;
 
-  // Streaming bubble
-  thinking.remove();
+  // Streaming bubble (hidden dulu, muncul setelah token pertama)
   const streamWrap = document.createElement('div');
   streamWrap.className = 'flex justify-start animate-fsu';
+  streamWrap.style.display = 'none';
   const streamBubble = document.createElement('div');
   streamBubble.className = 'max-w-[78%] px-5 py-4 msg-ai text-parchment-200';
   const streamText = document.createElement('p');
@@ -1251,6 +1253,7 @@ async function handleSend() {
 
   const citations: Citation[] = [];
   let fullText = '';
+  let firstTokenReceived = false;
 
   const convId = getCurrentConversationId();
   await askStream(question, persona, 5, {
@@ -1264,6 +1267,11 @@ async function handleSend() {
       }
     },
     onToken: (text) => {
+      if (!firstTokenReceived) {
+        firstTokenReceived = true;
+        thinking.remove();
+        streamWrap.style.display = '';
+      }
       fullText += text;
       streamText.textContent = fullText;
       chatMessages.scrollTop = chatMessages.scrollHeight;
@@ -1331,38 +1339,12 @@ async function handleSend() {
         streamBubble.appendChild(citeRow);
         initIcons();
       }
-      if (meta?.confidence) {
-        const conf = document.createElement('p');
-        conf.className = 'text-[10px] text-parchment-500 mt-2';
-        conf.textContent = `Keyakinan: ${meta.confidence}`;
-        streamBubble.appendChild(conf);
-      }
-      if (meta?.session_id) {
-        const fb = document.createElement('div');
-        fb.className = 'mt-2 flex items-center gap-2 text-[11px] text-parchment-500';
-        fb.innerHTML = '<span class="mr-1">Feedback:</span>';
-        const up = document.createElement('button');
-        up.type = 'button';
-        up.className = 'px-2 py-0.5 rounded bg-warm-700 hover:bg-warm-600 text-parchment-200';
-        up.textContent = '👍';
-        up.title = 'Membantu';
-        up.addEventListener('click', () => {
-          void submitFeedback(meta.session_id!, 'up').catch(() => {});
-          up.disabled = true;
-        });
-        const down = document.createElement('button');
-        down.type = 'button';
-        down.className = 'px-2 py-0.5 rounded bg-warm-700 hover:bg-warm-600 text-parchment-200';
-        down.textContent = '👎';
-        down.title = 'Kurang tepat';
-        down.addEventListener('click', () => {
-          void submitFeedback(meta.session_id!, 'down').catch(() => {});
-          down.disabled = true;
-        });
-        fb.appendChild(up);
-        fb.appendChild(down);
-        streamBubble.appendChild(fb);
-      }
+      // SIDIX 2.0: hide confidence & feedback untuk agent mode (conversational)
+      // Metadata epistemic hanya ditampilkan di strict_mode / research — nanti bisa
+      // di-enable via flag dari backend. Untuk sekarang, biarkan conversation bersih.
+      // (confidence dan feedback tetap terekam di backend untuk analytics)
+      // if (meta?.confidence) { ... }
+      // if (meta?.session_id) { ... }
     },
     onError: (msg) => {
       streamWrap.remove();

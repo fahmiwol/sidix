@@ -4724,7 +4724,8 @@ Branch System, berjiwa IHOS. Pilot pertama: Tiranyx Digital Agency.
   - [DOC] Research Note 212: Epistemik Kehati-hatian.
 
 [2026-04-25] [IMPL] Creative Thinking Engine: Integrasi Prinsip Inovasi Bisnizy.
-  - [UPDATE] creative_framework.py: Penambahan logika eframe_problem (Bagaimana jika...) dan rainstorm_divergent_ideas.
+  - [UPDATE] creative_framework.py: Penambahan logika 
+eframe_problem (Bagaimana jika...) dan rainstorm_divergent_ideas.
   - [DOC] Research Note 213: Mesin Kreativitas SIDIX.
 
 [2026-04-25] [IMPL] Inovasi Berkelanjutan: Ingest Teori Kreativitas & Inovasi.
@@ -5531,3 +5532,43 @@ Append `OLLAMA_MODEL=qwen2.5:1.5b` ke `/opt/sidix/.env`. Alasan: model `sidix-lo
 
 ### DOC: docs/HANDOFF_KIMI_TO_CLAUDE_20260425.md
 KIMI's handoff doc copy dari `C:\SIDIX-AI\docs\` ke worktree, akan di-commit bersama Claude's response sebagai dokumentasi continuity. Format: 5 open issues, deploy status table, anti-bentrok rules, key file list, test commands.
+
+---
+
+### 2026-04-25 — HANDOFF: Kimi → Claude (Complete Pivot Summary)
+
+**HANDOFF:** Dokumen handoff komprehensif dibuat: `docs/HANDOFF_KIMI_TO_CLAUDE_20260425.md`
+
+**Isi handoff:**
+- Ringkasan semua perubahan kode hari ini (agent mode default, strict_mode, memory, streaming, persona rewrite, system prompt, research docs, landing page)
+- 5 Open Issues dengan priority & langkah debug
+- Deploy status VPS (sidix-brain online, sidix-ui serve dist lama, Ollama timeout, landing page unsynced)
+- Instruksi khusus untuk Claude: jangan diulang, anti-bentrok protocol, aturan inference
+- File kunci yang berubah + cara test + konteks visi
+
+**Commit terakhir:** `90ab07b` — LOG: SIDIX 2.0 DEPLOYED TO VPS — LIVE!
+
+**Catatan:** User sudah melakukan update manual di VPS. Handoff ini untuk mencegah Claude mengulang pekerjaan atau salah konteks.
+
+
+
+### 2026-04-25 — FIX: Greeting persona-aware + Frontend UX (Jiwa)
+
+**FIX:** Greeting fallback di `agent_react.py` — persona-aware, bukan hardcoded formal.
+- Sebelumnya: "Halo! Saya SIDIX — AI multipurpose berbasis prinsip sidq..." (formal, kaku)
+- Sekarang: 5 greeting sesuai persona (AYMAN hangat/empatik, ABOO nyelekit, OOMAR strategis, ALEY penasaran, UTZ playful)
+- Greeting fallback ini trigger kalau semua LLM off (Ollama timeout, local LLM fail)
+
+**FIX:** Frontend thinking indicator + loading UX di `SIDIX_USER_UI/src/main.ts`:
+- Sebelumnya: 3 dot tanpa teks, langsung di-remove sebelum streaming
+- Sekarang: "Sedang berpikir..." dengan dot animation, persist sampai token pertama datang
+- Stream bubble hidden sampai token pertama muncul — user tahu sistem sedang proses
+
+**FIX:** Hide confidence score + feedback buttons untuk v2.0 agent mode.
+- Sebelumnya: "Keyakinan: tinggi" + 👍👎 selalu muncul di setiap response
+- Sekarang: Dihide untuk conversational mode (metadata tetap terekam backend untuk analytics)
+- Cocok visi v2.0: agent = humanis, tanpa clutter epistemik di casual chat
+
+**Catatan:** TypeScript pre-existing errors (api.ts quota, main.ts conversationId, catch, QuotaInfo) — tidak di-fix karena teritori Otak / bukan dari edit ini.
+
+**TODO rebuild UI:** `cd /opt/sidix/SIDIX_USER_UI && npm install && npm run build && pm2 restart sidix-ui`
