@@ -134,9 +134,95 @@
 
     /* Empty state */
     .empty { text-align: center; color: var(--text-dim); padding: 32px; font-size: 13px; }
+
+    /* ── Login Overlay ── */
+    .login-overlay {
+      position: fixed; inset: 0; z-index: 1000;
+      background: linear-gradient(135deg, #0a0908 0%, #16130f 100%);
+      display: flex; align-items: center; justify-content: center;
+      padding: 20px;
+    }
+    .login-overlay.hidden { display: none; }
+    .login-card {
+      width: 100%; max-width: 420px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 36px 32px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.6), 0 0 0 1px rgba(212,168,83,0.05);
+    }
+    .login-logo { text-align: center; margin-bottom: 24px; }
+    .login-logo .icon { font-size: 48px; }
+    .login-logo h1 {
+      margin: 12px 0 4px; font-size: 22px;
+      color: var(--gold); letter-spacing: 0.5px;
+    }
+    .login-logo p {
+      margin: 0; font-size: 11px; color: var(--text-dim);
+      text-transform: uppercase; letter-spacing: 2px;
+    }
+    .login-card form { display: flex; flex-direction: column; gap: 4px; }
+    .login-card label { margin-top: 14px; }
+    .login-card button[type="submit"] {
+      margin-top: 22px; padding: 12px 16px; font-size: 14px;
+      width: 100%;
+    }
+    .login-help {
+      margin-top: 18px; padding: 12px 14px;
+      background: var(--bg-input); border-radius: 8px;
+      font-size: 11px; color: var(--text-dim);
+      line-height: 1.5;
+    }
+    .login-help strong { color: var(--text); }
+    .login-help code { font-size: 11px; }
+
+    /* Logout button di sidebar */
+    .logout-btn {
+      margin: 16px 12px 12px; padding: 9px 12px;
+      background: transparent; border: 1px solid var(--border);
+      color: var(--text-dim); font-size: 12px; cursor: pointer;
+      border-radius: 8px; width: calc(100% - 24px);
+      transition: all 0.15s;
+      display: flex; align-items: center; gap: 8px; justify-content: center;
+    }
+    .logout-btn:hover { border-color: var(--red); color: var(--red); transform: none; }
+    .session-info {
+      padding: 10px 16px; margin: 0 12px;
+      font-size: 11px; color: var(--text-dim);
+      border-top: 1px solid var(--border); margin-top: 12px; padding-top: 12px;
+    }
   </style>
 </head>
 <body>
+
+  <!-- ════════════════════ LOGIN OVERLAY ════════════════════ -->
+  <div id="login-overlay" class="login-overlay">
+    <div class="login-card">
+      <div class="login-logo">
+        <div class="icon">🛡️</div>
+        <h1>SIDIX Admin</h1>
+        <p>Control Panel</p>
+      </div>
+
+      <form id="login-form" onsubmit="event.preventDefault(); doLogin();">
+        <label for="login-username">Nama (untuk session)</label>
+        <input id="login-username" type="text" placeholder="admin" autocomplete="username" />
+
+        <label for="login-token">Admin Token</label>
+        <input id="login-token" type="password" placeholder="paste BRAIN_QA_ADMIN_TOKEN..." autocomplete="current-password" required />
+
+        <button type="submit">🔓 Masuk</button>
+      </form>
+
+      <div id="login-error" style="margin-top: 14px;"></div>
+
+      <div class="login-help">
+        <strong>📍 Token didapat dari:</strong><br>
+        Env var <code>BRAIN_QA_ADMIN_TOKEN</code> di <code>/opt/sidix/.env</code> (VPS).<br>
+        Cek via SSH: <code>grep BRAIN_QA_ADMIN_TOKEN /opt/sidix/.env</code>
+      </div>
+    </div>
+  </div>
 
   <!-- ════════════════════ SIDEBAR ════════════════════ -->
   <aside id="sidebar">
@@ -157,31 +243,19 @@
       <a class="nav-item disabled"><span class="icon">📜</span><span>Logs</span><span class="badge">soon</span></a>
 
       <div class="nav-section">System</div>
-      <a class="nav-item" data-tab="auth"><span class="icon">🔑</span><span>Admin Token</span></a>
       <a class="nav-item" href="/docs" target="_blank"><span class="icon">📘</span><span>API Docs</span></a>
     </nav>
+
+    <div class="session-info">
+      Signed in as <strong id="session-name" style="color: var(--gold)">—</strong>
+    </div>
+    <button class="logout-btn" onclick="doLogout()">
+      <span>🚪</span><span>Logout</span>
+    </button>
   </aside>
 
   <!-- ════════════════════ MAIN ════════════════════ -->
   <main>
-
-    <!-- ── TAB: Auth (token entry) ── -->
-    <div class="tab-pane" id="tab-auth">
-      <div class="page-header">
-        <h2>🔑 Admin Authentication</h2>
-        <p>Pakai admin token (env <code>BRAIN_QA_ADMIN_TOKEN</code>) untuk akses semua tools admin di panel ini.</p>
-      </div>
-      <div class="card">
-        <h3>Token</h3>
-        <label>Admin Token</label>
-        <input type="password" id="admin-token" placeholder="Paste admin token..." autocomplete="off" />
-        <p style="font-size: 12px; color: var(--text-dim); margin-top: 8px;">
-          Token disimpan di <code>sessionStorage</code> — hilang saat tab ditutup. Header <code>x-admin-token</code> dikirim ke backend pada setiap request.
-        </p>
-        <button onclick="saveToken()" style="margin-top: 12px;">Simpan & Verifikasi</button>
-        <div id="auth-status"></div>
-      </div>
-    </div>
 
     <!-- ── TAB: Whitelist ── -->
     <div class="tab-pane active" id="tab-whitelist">
@@ -289,40 +363,70 @@
     document.querySelectorAll('.nav-item[data-tab]').forEach(item => {
       item.addEventListener('click', () => switchTab(item.dataset.tab));
     });
-    // Init from hash
-    const initTab = (location.hash || '#whitelist').slice(1);
-    switchTab(initTab);
 
-    // ── Token management ──
+    // ── Auth state ──
     function getToken() {
-      const inEl = (document.getElementById('admin-token').value || '').trim();
-      if (inEl) sessionStorage.setItem('sidix_admin_token', inEl);
-      return inEl || sessionStorage.getItem('sidix_admin_token') || '';
+      return sessionStorage.getItem('sidix_admin_token') || '';
     }
 
-    async function saveToken() {
-      const tok = getToken();
-      if (!tok) {
-        showStatus('auth-status', '⚠️ Token kosong.', false); return;
+    function showLogin() {
+      document.getElementById('login-overlay').classList.remove('hidden');
+      document.getElementById('login-error').innerHTML = '';
+      // Pre-fill username dari session kalau pernah login
+      const savedName = sessionStorage.getItem('sidix_admin_name') || 'admin';
+      document.getElementById('login-username').value = savedName;
+      setTimeout(() => document.getElementById('login-token').focus(), 100);
+    }
+
+    function hideLogin() {
+      document.getElementById('login-overlay').classList.add('hidden');
+      // Set session name
+      const name = sessionStorage.getItem('sidix_admin_name') || 'admin';
+      document.getElementById('session-name').textContent = name;
+      // Init tab dari hash atau default whitelist
+      const initTab = (location.hash || '#whitelist').slice(1);
+      switchTab(initTab);
+    }
+
+    async function doLogin() {
+      const name = (document.getElementById('login-username').value || 'admin').trim();
+      const token = (document.getElementById('login-token').value || '').trim();
+      const errEl = document.getElementById('login-error');
+
+      if (!token) {
+        errEl.innerHTML = `<div class="alert alert-err">Token wajib diisi.</div>`;
+        return;
       }
-      // Verify by calling /admin/whitelist
+
+      // Verify token via /admin/whitelist GET
       try {
         const res = await fetch(`${API_BASE}/admin/whitelist`, {
-          headers: { 'x-admin-token': tok },
+          headers: { 'x-admin-token': token },
         });
         if (res.status === 403) {
-          showStatus('auth-status', '❌ Token salah (403). Cek env BRAIN_QA_ADMIN_TOKEN.', false);
+          errEl.innerHTML = `<div class="alert alert-err">❌ Token salah. Cek env <code>BRAIN_QA_ADMIN_TOKEN</code> di VPS.</div>`;
           return;
         }
         if (!res.ok) {
-          showStatus('auth-status', `⚠️ Backend error ${res.status}.`, false);
+          errEl.innerHTML = `<div class="alert alert-err">⚠️ Backend error ${res.status}.</div>`;
           return;
         }
-        showStatus('auth-status', '✓ Token valid! Sekarang bisa akses semua menu.');
+        // Success — save token + name, hide overlay, load data
+        sessionStorage.setItem('sidix_admin_token', token);
+        sessionStorage.setItem('sidix_admin_name', name);
+        document.getElementById('login-token').value = '';
+        hideLogin();
         loadList();
       } catch (e) {
-        showStatus('auth-status', `Network error: ${e.message}`, false);
+        errEl.innerHTML = `<div class="alert alert-err">Network error: ${e.message}</div>`;
       }
+    }
+
+    function doLogout() {
+      if (!confirm('Yakin logout? Token akan dihapus dari session.')) return;
+      sessionStorage.removeItem('sidix_admin_token');
+      sessionStorage.removeItem('sidix_admin_name');
+      showLogin();
     }
 
     function showStatus(elId, msg, ok = true) {
@@ -334,14 +438,15 @@
     // ── Whitelist ──
     async function loadList() {
       const tok = getToken();
-      if (!tok) {
-        switchTab('auth');
-        showStatus('auth-status', '⚠️ Masukkan token dulu.', false);
-        return;
-      }
+      if (!tok) { showLogin(); return; }
       try {
         const res = await fetch(`${API_BASE}/admin/whitelist`, { headers: { 'x-admin-token': tok } });
-        if (res.status === 403) { switchTab('auth'); showStatus('auth-status', '❌ Token salah.', false); return; }
+        if (res.status === 403) {
+          // Token expired / invalid — kembali ke login
+          sessionStorage.removeItem('sidix_admin_token');
+          showLogin();
+          return;
+        }
         if (!res.ok) { showStatus('add-status', `⚠️ Error ${res.status}`, false); return; }
         const data = await res.json();
         renderTables(data);
@@ -394,7 +499,7 @@
 
     async function addEntry() {
       const tok = getToken();
-      if (!tok) { switchTab('auth'); return; }
+      if (!tok) { showLogin(); return; }
       const email = document.getElementById('add-email').value.trim();
       const userId = document.getElementById('add-user-id').value.trim();
       const category = document.getElementById('add-category').value;
@@ -447,14 +552,24 @@
       }
     }
 
-    // ── Auto load ──
+    // ── Auto load — cek token, kalau ada langsung dashboard, kalau tidak: login ──
     window.addEventListener('DOMContentLoaded', () => {
       const saved = sessionStorage.getItem('sidix_admin_token');
       if (saved) {
-        document.getElementById('admin-token').value = saved;
-        loadList();
+        // Verify token is still valid
+        fetch(`${API_BASE}/admin/whitelist`, { headers: { 'x-admin-token': saved } })
+          .then(res => {
+            if (res.ok) {
+              hideLogin();
+              loadList();
+            } else {
+              sessionStorage.removeItem('sidix_admin_token');
+              showLogin();
+            }
+          })
+          .catch(() => showLogin());
       } else {
-        switchTab('auth');
+        showLogin();
       }
     });
   </script>
