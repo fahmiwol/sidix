@@ -5949,3 +5949,46 @@ Token disimpan di sessionStorage browser — hilang saat tab ditutup.
 ### Validation
 - pytest: 520 passed
 - Syntax check OK
+
+## 2026-04-26 (lanjutan 3) — Admin Dashboard refactor (single-page sidebar)
+
+### USER FEEDBACK
+> "loh maksud saya, https://ctrl.sidixlab.com/ ini kan halaman admin sidix, kenapa nggak taro di dalam situ aja? bikin menu baru buat whitelist"
+> "jadi nggak banyak double2"
+
+### REASONING
+Sebelumnya saya bikin standalone `admin-whitelist.html` di `/admin/ui`. User
+maunya **one admin panel** dengan sidebar menu — Whitelist sebagai 1 menu,
+plus placeholder untuk future admin tools. Avoid duplicate page.
+
+### IMPL
+**File baru**: `apps/brain_qa/brain_qa/static/admin.html`
+- Layout 2-kolom: sidebar 240px + main content
+- Responsive (mobile: sidebar hidden)
+- Tab routing via `data-tab` + URL hash (`#whitelist`, `#health`, `#auth`)
+- Sidebar sections:
+  - **Management**: Whitelist (active) / Users (soon) / Tool Permissions (soon)
+  - **Monitoring**: System Health (active) / Metrics (soon) / Logs (soon)
+  - **System**: Admin Token / API Docs (link ke /docs)
+- Whitelist tab: stats grid + add form + email/uid tables (dipindah dari standalone)
+- Health tab: live `/health` endpoint viewer dengan JSON pretty-print
+- Auth tab: token entry + verify
+
+**Route changes** (`agent_serve.py`):
+- `GET /` → 302 redirect ke `/admin`
+- `GET /admin` → serve admin.html (HTMLResponse)
+- `GET /admin/` → alias
+- `GET /admin/ui` → backward compat alias
+- `GET /admin/whitelist/ui` → backward compat alias
+
+**Cleanup**:
+- Hapus `apps/brain_qa/brain_qa/static/admin-whitelist.html` (redundant)
+- Whitelist functionality sekarang inside admin.html sebagai 1 tab
+
+### ACCESS
+**URL utama**: https://ctrl.sidixlab.com/admin (atau langsung https://ctrl.sidixlab.com/)
+**Auth**: paste admin token di tab "Admin Token" (sidebar bawah)
+
+### Validation
+- pytest: 520 passed
+- Syntax check OK

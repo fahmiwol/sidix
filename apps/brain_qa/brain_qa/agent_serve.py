@@ -1323,24 +1323,33 @@ def create_app() -> "FastAPI":
     # Auth: header `x-admin-token` harus match env BRAIN_QA_ADMIN_TOKEN.
     # Storage: apps/brain_qa/.data/whitelist.json (persistent).
 
-    @app.get("/admin/ui", include_in_schema=False)
-    @app.get("/admin/whitelist/ui", include_in_schema=False)
-    def serve_admin_whitelist_ui():
+    @app.get("/", include_in_schema=False)
+    def serve_root_redirect():
+        """ctrl.sidixlab.com/ → redirect ke /admin (full admin dashboard)."""
+        from fastapi.responses import RedirectResponse
+        return RedirectResponse(url="/admin", status_code=302)
+
+    @app.get("/admin", include_in_schema=False)
+    @app.get("/admin/", include_in_schema=False)
+    @app.get("/admin/ui", include_in_schema=False)  # backward compat
+    @app.get("/admin/whitelist/ui", include_in_schema=False)  # backward compat
+    def serve_admin_dashboard():
         """
-        Serve admin whitelist UI HTML langsung dari brain_qa FastAPI.
-        Pivot 2026-04-26: pindah dari app.sidixlab.com ke ctrl.sidixlab.com
-        supaya admin tools terpisah dari user-facing app.
-        Akses: https://ctrl.sidixlab.com/admin/ui
+        SIDIX Admin Dashboard — single-page dengan sidebar menu.
+        Sub-pages: Whitelist / System Health / Auth (/ future: Users, Logs, Metrics).
+
+        Akses: https://ctrl.sidixlab.com/admin
+        Auth: header `x-admin-token` (di-set via UI) sesuai env BRAIN_QA_ADMIN_TOKEN.
         """
         from fastapi.responses import HTMLResponse, PlainTextResponse
         from pathlib import Path
-        html_path = Path(__file__).resolve().parent / "static" / "admin-whitelist.html"
+        html_path = Path(__file__).resolve().parent / "static" / "admin.html"
         try:
             content = html_path.read_text(encoding="utf-8")
             return HTMLResponse(content=content, status_code=200)
         except FileNotFoundError:
             return PlainTextResponse(
-                content=f"Admin UI not found at {html_path}",
+                content=f"Admin dashboard not found at {html_path}",
                 status_code=404,
             )
 

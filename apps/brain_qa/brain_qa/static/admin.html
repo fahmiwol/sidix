@@ -1,0 +1,462 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SIDIX Admin Panel</title>
+  <meta name="robots" content="noindex,nofollow" />
+  <style>
+    :root {
+      --bg: #0a0908;
+      --bg-card: #16130f;
+      --bg-input: #1f1c17;
+      --bg-sidebar: #110e0b;
+      --border: #3a342c;
+      --text: #f5e6c4;
+      --text-dim: #b8a888;
+      --gold: #d4a853;
+      --gold-dim: #8a6e35;
+      --green: #6eae7c;
+      --red: #d97a5a;
+      --blue: #6b94c4;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+      background: var(--bg); color: var(--text);
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 240px 1fr;
+    }
+    @media (max-width: 768px) {
+      body { grid-template-columns: 1fr; }
+      aside { display: none; }
+      aside.open { display: block; position: fixed; inset: 0; z-index: 100; }
+    }
+
+    /* ── Sidebar ── */
+    aside {
+      background: var(--bg-sidebar);
+      border-right: 1px solid var(--border);
+      padding: 20px 0;
+      position: sticky; top: 0; height: 100vh; overflow-y: auto;
+    }
+    .brand {
+      padding: 0 20px 20px; border-bottom: 1px solid var(--border); margin-bottom: 16px;
+    }
+    .brand h1 {
+      margin: 0; font-size: 18px; color: var(--gold); letter-spacing: 0.5px;
+    }
+    .brand p { margin: 4px 0 0; font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1.5px; }
+    nav { padding: 0 12px; }
+    .nav-section { font-size: 10px; color: var(--gold-dim); text-transform: uppercase; letter-spacing: 1.5px; padding: 12px 12px 6px; }
+    .nav-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 12px; border-radius: 8px; cursor: pointer;
+      color: var(--text-dim); font-size: 14px;
+      text-decoration: none; transition: all 0.15s;
+      user-select: none;
+    }
+    .nav-item:hover { background: rgba(212, 168, 83, 0.05); color: var(--text); }
+    .nav-item.active { background: rgba(212, 168, 83, 0.1); color: var(--gold); border-left: 2px solid var(--gold); padding-left: 10px; }
+    .nav-item .icon { font-size: 16px; width: 20px; text-align: center; }
+    .nav-item.disabled { opacity: 0.4; cursor: not-allowed; }
+    .nav-item.disabled .badge { background: var(--border); color: var(--text-dim); font-size: 9px; padding: 1px 6px; border-radius: 8px; margin-left: auto; }
+
+    /* ── Main ── */
+    main { padding: 24px 32px; max-width: 1100px; }
+    .page-header { margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+    .page-header h2 { margin: 0; font-size: 22px; color: var(--gold); }
+    .page-header p { margin: 4px 0 0; color: var(--text-dim); font-size: 13px; }
+
+    /* ── Card ── */
+    .card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 12px; padding: 20px; margin-bottom: 20px;
+    }
+    .card h3 { margin: 0 0 12px; font-size: 14px; color: var(--gold); text-transform: uppercase; letter-spacing: 1px; }
+
+    /* ── Form ── */
+    label { display: block; font-size: 11px; color: var(--text-dim); margin: 10px 0 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+    input, select, textarea {
+      width: 100%; padding: 10px 12px;
+      background: var(--bg-input); border: 1px solid var(--border);
+      border-radius: 8px; color: var(--text); font-size: 14px;
+      font-family: inherit;
+    }
+    input:focus, select:focus, textarea:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 2px rgba(212, 168, 83, 0.15); }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    @media (max-width: 600px) { .row { grid-template-columns: 1fr; } }
+    button {
+      padding: 10px 16px; background: var(--gold); color: #0a0908;
+      border: 0; border-radius: 8px; font-weight: 600; cursor: pointer;
+      font-size: 13px; transition: all 0.15s;
+    }
+    button:hover { opacity: 0.9; transform: translateY(-1px); }
+    button.danger { background: var(--red); color: #fff; }
+    button.ghost { background: transparent; color: var(--text); border: 1px solid var(--border); }
+    button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+    /* ── Table ── */
+    table { width: 100%; border-collapse: collapse; margin-top: 4px; }
+    th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--border); font-size: 13px; }
+    th { color: var(--text-dim); font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
+    tr:hover { background: rgba(212, 168, 83, 0.03); }
+
+    /* ── Badge ── */
+    .badge { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 11px; font-weight: 500; }
+    .badge-owner { background: rgba(212, 168, 83, 0.2); color: var(--gold); }
+    .badge-dev { background: rgba(110, 174, 124, 0.2); color: var(--green); }
+    .badge-sponsor { background: rgba(217, 122, 90, 0.2); color: var(--red); }
+    .badge-researcher { background: rgba(107, 148, 196, 0.2); color: var(--blue); }
+    .badge-contributor { background: rgba(184, 134, 197, 0.2); color: #b886c5; }
+    .badge-beta_tester { background: rgba(122, 197, 184, 0.2); color: #7ac5b8; }
+    .badge-vip { background: rgba(255, 215, 0, 0.2); color: #ffd700; }
+    .badge-other { background: rgba(184, 168, 136, 0.2); color: var(--text-dim); }
+
+    /* ── Alert ── */
+    .alert { padding: 10px 14px; border-radius: 8px; margin: 10px 0; font-size: 13px; }
+    .alert-ok { background: rgba(110, 174, 124, 0.1); border: 1px solid rgba(110, 174, 124, 0.3); color: var(--green); }
+    .alert-err { background: rgba(217, 122, 90, 0.1); border: 1px solid rgba(217, 122, 90, 0.3); color: var(--red); }
+
+    /* ── Stats ── */
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
+    .stat-box { background: var(--bg-input); padding: 14px; border-radius: 10px; }
+    .stat-num { font-size: 26px; color: var(--gold); font-weight: 600; line-height: 1; }
+    .stat-label { font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px; }
+
+    code { background: var(--bg-input); padding: 2px 6px; border-radius: 4px; font-size: 12px; color: var(--gold); }
+
+    /* ── Tab content ── */
+    .tab-pane { display: none; }
+    .tab-pane.active { display: block; }
+
+    /* Empty state */
+    .empty { text-align: center; color: var(--text-dim); padding: 32px; font-size: 13px; }
+  </style>
+</head>
+<body>
+
+  <!-- ════════════════════ SIDEBAR ════════════════════ -->
+  <aside id="sidebar">
+    <div class="brand">
+      <h1>🛡️ SIDIX Admin</h1>
+      <p>Control Panel</p>
+    </div>
+
+    <nav>
+      <div class="nav-section">Management</div>
+      <a class="nav-item active" data-tab="whitelist"><span class="icon">🎟️</span><span>Whitelist</span></a>
+      <a class="nav-item disabled"><span class="icon">👥</span><span>Users</span><span class="badge">soon</span></a>
+      <a class="nav-item disabled"><span class="icon">🧰</span><span>Tool Permissions</span><span class="badge">soon</span></a>
+
+      <div class="nav-section">Monitoring</div>
+      <a class="nav-item" data-tab="health"><span class="icon">💚</span><span>System Health</span></a>
+      <a class="nav-item disabled"><span class="icon">📊</span><span>Metrics</span><span class="badge">soon</span></a>
+      <a class="nav-item disabled"><span class="icon">📜</span><span>Logs</span><span class="badge">soon</span></a>
+
+      <div class="nav-section">System</div>
+      <a class="nav-item" data-tab="auth"><span class="icon">🔑</span><span>Admin Token</span></a>
+      <a class="nav-item" href="/docs" target="_blank"><span class="icon">📘</span><span>API Docs</span></a>
+    </nav>
+  </aside>
+
+  <!-- ════════════════════ MAIN ════════════════════ -->
+  <main>
+
+    <!-- ── TAB: Auth (token entry) ── -->
+    <div class="tab-pane" id="tab-auth">
+      <div class="page-header">
+        <h2>🔑 Admin Authentication</h2>
+        <p>Pakai admin token (env <code>BRAIN_QA_ADMIN_TOKEN</code>) untuk akses semua tools admin di panel ini.</p>
+      </div>
+      <div class="card">
+        <h3>Token</h3>
+        <label>Admin Token</label>
+        <input type="password" id="admin-token" placeholder="Paste admin token..." autocomplete="off" />
+        <p style="font-size: 12px; color: var(--text-dim); margin-top: 8px;">
+          Token disimpan di <code>sessionStorage</code> — hilang saat tab ditutup. Header <code>x-admin-token</code> dikirim ke backend pada setiap request.
+        </p>
+        <button onclick="saveToken()" style="margin-top: 12px;">Simpan & Verifikasi</button>
+        <div id="auth-status"></div>
+      </div>
+    </div>
+
+    <!-- ── TAB: Whitelist ── -->
+    <div class="tab-pane active" id="tab-whitelist">
+      <div class="page-header">
+        <h2>🎟️ Whitelist Manager</h2>
+        <p>Bypass rate limit + daily quota untuk owner, dev, sponsor, researcher, contributor, beta tester, VIP.</p>
+      </div>
+
+      <!-- Stats -->
+      <div class="card">
+        <h3>📊 Statistik</h3>
+        <div class="stats-grid" id="wl-stats">
+          <div class="stat-box"><div class="stat-num">—</div><div class="stat-label">Total Email</div></div>
+          <div class="stat-box"><div class="stat-num">—</div><div class="stat-label">Total User ID</div></div>
+          <div class="stat-box"><div class="stat-num">—</div><div class="stat-label">Env-locked</div></div>
+        </div>
+        <p id="wl-env-info" style="font-size: 12px; color: var(--text-dim); margin-top: 10px;"></p>
+      </div>
+
+      <!-- Add form -->
+      <div class="card">
+        <h3>➕ Tambah ke Whitelist</h3>
+        <div class="row">
+          <div>
+            <label>Email</label>
+            <input id="add-email" type="email" placeholder="user@example.com" />
+          </div>
+          <div>
+            <label>User ID (Supabase, opsional)</label>
+            <input id="add-user-id" type="text" placeholder="user_xxxxxxxxxxxx" />
+          </div>
+        </div>
+        <div class="row">
+          <div>
+            <label>Kategori</label>
+            <select id="add-category">
+              <option value="owner">👑 Owner</option>
+              <option value="dev">🛠️ Dev</option>
+              <option value="sponsor">💰 Sponsor</option>
+              <option value="researcher">🔬 Researcher</option>
+              <option value="contributor">🤝 Contributor</option>
+              <option value="beta_tester">🧪 Beta Tester</option>
+              <option value="vip">⭐ VIP</option>
+              <option value="other" selected>📋 Other</option>
+            </select>
+          </div>
+          <div>
+            <label>Catatan (opsional)</label>
+            <input id="add-note" type="text" placeholder="contoh: PhD AI MIT, sponsor Tier 3" maxlength="240" />
+          </div>
+        </div>
+        <button onclick="addEntry()" style="margin-top: 16px;">+ Tambahkan</button>
+        <div id="add-status"></div>
+      </div>
+
+      <!-- List emails -->
+      <div class="card">
+        <h3>📧 Whitelist by Email</h3>
+        <table>
+          <thead><tr><th>Email</th><th>Kategori</th><th>Catatan</th><th>Tanggal</th><th></th></tr></thead>
+          <tbody id="emails-tbody"><tr><td colspan="5" class="empty">Belum ada data. Masukkan token & klik refresh.</td></tr></tbody>
+        </table>
+      </div>
+
+      <!-- List user IDs -->
+      <div class="card">
+        <h3>🆔 Whitelist by User ID</h3>
+        <table>
+          <thead><tr><th>User ID</th><th>Kategori</th><th>Catatan</th><th>Tanggal</th><th></th></tr></thead>
+          <tbody id="uids-tbody"><tr><td colspan="5" class="empty">Belum ada data.</td></tr></tbody>
+        </table>
+      </div>
+
+      <button onclick="loadList()" class="ghost">🔄 Refresh</button>
+    </div>
+
+    <!-- ── TAB: System Health ── -->
+    <div class="tab-pane" id="tab-health">
+      <div class="page-header">
+        <h2>💚 System Health</h2>
+        <p>Status real-time SIDIX backend, model, corpus, dan tools.</p>
+      </div>
+      <div class="card">
+        <h3>Health Endpoint</h3>
+        <button onclick="loadHealth()">🔄 Refresh Health</button>
+        <pre id="health-output" style="margin-top: 14px; background: var(--bg-input); padding: 14px; border-radius: 8px; font-size: 12px; overflow-x: auto; color: var(--text-dim); max-height: 480px;">Klik "Refresh Health" untuk load.</pre>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    const API_BASE = '';
+
+    // ── Tab routing ──
+    function switchTab(name) {
+      document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+      const pane = document.getElementById(`tab-${name}`);
+      if (pane) pane.classList.add('active');
+      const link = document.querySelector(`.nav-item[data-tab="${name}"]`);
+      if (link) link.classList.add('active');
+      try { history.replaceState(null, '', `#${name}`); } catch {}
+    }
+    document.querySelectorAll('.nav-item[data-tab]').forEach(item => {
+      item.addEventListener('click', () => switchTab(item.dataset.tab));
+    });
+    // Init from hash
+    const initTab = (location.hash || '#whitelist').slice(1);
+    switchTab(initTab);
+
+    // ── Token management ──
+    function getToken() {
+      const inEl = (document.getElementById('admin-token').value || '').trim();
+      if (inEl) sessionStorage.setItem('sidix_admin_token', inEl);
+      return inEl || sessionStorage.getItem('sidix_admin_token') || '';
+    }
+
+    async function saveToken() {
+      const tok = getToken();
+      if (!tok) {
+        showStatus('auth-status', '⚠️ Token kosong.', false); return;
+      }
+      // Verify by calling /admin/whitelist
+      try {
+        const res = await fetch(`${API_BASE}/admin/whitelist`, {
+          headers: { 'x-admin-token': tok },
+        });
+        if (res.status === 403) {
+          showStatus('auth-status', '❌ Token salah (403). Cek env BRAIN_QA_ADMIN_TOKEN.', false);
+          return;
+        }
+        if (!res.ok) {
+          showStatus('auth-status', `⚠️ Backend error ${res.status}.`, false);
+          return;
+        }
+        showStatus('auth-status', '✓ Token valid! Sekarang bisa akses semua menu.');
+        loadList();
+      } catch (e) {
+        showStatus('auth-status', `Network error: ${e.message}`, false);
+      }
+    }
+
+    function showStatus(elId, msg, ok = true) {
+      const el = document.getElementById(elId);
+      el.innerHTML = `<div class="alert ${ok ? 'alert-ok' : 'alert-err'}">${msg}</div>`;
+      setTimeout(() => { el.innerHTML = ''; }, 5000);
+    }
+
+    // ── Whitelist ──
+    async function loadList() {
+      const tok = getToken();
+      if (!tok) {
+        switchTab('auth');
+        showStatus('auth-status', '⚠️ Masukkan token dulu.', false);
+        return;
+      }
+      try {
+        const res = await fetch(`${API_BASE}/admin/whitelist`, { headers: { 'x-admin-token': tok } });
+        if (res.status === 403) { switchTab('auth'); showStatus('auth-status', '❌ Token salah.', false); return; }
+        if (!res.ok) { showStatus('add-status', `⚠️ Error ${res.status}`, false); return; }
+        const data = await res.json();
+        renderTables(data);
+      } catch (e) {
+        showStatus('add-status', `Network: ${e.message}`, false);
+      }
+    }
+
+    function renderTables(data) {
+      const stats = data.stats || {};
+      document.getElementById('wl-stats').innerHTML = `
+        <div class="stat-box"><div class="stat-num">${stats.total_emails ?? 0}</div><div class="stat-label">Total Email</div></div>
+        <div class="stat-box"><div class="stat-num">${stats.total_user_ids ?? 0}</div><div class="stat-label">Total User ID</div></div>
+        <div class="stat-box"><div class="stat-num">${(data.env_emails || []).length}</div><div class="stat-label">Env-locked</div></div>
+      `;
+      document.getElementById('wl-env-info').innerHTML = data.env_emails?.length
+        ? `Env-locked emails (immutable): <code>${data.env_emails.join(', ')}</code>`
+        : 'Tidak ada env-locked email.';
+
+      const emailsBody = document.getElementById('emails-tbody');
+      if ((data.emails || []).length === 0) {
+        emailsBody.innerHTML = `<tr><td colspan="5" class="empty">Belum ada email di whitelist.</td></tr>`;
+      } else {
+        emailsBody.innerHTML = data.emails.map(e => `
+          <tr>
+            <td><code>${e.email}</code></td>
+            <td><span class="badge badge-${e.category || 'other'}">${e.category || 'other'}</span></td>
+            <td>${e.note || '<span style="color:var(--text-dim)">—</span>'}</td>
+            <td style="color: var(--text-dim); font-size: 11px;">${(e.added_at || '').slice(0, 10)}</td>
+            <td><button class="danger" onclick="removeEntry('email', '${e.email}')">Hapus</button></td>
+          </tr>
+        `).join('');
+      }
+
+      const uidsBody = document.getElementById('uids-tbody');
+      if ((data.user_ids || []).length === 0) {
+        uidsBody.innerHTML = `<tr><td colspan="5" class="empty">Belum ada user ID di whitelist.</td></tr>`;
+      } else {
+        uidsBody.innerHTML = data.user_ids.map(u => `
+          <tr>
+            <td><code>${u.id}</code></td>
+            <td><span class="badge badge-${u.category || 'other'}">${u.category || 'other'}</span></td>
+            <td>${u.note || '<span style="color:var(--text-dim)">—</span>'}</td>
+            <td style="color: var(--text-dim); font-size: 11px;">${(u.added_at || '').slice(0, 10)}</td>
+            <td><button class="danger" onclick="removeEntry('user_id', '${u.id}')">Hapus</button></td>
+          </tr>
+        `).join('');
+      }
+    }
+
+    async function addEntry() {
+      const tok = getToken();
+      if (!tok) { switchTab('auth'); return; }
+      const email = document.getElementById('add-email').value.trim();
+      const userId = document.getElementById('add-user-id').value.trim();
+      const category = document.getElementById('add-category').value;
+      const note = document.getElementById('add-note').value.trim();
+      if (!email && !userId) {
+        showStatus('add-status', '⚠️ Email atau User ID wajib.', false); return;
+      }
+      try {
+        const res = await fetch(`${API_BASE}/admin/whitelist`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'x-admin-token': tok },
+          body: JSON.stringify({ email: email || null, user_id: userId || null, category, note }),
+        });
+        if (!res.ok) { showStatus('add-status', `⚠️ ${await res.text()}`, false); return; }
+        showStatus('add-status', '✓ Berhasil ditambahkan.');
+        document.getElementById('add-email').value = '';
+        document.getElementById('add-user-id').value = '';
+        document.getElementById('add-note').value = '';
+        loadList();
+      } catch (e) {
+        showStatus('add-status', `Network: ${e.message}`, false);
+      }
+    }
+
+    async function removeEntry(type, value) {
+      if (!confirm(`Hapus ${type} "${value}" dari whitelist?`)) return;
+      const tok = getToken();
+      try {
+        const body = type === 'email' ? { email: value } : { user_id: value };
+        const res = await fetch(`${API_BASE}/admin/whitelist`, {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json', 'x-admin-token': tok },
+          body: JSON.stringify(body),
+        });
+        if (!res.ok) { alert(`Error: ${await res.text()}`); return; }
+        loadList();
+      } catch (e) { alert(`Network: ${e.message}`); }
+    }
+
+    // ── Health ──
+    async function loadHealth() {
+      const out = document.getElementById('health-output');
+      out.textContent = 'Loading...';
+      try {
+        const res = await fetch(`${API_BASE}/health`);
+        const d = await res.json();
+        out.textContent = JSON.stringify(d, null, 2);
+      } catch (e) {
+        out.textContent = `Error: ${e.message}`;
+      }
+    }
+
+    // ── Auto load ──
+    window.addEventListener('DOMContentLoaded', () => {
+      const saved = sessionStorage.getItem('sidix_admin_token');
+      if (saved) {
+        document.getElementById('admin-token').value = saved;
+        loadList();
+      } else {
+        switchTab('auth');
+      }
+    });
+  </script>
+</body>
+</html>
