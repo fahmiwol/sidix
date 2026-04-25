@@ -5672,3 +5672,29 @@ rsync -av --delete /opt/sidix/SIDIX_LANDING/ /www/wwwroot/sidixlab.com/
 - Dokumentasi: handoff, validasi checklist, blueprint — semua tersedia untuk Claude
 - Sisa: eksekusi optimasi (web search fix, model decision, streaming, evaluation)
 
+
+## 2026-04-25 (lanjutan 5) — SIDIX 2.0 SUPERMODEL ENDPOINTS
+
+User vision: SIDIX di launching pertama jadi "Supermodel AI Agent" — visioner, mampu prediksi, inovatif, beda dari Claude/Gemini/KIMI. Saya bangun 3 differentiator endpoint + fix web_search trigger.
+
+### IMPL: 3 Supermodel endpoints
+- **POST /agent/burst** (`agent_burst.py`) — Burst+Refinement (Gaga method). 8 angle paralel × Pareto select × refine. Live test: 3 candidates, 1 winner (contrarian), final 250 chars.
+- **POST /agent/two-eyed** (`agent_two_eyed.py`) — Mi'kmaq Etuaptmumk dual-perspective. Scientific eye + Maqashid eye paralel + sintesis (eka-eka). Live test: ok=true, 3 perspectives valid response.
+- **POST /agent/foresight** (`agent_foresight.py`) — Visionary scenario planning. 4-stage pipeline: scan(web+corpus) → extract(leading/lagging/frictions/accelerators) → project(3 scenarios base/bull/bear) → synthesize. Live test: AI agent open source 1y forecast → "akan jadi standard, IBM/MS/Google enter..."
+
+### FIX: _CURRENT_EVENTS_RE expanded (web_search aggressive default)
+User input "siapa president indonesia sekarang?" tidak trigger web_search karena regex hanya match "presiden" (Indonesian). Sekarang cover EN+ID + typo (presi(d)?ent) + tahun spesifik (2023+) + finance broader + "what is happening" + "who is the president/PM/king/queen/CEO/champion". Test: 14/14 sample queries.
+
+Live verify: query "who is the president of indonesia in 2026 right now?" → web_search hit, 5 citations, "prabowo" in answer. ✅
+
+### Anti-bentrok
+Tidak menyentuh: agent_react.py JIWA INTEGRATION section, agent_memory.py, parallel_executor.py, jiwa/*, cot_system_prompts.PERSONA_DESCRIPTIONS, ollama_llm.SIDIX_SYSTEM. Hanya: agent_react.py CORE (regex), agent_serve.py (endpoint wiring), 3 new files (Claude territory).
+
+### TEST
+- 510 passed, 1 deselected (perf-flaky). Syntax OK semua 5 file.
+- Live smoke test 4 endpoints (/agent/burst, /agent/two-eyed, /agent/foresight, /ask web_search trigger).
+
+### STATUS Live
+- Backend: PID changed setelah 2 restart, online, model_ready=true
+- 3 endpoints baru terdaftar di FastAPI router (visible di /docs OpenAPI)
+- VPS RAM: 12 GB free → bisa upgrade qwen2.5:7b nanti
