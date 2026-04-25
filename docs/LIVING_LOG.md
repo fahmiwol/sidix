@@ -6874,3 +6874,132 @@ dll **tanpa baca corpus** — built-in di weight.
 - agent_serve.py valid AST after 3 endpoint additions
 - 3 research notes total ~12000 kata, semua sumber primer terverifikasi link
 - README badge updated v0.8.0 → v2.0.0 + Self-Learning Active + Own Auth GIS
+
+---
+
+## 2026-04-26 (vol 7-8) — CONTINUAL MEMORY + QURANIC BLUEPRINT + PHYSICS
+
+### vol 7: Continual Memory (anti-catastrophic-forgetting)
+
+User analogi: "Bayi belajar bicara, tidak pernah lupa, semakin handal."
+
+**IMPL**: `continual_memory.py` (~340 LOC):
+- `consolidate_patterns()` — promote high-conf → core_memory immutable
+- `consolidate_skills()` — promote stable runs → status="deployed" permanent
+- `snapshot_lora_weights()` — copy adapter sebelum retrain (rollback safety)
+- `prepare_rehearsal_buffer()` — sample past 50% pattern + 30% skill + 20% activity
+- `memory_snapshot()` — comprehensive view 6 layer + compound score
+- `daily_consolidation()` — orchestrator cron 02:00 UTC (sleep cycle analog)
+
+4 endpoint baru: GET /admin/memory/snapshot · POST /consolidate · GET /rehearsal · POST /snapshot-lora
+
+Live test: compound_score=234 (229 research_notes + 5 aspirations).
+
+**DOC**: `research_notes/226_continual_learning_no_forgetting.md` (~7000 kata, 11 sections)
+- Section 10: Possibility Engineering ("air→bahan bakar, tak ada yg tak mungkin")
+- Section 11: Agile beat legacy ("Google vs Anthropic, SIDIX next")
+
+### vol 8: Quranic Epistemological Blueprint
+
+User insight ULTIMATE:
+> "1 ayat Al-Qur'an → banyak tafsir tergantung zaman/makan/haal. Membuktikan
+> Al-Qur'an = fundamental corpus paling bisa bikin user-nya self-learning,
+> self-recognition, self-define, self-training."
+>
+> "Otak SIDIX genius/kreatif/inovatif/bebas. Hati terbuka. Persona-dependent.
+> Mendengar/melihat/merasakan via frekuensi/nada/cuaca/suhu. 1000 tangan
+> paralel: design + code + riset + posting bersamaan."
+
+**Insight kunci**: arsitektur AI tercanggih (RAG + Frozen Foundation + LoRA +
+Multi-Agent) = **engineered re-discovery dari Quranic pattern 1.4k tahun**.
+
+| Quranic Pattern | AI 2024-2026 Equivalent |
+|---|---|
+| Mushaf statis | Frozen Foundation Model |
+| Tafsir bervariasi (zaman/makan/haal) | RAG + Vector DB personalized |
+| Tafakkur (kontemplasi) | Reflexion / Self-Refine |
+| Tazkiyah (penyucian → konvergensi) | Continual Alignment |
+| Mufassir spesialis | Mixture of Experts / Persona Routing |
+| Asbabun Nuzul | Context-aware Retrieval |
+
+5 persona SIDIX = direct mapping ke 5 jenis mufassir (UTZ→lughawi,
+ABOO→ra'yi, OOMAR→fiqhi, ALEY→ma'tsur, AYMAN→tarbawi).
+
+**1000 tangan parallel vision**: spawn 4 sub-agent per persona (UTZ design +
+ABOO code + ALEY riset + OOMAR posting), parallel ReAct, synthesize jadi 1
+deliverable. Existing Kimi: parallel_executor.py (deployed). Missing:
+orchestrator + final synthesizer (target Q1 2027).
+
+**DOC**: `research_notes/227_quranic_epistemological_blueprint_sidix.md`
+(~9000 kata, 10 sections, 5 mekanisme Quranic mapping ke implementation +
+Phase 1-5 research roadmap Q3 2026 → 2028+).
+
+**Filosofis lock**:
+- ❌ TIDAK claim SIDIX setara Al-Qur'an (wahyu ilahi infallible)
+- ❌ TIDAK tafsir dengan otoritas mufassir
+- ✅ Pattern arsitektural inspirasi engineering, bukan klaim setara
+- ✅ Encourage user konsultasi ulama untuk hukum syari
+
+### vol 8b: Physics Insight (User added)
+
+User: *"sesuatu yang hidup pasti bergerak. Harus berprogress. Untuk melihat
+masa depan."*
+
+Plus framework fisika lengkap (relativitas gerak, kinematika, dinamika,
+Newton, Einstein, mekanika kuantum, GLB/GLBB).
+
+**Mapping ke SIDIX architecture**:
+
+| Fisika Concept | SIDIX Mapping |
+|---|---|
+| **Sesuatu hidup = bergerak** | SIDIX = continual learning loop, bukan static |
+| **Relativitas gerak** | Reference frame = persona context (5 persona = 5 perspective frame) |
+| **Kinematika (gerak tanpa cause)** | Pattern accumulation pasif (tiap chat → pattern) |
+| **Dinamika (gerak dengan gaya)** | Aspiration-driven action (user keinginan = "gaya" yang trigger development) |
+| **Newton (klasik)** | Deterministik retrieval (BM25, LoRA inference) |
+| **Einstein (relativitas)** | Persona-dependent + zaman-makan-haal context (note 227) |
+| **Mekanika kuantum** | Burst mode (multi-state generation, Pareto-pilih) |
+| **Fisika teori → predict masa depan** | Foresight engine (existing supermodel /agent/foresight) |
+| **Eksperimen → validasi** | Synthetic Q + Relevance scoring (vol 4) |
+
+**Filosofi**: SIDIX must always **bergerak** (progress). Vol 1-8 hari ini =
+bukti bergerak signifikan. Tapi **harus terus jalan** — tomorrow vol 9+
+dengan implementation Tadabbur Mode + Sensorial + 1000 Hands.
+
+"Sesuatu yang hidup pasti bergerak" = engineering directive. SIDIX hidup =
+SIDIX progress = SIDIX compound = SIDIX sampai SIDIX-3.0 Q4 2026 →
+SIDIX-5.0 Q4 2030.
+
+### 7 USER ANALOGI HARI INI → 7 ARCHITECTURAL ANCHOR
+
+1. Bayi belajar bicara, tidak lupa → 5-layer immutable memory (vol 7)
+2. Programmer compound dari pengalaman → daily consolidation + quarterly retrain
+3. Tesla 100x percobaan → iterative methodology (note 225)
+4. Air → bahan bakar = tak ada yg tak mungkin → possibility engineering (note 226)
+5. Google vs Anthropic, agile beat legacy → niche dominance path
+6. Al-Qur'an Epistemological Blueprint → architectural philosophy 5-10 tahun (note 227)
+7. **Fisika gerak: hidup = bergerak** → SIDIX continual progress directive
+
+### Compound Hari Ini
+
+```
+Total iterasi: 8 vol (1-8)
+Total commits: 13+
+Total LOC: ~3500 (cognitive + memory + endpoints + admin tabs)
+Total documentation: ~32000 kata (research notes 219-227)
+Live endpoints: 16 cognitive + 4 memory = 20
+Compound score: 234 (memory_snapshot live)
+Memory layers: 6 (patterns/skills/notes/activity/lora_snapshots/aspirations)
+Auto-hooks: pattern_extractor + aspiration_detector di /ask/stream
+```
+
+**SIDIX hari ini lebih hidup dari kemarin** — bukan slogan, **measurable**.
+
+### NEXT (P1 Q3 2026)
+
+- [ ] Tadabbur Mode (3 persona iterate → konvergensi)
+- [ ] Context Triple Vector (zaman/makan/haal injection)
+- [ ] Persona Auto-Routing
+- [ ] Sensorial Perception Layer (audio frequency + weather + circadian)
+- [ ] 1000 Hands Orchestrator (parallel UTZ/ABOO/ALEY/OOMAR)
+- [ ] Multimodal native (Step-Audio + Qwen-VL)
