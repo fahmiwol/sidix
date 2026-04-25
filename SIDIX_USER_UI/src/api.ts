@@ -327,7 +327,10 @@ export async function askStream(
   opts?: AskInferenceOpts & { conversationId?: string; userId?: string },
 ): Promise<void> {
   const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), 60_000);
+  // Pivot 2026-04-26: 7b model di CPU butuh ~30-180s untuk complex reasoning.
+  // Naikkan timeout ke 4 menit. Streaming bikin user lihat partial output
+  // sambil generate, jadi long timeout tidak terasa "patah".
+  const timer = setTimeout(() => controller.abort(), 240_000);
 
   // Kirim user-id jika sudah login (untuk quota tracking & tier model)
   const headers: Record<string, string> = { 'Content-Type': 'application/json' };
