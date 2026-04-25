@@ -6281,6 +6281,139 @@ User paste Client Secret (`GOCSPX-...`) di transkrip. Warned user:
 
 ---
 
+## 2026-04-26 (vol 5) — COGNITIVE FOUNDATION + KIMI INTEGRATION
+
+User 3 visionary questions:
+> "Gimana sidix bantu mecahin masalah?
+>  Bagaimana caranya sidix belajar hal baru?
+>  Bagaimana caranya sidix bisa membuat tools baru padahal tidak ada referensinya?"
+
+Plus 5 aspirasi konkret (TTS voice clone, 3D Blender/Spline/ThreeJS, game,
+GitHub→tools, AI-driven discovery) + insight philosophical:
+
+> "logika seorang genius yang kreatif dan inovatif. teori, mvp, validasi,
+> testing, iterasi, lesson learn, iterasi, validasi, testing, AHA!"
+
+### IMPL — 4 Cognitive Modules (~1050 LOC)
+
+`apps/brain_qa/brain_qa/`:
+- **pattern_extractor.py** (290 lines) — induktif generalisasi, jawab Example
+  A "batok kelapa → kayu". Trigger detection regex Indo+EN, LLM extract
+  principle+domain+keywords+confidence, save brain/patterns/induction.jsonl,
+  retrieval keyword-overlap+domain-bonus, corroboration/falsification.
+- **aspiration_detector.py** (240 lines) — capability gap "GPT bisa, saya
+  juga bisa". Regex 12 trigger pattern (harusnya bisa, bikin ah, competitor
+  names), LLM analyze → Aspiration spec dengan capability_target +
+  competitors + decomposition + resources + novel_angle + effort. Save
+  brain/aspirations/<id>.md untuk admin review.
+- **tool_synthesizer.py** (320 lines) — autonomous tool creation, jawab
+  "bagaimana bikin tools tanpa referensi?". 5-step pipeline: spec → code
+  → AST validate (9 forbidden patterns: openai/anthropic/exec/eval/
+  subprocess/os.system/__import__/file write/HTTP mutation) → sandbox test
+  → save brain/skills/<name>.py + _index.json.
+- **problem_decomposer.py** (240 lines) — Polya 4-phase ("How to Solve It"
+  1945). Phase 1 UNDERSTAND (given/unknown/constraints + retrieve patterns),
+  Phase 2 PLAN (strategy + sub_goals + tools), Phase 3 EXECUTE (handled
+  by ReAct loop existing), Phase 4 REVIEW (correctness + insight + auto
+  save_pattern kalau generalizable).
+
+### IMPL — 8 Cognitive Endpoints di agent_serve.py
+
+```
+POST /agent/patterns/extract     — manual extract (admin)
+GET  /admin/patterns/stats       — library overview
+POST /agent/aspirations/analyze  — manual capture (admin)
+GET  /admin/aspirations/stats    — list spec
+POST /agent/skills/synthesize    — full pipeline (admin, expensive)
+GET  /admin/skills/stats         — skill registry
+POST /agent/decompose            — Polya 1+2 (public)
+```
+
+### BUG FIX — LLM Signature
+
+Live test ungkap: `generate_sidix() missing 1 required positional argument:
+'system'`. Saya pakai `from .ollama_llm import generate as llm_gen` (function
+sebenarnya `ollama_generate`) dan fallback `generate_sidix` butuh positional
+`system`.
+
+**Fix**: helper `_call_llm(prompt, max_tokens, temperature)` di 4 modul
+yang try `ollama_generate(prompt, system="", ...)` dulu, fallback
+`generate_sidix(prompt, system="", ...)`. Konsisten antar modul.
+
+### LIVE DEMO — User Aspirasi #1 (TTS Voice Cloning) BERHASIL
+
+Curl test live setelah fix bug:
+```bash
+POST /agent/aspirations/analyze
+{"text":"kalo banyak platform bisa bikin TTS bisa record cloning suara
+        orang trus jadi tts, harusnya saya bisa!"}
+```
+
+Response (real, terverifikasi):
+- capability_target: "SuaraClonerTTS"
+- competitors: [DeepVoice, Tacotron]
+- inspiration_sources: [arXiv:1705.08925, github/adversarial-speech-to-text]
+- decomposition: 3 langkah konkret (dataset, deep learning, TTS engine)
+- resources_needed: [GPU, Librosa, PyTorch, Tacotron2]
+- effort: high
+- open_source_alternatives: [Tacotron2, Praat]
+- novel_angle: "Suara cloning real-time + interaktif natural"
+- saved ke brain/aspirations/asp_cc12914f5b.md
+
+Plus 2 aspirasi lain ter-test: 3D Generator (Blender/Three.js, "real-time
+rendering + material properties") + Game Creation (Unity/Unreal, "GameDevLite
+no-code/low-code + AI gameplay automation").
+
+### AUDIT — Kimi Overlap (per user heads-up "Kimi kadang gagal deploy")
+
+Spawn Explore agent, hasil:
+- **CONFLICT** (kemungkinan duplikasi): `analogical_reasoning.py` Kimi (Qiyas-
+  inspired) vs `pattern_extractor.py` saya (induktif Western). Decision:
+  COEXIST — different paradigm. Pattern induktif untuk fact/scientific,
+  Qiyas untuk fiqh/ethical. Future P1: merge ke unified `reasoning_engine`.
+- **OVERLAP**: `skill_builder.py` Kimi (transform resource → skill, deployed)
+  vs `tool_synthesizer.py` saya (synthesize from scratch). Decision:
+  LAYERED. tool_synthesizer SYNTHESIZE → skill_builder STORE.
+- **DORMANT** (Kimi work tanpa endpoint, saya wire): `socratic_probe.py`
+  + `wisdom_gate.py` → newly wired endpoint:
+  - `POST /agent/socratic` — clarifying questions sebelum jawab
+  - `POST /agent/wisdom-gate` — pre-action safety reflection (Pareto,
+    Method Mirror, sensitive-topic guard)
+
+Per CLAUDE.md anti-bentrok: file Kimi tetap milik Kimi, saya hanya wire
+endpoint tanpa modify logic. Total cognitive endpoints: 6 saya + 2 Kimi
++ 4 vol 4 (synthetic + relevance) = **12 cognitive endpoints**.
+
+### DOC
+
+- `research_notes/224_how_sidix_solves_learns_creates.md` (~5500 kata) —
+  4 module walkthrough + holistic example + comparison table + filosofi
+- `research_notes/225_genius_iterative_methodology.md` (~3500 kata) —
+  iterative methodology mapping ke modul + Kimi integration + live demo
+  + 5 aspirasi user → roadmap
+
+### NEXT (P0-P1 Mei-Jun 2026)
+
+- [ ] Auto-hook 4 cognitive modules ke `/ask/stream` (no manual trigger)
+- [ ] Admin tab di ctrl.sidixlab.com untuk Patterns + Aspirations + Skills
+- [ ] Merge analogical_reasoning + pattern_extractor → unified reasoning_engine
+- [ ] Pipeline aspiration → tool_synthesizer → skill_builder → deploy
+- [ ] Auto-trigger Burst untuk pertanyaan "gimana kalo X jadi Y?"
+- [ ] CodeAct adapter di agent_react.py
+- [ ] MCP server wrap 17 tool
+
+### Validation
+
+- pytest belum run (akan run setelah commit)
+- All 4 modules import OK
+- agent_serve.py syntax valid (12 cognitive endpoints)
+- LLM signature unified via _call_llm helper
+- Live test 3 aspirasi berhasil (TTS, 3D, game)
+- Kimi modules wired ke endpoint, dormant work activated
+- Bundle size unchanged (frontend tidak di-touch)
+
+---
+
 ## 2026-04-26 (vol 2) — POST-LOGIN: Activity Log + Admin User Tab + Drop Supabase Auth
 
 User feedback setelah login berhasil:

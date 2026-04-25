@@ -1769,6 +1769,56 @@ def create_app() -> "FastAPI":
             raise HTTPException(status_code=500, detail=f"decompose fail: {e}")
 
     # ════════════════════════════════════════════════════════════════════════
+    # KIMI DORMANT MODULES (newly wired) — complement cognitive foundation:
+    #   - socratic_probe: clarifying questions sebelum jawab
+    #   - wisdom_gate: pre-action ethical/safety reflection
+    # File milik Kimi (sesuai AGENT_WORK_LOCK), saya hanya WIRE endpoint
+    # tanpa modify logic-nya. Saling complement: Polya understand → Socratic
+    # probe → Wisdom gate → ReAct execute → Polya review.
+    # ════════════════════════════════════════════════════════════════════════
+
+    @app.post("/agent/socratic", tags=["Cognitive"])
+    async def socratic_probe_endpoint(request: Request):
+        """Socratic Probe — apakah SIDIX harus tanya balik (clarifying)
+        sebelum jawab? Output: {probe, reason, questions[], angle, confidence}.
+        Body: {question, persona?: AYMAN}"""
+        try:
+            body = await request.json()
+        except Exception:
+            body = {}
+        question = (body.get("question") or "").strip()
+        if not question:
+            raise HTTPException(status_code=400, detail="question wajib")
+        persona = body.get("persona", "AYMAN")
+        try:
+            from . import socratic_probe
+            result = socratic_probe.get_probe_response(question, persona=persona)
+            return {"ok": True, "result": result}
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"socratic fail: {e}")
+
+    @app.post("/agent/wisdom-gate", tags=["Cognitive"])
+    async def wisdom_gate_endpoint(request: Request):
+        """Wisdom Gate — evaluasi apakah action layak dijalankan (Pareto +
+        Method Mirror + complex-topic safety).
+        Body: {question, proposed_action, context?: {history, step_count}}"""
+        try:
+            body = await request.json()
+        except Exception:
+            body = {}
+        question = (body.get("question") or "").strip()
+        action = (body.get("proposed_action") or "").strip()
+        context = body.get("context") or {}
+        if not question or not action:
+            raise HTTPException(status_code=400, detail="question + proposed_action wajib")
+        try:
+            from .wisdom_gate import WisdomGate
+            is_safe, suggestion = WisdomGate.evaluate_intent(question, action, context)
+            return {"ok": True, "is_safe": is_safe, "suggestion": suggestion}
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"wisdom_gate fail: {e}")
+
+    # ════════════════════════════════════════════════════════════════════════
     # RELEVANCE SCORE — metric kualitas jawaban (untuk SIDIX learning loop)
     # ════════════════════════════════════════════════════════════════════════
 
