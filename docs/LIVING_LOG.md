@@ -5610,3 +5610,42 @@ curl -X POST http://72.62.125.6:8765/agent/chat \
 ```
 Harusnya: jawaban dari web_search atau model knowledge, BUKAN "aku sedang mengalami masalah"
 
+
+
+### 2026-04-25 — DEPLOY: Full VPS Deploy (Backend + UI + Landing) ✅
+
+**DEPLOY:** Semua perubahan hari ini berhasil deploy ke VPS production!
+
+**Langkah deploy:**
+```bash
+cd /opt/sidix && git pull origin main  # 36 files, 4761 insertions
+pm2 restart sidix-brain                # PID 241844, fresh
+pm2 restart sidix-ui                   # PID 241771, fresh
+```
+
+**Frontend rebuild:**
+```bash
+cd /opt/sidix/SIDIX_USER_UI
+npm install  # 190 packages, 0 vulnerabilities
+npm run build  # ✅ 1753 modules, 1.54s, dist/ updated
+```
+
+**Landing page sync:**
+```bash
+rsync -av --delete /opt/sidix/SIDIX_LANDING/ /www/wwwroot/sidixlab.com/
+# Note: .user.ini permission warning (non-fatal, panel file)
+```
+
+**Status VPS pasca-deploy:**
+| Service | PID | Uptime | Memory | Status |
+|---------|-----|--------|--------|--------|
+| sidix-brain | 241844 | 3s | 72.9mb | 🟢 online |
+| sidix-ui | 241771 | 24s | 65.7mb | 🟢 online |
+
+**Dokumen validasi:** `docs/VALIDASI_CLAUDE_20260425.md` — 7 test cases + known issues + decision points untuk Claude review.
+
+**TODO sisa untuk Claude/Infra:**
+1. Test web_search di VPS (`python -c "from brain_qa.agent_tools import _tool_web_search; ..."`)
+2. Test factual query: "siapa presiden indonesia sekarang"
+3. Kalau model 1.5B masih lemah → rekomendasi upgrade ke 7B + GPU
+
