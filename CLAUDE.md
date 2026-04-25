@@ -4,6 +4,25 @@ Proyek: **SIDIX / Mighan Model**
 
 ---
 
+## 🚦 ANTI-BENTROK: CLAUDE × KIMI (WAJIB BACA SEBELUM EDIT FILE APAPUN)
+
+Proyek ini dikerjakan oleh DUA agent AI secara bersamaan: **Claude** (otak/deploy) dan **Kimi** (jiwa/kreatif).
+
+### Sebelum edit file apapun, cek `docs/AGENT_WORK_LOCK.md`:
+- **File milik KIMI** → JANGAN SENTUH: `parallel_executor.py`, `jiwa/*`, `emotional_tone_engine.py`, `sensor_fusion.py`, `parallel_planner.py`, dll.
+- **File milik CLAUDE** → aman diedit: `agent_serve.py`, deploy scripts, tests, LIVING_LOG
+- **File SHARED** (agent_react.py, cot_system_prompts.py) → edit di section yang ditandai, JANGAN hapus kode agent lain
+- **Setelah Kimi commit** → run `git pull` + resolve conflict + full pytest SEBELUM commit apapun
+
+### Quick rule:
+```
+Kalau file menyentuh Jiwa/Emosi/Kreativitas → Kimi
+Kalau file menyentuh endpoint/deploy/orchestration → Claude
+Kalau ragu → tulis di LIVING_LOG, tanya user
+```
+
+---
+
 ## 📖 BACA DULU SEBELUM MULAI (SSOT)
 
 Urutan wajib sebelum kerja apapun:
