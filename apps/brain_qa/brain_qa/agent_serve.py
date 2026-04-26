@@ -3144,7 +3144,7 @@ def create_app() -> "FastAPI":
         _is_simple_bypass = _tier_decision is not None and _tier_decision.tier == "simple"
         if _is_simple_bypass:
             try:
-                from .local_llm import generate_sidix
+                from .runpod_serverless import hybrid_generate
                 _bump_metric("ask_simple_bypass")
                 _t_simple = time.time()
                 _simple_sys = (
@@ -3152,7 +3152,7 @@ def create_app() -> "FastAPI":
                     "Jawab singkat (max 2 kalimat), hangat, natural. "
                     "Jangan tampilkan citations atau analisis multi-step."
                 )
-                _simple_text, _simple_mode = generate_sidix(
+                _simple_text, _simple_mode = hybrid_generate(
                     prompt=req.question, system=_simple_sys,
                     max_tokens=120, temperature=0.6,
                 )
@@ -3545,7 +3545,7 @@ def create_app() -> "FastAPI":
             _is_simple_bypass = _tier_decision_s is not None and _tier_decision_s.tier == "simple"
             if _is_simple_bypass:
                 try:
-                    from .local_llm import generate_sidix
+                    from .runpod_serverless import hybrid_generate
                     _bump_metric("ask_stream_simple_bypass")
                     _t_simple_start = time.time()
                     _simple_sys = (
@@ -3554,7 +3554,7 @@ def create_app() -> "FastAPI":
                         "Jangan tampilkan citations atau analisis multi-step. "
                         "Jangan tambah label epistemik untuk obrolan ringan."
                     )
-                    _simple_text, _simple_mode = generate_sidix(
+                    _simple_text, _simple_mode = hybrid_generate(
                         prompt=req.question,
                         system=_simple_sys,
                         max_tokens=120,
