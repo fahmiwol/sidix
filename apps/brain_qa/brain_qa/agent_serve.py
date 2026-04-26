@@ -540,7 +540,8 @@ def create_app() -> "FastAPI":
     # Vol 12 QA finding: /agent/wisdom-gate cold start 14.6s karena lazy import
     # trigger module dependency tree (Kimi jiwa/* etc) on first call.
     # Fix: preload semua cognitive module di startup supaya first call <500ms.
-    _startup_logger = logging.getLogger(__name__)
+    import logging as _startup_logging
+    _startup_logger = _startup_logging.getLogger(__name__)
     try:
         from . import (
             pattern_extractor,           # noqa: F401  vol 5
