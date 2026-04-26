@@ -561,8 +561,11 @@ def create_app() -> "FastAPI":
             nightly_lora,                 # noqa: F401  vol 15 — Pilar 3 closure
             sensorial_input,              # noqa: F401  vol 15 — sensorial foundation
             creative_tools_registry,      # noqa: F401  vol 16 — creative tool registry
+            codeact_adapter,              # noqa: F401  vol 17 — CodeAct executable
+            mcp_server_wrap,              # noqa: F401  vol 17 — MCP server expose
+            hands_orchestrator,           # noqa: F401  vol 17 — 1000 hands stub
         )
-        _startup_logger.info("[startup] cognitive modules eager-loaded (vol 5-16)")
+        _startup_logger.info("[startup] cognitive modules eager-loaded (vol 5-17)")
     except Exception as e:
         _startup_logger.warning("[startup] cognitive eager-load skipped: %s", e)
 
@@ -2359,6 +2362,123 @@ def create_app() -> "FastAPI":
             return {"ok": ok}
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"update fail: {e}")
+
+    # ════════════════════════════════════════════════════════════════════════
+    # CODEACT (vol 17, P2) — Executable Code Action vs JSON Tool Calls
+    # Per Wang et al. 2024 (huggingface.co/papers/2402.01030)
+    # ════════════════════════════════════════════════════════════════════════
+
+    @app.post("/agent/codeact/process", tags=["Cognitive"])
+    async def codeact_process_endpoint(request: Request):
+        """Detect + validate + execute code action dari LLM output.
+        Body: {llm_output: "...```python\\n...\\n```", auto_execute?: True}"""
+        try:
+            body = await request.json()
+        except Exception:
+            body = {}
+        llm_output = body.get("llm_output", "")
+        if not llm_output:
+            raise HTTPException(status_code=400, detail="llm_output wajib")
+        try:
+            from . import codeact_adapter
+            return codeact_adapter.process_llm_output_for_codeact(
+                llm_output,
+                auto_execute=bool(body.get("auto_execute", True)),
+                timeout_seconds=int(body.get("timeout_seconds", 10)),
+            )
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"codeact fail: {e}")
+
+    @app.get("/admin/codeact/stats", tags=["Cognitive"])
+    def codeact_stats_endpoint(request: Request):
+        """Stats CodeAct adapter (total/valid/executed/errors/avg_duration)."""
+        if not _admin_ok(request):
+            raise HTTPException(status_code=403, detail="Akses ditolak")
+        try:
+            from . import codeact_adapter
+            return codeact_adapter.stats()
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"stats fail: {e}")
+
+    # ════════════════════════════════════════════════════════════════════════
+    # MCP SERVER WRAP (vol 17, P2) — Expose SIDIX tools sebagai MCP server
+    # Per modelcontextprotocol.io spec
+    # ════════════════════════════════════════════════════════════════════════
+
+    @app.get("/mcp/tools", tags=["MCP"])
+    def mcp_list_tools_endpoint(request: Request, category: str = ""):
+        """MCP standard tools/list. Public (non-admin tools only)."""
+        try:
+            from . import mcp_server_wrap
+            admin_ok = _admin_ok(request)
+            return {
+                "tools": mcp_server_wrap.list_tools(category=category, admin_ok=admin_ok),
+            }
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"mcp list fail: {e}")
+
+    @app.get("/mcp/manifest", tags=["MCP"])
+    def mcp_manifest_endpoint(request: Request):
+        """Full MCP server manifest export — untuk register di Claude Desktop /
+        Cursor / smolagents / continue.dev."""
+        try:
+            from . import mcp_server_wrap
+            return mcp_server_wrap.export_manifest()
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"manifest fail: {e}")
+
+    @app.get("/admin/mcp/stats", tags=["MCP"])
+    def mcp_stats_endpoint(request: Request):
+        """MCP server stats untuk admin."""
+        if not _admin_ok(request):
+            raise HTTPException(status_code=403, detail="Akses ditolak")
+        try:
+            from . import mcp_server_wrap
+            return mcp_server_wrap.stats()
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"stats fail: {e}")
+
+    # ════════════════════════════════════════════════════════════════════════
+    # 1000 HANDS ORCHESTRATOR (vol 17 stub, Q1 2027 full)
+    # Multi-persona parallel sub-task dispatch + synthesis
+    # ════════════════════════════════════════════════════════════════════════
+
+    @app.post("/agent/hands/orchestrate", tags=["Cognitive"])
+    async def hands_orchestrate_endpoint(request: Request):
+        """1000 hands orchestrator: split goal → dispatch per persona → synthesize.
+        Vol 17 = sequential stub (3-4 sub-task, 1-3 menit total).
+        Q1 2027 = real parallel via Celery+Redis.
+        Body: {user_goal, use_llm_split?: True}"""
+        if not _admin_ok(request):
+            raise HTTPException(status_code=403, detail="Akses ditolak (mahal, admin only saat stub)")
+        try:
+            body = await request.json()
+        except Exception:
+            body = {}
+        user_goal = (body.get("user_goal") or "").strip()
+        if not user_goal:
+            raise HTTPException(status_code=400, detail="user_goal wajib")
+        try:
+            from . import hands_orchestrator
+            from dataclasses import asdict
+            result = hands_orchestrator.orchestrate(
+                user_goal,
+                use_llm_split=bool(body.get("use_llm_split", True)),
+            )
+            return {"ok": True, "goal": asdict(result)}
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"orchestrate fail: {e}")
+
+    @app.get("/admin/hands/stats", tags=["Cognitive"])
+    def hands_stats_endpoint(request: Request):
+        """1000 hands orchestrator stats."""
+        if not _admin_ok(request):
+            raise HTTPException(status_code=403, detail="Akses ditolak")
+        try:
+            from . import hands_orchestrator
+            return hands_orchestrator.stats()
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"stats fail: {e}")
 
     @app.get("/agent/context-triple", tags=["Cognitive"])
     async def context_triple_endpoint(request: Request, user_id: str = "", verbose: bool = False):
