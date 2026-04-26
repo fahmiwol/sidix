@@ -3139,15 +3139,22 @@ def create_app() -> "FastAPI":
         except Exception as _e:
             log.debug("[semantic_cache] lookup error: %s", _e)
 
+        # ── Vol 20-fu3: Simple-tier fast-path (override flags) ───────────────
+        # Tier=simple (greeting, ack, <8 char) → force lightweight: no agent
+        # tools, no web fallback, force simple_mode. Slashes latency 60s→2s.
+        _is_simple_tier = _tier_decision is not None and _tier_decision.tier == "simple"
+        if _is_simple_tier:
+            _bump_metric("ask_simple_fastpath")
+
         session = run_react(
             question=req.question,
             persona=req.persona,
             client_id=request.headers.get("x-client-id", "").strip(),
             conversation_id=request.headers.get("x-conversation-id", "").strip(),
-            corpus_only=req.corpus_only,
-            allow_web_fallback=req.allow_web_fallback,
-            simple_mode=req.simple_mode,
-            agent_mode=req.agent_mode,
+            corpus_only=req.corpus_only or _is_simple_tier,
+            allow_web_fallback=req.allow_web_fallback and not _is_simple_tier,
+            simple_mode=req.simple_mode or _is_simple_tier,
+            agent_mode=req.agent_mode and not _is_simple_tier,
             strict_mode=req.strict_mode,
         )
         _store_session(session)
@@ -3563,6 +3570,11 @@ def create_app() -> "FastAPI":
                 _tadabbur_swap_active = False
 
             # ── 2b. Jalankan ReAct (atau pakai tadabbur session kalau swap) ──
+            # Vol 20-fu3: Simple-tier fast-path — force lightweight flags untuk
+            # greeting/ack supaya tidak masuk ReAct loop deep (60-80s → ~2-5s).
+            _is_simple_tier_s = _tier_decision_s is not None and _tier_decision_s.tier == "simple"
+            if _is_simple_tier_s and not _tadabbur_swap_active:
+                _bump_metric("ask_stream_simple_fastpath")
             if _tadabbur_swap_active and _tadabbur_session is not None:
                 # Skip run_react — pakai tadabbur session
                 session = _tadabbur_session
@@ -3571,11 +3583,11 @@ def create_app() -> "FastAPI":
                     session = run_react(
                         question=req.question,
                         persona=effective_persona,
-                        corpus_only=req.corpus_only,
-                        allow_web_fallback=req.allow_web_fallback,
-                        simple_mode=req.simple_mode,
-                        agent_mode=req.agent_mode,
-                    strict_mode=req.strict_mode,
+                        corpus_only=req.corpus_only or _is_simple_tier_s,
+                        allow_web_fallback=req.allow_web_fallback and not _is_simple_tier_s,
+                        simple_mode=req.simple_mode or _is_simple_tier_s,
+                        agent_mode=req.agent_mode and not _is_simple_tier_s,
+                        strict_mode=req.strict_mode,
                         conversation_id=effective_conversation_id,
                         conversation_context=conversation_context,
                     )
