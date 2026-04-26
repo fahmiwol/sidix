@@ -3608,17 +3608,28 @@ def create_app() -> "FastAPI":
                 log.debug("[stream] domain detect error: %s", _e)
             if _is_current_events:
                 try:
-                    from .wiki_lookup import wiki_lookup_fast, format_for_llm_context, to_citations
+                    from .wiki_lookup import wiki_lookup_fast, format_for_llm_context as wiki_fmt, to_citations as wiki_cites
+                    from .brave_search import brave_search_async, format_for_llm_context as brave_fmt, to_citations as brave_cites
                     from .runpod_serverless import hybrid_generate
                     _bump_metric("ask_stream_current_events_fastpath")
                     _t_ce_start = time.time()
-                    # Yield meta phase (UX: user tahu sedang lookup wiki)
-                    yield f"data: {_json.dumps({'type':'meta','_phase':'wiki_lookup','_phase_detail':'Cek Wikipedia untuk info terkini...'})}\n\n"
-                    # Vol 20-fu5: Wikipedia primary (DDG blocked from VPS IP)
-                    _wiki_results = wiki_lookup_fast(req.question, max_articles=3)
-                    _wiki_context = format_for_llm_context(_wiki_results, max_chars=4000)
-                    _wiki_citations = to_citations(_wiki_results)
+                    # Yield meta phase (UX: user tahu sedang lookup multi-source)
+                    yield f"data: {_json.dumps({'type':'meta','_phase':'multi_source','_phase_detail':'Cek Wikipedia + Brave Search...'})}\n\n"
+                    # Vol 20-fu6: Wiki + Brave PARALLEL (Brave catches fresh updates Wiki may miss)
+                    _wiki_results, _brave_results = await asyncio.gather(
+                        asyncio.get_event_loop().run_in_executor(None, lambda: wiki_lookup_fast(req.question, max_articles=2)),
+                        brave_search_async(req.question, max_results=4),
+                        return_exceptions=False,
+                    )
+                    _wiki_context = wiki_fmt(_wiki_results, max_chars=2000) if _wiki_results else ""
+                    _brave_context = brave_fmt(_brave_results, max_chars=2500) if _brave_results else ""
+                    _combined_ctx = ""
+                    if _brave_context:
+                        _combined_ctx += f"=== Hasil Brave Search (paling fresh) ===\n{_brave_context}\n\n"
                     if _wiki_context:
+                        _combined_ctx += f"=== Wikipedia (untuk konteks) ===\n{_wiki_context}\n"
+                    _wiki_citations = (wiki_cites(_wiki_results) if _wiki_results else []) + (brave_cites(_brave_results) if _brave_results else [])
+                    if _combined_ctx:
                         _ce_sys = (
                             f"Kamu SIDIX, persona {effective_persona}. Jawab pertanyaan user "
                             "berdasarkan KONTEKS WIKIPEDIA di bawah. Singkat (max 3 kalimat), "
@@ -3629,13 +3640,13 @@ def create_app() -> "FastAPI":
                         _ce_text, _ce_mode = hybrid_generate(
                             prompt=req.question,
                             system=_ce_sys,
-                            corpus_context=_wiki_context,
+                            corpus_context=_combined_ctx,
                             max_tokens=300,
                             temperature=0.3,
                         )
                         _ce_ms = int((time.time() - _t_ce_start) * 1000)
-                        log.info("[stream] current_events fastpath %dms (mode=%s, wiki=%d articles)",
-                                 _ce_ms, _ce_mode, len(_wiki_results))
+                        log.info("[stream] current_events fastpath %dms (mode=%s, wiki=%d, brave=%d)",
+                                 _ce_ms, _ce_mode, len(_wiki_results), len(_brave_results))
                         _ce_meta = {
                             "type": "meta",
                             "session_id": f"ce-{int(time.time()*1000)}",
@@ -3645,6 +3656,7 @@ def create_app() -> "FastAPI":
                             "_current_events_latency_ms": _ce_ms,
                             "_current_events_mode": _ce_mode,
                             "_wiki_articles": len(_wiki_results),
+                            "_brave_results": len(_brave_results),
                             "_citations": _wiki_citations,
                         }
                         yield f"data: {_json.dumps(_ce_meta)}\n\n"
