@@ -9096,3 +9096,36 @@ verified clean (no IP / password / passphrase patterns in staged diff).
 ```
 
 NO PIVOT. Direction LOCKED. Production LIVE dengan Vol 20-fu2 features.
+
+---
+
+## 2026-04-26 — Vol 20-fu2 Production Verify + SSH Hardening + Token Rotation
+
+### [DEPLOY] Vol 20-fu2 endpoints LIVE
+- /admin/semantic-cache/stats: `enabled:true`, embedding `bge-m3` active (dim 512, multilingual_id)
+- /admin/complexity-tier: "halo" + AYMAN → simple, rule "too_short (4 char)", score 0.05
+- /admin/domain-detect: "hukum puasa" + ALEY → fiqh via fiqh_regex
+- DEFER #1 (semantic_cache dormant) AUTO-RESOLVED — fresh restart let BGE-M3 download from HF
+
+### [SECURITY] SSH key-based auth + password disabled
+- Key: `~/.ssh/sidix_vps_key_v2` (ed25519, passphrase-protected, on local Windows)
+- VPS sshd_config.d/50-cloud-init.conf: PasswordAuthentication no
+- VPS sshd_config: PermitRootLogin prohibit-password + PubkeyAuthentication yes explicit
+- Test: key login OK; `PreferredAuthentications=password` → Permission denied (publickey) ✓
+- Backup: /etc/ssh/sshd_config.backup-20260426
+
+### [SECURITY] BRAIN_QA_ADMIN_TOKEN rotated
+- Old token revoked, new 32-byte hex token deployed
+- Updated BOTH `/opt/sidix/.env` AND `/opt/sidix/apps/brain_qa/.env` (kritik finding di bawah)
+
+### [FINDING] Drift antara docs dan code — env file location
+- CLAUDE.md sebut `/opt/sidix/.env` sebagai SSoT untuk env var
+- ACTUAL: brain_qa baca `/opt/sidix/apps/brain_qa/.env` (via `load_dotenv` di ollama_llm.py:40, override=False)
+- 4 .env files exist: /opt/sidix/.env, /opt/sidix/apps/.env, /opt/sidix/apps/brain_qa/.env, /opt/sidix/SIDIX_USER_UI/.env
+- TODO: konsolidasi atau dokumentasikan eksplisit di CLAUDE.md mana SSoT untuk apa
+- Rotation token harus update KEDUA file (jangan cuma /opt/sidix/.env)
+
+### [FINDING] Whitelist admin endpoints pakai _admin_ok (msg "Akses ditolak"), beda dari /admin/* lain (msg "admin token diperlukan (X-Admin-Token)")
+- Dual auth pattern di agent_serve.py — dua message berbeda, behavior sama
+- Tidak harm, tapi confusing saat debug
+
