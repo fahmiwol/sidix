@@ -9129,3 +9129,33 @@ NO PIVOT. Direction LOCKED. Production LIVE dengan Vol 20-fu2 features.
 - Dual auth pattern di agent_serve.py — dua message berbeda, behavior sama
 - Tidak harm, tapi confusing saat debug
 
+
+---
+
+## 2026-04-26 — [NOTE] Mamba2 Deployment Path: RunPod GPU OPTION exist
+
+### Salah kaprah berulang Claude
+- Repeatedly forget VPS punya GPU companion via RunPod (endpoint ws3p5ryxtlambj)
+- 3rd time same forgetfulness — user explicitly catat lagi ("laah lupa lagi? kan ada runpod?")
+
+### Mamba2 deployment options (3-way)
+| Option | Where | Pros | Cons | Status |
+|--------|-------|------|------|--------|
+| Mamba2-1.3B di VPS CPU | VPS local | No extra cost, low latency | Unproven on CPU, ~1.3B params slow | Code ready, NOT activated |
+| Mamba2-7B di VPS CPU | VPS local | Best quality (per note 235) | Confirmed TOO SLOW (CLAUDE.md) | Blocked |
+| **Mamba2-7B di RunPod GPU** | New endpoint | Best quality, constant memory long input | Per-query cost, network RTT, ops overhead | **NOT EXPLORED — viable for Q3** |
+| BGE-M3 di VPS CPU (current) | VPS local | Working, multilingual ID, fast | Lower MTEB than Mamba2 | ACTIVE ✓ |
+
+### Decision (lock 2026-04-26)
+- **Short term**: BGE-M3 stay (working, sufficient for ID semantic cache)
+- **Q3 candidate**: Mamba2-7B deployed di RunPod serverless (parallel ke vLLM endpoint)
+  - Pro: top MTEB quality, constant memory untuk long-context corpus chunks
+  - Con: another endpoint to manage, per-query GPU cost
+  - Trigger: kalau cache hit-rate plateau di ~50% atau kualitas semantic miss tinggi
+- **Q3 candidate alt**: Mamba2-1.3B di VPS CPU — bench dulu, kalau <100ms acceptable
+
+### TODO (catat di MASTER_ROADMAP nanti)
+- [ ] Bench Mamba2-1.3B latency on VPS CPU (4 vCPU AMD EPYC, 15GB RAM)
+- [ ] Spec RunPod serverless endpoint untuk Mamba2-7B (separate dari LLM endpoint)
+- [ ] Cost model: per-query GPU cost vs. semantic cache hit value
+
