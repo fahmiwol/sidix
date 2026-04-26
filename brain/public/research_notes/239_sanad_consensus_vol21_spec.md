@@ -428,3 +428,148 @@ async def inventory_synthesis_loop():
 - No regression on sanad fresh queries (still ≤7s)
 - Concurrent agent_id load: 10+ simultaneous queries with inventory hits
 
+
+
+---
+
+## Update 2026-04-26 (4th append): 100-User Concurrency + Hafidz Ledger + Lite Browser
+
+User: "bayangkan kalo ada 100 user yang online bareng, ada yang nanya, ada yang bikinin script coding, ada yang generate gambar... siapin tools seribu bayangan agent yang tau harus baliknya kemana, hafidz ledger... pengingat di decompile, trus bisa compile lewat sanad sebagai validator. Harus siapin browser yang sangat lite ringan jalan di server tapi ngebut dan powerfull. atau buat browser versi CLI..."
+
+### Insight kunci
+
+3 dimensi baru:
+1. Concurrency 100+ users: heterogen intent (Q&A + coding + image-gen) butuh agent pool dengan correct return-routing
+2. Hafidz Ledger = decompile/compile mechanism (per whitepaper SIDIX)
+3. Lite browser untuk server-side scraping — fast, low-memory, multi-tab
+
+---
+
+### Dimension 1: 100-User Shadow Agent Pool ("Seribu Bayangan")
+
+Per SIDIX_DEFINITION: "1000 tangan paralel". Operasionalkan dengan agent pool:
+
+- Pre-warmed shadow pool, max 1000 concurrent
+- Setiap shadow agent_id punya return queue (asyncio.Queue)
+- Dispatch non-blocking: return agent_id immediately, work happens in background
+- Collect-blocking with timeout untuk client polling
+
+#### Per-Intent Routing
+
+- qa -> Sanad fan-out 8-branch
+- code -> LLM + code_sandbox iter loop
+- image -> SDXL queue (1 GPU slot)
+- research -> Tadabbur 3-persona
+- summarize -> LLM tight prompt
+- translate -> LLM language-pair
+
+#### Concurrency Constraints
+
+| Resource | Limit | Strategy |
+|---|---|---|
+| RunPod LLM | 1 worker bursty | Queue + batch |
+| Web fetch | ~10 concurrent | Semaphore |
+| code_sandbox | 4 parallel | Semaphore |
+| Image gen | 1 GPU slot | Strict queue |
+| Inventory write | unlimited | SQLite WAL |
+
+Anti-pattern: shared mutable state without lock = race condition di shadow.
+
+---
+
+### Dimension 2: Hafidz Ledger — Decompile/Compile via AKU
+
+Per whitepaper SIDIX (Proof-of-Hifdz). Operasional:
+
+#### Decompile / Compile Cycle
+
+```
+RAW INPUT
+  -> DECOMPILE -> Atomic Knowledge Units (AKU)
+     - subject (who/what)
+     - predicate (relation)
+     - object (value)
+     - context (when/where/why)
+     - sources (sanad chain)
+     - timestamp + confidence + signature
+  -> STORE in Ledger (aku.db)
+  -> on QUERY: COMPILE
+     - find AKUs matching query
+     - cross-validate via multiple sources
+     - render coherent answer with sanad chain
+```
+
+#### AKU Format
+
+```python
+@dataclass
+class AtomicKnowledgeUnit:
+    aku_id: str           # hash(subject + predicate + object + ts)
+    subject: str          # "Indonesia"
+    predicate: str        # "presiden"
+    object: str           # "Prabowo Subianto"
+    context: dict         # {"period": "2024-2029"}
+    sources: list[Sanad]  # multi-source proof
+    timestamp: int
+    confidence: float
+    signature: str        # tamper-evident
+    version: int
+```
+
+#### Why AKU > Plain Cache
+
+- Smaller granularity: small fact change updates 1 AKU, not whole answer
+- Sanad chain per AKU: every claim has source proof
+- Composable: combine AKUs to answer new questions
+- Tamper-evident via signature
+- Audit-friendly via version history
+
+---
+
+### Dimension 3: Lite Browser — Server-Side Scraping
+
+DDG empty bug menunjukkan public search = unreliable dari VPS IP. Solusi: own multi-tier scraper.
+
+#### Two-Tier Architecture
+
+**Tier 1 — Lightweight HTTP (90% queries)**:
+- httpx.AsyncClient with HTTP/2 + connection pooling
+- selectolax for HTML parse (10x faster than BeautifulSoup, MIT)
+- trafilatura for text extraction
+- Multi-tab = asyncio.gather of fetches
+- RAM: ~30MB for 20 concurrent fetches
+- Latency: ~200ms per URL warm
+
+**Tier 2 — Headless browser (10% JS-required)**:
+- playwright async chromium
+- Spawned on-demand, killed after use
+- Pool: max 2 instances
+- Reserved for SPA / heavy JS
+
+#### Search Engine Diversification
+
+Replace DDG dependence:
+1. SearxNG self-hosted (meta-search, no rate limit, MIT) - RECOMMENDED
+2. Wikipedia API (already integrated)
+3. Direct domain whitelisting (trusted news/gov)
+4. Brave Search API (if usage allowed)
+5. DDG as 5th fallback only
+
+Target: 90% queries via SearxNG + Wikipedia + direct domains.
+
+---
+
+### Updated Phase Plan (All 4 Appends Combined)
+
+| Vol | Feature | p50 latency | Concurrent users |
+|---|---|---|---|
+| 20-fu3 | Simple bypass (SHIPPED) | 2s | ~10 |
+| 21 | Sanad fan-out 3-branch | 5s | ~20 |
+| 22 | + per-agent validation + iter | 7s | ~30 |
+| 23 | + Inventory Memory | 3s repeat / 5s new | ~50 |
+| 24 | + Lite browser + SearxNG | -1s on web queries | ~80 |
+| 25 | + Hafidz Ledger AKU + Shadow Pool 1000 | 2s repeat / 4s new | ~100+ |
+| 26 | + GPU pool + per-intent specialized routers | 1s cached / 3s new | ~500 |
+
+### Vol 25 = SIDIX at-scale: target architecture combining all 4 user inputs.
+
