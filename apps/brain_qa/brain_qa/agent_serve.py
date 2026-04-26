@@ -3608,29 +3608,34 @@ def create_app() -> "FastAPI":
                 log.debug("[stream] domain detect error: %s", _e)
             if _is_current_events:
                 try:
-                    from .agent_tools import _tool_web_search
+                    from .wiki_lookup import wiki_lookup_fast, format_for_llm_context, to_citations
                     from .runpod_serverless import hybrid_generate
                     _bump_metric("ask_stream_current_events_fastpath")
                     _t_ce_start = time.time()
-                    # Yield meta phase (UX: user tahu sedang web search)
-                    yield f"data: {_json.dumps({'type':'meta','_phase':'web_search','_phase_detail':'Cek info terkini di web...'})}\n\n"
-                    _ws_result = _tool_web_search({"query": req.question, "max_results": 4})
-                    if _ws_result.success and _ws_result.output.strip():
+                    # Yield meta phase (UX: user tahu sedang lookup wiki)
+                    yield f"data: {_json.dumps({'type':'meta','_phase':'wiki_lookup','_phase_detail':'Cek Wikipedia untuk info terkini...'})}\n\n"
+                    # Vol 20-fu5: Wikipedia primary (DDG blocked from VPS IP)
+                    _wiki_results = wiki_lookup_fast(req.question, max_articles=3)
+                    _wiki_context = format_for_llm_context(_wiki_results, max_chars=4000)
+                    _wiki_citations = to_citations(_wiki_results)
+                    if _wiki_context:
                         _ce_sys = (
                             f"Kamu SIDIX, persona {effective_persona}. Jawab pertanyaan user "
-                            "berdasarkan KONTEKS WEB di bawah. Singkat, akurat, sertakan tahun/tanggal "
-                            "kalau relevan. Untuk klaim faktual, awali dengan [FAKTA]. Jangan "
-                            "mengarang fakta yang tidak ada di konteks. Jangan analisis multi-step."
+                            "berdasarkan KONTEKS WIKIPEDIA di bawah. Singkat (max 3 kalimat), "
+                            "akurat, sertakan tahun/tanggal kalau relevan. Untuk klaim faktual, "
+                            "awali dengan [FAKTA]. Jangan mengarang fakta yang tidak ada di "
+                            "konteks. Jangan analisis multi-step."
                         )
                         _ce_text, _ce_mode = hybrid_generate(
                             prompt=req.question,
                             system=_ce_sys,
-                            corpus_context=_ws_result.output[:6000],
+                            corpus_context=_wiki_context,
                             max_tokens=300,
                             temperature=0.3,
                         )
                         _ce_ms = int((time.time() - _t_ce_start) * 1000)
-                        log.info("[stream] current_events fastpath %dms (mode=%s)", _ce_ms, _ce_mode)
+                        log.info("[stream] current_events fastpath %dms (mode=%s, wiki=%d articles)",
+                                 _ce_ms, _ce_mode, len(_wiki_results))
                         _ce_meta = {
                             "type": "meta",
                             "session_id": f"ce-{int(time.time()*1000)}",
@@ -3639,10 +3644,11 @@ def create_app() -> "FastAPI":
                             "_complexity_tier": _tier_decision_s.tier if _tier_decision_s else "standard",
                             "_current_events_latency_ms": _ce_ms,
                             "_current_events_mode": _ce_mode,
-                            "_citations": _ws_result.citations or [],
+                            "_wiki_articles": len(_wiki_results),
+                            "_citations": _wiki_citations,
                         }
                         yield f"data: {_json.dumps(_ce_meta)}\n\n"
-                        _ce_words = (_ce_text or "Maaf, tidak ada hasil dari pencarian web.").split(" ")
+                        _ce_words = (_ce_text or "Maaf, tidak ada hasil dari Wikipedia.").split(" ")
                         for i, w in enumerate(_ce_words):
                             _t = w + (" " if i < len(_ce_words) - 1 else "")
                             yield f"data: {_json.dumps({'type':'token','text':_t})}\n\n"
@@ -3654,12 +3660,12 @@ def create_app() -> "FastAPI":
                             "conversation_id": effective_conversation_id,
                             "confidence": "tinggi",
                             "_current_events_fastpath": True,
-                            "citations": _ws_result.citations or [],
+                            "citations": _wiki_citations,
                         }
                         yield f"data: {_json.dumps(_ce_done)}\n\n"
                         return
                     else:
-                        log.warning("[stream] web_search returned empty, fallback")
+                        log.warning("[stream] wiki_lookup empty for '%s', fallback to ReAct", req.question[:50])
                 except Exception as _e:
                     log.warning("[stream] current_events fastpath failed: %s", _e)
                     # Fall through
