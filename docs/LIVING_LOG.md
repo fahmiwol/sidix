@@ -8668,3 +8668,79 @@ parallel dijaga sebagai secondary justification — primary tetap engineering
 rationale.
 
 NO PIVOT. Direction LOCKED. Liberation Sprint pivot integrity intact.
+
+---
+
+## 2026-04-27 (vol 20-fu2 task#7) — Step 1 CATAT: Complexity-Tier Routing Design
+
+User pick #7 dari 8 DEFER. Apply mandatory 9-step POST-TASK PROTOCOL.
+
+### Design [DECISION]
+
+3-tier routing classifier:
+- `simple` → corpus-only direct (greeting/short/exact match), <100ms
+- `standard` → single-pass ReAct (current default), 5-30s
+- `deep` → Tadabbur eligible (multi-perspective complex), 30-120s
+
+Detection priority (target <5ms, no model):
+1. Regex keyword + length heuristik
+2. Persona override (UTZ creative bias standard, ALEY akademik bias deep)
+3. Adapter ke tadabbur_auto.adaptive_trigger existing
+
+File baru: `apps/brain_qa/brain_qa/complexity_router.py`
+
+Wire: agent_serve.py /ask + /ask/stream early decision
+
+### Sumber rationale [DECISION]
+
+- Note 235 finding: NeuralRouting research, Llama 70B within 3% GPT-4o,
+  routing 79-93% cost reduction
+- Note 234 Q3 roadmap: persona-aware spec routing
+- Note 237 Vol 20-closure: tadabbur observability already shipped, ready
+  untuk full integration via routing trigger
+
+### Anti-pattern di-hindari [DECISION]
+
+- ❌ ML classifier (overkill, embed bottleneck)
+- ❌ LLM-as-classifier (cost + latency)
+- ✅ Regex + persona heuristik <5ms
+
+### Step 6 CATAT validasi findings + Step 7 VALIDASI
+
+13/13 unit test pass (after tuple bug fix di Step 3).
+4 integration test pass (complexity + domain + tadabbur + response_cache).
+
+**Decision consistency observation [DECISION]**:
+- `complexity_router.detect_tier` threshold deep=0.7 (aggressive triage)
+- `tadabbur_auto.adaptive_trigger` threshold 0.6 (conservative — 7 LLM call mahal)
+- Untuk Q architectural deep (e.g. B2B GTM strategy):
+  - tier=deep (router 0.78)
+  - tadabbur_eligible=False (auto 0.38)
+- **By design separate**: tier=deep ≠ tadabbur. tier triage path,
+  tadabbur specific trigger 3-persona iteration. Future #1 Tadabbur full swap
+  bisa pakai EITHER signal.
+
+### Step 8 QA
+
+- syntax OK: agent_serve.py, complexity_router.py
+- security audit: no leak
+- existing tests intact: response_cache, semantic_cache, domain_detector all import + behavior unchanged
+- Kimi territory NOT touched (PERSONA_DESCRIPTIONS, parallel_executor, jiwa/* untouched)
+
+### Step 9 final CATAT before push
+
+Files changed:
+- NEW apps/brain_qa/brain_qa/complexity_router.py (~270 LOC)
+- WIRE apps/brain_qa/brain_qa/agent_serve.py (4 spots: /ask + /ask/stream + admin endpoint)
+- WIRE SIDIX_USER_UI/src/main.ts (frontend tier indicator)
+- CATAT docs/LIVING_LOG.md
+
+Effect:
+- Sebelum: setiap /ask call masuk full ReAct (5-30s) regardless of complexity
+- Setelah Vol 20-fu2 #7: classification ter-emit di response meta
+  - tier=simple (greeting/short/factual) → telemetry only di Vol 20-fu2,
+    actual fast-path defer ke Vol 20e
+  - tier=standard (most queries) → current default ReAct
+  - tier=deep (multi-clause + deep keywords + length) → telemetry only,
+    actual swap defer ke #1 Tadabbur full swap
+- Frontend: ⚡ simple / 🧠 deep badge di latency footer (skip standard)

@@ -1595,6 +1595,9 @@ async function handleSend() {
   let codeactDurationMs: number | null = null;
   let tadabburEligible = false;
   let tadabburScore: number | null = null;
+  // Vol 20-fu2 #7: complexity tier
+  let complexityTier: string | null = null;
+  let complexityScore: number | null = null;
 
   const convId = getCurrentConversationId();
   await askStream(question, persona, 5, {
@@ -1621,6 +1624,10 @@ async function handleSend() {
       if (m._tadabbur_eligible === true) {
         tadabburEligible = true;
         tadabburScore = (m._tadabbur_score as number) ?? null;
+      }
+      if (typeof m._complexity_tier === 'string') {
+        complexityTier = m._complexity_tier;
+        complexityScore = (m._complexity_score as number) ?? null;
       }
     },
     onToken: (text) => {
@@ -1719,6 +1726,11 @@ async function handleSend() {
       }
       if (cacheHit && cacheDomain) {
         extras.push(`<span class="text-parchment-400">domain: ${cacheDomain}</span>`);
+      }
+      if (complexityTier && complexityTier !== 'standard') {
+        const tierIcon = complexityTier === 'simple' ? '⚡' : '🧠';
+        const tierColor = complexityTier === 'simple' ? 'text-status-ready' : 'text-sky-300';
+        extras.push(`<span class="${tierColor}">${tierIcon} ${complexityTier}${complexityScore !== null ? ` (${complexityScore.toFixed(2)})` : ''}</span>`);
       }
       const extrasHTML = extras.length > 0 ? `<span>·</span>${extras.join('<span>·</span>')}` : '';
       latencyRow.innerHTML = `<span style="font-variant-numeric: tabular-nums;">⏱ ${latencySec}s</span><span>·</span><span>${speedHint}</span>${extrasHTML}`;

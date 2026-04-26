@@ -2578,6 +2578,17 @@ def create_app() -> "FastAPI":
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"domain detect fail: {e}")
 
+    @app.get("/admin/complexity-tier", tags=["Performance"])
+    def complexity_tier_endpoint(request: Request, question: str = "", persona: str = "AYMAN"):
+        """Debug: classify complexity tier dari question + persona. Vol 20-fu2 #7."""
+        if not _admin_ok(request):
+            raise HTTPException(status_code=403, detail="Akses ditolak")
+        try:
+            from . import complexity_router
+            return complexity_router.explain_tier(question, persona)
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"complexity tier fail: {e}")
+
     @app.post("/agent/tadabbur-decide", tags=["Cognitive"])
     async def tadabbur_decide_endpoint(request: Request):
         """Test endpoint: should_trigger_tadabbur untuk question.
@@ -3021,6 +3032,18 @@ def create_app() -> "FastAPI":
         _bump_metric("ask")
         _t_ask_start = time.time()
 
+        # ── Vol 20-fu2 #7: Complexity tier classification (early, <5ms) ──────
+        # Route question ke tier reasoning yang sesuai. Telemetry only di Vol
+        # 20-fu2 ini — actual routing decision (skip ReAct untuk simple, swap
+        # ke Tadabbur untuk deep) defer ke #1 Tadabbur full swap berikutnya.
+        _tier_decision = None
+        try:
+            from .complexity_router import detect_tier
+            _tier_decision = detect_tier(req.question, req.persona)
+            _bump_metric(f"ask_tier_{_tier_decision.tier}")
+        except Exception as _e:
+            log.debug("[complexity_router] error: %s", _e)
+
         # ── Vol 20: Response cache early lookup ──────────────────────────────
         # Cache hit return <100ms vs LLM 5-30s. Hanya untuk stable factual Q
         # (corpus-based). Skip kalau current events / personalized / strict.
@@ -3229,6 +3252,10 @@ def create_app() -> "FastAPI":
             "praxis_matched_frame_ids": getattr(session, "praxis_matched_frame_ids", ""),
             **_codeact_meta,
         }
+        if _tier_decision is not None:
+            _response["_complexity_tier"] = _tier_decision.tier
+            _response["_complexity_score"] = _tier_decision.score
+            _response["_complexity_latency_class"] = _tier_decision.estimated_latency_class
 
         # ── Vol 20: Response cache store (post-success) ──────────────────────
         # Hanya cache jika cacheable + confidence cukup tinggi (>=0.7)
@@ -3351,6 +3378,15 @@ def create_app() -> "FastAPI":
                         effective_persona = decision.persona
             except Exception as e:
                 log.debug("[stream] persona route skip: %s", e)
+
+            # ── Vol 20-fu2 #7: Complexity tier classification (early) ────────
+            _tier_decision_s = None
+            try:
+                from .complexity_router import detect_tier
+                _tier_decision_s = detect_tier(req.question, effective_persona)
+                _bump_metric(f"ask_stream_tier_{_tier_decision_s.tier}")
+            except Exception as _e:
+                log.debug("[stream] complexity_router error: %s", _e)
 
             # ── Vol 20-Closure: Cache short-circuit (L1 exact + L2 semantic) ─
             # Frontend pakai stream exclusively, tanpa wiring di sini cache
@@ -3537,6 +3573,10 @@ def create_app() -> "FastAPI":
             if _tadabbur_decision and _tadabbur_decision.should_trigger:
                 _meta_payload["_tadabbur_eligible"] = True
                 _meta_payload["_tadabbur_score"] = _tadabbur_decision.score
+            if _tier_decision_s is not None:
+                _meta_payload["_complexity_tier"] = _tier_decision_s.tier
+                _meta_payload["_complexity_score"] = _tier_decision_s.score
+                _meta_payload["_complexity_latency_class"] = _tier_decision_s.estimated_latency_class
             meta = _json.dumps(_meta_payload)
             yield f"data: {meta}\n\n"
 
