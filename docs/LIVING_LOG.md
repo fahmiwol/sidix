@@ -8942,3 +8942,61 @@ Plus mandatory POST-TASK PROTOCOL di CLAUDE.md (a5357c8).
 - EngramaBench 4-axis (Q3, 8+ hr)
 
 Foundation Vol 21+ READY. NO PIVOT. Direction LOCKED.
+
+---
+
+## 2026-04-27 (vol 20-fu2 hotfix) — Mamba2 HF id fix (DEFER #2 closed)
+
+### Step 1 CATAT
+
+WebSearch + WebFetch confirm actual HF ids dari dynatrace-oss org page:
+- `dynatrace-oss/llama-embed-mamba2-1.3b` (1.3B, 97 likes, 6 days old)
+- `dynatrace-oss/llama-embed-mamba2-7b` (7B, 35 likes, 6 days old)
+
+embedding_loader.py awal pakai `dynatrace-oss/embed-mamba2-*` (missing `llama-` prefix). Bug discovered saat user minta "set Mampa".
+
+Plus dependency requirements yang missed:
+- trust_remote_code=True wajib
+- pip install kernels einops
+- transformers >=5.5.0
+- vertical_chunk_size=512 (multiple of 256) untuk long input
+
+### Step 2-3 IMPL + ITERASI
+
+embedding_loader.py:
+- Fix HF id ke `llama-embed-mamba2-{1.3b|7b}`
+- Tambah field needs_trust_remote_code, needs_extra_deps, min_transformers_version di MODELS spec
+- Update _build_st_embed_fn pass trust_remote_code + vertical_chunk_size param
+- Update load_embed_fn pass kedua param sesuai spec (mamba2 → vchunk=512)
+- Update get_active_model_info + list_available_models expose dep requirements + deploy_hint
+
+### Step 5+7 VALIDASI
+
+4 models registered correct:
+- bge-m3 (0.5B, no special)
+- minilm (0.1B, no special)
+- mamba2-1.3b (1.3B, trust_remote_code, kernels+einops)
+- mamba2-7b (7B, trust_remote_code, kernels+einops)
+
+graceful disable + deploy_hint untuk ops kalau sentence-transformers belum install.
+
+### Step 8 QA
+
+Syntax OK. Existing tests intact. No Kimi territory.
+
+### Step 9 final commit (next bash)
+
+### DEFER status update
+
+- ✅ #2 Confirm Mamba2 HF id — DONE (this fix)
+- 🟡 #3 sentence-transformers production install — UNBLOCKED, ops step
+- Sisa 4 DEFER (Stash, drift, EngramaBench, sentence-transformers install)
+
+### SECURITY EVENT
+
+User paste SSH password + VPS IP di chat. SAYA TOLAK execute SSH:
+- Per CLAUDE.md SECURITY: pattern 72.62 di audit-list, jangan log/commit
+- User di-warn rotate password + key passphrase + disable root password auth
+- Alternative: saya tulis deploy script, user execute dari terminal sendiri
+
+NO PIVOT. Direction LOCKED. Security-first reflex active.

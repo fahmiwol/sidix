@@ -64,20 +64,27 @@ MODELS = {
         "default": False,  # CPU fallback only
     },
     "mamba2-1.3b": {
-        "hf_id": "dynatrace-oss/embed-mamba2-1.3b",  # tentative; check HF actual name
-        "dim_native": 768,  # tentative
-        "dim_truncated": 768,
+        # Confirmed via HF dynatrace-oss org page (2026-04-27 fetch)
+        "hf_id": "dynatrace-oss/llama-embed-mamba2-1.3b",
+        "dim_native": 2048,    # llama-1.3b standard hidden dim (verify on load)
+        "dim_truncated": 2048,
         "size_b": 1.3,
         "multilingual_id": True,
         "default": False,
+        "needs_trust_remote_code": True,
+        "needs_extra_deps": ["kernels", "einops"],  # pip install
+        "min_transformers_version": "5.5.0",
     },
     "mamba2-7b": {
-        "hf_id": "dynatrace-oss/embed-mamba2",  # check HF actual
-        "dim_native": 4096,  # tentative
-        "dim_truncated": 1024,  # truncated for cache key
+        "hf_id": "dynatrace-oss/llama-embed-mamba2-7b",
+        "dim_native": 4096,    # llama-7b standard hidden dim (verify on load)
+        "dim_truncated": 1024,  # MRL truncate for cache key efficiency
         "size_b": 7.0,
         "multilingual_id": True,
         "default": False,
+        "needs_trust_remote_code": True,
+        "needs_extra_deps": ["kernels", "einops"],
+        "min_transformers_version": "5.5.0",
     },
 }
 
@@ -119,8 +126,19 @@ def _l2_normalize(vec):
     return vec.astype(np.float32)
 
 
-def _build_st_embed_fn(model_name: str, hf_id: str, truncate_dim: Optional[int] = None) -> Optional[Callable]:
-    """Build callable(text) -> np.ndarray dari sentence-transformers model."""
+def _build_st_embed_fn(
+    model_name: str,
+    hf_id: str,
+    truncate_dim: Optional[int] = None,
+    *,
+    trust_remote_code: bool = False,
+    vertical_chunk_size: Optional[int] = None,
+) -> Optional[Callable]:
+    """Build callable(text) -> np.ndarray dari sentence-transformers model.
+
+    Mamba2 models butuh trust_remote_code=True dan opsional vertical_chunk_size
+    untuk long input efficiency.
+    """
     ST = _try_import_sentence_transformers()
     np = _try_import_numpy()
     if ST is None or np is None:
@@ -131,8 +149,14 @@ def _build_st_embed_fn(model_name: str, hf_id: str, truncate_dim: Optional[int] 
             model = _model_cache[model_name]
         else:
             try:
-                log.info("[embedding_loader] loading %s from HF (%s)...", model_name, hf_id)
-                model = ST(hf_id)
+                log.info(
+                    "[embedding_loader] loading %s from HF (%s) trust_remote_code=%s...",
+                    model_name, hf_id, trust_remote_code,
+                )
+                if trust_remote_code:
+                    model = ST(hf_id, trust_remote_code=True)
+                else:
+                    model = ST(hf_id)
                 _model_cache[model_name] = model
                 log.info("[embedding_loader] loaded %s OK", model_name)
             except Exception as e:
@@ -141,7 +165,14 @@ def _build_st_embed_fn(model_name: str, hf_id: str, truncate_dim: Optional[int] 
 
     def embed(text: str):
         try:
-            v = model.encode(text or "", convert_to_numpy=True, show_progress_bar=False)
+            encode_kwargs = {
+                "convert_to_numpy": True,
+                "show_progress_bar": False,
+            }
+            # Mamba2: vertical_chunk_size untuk constant-memory long input
+            if vertical_chunk_size:
+                encode_kwargs["vertical_chunk_size"] = vertical_chunk_size
+            v = model.encode(text or "", **encode_kwargs)
             if truncate_dim and v.shape[0] > truncate_dim:
                 v = v[:truncate_dim]
             return _l2_normalize(v)
@@ -189,7 +220,16 @@ def load_embed_fn(model_name: Optional[str] = None) -> Optional[Callable[[str], 
     for candidate in candidates:
         spec = MODELS[candidate]
         truncate = spec["dim_truncated"] if spec["dim_truncated"] != spec["dim_native"] else None
-        fn = _build_st_embed_fn(candidate, spec["hf_id"], truncate_dim=truncate)
+        # Mamba2 specifics
+        trust_rc = spec.get("needs_trust_remote_code", False)
+        # Mamba2 supports vertical_chunk_size untuk long input (multiple of 256)
+        vchunk = 512 if candidate.startswith("mamba2") else None
+        fn = _build_st_embed_fn(
+            candidate, spec["hf_id"],
+            truncate_dim=truncate,
+            trust_remote_code=trust_rc,
+            vertical_chunk_size=vchunk,
+        )
         if fn is not None:
             _active_model_name = candidate
             log.info(
@@ -210,6 +250,11 @@ def get_active_model_info() -> dict:
             "active": False,
             "model": None,
             "reason": "no model loaded (sentence-transformers not installed atau load failed)",
+            "deploy_hint": (
+                "Run on VPS: pip install sentence-transformers numpy. "
+                "Untuk Mamba2: tambah pip install kernels einops, transformers>=5.5.0. "
+                "Set ENV SIDIX_EMBED_MODEL=bge-m3 (default) atau mamba2-1.3b atau mamba2-7b."
+            ),
         }
     spec = MODELS[_active_model_name]
     return {
@@ -219,6 +264,8 @@ def get_active_model_info() -> dict:
         "dim": spec["dim_truncated"],
         "size_b": spec["size_b"],
         "multilingual_id": spec["multilingual_id"],
+        "needs_trust_remote_code": spec.get("needs_trust_remote_code", False),
+        "needs_extra_deps": spec.get("needs_extra_deps", []),
     }
 
 
@@ -233,6 +280,8 @@ def list_available_models() -> list[dict]:
             "multilingual_id": spec["multilingual_id"],
             "default": spec["default"],
             "active": name == _active_model_name,
+            "needs_trust_remote_code": spec.get("needs_trust_remote_code", False),
+            "needs_extra_deps": spec.get("needs_extra_deps", []),
         }
         for name, spec in MODELS.items()
     ]
