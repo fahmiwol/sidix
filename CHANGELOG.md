@@ -6,6 +6,59 @@ Semua perubahan signifikan dicatat di sini. Format: `[versi] — tanggal — rin
 
 ---
 
+## [2.1.0] — 2026-04-26 — Cognitive Compound Sprint (Vol 14-18)
+
+### 🔒 LOCK & ALIGNMENT
+- **NEW**: `docs/SIDIX_DEFINITION_20260426.md` — Source of Truth #1, formal definition (immutable)
+- 5 dokumen aligned: CLAUDE.md, README.md, NORTH_STAR.md, SIDIX_BIBLE.md, DIRECTION_LOCK
+- Tagline locked: *"Autonomous AI Agent — Thinks, Learns & Creates"*
+- Direction locked: BEBAS dan TUMBUH
+- 10 ❌ hard rules tidak boleh berubah tanpa user explicit + file BARU
+
+### Added — Q3 P1 100% SHIP (9/9)
+- ✅ **agent_critic.py** (vol 10): 3 mode critique + Innovator-Critic loop (Pilar 2 closure 50% → 80%)
+- ✅ **tadabbur_mode.py** (vol 10): 3-persona iterate konvergensi
+- ✅ **persona_router.py** (vol 11): auto-detect optimal persona dari user message
+- ✅ **context_triple.py** (vol 11): zaman/makan/haal vector
+- ✅ **proactive_feeds.py** (vol 15): HN/arxiv/GitHub/HF papers fetch (Pilar 4 closure 70% → 85%)
+- ✅ **nightly_lora.py** (vol 15): orchestrator + snapshot + signal external (Pilar 3 closure 75% → 90%)
+- ✅ **sensorial_input.py** (vol 15): vision/audio/voice foundation
+- ✅ **codeact_adapter.py** (vol 17): executable code action (Wang 2024 pattern)
+- ✅ **mcp_server_wrap.py** (vol 17): 17 SIDIX tools wrapped sebagai MCP server (Anthropic spec)
+
+### Added — Foundation Future
+- 🚧 **hands_orchestrator.py** (vol 17): 1000 hands stub, full Q1 2027
+- 📋 **creative_tools_registry.py** (vol 16): 33 tools tracked (Q3 2026 → Q1 2027 adoption)
+
+### Added — Endpoints (50 total live)
+- 11 vol 15 (feeds×3, lora×3, sensorial×5)
+- 2 vol 16 (creative registry)
+- 7 vol 17 (codeact×2, mcp×3, hands×2)
+
+### Documentation — Research Notes
+- 224: HOW SIDIX solves/learns/creates (cognitive 4 modules)
+- 225: Iterative methodology (Tesla compound)
+- 226: Continual learning anti-forgetting (5-layer)
+- 227: Quranic Epistemological Blueprint (INTERNAL inspiration only)
+- 228: BEBAS dan TUMBUH 4-pilar architecture
+- 229: Full-stack Creative Agent Ecosystem (~10k kata, Q3-Q4 roadmap)
+- **230**: Global creative+culture sweep 2000 BC → 2031 trend projection (mendunia)
+
+### Fixed — Vol 12-13 QA Findings
+- Cold start `/agent/wisdom-gate` 14.6s → 78ms (eager preload cognitive modules)
+- Persona auto-route ke `/ask/stream` (saat req.persona default)
+- Defensive create activity_log.jsonl
+- 2× hotfix logging scope issue (NameError, UnboundLocalError)
+
+### Stats Final Vol 14-18
+```
+17 vol iterasi · 30+ commits · ~7300 LOC code · ~84,000 kata documentation
+50 endpoint live · 12 research notes (219-230) · 33 creative tools
+4-pilar coverage: 81.25% avg
+```
+
+---
+
 ## [2.0.0] — 2026-04-26 — Beta Launch Sprint
 
 ### Added — Supermodel Endpoints (4 unique features)

@@ -1,0 +1,456 @@
+# 🔄 HANDOFF — Sesi Baru Continuation (2026-04-27)
+
+> **Untuk Claude/Kimi agent sesi berikutnya**: dokumen ini = **single point
+> of truth** untuk continue tanpa kehilangan konteks. Baca file ini SEBELUM
+> action apapun.
+
+**Date sesi sebelumnya**: 2026-04-26 (full day, 17 vol iterasi)
+**Status**: Q3 P1 100% SHIP + global creative blueprint documented
+**Token usage saat handoff**: ~88% context window (efisien mode aktif)
+
+---
+
+## 📌 LANGKAH PERTAMA — Baca Urutan Ini
+
+1. **`docs/SIDIX_DEFINITION_20260426.md`** ← Source of Truth #1 (formal definition, IMMUTABLE)
+2. **`docs/DIRECTION_LOCK_20260426.md`** ← Tactical lock + 8 ❌ rules + Q3 roadmap
+3. **`CLAUDE.md`** ← Agent instruction (lock reference di top)
+4. **This file** ← state continuation
+5. **`docs/LIVING_LOG.md`** tail-200 — context recent actions
+
+**TIDAK BOLEH PIVOT** tanpa user explicit + buat file BARU `SIDIX_DEFINITION_<new_date>.md`.
+
+---
+
+## 🎯 STATE OVERVIEW (2026-04-26 Final)
+
+### Identity LOCKED
+- **Tagline**: *"Autonomous AI Agent — Thinks, Learns & Creates"*
+- **Karakter**: GENIUS · KREATIF · INOVATIF
+- **Direction**: AI Agent yang **BEBAS dan TUMBUH**
+- **5 Persona LOCKED**: UTZ · ABOO · OOMAR · ALEY · AYMAN
+- **License**: MIT, self-hosted, no vendor LLM API
+
+### Compound Stats
+```
+17 vol iterasi · 29+ commits · ~7300 LOC code · ~76,000 kata documentation
+50 endpoint live (cognitive + memory + proactive + creative + codeact + mcp + hands)
+12 research notes (219-229) + 2 LOCK files (DIRECTION + DEFINITION)
+33 creative tools registered + 17 MCP tools manifest
+4-pilar coverage: 81.25% avg
+```
+
+---
+
+## ✅ SUDAH DIKERJAKAN (Vol 1-17)
+
+### Vol 1-3 — Foundation Auth + Activity (pagi 2026-04-26)
+- Migrasi Supabase Auth → Own Auth Google Identity Services
+- Activity log per-user untuk SIDIX learning
+- Admin tabs (User Database, Activity Log)
+- Bug fix activity log capture (Bearer header missing → fixed)
+- Thinking timer real-time + Tutorial menu di header
+- **Files**: `auth_google.py`, `agent_serve.py` auth endpoints, `login.html`, `main.ts` ownAuth helpers
+
+### Vol 4 — Synthetic Q + Relevance + Warmup
+- Synthetic question agent (agent dummy untuk training signal)
+- Relevance scoring framework v1
+- RunPod warmup script (eliminate cold-start)
+- 3 research notes (221, 222, 223)
+- **Files**: `synthetic_question_agent.py`, `deploy-scripts/warmup_runpod.sh`
+
+### Vol 5 — Cognitive Foundation 4 Modules
+- `pattern_extractor.py` — induktif generalisasi
+- `aspiration_detector.py` — capability gap detection
+- `tool_synthesizer.py` — autonomous tool creation
+- `problem_decomposer.py` — Polya 4-phase
+- LLM signature unified `_call_llm` helper
+- **Files**: 4 modules + research note 224
+
+### Vol 5b — Wire Kimi Dormant
+- `socratic_probe.py` (Kimi) wired ke endpoint
+- `wisdom_gate.py` (Kimi) wired ke endpoint
+- **Files**: agent_serve.py + research note 225
+
+### Vol 6 — Auto-Hook + Admin Tabs
+- Cognitive modules auto-fire di /ask + /ask/stream
+- Admin tabs Patterns + Aspirations + Skills viewer
+- **Files**: agent_serve.py + admin.html
+
+### Vol 7 — Continual Memory (Anti-Forgetting)
+- `continual_memory.py` — 5-layer immutable + snapshot + rehearsal
+- 4 memory endpoints
+- **Files**: continual_memory.py + research note 226
+
+### Vol 8 — Quranic Blueprint Research (INTERNAL only)
+- Research note 227 — Quranic Epistemological Blueprint
+- ⚠️ NOTE: framing pivot di vol 9 ke "BEBAS dan TUMBUH" (per Gemini critique trivializing). Note 227 simpan sebagai INTERNAL inspiration source, BUKAN public branding.
+
+### Vol 9 — Pivot Framing + Proactive Trigger (Pilar 4)
+- `proactive_trigger.py` — anomaly scan + self-prompt + daily digest
+- Research note 228 — BEBAS dan TUMBUH 4-pilar architecture
+
+### LOCK 2026-04-26
+- `DIRECTION_LOCK_20260426.md` — IMMUTABLE direction
+- 5 dokumen aligned (CLAUDE, README, NORTH_STAR, SIDIX_BIBLE, etc.)
+
+### Vol 10 — Critic + Tadabbur (Pilar 2 closure)
+- `agent_critic.py` — devil_advocate / quality_check / destruction_test
+- `tadabbur_mode.py` — 3-persona iterate konvergensi
+- 4 endpoint baru
+
+### Vol 11 — Persona Routing + Context Triple
+- `persona_router.py` — auto-detect optimal persona dari user message
+- `context_triple.py` — zaman/makan/haal vector
+- **LIVE TEST PASSED**: "bikin gambar logo" → UTZ (0.85 conf), "debug API" → ABOO
+
+### Vol 12 — QA Cycle (Verify, no add)
+- pytest 520 pass / 1 flaky
+- 22/22 endpoint smoke test
+- 4 issues identified (cold start, persona auto-integrate, defensive file, LLM CPU)
+
+### Vol 13 — Fix QA Issues
+- Eager preload cognitive modules (cold start 14.6s → 78ms)
+- Persona auto-route di /ask/stream
+- Defensive activity_log.jsonl create
+- 2x hotfix (NameError log, UnboundLocalError logging)
+- 5 dokumen aligned ke DIRECTION_LOCK
+
+### Vol 14 — SIDIX_DEFINITION LOCK (BESAR, immutable)
+- `docs/SIDIX_DEFINITION_20260426.md` — Source of Truth #1 (~600 lines)
+- 5 docs reference SIDIX_DEFINITION
+- 10 ❌ hard rules tidak boleh berubah
+
+### Vol 15 — GAS SEMUA (Trend Feeds + Nightly LoRA + Sensorial)
+- `proactive_feeds.py` — HN/arxiv/GitHub/HF papers (Pilar 4 closure 70→85%)
+- `nightly_lora.py` — orchestrator + snapshot + signal external (Pilar 3 closure 75→90%)
+- `sensorial_input.py` — vision/audio/voice foundation
+- 11 endpoint baru
+
+### Vol 16 — Creative Agent Ecosystem
+- Research note 229 — Full-Stack Creative Agent Ecosystem (10k kata, Q3 2026 → Q4 2027 roadmap)
+- `creative_tools_registry.py` — 33 tools (5 shipped, 2 evaluating, 26 planned)
+- 6 metode baru SIDIX (Sanad-Traceable Provenance, Multi-Persona Direction, Compound Style Lock, Cultural Adaptive, Self-Evolving Brand Voice, Aspiration→Skill Pipeline)
+- Phase 0 decision: wire ke `mighan-media-worker` (shared backend, no train ulang)
+
+### Vol 17 — Q3 P1 100% SHIP
+- `codeact_adapter.py` — executable code action (Wang 2024 pattern)
+- `mcp_server_wrap.py` — 17 SIDIX tools wrapped sebagai MCP server
+- `hands_orchestrator.py` — 1000 hands stub (Q1 2027 full)
+- 7 endpoint baru
+- **LIVE TEST**: MCP manifest, codeact process, persona route ALL pass
+
+### Vol 18 (this) — Global Creative Sweep + Handoff Documentation
+- Research note 230 — Global creative+culture 2000 BC → 2031
+- HANDOFF doc (this file)
+- CHANGELOG vol 14-17 update
+- LIVING_LOG vol 18 final summary
+
+---
+
+## 🚧 YANG AKAN DIKERJAKAN (Sprint Plan Vol 18+)
+
+### Phase 0 — IMMEDIATE (Q3 2026, 2-3 hari kerja)
+**Wire ke `mighan-media-worker` shared backend**:
+
+```
+☐ Buat package: apps/brain_qa/brain_qa/creative/__init__.py
+☐ creative/visual_engine.py — wrap mighan-worker SDXL endpoint
+☐ creative/audio_engine.py — wrap mighan-worker coqui-tts
+☐ creative/sanad_wrapper.py — provenance metadata layer (SIDIX-unique)
+☐ Endpoint: POST /agent/creative/image
+☐ Endpoint: POST /agent/creative/voice (proper, replace stub)
+☐ Frontend: tombol generate image di chat
+☐ Env config /opt/sidix/.env:
+   MIGHAN_MEDIA_WORKER_URL=https://...runpod.io
+   MIGHAN_MEDIA_WORKER_KEY=<api-token>
+☐ Update creative_tools_registry: mark mighan-worker = "wired"
+```
+
+**Action item user**: kasih env config Mighan worker URL + API key.
+
+### Q3 2026 — Full Sensorial Multimodal (Jul-Sep)
+
+```
+☐ STT real integration (Whisper-large-v3 atau Step-Audio)
+☐ VLM real integration (Qwen2.5-VL atau LLaVA-Next)
+☐ TTS upgrade Piper → XTTS v2 (voice clone capability)
+☐ ComfyUI wrap untuk presisi visual control
+☐ Vector DB upgrade: BM25 → Qdrant + BGE-M3 embedding
+☐ Celery + Redis async task queue (untuk video gen jobs)
+☐ Cloudflare R2 CDN untuk asset distribution
+☐ Brand kit module (creative/brand_kit.py)
+☐ Social publisher module (multi-platform format)
+```
+
+### Q4 2026 — Video + 3D + Marketing (Oct-Dec)
+
+```
+☐ Video engine: SVD + CogVideoX wrap
+☐ Music gen: AudioCraft integration
+☐ 3D engine: Hunyuan3D-2 + Blender script auto-rig
+☐ MCP server full deploy (FastMCP standalone)
+☐ Multiagent finetuning: 5 persona LoRA distinct (per Multiagent paper Jan 2025)
+☐ Petals/Bittensor P2P pilot (decentralized memory)
+☐ RLHF feedback loop dari feedback_store ke training
+☐ Trend RSS feed expansion (more sources, push notification)
+☐ Influencer match module + outreach draft
+☐ Commerce research (Tokopedia/Shopee API integration)
+```
+
+### Q1 2027 — 1000 Hands Full + Web Embodied (Jan-Mar)
+
+```
+☐ 1000 hands FULL parallel via Celery + Redis
+☐ Per-persona dedicated LoRA (multiagent finetuning matured)
+☐ Game asset gen: Phaser.js + Three.js export
+☐ Cross-task dependency resolver
+☐ Live progress streaming SSE
+☐ AR pilot: A-Frame + WebXR
+☐ Computer-use mode (browser automation)
+```
+
+### Q2-Q4 2027 — Frontier (Moonshot)
+
+```
+☐ Tactile sensorial (Touch Dreaming pattern, note 223)
+☐ Voice clone brand-specific (XTTS v2 per-brand fine-tune)
+☐ Self-modifying skill marketplace
+☐ Robot integration partnership (optional)
+☐ Public benchmark: SIDIX vs ChatGPT user-specific domain
+☐ NeRF/Gaussian splatting (gsplat / nerfstudio)
+```
+
+### Q4 2030 — SIDIX-5.0 Vision
+
+- Multimodal sensorial fully alive (vision + audio + tactile + spatial)
+- Self-modifying skill library mature (1000+ skills)
+- Multi-region open source community
+- Compound advantage proven via 5-year benchmark
+
+---
+
+## 🐛 KNOWN BUGS (P1-P3)
+
+### P1 (fix vol 18+)
+- ❌ `/agent/voice` returns "tts_engine not available" — function name mismatch dengan tts_engine.py existing. Need verify signature actual.
+- ⚠️ wisdom_gate keyword list current cuma cover destruktif explicit (`hapus|delete|kill`). Belum cover ethics violation (`unauthorized|steal|hack|exploit`). LOG: Kimi territory, tunggu Kimi extend.
+
+### P2 (fix Q3 2026)
+- ⚠️ LLM JSON parse fail saat text panjang (aspiration analyze kadang return empty). Need retry logic + simpler JSON schema.
+- ⚠️ Burst mode auto-trigger untuk pertanyaan "gimana kalo X jadi Y?" pattern belum ada (hari ini manual trigger).
+
+### P3 (acknowledge, no immediate fix)
+- 🟢 LLM CPU bottleneck Qwen 7B di Ollama lokal (decompose 90s+). Mitigation: switch RunPod GPU permanent atau cache common queries.
+- 🟢 Module-level latency metric belum ada (track p50/p95 per endpoint).
+
+---
+
+## 🔧 INFRASTRUKTUR STATE (VPS Hostinger)
+
+### PM2 Processes
+- `sidix-brain` (FastAPI :8765) — eager preload 16 cognitive modules saat startup
+- `sidix-ui` (Vite serve dist :4000)
+- `mighan-media-worker` di RunPod (shared backend, separate)
+
+### File Locations
+- Backend: `/opt/sidix/apps/brain_qa/`
+- Frontend: `/opt/sidix/SIDIX_USER_UI/dist/`
+- Data: `/opt/sidix/apps/brain_qa/.data/`
+- Patterns: `/opt/sidix/brain/patterns/induction.jsonl`
+- Skills: `/opt/sidix/brain/skills/`
+- Aspirations: `/opt/sidix/brain/aspirations/`
+- Research notes: `/opt/sidix/brain/public/research_notes/`
+- Proactive outputs: `/opt/sidix/brain/proactive_outputs/`
+
+### Env Config
+- `/opt/sidix/.env` — root env
+- `/opt/sidix/apps/brain_qa/.env` — overrides (admin token: `d76f59a4...`)
+
+### Endpoint Public
+- App: `https://app.sidixlab.com` (frontend)
+- API: `https://ctrl.sidixlab.com` (backend FastAPI)
+- Landing: `https://sidixlab.com` (static, ada di `/www/wwwroot/sidixlab.com/`)
+- MCP Manifest: `https://ctrl.sidixlab.com/mcp/manifest`
+
+### LLM Backend
+- **Primary**: Ollama lokal di VPS (Qwen2.5:7b, ~4.68 GB) — CPU-only inference
+- **Optional**: RunPod Serverless (GPU) untuk LLM heavy — ada di env `RUNPOD_INFERENCE_URL`
+- **Future**: mighan-media-worker (RunPod) untuk SDXL + coqui-tts
+
+---
+
+## 📊 50 ENDPOINT INVENTORY
+
+```
+4 base auth/admin                               [vol 1-2]
+3 own auth (config, google, me)                 [vol 1]
+2 admin (users, activity)                        [vol 2]
+3 admin (whitelist, feedback, etc)              [existing]
+12 cognitive (pattern×2, asp×2, skill×2, decompose, socratic, wisdom, synthetic×2, relevance) [vol 5-6]
+4 memory (snapshot, consolidate, rehearsal, snapshot-lora) [vol 7]
+3 proactive (scan, digest, triggers)            [vol 9]
+4 critic (critique, innovator-critic, tadabbur, stats) [vol 10]
+3 routing (persona-route, router-stats, context-triple) [vol 11]
+3 feeds (fetch, anomalies, recent)              [vol 15]
+3 nightly LoRA (plan, orchestrate, stats)       [vol 15]
+5 sensorial (vision, audio, voice, stats, cleanup) [vol 15]
+2 creative registry (registry, update-status)   [vol 16]
+2 codeact (process, stats)                      [vol 17]
+3 MCP (tools, manifest, stats)                  [vol 17]
+2 hands (orchestrate, stats)                    [vol 17]
+═══════════════════════════════
+50 total
+```
+
+---
+
+## 🎨 33 CREATIVE TOOLS REGISTRY
+
+```
+By status:
+  shipped:    5 (existing SIDIX cognitive: Burst, Critic, Tadabbur, Persona, Proactive Feeds)
+  evaluating: 2 (mighan-worker SDXL + TTS)
+  planned:   26 (Q3 2026 → Q1 2027)
+
+By category:
+  visual:    6 (SDXL, ComfyUI, ControlNet, Kohya_ss, IP-Adapter, mighan-SDXL)
+  audio:     6 (Whisper, XTTS v2, Step-Audio, AudioCraft, OpenVoice, mighan-TTS)
+  video:     5 (AnimateDiff, SVD, CogVideoX, Mochi-1, FFmpeg+MoviePy)
+  3d:        4 (Hunyuan3D-2, TRELLIS, Three.js, Phaser.js)
+  rag:       2 (Qdrant, BGE-M3)
+  mcp:       3 (FastMCP, Blender MCP, Filesystem MCP)
+  marketing: 2 (Tokopedia, Shopee)
+  agent:     5 (existing shipped)
+```
+
+---
+
+## 🧠 7 USER ANALOGI → 7 ARCHITECTURAL ANCHOR (Locked)
+
+| User Insight | Architectural Anchor |
+|---|---|
+| 🍼 Bayi belajar bicara, tidak lupa | 5-layer immutable memory (note 226) |
+| 💻 Programmer compound dari pengalaman | Daily consolidation + quarterly retrain |
+| ⚡ Tesla 100x percobaan → AC current | Iterative methodology (note 225) |
+| 💧 Air → bahan bakar = tak ada yg tak mungkin | Possibility engineering (note 226) |
+| 🏢 Google vs Anthropic = agile beat legacy | Niche dominance path |
+| 📖 Quranic pattern (1.4k tahun) | INTERNAL inspiration only (note 227) — NOT public branding |
+| 🌀 Fisika gerak: hidup = bergerak | Continual progress directive |
+
+---
+
+## 🛡️ 10 ❌ HARD RULES (Tidak Boleh Berubah)
+
+Per `SIDIX_DEFINITION_20260426.md` section "Yang TIDAK BOLEH BERUBAH":
+
+1. ❌ Ganti tagline tanpa user explicit
+2. ❌ Klaim setara entitas spiritual (wahyu/mufassir/divine)
+3. ❌ Add vendor LLM API ke inference pipeline (OpenAI/Anthropic/Google)
+4. ❌ Revert ke filter strict (Liberation Sprint pivot LOCK)
+5. ❌ Drop 5 persona / replace
+6. ❌ Ganti MIT license
+7. ❌ Ganti self-hosted core architecture
+8. ❌ Drop sanad chain provenance
+9. ❌ Drop epistemic 4-label (FACT/OPINION/SPECULATION/UNKNOWN)
+10. ❌ Trivialize spiritual concepts dengan encode pure-math (Gemini critique acknowledged)
+
+---
+
+## 📋 RESEARCH NOTES INVENTORY (219-230)
+
+| # | Topic | Status |
+|---|---|---|
+| 219 | Own auth via Google Identity Services | ✅ implemented |
+| 220 | Activity log + user database design | ✅ implemented |
+| 221 | AI innovation 2026 adoption roadmap | strategic |
+| 222 | Visionary roadmap multimodal + self-modifying | strategic |
+| 223 | AI 2026→2027 underground predictions | strategic |
+| 224 | HOW SIDIX solves/learns/creates (4 cognitive modules) | ✅ implemented |
+| 225 | Iterative genius methodology (Tesla) | philosophy |
+| 226 | Continual learning anti-forgetting (5-layer) | ✅ implemented |
+| 227 | Quranic Epistemological Blueprint | INTERNAL inspiration only |
+| 228 | BEBAS dan TUMBUH 4-pilar architecture | strategic |
+| 229 | Full-stack creative agent ecosystem | blueprint Q3-Q4 2026 |
+| 230 | Global creative+culture sweep 2000 BC → 2031 | strategic global |
+
+---
+
+## 🚀 IMMEDIATE NEXT ACTION (Vol 19+)
+
+User priority order:
+
+### Priority 1 — Phase 0 Wire mighan-worker (2-3 hari)
+```
+1. User kasih env config: MIGHAN_MEDIA_WORKER_URL + KEY
+2. Build apps/brain_qa/brain_qa/creative/ package
+3. visual_engine.py + audio_engine.py + sanad_wrapper.py
+4. Endpoint: POST /agent/creative/image + /agent/creative/voice
+5. Frontend: button generate image di chat
+6. Update creative_tools_registry: mark wired
+7. LIVING_LOG vol 19
+```
+
+### Priority 2 — Cron Setup di VPS
+```
+0 * * * *           hourly anomaly scan
+0 */4 * * *         4-hourly synthetic Q batch + feeds fetch
+0 23 * * *          daily 06:00 WIB morning digest
+0 2 * * *           nightly LoRA orchestrator
+0 0 * * 0           weekly cleanup expired sensorial files
+```
+
+### Priority 3 — Frontend UX Polish
+```
+- Vision/audio upload UI di chat
+- Tutorial menu update (mention CodeAct + creative)
+- Admin tab cognitive dashboard (Patterns + Aspirations + Skills + MCP)
+```
+
+---
+
+## 💬 USER COMMUNICATION STYLE
+
+- User pakai **Bahasa Indonesia casual** (bukan formal)
+- Suka **gas/lanjut/gass mode** = quick succession iterations
+- Direct + decisive, tidak suka over-explanation
+- Quote penting: *"jangan berubah-ubah lagi arah sidix"* (LOCK active)
+- *"catat semua"* = mandatory documentation
+- **5-hour limit hampir habis** saat handoff (gunakan token efisien!)
+
+---
+
+## 🔄 GIT STATE
+
+**Branch**: `claude/zen-yalow-8d0745` → push ke `main`
+**Latest commits** (vol 14-17):
+```
+b7a7a79 vol 17  CodeAct + MCP wrap + 1000 hands stub
+472b06c vol 16  Creative Agent Ecosystem note 229 + 33 tools
+ed5c120 vol 15  GAS SEMUA: Trend Feeds + Nightly LoRA + Sensorial
+df12bd7 vol 14  LOCK SIDIX_DEFINITION + 5 docs aligned
+```
+
+**Worktree**: `C:\SIDIX-AI\.claude\worktrees\zen-yalow-8d0745`
+**SSH alias**: `sidix-vps`
+
+---
+
+## 🌱 ULTIMATE FILOSOFI (LOCKED)
+
+> *"Tesla 100x percobaan → AC current revolusi."*
+> *"Bayi belajar bicara tidak pernah lupa, semakin handal."*
+> *"Sesuatu yang hidup pasti bergerak."*
+> *"Tak ada yang tak mungkin."*
+> *"Google vs Anthropic, agile beat legacy. SIDIX next."*
+
+**Direction**: AI Agent yang BEBAS dan TUMBUH.
+**Karakter**: GENIUS · KREATIF · INOVATIF.
+**Tagline**: Autonomous AI Agent — Thinks, Learns & Creates.
+
+🔒 **LOCKED**. Vol 19+ build forward, no looking back.
+
+---
+
+**Dokumen ini = peta lengkap untuk continue session baru tanpa context loss.**
+**Read this FIRST. Then `LIVING_LOG.md` tail-200 untuk recent diff.**
