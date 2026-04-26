@@ -500,9 +500,15 @@ def create_app() -> "FastAPI":
         raise RuntimeError("FastAPI tidak terinstall. Jalankan: pip install fastapi uvicorn")
 
     app = FastAPI(
-        title="SIDIX Inference Engine",
-        description="SIDIX AI — ReAct Agent + Corpus Search + (soon) Local LLM",
-        version="0.1.0",
+        title="SIDIX — Autonomous AI Agent (BEBAS dan TUMBUH)",
+        description=(
+            "Thinks, Learns & Creates. AI Agent dengan initiative, opinions, "
+            "creativity. Brainstorms with you, builds for you, grows from "
+            "every conversation. Self-hosted, MIT, no vendor LLM API. "
+            "4-Pilar: Memory + Multi-Agent + Continuous Learning + Proactive. "
+            "Direction LOCK 2026-04-26."
+        ),
+        version="2.0.0",
     )
 
     app.add_middleware(

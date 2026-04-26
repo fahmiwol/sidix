@@ -56,8 +56,24 @@
 
 ---
 
-> **SIDIX is a free, open-source AI agent you can run entirely on your own server.**
-> Default mode runs without any third-party hosted model API. Your data stays with you.
+## 🌱 Autonomous AI Agent — Thinks, Learns & Creates
+
+> **Not a chatbot. SIDIX is an AI Agent with initiative, opinions, and creativity.**
+> It brainstorms with you, builds for you, and grows from every conversation.
+> Self-hosted. MIT licensed. Yours forever.
+
+**Direction**: AI Agent yang **BEBAS dan TUMBUH** — bebas dari single-prompt loop,
+tumbuh compound dari setiap interaksi.
+
+**4-Pilar Arsitektur**:
+- 🧠 **Memory** — 5-layer immutable + LoRA + RAG (no catastrophic forgetting)
+- 🎭 **Multi-Agent** — Innovator (Burst) + Critic + Tadabbur 3-persona convergence
+- 🔄 **Continuous Learning** — auto_lora + rehearsal buffer + nightly retrain
+- 🤖 **Proactive** — anomaly detect + self-prompt + daily digest (gerak sendiri)
+
+**5 Persona LOCKED**: UTZ (creative) · ABOO (engineer) · OOMAR (strategist) · ALEY (academic) · AYMAN (general)
+
+**Direction LOCK**: 2026-04-26 — see [`docs/DIRECTION_LOCK_20260426.md`](docs/DIRECTION_LOCK_20260426.md)
 
 > *"The measure of intelligence is not how much you know,*
 > *but how precisely you know what you don't know — and how honestly you say so."*

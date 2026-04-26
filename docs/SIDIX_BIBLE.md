@@ -1,8 +1,24 @@
 # SIDIX BIBLE — Konstitusi Hidup
 
-> **Versi**: 1.0 — 2026-04-19
+> **Versi**: 1.0 — 2026-04-19 (UPDATED 2026-04-26 with DIRECTION_LOCK reference)
 > **Status**: HIDUP, BUKAN BAKU
 > **Sumber otoritas**: framework_living.md + research notes 41/42/43/106/115/142/143/144 + PRD
+
+---
+
+## 🔒 2026-04-26 — DIRECTION LOCK Reference
+
+Setelah 4 pivot Apr 2026, user explicit minta lock direction final.
+Lihat **[`DIRECTION_LOCK_20260426.md`](DIRECTION_LOCK_20260426.md)** + research_notes/228.
+
+**Quick alignment**:
+- **Tagline**: *"Autonomous AI Agent — Thinks, Learns & Creates"*
+- **Direction**: BEBAS dan TUMBUH
+- **4-Pilar**: Memory + Multi-Agent + Continuous + Proactive
+- **5 Persona LOCKED**: UTZ / ABOO / OOMAR / ALEY / AYMAN
+
+Bible ini **tetap hidup** (status HIDUP BUKAN BAKU) — pasal-pasal di bawah
+boleh evolve tapi **direction tidak boleh pivot tanpa user explicit**.
 
 ---
 

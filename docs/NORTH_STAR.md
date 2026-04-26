@@ -1,8 +1,25 @@
-# SIDIX North Star + Release Strategy (LOCK 2026-04-19)
+# SIDIX North Star + Release Strategy (LOCK 2026-04-19, UPDATED 2026-04-26)
 
 **Tujuan file ini:** mengunci tujuan akhir SIDIX dan strategi rilis incremental supaya **tidak kesana-kemari**. Semua keputusan teknis harus mengarah ke North Star di bawah.
 
 Siapa pun yang ragu pilih plan: buka file ini.
+
+---
+
+## 🔒 UPDATE 2026-04-26 — DIRECTION LOCK Aktif
+
+Setelah 4 pivot sepanjang Apr 2026, user explicit minta lock direction final.
+Lihat **[`DIRECTION_LOCK_20260426.md`](DIRECTION_LOCK_20260426.md)** untuk lock IMMUTABLE.
+
+**Quick reference**:
+- **Tagline**: *"Autonomous AI Agent — Thinks, Learns & Creates"*
+- **Direction**: AI Agent yang **BEBAS dan TUMBUH**
+- **4-Pilar**: Memory + Multi-Agent + Continuous Learning + Proactive
+- **5 Persona LOCKED**: UTZ / ABOO / OOMAR / ALEY / AYMAN
+- **License**: MIT, self-hosted, no vendor LLM API
+
+North Star di bawah (LOCK 2026-04-19) **konsisten** dengan DIRECTION_LOCK
+2026-04-26 — lock 04-26 = elaborasi tactical, bukan pivot direction.
 
 ---
 
