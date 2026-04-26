@@ -530,6 +530,24 @@ def create_app() -> "FastAPI":
 
     app.add_middleware(TraceMiddleware)
 
+    # ── Vol 20c: Bootstrap semantic cache embedding ─────────────────────────
+    # Try load embedding model di startup. Kalau gagal (sentence-transformers
+    # not installed), semantic_cache stay dormant — Vol 20b graceful disable.
+    @app.on_event("startup")
+    async def _bootstrap_semantic_cache():
+        try:
+            from .embedding_loader import load_embed_fn, get_active_model_info
+            from .semantic_cache import get_semantic_cache
+            embed_fn = load_embed_fn()  # auto-select via ENV / fallback
+            if embed_fn is not None:
+                get_semantic_cache().set_embed_fn(embed_fn)
+                info = get_active_model_info()
+                log.info("[startup] semantic_cache enabled with %s", info.get("model"))
+            else:
+                log.info("[startup] semantic_cache stay dormant (no embed_fn)")
+        except Exception as e:
+            log.warning("[startup] semantic_cache bootstrap failed: %s", e)
+
     # Init conversational memory (SQLite, lightweight, non-blocking)
     try:
         memory_store.init_db()
@@ -2511,6 +2529,55 @@ def create_app() -> "FastAPI":
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"cache clear fail: {e}")
 
+    # ── Vol 20c: Semantic cache (L2) admin endpoints ──────────────────────────
+
+    @app.get("/admin/semantic-cache/stats", tags=["Performance"])
+    def semantic_cache_stats_endpoint(request: Request):
+        """Semantic cache stats + active embedding model info."""
+        if not _admin_ok(request):
+            raise HTTPException(status_code=403, detail="Akses ditolak")
+        try:
+            from . import semantic_cache, embedding_loader
+            return {
+                "cache": semantic_cache.get_semantic_cache().stats(),
+                "embedding": embedding_loader.get_active_model_info(),
+                "available_models": embedding_loader.list_available_models(),
+            }
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"semantic cache stats fail: {e}")
+
+    @app.post("/admin/semantic-cache/clear", tags=["Performance"])
+    def semantic_cache_clear_endpoint(request: Request):
+        """Clear semantic cache. Body optional: {persona: str} untuk per-persona clear."""
+        if not _admin_ok(request):
+            raise HTTPException(status_code=403, detail="Akses ditolak")
+        try:
+            from . import semantic_cache
+            persona = None
+            try:
+                # Sync request body parse — fallback safe
+                import json as _json
+                raw = request.scope.get("body", b"")
+                if raw:
+                    persona = _json.loads(raw).get("persona")
+            except Exception:
+                pass
+            cleared = semantic_cache.get_semantic_cache().clear(persona=persona)
+            return {"ok": True, "cleared": cleared, "persona": persona}
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"semantic cache clear fail: {e}")
+
+    @app.get("/admin/domain-detect", tags=["Performance"])
+    def domain_detect_endpoint(request: Request, question: str = "", persona: str = "AYMAN"):
+        """Debug: detect domain dari question + persona. Returns matched_rule + domain."""
+        if not _admin_ok(request):
+            raise HTTPException(status_code=403, detail="Akses ditolak")
+        try:
+            from . import domain_detector
+            return domain_detector.explain_detection(question, persona)
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"domain detect fail: {e}")
+
     @app.post("/agent/tadabbur-decide", tags=["Cognitive"])
     async def tadabbur_decide_endpoint(request: Request):
         """Test endpoint: should_trigger_tadabbur untuk question.
@@ -2987,9 +3054,11 @@ def create_app() -> "FastAPI":
         # sensitif (fiqh/medis/data).
         try:
             from .semantic_cache import get_semantic_cache
+            from .domain_detector import detect_domain
             _sc = get_semantic_cache()
             if _sc.enabled and _cacheable:
-                _domain = "casual"  # default; bisa di-enrich kalau ada domain detector
+                # Vol 20c: auto-detect domain (regex + persona mapping)
+                _domain = detect_domain(req.question, req.persona)
                 _hit = _sc.lookup(
                     query=req.question,
                     persona=req.persona,
@@ -3006,6 +3075,7 @@ def create_app() -> "FastAPI":
                     _resp["_cache_hit"] = True
                     _resp["_cache_layer"] = "semantic"
                     _resp["_cache_similarity"] = round(_score, 4)
+                    _resp["_cache_domain"] = _domain
                     _resp["_cache_latency_ms"] = int((time.time() - _t_ask_start) * 1000)
                     return _resp
         except Exception as _e:
@@ -3147,10 +3217,11 @@ def create_app() -> "FastAPI":
                 _conf_score = getattr(session, "confidence_score", 0.0) or 0.0
                 if _conf_score >= 0.7:
                     set_ask_cache(_response, req.question, req.persona, _cache_mode)
-                    # Vol 20b: also store di semantic cache (graceful skip
+                    # Vol 20b/c: also store di semantic cache (graceful skip
                     # kalau embed_fn belum di-set)
                     try:
                         from .semantic_cache import get_semantic_cache
+                        from .domain_detector import detect_domain
                         _sc = get_semantic_cache()
                         if _sc.enabled:
                             _sc.store(
@@ -3159,7 +3230,7 @@ def create_app() -> "FastAPI":
                                 persona=req.persona,
                                 lora_version="v1",
                                 system_prompt="",
-                                domain="casual",
+                                domain=detect_domain(req.question, req.persona),
                                 output=session.final_answer,
                             )
                     except Exception as _e:

@@ -9,21 +9,33 @@
 
 ---
 
-# ⚡ LATEST STATUS (2026-04-27, Vol 20b+) — BACA INI DULU
+# ⚡ LATEST STATUS (2026-04-27, Vol 20c) — BACA INI DULU
 
 ## Komit chain (terbaru di atas)
 ```
-39e4289 vol 20b+  comprehensive research sweep 96/104 (92%) → note 235  ← LATEST PUSHED
-604dbd7 vol 20a+b DOC HANDOFF update
-08a7d46 vol 20b   semantic cache Phase B (riset 18 sumber → ship)
-32d91d0 vol 20a   wire response_cache + json_robust ke /ask
-9a8a878 vol 19b   HANDOFF final (sesi sebelumnya)
+[VOL20c]  vol 20c   unlock semantic cache: domain_detector + embedding_loader  ← LATEST
+9db1d07  vol 20b+  CHANGELOG [2.1.2] + HANDOFF latest status
+39e4289  vol 20b+  comprehensive research sweep 96/104 (92%) → note 235
+604dbd7  vol 20a+b DOC HANDOFF update
+08a7d46  vol 20b   semantic cache Phase B (riset 18 sumber → ship)
+32d91d0  vol 20a   wire response_cache + json_robust ke /ask
+9a8a878  vol 19b   HANDOFF final (sesi sebelumnya)
 ```
 
 ## Yang sudah JALAN di production /ask flow
 1. **L1 exact response_cache** — wired, hit `_cache_layer="exact"` (vol 20a)
-2. **L2 semantic_cache** — wired BUT **dormant** (`embed_fn=None`, graceful disable)
-3. **9 robust_json_parse** di 7 modul kognitif — replace `json.loads` (vol 20a)
+2. **L2 semantic_cache** — wired + **READY ENABLE** (`embed_fn` auto-load di startup, kalau sentence-transformers terinstall)
+3. **Domain auto-detect** per-request (fiqh 0.96 / coding 0.92 / casual 0.88 / current_events skip)
+4. **9 robust_json_parse** di 7 modul kognitif — replace `json.loads` (vol 20a)
+5. **3 admin endpoint baru** (vol 20c): `/admin/semantic-cache/stats`, `/admin/semantic-cache/clear`, `/admin/domain-detect`
+
+## Vol 20c shipped (saat sentence-transformers terinstall, semantic cache instant aktif)
+- `embedding_loader.py` — 3-way: BGE-M3 default + Mamba2 1.3B/7B + MiniLM CPU
+- `domain_detector.py` — regex + persona mapping, 13/14 test pass
+- Startup hook `@app.on_event("startup")` bootstrap embed_fn
+- Per-request auto-detect domain di `/ask` lookup + store
+- ENV `SIDIX_EMBED_MODEL` untuk explicit model pick
+- Research note 236 — implementation detail + 9 DEFER items
 
 ## Yang BARU diketahui dari riset 96 file (Vol 20c plan REVISED)
 

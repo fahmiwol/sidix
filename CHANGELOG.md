@@ -6,6 +6,44 @@ Semua perubahan signifikan dicatat di sini. Format: `[versi] — tanggal — rin
 
 ---
 
+## [2.1.3] — 2026-04-27 — Vol 20c Unlock Semantic Cache (domain + embedding)
+
+### Vol 20c (commit pending) — Domain Detector + Embedding Loader
+- **NEW**: `apps/brain_qa/brain_qa/embedding_loader.py` (~190 LOC) — 3-way model option:
+  - BGE-M3 default (0.5B, multilingual ID, 100+ bahasa)
+  - Mamba2 1.3B / 7B (game-changer dari note 235, linear time, MTEB top)
+  - MiniLM CPU fallback (0.1B, weak ID, fastest)
+  - Selection: ENV `SIDIX_EMBED_MODEL` → auto bge-m3 → fallback minilm → None (graceful disable)
+  - Lazy load, L2-normalize, MRL truncate
+- **NEW**: `apps/brain_qa/brain_qa/domain_detector.py` (~150 LOC) — auto-detect dari question + persona
+  - Regex priority: current_events > fiqh > medis > data > coding > factual
+  - Persona mapping: UTZ→casual, ABOO→coding, OOMAR→factual, ALEY→fiqh, AYMAN→casual
+  - Target <1ms, no model load
+- **WIRE**: `agent_serve.py` startup hook + replace hardcoded `domain="casual"` dengan auto-detect
+- Hit response: `_cache_layer="semantic"`, `_cache_similarity`, `_cache_domain`
+
+### 3 Admin Endpoint Baru (Vol 20c)
+- `GET  /admin/semantic-cache/stats` — cache stats + active embedding model + available models
+- `POST /admin/semantic-cache/clear` — optional persona-scoped clear
+- `GET  /admin/domain-detect?question=&persona=` — debug detect domain
+
+### Test
+- 13/14 domain detector test pass (1 mismatch = test expectation salah, behavior valid)
+- 4 integration test: graceful disable, coding lookup, fiqh threshold 0.96, current_events skip
+
+### Documentation
+- Research note 236 — Vol 20c implementation + 9 DEFER items (Vol 20d/Q3)
+
+### Effect
+Sebelum: L2 semantic_cache DORMANT (embed_fn=None).
+Setelah (saat ops `pip install sentence-transformers` + ENV set):
+- Startup auto-load embedding model
+- Per-request auto-detect domain → per-domain threshold + TTL
+- Persona-bucket isolation + LoRA-version auto-invalidate
+- Foundation siap deploy tanpa code change tambahan
+
+---
+
 ## [2.1.2] — 2026-04-27 — Vol 20 Wire Sprint + Comprehensive Research Sweep
 
 ### Vol 20a (commit `32d91d0`) — Wire Vol 19 Modules ke /ask

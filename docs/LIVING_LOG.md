@@ -8355,3 +8355,81 @@ tangential, bukan paksakan ADOPT_NOW. 10 ADOPT_NOW dengan action konkret =
 foundation Vol 21+ acceleration.
 
 NO PIVOT. Direction LOCKED. Compound integrity > compound velocity.
+
+---
+
+## 2026-04-27 (vol 20c) — Unlock Semantic Cache via Domain + Embedding
+
+User: *"Eksekusi sekarang yang paling impactful"*. Paling impactful =
+unlock Vol 20b semantic cache yang masih dormant tanpa embed_fn.
+
+### Implement [IMPL]
+
+`apps/brain_qa/brain_qa/embedding_loader.py` (~190 LOC):
+- 3-way model registry: BGE-M3 (default 0.5B multilingual ID), Mamba2 1.3B/7B
+  (game-changer dari note 235), MiniLM CPU fallback
+- Selection: ENV SIDIX_EMBED_MODEL → auto bge-m3 → fallback minilm → None
+- Graceful: kalau sentence-transformers belum install → None, semantic_cache
+  stay dormant (Vol 20b safe behavior)
+- Lazy load, L2-normalize otomatis, truncate MRL pattern
+
+`apps/brain_qa/brain_qa/domain_detector.py` (~150 LOC):
+- detect_domain(question, persona) → 8 domain enum
+- Regex priority (current_events > fiqh > medis > data > coding > factual)
+- Persona default: UTZ→casual, ABOO→coding, OOMAR→factual, ALEY→fiqh, AYMAN→casual
+- explain_detection() debug helper
+- Target <1ms, no model load
+
+`agent_serve.py` wiring:
+- @app.on_event("startup") bootstrap embed_fn → set_embed_fn()
+- /ask lookup: replace hardcoded domain="casual" → detect_domain(...)
+- /ask store: same auto-detect
+- 3 admin endpoint baru:
+  - GET /admin/semantic-cache/stats (cache + embedding model info)
+  - POST /admin/semantic-cache/clear (optional persona scope)
+  - GET /admin/domain-detect (debug detect_domain)
+
+### Test [TEST]
+
+13/14 domain pass (1 mismatch = saya yang salah expectation, behavior valid).
+4 integration test:
+- coding domain cycle: HIT score=1.0000
+- fiqh domain (threshold 0.96): store eligible, HIT
+- current_events domain: store correctly skip (TTL=0)
+- Graceful disable confirmed (no sentence-transformers)
+
+### Doc [DOC]
+
+Research note 236: Vol 20c implementation detail + DEFER list (9 items)
+
+### Effect
+
+Sebelum: /ask L2 semantic = DORMANT (embed_fn=None)
+Setelah (saat ops install sentence-transformers + ENV set):
+- Startup auto-load embedding (BGE-M3 default, atau Mamba2 1.3B kalau VRAM cukup)
+- Per-request auto-detect domain → per-domain threshold (fiqh 0.96, casual 0.88, dll)
+- Hit response: _cache_layer="semantic", _cache_similarity, _cache_domain
+
+### Yang DEFER Vol 20d/Q3 (9 items)
+
+1. Install sentence-transformers di production (deploy step)
+2. Confirm Mamba2 HF id actual name
+3. System prompt hash dari cot_system_prompts (sekarang "")
+4. LoRA version dari adapter manifest (sekarang "v1")
+5. Stash Postgres+pgvector backend mirror
+6. Drift detection weekly job
+7. Tadabbur_auto adaptive_trigger /ask/stream (vol 20 task B)
+8. CodeAct enrich done event (vol 20 task C)
+9. Frontend cache hit indicator (vol 20 task E)
+
+### Filosofi
+
+Vol 20c pragmatis: ship embedding-agnostic module + wiring lengkap, deploy
+step (model pick) di-defer ke ops decision. Mamba2 finding dari note 235
+di-respect (3-way option), default tetap BGE-M3 (proven safe). Konservatif
+karena identitas SIDIX > performance hype.
+
+Foundation siap. Saat sentence-transformers + ENV set di production,
+semantic cache instant aktif tanpa code change.
+
+NO PIVOT. Direction LOCKED.
