@@ -24,10 +24,17 @@ Swap ke real model:
 from __future__ import annotations
 
 import json
+import logging
 import os
 import time
 import uuid
 from pathlib import Path
+
+# Module-level logger — dipakai di startup hook + try/except blocks di seluruh file.
+# Fix vol 20-fu2 hotfix2 (2026-04-27): existing code line 555/904/3704 pakai
+# `log.` tapi tidak pernah didefinisikan → latent bug yang baru ke-trigger
+# saat startup hook Vol 20c gagal load embedding (NameError). Define di sini.
+log = logging.getLogger(__name__)
 from typing import Any, Optional
 
 try:
