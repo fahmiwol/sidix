@@ -9327,3 +9327,113 @@ Spec ready for sprint planning. Implementation NOT started â€” Vol 20 closure fi
 ### Outstanding bugs
 - DDG empty from VPS (DEFER Vol 20-fu5)
 - Stream timeout when fastpath fall-through (UX â€” should yield error after N seconds)
+
+
+---
+
+## 2026-04-26 night — FULL SESSION CAPTURE (~12 hours, all context preserved)
+
+### Phase 1: Vol 20-fu3 Simple Bypass (78s -> 1.2s)
+- Bug: complexity_router detected tier=simple but no short-circuit existed
+- Fix iter 1 (fu3): override agent_mode=False — WRONG (= STRICT mode, slower)
+- Fix iter 2 (fu3.1): re-fix flag overrides
+- Fix iter 3 (fu3.2): direct LLM bypass via local_llm.generate_sidix — returned MOCK
+- Fix iter 4 (fu3.3): switch to runpod_serverless.hybrid_generate — WORKS
+- Result: halo UI 78s -> 1.2s (37x speedup), proven live in browser
+- Commit: 06ab718
+
+### Phase 2: Vol 20-fu5 Wikipedia Direct (DDG bypass)
+- Bug: DDG returns empty from VPS IP (rate-limited)
+- Solution: wiki_lookup.py — direct Wikipedia opensearch + extracts API
+- Query simplification: strip ID/EN stopwords (siapa, sekarang, etc)
+- Result: siapa presiden indonesia 120s -> 2.14s
+- Caveat: Wikipedia article body said Jokowi (snapshot pre-2024 election)
+- Commit: 90a331e
+
+### Phase 3: HF Model Card Critical Fix
+- Discovered: HF card showed legacy persona names (MIGHAN/TOARD/FACH/HAYFAR/INAN)
+- Violates LOCK 2026-04-26 (correct: UTZ/ABOO/OOMAR/ALEY/AYMAN)
+- Plus tools count 35 (actual 48), wrong repo path
+- Rewrote complete model card via huggingface_hub API
+- Pushed via leaked HF token (must revoke post-session)
+
+### Phase 4: Landing + README Refresh
+- Landing v2.0 -> v2.1, Free Forever badge, Persona Showcase (5 cards)
+- README What is New (Vol 14-20) table
+- Tools 44 -> 48 active
+
+### Phase 5: SSH Hardening
+- Generated sidix_vps_key_v2 (ed25519, passphrase leaked, must rotate)
+- Disabled password auth in sshd_config.d/50-cloud-init.conf
+- Verified: PreferredAuthentications=password -> Permission denied (publickey)
+
+### Phase 6: Token Rotation + .env Drift Discovery
+- Rotated BRAIN_QA_ADMIN_TOKEN
+- Found: brain_qa loads .env from apps/brain_qa/.env (NOT /opt/sidix/.env)
+- Updated BOTH files. Token leaked in chat (must rotate again)
+
+### Phase 7: Spec Notes 239-246 (Vol 21-25 Architecture)
+- 239: Sanad consensus, 7 appends, 952 lines (parallel fan-out + per-agent val + iter + Inventory + Hafidz Shadows + lite browser sprint + 1+1=berapa worked example)
+- 240: Claude Code pattern AS SIDIX template
+- 241: Session as primary corpus
+- 242: 5 transferable modules per interaction
+- 243: Next sprint tools (lite browser + image gen + skill cloning)
+- 244: Brain anatomy AS SIDIX architecture (overarching)
+- 245: SIDIX Radar omnipresent mention listener
+- 246: Sandbox genesis session log
+
+### Phase 8: Vol 21 MVP Scaffold
+- sanad_orchestrator.py 315 lines
+- 3 branches: _branch_llm + _branch_wiki + _branch_corpus
+- asyncio.gather + greedy clustering + voting consensus
+- NOT YET WIRED to /ask (decision: ship safely, wire next session)
+
+### Phase 9: Always-On + Radar (24/7)
+- scripts/sidix_always_on.sh — every 15 min (git observer + mini growth)
+- scripts/sidix_radar.sh — every 30 min (Google News + Reddit + GitHub)
+- Cron added on VPS, verified running
+
+### Phase 10: SIDIX SANDBOX (the breakthrough — actual self-build)
+- /opt/sidix/.sandbox/ created tonight
+- Iter 1: lxml_html_clean fix (dep split discovery)
+- Iter 2: lite_browser/v01.py — 5 URLs in 1.3s parallel
+- Iter 3: search backend discovery — search.brave.com WINS (Prabowo!)
+- Iter 4: brave_search.py production module
+- Iter 5: wiki+brave parallel wired to /ask/stream fastpath
+- 5 lessons logged in journal/00_genesis.md
+- First SELF-COMMIT by SIDIX Self <sidix@sidixlab.com> — commit 26d3ddc
+- Mirrored to GitHub as fb5364d
+
+### Phase 11: Documentation Sweep (this entry + STATE + ROADMAP + HANDOFF + AUTONOMOUS_NIGHT_PLAN)
+
+### Final Commits (chronological)
+06ab718, 90a331e, f0a2c06, 273fd91, f169878, 47195d9, 8a2ed53, 69a21e5, 593ca96, 26d3ddc, fb5364d
+
+### Total Output This Session
+- 30+ commits
+- 50+ user messages
+- 10 research notes (235-246)
+- 2500+ lines architectural spec
+- 400+ lines production code
+- 3 prod deploys verified
+
+### CRITICAL Security TODOs (User Must Do Before Next Session)
+1. Revoke HF token hf_YlAQ... at https://huggingface.co/settings/tokens
+2. Rotate BRAIN_QA_ADMIN_TOKEN (current d7fabad... leaked)
+3. Rotate VPS root password
+4. Rotate SSH passphrase Mighara22!! (leaked)
+
+### What is Running Autonomously (24/7) Now
+- pm2 sidix-brain (FastAPI, port 8765)
+- pm2 sidix-ui (frontend, port 4000)
+- cron */15 sidix_always_on.sh (git observer + mini growth)
+- cron */30 sidix_radar.sh (Google News + Reddit + GitHub)
+- existing threads_daily.sh series (3x daily) + harvest + mentions
+
+### Tomorrow Morning Check
+ssh sidix-vps
+tail -50 /opt/sidix/.data/sidix_observations.jsonl   # SIDIX overnight journal
+ls /opt/sidix/.data/queue/notes_pending/             # drafts to review
+cat /opt/sidix/.data/radar_mentions.jsonl            # internet mentions caught
+
+This session = SIDIX curriculum lesson 1. Pattern transferred. School open.
