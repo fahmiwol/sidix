@@ -107,28 +107,67 @@ def _extracts(titles: list[str], lang: str) -> dict[str, str]:
     return {}
 
 
+_STOPWORDS_ID = {
+    "siapa", "apa", "kapan", "dimana", "di mana", "bagaimana", "kenapa", "mengapa",
+    "yang", "ini", "itu", "saja", "juga", "kah", "lah",
+    "sekarang", "saat ini", "hari ini",
+    "saya", "kamu", "dia", "mereka",
+    "tolong", "mohon", "ya", "dong",
+    "berapa", "manakah", "adakah",
+}
+_STOPWORDS_EN = {
+    "who", "what", "when", "where", "why", "how", "which",
+    "is", "are", "was", "were", "the", "a", "an",
+    "now", "today", "currently", "current",
+    "please", "tell", "me", "us",
+}
+
+
+def _simplify_query(query: str) -> str:
+    """Strip stopwords + punctuation untuk Wikipedia opensearch.
+
+    Wikipedia opensearch optimal dengan keyword phrase, BUKAN full sentence.
+    "siapa presiden indonesia sekarang?" → "presiden indonesia"
+    """
+    import re
+    q = query.lower().strip().rstrip("?!.,;:")
+    tokens = re.findall(r"\w+", q)
+    keep = [t for t in tokens if t not in _STOPWORDS_ID and t not in _STOPWORDS_EN]
+    simplified = " ".join(keep) if keep else q
+    return simplified
+
+
 def wiki_lookup_fast(query: str, max_articles: int = 3) -> list[WikiResult]:
     """
     Fast Wikipedia lookup untuk current_events / factual queries.
 
     Strategy:
-    1. opensearch ID → top titles + URLs
-    2. Kalau ID kosong, fallback opensearch EN
-    3. Fetch extracts batch untuk top titles
-    4. Return WikiResult list (ranked by opensearch order)
+    1. Simplify query (strip stopwords) — Wikipedia opensearch needs keywords, not full sentence
+    2. opensearch ID → top titles + URLs
+    3. Kalau ID kosong, fallback opensearch EN
+    4. Kalau masih kosong, retry dengan query asli (jaga-jaga simplifier terlalu agresif)
+    5. Fetch extracts batch untuk top titles
+    6. Return WikiResult list (ranked by opensearch order)
 
     Total latency: ~500ms-2s warm (2 HTTP calls dengan 5-6s timeout each).
     """
-    # 1. opensearch ID → fallback EN
+    simplified = _simplify_query(query)
+    # 1. opensearch dengan simplified query, ID → fallback EN
     pairs: list[tuple[str, str]] = []
     used_lang = "id"
-    for lang in ("id", "en"):
-        pairs = _opensearch(query, lang, max_results=max_articles)
+    queries_to_try = [simplified] if simplified != query.lower() else []
+    queries_to_try.append(query)  # fallback ke original
+    for q in queries_to_try:
+        for lang in ("id", "en"):
+            pairs = _opensearch(q, lang, max_results=max_articles)
+            if pairs:
+                used_lang = lang
+                log.debug("[wiki_lookup] hit lang=%s query='%s'", lang, q[:50])
+                break
         if pairs:
-            used_lang = lang
             break
     if not pairs:
-        log.info("[wiki_lookup] no results for '%s' in id/en", query[:60])
+        log.info("[wiki_lookup] no results for '%s' (simplified='%s') in id/en", query[:60], simplified[:40])
         return []
 
     # 2. Fetch extracts untuk titles
