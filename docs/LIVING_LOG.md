@@ -9284,3 +9284,46 @@ User: *"di HF udah diupdate belum kontennya? trus di GIT kontennya udah diupdate
 - [ ] Landing OpenGraph preview image refresh
 - [ ] README architecture ASCII diagram (currently description only)
 
+
+---
+
+## 2026-04-26 — Vol 20-fu4 + Vol 21 Sanad Consensus Spec (note 239)
+
+### [FIX] Vol 20-fu3.3: simple-tier direct LLM bypass shipped
+- Commit 06ab718: `hybrid_generate` (RunPod path, not local mock)
+- Test: "halo" UI = **1.2s + cepat badge** (vs 78-148s before)
+
+### [FEAT] Vol 20-fu4: current_events fast-path (partial)
+- Commit f0a2c06: domain=current_events → web_search → hybrid_generate single-shot
+- Logic correct (verified via /admin/domain-detect: returns current_events)
+- BUT: DDG returns empty from VPS IP → falls through to ReAct slow path
+- DEFER: investigate DDG rate-limit / IP block (could need HTTP proxy or alt engine)
+
+### [SPEC] Vol 21: Sanad Consensus Architecture (research note 239)
+User vision: multi-source parallel validation, ≥90% agreement = truth, <2s
+target. Plus per-agent validation tool + relevance score + iteration loop.
+
+Sketches captured:
+- Fan-out: LLM + RAG + Web + Corpus + MCP + Tools + Orchestra parallel
+- Sanad pool: claim extraction + clustering + voting
+- Persona-rendered output
+- "Jurus bayangan" — multiple agent_id, concurrent queries, no blocking
+
+Per-agent validation (user append):
+- Code agent → run code → exit 0?
+- Web agent → URL alive + relevance score
+- Corpus agent → BM25 score gate
+- LLM agent → perplexity check
+- Iteration loop: refine query if score low, max 3-5 iters
+
+Honest latency budget:
+- Vol 21 MVP (3-branch) → ~5s p50
+- Vol 22 Full (7-10 branch + iter) → ~7s p50
+- Vol 23 (warmup + cache) → ~4s p50
+- 2s = aspirational, achievable for cached queries only
+
+Spec ready for sprint planning. Implementation NOT started — Vol 20 closure first.
+
+### Outstanding bugs
+- DDG empty from VPS (DEFER Vol 20-fu5)
+- Stream timeout when fastpath fall-through (UX — should yield error after N seconds)
