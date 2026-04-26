@@ -3139,22 +3139,49 @@ def create_app() -> "FastAPI":
         except Exception as _e:
             log.debug("[semantic_cache] lookup error: %s", _e)
 
-        # ── Vol 20-fu3: Simple-tier fast-path (override flags) ───────────────
-        # Tier=simple (greeting, ack, <8 char) → force lightweight: no agent
-        # tools, no web fallback, force simple_mode. Slashes latency 60s→2s.
-        _is_simple_tier = _tier_decision is not None and _tier_decision.tier == "simple"
-        if _is_simple_tier:
-            _bump_metric("ask_simple_fastpath")
+        # ── Vol 20-fu3.2: SIMPLE-TIER DIRECT LLM BYPASS ──────────────────────
+        # Greeting/ack → skip run_react/RAG/tools. Direct generate_sidix.
+        _is_simple_bypass = _tier_decision is not None and _tier_decision.tier == "simple"
+        if _is_simple_bypass:
+            try:
+                from .local_llm import generate_sidix
+                _bump_metric("ask_simple_bypass")
+                _t_simple = time.time()
+                _simple_sys = (
+                    f"Kamu SIDIX, persona {req.persona}. "
+                    "Jawab singkat (max 2 kalimat), hangat, natural. "
+                    "Jangan tampilkan citations atau analisis multi-step."
+                )
+                _simple_text, _simple_mode = generate_sidix(
+                    prompt=req.question, system=_simple_sys,
+                    max_tokens=120, temperature=0.6,
+                )
+                _simple_ms = int((time.time() - _t_simple) * 1000)
+                log.info("[ask] simple bypass done in %dms (mode=%s)", _simple_ms, _simple_mode)
+                return {
+                    "answer": _simple_text or "Halo!",
+                    "session_id": f"simple-{int(time.time()*1000)}",
+                    "persona": req.persona,
+                    "confidence": "tinggi",
+                    "citations": [],
+                    "_simple_bypass": True,
+                    "_complexity_tier": "simple",
+                    "_simple_bypass_latency_ms": _simple_ms,
+                    "_simple_bypass_mode": _simple_mode,
+                }
+            except Exception as _e:
+                log.warning("[ask] simple bypass failed, fallback to run_react: %s", _e)
+                # Fall through
 
         session = run_react(
             question=req.question,
             persona=req.persona,
             client_id=request.headers.get("x-client-id", "").strip(),
             conversation_id=request.headers.get("x-conversation-id", "").strip(),
-            corpus_only=req.corpus_only or _is_simple_tier,
-            allow_web_fallback=req.allow_web_fallback and not _is_simple_tier,
-            simple_mode=req.simple_mode or _is_simple_tier,
-            agent_mode=req.agent_mode and not _is_simple_tier,
+            corpus_only=req.corpus_only,
+            allow_web_fallback=req.allow_web_fallback,
+            simple_mode=req.simple_mode,
+            agent_mode=req.agent_mode,
             strict_mode=req.strict_mode,
         )
         _store_session(session)
@@ -3508,6 +3535,62 @@ def create_app() -> "FastAPI":
                 yield f"data: {_json.dumps(_done_cache)}\n\n"
                 return
 
+            # ── Vol 20-fu3.2: SIMPLE-TIER DIRECT LLM BYPASS ───────────────────
+            # Greeting/ack (tier=simple) → skip orchestration_plan, tadabbur,
+            # run_react, RAG search. Direct generate_sidix() with tight system
+            # prompt. Target: <3s warm, ~30s cold (RunPod boot).
+            #
+            # WHY: simple_mode=True flag in run_react still triggers RAG + multi-
+            # step ReAct. Real fast-path = bypass run_react entirely.
+            _is_simple_bypass = _tier_decision_s is not None and _tier_decision_s.tier == "simple"
+            if _is_simple_bypass:
+                try:
+                    from .local_llm import generate_sidix
+                    _bump_metric("ask_stream_simple_bypass")
+                    _t_simple_start = time.time()
+                    _simple_sys = (
+                        f"Kamu SIDIX, persona {effective_persona}. "
+                        "Jawab singkat (max 2 kalimat), hangat, natural. "
+                        "Jangan tampilkan citations atau analisis multi-step. "
+                        "Jangan tambah label epistemik untuk obrolan ringan."
+                    )
+                    _simple_text, _simple_mode = generate_sidix(
+                        prompt=req.question,
+                        system=_simple_sys,
+                        max_tokens=120,
+                        temperature=0.6,
+                    )
+                    _simple_latency_ms = int((time.time() - _t_simple_start) * 1000)
+                    log.info("[stream] simple bypass done in %dms (mode=%s)", _simple_latency_ms, _simple_mode)
+                    _bypass_meta = {
+                        "type": "meta",
+                        "session_id": f"simple-{int(time.time()*1000)}",
+                        "confidence": "tinggi",
+                        "_simple_bypass": True,
+                        "_complexity_tier": "simple",
+                        "_simple_bypass_latency_ms": _simple_latency_ms,
+                        "_simple_bypass_mode": _simple_mode,
+                    }
+                    yield f"data: {_json.dumps(_bypass_meta)}\n\n"
+                    _words = (_simple_text or "Halo!").split(" ")
+                    for i, w in enumerate(_words):
+                        _t = w + (" " if i < len(_words) - 1 else "")
+                        yield f"data: {_json.dumps({'type':'token','text':_t})}\n\n"
+                        await asyncio.sleep(0.01)
+                    _bypass_done = {
+                        "type": "done",
+                        "persona": effective_persona,
+                        "session_id": _bypass_meta["session_id"],
+                        "conversation_id": effective_conversation_id,
+                        "confidence": "tinggi",
+                        "_simple_bypass": True,
+                    }
+                    yield f"data: {_json.dumps(_bypass_done)}\n\n"
+                    return
+                except Exception as _e:
+                    log.warning("[stream] simple bypass failed, fallback to full flow: %s", _e)
+                    # Fall through to normal tadabbur/run_react path
+
             # ── Vol 20-Closure B: Tadabbur observability (decision + meta) ───
             _tadabbur_decision = None
             try:
@@ -3570,11 +3653,8 @@ def create_app() -> "FastAPI":
                 _tadabbur_swap_active = False
 
             # ── 2b. Jalankan ReAct (atau pakai tadabbur session kalau swap) ──
-            # Vol 20-fu3: Simple-tier fast-path — force lightweight flags untuk
-            # greeting/ack supaya tidak masuk ReAct loop deep (60-80s → ~2-5s).
-            _is_simple_tier_s = _tier_decision_s is not None and _tier_decision_s.tier == "simple"
-            if _is_simple_tier_s and not _tadabbur_swap_active:
-                _bump_metric("ask_stream_simple_fastpath")
+            # Note: simple-tier sudah di-bypass di awal (Vol 20-fu3.2), kalau
+            # sampai di sini = standard/deep tier ATAU bypass gagal fallback.
             if _tadabbur_swap_active and _tadabbur_session is not None:
                 # Skip run_react — pakai tadabbur session
                 session = _tadabbur_session
@@ -3583,10 +3663,10 @@ def create_app() -> "FastAPI":
                     session = run_react(
                         question=req.question,
                         persona=effective_persona,
-                        corpus_only=req.corpus_only or _is_simple_tier_s,
-                        allow_web_fallback=req.allow_web_fallback and not _is_simple_tier_s,
-                        simple_mode=req.simple_mode or _is_simple_tier_s,
-                        agent_mode=req.agent_mode and not _is_simple_tier_s,
+                        corpus_only=req.corpus_only,
+                        allow_web_fallback=req.allow_web_fallback,
+                        simple_mode=req.simple_mode,
+                        agent_mode=req.agent_mode,
                         strict_mode=req.strict_mode,
                         conversation_id=effective_conversation_id,
                         conversation_context=conversation_context,
