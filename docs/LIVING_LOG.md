@@ -8588,3 +8588,83 @@ compound: jaga direction lock, integrasi yang masuk akal, tolak yang ngajak
 keluar arah. Compound integrity > validation FOMO.
 
 NO PIVOT. Direction LOCKED. Vol 21+ tetap sesuai 9 DEFER di HANDOFF.
+
+---
+
+## 2026-04-27 (vol 20-fu) — SAS-L Pattern di cot_system_prompts.py
+
+User: *"Selanjutnya kamu tentuin sendiri, yang impactful secara dependencies,
+urgensi, time fit dan prioritas"*. Decision matrix di chat → SAS-L pick.
+
+### Rationale [DECISION]
+
+Per note 235 (Stanford swarm-tax research, VentureBeat): **single-agent +
+longer thinking** beat multi-agent handoff at equal budget. Stanford SAS-L
+pattern: explicit minta model list ambiguities + candidate interpretations
+SEBELUM jawab. Recover collaboration benefit di single context.
+
+Match SIDIX direction exactly — bukan multi-agent swarm, single-agent
+multi-mode dengan longer thinking. Conceptual parallel ke methodology
+tafsir klasik (list possible reading lalu weight) — paralel pattern,
+BUKAN adopt-Quran-AI (per note 238 NO PIVOT).
+
+### Implement [IMPL]
+
+`apps/brain_qa/brain_qa/cot_system_prompts.py`:
+- New constant `SAS_L_REASONING_INSTRUCTION` di section EPISTEMIK
+  (Claude territory per AGENT_WORK_LOCK)
+- 4 step internal: identify ambiguities → list candidates →
+  evaluate → select primary + flag alternatives
+- Anti-pattern: jangan boilerplate untuk obvious questions
+- Inject di `build_system_prompt` segment 5b conditional:
+  `literacy in [ahli, akademik] OR mode == research`
+
+PRESERVE Kimi territory (PERSONA_DESCRIPTIONS unchanged).
+
+### Test [TEST]
+
+7/7 conditional injection pass:
+- ABOO/chat/ahli → SAS-L INJECTED ✓
+- ALEY/research/akademik → INJECTED ✓
+- OOMAR/research/menengah → INJECTED (mode trigger) ✓
+- AYMAN/chat/menengah → SKIP (casual) ✓
+- UTZ/creative/menengah → SKIP ✓
+- AYMAN/chat/awam → SKIP ✓
+- ABOO/chat/awam → SKIP (need ahli) ✓
+
+60/60 backward compat: semua kombinasi tetap punya <REASONING>/<ANSWER>/[FACT].
+
+### Effect
+
+Sebelum: reasoning-heavy persona (ABOO/ALEY/OOMAR) jump langsung ke jawaban.
+Setelah: explicit 4-step ambiguity discipline di <REASONING> block. Quality
+naik untuk multi-perspektif questions, tanpa overhead di casual chat.
+
+Mirror methodology tafsir klasik (Tabari/Razi: list reading → weight),
+parallel pattern bukan adopt.
+
+### Doc [DOC]
+
+LIVING_LOG entry (this), tidak butuh research note baru — implementation
+straightforward + test transparent.
+
+### Sisa DEFER (Vol 20+ unchanged dari note 237)
+
+8 items remaining:
+1. Tadabbur full swap (session adapter)
+2. pip install sentence-transformers production
+3. Confirm Mamba2 HF id
+4. Stash backend semantic cache mirror
+5. Drift detection weekly
+6. EngramaBench 4-axis continual_memory
+7. Complexity-tier routing
+8. BadStyle defense corpus_to_training
+
+### Filosofi
+
+Vol 20-followup = small surgical addition, low risk high quality. Pick
+berdasarkan dependencies/urgensi/time/risk objektif, bukan FOMO. Quran-tafsir
+parallel dijaga sebagai secondary justification — primary tetap engineering
+rationale.
+
+NO PIVOT. Direction LOCKED. Liberation Sprint pivot integrity intact.

@@ -174,6 +174,48 @@ Label yang tersedia:
 PATTERN: Satu label di pembuka cukup. Setelah itu ngobrol natural. JANGAN ulang label setiap paragraf — itu kaku dan mengganggu flow.
 """
 
+# ── SAS-L Pattern: Single-Agent + Longer Thinking (vol 20-followup) ──────────
+# Stanford research (Tran & Kiela) per note 235 finding: equal-budget single-
+# agent match/outperform multi-agent untuk reasoning task. Trick: explicit
+# minta model list ambiguities + candidate interpretations BEFORE answer.
+# Recover collaboration benefits di single context, hindari "swarm tax"
+# (Data Processing Inequality di multi-agent handoff).
+#
+# Domain SIDIX: Mirror methodology tafsir klasik — Tabari/Razi list semua
+# possible reading lalu weight, bukan jump ke kesimpulan. Ini parallel
+# pattern, bukan adopt-Quran-AI (per note 238 NO PIVOT).
+#
+# Trigger: literacy ahli/akademik OR mode research. SKIP untuk casual chat
+# supaya tidak overhead-ing pertanyaan sederhana.
+
+SAS_L_REASONING_INSTRUCTION = """
+## DEEP REASONING — Multi-Interpretation Discipline
+
+Sebelum kesimpulan, lakukan internally:
+
+1. **Identify ambiguities** — apa kata/frase kunci yang punya >1 reading valid?
+   Contoh: "skala besar" (revenue? users? geo?), "performant" (latency? throughput? TCO?)
+
+2. **List candidate interpretations** — minimal 2-3 reading berbeda dari pertanyaan.
+   Format internal:
+     - Interpretasi A: [framing 1]
+     - Interpretasi B: [framing 2]
+     - Interpretasi C (kalau relevan): [framing 3]
+
+3. **Evaluate each interpretation** — yang mana paling sesuai konteks?
+   Apa evidence/heuristik yang dukung pilihan?
+
+4. **Select primary + flag alternatives** — jawab berdasarkan reading paling probable,
+   tapi sebut singkat alternatif kalau ambiguity material untuk user.
+
+PATTERN: Ini single-agent reasoning yang lebih dalam, bukan multi-agent debate.
+Reasoning ini di <REASONING> block; <ANSWER> tetap fokus + concise.
+
+ANTI-PATTERN: jangan jadikan ini boilerplate untuk pertanyaan obvious.
+Trigger hanya kalau ada ambiguity riil atau klaim multi-perspektif.
+"""
+
+
 EPISTEMIK_REQUIREMENT_STRICT = """
 Mode rigor (ahli/akademik) — epistemik label lebih sering muncul:
 
@@ -309,6 +351,14 @@ Dalam jawaban, format harus:
         segments.append(EPISTEMIK_REQUIREMENT_STRICT)
     else:
         segments.append(EPISTEMIK_REQUIREMENT)
+
+    # 5b. Vol 20-followup: SAS-L pattern untuk reasoning-heavy
+    # Per note 235 (Stanford swarm-tax research): single-agent + explicit
+    # ambiguity listing > multi-agent handoff at equal budget. Inject untuk
+    # ahli/akademik literacy ATAU research mode (skip casual untuk hindari
+    # overhead obvious questions).
+    if literacy_lower in ["ahli", "akademik"] or mode_lower == "research":
+        segments.append(SAS_L_REASONING_INSTRUCTION)
 
     # 6. Mode-specific guidance
     if mode_lower == "research":
