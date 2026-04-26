@@ -6,20 +6,27 @@ Siapa pun yang ragu pilih plan: buka file ini.
 
 ---
 
-## 🔒 UPDATE 2026-04-26 — DIRECTION LOCK Aktif
+## 🔒 UPDATE 2026-04-26 — DEFINITION + DIRECTION LOCK Aktif
 
-Setelah 4 pivot sepanjang Apr 2026, user explicit minta lock direction final.
-Lihat **[`DIRECTION_LOCK_20260426.md`](DIRECTION_LOCK_20260426.md)** untuk lock IMMUTABLE.
+Setelah 4 pivot sepanjang Apr 2026, user explicit minta lock direction final
++ definisi formal yang BESAR & IMMUTABLE.
+
+**Source of Truth**:
+1. 📜 **[`SIDIX_DEFINITION_20260426.md`](SIDIX_DEFINITION_20260426.md)** ← formal definition (karakter, kemampuan, 3 fondasi, 4-pilar)
+2. 🔒 [`DIRECTION_LOCK_20260426.md`](DIRECTION_LOCK_20260426.md) ← tactical lock (8 ❌ rules + Q3 roadmap)
 
 **Quick reference**:
 - **Tagline**: *"Autonomous AI Agent — Thinks, Learns & Creates"*
+- **Karakter**: GENIUS · KREATIF · INOVATIF
 - **Direction**: AI Agent yang **BEBAS dan TUMBUH**
+- **3 Fondasi**: The Mind · The Hands & Tools · The Drive
 - **4-Pilar**: Memory + Multi-Agent + Continuous Learning + Proactive
 - **5 Persona LOCKED**: UTZ / ABOO / OOMAR / ALEY / AYMAN
+- **Multitasking**: vision + audio + speech + tactile + 1000 hands parallel (Q3-Q1 2027)
 - **License**: MIT, self-hosted, no vendor LLM API
 
-North Star di bawah (LOCK 2026-04-19) **konsisten** dengan DIRECTION_LOCK
-2026-04-26 — lock 04-26 = elaborasi tactical, bukan pivot direction.
+North Star di bawah (LOCK 2026-04-19) **konsisten** dengan SIDIX_DEFINITION
++ DIRECTION_LOCK 2026-04-26 — lock 04-26 = elaborasi tactical, bukan pivot direction.
 
 ---
 

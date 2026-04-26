@@ -6,19 +6,27 @@
 
 ---
 
-## 🔒 2026-04-26 — DIRECTION LOCK Reference
+## 🔒 2026-04-26 — DEFINITION + DIRECTION LOCK Reference
 
-Setelah 4 pivot Apr 2026, user explicit minta lock direction final.
-Lihat **[`DIRECTION_LOCK_20260426.md`](DIRECTION_LOCK_20260426.md)** + research_notes/228.
+Setelah 4 pivot Apr 2026 + alignment audit, user explicit minta lock direction
+final + definisi formal IMMUTABLE.
+
+**Source of Truth**:
+1. 📜 **[`SIDIX_DEFINITION_20260426.md`](SIDIX_DEFINITION_20260426.md)** ← formal definition
+2. 🔒 [`DIRECTION_LOCK_20260426.md`](DIRECTION_LOCK_20260426.md) ← tactical lock
+3. Research notes 219-228 ← research foundation
 
 **Quick alignment**:
 - **Tagline**: *"Autonomous AI Agent — Thinks, Learns & Creates"*
+- **Karakter**: GENIUS · KREATIF · INOVATIF
 - **Direction**: BEBAS dan TUMBUH
+- **3 Fondasi**: The Mind · The Hands & Tools · The Drive
 - **4-Pilar**: Memory + Multi-Agent + Continuous + Proactive
 - **5 Persona LOCKED**: UTZ / ABOO / OOMAR / ALEY / AYMAN
 
 Bible ini **tetap hidup** (status HIDUP BUKAN BAKU) — pasal-pasal di bawah
-boleh evolve tapi **direction tidak boleh pivot tanpa user explicit**.
+boleh evolve tapi **definisi + direction tidak boleh pivot tanpa user explicit
++ buat file baru SIDIX_DEFINITION_<new_date>.md**.
 
 ---
 

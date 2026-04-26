@@ -4,27 +4,34 @@ Proyek: **SIDIX / Mighan Model**
 
 ---
 
-## 🔒 DIRECTION LOCK 2026-04-26 (BACA PERTAMA — IMMUTABLE)
+## 🔒 DEFINITION + DIRECTION LOCK 2026-04-26 (BACA PERTAMA — IMMUTABLE)
 
-User directive eksplisit: *"gaaaaaaasssssssssssss!!!! catat!! jangan berubah-ubah lagi arah sidix"*
+User directive eksplisit: *"gaaaaaaasssssssssssss!!!! catat!! jangan berubah-ubah lagi arah sidix"* + *"tulis dengan besar supaya nggak berubah lagi. cataaaattt!!! aligment semuanya"*
 
-**WAJIB BACA SEBELUM APA-APA**: [`docs/DIRECTION_LOCK_20260426.md`](docs/DIRECTION_LOCK_20260426.md)
+**WAJIB BACA URUTAN INI**:
+1. 📜 **[`docs/SIDIX_DEFINITION_20260426.md`](docs/SIDIX_DEFINITION_20260426.md)** ← **SOURCE OF TRUTH #1** (definisi formal lengkap karakter + kemampuan + arsitektur)
+2. 🔒 [`docs/DIRECTION_LOCK_20260426.md`](docs/DIRECTION_LOCK_20260426.md) ← tactical lock (8 ❌ rules + Q3 roadmap)
 
-### Quick lock summary:
+### Quick reference:
 - **Tagline**: *"Autonomous AI Agent — Thinks, Learns & Creates"*
+- **Karakter**: **GENIUS · KREATIF · INOVATIF**
 - **Direction**: AI Agent yang **BEBAS dan TUMBUH**
-- **Arsitektur**: 4-pilar (Memory + Multi-Agent + Continuous Learning + Proactive)
+- **Inti**: *"Entitas kecerdasan komprehensif yang tidak hanya mengeksekusi perintah multi-modal, tetapi secara PROAKTIF mengevaluasi, memori-optimasi, dan mengorkestrasi ekosistem tools untuk menciptakan nilai komersial dan inovasi TANPA PENGAWASAN TERUS-MENERUS"*
+- **3 Fondasi**: The Mind (Self-Correction + RAG + ToT) · The Hands (Tool Orchestration + Aesthetic + Resource Mgmt) · The Drive (Proactivity + Boundary)
+- **4-Pilar**: Memory + Multi-Agent + Continuous Learning + Proactive
+- **5 Persona LOCKED**: UTZ · ABOO · OOMAR · ALEY · AYMAN
 - **License**: MIT, self-hosted, no vendor LLM API
-- **5 persona LOCKED**: UTZ / ABOO / OOMAR / ALEY / AYMAN
-- **Sanad chain + epistemic 4-label**: mandatory
 
-### Yang TIDAK BOLEH BERUBAH (tanpa user explicit):
-❌ Tagline · ❌ klaim spiritual entity · ❌ vendor API · ❌ filter strict (Liberation Sprint pivot LOCK) · ❌ 5 persona · ❌ MIT license
+### Yang TIDAK BOLEH BERUBAH (10 ❌ hard rules):
+Lihat `SIDIX_DEFINITION_20260426.md` section "Yang TIDAK BOLEH BERUBAH". Highlight:
+- ❌ Tagline · ❌ klaim spiritual entity · ❌ vendor API · ❌ filter strict
+- ❌ Drop 5 persona · ❌ MIT license · ❌ self-hosted core
+- ❌ Drop sanad chain · ❌ Drop epistemic 4-label · ❌ Trivialize spiritual
 
-### Yang BOLEH:
-✅ Add fitur baru, optimize, improve performance, build on top vol 1-9
+### Yang BOLEH (Build On Top):
+✅ Add fitur baru, tools baru, optimize, improve · ✅ Build di atas vol 1-13 NO replace · ✅ Sensorial multimodal (Q3-Q1 2027) · ✅ Q3 roadmap (Nightly LoRA, Trend RSS, MCP wrap, CodeAct)
 
-**Vol 10+ = BUILD ON TOP, NO PIVOT**.
+**Vol 14+ = BUILD ON TOP, NO PIVOT**. Setiap pivot yang akan datang harus eksplisit user minta + buat file BARU `SIDIX_DEFINITION_<new_date>.md`.
 
 ---
 

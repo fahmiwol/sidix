@@ -9,6 +9,19 @@ TANPA USER EXPLICIT KASIH IZIN**.
 
 ---
 
+## 📜 PARENT DOCUMENT (Source of Truth #1)
+
+File ini adalah **tactical lock** (8 ❌ rules + Q3 2026 roadmap). Untuk
+**definisi formal lengkap** (karakter, kemampuan, 3 fondasi, 4-pilar,
+ringkasan inti), baca:
+
+**[`SIDIX_DEFINITION_20260426.md`](SIDIX_DEFINITION_20260426.md)** ← Source of Truth #1
+
+Document ini reference dan KONSISTEN dengan SIDIX_DEFINITION. Kalau konflik,
+SIDIX_DEFINITION yang menang.
+
+---
+
 ## 1. IDENTITAS SIDIX (LOCKED)
 
 ### Tagline (PUBLIC)
