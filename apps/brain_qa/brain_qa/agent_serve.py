@@ -560,8 +560,9 @@ def create_app() -> "FastAPI":
             proactive_feeds,              # noqa: F401  vol 15 — Pilar 4 closure
             nightly_lora,                 # noqa: F401  vol 15 — Pilar 3 closure
             sensorial_input,              # noqa: F401  vol 15 — sensorial foundation
+            creative_tools_registry,      # noqa: F401  vol 16 — creative tool registry
         )
-        _startup_logger.info("[startup] cognitive modules eager-loaded (vol 5-15)")
+        _startup_logger.info("[startup] cognitive modules eager-loaded (vol 5-16)")
     except Exception as e:
         _startup_logger.warning("[startup] cognitive eager-load skipped: %s", e)
 
@@ -2310,6 +2311,54 @@ def create_app() -> "FastAPI":
             return sensorial_input.cleanup_expired(ttl_hours=int(ttl_hours))
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"cleanup fail: {e}")
+
+    # ════════════════════════════════════════════════════════════════════════
+    # CREATIVE TOOLS REGISTRY (vol 16) — adoption tracker untuk creative agent
+    # Per research_notes/229_full_stack_creative_agent_ecosystem.md
+    # ════════════════════════════════════════════════════════════════════════
+
+    @app.get("/admin/creative/registry", tags=["Creative"])
+    def creative_registry_endpoint(
+        request: Request,
+        category: str = "",
+        status: str = "",
+    ):
+        """Registry creative tools — track adoption status (planned/wired/shipped).
+        Filter: category (visual/video/audio/3d/agent/rag/mcp/marketing) +
+        status (planned/evaluating/wired/shipped/deprecated)."""
+        if not _admin_ok(request):
+            raise HTTPException(status_code=403, detail="Akses ditolak")
+        try:
+            from . import creative_tools_registry
+            return {
+                "stats": creative_tools_registry.stats(),
+                "tools": creative_tools_registry.list_tools(category=category, status=status),
+            }
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"registry fail: {e}")
+
+    @app.post("/admin/creative/update-status", tags=["Creative"])
+    async def creative_update_status_endpoint(request: Request):
+        """Update tool status. Body: {tool_id, new_status, integration_module?}"""
+        if not _admin_ok(request):
+            raise HTTPException(status_code=403, detail="Akses ditolak")
+        try:
+            body = await request.json()
+        except Exception:
+            body = {}
+        tool_id = (body.get("tool_id") or "").strip()
+        new_status = (body.get("new_status") or "").strip()
+        if not tool_id or not new_status:
+            raise HTTPException(status_code=400, detail="tool_id + new_status wajib")
+        try:
+            from . import creative_tools_registry
+            ok = creative_tools_registry.update_status(
+                tool_id, new_status,
+                integration_module=body.get("integration_module", ""),
+            )
+            return {"ok": ok}
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"update fail: {e}")
 
     @app.get("/agent/context-triple", tags=["Cognitive"])
     async def context_triple_endpoint(request: Request, user_id: str = "", verbose: bool = False):
