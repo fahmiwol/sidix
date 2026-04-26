@@ -8267,3 +8267,91 @@ Vol 20b = compound integrity. Riset → adopt → implement → validate →
 document → ship. Tesla 100x percobaan compound.
 
 NO PIVOT. Direction LOCKED. Foundation bertumbuh.
+
+---
+
+## 2026-04-27 (vol 20b+) — Comprehensive Research Sweep (96/104 file, 92%)
+
+User: *"baca semua, saya yakin semuanya berguna"*. Sebelumnya Vol 20b cuma
+21% coverage. Spawn 4 agent paralel handle ~75 file sisa.
+
+### Coverage final [PROC]
+
+```
+Total file:         104
+Berhasil extract:   ~96 (92%)
+Gagal teknis:       1 (Cerebras SPA, acceptable)
+Duplicate skip:     4 (same arxiv different size)
+Sisa:               ~3 (likely duplicates)
+```
+
+Vol 20b lama: 21% → Vol 20b+ sekarang: 92% (+71pp).
+
+### 4 batch agent [IMPL]
+
+- Batch 1 (15 retry-failure): lmdeploy, MEMENTO, AgenticQwen, FASER/SMART/SpecBound, multi-LoRA, swarm tax, Cerebras
+- Batch 2 (21 inference + embedding): ⭐ Mamba2 embedding game-changer, MEMENTO, SMC-SD, SAE-SPLADE, Copy-as-Decode, ConfigSpec, banyak tangential SD
+- Batch 3 (17 agent + memory): ⭐ EngramaBench 4-axis, complexity routing, BadStyle defense, AI News Apr 24, DiffMAS, Agent-World, USER docx notes
+- Batch 4 (22 apps + tangential): DELEGATE-52 corruption, Qwen3.6-27B, Qwen2.5-VL, CHAI critique, banyak tangential video/PDE/math
+
+### Synthesis [DOC]
+
+Research note 235 — Comprehensive Sweep:
+- 10 ADOPT_NOW dengan action konkret
+- ~15 Q3_ROADMAP entries (effort + impact)
+- ~12 NICE_TO_KNOW summary
+- ~22 TANGENTIAL list (jujur)
+- 6 KEPUTUSAN Vol 20c REVISED dari note 233
+
+### Game-changer findings [DECISION]
+
+1. **Mamba2 Embeddings (Dynatrace)** — game-changer untuk Vol 20c:
+   - Codestral Mamba2 7B beat Mistral 7B v0.1 di MTEB Multilingual (+0.8pt)
+   - Constant memory in input length (linear vs quadratic)
+   - HF ready: dynatrace-oss/embed-mamba2
+   - **Ubah default**: BGE-M3 → 3-way option (BGE-M3 safe default, Mamba2 1.3B/7B kalau VRAM cukup, MiniLM CPU fallback)
+
+2. **EngramaBench 4-axis Memory** — upgrade continual_memory.py:
+   - Bukan flat vector lagi
+   - Schema: entities + semantic spaces + temporal traces + associative links
+
+3. **DELEGATE-52 Corruption Risk** — checkpoint/diff wajib:
+   - Frontier models corrupt 25% setelah 20 round-trip
+   - SIDIX sanad+epistemic = differentiator audit trail
+
+4. **BadStyle Backdoor** — corpus pipeline defense:
+   - Style trigger (Bible/Legal/Shakespeare) imperceptible backdoor
+   - Filter style-anomaly di corpus_to_training mandatory
+
+5. **Stash (Postgres+pgvector MCP self-hosted)** — REVISIT Supabase decision:
+   - Better match SIDIX self-hosted philosophy
+   - Open source, MCP-compatible
+
+6. **SAS-L pattern** — prompt explicit minta listing ambiguities:
+   - Single-agent + longer thinking beat multi-agent equal budget
+   - Adopt ke cot_system_prompts.py untuk reasoning-heavy persona
+
+### Vol 20c plan UPDATED [DECISION]
+
+Vol 20c sprint sekarang:
+1. Embedding loader 3-way option (BGE-M3/Mamba2/MiniLM)
+2. Domain detector + persona-domain mapping
+3. Wire detect_domain(question, persona) di /ask
+4. Test 3-way embedding cycle
+
+Q3 baru muncul:
+- EngramaBench 4-axis continual_memory upgrade
+- Complexity-tier routing
+- VLAA-GUI Stop/Recover/Search
+- SAS-L pattern
+- BadStyle defense
+- SpecBound/DS2D speculative
+- LMDeploy migration
+
+### Filosofi
+
+Tesla 100x percobaan. Jujur > klaim sempurna. 22 file tangential di-tag
+tangential, bukan paksakan ADOPT_NOW. 10 ADOPT_NOW dengan action konkret =
+foundation Vol 21+ acceleration.
+
+NO PIVOT. Direction LOCKED. Compound integrity > compound velocity.
