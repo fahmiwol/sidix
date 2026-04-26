@@ -557,8 +557,11 @@ def create_app() -> "FastAPI":
             tadabbur_mode,                # noqa: F401  vol 10
             persona_router,               # noqa: F401  vol 11
             context_triple,               # noqa: F401  vol 11
+            proactive_feeds,              # noqa: F401  vol 15 — Pilar 4 closure
+            nightly_lora,                 # noqa: F401  vol 15 — Pilar 3 closure
+            sensorial_input,              # noqa: F401  vol 15 — sensorial foundation
         )
-        _startup_logger.info("[startup] cognitive modules eager-loaded (vol 5-11)")
+        _startup_logger.info("[startup] cognitive modules eager-loaded (vol 5-15)")
     except Exception as e:
         _startup_logger.warning("[startup] cognitive eager-load skipped: %s", e)
 
@@ -2092,6 +2095,221 @@ def create_app() -> "FastAPI":
             return persona_router.stats()
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"stats fail: {e}")
+
+    # ════════════════════════════════════════════════════════════════════════
+    # PROACTIVE FEEDS (vol 15, Pilar 4 closure 70% → 85%)
+    # External trend monitor: HN + arxiv + GitHub + HF papers
+    # ════════════════════════════════════════════════════════════════════════
+
+    @app.post("/admin/feeds/fetch", tags=["Proactive"])
+    def feeds_fetch_endpoint(request: Request, limit_per_source: int = 5):
+        """Fetch all external feeds (HN, arxiv, GitHub trending, HF papers).
+        Save ke trends_cache.json. Cron: hourly."""
+        if not _admin_ok(request):
+            raise HTTPException(status_code=403, detail="Akses ditolak")
+        try:
+            from . import proactive_feeds
+            return proactive_feeds.fetch_all_feeds(limit_per_source=int(limit_per_source))
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"feeds fetch fail: {e}")
+
+    @app.get("/admin/feeds/anomalies", tags=["Proactive"])
+    def feeds_anomalies_endpoint(request: Request):
+        """Detect cross-source keyword cluster + high-score outlier.
+        Hook ke proactive_trigger anomaly system."""
+        if not _admin_ok(request):
+            raise HTTPException(status_code=403, detail="Akses ditolak")
+        try:
+            from . import proactive_feeds
+            return {"anomalies": proactive_feeds.detect_trend_anomalies()}
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"anomalies fail: {e}")
+
+    @app.get("/admin/feeds/recent", tags=["Proactive"])
+    def feeds_recent_endpoint(request: Request, limit: int = 20, source: str = ""):
+        """List recent trend items (filter by source: hn|arxiv|github|hf_papers)."""
+        if not _admin_ok(request):
+            raise HTTPException(status_code=403, detail="Akses ditolak")
+        try:
+            from . import proactive_feeds
+            return {
+                "stats": proactive_feeds.stats(),
+                "items": proactive_feeds.list_recent(limit=int(limit), source=source),
+            }
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"recent fail: {e}")
+
+    # ════════════════════════════════════════════════════════════════════════
+    # NIGHTLY LORA (vol 15, Pilar 3 closure 75% → 90%)
+    # Nightly orchestrator + snapshot + signal external pipeline
+    # ════════════════════════════════════════════════════════════════════════
+
+    @app.get("/admin/lora/plan", tags=["Memory"])
+    def lora_plan_endpoint(request: Request):
+        """Pre-flight check: training pair count, last retrain, threshold met?"""
+        if not _admin_ok(request):
+            raise HTTPException(status_code=403, detail="Akses ditolak")
+        try:
+            from . import nightly_lora
+            from dataclasses import asdict
+            plan = nightly_lora.plan_nightly_retrain()
+            return {"plan": asdict(plan)}
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"plan fail: {e}")
+
+    @app.post("/admin/lora/orchestrate", tags=["Memory"])
+    async def lora_orchestrate_endpoint(request: Request):
+        """Run nightly orchestrator: snapshot + emit signal kalau threshold met.
+        Body: {dry_run?: bool}"""
+        if not _admin_ok(request):
+            raise HTTPException(status_code=403, detail="Akses ditolak")
+        try:
+            body = await request.json()
+        except Exception:
+            body = {}
+        try:
+            from . import nightly_lora
+            return nightly_lora.execute_nightly_orchestrator(
+                dry_run=bool(body.get("dry_run", False)),
+                auto_snapshot=bool(body.get("auto_snapshot", True)),
+            )
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"orchestrate fail: {e}")
+
+    @app.get("/admin/lora/stats", tags=["Memory"])
+    def lora_stats_endpoint(request: Request):
+        """Nightly retrain history + current pair count."""
+        if not _admin_ok(request):
+            raise HTTPException(status_code=403, detail="Akses ditolak")
+        try:
+            from . import nightly_lora
+            return nightly_lora.stats()
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"stats fail: {e}")
+
+    # ════════════════════════════════════════════════════════════════════════
+    # SENSORIAL INPUT (vol 15, Q3-Q4 P2 foundation)
+    # Vision + Audio + Voice multimodal foundation
+    # ════════════════════════════════════════════════════════════════════════
+
+    @app.post("/agent/vision", tags=["Sensorial"])
+    async def vision_endpoint(request: Request):
+        """Receive image upload (base64 / URL). Save + EXIF strip + caption stub.
+        Body: {image_base64?, image_url?, user_id?}
+        VLM real integration target Q3 2026 (Qwen2.5-VL)."""
+        try:
+            body = await request.json()
+        except Exception:
+            body = {}
+        if not body.get("image_base64") and not body.get("image_url"):
+            raise HTTPException(status_code=400, detail="image_base64 atau image_url wajib")
+
+        # Extract user dari Bearer JWT kalau ada
+        user_id = ""
+        try:
+            from . import auth_google
+            payload = auth_google.extract_user_from_request(request)
+            if payload:
+                user_id = payload.get("sub", "")
+        except Exception:
+            pass
+
+        try:
+            from . import sensorial_input
+            from dataclasses import asdict
+            record = sensorial_input.receive_image(
+                image_base64=body.get("image_base64", ""),
+                image_url=body.get("image_url", ""),
+                user_id=user_id or body.get("user_id", ""),
+            )
+            return {"ok": record.processing_status != "failed", "record": asdict(record)}
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"vision fail: {e}")
+
+    @app.post("/agent/audio", tags=["Sensorial"])
+    async def audio_endpoint(request: Request):
+        """Receive audio upload (base64). STT real integration target Q3 2026
+        (Step-Audio / Qwen3-ASR / Whisper local).
+        Body: {audio_base64, user_id?}"""
+        try:
+            body = await request.json()
+        except Exception:
+            body = {}
+        if not body.get("audio_base64"):
+            raise HTTPException(status_code=400, detail="audio_base64 wajib")
+
+        user_id = ""
+        try:
+            from . import auth_google
+            payload = auth_google.extract_user_from_request(request)
+            if payload:
+                user_id = payload.get("sub", "")
+        except Exception:
+            pass
+
+        try:
+            from . import sensorial_input
+            from dataclasses import asdict
+            record = sensorial_input.receive_audio(
+                audio_base64=body.get("audio_base64", ""),
+                user_id=user_id or body.get("user_id", ""),
+            )
+            return {"ok": record.processing_status != "failed", "record": asdict(record)}
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"audio fail: {e}")
+
+    @app.post("/agent/voice", tags=["Sensorial"])
+    async def voice_endpoint(request: Request):
+        """Text → speech (TTS). Reuse existing tts_engine (Piper, 4 bahasa).
+        Body: {text, language?: 'id'|'en'|'ar'|'ms'}"""
+        try:
+            body = await request.json()
+        except Exception:
+            body = {}
+        text = (body.get("text") or "").strip()
+        if not text:
+            raise HTTPException(status_code=400, detail="text wajib")
+
+        user_id = ""
+        try:
+            from . import auth_google
+            payload = auth_google.extract_user_from_request(request)
+            if payload:
+                user_id = payload.get("sub", "")
+        except Exception:
+            pass
+
+        try:
+            from . import sensorial_input
+            return sensorial_input.synthesize_voice(
+                text=text,
+                language=body.get("language", "id"),
+                user_id=user_id,
+            )
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"voice fail: {e}")
+
+    @app.get("/admin/sensorial/stats", tags=["Sensorial"])
+    def sensorial_stats_endpoint(request: Request):
+        """Stats sensorial input (vision + audio + voice)."""
+        if not _admin_ok(request):
+            raise HTTPException(status_code=403, detail="Akses ditolak")
+        try:
+            from . import sensorial_input
+            return sensorial_input.stats()
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"stats fail: {e}")
+
+    @app.post("/admin/sensorial/cleanup", tags=["Sensorial"])
+    def sensorial_cleanup_endpoint(request: Request, ttl_hours: int = 24):
+        """Sweep expired media files (cron-friendly, default TTL 24h)."""
+        if not _admin_ok(request):
+            raise HTTPException(status_code=403, detail="Akses ditolak")
+        try:
+            from . import sensorial_input
+            return sensorial_input.cleanup_expired(ttl_hours=int(ttl_hours))
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"cleanup fail: {e}")
 
     @app.get("/agent/context-triple", tags=["Cognitive"])
     async def context_triple_endpoint(request: Request, user_id: str = "", verbose: bool = False):
