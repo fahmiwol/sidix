@@ -2010,6 +2010,71 @@ def create_app() -> "FastAPI":
             raise HTTPException(status_code=500, detail=f"stats fail: {e}")
 
     # ════════════════════════════════════════════════════════════════════════
+    # PERSONA AUTO-ROUTING + CONTEXT TRIPLE (vol 11, P1 Q3 roadmap)
+    # ════════════════════════════════════════════════════════════════════════
+
+    @app.post("/agent/persona-route", tags=["Cognitive"])
+    async def persona_route_endpoint(request: Request):
+        """Auto-detect optimal persona dari user message. Tier 1 keyword
+        heuristic + history-aware override.
+        Body: {message, user_id?, explicit_persona?}"""
+        try:
+            body = await request.json()
+        except Exception:
+            body = {}
+        message = (body.get("message") or "").strip()
+        if not message:
+            raise HTTPException(status_code=400, detail="message wajib")
+        try:
+            from . import persona_router
+            from dataclasses import asdict
+            decision = persona_router.route_persona(
+                message,
+                user_id=body.get("user_id", ""),
+                explicit_persona=body.get("explicit_persona", ""),
+            )
+            return {"ok": True, "decision": asdict(decision)}
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"route fail: {e}")
+
+    @app.get("/admin/persona-router/stats", tags=["Cognitive"])
+    def persona_router_stats(request: Request):
+        """Distribusi persona routing decisions (admin dashboard)."""
+        if not _admin_ok(request):
+            raise HTTPException(status_code=403, detail="Akses ditolak")
+        try:
+            from . import persona_router
+            return persona_router.stats()
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"stats fail: {e}")
+
+    @app.get("/agent/context-triple", tags=["Cognitive"])
+    async def context_triple_endpoint(request: Request, user_id: str = "", verbose: bool = False):
+        """Derive zaman/makan/haal context triple untuk current request.
+        Privacy-conscious bucket (no precise location/IP stored)."""
+        try:
+            from . import context_triple as ct
+            from dataclasses import asdict
+            # Build request metadata (safe extraction)
+            req_meta = {}
+            try:
+                req_meta["accept_language"] = request.headers.get("accept-language", "")
+                req_meta["country"] = (
+                    request.headers.get("cf-ipcountry", "")
+                    or request.headers.get("x-country", "")
+                )
+            except Exception:
+                pass
+            triple = ct.derive_context_triple(user_id=user_id, request_metadata=req_meta)
+            return {
+                "ok": True,
+                "triple": asdict(triple),
+                "formatted": ct.format_for_prompt(triple, verbose=bool(verbose)),
+            }
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"context_triple fail: {e}")
+
+    # ════════════════════════════════════════════════════════════════════════
     # RELEVANCE SCORE — metric kualitas jawaban (untuk SIDIX learning loop)
     # ════════════════════════════════════════════════════════════════════════
 
