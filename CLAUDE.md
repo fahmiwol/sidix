@@ -132,6 +132,80 @@ kerja = waste energy. Catatan adalah memori eksternal SIDIX.
 - "ini kecil, gak perlu dicatat" → tidak ada yang terlalu kecil
 - "sudah obvious dari commit message" → commit message ≠ context lengkap
 
+### 6.5. ⚠️ POST-TASK PROTOCOL — Loop Mandatory (2026-04-27 LOCK)
+
+User directive eksplisit: *"Catat, testing, iterasi, training, Review, Catat,
+Validasi, QA, Catat! Jadiin itu Mandatory kerja deh dari setiap habis done
+task, push, pull and deploy."*
+
+**SETIAP kali task selesai (sebelum push/pull/deploy/move-on)**, jalankan
+loop ini SECARA URUT:
+
+```
+1. CATAT  (initial post-implement)
+   └─ append progress ke LIVING_LOG (tag IMPL)
+   └─ note keputusan kunci kalau ada
+
+2. TESTING
+   └─ syntax check (ast.parse / tsc --noEmit / equivalent)
+   └─ smoke test: import + happy path + edge cases
+   └─ integration test kalau touch flow lain
+
+3. ITERASI
+   └─ kalau test fail → fix → re-test
+   └─ kalau test edge case kurang → tambah → re-test
+   └─ ulang sampai green
+
+4. TRAINING (optional, kalau task touch model behavior)
+   └─ collect baseline metric (pre-change)
+   └─ run new behavior → compare metric
+   └─ kalau regress → rollback atau iterasi
+   └─ kalau task tidak touch model: skip step ini
+
+5. REVIEW (manual self-audit)
+   └─ baca diff sendiri sebelum commit
+   └─ check anti-pattern (over-engineering, secret leak, scope creep)
+   └─ verify direction lock (10 ❌ rules belum dilanggar)
+   └─ verify Kimi territory belum disentuh
+
+6. CATAT (validasi findings)
+   └─ append hasil testing ke LIVING_LOG (tag TEST + angka konkret)
+   └─ append iterasi/regression notes
+
+7. VALIDASI (functional verification)
+   └─ kalau wired ke flow production: test dengan input nyata (atau mock representatif)
+   └─ verify behavior match expectation
+   └─ cek tidak break existing feature
+
+8. QA (final check before commit)
+   └─ git diff --cached | grep secret pattern (security audit)
+   └─ verify all tests pass
+   └─ verify dokumen ter-update (CHANGELOG kalau versi naik, HANDOFF kalau state berubah)
+
+9. CATAT (final, before push)
+   └─ commit message lengkap dengan WHY
+   └─ push ke remote
+   └─ kalau deploy: append entry deploy log
+   └─ kalau ada DEFER: list eksplisit di HANDOFF
+```
+
+**Kenapa**: Tesla 100x percobaan compound. Setiap task tanpa catat = waste
+energy karena context hilang. Setiap task tanpa testing = produksi bug.
+Setiap task tanpa review = silent regression. Loop ini = compound integrity.
+
+**Anti-pattern yang HARUS dihindari**:
+- ❌ Skip testing karena "ini cuma small change" → semua change perlu test
+- ❌ Skip catat di tengah loop → catat SETIAP step, bukan cuma akhir
+- ❌ Push tanpa security audit → wajib `git diff | grep` pattern
+- ❌ Iterasi tanpa baseline → harus ada metric/test yang jelas pass/fail
+- ❌ Move ke task berikutnya tanpa selesaikan loop → finish loop dulu, baru next
+
+**Lokasi dokumentasi yang ter-update tiap loop iteration**:
+- `docs/LIVING_LOG.md` — semua step (catat steps 1, 6, 9 minimal)
+- `CHANGELOG.md` — kalau versi minor/major naik
+- `docs/HANDOFF_CLAUDE_<latest>.md` — kalau state berubah signifikan
+- `brain/public/research_notes/<n>_*.md` — kalau ≥1 paragraf knowledge baru
+
 ### 7. 🔒 SECURITY & PRIVACY MINDSET — Default Wajib
 
 **Setiap kali edit file/build fitur/expose endpoint, pikirkan**:
