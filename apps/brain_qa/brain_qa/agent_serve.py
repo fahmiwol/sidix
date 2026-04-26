@@ -540,6 +540,7 @@ def create_app() -> "FastAPI":
     # Vol 12 QA finding: /agent/wisdom-gate cold start 14.6s karena lazy import
     # trigger module dependency tree (Kimi jiwa/* etc) on first call.
     # Fix: preload semua cognitive module di startup supaya first call <500ms.
+    _startup_logger = logging.getLogger(__name__)
     try:
         from . import (
             pattern_extractor,           # noqa: F401  vol 5
@@ -556,9 +557,9 @@ def create_app() -> "FastAPI":
             persona_router,               # noqa: F401  vol 11
             context_triple,               # noqa: F401  vol 11
         )
-        log.info("[startup] cognitive modules eager-loaded (vol 5-11)")
+        _startup_logger.info("[startup] cognitive modules eager-loaded (vol 5-11)")
     except Exception as e:
-        log.warning("[startup] cognitive eager-load skipped: %s", e)
+        _startup_logger.warning("[startup] cognitive eager-load skipped: %s", e)
 
     # ── Vol 13 fix P1: Defensive create activity_log.jsonl ────────────────────
     # Vol 12 QA finding: file belum ada karena admin token tidak trigger log.
@@ -569,9 +570,9 @@ def create_app() -> "FastAPI":
         _, log_path = _ag._resolve_paths()
         if not log_path.exists():
             log_path.touch()
-            log.info("[startup] activity_log.jsonl created defensively")
+            _startup_logger.info("[startup] activity_log.jsonl created defensively")
     except Exception as e:
-        log.debug("[startup] activity_log defensive create skipped: %s", e)
+        _startup_logger.debug("[startup] activity_log defensive create skipped: %s", e)
 
     # Task 49 — Al-Kafirun: Security headers middleware (hardening WebUI)
     class SecurityHeadersMiddleware(BaseHTTPMiddleware):
