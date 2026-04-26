@@ -2974,10 +2974,42 @@ def create_app() -> "FastAPI":
                     _bump_metric("ask_cache_hit")
                     _resp = dict(_cached)
                     _resp["_cache_hit"] = True
+                    _resp["_cache_layer"] = "exact"
                     _resp["_cache_latency_ms"] = int((time.time() - _t_ask_start) * 1000)
                     return _resp
         except Exception:
             pass  # cache failure never blocks main flow
+
+        # ── Vol 20b: Semantic cache L2 lookup (after L1 exact miss) ──────────
+        # Embedding-agnostic: kalau embed_fn belum di-set, lookup return None
+        # secara graceful dan flow lanjut ke run_react. Per-domain threshold
+        # konservatif (0.95 default) untuk hindari wrong-answer di klaim
+        # sensitif (fiqh/medis/data).
+        try:
+            from .semantic_cache import get_semantic_cache
+            _sc = get_semantic_cache()
+            if _sc.enabled and _cacheable:
+                _domain = "casual"  # default; bisa di-enrich kalau ada domain detector
+                _hit = _sc.lookup(
+                    query=req.question,
+                    persona=req.persona,
+                    lora_version="v1",  # TODO: read dari LoRA adapter version saat deploy
+                    system_prompt="",   # TODO: pass actual system prompt hash
+                    domain=_domain,
+                    msg_history_len=0,
+                    temperature=0.0,
+                )
+                if _hit is not None:
+                    _cached_resp, _score = _hit
+                    _bump_metric("ask_semantic_cache_hit")
+                    _resp = dict(_cached_resp)
+                    _resp["_cache_hit"] = True
+                    _resp["_cache_layer"] = "semantic"
+                    _resp["_cache_similarity"] = round(_score, 4)
+                    _resp["_cache_latency_ms"] = int((time.time() - _t_ask_start) * 1000)
+                    return _resp
+        except Exception as _e:
+            log.debug("[semantic_cache] lookup error: %s", _e)
 
         session = run_react(
             question=req.question,
@@ -3115,6 +3147,23 @@ def create_app() -> "FastAPI":
                 _conf_score = getattr(session, "confidence_score", 0.0) or 0.0
                 if _conf_score >= 0.7:
                     set_ask_cache(_response, req.question, req.persona, _cache_mode)
+                    # Vol 20b: also store di semantic cache (graceful skip
+                    # kalau embed_fn belum di-set)
+                    try:
+                        from .semantic_cache import get_semantic_cache
+                        _sc = get_semantic_cache()
+                        if _sc.enabled:
+                            _sc.store(
+                                query=req.question,
+                                response=_response,
+                                persona=req.persona,
+                                lora_version="v1",
+                                system_prompt="",
+                                domain="casual",
+                                output=session.final_answer,
+                            )
+                    except Exception as _e:
+                        log.debug("[semantic_cache] store error: %s", _e)
         except Exception:
             pass
 

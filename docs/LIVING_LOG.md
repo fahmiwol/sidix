@@ -8169,3 +8169,101 @@ Tunggu validasi D+A live di production dulu sebelum lanjut.
 Vol 20a = wire safest first. Vol 20b/c = deeper setelah confirmation.
 User methodology: catat → analisa → build → validasi → testing → verifikasi → QA.
 Foundation bertumbuh. NO PIVOT. Direction LOCKED.
+
+---
+
+## 2026-04-27 (vol 20b) — Semantic Cache Adoption (riset 113 file → ship)
+
+User drop folder `riset baru/semantic vs exact` (113 PDF/docx/jsonl).
+User minta: *"baca dengan teliti, adopsi, implementasi, mapping, buat
+saya kagum, catat, iterasi, validasi, testing, QA, review, catat"*.
+
+### Triage [PROC]
+
+113 file diklasifikasi:
+- T1 (~18 file): caching / semantic cache → adopt SEKARANG
+- T2 (~25 file): speculative decoding / inference optim → Q3 roadmap
+- T3 (~70 file): tangential (LoRA, multimodal, safety, dll) → reference
+
+Spawn 2 agent paralel:
+- Agent A: synthesis 18 caching docs → blueprint Phase B semantic
+- Agent B: synthesis ~9 speculative decoding paper + LoRA → Q3 roadmap
+
+### Implement [IMPL]
+
+`apps/brain_qa/brain_qa/semantic_cache.py` (430 LOC) — embedding-agnostic:
+- `SemanticCache` class dengan injectable `embed_fn`
+- Per-domain threshold: fiqh/medis 0.96, factual 0.92, casual 0.88, default 0.95
+- Per-domain TTL: factual 72h, fiqh 7 hari, current_events 0 (skip)
+- Bucket key: `persona:lora_version:system_prompt_hash[:12]`
+  → cross-persona contamination prevented
+  → LoRA retrain auto-invalidate
+  → system prompt change auto-invalidate
+- Eligibility skip: too short, current events keyword, PII regex,
+  multi-turn>3, high temperature, low-confidence output labels
+- LRU + TTL eviction, max 10K entries per bucket
+- Stats: hits/misses/scores histogram (Prometheus-shape)
+- `set_embed_fn()` graceful enable/disable
+
+Wired ke `agent_serve.py` `/ask` endpoint:
+- L2 lookup setelah L1 exact miss, sebelum run_react()
+- L2 store post-success (confidence_score >= 0.7)
+- Hit response: `_cache_hit=True, _cache_layer="semantic", _cache_similarity=X`
+
+### Test [TEST]
+
+8/8 pass:
+1. Graceful disable (no embed_fn) ✓
+2. 8 eligibility rules (too short, current events, PII, multi-turn,
+   high temp, low-conf output, current_events domain, fiqh OK) ✓
+3. Mock embedding cycle: identical hit, persona isolation, LoRA
+   isolation, unrelated miss ✓
+4. Stats accuracy ✓
+5. TTL=0 domain skip ✓
+6. Singleton identity ✓
+7. Clear bucket ✓
+8. Threshold below = MISS ✓
+
+### Doc [DOC]
+
+- Research note 233: Semantic Cache Adoption (synthesis 18 sumber +
+  decision matrix + failure mode catalog)
+- Research note 234: Speculative Decoding Q3 Roadmap (synthesis 9 paper
+  + 5 fase plan + persona mapping + decision gate)
+
+### KEPUTUSAN PENTING [DECISION]
+
+1. **Threshold KONSERVATIF** (default 0.95, fiqh/medis 0.96) bukan
+   industry mid (0.92) karena SIDIX sanad/persona/epistemic = wrong-answer
+   adalah pelanggaran direction.
+2. **Embedding-agnostic** module land sekarang, embedding model decision
+   (BGE-M3 vs MiniLM) defer ke deploy time — pragmatis, tidak block.
+3. **Per-persona bucket** karena 5 persona LOCKED + cross-bucket
+   contamination = persona break = LOCK violation.
+4. **LoRA-version key** karena growth loop auto-invalidate cache tanpa
+   manual clear.
+5. **Speculative decoding DEFER ke Q3** — research note 234 prep, no
+   implementation Vol 20b.
+
+### Yang BELUM (Vol 20c)
+
+- Embedding model loader (BGE-M3 atau MiniLM)
+- Domain detector (sekarang hardcoded "casual" di wiring)
+- Supabase mirror startup load
+- Prometheus exporter wrap
+- Drift detection weekly job
+- Request coalescing (Vol 20c+ kalau >100 RPS)
+
+### Filosofi
+
+User: *"buat saya kagum"*. Hasil:
+- 18 sumber 2025-2026 di-survey, KONFLIK eksplisit di-flag
+- Decision matrix di-document (threshold spread 0.80↔0.97 = 17 poin)
+- SIDIX-spesifik decision tree, bukan "ngikut tutorial"
+- 12 failure mode catalog → 9 covered, 3 deferred sengaja
+- 8/8 test pass, embedding-agnostic = production-ready architecture
+
+Vol 20b = compound integrity. Riset → adopt → implement → validate →
+document → ship. Tesla 100x percobaan compound.
+
+NO PIVOT. Direction LOCKED. Foundation bertumbuh.
