@@ -3467,38 +3467,87 @@ def create_app() -> "FastAPI":
                 return
 
             # ── Vol 20-Closure B: Tadabbur observability (decision + meta) ───
-            # Adaptive trigger decision di-log tapi BELUM swap ke tadabbur_mode
-            # full (butuh session adapter, defer ke Vol 20e). Sekarang frontend
-            # bisa observe decision via meta event.
             _tadabbur_decision = None
             try:
                 from .tadabbur_auto import adaptive_trigger
                 _tadabbur_decision = adaptive_trigger(req.question)
                 if _tadabbur_decision.should_trigger:
                     log.info(
-                        "[stream] tadabbur trigger detected (score=%.2f) but full swap defer Vol 20e",
+                        "[stream] tadabbur trigger detected (score=%.2f)",
                         _tadabbur_decision.score,
                     )
             except Exception as _e:
                 log.debug("[stream] tadabbur decision error: %s", _e)
 
-            # ── 2b. Jalankan ReAct ───────────────────────────────────────────
+            # ── Vol 20-fu2 #1: TADABBUR FULL SWAP (triple-gate) ──────────────
+            # Run tadabbur (3-persona, 7 LLM call) instead of run_react SAAT:
+            #   1. tier=deep (complexity_router signal)
+            #   2. tadabbur_eligible (adaptive_trigger signal)
+            #   3. quota cukup (>=7 remaining kalau quota active)
+            # Adapter wrap TadabburResult -> AgentSession-shape supaya downstream
+            # code (cache, log, hooks) tetap kompatibel.
+            _tadabbur_swap_active = False
+            _tadabbur_session = None
             try:
-                session = run_react(
-                    question=req.question,
-                    persona=effective_persona,
-                    corpus_only=req.corpus_only,
-                    allow_web_fallback=req.allow_web_fallback,
-                    simple_mode=req.simple_mode,
-                    agent_mode=req.agent_mode,
-                strict_mode=req.strict_mode,
-                    conversation_id=effective_conversation_id,
-                    conversation_context=conversation_context,
-                )
-            except Exception as e:
-                err = _json.dumps({"type": "error", "message": str(e)})
-                yield f"data: {err}\n\n"
-                return
+                _tier_match = _tier_decision_s and _tier_decision_s.tier == "deep"
+                _tad_match = _tadabbur_decision and _tadabbur_decision.should_trigger
+                _quota_ok = True
+                if quota and isinstance(quota, dict):
+                    _remaining = quota.get("remaining", 9999)
+                    _quota_ok = _remaining >= 7
+                if _tier_match and _tad_match and _quota_ok:
+                    _tadabbur_swap_active = True
+                    log.info("[stream] TADABBUR SWAP active: tier=deep + eligible + quota OK")
+                    # Yield meta phase event sebelum block (UX: user tahu ini deep mode)
+                    _phase_meta = _json.dumps({
+                        "type": "meta",
+                        "_phase": "tadabbur_active",
+                        "_phase_detail": "3-persona deep iteration (60-120s)",
+                    })
+                    yield f"data: {_phase_meta}\n\n"
+                    # Run tadabbur (sync, blocking — 60-120s)
+                    from . import tadabbur_mode
+                    _tadabbur_result = tadabbur_mode.tadabbur(
+                        req.question,
+                        personas=["UTZ", "ABOO", "OOMAR"],
+                    )
+                    _tadabbur_session = tadabbur_mode.adapt_to_agent_session(
+                        _tadabbur_result,
+                        question=req.question,
+                        persona=effective_persona,
+                        conversation_id=effective_conversation_id,
+                    )
+                    log.info(
+                        "[stream] tadabbur done %dms, %d rounds, synthesis %d chars",
+                        _tadabbur_result.total_duration_ms,
+                        len(_tadabbur_result.rounds),
+                        len(_tadabbur_result.final_synthesis),
+                    )
+            except Exception as _e:
+                log.warning("[stream] tadabbur swap error, fallback to run_react: %s", _e)
+                _tadabbur_swap_active = False
+
+            # ── 2b. Jalankan ReAct (atau pakai tadabbur session kalau swap) ──
+            if _tadabbur_swap_active and _tadabbur_session is not None:
+                # Skip run_react — pakai tadabbur session
+                session = _tadabbur_session
+            else:
+                try:
+                    session = run_react(
+                        question=req.question,
+                        persona=effective_persona,
+                        corpus_only=req.corpus_only,
+                        allow_web_fallback=req.allow_web_fallback,
+                        simple_mode=req.simple_mode,
+                        agent_mode=req.agent_mode,
+                    strict_mode=req.strict_mode,
+                        conversation_id=effective_conversation_id,
+                        conversation_context=conversation_context,
+                    )
+                except Exception as e:
+                    err = _json.dumps({"type": "error", "message": str(e)})
+                    yield f"data: {err}\n\n"
+                    return
 
             # ── Vol 20-Closure C: CodeAct enrich (post-react, pre-stream) ────
             # Scan answer untuk code block, execute, replace dengan enriched.
@@ -3577,6 +3626,9 @@ def create_app() -> "FastAPI":
                 _meta_payload["_complexity_tier"] = _tier_decision_s.tier
                 _meta_payload["_complexity_score"] = _tier_decision_s.score
                 _meta_payload["_complexity_latency_class"] = _tier_decision_s.estimated_latency_class
+            if _tadabbur_swap_active:
+                _meta_payload["_tadabbur_used"] = True
+                _meta_payload["_cognitive_mode"] = "tadabbur"
             meta = _json.dumps(_meta_payload)
             yield f"data: {meta}\n\n"
 
@@ -3720,6 +3772,9 @@ def create_app() -> "FastAPI":
             if _tadabbur_decision and _tadabbur_decision.should_trigger:
                 _done_payload["_tadabbur_eligible"] = True
                 _done_payload["_tadabbur_score"] = _tadabbur_decision.score
+            if _tadabbur_swap_active:
+                _done_payload["_tadabbur_used"] = True
+                _done_payload["_cognitive_mode"] = "tadabbur"
             yield f"data: {_json.dumps(_done_payload)}\n\n"
 
         return SR(generate(), media_type="text/event-stream")

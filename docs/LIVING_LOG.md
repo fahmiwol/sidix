@@ -8744,3 +8744,108 @@ Effect:
   - tier=deep (multi-clause + deep keywords + length) → telemetry only,
     actual swap defer ke #1 Tadabbur full swap
 - Frontend: ⚡ simple / 🧠 deep badge di latency footer (skip standard)
+
+---
+
+## 2026-04-27 (vol 20-fu2 #1) — Tadabbur Full Swap (triple-gate)
+
+User pick #1 dari 8 DEFER, 9-step POST-TASK PROTOCOL.
+
+### Step 1 CATAT design [DECISION]
+
+Wire tadabbur_mode ke /ask/stream dengan triple-gate:
+1. tier=deep (complexity_router signal)
+2. tadabbur_eligible (adaptive_trigger signal)
+3. quota cukup (>=7 remaining kalau quota active)
+
+Adapter `adapt_to_agent_session(TadabburResult, ...)` di tadabbur_mode.py
+wrap result jadi AgentSession-shape supaya downstream code (cache, log,
+hooks) tetap kompatibel tanpa special-case.
+
+### Step 2-3 TESTING + ITERASI [IMPL][TEST]
+
+Adapter test:
+- mock TadabburResult build → adapt → AgentSession ✓
+- citations dari rounds (3 round1 + 1 round3 = 4 citation) ✓
+- answer_type detect epistemik label ([OPINI] → opini, [SPEKULASI] → spekulasi) ✓
+- empty result fallback message ✓
+- ITER fix: double "tdb_" prefix di session_id, fixed dengan check startswith
+
+### Step 5 REVIEW + WIRE
+
+agent_serve.py /ask/stream:
+- Triple-gate check setelah tadabbur_decision (existing observability)
+- Yield phase meta event "_phase=tadabbur_active" SEBELUM block (UX)
+- tadabbur_mode.tadabbur(...) SYNC call (60-120s, blocking di async generator)
+- adapt_to_agent_session(...) wrap → session = _tadabbur_session
+- Skip run_react kalau swap active
+- Tag _tadabbur_used=True + _cognitive_mode=tadabbur di meta + done event
+- try/except wrap: kalau tadabbur fail, fallback ke run_react graceful
+
+frontend main.ts:
+- Capture _tadabbur_used + _phase events
+- Phase event "tadabbur_active" → update thinking label "🧭 Deep mode: 3-persona iteration (60-120s)..."
+- Done event _tadabbur_used=true → render badge "🧭 tadabbur (3-persona)" di latency footer
+
+### Step 6+7 VALIDASI [TEST]
+
+5 scenarios full chain integration:
+- "Halo apa kabar" → simple, no swap ✓
+- "Apa itu RAG?" → simple, no swap ✓
+- "Cara debug Python error" → standard+code, no swap ✓
+- B2B GTM strategy (deep tier 0.78 tapi tadabbur 0.38) → no swap (threshold beda by design) ✓
+- "Bandingkan strategi caching exact vs semantic..." (tier 1.25 + tadabbur 1.00) → SWAP ACTIVE ✓
+
+Quota gate test:
+- quota.remaining=5 → quota_ok=False (block) ✓
+- quota.remaining=100 → quota_ok=True ✓
+- quota=None → quota_ok=True (graceful) ✓
+
+Fallback graceful: try/except wrap, kalau tadabbur exception → swap_active=False → fallback run_react ✓
+
+### Step 8 QA
+
+- syntax: agent_serve.py + tadabbur_mode.py OK
+- Kimi territory NOT touched (parallel_executor, jiwa/* untouched)
+- existing tests intact (response_cache, semantic_cache, complexity_router all import + behavior unchanged)
+- security audit: no leak
+
+### Step 9 final CATAT before commit
+
+Files changed:
+- WIRE apps/brain_qa/brain_qa/agent_serve.py (/ask/stream triple-gate + meta + done)
+- ADD apps/brain_qa/brain_qa/tadabbur_mode.py (adapter function ~70 LOC)
+- WIRE SIDIX_USER_UI/src/main.ts (phase event + tadabbur badge)
+- CATAT LIVING_LOG (this entry)
+
+### Effect
+
+Sebelum: deep questions → run_react single-pass (jawaban serupa untuk semua persona).
+Setelah: deep questions yang ALSO tadabbur eligible → 3-persona (UTZ creative + ABOO engineer + OOMAR strategist) iteration → AYMAN synthesis. Quality multi-perspektif jauh lebih kaya. Cost 7 LLM call (dijaga oleh quota gate).
+
+UX:
+- thinking label berubah saat tadabbur active: "🧭 Deep mode: 3-persona iteration (60-120s)..."
+- latency footer tambah badge "🧭 tadabbur (3-persona)" kalau full swap dipakai
+
+### Vol 20 sprint sekarang truly complete (semua ORIGINAL task done):
+
+| Task vol 20 original | Status |
+|---|---|
+| A. response_cache di /ask | ✅ vol 20a |
+| D. json_robust 7 modul | ✅ vol 20a |
+| B. Tadabbur observability di /ask/stream | ✅ vol 20-closure |
+| C. CodeAct enrich done event | ✅ vol 20-closure |
+| E. Frontend cache hit indicator | ✅ vol 20-closure |
+| **B+ Tadabbur FULL SWAP (was deferred)** | ✅ **vol 20-fu2 #1 INI** |
+
+Plus NEW dari riset:
+- Semantic cache Phase B (vol 20b)
+- Research sweep 96/104 (vol 20b+)
+- Domain detector + 3-way embedding loader (vol 20c)
+- SAS-L pattern (vol 20-fu)
+- Mandatory POST-TASK PROTOCOL di CLAUDE.md (vol 20-fu+)
+- Complexity-tier routing (vol 20-fu2 #7)
+- Tadabbur full swap (vol 20-fu2 #1) ← THIS
+
+NO PIVOT. Direction LOCKED. Vol 20 milestone TRULY closed.
+

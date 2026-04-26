@@ -320,6 +320,78 @@ def tadabbur(
     return result
 
 
+# ── Vol 20-fu2 #1: Session Adapter (Tadabbur Full Swap) ──────────────────────
+# User pick #1 dari 8 DEFER (note 237). Wire tadabbur_mode ke /ask/stream
+# saat tier=deep AND tadabbur_eligible AND quota>=7. Adapter ini wrap
+# TadabburResult ke AgentSession-shape supaya downstream code (cache, log,
+# initiative hooks, dll) tetap kompatibel tanpa special-case tadabbur.
+
+def adapt_to_agent_session(
+    result: "TadabburResult",
+    *,
+    question: str,
+    persona: str,
+    session_id: Optional[str] = None,
+    conversation_id: str = "",
+):
+    """
+    Wrap TadabburResult sebagai AgentSession-shape untuk compatibility
+    downstream (log_user_activity, save_qa_pair, cache store, dll).
+
+    Tadabbur tidak punya ReAct steps atau citations dari tools — fields itu
+    di-default empty. Confidence di-set tinggi by definition (deep mode 7
+    LLM call).
+
+    Returns AgentSession instance (lazy import untuk hindari circular).
+    """
+    import uuid as _uuid
+    try:
+        from .agent_react import AgentSession
+    except Exception as e:
+        log.warning("[tadabbur_adapter] AgentSession import fail: %s", e)
+        return None
+
+    # Avoid double "tdb_" prefix (result.id already starts with "tdb_")
+    sid = session_id or (result.id if result.id.startswith("tdb_") else f"tdb_{result.id}")
+
+    # Build citations dari tadabbur rounds (each round persona = 1 "source")
+    citations = []
+    for r in result.rounds:
+        if r.stage in ("diversification", "convergence") and r.output:
+            citations.append({
+                "type": "tadabbur_round",
+                "source_path": f"tadabbur:{r.persona}:round{r.round_n}",
+                "source_title": f"{r.persona} ({r.stage})",
+                "snippet": r.output[:200],
+                "url": "",
+            })
+
+    # Detect epistemik label di synthesis (kontekstual per Liberation Sprint)
+    answer_type = "fakta"
+    synth_lower = (result.final_synthesis or "").lower()
+    if "[opini]" in synth_lower or "[opinion]" in synth_lower:
+        answer_type = "opini"
+    elif "[spekulasi]" in synth_lower or "[speculation]" in synth_lower:
+        answer_type = "spekulasi"
+    elif "[tidak tahu]" in synth_lower or "[unknown]" in synth_lower:
+        answer_type = "spekulasi"
+
+    return AgentSession(
+        session_id=sid,
+        question=question,
+        persona=persona,
+        conversation_id=conversation_id,
+        steps=[],  # tadabbur tidak punya ReAct steps
+        final_answer=result.final_synthesis or "Tadabbur tidak menghasilkan synthesis.",
+        citations=citations,
+        finished=True,
+        confidence="tinggi",  # by definition deep mode
+        confidence_score=0.85,
+        answer_type=answer_type,
+        cognitive_mode="tadabbur",
+    )
+
+
 # ── Stats ──────────────────────────────────────────────────────────────────────
 
 def stats() -> dict:

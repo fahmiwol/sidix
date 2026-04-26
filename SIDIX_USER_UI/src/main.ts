@@ -1598,6 +1598,9 @@ async function handleSend() {
   // Vol 20-fu2 #7: complexity tier
   let complexityTier: string | null = null;
   let complexityScore: number | null = null;
+  // Vol 20-fu2 #1: tadabbur used (full swap actually invoked)
+  let tadabburUsed = false;
+  let tadabburPhaseShown = false;
 
   const convId = getCurrentConversationId();
   await askStream(question, persona, 5, {
@@ -1628,6 +1631,17 @@ async function handleSend() {
       if (typeof m._complexity_tier === 'string') {
         complexityTier = m._complexity_tier;
         complexityScore = (m._complexity_score as number) ?? null;
+      }
+      // Vol 20-fu2 #1: tadabbur full swap signal
+      if (m._tadabbur_used === true) {
+        tadabburUsed = true;
+      }
+      // Vol 20-fu2 #1: phase event sebelum tadabbur block (60-120s)
+      if (m._phase === 'tadabbur_active' && !tadabburPhaseShown) {
+        tadabburPhaseShown = true;
+        if (labelEl) {
+          labelEl.textContent = '🧭 Deep mode: 3-persona iteration (60-120s)...';
+        }
       }
     },
     onToken: (text) => {
@@ -1731,6 +1745,10 @@ async function handleSend() {
         const tierIcon = complexityTier === 'simple' ? '⚡' : '🧠';
         const tierColor = complexityTier === 'simple' ? 'text-status-ready' : 'text-sky-300';
         extras.push(`<span class="${tierColor}">${tierIcon} ${complexityTier}${complexityScore !== null ? ` (${complexityScore.toFixed(2)})` : ''}</span>`);
+      }
+      // Vol 20-fu2 #1: tadabbur full swap badge (only kalau actually invoked)
+      if (tadabburUsed) {
+        extras.push(`<span class="text-purple-300">🧭 tadabbur (3-persona)</span>`);
       }
       const extrasHTML = extras.length > 0 ? `<span>·</span>${extras.join('<span>·</span>')}` : '';
       latencyRow.innerHTML = `<span style="font-variant-numeric: tabular-nums;">⏱ ${latencySec}s</span><span>·</span><span>${speedHint}</span>${extrasHTML}`;
