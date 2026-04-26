@@ -392,6 +392,47 @@ def doc_to_training_pairs(
     if len(text.strip()) < 200:
         return []
 
+    # ── Vol 20-fu2 #8: BadStyle defense (corpus poisoning prevention) ─────
+    # Per riset note 235 finding: style trigger (Bible/Legal/Shakespeare) =
+    # imperceptible backdoor 90% ASR di GPT-4. Risk SIDIX: LearnAgent fetch
+    # external bisa kontaminasi LoRA retrain. Filter style-anomaly + topic
+    # mismatch SEBELUM corpus_to_training write to JSONL.
+    try:
+        from .style_anomaly_filter import is_safe_for_training
+        # Has-sanad heuristik: file path mengandung "approved/" atau "sanad/"
+        # (kalau corpus pipeline track sanad, override di sini)
+        _has_sanad = any(marker in str(doc_path).lower() for marker in ("approved/", "sanad/", "verified/"))
+        _safe, _decision = is_safe_for_training(
+            text[:5000],  # sample first 5K char untuk speed
+            declared_topic=domain,
+            has_sanad=_has_sanad,
+        )
+        if not _safe:
+            log.warning(
+                "[corpus_to_training] BLOCKED %s: severity=%s reason=%s styles=%s",
+                doc_path.name, _decision.severity, _decision.reason,
+                _decision.detected_styles,
+            )
+            # Quarantine log untuk review manual
+            try:
+                from pathlib import Path as _Path
+                _qpath = _Path(__file__).parent.parent / ".data" / "corpus_quarantine.jsonl"
+                _qpath.parent.mkdir(parents=True, exist_ok=True)
+                import json as _json
+                from datetime import datetime as _dt, timezone as _tz
+                with _qpath.open("a", encoding="utf-8") as _f:
+                    _f.write(_json.dumps({
+                        "ts": _dt.now(_tz.utc).isoformat(),
+                        "doc": doc_path.name,
+                        "domain": domain,
+                        "decision": _decision.to_dict(),
+                    }, ensure_ascii=False) + "\n")
+            except Exception:
+                pass
+            return []  # SKIP doc, no training pairs
+    except Exception as _e:
+        log.debug("[corpus_to_training] style filter error (proceeding): %s", _e)
+
     sections = _extract_sections(text)
     if not sections:
         # Treat whole doc as one section

@@ -2589,6 +2589,34 @@ def create_app() -> "FastAPI":
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"complexity tier fail: {e}")
 
+    @app.post("/admin/style-anomaly-check", tags=["Security"])
+    async def style_anomaly_check_endpoint(request: Request):
+        """Debug: check style anomaly untuk text. Vol 20-fu2 #8 BadStyle defense.
+        Body: {text: str, declared_topic?: str, has_sanad?: bool}"""
+        if not _admin_ok(request):
+            raise HTTPException(status_code=403, detail="Akses ditolak")
+        try:
+            body = await request.json()
+        except Exception:
+            body = {}
+        text = (body.get("text") or "").strip()
+        if not text:
+            raise HTTPException(status_code=400, detail="text wajib")
+        try:
+            from . import style_anomaly_filter
+            decision = style_anomaly_filter.detect_style_anomaly(
+                text,
+                declared_topic=(body.get("declared_topic") or ""),
+                has_sanad=bool(body.get("has_sanad", False)),
+            )
+            return {
+                "decision": decision.to_dict(),
+                "would_block": decision.severity == "quarantine"
+                    or (decision.severity == "suspicious" and not bool(body.get("has_sanad", False))),
+            }
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"style check fail: {e}")
+
     @app.post("/agent/tadabbur-decide", tags=["Cognitive"])
     async def tadabbur_decide_endpoint(request: Request):
         """Test endpoint: should_trigger_tadabbur untuk question.

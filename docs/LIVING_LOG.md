@@ -8849,3 +8849,96 @@ Plus NEW dari riset:
 
 NO PIVOT. Direction LOCKED. Vol 20 milestone TRULY closed.
 
+
+---
+
+## 2026-04-27 (vol 20-fu2 #8) — BadStyle Defense (corpus poisoning prevention)
+
+User pick #8 dari 8 DEFER. Apply mandatory 9-step POST-TASK PROTOCOL.
+
+### Step 1 CATAT design
+
+Per riset note 235 finding: BadStyle paper — style trigger (Bible/Legal/
+Shakespeare) imperceptible backdoor 90% ASR di GPT-4. Risk SIDIX:
+LearnAgent fetch external bisa kontaminasi LoRA retrain.
+
+Defense: style fingerprint regex + topic-mismatch detection + severity
+grading (clean/suspicious/quarantine) + sanad mandatory.
+
+### Step 2-3 TESTING + ITERASI
+
+8/8 unit test pass setelah Step 3 ITERASI:
+- ITER fix: religious context override factual signal
+- ITER fix: tighten — tech context strong (always quarantine), factual
+  weaker (suspicious unlock by sanad)
+
+Decision tree final:
+1. Tech context + style → quarantine (regardless religious mix)
+2. Religious/historical context → clean (legitimate, e.g., Quran tafsir)
+3. Factual-only context → suspicious (sanad unlock)
+4. No topic signal → suspicious (ambiguous)
+
+### Step 5 REVIEW + WIRE
+
+NEW apps/brain_qa/brain_qa/style_anomaly_filter.py (~210 LOC):
+- detect_style_anomaly() classifier
+- is_safe_for_training() corpus pipeline wrapper
+- StyleAnomalyDecision dataclass
+
+WIRE corpus_to_training.doc_to_training_pairs:
+- Filter setelah text read, sebelum extract sections
+- Sample 5K char untuk speed
+- Quarantine queue di .data/corpus_quarantine.jsonl
+- BLOCKED doc → return []
+
+WIRE admin: POST /admin/style-anomaly-check
+
+### Step 6+7 VALIDASI
+
+5 realistic scenarios pass:
+- Normal arxiv ML paper → clean ✓
+- Quran tafsir (bible style + religious topic) → clean ✓
+- React tutorial + bible+legal style → QUARANTINE ✓
+- ML paper + legal style → suspicious ✓
+- Factual + sanad=True → safe ✓
+
+Corpus pipeline mock test:
+- Backdoor doc → 0 pairs (BLOCKED) ✓
+- Legitimate doc → 3 pairs (passed) ✓
+
+### Step 8 QA
+
+- 3 files syntax OK
+- existing tests intact
+- Kimi territory not touched
+- security audit clean
+
+### Step 9 final CATAT (this commit)
+
+### Effect
+
+Sebelum: corpus_to_training write semua doc tanpa filter. Backdoor
+poisoning silent kontaminasi LoRA retrain.
+
+Setelah: tech+archaic blocked, religious legitimate, factual+sanad allowed,
+quarantine queue untuk human review.
+
+### TRIO Vol 20-fu2 COMPLETE
+
+| # | Task | Pilar | Commit |
+|---|---|---|---|
+| 7 | Complexity-tier routing | Pilar 4 Proactive | 2fd6414 |
+| 1 | Tadabbur full swap | Pilar 2 Multi-Agent | 5e6fb13 |
+| 8 | BadStyle defense | Pilar 3 Continuous Learning integrity | (this) |
+
+Plus mandatory POST-TASK PROTOCOL di CLAUDE.md (a5357c8).
+
+### Sisa DEFER (5 items, deploy/Q3-long)
+
+- pip install sentence-transformers (ops/deploy)
+- Confirm Mamba2 HF id (ops/eval)
+- Stash backend (Q3, 4-6 hr)
+- Drift detection (Q3, observability)
+- EngramaBench 4-axis (Q3, 8+ hr)
+
+Foundation Vol 21+ READY. NO PIVOT. Direction LOCKED.
