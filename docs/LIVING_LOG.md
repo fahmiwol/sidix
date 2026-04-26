@@ -8526,3 +8526,65 @@ standalone sekarang semua jalan di production /ask flow. Foundation
 Vol 21+ siap accelerate. Tesla 100x percobaan compound.
 
 NO PIVOT. Direction LOCKED. Vol 20 milestone CLEAN.
+
+---
+
+## 2026-04-27 (interrupt) — User Context Test + Paper CT × Tahfidz Eval
+
+User drop 2 file (PDF jurnal Shofiy 2024 + docx Gemini synthesis), test apakah
+saya loss context: *"kamu masih inget kan tujuannya? SIDIX sekarang jadi apa?"*
+
+### Context affirm [DECISION]
+
+Saya konfirmasi tidak loss: SIDIX = Autonomous AI Agent — Thinks, Learns &
+Creates, BEBAS dan TUMBUH, 5 persona LOCKED, 4-pilar, no vendor API, sanad
+mandatory hanya untuk klaim sensitif. Vol 20 sprint just closed.
+
+### Honest assessment paper [PROC]
+
+Jurnal undergrad ULM 2024, kualitatif kajian pustaka, citation lemah. Klaim
+inti: pemetaan CT 4-tahap (Dekomposisi/Pattern/Abstraksi/Algorithm) ke
+domain tahfidz Al-Quran + 7 metode tahfidz klasik (Wahdah/Kitabah/Sima'i/
+Gabungan/Jama'/Isyarat/ODOA).
+
+Kategori: NICE_TO_KNOW. Bukan ADOPT_NOW, bukan Q3_ROADMAP.
+
+### Honest critique Gemini synthesis [DECISION]
+
+Gemini bagus untuk inspiration tapi over-claim:
+- ✅ VALID parallel: CT 4-tahap ↔ SIDIX existing modules (decomposer, pattern_extractor, RAG, ReAct)
+- ✅ VALID parallel: Wahdah/Kitabah/ODOA ↔ DoRA training / spec decode / nightly_lora
+- ❌ REJECT: "Self-Evolving Creative Agent untuk advertising/3D specifically" → ngajak pivot, persempit scope
+- ❌ REJECT: "Decentralized RAG" → SIDIX self-hosted single-node, fabrication Gemini
+- ❌ REJECT: "Literasi spiritual" framing → 10 ❌ rule violation
+
+### Yang berguna (build on top, NO PIVOT)
+
+1. **Indigenous naming convention** untuk Q3: Wahdah Protocol (DoRA),
+   Kitabah Protocol (spec decoding), ODOA Protocol (nightly_lora confirm),
+   Murojaah Protocol (continual_memory). **Zero impact ke arsitektur**, hanya
+   label flavor + dokumentasi differentiator.
+2. **Corpus enrichment** untuk ALEY persona depth (akademik + tahfidz queries)
+3. **Validation 4-pilar**: paper independent confirm taksonomi SIDIX existing
+
+### Yang TIDAK saya lakukan [DECISION]
+
+- ❌ Pivot ke creative-only / 3D-advertising agent
+- ❌ Tambah label decentralized
+- ❌ Adopt Gemini PRD wholesale
+- ❌ Klaim spiritual entity
+- ❌ Build modul Wahdah/Kitabah/ODOA baru (sudah ada dengan nama lain)
+- ❌ Platform pendidikan formal / aplikasi mobile tahfidz (out of scope)
+
+### Doc [DOC]
+
+Research note 238 — full synthesis honest dengan accept/reject rationale.
+
+### Filosofi
+
+User test passed: paper **validate** arsitektur existing, BUKAN trigger
+pivot. Tag NICE_TO_KNOW + optional Q3 naming flavor. Tesla 100x percobaan
+compound: jaga direction lock, integrasi yang masuk akal, tolak yang ngajak
+keluar arah. Compound integrity > validation FOMO.
+
+NO PIVOT. Direction LOCKED. Vol 21+ tetap sesuai 9 DEFER di HANDOFF.
