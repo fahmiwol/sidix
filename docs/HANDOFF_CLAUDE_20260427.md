@@ -4,13 +4,94 @@
 > of truth** untuk continue tanpa kehilangan konteks. Baca file ini SEBELUM
 > action apapun.
 
-**Date sesi sebelumnya**: 2026-04-26 (full day, 19 vol iterasi)
-**Status**: Q3 P1 100% SHIP + global creative blueprint + Quality Foundation Sprint
-**Token usage saat handoff**: critical (~95%) — sesi baru required
+**Date sesi sebelumnya**: 2026-04-26 → 2026-04-27 (vol 19b → vol 20b+)
+**Status latest**: Vol 20b+ shipped — semantic cache + comprehensive research sweep 96/104 file (92%)
 
 ---
 
-# 🆕 UPDATE VOL 18-19 (latest before handoff)
+# ⚡ LATEST STATUS (2026-04-27, Vol 20b+) — BACA INI DULU
+
+## Komit chain (terbaru di atas)
+```
+39e4289 vol 20b+  comprehensive research sweep 96/104 (92%) → note 235  ← LATEST PUSHED
+604dbd7 vol 20a+b DOC HANDOFF update
+08a7d46 vol 20b   semantic cache Phase B (riset 18 sumber → ship)
+32d91d0 vol 20a   wire response_cache + json_robust ke /ask
+9a8a878 vol 19b   HANDOFF final (sesi sebelumnya)
+```
+
+## Yang sudah JALAN di production /ask flow
+1. **L1 exact response_cache** — wired, hit `_cache_layer="exact"` (vol 20a)
+2. **L2 semantic_cache** — wired BUT **dormant** (`embed_fn=None`, graceful disable)
+3. **9 robust_json_parse** di 7 modul kognitif — replace `json.loads` (vol 20a)
+
+## Yang BARU diketahui dari riset 96 file (Vol 20c plan REVISED)
+
+### 6 KEPUTUSAN VOL 20c REVISED dari note 233:
+1. **Embedding model**: BGE-M3 only → **3-way option** (BGE-M3 default + Codestral Mamba2 1.3B/7B + MiniLM CPU fallback)
+   - Mamba2 = game-changer: linear time + multilingual MTEB top + HF ready (`dynatrace-oss/embed-mamba2`)
+2. **Backend semantic mirror**: Supabase → eval **Stash** (Postgres+pgvector MCP self-hosted, match SIDIX philosophy)
+3. **Domain detector** (NEW): regex + persona mapping. Sekarang hardcoded `domain="casual"` di wiring
+4. **Continual memory** upgrade (NEW): **EngramaBench 4-axis** schema (entities + spaces + temporal + assoc)
+5. **ReAct loop improvements** (NEW): VLAA-GUI Completion Gate + Loop Breaker + SAS-L pattern + DELEGATE-52 checkpoint/diff
+6. **Security**: BadStyle backdoor defense (style-anomaly filter) + sanad mandatory di corpus_to_training
+
+## 3 RESEARCH NOTES BARU (WAJIB BACA sebelum coding lanjut)
+- `brain/public/research_notes/233_semantic_cache_adoption_2026.md` — synthesis 18 sumber + decision matrix + 12 failure mode
+- `brain/public/research_notes/234_speculative_decoding_q3_roadmap.md` — synthesis 9 paper + 5 fase plan
+- `brain/public/research_notes/235_comprehensive_research_sweep_2026.md` — **96/104 file, decision matrix lengkap, 4 tier ranking**
+
+## VOL 20c IMMEDIATE NEXT ACTION (paling impactful)
+
+**Effect**: unlocks Vol 20b semantic cache yang masih dormant tanpa embed_fn.
+
+```
+☐ 1. Build apps/brain_qa/brain_qa/embedding_loader.py
+   - 3-way: BGE-M3 default (multilingual ID, ~0.5B, 12ms CPU)
+   - Mamba2 1.3B/7B (linear-time, MTEB top, optional kalau VRAM cukup)
+   - MiniLM-L6-v2 fallback (CPU-only, weak ID)
+   - Graceful: kalau dependency tidak terinstall → return None (semantic_cache stay dormant)
+   - load_embed_fn(model_name) → Callable[[str], np.ndarray] | None
+   - get_active_embedder() → status info untuk admin
+
+☐ 2. Build apps/brain_qa/brain_qa/domain_detector.py
+   - detect_domain(question, persona) -> Literal["fiqh","medis","data","coding","factual","casual","current_events"]
+   - Regex keyword + persona mapping:
+     UTZ → casual/creative, ABOO → coding, OOMAR → strategy/factual,
+     ALEY → fiqh/medis/data (high threshold), AYMAN → casual/general
+   - Override regex untuk domain spesifik (riba/halal → fiqh, error/exception → coding, dll)
+
+☐ 3. Wire ke agent_serve.py /ask:
+   - Startup: embedding_loader.load_embed_fn() → semantic_cache.set_embed_fn()
+   - Per-request: domain = domain_detector.detect_domain(question, persona)
+   - Pass domain ke semantic_cache.lookup() + .store()
+
+☐ 4. Test 3-way embedding cycle (mock + real)
+   - Mock: deterministic 16-dim
+   - Real: kalau sentence-transformers terinstall, test dengan MiniLM dulu (smallest)
+
+☐ 5. Admin endpoint /admin/semantic-cache/stats + /admin/semantic-cache/clear
+
+☐ 6. Doc + LIVING_LOG + commit + push
+```
+
+## YANG MASIH DEFER (Vol 20d+ atau Q3)
+- **Task B Vol 20 original**: tadabbur_auto.adaptive_trigger() di /ask/stream
+- **Task C Vol 20 original**: codeact_integration.maybe_enrich_with_codeact() di done event
+- **Task E Vol 20 original**: Frontend ⚡ cache hit indicator UX
+- **Stash backend** untuk semantic cache mirror (override Supabase decision)
+- **EngramaBench 4-axis** continual_memory upgrade (Q3 sprint)
+- **Speculative decoding F1** (n-gram di vLLM, Q3, butuh deploy stack vLLM dulu)
+- **VLAA-GUI 3-pattern** (Stop/Recover/Search) di ReAct loop
+- **SAS-L** prompt pattern di cot_system_prompts.py
+- **BadStyle defense** di corpus_to_training
+- **LMDeploy migration** eval (multi-LoRA hot-swap)
+- **Qwen3.6-27B** feasibility study (Q4 decision gate)
+- **Qwen2.5-VL** integration (Q3-Q1 2027 sensorial)
+
+---
+
+# 🆕 UPDATE VOL 18-19 (sebelum vol 20)
 
 ## Vol 18 — Documentation Sprint
 - `research_notes/230_global_creative_culture_sweep_2000_years_to_2031.md` (~6500 kata, 16 sections, mendunia)

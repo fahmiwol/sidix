@@ -6,6 +6,53 @@ Semua perubahan signifikan dicatat di sini. Format: `[versi] — tanggal — rin
 
 ---
 
+## [2.1.2] — 2026-04-27 — Vol 20 Wire Sprint + Comprehensive Research Sweep
+
+### Vol 20a (commit `32d91d0`) — Wire Vol 19 Modules ke /ask
+- **L1 exact response_cache** wired di `/ask` endpoint (early lookup + post-success store)
+- Hit return `_cache_hit=True, _cache_layer="exact", _cache_latency_ms`
+- Threshold cache store: `confidence_score >= 0.7` (anti-poison)
+- 9 `json.loads` → `robust_json_parse` di 7 modul kognitif (aspiration_detector, pattern_extractor, tool_synthesizer, tadabbur_mode, problem_decomposer×3, agent_critic, hands_orchestrator)
+- Pattern minimum-invasive: preserve failure semantics via `raise` di existing try/except
+- 8/8 smoke test pass
+
+### Vol 20b (commit `08a7d46`) — Semantic Cache Phase B
+- **NEW**: `apps/brain_qa/brain_qa/semantic_cache.py` (430 LOC, embedding-agnostic)
+- L2 semantic cache wired di `/ask` setelah L1 exact miss
+- Per-domain threshold KONSERVATIF: fiqh/medis 0.96, factual 0.92, casual 0.88, default 0.95
+- Per-domain TTL: factual 72h, fiqh 7 hari, current_events 0 (skip)
+- Bucket key: `persona:lora_version:system_prompt_hash[:12]` (cross-persona safe + LoRA auto-invalidate)
+- Eligibility skip: too short, current events, PII regex, multi-turn>3, high temperature, low-conf labels
+- 8/8 smoke test pass (graceful disable, persona isolation, LoRA isolation, threshold)
+
+### Vol 20b+ (commit `39e4289`) — Comprehensive Research Sweep
+**User**: *"baca semua, saya yakin semuanya berguna"*. Spawn 4 agent paralel.
+- 96/104 file extracted (92% coverage, dari 21% di Vol 20b)
+- 4 batch agent: retry-failure (15), inference-deep (21), agent-memory (17), apps-tangential (22)
+- 10 ADOPT_NOW, ~15 Q3_ROADMAP, ~12 NICE_TO_KNOW, ~22 TANGENTIAL — jujur di-tag
+
+### Game-changer findings (Vol 20c plan REVISED)
+1. **Linear-Time Mamba2 Embeddings** (Dynatrace) → 3-way option (BGE-M3 default + Mamba2 + MiniLM) instead of BGE-M3 only
+2. **EngramaBench 4-axis Memory** → upgrade `continual_memory.py` schema (entities + spaces + temporal + assoc)
+3. **Stash** (Postgres+pgvector MCP self-hosted) → backend semantic cache mirror (override Supabase)
+4. **DELEGATE-52** (25% corruption after 20 round-trip) → checkpoint/diff wajib di multi-step agent
+5. **BadStyle Backdoor** (style-trigger imperceptible) → `corpus_to_training` style-anomaly filter mandatory
+6. **SAS-L pattern** (single-agent + longer thinking beat multi-agent) → adopt ke `cot_system_prompts.py`
+
+### Documentation
+- Research note 233 — Semantic Cache Adoption (synthesis 18 sumber + decision matrix + 12 failure mode)
+- Research note 234 — Speculative Decoding Q3 Roadmap (synthesis 9 paper + 5 fase plan)
+- Research note 235 — Comprehensive Research Sweep (96/104 file, 4 tier ranking, decision matrix)
+- HANDOFF doc updated dengan Vol 20a/b/b+ status
+
+### Stats
+```
+20+ vol · 35+ commits · ~9450 LOC code · ~94k kata docs · 54 endpoint
+3 research notes new (233, 234, 235) — 18+9+96 = 123 paper/blog 2025-2026 surveyed
+```
+
+---
+
 ## [2.1.1] — 2026-04-26 — Quality Foundation Sprint (Vol 19)
 
 ### Added — 4 Modul Vol 19 (Best Practice 2025-2026)
