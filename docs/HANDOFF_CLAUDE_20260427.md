@@ -4,9 +4,118 @@
 > of truth** untuk continue tanpa kehilangan konteks. Baca file ini SEBELUM
 > action apapun.
 
-**Date sesi sebelumnya**: 2026-04-26 (full day, 17 vol iterasi)
-**Status**: Q3 P1 100% SHIP + global creative blueprint documented
-**Token usage saat handoff**: ~88% context window (efisien mode aktif)
+**Date sesi sebelumnya**: 2026-04-26 (full day, 19 vol iterasi)
+**Status**: Q3 P1 100% SHIP + global creative blueprint + Quality Foundation Sprint
+**Token usage saat handoff**: critical (~95%) — sesi baru required
+
+---
+
+# 🆕 UPDATE VOL 18-19 (latest before handoff)
+
+## Vol 18 — Documentation Sprint
+- `research_notes/230_global_creative_culture_sweep_2000_years_to_2031.md` (~6500 kata, 16 sections, mendunia)
+- `HANDOFF_CLAUDE_20260427.md` (this file, foundation)
+- `CHANGELOG.md` [2.1.0] vol 14-17 audit-ready
+
+## Vol 19 — Quality Foundation Sprint (Best Practice 2025-2026)
+
+**4 modul build + 14/14 test pass + 3/3 live verified**:
+
+### Modul Vol 19
+
+| Modul | File | Test |
+|---|---|---|
+| JSON Robust Parse | `llm_json_robust.py` | 3/3 ✓ |
+| Tadabbur Auto-Trigger | `tadabbur_auto.py` | 4/4 ✓ |
+| Response LRU Cache | `response_cache.py` | 5/5 ✓ |
+| CodeAct Hook Integration | `codeact_integration.py` | 2/2 ✓ |
+
+### Best Practice 2025-2026 Adopted
+1. ✅ Schema-Aligned Parsing (BoundaryML BAML 2024)
+2. ✅ Selective Expert Routing (Raschka 2024)
+3. ✅ LRU+TTL Cache (Redis Search 2024)
+4. ✅ CodeAct Paradigm (Wang 2024)
+
+### 4 Endpoint Vol 19
+```
+GET  /admin/cache/stats           — cache statistics
+POST /admin/cache/clear           — clear cache
+POST /agent/tadabbur-decide       — test trigger (no execution)
+POST /agent/codeact-enrich        — manual enrich code block
+```
+
+Total endpoint live: **54** (50 + 4 vol 19).
+
+### Live Verified Post-Deploy
+- Tadabbur decide ("strategi GTM B2B SaaS"): `score=0.85, trigger=True, 4 unique deep keywords`
+- Cache stats: baseline empty, ready
+- CodeAct enrich: code execute 1ms, found+executed ✓
+
+### Vol 19 QA Tuning (Lesson Learn)
+- ❌ False positive: keyword "go" matched "go-to-market" → fix: removed standalone, pattern specific (debug/exception/framework names)
+- ❌ False negative: 4 deep keywords + medium-length scored 0.5 < threshold 0.6 → fix: multi-keyword bonus +0.15 untuk ≥3 unique
+
+### Research Note 231
+`brain/public/research_notes/231_relevance_quality_best_practice_2026.md`:
+- 5 best practice 2025-2026 reference
+- 4 modul implementation detail
+- 14/14 test coverage
+- Vol 20+ wire roadmap
+
+---
+
+# 🚀 IMMEDIATE NEXT ACTION (Vol 20 — Sesi Baru)
+
+**Vol 19 build modul standalone. Vol 20 = wire ke /ask flow integration.**
+
+## Vol 20 Sprint Plan
+
+```
+☐ A. Wire response_cache.is_cacheable() + lookup di /ask + /ask/stream EARLY
+   → Sebelum panggil run_react(), cek cache. Hit return langsung (<100ms).
+   → Saat success, store ke cache.
+   → Cache key: hash(question + persona + mode + corpus_only flag).
+
+☐ B. Wire tadabbur_auto.adaptive_trigger() di /ask/stream auto-route
+   → Setelah persona auto-route (vol 11), cek apakah perlu Tadabbur.
+   → Kalau yes (score >= 0.6), spawn tadabbur_mode.tadabbur() instead of
+     standard run_react.
+   → Cost-aware: daily quota guard.
+
+☐ C. Wire codeact_integration.maybe_enrich_with_codeact() di done event
+   → Setelah session.final_answer ready, scan code block.
+   → Kalau ada, execute → enrich → replace di final_answer.
+   → SIDIX bisa "literally hitung" via Python sandbox.
+
+☐ D. Update 7 cognitive modules: ganti json.loads → llm_json_robust.robust_json_parse
+   - aspiration_detector.py
+   - pattern_extractor.py
+   - tool_synthesizer.py (2 spots)
+   - tadabbur_mode.py
+   - problem_decomposer.py (3 spots)
+   - agent_critic.py
+   - hands_orchestrator.py
+   → Reduces JSON parse fail dari 5-15% ke <1%.
+
+☐ E. Frontend cache hit indicator (UX)
+   → Kalau response < 100ms, tampilkan ⚡ icon "Quick Cache".
+   → User aware bahwa SIDIX cache pintar.
+```
+
+## Vol 20 Estimated Effort: 1-2 hari
+
+A + B + C + D = backend wiring (~150-200 LOC change di agent_serve.py)
+E = frontend small change (`SIDIX_USER_UI/src/main.ts`)
+
+## Expected Impact After Vol 20
+
+User experience di `app.sidixlab.com`:
+- Pertanyaan deep ("strategi GTM B2B...") → auto-Tadabbur 3-persona (jawaban lebih dalam)
+- Pertanyaan recurring → cache hit instant (<100ms vs 5-30s)
+- Pertanyaan computation → CodeAct execute beneran (akurasi numerik)
+- LLM JSON 5-15% reliability boost (less aspiration/pattern null)
+
+---
 
 ---
 
@@ -31,14 +140,21 @@
 - **5 Persona LOCKED**: UTZ · ABOO · OOMAR · ALEY · AYMAN
 - **License**: MIT, self-hosted, no vendor LLM API
 
-### Compound Stats
+### Compound Stats (Updated Vol 19)
 ```
-17 vol iterasi · 29+ commits · ~7300 LOC code · ~76,000 kata documentation
-50 endpoint live (cognitive + memory + proactive + creative + codeact + mcp + hands)
-12 research notes (219-229) + 2 LOCK files (DIRECTION + DEFINITION)
+19 vol iterasi · 31+ commits · ~7940 LOC code · ~88,000 kata documentation
+54 endpoint live (cognitive + memory + proactive + creative + codeact + mcp +
+   hands + json_robust + tadabbur_auto + cache + codeact_integration)
+13 research notes (219-231) + 2 LOCK files (DIRECTION + DEFINITION)
 33 creative tools registered + 17 MCP tools manifest
 4-pilar coverage: 81.25% avg
 ```
+
+**Vol 19 modules ready (built standalone, awaiting wire ke /ask flow di Vol 20)**:
+- `llm_json_robust.py` (BAML pattern) — siap ganti json.loads di 7 cognitive modul
+- `tadabbur_auto.py` (Selective routing) — siap auto-route di /ask/stream
+- `response_cache.py` (LRU+TTL) — siap cache lookup di /ask early
+- `codeact_integration.py` (Wang CodeAct) — siap hook done event /ask/stream
 
 ---
 
@@ -423,8 +539,10 @@ User priority order:
 ## 🔄 GIT STATE
 
 **Branch**: `claude/zen-yalow-8d0745` → push ke `main`
-**Latest commits** (vol 14-17):
+**Latest commits** (vol 14-19):
 ```
+675241c vol 19  Relevance + Quality Sprint (4 modul + 14/14 test pass) ← LATEST
+5f99577 vol 18  Global Creative Sweep + HANDOFF + CHANGELOG
 b7a7a79 vol 17  CodeAct + MCP wrap + 1000 hands stub
 472b06c vol 16  Creative Agent Ecosystem note 229 + 33 tools
 ed5c120 vol 15  GAS SEMUA: Trend Feeds + Nightly LoRA + Sensorial

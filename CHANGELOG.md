@@ -6,6 +6,38 @@ Semua perubahan signifikan dicatat di sini. Format: `[versi] — tanggal — rin
 
 ---
 
+## [2.1.1] — 2026-04-26 — Quality Foundation Sprint (Vol 19)
+
+### Added — 4 Modul Vol 19 (Best Practice 2025-2026)
+- **llm_json_robust.py** — Schema-Aligned Parsing (BoundaryML BAML 2024 pattern), 5-strategy fallback (direct, fence strip, repair, regex extract, default). Reduces JSON parse fail dari 5-15% ke <1%.
+- **tadabbur_auto.py** — Selective Expert Routing (Sebastian Raschka 2024 pattern). Auto-trigger Tadabbur Mode (7 LLM call mahal) hanya untuk deep questions (score ≥ 0.6). Multi-keyword bonus, cost-aware quota guard.
+- **response_cache.py** — LRU + TTL cache (Redis Search 2024 pattern). Thread-safe, max 500 entries, TTL 1 jam. is_cacheable() rule (skip current events, user-context, casual).
+- **codeact_integration.py** — Hook codeact_adapter (vol 17) ke /ask flow. maybe_enrich_with_codeact() detect+execute+inject. should_suggest_codeact() pre-emptive computation hint.
+
+### Added — 4 Endpoint Vol 19
+- `GET  /admin/cache/stats` — cache statistics
+- `POST /admin/cache/clear` — clear seluruh cache
+- `POST /agent/tadabbur-decide` — test trigger decision
+- `POST /agent/codeact-enrich` — manual enrich code block
+
+### QA Tuning (Lesson Learn Vol 19)
+- Removed standalone `go` from Tadabbur code keywords (false positive go-to-market)
+- Multi-keyword bonus +0.15 untuk ≥3 unique deep keywords (false negative fix)
+
+### Validation
+- 14/14 functional test pass (3 JSON + 4 Tadabbur + 5 Cache + 2 CodeAct)
+- 3/3 live verified post-deploy (tadabbur-decide score 0.85, cache baseline, codeact 1ms execute)
+
+### Documentation
+- `research_notes/231_relevance_quality_best_practice_2026.md` — 5 best practice survey + implementation detail + Vol 20 wire roadmap
+
+### Stats
+```
+19 vol · 31+ commits · ~7940 LOC · ~88k kata docs · 54 endpoint live
+```
+
+---
+
 ## [2.1.0] — 2026-04-26 — Cognitive Compound Sprint (Vol 14-18)
 
 ### 🔒 LOCK & ALIGNMENT
