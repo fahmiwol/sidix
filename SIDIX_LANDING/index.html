@@ -251,10 +251,11 @@
 
     <!-- ═══════════════════ HERO ═══════════════════ -->
     <section class="min-h-screen flex flex-col items-center justify-center text-center px-6 py-24 relative">
-      <div class="mb-6 flex items-center gap-2">
-        <span class="badge badge-green" data-i18n="hero.badge.live">v2.0 · Live</span>
+      <div class="mb-6 flex items-center gap-2 flex-wrap justify-center">
+        <span class="badge badge-green" data-i18n="hero.badge.live">v2.1 · Live</span>
         <span class="badge badge-gold">MIT License</span>
         <span class="badge badge-gray" data-i18n="hero.badge.selfhosted">Self-Hosted</span>
+        <span class="badge badge-gray" data-i18n="hero.badge.free">Free Forever</span>
       </div>
 
       <div class="relative mb-8">
@@ -268,10 +269,10 @@
         SIDIX
       </h1>
       <p class="text-xl md:text-2xl text-parchment-300 font-light mb-3 max-w-2xl" data-i18n="hero.subtitle">
-        Self-Hosted AI Agent with Epistemic Integrity
+        AI Agent yang Berpikir, Belajar &amp; Mencipta
       </p>
       <p class="text-base text-parchment-500 mb-10 max-w-xl leading-relaxed" data-i18n="hero.desc">
-        Honest. Cited. Verifiable. Run your own AI agent — no vendor lock-in, no cloud dependency, no hallucination left unlabeled.
+        Gratis selamanya · Tanpa daftar · Tanpa kartu kredit · Jawab obrolan ringan dalam 2 detik · 5 persona dengan gaya bicara berbeda · Klaim sensitif (fiqh, medis, data) dilabeli sumbernya — bukan halusinasi tak bertanda.
       </p>
 
       <div class="flex flex-wrap items-center justify-center gap-4 mb-16">
@@ -301,23 +302,92 @@
           <div class="triad-icon mb-4" style="background:rgba(212,168,83,0.1);border:1px solid rgba(212,168,83,0.2)">
             <span style="color:#D4A853">⚖</span>
           </div>
-          <h3 class="font-bold text-parchment-100 mb-1">Think Out Loud</h3>
-          <p class="text-sm text-parchment-500 leading-relaxed">Casual chat flows naturally. When accuracy matters — fiqh, medical, data — claims get tagged: <code style="font-size:0.7rem;background:rgba(212,168,83,0.1);padding:0.1rem 0.35rem;border-radius:4px;color:#D4A853">[FACT]</code> <code style="font-size:0.7rem;background:rgba(212,168,83,0.1);padding:0.1rem 0.35rem;border-radius:4px;color:#D4A853">[OPINION]</code> <code style="font-size:0.7rem;background:rgba(212,168,83,0.1);padding:0.1rem 0.35rem;border-radius:4px;color:#D4A853">[UNKNOWN]</code></p>
+          <h3 class="font-bold text-parchment-100 mb-1">Jujur &amp; Bersumber</h3>
+          <p class="text-sm text-parchment-500 leading-relaxed">Obrolan santai mengalir natural. Tapi untuk klaim sensitif — fiqh, medis, data, berita — SIDIX tandai: <code style="font-size:0.7rem;background:rgba(212,168,83,0.1);padding:0.1rem 0.35rem;border-radius:4px;color:#D4A853">[FAKTA]</code> <code style="font-size:0.7rem;background:rgba(212,168,83,0.1);padding:0.1rem 0.35rem;border-radius:4px;color:#D4A853">[OPINI]</code> <code style="font-size:0.7rem;background:rgba(212,168,83,0.1);padding:0.1rem 0.35rem;border-radius:4px;color:#D4A853">[TIDAK TAHU]</code> + sanad sumber. Tidak ada halusinasi tak bertanda.</p>
         </div>
         <div class="card p-5 text-left">
           <div class="triad-icon mb-4" style="background:rgba(110,174,124,0.1);border:1px solid rgba(110,174,124,0.2)">
             <span style="color:#6EAE7C">🛠️</span>
           </div>
-          <h3 class="font-bold text-parchment-100 mb-1">Use Tools</h3>
-          <p class="text-sm text-parchment-500 leading-relaxed">48+ tools — web search, code sandbox, image gen, calculator, workspace. SIDIX picks the right tool intuitively, like you would Google.</p>
+          <h3 class="font-bold text-parchment-100 mb-1">48 Tools Siap Pakai</h3>
+          <p class="text-sm text-parchment-500 leading-relaxed">Web search, code sandbox, kalkulator, workspace, PDF, image gen, dan 42 lainnya. SIDIX pilih tool yang tepat sendiri — seperti kamu pakai Google, tapi otomatis.</p>
         </div>
         <div class="card p-5 text-left">
           <div class="triad-icon mb-4" style="background:rgba(107,148,196,0.1);border:1px solid rgba(107,148,196,0.2)">
             <span style="color:#6B94C4">🌱</span>
           </div>
-          <h3 class="font-bold text-parchment-100 mb-1">Grow With You</h3>
-          <p class="text-sm text-parchment-500 leading-relaxed">Multi-layer memory + self-learning — every conversation makes SIDIX a little sharper. Not a snapshot. A living agent.</p>
+          <h3 class="font-bold text-parchment-100 mb-1">Tumbuh Bersamamu</h3>
+          <p class="text-sm text-parchment-500 leading-relaxed">Memori multi-layer + belajar mandiri — setiap percakapan bikin SIDIX makin tajam. LoRA retrain harian, korpus 1.182 dokumen dan terus tumbuh. Bukan snapshot. Agent hidup.</p>
         </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════ PERSONA SHOWCASE ═══════════════════ -->
+    <section id="personas" class="py-24 px-6 max-w-6xl mx-auto">
+      <div class="divider mb-16"></div>
+      <div class="text-center mb-12">
+        <p class="section-label mb-3" data-i18n="personas.label">5 Persona, 5 Suara Berbeda</p>
+        <h2 class="font-display text-3xl md:text-4xl font-bold text-parchment-100" style="font-family:Georgia,serif" data-i18n="personas.h2">Pilih Suara, Pilih Sudut Pandang</h2>
+        <p class="text-parchment-500 mt-3 max-w-2xl mx-auto" data-i18n="personas.desc">SIDIX nggak pakai 1 suara generik kayak chatbot lain. Tiap persona punya cara berpikir, gaya bicara, dan keahlian sendiri. Pilih yang cocok dengan kebutuhanmu — atau biarkan SIDIX pilih otomatis.</p>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div class="card p-5 text-left">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="text-2xl">🎨</span>
+            <h3 class="font-bold text-parchment-100">UTZ</h3>
+            <span class="badge badge-gray text-xs">Creative</span>
+          </div>
+          <p class="text-xs text-parchment-500 mb-3">Visual, kreatif, brainstorm. Pakai "aku".</p>
+          <div class="text-xs text-parchment-400 italic border-l-2 border-amber-700/40 pl-3">"Bantuin desain logo coffee shop yang feel warm + handcrafted"</div>
+        </div>
+        <div class="card p-5 text-left">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="text-2xl">⚙️</span>
+            <h3 class="font-bold text-parchment-100">ABOO</h3>
+            <span class="badge badge-gray text-xs">Engineer</span>
+          </div>
+          <p class="text-xs text-parchment-500 mb-3">Teknis, code review, debug. Pakai "gue".</p>
+          <div class="text-xs text-parchment-400 italic border-l-2 border-amber-700/40 pl-3">"Audit fungsi Python ini, ada race condition?"</div>
+        </div>
+        <div class="card p-5 text-left">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="text-2xl">📊</span>
+            <h3 class="font-bold text-parchment-100">OOMAR</h3>
+            <span class="badge badge-gray text-xs">Strategist</span>
+          </div>
+          <p class="text-xs text-parchment-500 mb-3">Bisnis, analisis, keputusan. Pakai "saya".</p>
+          <div class="text-xs text-parchment-400 italic border-l-2 border-amber-700/40 pl-3">"Bandingkan strategi pricing freemium vs flat untuk SaaS B2B"</div>
+        </div>
+        <div class="card p-5 text-left">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="text-2xl">📚</span>
+            <h3 class="font-bold text-parchment-100">ALEY</h3>
+            <span class="badge badge-gray text-xs">Researcher</span>
+          </div>
+          <p class="text-xs text-parchment-500 mb-3">Akademik, fiqh, riset mendalam. Sanad chain wajib.</p>
+          <div class="text-xs text-parchment-400 italic border-l-2 border-amber-700/40 pl-3">"Hukum puasa di hari Senin Kamis menurut 4 mazhab?"</div>
+        </div>
+        <div class="card p-5 text-left">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="text-2xl">💬</span>
+            <h3 class="font-bold text-parchment-100">AYMAN</h3>
+            <span class="badge badge-gray text-xs">General</span>
+          </div>
+          <p class="text-xs text-parchment-500 mb-3">Chat hangat, tanya apa aja. Pakai "halo".</p>
+          <div class="text-xs text-parchment-400 italic border-l-2 border-amber-700/40 pl-3">"Halo, lagi galau soal pilihan karir, bisa ngobrol bareng?"</div>
+        </div>
+        <div class="card p-5 text-left flex items-center justify-center" style="background:linear-gradient(135deg,rgba(204,152,49,0.08),rgba(212,168,83,0.04));border:1px dashed rgba(212,168,83,0.3)">
+          <div class="text-center">
+            <p class="text-sm text-parchment-300 font-bold mb-1">+ Auto-Routing</p>
+            <p class="text-xs text-parchment-500 leading-relaxed">SIDIX deteksi sinyal pertanyaan dan pilih persona terbaik otomatis. Atau tetap pakai pilihanmu — selalu manual override.</p>
+          </div>
+        </div>
+      </div>
+      <div class="text-center mt-8">
+        <a href="https://app.sidixlab.com" class="btn-gold text-base px-6 py-3 inline-flex items-center gap-2">
+          <span data-i18n="personas.cta">Coba 5 Persona Sekarang</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </a>
       </div>
     </section>
 
@@ -1122,11 +1192,16 @@
   const LANG_DATA = {
     en: {
       'nav.try': 'Try SIDIX',
-      'hero.badge.live': 'v1.0 · Live',
+      'hero.badge.live': 'v2.1 · Live',
       'hero.badge.selfhosted': 'Self-Hosted',
-      'hero.subtitle': 'Autonomous AI Agent — Thinks, Learns & Creates',
-      'hero.desc': 'Not a chatbot. SIDIX is an AI Agent with initiative, opinions, and creativity. It brainstorms with you, builds for you, and grows from every conversation. Self-hosted. MIT licensed. Yours forever.',
+      'hero.badge.free': 'Free Forever',
+      'hero.subtitle': 'AI Agent that Thinks, Learns & Creates',
+      'hero.desc': 'Free forever · No signup · No credit card · 2-second replies for casual chat · 5 distinct personas · Sensitive claims (fiqh, medical, data) cited with sources — no unlabeled hallucination.',
       'hero.cta.telegram': 'Contribute',
+      'personas.label': '5 Personas, 5 Distinct Voices',
+      'personas.h2': 'Pick a Voice, Pick a Lens',
+      'personas.desc': "SIDIX doesn't ship one generic chatbot voice. Each persona has its own way of thinking, speaking, and specialty. Pick the right one for the job — or let SIDIX auto-route.",
+      'personas.cta': 'Try 5 Personas Now',
       'features.label': "What's inside",
       'features.h2': 'Built different, on purpose',
       'features.desc': 'Every design decision traces back to one goal: an AI agent you can actually trust because you can verify it.',
@@ -1154,11 +1229,16 @@
     },
     id: {
       'nav.try': 'Coba SIDIX',
-      'hero.badge.live': 'v1.0 · Aktif',
+      'hero.badge.live': 'v2.1 · Aktif',
       'hero.badge.selfhosted': 'Lokal',
-      'hero.subtitle': 'AI Agent Otonom — Berpikir, Belajar & Mencipta',
-      'hero.desc': 'Bukan chatbot. SIDIX adalah AI Agent yang punya inisiatif, punya opini, dan punya kreativitas. Dia brainstorming bareng kamu, bangunin solusi, dan tumbuh dari setiap percakapan. Self-hosted. MIT licensed. Milikmu selamanya.',
+      'hero.badge.free': 'Gratis Selamanya',
+      'hero.subtitle': 'AI Agent yang Berpikir, Belajar & Mencipta',
+      'hero.desc': 'Gratis selamanya · Tanpa daftar · Tanpa kartu kredit · Jawab obrolan ringan dalam 2 detik · 5 persona dengan gaya bicara berbeda · Klaim sensitif (fiqh, medis, data) dilabeli sumbernya — bukan halusinasi tak bertanda.',
       'hero.cta.telegram': 'Kontribusi',
+      'personas.label': '5 Persona, 5 Suara Berbeda',
+      'personas.h2': 'Pilih Suara, Pilih Sudut Pandang',
+      'personas.desc': 'SIDIX nggak pakai 1 suara generik kayak chatbot lain. Tiap persona punya cara berpikir, gaya bicara, dan keahlian sendiri. Pilih yang cocok dengan kebutuhanmu — atau biarkan SIDIX pilih otomatis.',
+      'personas.cta': 'Coba 5 Persona Sekarang',
       'features.label': 'Ada apa di dalamnya',
       'features.h2': 'Dibangun berbeda, sengaja',
       'features.desc': 'Setiap keputusan desain bermuara pada satu tujuan: AI agent yang benar-benar bisa dipercaya karena bisa diverifikasi.',
