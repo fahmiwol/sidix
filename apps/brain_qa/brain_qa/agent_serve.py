@@ -530,6 +530,43 @@ def create_app() -> "FastAPI":
     except Exception as e:
         log.warning("Memory store init skipped: %s", e)
 
+    # ── Vol 13 fix P0: Eager preload cognitive modules ────────────────────────
+    # Vol 12 QA finding: /agent/wisdom-gate cold start 14.6s karena lazy import
+    # trigger module dependency tree (Kimi jiwa/* etc) on first call.
+    # Fix: preload semua cognitive module di startup supaya first call <500ms.
+    try:
+        from . import (
+            pattern_extractor,           # noqa: F401  vol 5
+            aspiration_detector,          # noqa: F401  vol 5
+            tool_synthesizer,             # noqa: F401  vol 5
+            problem_decomposer,           # noqa: F401  vol 5
+            socratic_probe,               # noqa: F401  vol 5b (Kimi)
+            wisdom_gate,                  # noqa: F401  vol 5b (Kimi)
+            synthetic_question_agent,     # noqa: F401  vol 4
+            continual_memory,             # noqa: F401  vol 7
+            proactive_trigger,            # noqa: F401  vol 9
+            agent_critic,                 # noqa: F401  vol 10
+            tadabbur_mode,                # noqa: F401  vol 10
+            persona_router,               # noqa: F401  vol 11
+            context_triple,               # noqa: F401  vol 11
+        )
+        log.info("[startup] cognitive modules eager-loaded (vol 5-11)")
+    except Exception as e:
+        log.warning("[startup] cognitive eager-load skipped: %s", e)
+
+    # ── Vol 13 fix P1: Defensive create activity_log.jsonl ────────────────────
+    # Vol 12 QA finding: file belum ada karena admin token tidak trigger log.
+    # Create empty file di startup supaya list_activity() konsisten + ready
+    # untuk first user real chat.
+    try:
+        from . import auth_google as _ag
+        _, log_path = _ag._resolve_paths()
+        if not log_path.exists():
+            log_path.touch()
+            log.info("[startup] activity_log.jsonl created defensively")
+    except Exception as e:
+        log.debug("[startup] activity_log defensive create skipped: %s", e)
+
     # Task 49 — Al-Kafirun: Security headers middleware (hardening WebUI)
     class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         async def dispatch(self, request: Request, call_next):  # type: ignore[override]
@@ -2642,12 +2679,38 @@ def create_app() -> "FastAPI":
                 quota = None
                 tier_model = None
 
-            # ── 2. Jalankan ReAct ──────────────────────────────────────────────
+            # ── 2a. Vol 13: Persona Auto-Routing ─────────────────────────────
+            # Kalau req.persona tidak diset / "AYMAN" default + auto routing
+            # bisa decide better, override. User explicit (UTZ/ABOO/OOMAR/ALEY)
+            # → respect, jangan override.
+            effective_persona = req.persona or "AYMAN"
+            try:
+                # Hanya auto-route kalau persona = AYMAN default (kemungkinan
+                # user tidak explicit pilih). Kalau req.persona explicit non-
+                # default → preserve user choice.
+                if effective_persona == "AYMAN":
+                    from . import persona_router as _pr
+                    decision = _pr.route_persona(
+                        req.question,
+                        user_id=effective_user_id,
+                        explicit_persona="",
+                    )
+                    # Hanya override kalau confidence >= 0.7 (avoid flaky route)
+                    if decision.confidence >= 0.7 and decision.persona != effective_persona:
+                        log.info(
+                            "[stream] persona auto-route: AYMAN → %s (conf %.2f, kw=%s)",
+                            decision.persona, decision.confidence, decision.matched_keywords[:3]
+                        )
+                        effective_persona = decision.persona
+            except Exception as e:
+                log.debug("[stream] persona route skip: %s", e)
+
+            # ── 2b. Jalankan ReAct ───────────────────────────────────────────
             t_start = time.time()
             try:
                 session = run_react(
                     question=req.question,
-                    persona=req.persona,
+                    persona=effective_persona,
                     corpus_only=req.corpus_only,
                     allow_web_fallback=req.allow_web_fallback,
                     simple_mode=req.simple_mode,
