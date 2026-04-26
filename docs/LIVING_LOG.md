@@ -9159,3 +9159,48 @@ NO PIVOT. Direction LOCKED. Production LIVE dengan Vol 20-fu2 features.
 - [ ] Spec RunPod serverless endpoint untuk Mamba2-7B (separate dari LLM endpoint)
 - [ ] Cost model: per-query GPU cost vs. semantic cache hit value
 
+
+---
+
+## 2026-04-26 — [REFERENCE] HF Model Card SIDIX LoRA — public-facing snapshot
+
+**URL**: https://huggingface.co/Tiranyx/sidix-lora
+
+### Metadata public (per 2026-04-26)
+- **Owner**: Tiranyx (HF account, alias user)
+- **License**: MIT
+- **Downloads last month**: 61
+- **Likes**: 0
+- **Base model**: Qwen/Qwen2.5-7B-Instruct (finetuned)
+- **Adapter type**: PEFT LoRA, Safetensors
+
+### Tags (public discoverability)
+`Text Generation` · `PEFT` · `Safetensors` · `Indonesian` · `English` · `Arabic`
+`ai-agent` · `lora` · `qwen` · `self-hosted` · `open-source` · `free`
+`rag` · `epistemology` · `indonesia` · `islamic-epistemology` · `local-ai`
+`agentic-ai` · `conversational`
+
+### Model card description (public copy)
+> "SIDIX adalah AI agent open source yang berjalan 100% lokal — tidak ada
+> biaya per-query, tidak ada data yang dikirim ke server eksternal."
+>
+> "Model ini adalah LoRA adapter yang di-fine-tune di atas Qwen2.5-7B-Instruct
+> menggunakan QLoRA (4-bit quantization, Kaggle T4 GPU)."
+
+### Links cross-reference
+- GitHub: github.com/fahmiwol/sidix
+- Live demo: app.sidixlab.com
+- License: MIT (sesuai DIRECTION_LOCK_20260426 — locked)
+
+### Why catat (rationale)
+- HF page = canonical public artifact untuk SIDIX LoRA
+- Tags Arabic + islamic-epistemology + epistemology = SEO + audience signal aligns dengan SIDIX_DEFINITION (5 persona, sanad chain, fiqh expertise)
+- "free" + "self-hosted" + "open-source" = differentiator vs vendor LLM API (sesuai CLAUDE.md no-vendor rule)
+- 61 downloads/month = baseline traction sebelum public launch
+- "Inference Providers: This model isn't deployed by any Inference Provider" = current state, kalau Q3 deploy ke RunPod serverless ini bisa berubah
+
+### TODO follow-up
+- [ ] Ensure tags align dengan future model versions (Q3 LoRA retrain)
+- [ ] Track download trend monthly (growth signal)
+- [ ] If RunPod serverless production deploy → consider HF Inference Endpoint listing untuk discovery
+
