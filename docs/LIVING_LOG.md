@@ -7876,3 +7876,133 @@ Tesla 100x percobaan compound. SIDIX 18 vol hari ini.
 🌍 **SIDIX untuk semua. Mendunia. BEBAS dan TUMBUH global.**
 🔒 **LOCKED. Vol 19+ build forward, no looking back.**
 🚀 **Phase 0 wire mighan-worker = next sesi priority.**
+
+---
+
+## 2026-04-26 (vol 19) — RELEVANCE + QUALITY SPRINT (Best Practice 2025-2026)
+
+User: "lanjut spring!! analisa, gunakan best practice + terobosan teknologi
+riset AI model terkini bisa di-adopsi. Catat, validasi, verifikasi, testing,
+QA, analisa."
+
+Vol 19 = quality foundation sprint. NO PIVOT. Build on top.
+
+### Phase 1 ANALISA — Research Best Practice 2025-2026
+
+5 pattern yang adopt:
+1. Selective Expert Routing (Raschka 2024) — cheap classifier route ke
+   expensive expert mode
+2. Schema-Aligned Parsing (BAML 2024) — 5-strategy JSON parse fallback
+3. LRU+TTL cache (Redis 2024) — exact match dulu, semantic Q3 2026
+4. CodeAct paradigm (Wang 2024) — code action vs JSON tools
+5. Reflexion/Self-Refine (Shinn/Madaan 2023) — sudah di vol 10 Critic
+
+### Phase 2 BUILD — 4 Modul (~640 LOC)
+
+#### llm_json_robust.py (~150 LOC)
+5 strategy fallback untuk parse LLM output:
+- Direct json.loads
+- Strip markdown fence + preamble + trailing
+- Repair pass (jsonrepair-style: trailing comma, single quote, smart quote)
+- Regex extract specific fields
+- Fallback default + retry-with-LLM
+
+#### tadabbur_auto.py (~190 LOC)
+Selective expert routing untuk Tadabbur Mode (7 LLM call mahal):
+- Block: casual chat, code-specific, too short
+- Trigger criteria: length>120, multi-?, deep keywords, complexity score
+- Multi-keyword bonus (>=3 unique = +0.15)
+- adaptive_trigger() dengan daily quota guard
+
+#### response_cache.py (~180 LOC)
+In-memory LRU cache:
+- Hash (question + persona + mode) → cache key
+- TTL 1 jam, max 500 entries
+- Thread-safe Lock
+- is_cacheable() rule (skip current events, user-context, casual)
+- Q3 2026 upgrade: Redis backend + semantic cache (BGE-M3)
+
+#### codeact_integration.py (~120 LOC)
+Hook codeact_adapter (vol 17) ke /ask flow:
+- maybe_enrich_with_codeact() — scan output → execute → inject result
+- should_suggest_codeact() — pre-emptive computation hint detect
+- codeact_system_hint() — append ke ReAct system prompt dynamically
+
+### Phase 3 WIRE — 4 Endpoint Baru
+
+```
+GET  /admin/cache/stats           — cache statistics
+POST /admin/cache/clear           — clear seluruh cache
+POST /agent/tadabbur-decide       — test trigger decision (no execution)
+POST /agent/codeact-enrich        — manual enrich code block
+```
+
+Total endpoint live: 50 + 4 = 54.
+
+4 modul added to eager preload (vol 5-19 cognitive bundle).
+
+### Phase 4 TEST — Validation 14/14 PASS
+
+```
+JSON Robust:        3/3 (direct, fence, trailing comma)
+Tadabbur Auto:      4/4 (casual, deep-strategic, code, deep-philo)
+Response Cache:     5/5 (set+get, miss, is_cacheable factual/current/casual)
+CodeAct Detect:     2/2 (hitung suggest, halo no-suggest)
+agent_serve.py:     syntax valid
+```
+
+### Phase 5 QA — Tuning Iteration (Lesson Learn)
+
+**False positive #1**: keyword "go" matched "go-to-market".
+Fix: remove standalone "go", pakai specific (debug/exception/framework).
+
+**False negative #2**: 4 deep keyword + medium-length score 0.5 < threshold 0.6.
+Fix: multi-keyword bonus +0.15 untuk >=3 unique.
+
+After tuning: 4/4 pass.
+
+### Phase 6 DOC
+
+`research_notes/231_relevance_quality_best_practice_2026.md`:
+- 5 best practice survey
+- 4 modul detail
+- 4 endpoint inventory
+- Test coverage 14/14 pass
+- Tuning lesson learn
+- Integration roadmap (Vol 20+ wire ke /ask flow)
+
+### Compound Vol 19 Final
+
+```
+19 vol iterasi · 31+ commits · ~7940 LOC code · ~88,000 kata documentation
+54 endpoint live (cognitive + memory + proactive + creative + codeact +
+   mcp + hands + cache + tadabbur-decide + enrich)
+13 research notes (219-231) + 2 LOCK files
+4-pilar coverage: 81.25% avg
+```
+
+### Komit Chain Vol 18-19
+
+```
+5f99577 vol 18   Global Creative Sweep + HANDOFF + CHANGELOG + LIVING_LOG
+[VOL19] vol 19   Relevance + Quality (json_robust + tadabbur_auto + cache + codeact_int)
+```
+
+### Vol 20 Plan — Wire to /ask Flow (Deep Integration)
+
+Modul vol 19 ready, tinggal wire ke pipeline:
+- Wire `tadabbur_auto.adaptive_trigger()` di /ask/stream auto-route
+- Wire `response_cache.is_cacheable()` + lookup di /ask early
+- Wire `codeact_integration.maybe_enrich_with_codeact()` di done event
+- Update 7 cognitive modul ganti json.loads → robust_json_parse
+- Frontend: cache hit indicator UX
+
+### Filosofi Vol 19
+
+User methodology: catat + analisa + build + validasi + testing + verifikasi + QA.
+
+Vol 19 = quality > velocity. 4 modul small (~640 LOC) tapi production-ready.
+14/14 test pass. Best practice 2025-2026 adopted (BAML, Redis, CodeAct,
+Selective Routing).
+
+Tesla 100x percobaan. Foundation kuat = vol 20+ aman accelerate.

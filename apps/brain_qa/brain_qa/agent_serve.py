@@ -564,8 +564,12 @@ def create_app() -> "FastAPI":
             codeact_adapter,              # noqa: F401  vol 17 — CodeAct executable
             mcp_server_wrap,              # noqa: F401  vol 17 — MCP server expose
             hands_orchestrator,           # noqa: F401  vol 17 — 1000 hands stub
+            llm_json_robust,              # noqa: F401  vol 19 — robust JSON parse
+            tadabbur_auto,                # noqa: F401  vol 19 — auto-trigger Tadabbur
+            response_cache,               # noqa: F401  vol 19 — LRU cache
+            codeact_integration,          # noqa: F401  vol 19 — hook CodeAct ke /ask
         )
-        _startup_logger.info("[startup] cognitive modules eager-loaded (vol 5-17)")
+        _startup_logger.info("[startup] cognitive modules eager-loaded (vol 5-19)")
     except Exception as e:
         _startup_logger.warning("[startup] cognitive eager-load skipped: %s", e)
 
@@ -2479,6 +2483,74 @@ def create_app() -> "FastAPI":
             return hands_orchestrator.stats()
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"stats fail: {e}")
+
+    # ════════════════════════════════════════════════════════════════════════
+    # VOL 19 — Relevance + CodeAct Integration + Cache
+    # ════════════════════════════════════════════════════════════════════════
+
+    @app.get("/admin/cache/stats", tags=["Performance"])
+    def cache_stats_endpoint(request: Request):
+        """Response cache stats (size, hits, misses, hit_rate)."""
+        if not _admin_ok(request):
+            raise HTTPException(status_code=403, detail="Akses ditolak")
+        try:
+            from . import response_cache
+            return response_cache.get_cache().stats()
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"cache stats fail: {e}")
+
+    @app.post("/admin/cache/clear", tags=["Performance"])
+    def cache_clear_endpoint(request: Request):
+        """Clear seluruh response cache."""
+        if not _admin_ok(request):
+            raise HTTPException(status_code=403, detail="Akses ditolak")
+        try:
+            from . import response_cache
+            cleared = response_cache.get_cache().clear()
+            return {"ok": True, "cleared": cleared}
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"cache clear fail: {e}")
+
+    @app.post("/agent/tadabbur-decide", tags=["Cognitive"])
+    async def tadabbur_decide_endpoint(request: Request):
+        """Test endpoint: should_trigger_tadabbur untuk question.
+        Body: {question, user_explicit?: bool}"""
+        try:
+            body = await request.json()
+        except Exception:
+            body = {}
+        question = (body.get("question") or "").strip()
+        if not question:
+            raise HTTPException(status_code=400, detail="question wajib")
+        try:
+            from . import tadabbur_auto
+            from dataclasses import asdict
+            decision = tadabbur_auto.should_trigger_tadabbur(
+                question,
+                user_explicit_request=bool(body.get("user_explicit", False)),
+            )
+            return {"ok": True, "decision": asdict(decision)}
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"decide fail: {e}")
+
+    @app.post("/agent/codeact-enrich", tags=["Cognitive"])
+    async def codeact_enrich_endpoint(request: Request):
+        """Manual enrich: detect+execute code di final_answer.
+        Body: {final_answer}"""
+        try:
+            body = await request.json()
+        except Exception:
+            body = {}
+        final_answer = body.get("final_answer", "")
+        if not final_answer:
+            raise HTTPException(status_code=400, detail="final_answer wajib")
+        try:
+            from . import codeact_integration
+            from dataclasses import asdict
+            result = codeact_integration.maybe_enrich_with_codeact(final_answer)
+            return {"ok": True, "result": asdict(result)}
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"enrich fail: {e}")
 
     @app.get("/agent/context-triple", tags=["Cognitive"])
     async def context_triple_endpoint(request: Request, user_id: str = "", verbose: bool = False):
