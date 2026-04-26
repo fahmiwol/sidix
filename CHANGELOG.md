@@ -60,6 +60,51 @@ Semua perubahan signifikan dicatat di sini. Format: `[versi] — tanggal — rin
 
 ---
 
+## [2.1.4] — 2026-04-27 — Vol 20-fu2 TRIO (Complexity routing + Tadabbur swap + BadStyle defense)
+
+### Trio Vol 20-fu2 — 4-Pilar Balanced Reinforcement
+3 task ter-pilih dari 8 DEFER, ship dengan 9-step POST-TASK PROTOCOL mandatory.
+
+#### #7 Complexity-Tier Routing (Pilar 4 Proactive) — commit `2fd6414`
+- **NEW**: `apps/brain_qa/brain_qa/complexity_router.py` (~270 LOC)
+- 3-tier classifier: simple / standard / deep (target <5ms, no model)
+- Persona bias mapping untuk tie-break ambiguous queries
+- Wire /ask + /ask/stream + admin endpoint `/admin/complexity-tier`
+- Frontend ⚡ simple / 🧠 deep badge di latency footer
+- 13 unit + 4 integration test pass
+
+#### #1 Tadabbur FULL SWAP (Pilar 2 Multi-Agent) — commit `5e6fb13`
+- **NEW**: `tadabbur_mode.adapt_to_agent_session()` adapter (~70 LOC)
+- Triple-gate activation: `tier=deep AND tadabbur_eligible AND quota>=7`
+- Run `tadabbur_mode.tadabbur(...)` (3-persona, 7 LLM call) instead of `run_react`
+- Phase event UX: thinking label → "🧭 Deep mode: 3-persona iteration (60-120s)..."
+- Frontend badge "🧭 tadabbur (3-persona)" saat full swap
+- Fallback graceful kalau tadabbur exception → run_react
+- 5 integration scenarios + quota gate test pass
+
+#### #8 BadStyle Defense (Pilar 3 Continuous Learning Integrity) — commit `9583e38`
+- **NEW**: `apps/brain_qa/brain_qa/style_anomaly_filter.py` (~210 LOC)
+- Style fingerprint detection: Bible (KJV archaic), Legal (Latin/passive), Shakespeare (drama)
+- Topic context: tech / factual / religious / historical
+- Severity grading: clean / suspicious / quarantine
+- Decision tree: tech+style → quarantine, religious context → clean (legitimate Quran tafsir),
+  factual+style → suspicious (sanad unlock), ambiguous → suspicious
+- Wire `corpus_to_training.doc_to_training_pairs` filter + quarantine queue jsonl
+- Wire admin endpoint `POST /admin/style-anomaly-check`
+- 8 unit + 5 integration scenarios + corpus mock pipeline pass
+
+### Mandatory POST-TASK PROTOCOL — commit `a5357c8`
+Lock 9-step loop di CLAUDE.md rule 6.5: CATAT → TESTING → ITERASI → TRAINING (optional) → REVIEW → CATAT validasi → VALIDASI → QA → CATAT final. Berlaku setiap habis done task / push / pull / deploy.
+
+### Sisa DEFER (5 items)
+1. `pip install sentence-transformers` production (deploy step)
+2. Confirm Mamba2 HF id actual name (research)
+3. Stash backend semantic cache mirror (Q3)
+4. Drift detection weekly (Q3)
+5. EngramaBench 4-axis continual_memory (Q3, 8+ hr)
+
+---
+
 ## [2.1.3] — 2026-04-27 — Vol 20c Unlock Semantic Cache (domain + embedding)
 
 ### Vol 20c (commit pending) — Domain Detector + Embedding Loader

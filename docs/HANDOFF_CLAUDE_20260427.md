@@ -9,19 +9,43 @@
 
 ---
 
-# ⚡ LATEST STATUS (2026-04-27, Vol 20-Closure) — Vol 20 SPRINT CLOSED
+# ⚡ LATEST STATUS (2026-04-27, Vol 20-fu2 TRIO) — TRIO COMPLETE
 
 ## Komit chain (terbaru di atas)
 ```
-[VOL20-CL] vol 20-closure  Tasks B+C+E wire — Vol 20 ORIGINAL CLOSED ← LATEST
-b139ef4   vol 20c    unlock semantic cache: domain_detector + embedding_loader
-9db1d07   vol 20b+   CHANGELOG [2.1.2] + HANDOFF latest status
-39e4289   vol 20b+   comprehensive research sweep 96/104 (92%) → note 235
-604dbd7   vol 20a+b  DOC HANDOFF update
-08a7d46   vol 20b    semantic cache Phase B (riset 18 sumber → ship)
-32d91d0   vol 20a    wire response_cache + json_robust ke /ask
-9a8a878   vol 19b    HANDOFF final (sesi sebelumnya)
+9583e38   vol 20-fu2 #8   BadStyle defense (Pilar 3 integrity)            ← LATEST PUSHED
+5e6fb13   vol 20-fu2 #1   Tadabbur full swap (Pilar 2 multi-agent)
+2fd6414   vol 20-fu2 #7   complexity-tier routing (Pilar 4 proactive)
+a5357c8   vol 20-fu+      LOCK POST-TASK PROTOCOL di CLAUDE.md (mandatory loop)
+7ec2a5e   vol 20-fu       SAS-L pattern di cot_system_prompts
+277c624   vol 20-int      paper CT × Tahfidz eval (NO PIVOT)
+7a0e793   vol 20-cl       Tasks B + C + E (Vol 20 ORIGINAL CLOSED)
+b139ef4   vol 20c         unlock semantic cache: domain_detector + embedding_loader
+9db1d07   vol 20b+        CHANGELOG [2.1.2] + HANDOFF latest status
+39e4289   vol 20b+        comprehensive research sweep 96/104 (92%) → note 235
+604dbd7   vol 20a+b       DOC HANDOFF update
+08a7d46   vol 20b         semantic cache Phase B (riset 18 sumber → ship)
+32d91d0   vol 20a         wire response_cache + json_robust ke /ask
+9a8a878   vol 19b         HANDOFF final (sesi sebelumnya)
 ```
+
+## TRIO Vol 20-fu2 (2026-04-27 sore) — 4-pilar balanced reinforcement
+
+| # | Task | Pilar SIDIX | Effect | Commit |
+|---|---|---|---|---|
+| 7 | Complexity-tier routing | Pilar 4 Proactive | telemetry tier (simple/standard/deep) di /ask + /ask/stream + frontend badge | 2fd6414 |
+| 1 | Tadabbur FULL SWAP | Pilar 2 Multi-Agent | triple-gate: tier=deep + eligible + quota>=7 → 3-persona iteration; phase event UX; fallback graceful | 5e6fb13 |
+| 8 | BadStyle defense | Pilar 3 Continuous Learning | corpus_to_training filter style-anomaly + quarantine queue + admin debug | 9583e38 |
+
+Plus mandatory **POST-TASK PROTOCOL** (9-step loop) di-LOCK di CLAUDE.md rule 6.5 (`a5357c8`).
+
+## Sisa DEFER (5 items, semua deploy-blocked atau Q3 long-term)
+
+1. **`pip install sentence-transformers` di production VPS** (deploy step, ops)
+2. **Confirm Mamba2 HF id actual name** (research step, eval)
+3. **Stash backend semantic cache mirror** (Q3, 4-6 hr scope)
+4. **Drift detection weekly** (Q3, observability)
+5. **EngramaBench 4-axis continual_memory** (Q3, 8+ hr scope, structural upgrade)
 
 ## Vol 20 SPRINT MILESTONE — CLOSED ✅
 Original 5 tasks (A/B/C/D/E) + 3 NEW (semantic cache, research sweep, embedding loader/domain detector) — semua ship.
