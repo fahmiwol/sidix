@@ -288,3 +288,143 @@ p50 dengan iteration ≈ 5-7s. p95 ≈ 12s. **Tidak akan capai 2s untuk complex 
 - ❌ Iteration without budget cap → infinite loop / cost explosion
 - ❌ Validation that re-calls LLM → double-cost branch
 - ❌ Hard-coded thresholds → tune per domain via config
+
+---
+
+## ⭐ Update 2026-04-26 (3rd append): Inventory Memory + Continuous Synthesis
+
+User: *"harus ada inventory memory yg selalu mensistesis informasi yang masuk, dan iterasi, terus."*
+
+### Insight kunci
+
+Sanad consensus menghasilkan validated claims SETIAP query. Tapi tanpa
+**inventory memory yang terus mensintesis**, knowledge tetap stateless —
+tiap query mulai dari nol.
+
+Solusi: **continuous synthesis loop** — setiap Q+A+sanad output:
+1. Disimpan ke inventory (per-claim level, bukan per-Q level)
+2. Synthesis online: cluster claim baru dengan claim eksisting (similarity)
+3. Update bobot: claim yang muncul lagi naik confidence, claim kontradiksi turun
+4. Aging: claim lama tanpa reinforcement turun bobot
+5. Iterate forever — knowledge graph tumbuh organik
+
+### Inventory Memory Architecture (Vol 22+)
+
+```
+                  ┌──────────────────────────────┐
+   Sanad query ──►│  Inventory Memory (live KG)  │
+                  ├──────────────────────────────┤
+                  │  - Claims (graph nodes)      │
+                  │  - Sources (graph edges)     │
+                  │  - Confidence (weighted)     │
+                  │  - Timestamps + decay curve  │
+                  │  - Synthesis loop:           │
+                  │    cluster → merge → abstract│
+                  └──────────────────────────────┘
+                            ↓
+                  ┌──────────────────────────────┐
+                  │  Periodic synthesis (online) │
+                  │  - Detect contradictions     │
+                  │  - Extract patterns          │
+                  │  - Promote stable claims     │
+                  │  - Demote outdated claims    │
+                  │  - Generate abstract concepts│
+                  └──────────────────────────────┘
+                            ↓
+                  ┌──────────────────────────────┐
+                  │  Inventory query (next Q)    │
+                  │  - As 8th branch in fan-out  │
+                  │  - Pre-computed answers       │
+                  │  - Already-validated claims  │
+                  └──────────────────────────────┘
+```
+
+### Per-Query Flow (with Inventory)
+
+```
+1. User Q → spawn agent_id
+2. Sanad fan-out (7 branches + INVENTORY branch as 8th)
+3. INVENTORY branch returns: pre-validated claims + confidence
+4. If inventory confidence high (>0.85) → render direct (faster path)
+5. Else → full sanad consensus + render
+6. POST-RESPONSE: ingest result back to inventory
+7. Inventory background loop synthesizes (every N queries or every M sec)
+```
+
+### Synthesis Operations
+
+| Op | Trigger | Effect |
+|---|---|---|
+| **Cluster** | New claim arrives | Group with similar (cosine > 0.85) |
+| **Merge** | Cluster size ≥ 3 | Promote to canonical claim |
+| **Contradict** | Claim A vs claim B (cosine inverse) | Mark conflict, escalate to sanad re-validation |
+| **Decay** | Claim age > 30 days, no reinforcement | Reduce confidence by 5% per day |
+| **Promote** | Claim confidence + frequency high | Become "canonical" — appears as 1st choice |
+| **Abstract** | N similar claims | Generate parent concept (LLM call, slow path) |
+
+### Connection ke Existing SIDIX
+
+- `LearnAgent` (existing) — already fetches 50+ open data sources daily.
+  Currently dumps to corpus queue. Vol 22 connects to Inventory Memory directly.
+- `daily_growth` 7-fase (existing) — currently batch nightly. Vol 22 transforms
+  to **continuous online** synthesis.
+- `auto_lora` (existing) — uses inventory periodic snapshot for retraining.
+  Vol 22: only retrain on synthesis-promoted claims (high confidence).
+- `knowledge_gap_detector` (existing) — finds low-confidence areas, triggers
+  research. Vol 22: detect gaps via inventory traversal (find sparse subgraphs).
+
+### Storage Backend Options
+
+- **Vol 22 MVP**: SQLite + similarity via embedding column (BGE-M3 active)
+- **Vol 23**: Migrate to vector DB (Qdrant/Weaviate self-hosted) for scale
+- **Vol 24**: Knowledge graph layer (RDF / property graph) for relationship queries
+
+### Latency Impact
+
+- Inventory branch lookup: ~0.3-0.5s (vector similarity)
+- Synthesis loop: BACKGROUND, no impact on user-facing latency
+- Pre-validated answer (high inventory confidence): can SKIP sanad fan-out → ~2s
+
+This is how 2-second target becomes achievable for **repeat / similar queries**.
+First-time question = 5s sanad. Repeat / paraphrased = 2s via inventory hit.
+
+### Iteration Loop (Forever)
+
+```python
+async def inventory_synthesis_loop():
+    """Background task, runs forever."""
+    while True:
+        await asyncio.sleep(INVENTORY_SYNTHESIS_INTERVAL)  # e.g., 60s
+        await detect_clusters()
+        await merge_canonical()
+        await detect_contradictions()
+        await decay_old_claims()
+        await abstract_patterns()
+        await promote_stable_claims()
+        log.info("[inventory] synthesis cycle done")
+```
+
+### Updated Phase Plan
+
+| Vol | Feature | Latency p50 |
+|---|---|---|
+| 21 MVP | Sanad fan-out 3-branch (no iter) | 5s |
+| 22 | Sanad + per-agent validation + iter | 7s |
+| **23** | **+ Inventory Memory (8th branch + synthesis loop)** | **3s repeat / 5s new** |
+| 24 | Vector DB + KG layer | 2s repeat / 4s new |
+
+### Anti-Patterns
+
+- ❌ Synthesis sync di /ask flow — must be background
+- ❌ Inventory grows without decay — capacity explosion
+- ❌ Trust inventory blindly — must keep sanad re-validation untuk klaim sensitif (fiqh/medis)
+- ❌ Inventory replaces corpus — keep corpus as ground truth untuk training data
+
+### Success Metrics (Vol 23 ship gate)
+
+- p50 latency repeat queries ≤ 3s
+- Inventory confidence calibration: 90%+ confidence claims have ≥85% accuracy (manual eval 100 q)
+- Synthesis loop overhead < 5% CPU (background)
+- No regression on sanad fresh queries (still ≤7s)
+- Concurrent agent_id load: 10+ simultaneous queries with inventory hits
+
