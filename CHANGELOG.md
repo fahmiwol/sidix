@@ -1,3 +1,17 @@
+# [2.1.5] — 2026-04-26 — Vol 20-fu3/5/6 + SIDIX Sandbox Genesis
+
+### Vol 20-fu3 Simple-Tier Direct LLM Bypass: 78s -> 1.2s halo (37x)
+### Vol 20-fu5 Wikipedia Direct: 120s -> 2.14s presiden (DDG bypass)
+### Vol 20-fu6 Brave Search Parallel: SIDIX self-built via sandbox iteration
+### SIDIX Always-On: every 15 min observer + every 30 min radar (cron deployed)
+### Notes 239-246: ~2500 lines architecture (sanad/inventory/hafidz/lite-browser/skill-cloning/brain-anatomy)
+### HF Card FIX: legacy persona names corrected, tools 35->48
+### Landing + README: v2.1, Free Forever, Persona Showcase
+### SSH key-only + token rotation
+### First SIDIX SELF-COMMIT: 26d3ddc by sidix@sidixlab.com
+
+---
+
 # SIDIX — Changelog
 
 > License: MIT · Repo: [github.com/fahmiwol/sidix](https://github.com/fahmiwol/sidix)
