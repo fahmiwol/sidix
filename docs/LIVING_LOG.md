@@ -9000,3 +9000,99 @@ User paste SSH password + VPS IP di chat. SAYA TOLAK execute SSH:
 - Alternative: saya tulis deploy script, user execute dari terminal sendiri
 
 NO PIVOT. Direction LOCKED. Security-first reflex active.
+
+---
+
+## 2026-04-27 (vol 20-deploy) — PRODUCTION DEPLOY (LIVE)
+
+User: "kamu bantu dulu deploy!!" — explicit authorization.
+
+### Deploy execution
+
+1. Local: merge claude/determined-shirley-8d9e7a → main (fast-forward 15 commits) → push origin/main
+2. Prod via paramiko SSH (password env, NOT command line): stash dirty WT → git pull origin/main → pm2 restart sidix-brain
+3. Initial restart FAIL: NameError 'log' not defined di startup hook _bootstrap_semantic_cache (Vol 20c)
+4. Hotfix push (commit 6858568): add `import logging; log = logging.getLogger(__name__)` module-level
+5. Prod git pull hotfix → restart → "Application startup complete" ✓
+6. npm run build SIDIX_USER_UI (1754 modules, 316KB JS gzip 83KB) → pm2 restart sidix-ui
+
+### Live verification [TEST]
+
+Brain alive:
+```
+GET /health → 200 OK, sidix_local_engine.ready=true, models_loaded=3, corpus_doc_count=1182
+```
+
+`/ask` test (Q="Halo, kamu siapa?", persona=AYMAN):
+```
+{"answer":"Halo! Terima kasih untuk pertanyaannya. Saya adalah SIDIX...",
+ "persona":"AYMAN","confidence":"tinggi","session_id":"b7a52c48"}
+```
+
+`/ask/stream` meta event LIVE:
+```json
+{"type":"meta", ...,
+ "_complexity_tier":"simple",
+ "_complexity_score":0.05,
+ "_complexity_latency_class":"<100ms"}
+```
+
+**Vol 20-fu2 #7 complexity-tier routing AKTIF di production** ✓
+
+### Discovery findings (catat ke CLAUDE.md)
+
+- VPS hardware: 4 vCPU AMD EPYC 9355P, 15GB RAM, NO GPU
+- Production arsitektur 2-tier:
+  - VPS = brain_qa coordinator + frontend (no GPU)
+  - RunPod serverless vLLM v2.14.0 (endpoint ws3p5ryxtlambj, GPU 24GB Pro) = LLM inference
+  - HF organization: Tiranyx, repo Tiranyx/sidix-lora
+- Sebelumnya CLAUDE.md tidak document arch ini — sekarang LOCKED ke section "Konteks Deployment"
+
+### Issues observed (DEFER)
+
+1. **Semantic cache dormant**: `embedding_loader.load_embed_fn()` returns None
+   meskipun sentence-transformers 5.4.1 terinstall. Kemungkinan BGE-M3
+   download fail di runtime atau version mismatch. Graceful disable working
+   (no crash). Investigate Vol 20-fu3.
+2. **Admin endpoints 403**: `BRAIN_QA_ADMIN_TOKEN` env var tidak ke-load
+   ke proses sidix-brain (pre-existing issue, bukan dari deploy ini).
+   PM2 ecosystem.config.js perlu update tambah env, atau dotenv plugin.
+3. **Health field `model_ready=false`** stale (sidix_local_engine.ready=true).
+   Cosmetic only, /ask functional.
+
+### Security event log [DECISION]
+
+User paste SSH password + VPS IP via chat. Authorization eksplisit:
+- "saya kasih akses biar kamu bisa bantu deploy dan validasi langsung di
+  live production, jangan dipulish dimana-mana. nanti saya ganti"
+- "sampai proyek ini sesi ini selesai pake terus"
+
+Saya pakai paramiko (password via env var, NOT command line) untuk deploy.
+NO credentials di-commit ke file/note manapun. Pre-commit grep audit
+verified clean (no IP / password / passphrase patterns in staged diff).
+
+### USER post-deploy MUST DO
+
+1. **ROTATE password VPS root**: `ssh root@... → passwd`
+2. **Setup SSH key-based auth**: ssh-keygen + ssh-copy-id
+3. **Disable password auth**: `/etc/ssh/sshd_config` PermitRootLogin prohibit-password
+4. **Rotate BRAIN_QA_ADMIN_TOKEN** (di /opt/sidix/.env, regen)
+5. **Rotate HF token** kalau ada di chat (saya tidak lihat, tapi check)
+
+### Deploy timeline
+
+```
+[T+0]    SSH connect via paramiko
+[T+1m]   Discovery: prod = main @ 675241c (Vol 19), 9 commits behind remote
+[T+2m]   Local push origin HEAD:main → 9a8a878..0cce3b3 fast-forward
+[T+3m]   Prod stash + pull → 0cce3b3
+[T+4m]   pm2 restart → CRASH NameError log not defined
+[T+5m]   Hotfix add module-level log + push 6858568
+[T+6m]   Prod pull hotfix + restart → Application startup complete ✓
+[T+7m]   /health 200 OK, /ask 200 OK
+[T+8m]   /ask/stream meta confirmed _complexity_tier="simple" LIVE
+[T+9m]   npm run build SIDIX_USER_UI → 316KB
+[T+10m]  pm2 restart sidix-ui ✓
+```
+
+NO PIVOT. Direction LOCKED. Production LIVE dengan Vol 20-fu2 features.

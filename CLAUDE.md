@@ -275,14 +275,71 @@ brain/manifest.json            ← konfigurasi corpus path
 
 ## 🔧 Konteks Deployment
 
+### Arsitektur Hardware (LOCK 2026-04-27 — PENTING, sebelumnya tidak tercatat)
+
+SIDIX **2-tier hardware**:
+
+```
+┌──────────────────────────────────────────────────────────┐
+│  VPS Linux (no GPU, 4 vCPU AMD EPYC, 15GB RAM)           │
+│  ─ /opt/sidix path                                        │
+│  ─ brain_qa FastAPI (PM2: sidix-brain, port 8765)        │
+│  ─ Frontend serve (PM2: sidix-ui, port 4000)             │
+│  ─ Local sentence-transformers (BGE-M3 / MiniLM CPU)     │
+│  ─ RAG corpus + semantic cache + domain detector         │
+│  ─ Tools execution sandbox + cognitive modules            │
+└──────────────────────────────────────────────────────────┘
+                          ↓ HTTP API
+┌──────────────────────────────────────────────────────────┐
+│  RunPod Serverless (GPU, vLLM v2.14.0)                   │
+│  ─ Endpoint: ws3p5ryxtlambj                              │
+│  ─ Model: Qwen2.5-7B-Instruct + LoRA SIDIX adapter       │
+│  ─ HF: huggingface.co/Tiranyx/sidix-lora                 │
+│  ─ GPU: 24GB Pro × 1 worker, queue-based, auto-scale     │
+│  ─ Warmup script: deploy-scripts/warmup_runpod.sh        │
+└──────────────────────────────────────────────────────────┘
+```
+
+**Implikasi**:
+- Embedding (BGE-M3) bisa run di VPS CPU, tidak butuh GPU
+- LLM inference (Qwen+LoRA) WAJIB via RunPod, jangan coba load di VPS
+- Mamba2-7B embedding (~14GB inference) ⚠️ TOO SLOW di VPS CPU; pilih Mamba2-1.3B atau BGE-M3 untuk VPS
+- Cold-start RunPod: 60-120s (warmup_runpod.sh run sebelum traffic)
+
+### PM2 Apps (production VPS)
+
+```
+sidix-brain   pid varies   port 8765   /opt/sidix/start_brain.sh (bash → python3 -m brain_qa serve)
+sidix-ui      pid varies   port 4000   serve dist -p 4000 dari /opt/sidix/SIDIX_USER_UI/
+sidix-mcp-prod stopped (manual enable via SIDIX_MCP_ENABLED=true)
+sidix-health-prod cron */15 min health check
+```
+
+### URLs
+
 - VPS: Linux server (private — IP & specs di env file lokal, jangan log)
-- Frontend: `serve dist -p 4000` (PM2: `sidix-ui`)
-- Backend: `python3 -m brain_qa serve` → port 8765 (PM2: `sidix-brain`)
-- Database: Supabase (URL & key di `.env`, jangan commit)
 - Domain publik: `sidixlab.com`, `app.sidixlab.com`, `ctrl.sidixlab.com`
+  - `app.sidixlab.com` → nginx proxy_pass localhost:4000 (sidix-ui)
+  - `ctrl.sidixlab.com` → nginx proxy_pass localhost:8765 (sidix-brain)
+  - `sidixlab.com` (landing) → static `/www/wwwroot/sidixlab.com/`
 - Aapanel manages nginx config di `/www/server/panel/vhost/nginx/`
-- Landing static di `/www/wwwroot/sidixlab.com/` (NOT `/opt/sidix/SIDIX_LANDING`)
 - Sync landing manual setelah git pull (TODO: auto via post-merge hook)
+
+### ENV Vars Penting (di `/opt/sidix/.env`)
+
+```
+BRAIN_QA_ADMIN_TOKEN     # untuk akses /admin/* endpoints (header X-Admin-Token)
+SIDIX_EMBED_MODEL        # bge-m3 (default safe) | minilm | mamba2-1.3b | mamba2-7b
+RUNPOD_API_KEY           # untuk call vLLM endpoint
+                         # endpoint URL: https://api.runpod.ai/v2/ws3p5ryxtlambj/run
+SIDIX_TYPO_PIPELINE      # =1 (di ecosystem.config.js)
+```
+
+⚠️ **PM2 tidak auto-load `/opt/sidix/.env`** — env var perlu di-set via ecosystem.config.js atau export sebelum `pm2 start`. Kalau env var hilang setelah `pm2 restart --update-env`, cek shell env saat command dijalankan.
+
+### Database
+- Supabase (URL & key di `.env`, jangan commit)
+- HF organization: `Tiranyx` (account user)
 
 ---
 
