@@ -71,38 +71,58 @@ Total endpoint live: **54** (50 + 4 vol 19).
 ## Vol 20 Sprint Plan
 
 ```
-☐ A. Wire response_cache.is_cacheable() + lookup di /ask + /ask/stream EARLY
-   → Sebelum panggil run_react(), cek cache. Hit return langsung (<100ms).
-   → Saat success, store ke cache.
-   → Cache key: hash(question + persona + mode + corpus_only flag).
-
-☐ B. Wire tadabbur_auto.adaptive_trigger() di /ask/stream auto-route
-   → Setelah persona auto-route (vol 11), cek apakah perlu Tadabbur.
-   → Kalau yes (score >= 0.6), spawn tadabbur_mode.tadabbur() instead of
-     standard run_react.
-   → Cost-aware: daily quota guard.
-
+✅ A. Wire response_cache di /ask EARLY                       (vol 20a, 32d91d0)
+✅ D. Update 7 cognitive modules: json.loads → robust_json_parse (vol 20a, 32d91d0)
+✅ NEW: Semantic cache Phase B (riset 18 sumber → ship)        (vol 20b, 08a7d46)
+☐ B. Wire tadabbur_auto.adaptive_trigger() di /ask/stream
 ☐ C. Wire codeact_integration.maybe_enrich_with_codeact() di done event
-   → Setelah session.final_answer ready, scan code block.
-   → Kalau ada, execute → enrich → replace di final_answer.
-   → SIDIX bisa "literally hitung" via Python sandbox.
-
-☐ D. Update 7 cognitive modules: ganti json.loads → llm_json_robust.robust_json_parse
-   - aspiration_detector.py
-   - pattern_extractor.py
-   - tool_synthesizer.py (2 spots)
-   - tadabbur_mode.py
-   - problem_decomposer.py (3 spots)
-   - agent_critic.py
-   - hands_orchestrator.py
-   → Reduces JSON parse fail dari 5-15% ke <1%.
-
 ☐ E. Frontend cache hit indicator (UX)
-   → Kalau response < 100ms, tampilkan ⚡ icon "Quick Cache".
-   → User aware bahwa SIDIX cache pintar.
+☐ NEW: Vol 20c — embedding model loader (BGE-M3 vs MiniLM decision)
+☐ NEW: Vol 20c — domain detector untuk semantic cache (sekarang hardcoded "casual")
 ```
 
-## Vol 20 Estimated Effort: 1-2 hari
+## Vol 20a Done (commit `32d91d0`)
+- L1 exact cache wired di /ask early lookup + post-success store
+- 9 `json.loads` replacement di 7 modul kognitif
+- Hit indicator: `_cache_hit=True, _cache_layer="exact", _cache_latency_ms`
+- 8/8 smoke test pass
+
+## Vol 20b Done (commit `08a7d46`) — Semantic Cache Phase B
+**User drop folder riset `semantic vs exact` (104 file). Triage + 2 agent paralel synthesis.**
+
+### Riset coverage (TRANSPARENT)
+- 104 file total
+- ~22 file BENAR-BENAR terbaca (Agent A 13-15 caching, Agent B ~9 priority HIGH speculative decoding)
+- ~12-15 file GAGAL teknis (`pdftoppm` not in sandbox — image PDF butuh render); FASER, SMART, SpecBound, AWQ_GPTQ, MEMENTO, AgenticQwen, swarm-tax, multi-LoRA edge — butuh re-attempt env lain
+- ~64 file SENGAJA SKIP (T3 tangential — Monte Carlo PDE, multimodal halu, video gen, dll yang tidak sentuh task ini)
+
+### Yang ter-ship
+- `apps/brain_qa/brain_qa/semantic_cache.py` (430 LOC, embedding-agnostic)
+- Wired di `agent_serve.py` /ask: L2 lookup setelah L1 exact miss
+- Per-domain threshold KONSERVATIF (fiqh/medis 0.96, default 0.95) — bukan industry mid 0.92
+- Per-bucket key: `persona:lora_version:system_prompt_hash` (cross-persona safe + LoRA auto-invalidate)
+- Eligibility skip: too short, current events, PII, multi-turn>3, high temp, low-conf output
+- 8/8 test pass dengan mock embedding
+- Stats Prometheus-shape ready
+
+### Doc baru
+- Note 233 — Semantic Cache Adoption (synthesis + decision matrix + 12 failure mode)
+- Note 234 — Speculative Decoding Q3 Roadmap (5 fase plan, persona mapping, ToolSpec ROI tertinggi)
+
+## Yang DEFER (Vol 20c+ — IMMEDIATE NEXT)
+1. **Embedding model loader**: BGE-M3 @ 512 MRL (recommended, multilingual ID) atau MiniLM (lighter, weaker ID)
+2. **Domain detector**: sekarang hardcoded `domain="casual"` di wiring — perlu auto-detect dari question/persona
+3. **Supabase mirror**: startup load + write-through (Provara pattern), cegah cold start
+4. **Prometheus exporter**: wrap `/metrics` dari `stats()`
+5. **Drift detection**: weekly job — mean similarity hits drop >0.03 = alert
+6. **Speculative decoding F1**: n-gram di vLLM = low-hanging fruit Q3 (1.5-1.9x), perlu deploy stack vLLM dulu
+
+## Yang BELUM dari Vol 20 original
+- Task B: tadabbur_auto.adaptive_trigger() di /ask/stream
+- Task C: codeact_integration.maybe_enrich_with_codeact() di done event
+- Task E: Frontend ⚡ cache hit indicator UX
+
+## Vol 20 Estimated Effort: 1-2 hari (asli) → Vol 20a+b done, sisa B/C/E + 20c
 
 A + B + C + D = backend wiring (~150-200 LOC change di agent_serve.py)
 E = frontend small change (`SIDIX_USER_UI/src/main.ts`)
