@@ -9243,3 +9243,44 @@ NO PIVOT. Direction LOCKED. Production LIVE dengan Vol 20-fu2 features.
 - [ ] Cache eligibility loosening: maybe allow short greetings to cache (currently `too_short` blocks)
 - [ ] RunPod warmup cron (eliminate cold-start penalty)
 
+
+---
+
+## 2026-04-26 — [DOC] Triple Surface Content Sweep — Landing + README + HF
+
+### Trigger
+User: *"di HF udah diupdate belum kontennya? trus di GIT kontennya udah diupdate juga belum semua konten di landing page... semua konten GIT, landing page, dan HF sesuain dengan kebutuhan masing-masing dan sesuai perilaku audiennya, buat mancing user juga"*
+
+### Audit findings (gap)
+| Surface | Issue |
+|---|---|
+| Landing (`SIDIX_LANDING/index.html`) | Hero v2.0 (actual v2.1.4), Triad cards generic, no persona showcase |
+| README.md | Tools badge "44 active" (actual 48), version v2.0.0, no Vol 14-20 highlights |
+| HF model card (Tiranyx/sidix-lora) | **Wrong 5 personas (legacy MIGHAN/TOARD/FACH/HAYFAR/INAN — should be UTZ/ABOO/OOMAR/ALEY/AYMAN per LOCK 2026-04-26)**, tools 35 (actual 48), wrong repo path `sidixlab/sidix-lora` (actual `Tiranyx/sidix-lora`), no Vol 14-20 features, no honest limits section |
+
+### Updates committed
+- **Landing** (commit c72c690): hero refresh + Persona Showcase section (5 cards + auto-routing) + new "Free Forever" badge + i18n EN/ID
+- **README.md** (commit f07cc99): "What's New (Vol 14-20)" table + version v2.0.0→v2.1.4 + tools 44→48
+- **HF model card** (HF commit 2026-04-26 22:10 UTC):
+  - Correct persona table (UTZ/ABOO/OOMAR/ALEY/AYMAN with example queries)
+  - 48 tools list with categories
+  - Vol 14-20 highlights table
+  - Architecture diagram (brain_qa + vLLM 2-tier)
+  - Quick Start: standalone + vLLM + full agent
+  - Honest limits section (Indonesian-first, not MMLU hero, sanad depends on corpus)
+  - Citation BibTeX
+  - Repo path corrected: `Tiranyx/sidix-lora`
+
+### Audience tuning per surface
+| Surface | Audience | Hook |
+|---|---|---|
+| Landing | End-user (non-tech) | "Gratis selamanya, 2 detik, 5 persona" — visual cards + CTA |
+| README | Dev/contributor | What's New table + arch + cross-link CHANGELOG |
+| HF model card | ML researcher | Quick Start code + LoRA training params + honest limits |
+
+### TODO (future iteration)
+- [ ] Add Vol 21+ section after each major sprint
+- [ ] HF model card eval signals (when we have benchmarks worth showing)
+- [ ] Landing OpenGraph preview image refresh
+- [ ] README architecture ASCII diagram (currently description only)
+
