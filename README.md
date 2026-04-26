@@ -6,7 +6,7 @@
   <p><em>Self-Hosted · Self-Learning · Self-Evolving · Own Stack · No Vendor API</em></p>
 
   <p>
-    <img src="https://img.shields.io/badge/version-v2.0.0-blue?style=flat-square" alt="Version" />
+    <img src="https://img.shields.io/badge/version-v2.1.4-blue?style=flat-square" alt="Version" />
     <img src="https://img.shields.io/badge/Free-100%25-brightgreen?style=flat-square" alt="Free" />
     <img src="https://img.shields.io/badge/Open%20Source-MIT-gold?style=flat-square" alt="Open Source MIT" />
     <img src="https://img.shields.io/badge/Self--Hosted-Own%20Stack-blue?style=flat-square" alt="Self-Hosted" />
@@ -21,7 +21,7 @@
     <a href="https://github.com/fahmiwol/sidix/stargazers"><img src="https://img.shields.io/github/stars/fahmiwol/sidix?color=gold" alt="Stars" /></a>
     <a href="https://github.com/fahmiwol/sidix/issues"><img src="https://img.shields.io/github/issues/fahmiwol/sidix" alt="Issues" /></a>
     <img src="https://img.shields.io/badge/Model-Local%20LLM-blue" alt="Model" />
-    <img src="https://img.shields.io/badge/Tools-44 active-orange" alt="Tools" />
+    <img src="https://img.shields.io/badge/Tools-48 active-orange" alt="Tools" />
     <a href="./docs/sidix-hafidz-ledger-whitepaper.pdf"><img src="https://img.shields.io/badge/Whitepaper-Proof--of--Hifdz-darkblue" alt="Whitepaper" /></a>
   <hr/>
 
@@ -61,6 +61,22 @@
 > **Not a chatbot. SIDIX is an AI Agent with initiative, opinions, and creativity.**
 > It brainstorms with you, builds for you, and grows from every conversation.
 > Self-hosted. MIT licensed. Yours forever.
+
+### ✨ What's New (Vol 14 → Vol 20, 2026-Q1/Q2)
+
+| Vol | Feature | Impact |
+|-----|---------|--------|
+| **20-fu3** | Simple-tier fast-path (greetings/ack) | **78s → 2s** (37× speedup) |
+| **20** | Semantic cache L2 + BGE-M3 embedding | <100ms warm, multilingual ID |
+| **20** | Complexity router (`simple/standard/deep`) | Auto-route reasoning depth |
+| **20** | Domain detector (fiqh/medis/coding/factual) | Per-domain cache threshold + sanad gating |
+| **20** | Style anomaly filter (BadStyle defense) | Corpus poisoning prevention |
+| **19** | Relevance + Quality Sprint (4 modules) | Better retrieval ranking |
+| **17** | CodeAct enrich + MCP wrap | Code blocks auto-execute |
+| **16** | Creative Agent Ecosystem (10 domain × 37 agent) | Multi-agent debate/iteration |
+| **15** | LoRA SIDIX adapter on Qwen2.5-7B | Self-trained, 4-bit QLoRA |
+
+**Production stack**: VPS (FastAPI brain · BGE-M3 CPU · 1.182 corpus docs) + RunPod GPU serverless (vLLM v2.14.0 · Qwen2.5-7B + LoRA). See [`docs/CHANGELOG.md`](CHANGELOG.md) for full version history.
 
 ### Karakter: **GENIUS · KREATIF · INOVATIF**
 
