@@ -8097,3 +8097,75 @@ solid. Vol 20+ aman accelerate ke generatif gambar + voice + video.
 🚀 **Sesi baru ready**. Read HANDOFF first. Vol 20 sprint waiting.
 
 **Sampai jumpa di sesi baru. Build forward, no looking back.**
+
+---
+
+## 2026-04-26 (vol 20a) — Wire Vol 19 Modules ke /ask Flow (D + A)
+
+Sesi baru lanjut dari handoff `9a8a878`. Eksekusi Vol 20 sprint plan:
+**D (json_robust) + A (response_cache)** — low-risk wins dulu.
+
+### Task D — json.loads → robust_json_parse (7 modul kognitif)
+
+[IMPL] 9 replacement (LLM-output only, JSONL file parsing untouched):
+- `aspiration_detector.py` L183
+- `pattern_extractor.py` L186
+- `tool_synthesizer.py` L158
+- `tadabbur_mode.py` L203
+- `problem_decomposer.py` L121, L188, L223 (3 phase: understand/plan/review)
+- `agent_critic.py` L159
+- `hands_orchestrator.py` L221
+
+Pattern minimum-invasive: replace strip+json.loads dengan
+`robust_json_parse(response)` + `if not data: raise` untuk preserve
+existing failure semantics (trigger downstream except → return None /
+fallback dict).
+
+### Task A — Wire response_cache di /ask endpoint
+
+[IMPL] `agent_serve.py` 2 intervensi di `def ask()`:
+
+1. **Early lookup** sebelum `run_react()`:
+   - `is_cacheable(question, persona, mode)` — auto-skip current events
+     keyword + short Q + strict mode
+   - `get_ask_cache(...)` — hit return dengan `_cache_hit=True`
+     + `_cache_latency_ms`
+   - Bump metric `ask_cache_hit`
+
+2. **Post-success store**:
+   - Hanya kalau `_cacheable=True` AND `confidence_score >= 0.7`
+   - Threshold 0.7 cegah racun cache (jangan warisan low-quality)
+
+`try/except: pass` di kedua titik — cache failure tidak boleh blocking.
+
+### Test [TEST]
+
+8/8 smoke test pass:
+- cacheable stable Q: True
+- cacheable current event: False (keyword detect)
+- cacheable too short: False (<15 char)
+- cache roundtrip: True
+- cache miss persona: True (persona isolation)
+- robust parse trailing comma: parsed OK
+- robust parse single quote: parsed OK
+- robust parse empty: None
+
+Syntax check: 8 file pass `ast.parse`.
+
+### Doc [DOC]
+
+Research note: `brain/public/research_notes/232_vol20a_wire_cache_jsonrobust.md`
+
+### Yang belum (Vol 20b)
+
+- Task B: `tadabbur_auto.adaptive_trigger()` di `/ask/stream` (medium risk)
+- Task C: `codeact_integration.maybe_enrich_with_codeact()` di done event
+- Task E: Frontend ⚡ cache hit indicator UX
+
+Tunggu validasi D+A live di production dulu sebelum lanjut.
+
+### Filosofi
+
+Vol 20a = wire safest first. Vol 20b/c = deeper setelah confirmation.
+User methodology: catat → analisa → build → validasi → testing → verifikasi → QA.
+Foundation bertumbuh. NO PIVOT. Direction LOCKED.

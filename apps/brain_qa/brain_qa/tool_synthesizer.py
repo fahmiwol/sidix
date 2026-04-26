@@ -152,10 +152,10 @@ Output ONLY JSON:"""
         return None
 
     try:
-        response = response.strip()
-        response = re.sub(r"^```(?:json)?\s*", "", response)
-        response = re.sub(r"\s*```$", "", response)
-        data = json.loads(response)
+        from .llm_json_robust import robust_json_parse
+        data = robust_json_parse(response)
+        if not data:
+            raise ValueError("robust_json_parse returned None")
 
         name = data.get("name", "").strip().lower()
         # Sanitize name (snake_case, no special chars)

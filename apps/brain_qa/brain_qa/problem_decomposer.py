@@ -116,9 +116,11 @@ Jangan filler. Pendek tapi spesifik. Output JSON:"""
     if not response:
         return {"given_data": [], "unknown_target": problem[:200], "constraints": []}
     try:
-        response = re.sub(r"^```(?:json)?\s*", "", response.strip())
-        response = re.sub(r"\s*```$", "", response)
-        return json.loads(response)
+        from .llm_json_robust import robust_json_parse
+        data = robust_json_parse(response)
+        if not data:
+            raise ValueError("robust_json_parse returned None")
+        return data
     except Exception as e:
         log.debug("[decompose] understand fail: %s", e)
         return {"given_data": [], "unknown_target": problem[:200], "constraints": []}
@@ -183,9 +185,11 @@ Output JSON:"""
     if not response:
         return {"strategy": "", "sub_goals": [], "tools_needed": []}
     try:
-        response = re.sub(r"^```(?:json)?\s*", "", response.strip())
-        response = re.sub(r"\s*```$", "", response)
-        return json.loads(response)
+        from .llm_json_robust import robust_json_parse
+        data = robust_json_parse(response)
+        if not data:
+            raise ValueError("robust_json_parse returned None")
+        return data
     except Exception as e:
         log.debug("[decompose] plan fail: %s", e)
         return {"strategy": "", "sub_goals": [], "tools_needed": []}
@@ -218,9 +222,10 @@ Output JSON:"""
         return {"correctness_check": "", "confidence": 0.5,
                 "generalizable_insight": "", "lessons": []}
     try:
-        response = re.sub(r"^```(?:json)?\s*", "", response.strip())
-        response = re.sub(r"\s*```$", "", response)
-        data = json.loads(response)
+        from .llm_json_robust import robust_json_parse
+        data = robust_json_parse(response)
+        if not data:
+            raise ValueError("robust_json_parse returned None")
         return {
             "correctness_check": (data.get("correctness_check") or "")[:300],
             "confidence": float(data.get("confidence", 0.5)),

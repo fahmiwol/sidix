@@ -2953,6 +2953,32 @@ def create_app() -> "FastAPI":
         _enforce_daily(request)
         _bump_metric("ask")
         _t_ask_start = time.time()
+
+        # ── Vol 20: Response cache early lookup ──────────────────────────────
+        # Cache hit return <100ms vs LLM 5-30s. Hanya untuk stable factual Q
+        # (corpus-based). Skip kalau current events / personalized / strict.
+        _cache_mode = "strict" if req.strict_mode else ("simple" if req.simple_mode else "agent")
+        _cacheable = False
+        try:
+            from .response_cache import is_cacheable, get_ask_cache, set_ask_cache
+            _cacheable, _ = is_cacheable(
+                req.question,
+                persona=req.persona,
+                mode=_cache_mode,
+                has_user_context=False,
+                is_current_events=False,
+            )
+            if _cacheable:
+                _cached = get_ask_cache(req.question, req.persona, _cache_mode)
+                if _cached:
+                    _bump_metric("ask_cache_hit")
+                    _resp = dict(_cached)
+                    _resp["_cache_hit"] = True
+                    _resp["_cache_latency_ms"] = int((time.time() - _t_ask_start) * 1000)
+                    return _resp
+        except Exception:
+            pass  # cache failure never blocks main flow
+
         session = run_react(
             question=req.question,
             persona=req.persona,
@@ -3059,7 +3085,7 @@ def create_app() -> "FastAPI":
         except Exception:
             pass
 
-        return {
+        _response = {
             "answer": session.final_answer,
             "citations": ui_citations[: min(5, req.k)],
             "persona": session.persona,
@@ -3080,6 +3106,19 @@ def create_app() -> "FastAPI":
             "case_frame_ids": getattr(session, "case_frame_ids", ""),
             "praxis_matched_frame_ids": getattr(session, "praxis_matched_frame_ids", ""),
         }
+
+        # ── Vol 20: Response cache store (post-success) ──────────────────────
+        # Hanya cache jika cacheable + confidence cukup tinggi (>=0.7)
+        # supaya jangan racun cache dengan jawaban low-quality.
+        try:
+            if _cacheable:
+                _conf_score = getattr(session, "confidence_score", 0.0) or 0.0
+                if _conf_score >= 0.7:
+                    set_ask_cache(_response, req.question, req.persona, _cache_mode)
+        except Exception:
+            pass
+
+        return _response
 
     # ── POST /ask/stream ──────────────────────────────────────────────────────
     @app.post("/ask/stream")

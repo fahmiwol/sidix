@@ -177,13 +177,10 @@ Jangan generic. Yang spesifik tapi applicable. Output ONLY JSON:"""
         return None
 
     try:
-        # Strip markdown code fence
-        response = response.strip()
-        response = re.sub(r"^```(?:json)?\s*", "", response)
-        response = re.sub(r"\s*```$", "", response)
-
-        # Try parse JSON
-        data = json.loads(response)
+        from .llm_json_robust import robust_json_parse
+        data = robust_json_parse(response)
+        if not data:
+            raise ValueError("robust_json_parse returned None")
         principle = (data.get("principle") or "").strip()
         if not principle or len(principle) < 10:
             return None

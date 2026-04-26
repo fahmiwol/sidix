@@ -197,10 +197,10 @@ Output JSON only:"""
         return {"convergence_summary": "", "divergence_points": [], "final_synthesis": ""}
 
     try:
-        response = response.strip()
-        response = re.sub(r"^```(?:json)?\s*", "", response)
-        response = re.sub(r"\s*```$", "", response)
-        data = json.loads(response)
+        from .llm_json_robust import robust_json_parse
+        data = robust_json_parse(response)
+        if not data:
+            raise ValueError("robust_json_parse returned None")
         return {
             "convergence_summary": (data.get("convergence_summary") or "")[:1000],
             "divergence_points": [s for s in (data.get("divergence_points") or []) if s][:6],

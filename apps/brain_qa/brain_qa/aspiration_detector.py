@@ -176,11 +176,10 @@ Jangan sok yakin. Kalau effort high atau moonshot, bilang jujur. Output ONLY JSO
         return None
 
     try:
-        response = response.strip()
-        response = re.sub(r"^```(?:json)?\s*", "", response)
-        response = re.sub(r"\s*```$", "", response)
-
-        data = json.loads(response)
+        from .llm_json_robust import robust_json_parse
+        data = robust_json_parse(response)
+        if not data:
+            raise ValueError("robust_json_parse returned None")
 
         return Aspiration(
             id=f"asp_{uuid.uuid4().hex[:10]}",

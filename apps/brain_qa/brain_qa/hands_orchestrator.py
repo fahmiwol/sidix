@@ -215,10 +215,10 @@ Jangan generic. Tiap sub-task spesifik untuk persona-nya. Output JSON:"""
         return goal
 
     try:
-        response = response.strip()
-        response = re.sub(r"^```(?:json)?\s*", "", response)
-        response = re.sub(r"\s*```$", "", response)
-        data = json.loads(response)
+        from .llm_json_robust import robust_json_parse
+        data = robust_json_parse(response)
+        if not data:
+            raise ValueError("robust_json_parse returned None")
 
         sub_tasks_data = data.get("sub_tasks", [])
         for st_data in sub_tasks_data[:5]:  # cap 5 sub-tasks
