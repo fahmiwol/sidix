@@ -9204,3 +9204,42 @@ NO PIVOT. Direction LOCKED. Production LIVE dengan Vol 20-fu2 features.
 - [ ] Track download trend monthly (growth signal)
 - [ ] If RunPod serverless production deploy → consider HF Inference Endpoint listing untuk discovery
 
+
+---
+
+## 2026-04-26 — [TEST] Vol 20-fu3 Production Verify
+
+### Bug observed (browser)
+- UI test: `halo` + AYMAN took **78.9s** (status: "Riset multi-langkah... Mikir lebih dalam (mungkin perlu web search)")
+- Status messages = deep-tier copy padahal tier seharusnya "simple"
+
+### Root cause
+- `complexity_router.detect_tier()` benar return `simple` (verified via /admin/complexity-tier)
+- BUT: di /ask flow, tier hanya di-record ke metric + response metadata
+- `run_react()` masih dipanggil dengan flag asli req.simple_mode/agent_mode dari UI
+- Default UI flags = full agent (web_search, deep ReAct) → 60-80s
+
+### Fix (commit c4c1bdf)
+- Add `_is_simple_tier` check after detect_tier
+- Override flags ke lightweight: `corpus_only=True`, `allow_web_fallback=False`, `simple_mode=True`, `agent_mode=False`
+- Applied di /ask AND /ask/stream
+- Telemetry: bump `ask_simple_fastpath` + `ask_stream_simple_fastpath` metric
+
+### Verify (post-deploy)
+| Test | Latency | Tier | Notes |
+|------|---------|------|-------|
+| 1st `halo` (cold RunPod) | 58.6s | simple | RunPod cold-start ~60s eaten by network init, not our fault |
+| 2nd `halo` (warm + session) | 0.017s | simple | session-level cache hit (cache_hit:False reported but answer identical) |
+| Fresh `hi gaes` (warm) | **2.13s** | simple | TRUE fast-path latency post-warm |
+
+### Latency impact
+- Before: 78s (UI test deep ReAct)
+- After: ~2s (simple tier warm)
+- **37x speedup** untuk greetings/ack
+- Cold-start penalty (RunPod queue + worker boot) still ~60s — DEFER ke warmup_runpod.sh cron
+
+### TODO (Vol 20-fu4 candidate)
+- [ ] Direct LLM bypass (skip run_react entirely) untuk simple tier — target <500ms warm
+- [ ] Cache eligibility loosening: maybe allow short greetings to cache (currently `too_short` blocks)
+- [ ] RunPod warmup cron (eliminate cold-start penalty)
+
