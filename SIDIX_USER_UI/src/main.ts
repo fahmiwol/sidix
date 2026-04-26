@@ -1586,6 +1586,15 @@ async function handleSend() {
   const citations: Citation[] = [];
   let fullText = '';
   let firstTokenReceived = false;
+  // Vol 20-Closure E: cache hit telemetry dari meta event
+  let cacheHit = false;
+  let cacheLayer: string | null = null;
+  let cacheSimilarity: number | null = null;
+  let cacheDomain: string | null = null;
+  let codeactExecuted = false;
+  let codeactDurationMs: number | null = null;
+  let tadabburEligible = false;
+  let tadabburScore: number | null = null;
 
   const convId = getCurrentConversationId();
   await askStream(question, persona, 5, {
@@ -1596,6 +1605,22 @@ async function handleSend() {
       if (meta.quota) {
         const q = meta.quota as unknown as QuotaInfo & { used: number; limit: number; remaining: number; tier: string };
         updateQuotaBadge(q.used ?? 0, q.limit ?? 5, q.tier ?? "guest", q.unlimited);
+      }
+      // Vol 20-Closure E: capture cache + codeact + tadabbur telemetry
+      const m = meta as Record<string, unknown>;
+      if (m._cache_hit === true) {
+        cacheHit = true;
+        cacheLayer = (m._cache_layer as string) || null;
+        cacheSimilarity = (m._cache_similarity as number) ?? null;
+        cacheDomain = (m._cache_domain as string) || null;
+      }
+      if (m._codeact_found === true) {
+        codeactExecuted = m._codeact_executed === true;
+        codeactDurationMs = (m._codeact_duration_ms as number) ?? null;
+      }
+      if (m._tadabbur_eligible === true) {
+        tadabburEligible = true;
+        tadabburScore = (m._tadabbur_score as number) ?? null;
       }
     },
     onToken: (text) => {
@@ -1678,11 +1703,25 @@ async function handleSend() {
       }
       // Latency footer — kasih tau user durasi total (transparency + UX feel)
       const latencySec = (totalMs / 1000).toFixed(1);
-      const speedHint = totalMs < 5000 ? '⚡ cepat' : totalMs < 15000 ? '✓ normal' : totalMs < 45000 ? '🐢 lama (mungkin web search/cold start)' : '⏳ sangat lama';
+      const speedHint = cacheHit
+        ? `⚡ cache ${cacheLayer}${cacheLayer === 'semantic' && cacheSimilarity ? ` (sim ${cacheSimilarity.toFixed(2)})` : ''}`
+        : totalMs < 5000 ? '⚡ cepat' : totalMs < 15000 ? '✓ normal' : totalMs < 45000 ? '🐢 lama (mungkin web search/cold start)' : '⏳ sangat lama';
       const latencyRow = document.createElement('div');
       latencyRow.className = 'mt-2 pt-2 flex items-center gap-2 text-[10px] text-parchment-500';
       latencyRow.style.borderTop = '1px dashed rgba(212,168,83,0.1)';
-      latencyRow.innerHTML = `<span style="font-variant-numeric: tabular-nums;">⏱ ${latencySec}s</span><span>·</span><span>${speedHint}</span>`;
+      // Build extras for codeact / tadabbur observability
+      const extras: string[] = [];
+      if (codeactExecuted) {
+        extras.push(`<span class="text-status-ready">▶ code executed${codeactDurationMs ? ` (${codeactDurationMs}ms)` : ''}</span>`);
+      }
+      if (tadabburEligible && !cacheHit) {
+        extras.push(`<span class="text-sky-300">🧭 deep-mode eligible (score ${tadabburScore?.toFixed(2) ?? '?'})</span>`);
+      }
+      if (cacheHit && cacheDomain) {
+        extras.push(`<span class="text-parchment-400">domain: ${cacheDomain}</span>`);
+      }
+      const extrasHTML = extras.length > 0 ? `<span>·</span>${extras.join('<span>·</span>')}` : '';
+      latencyRow.innerHTML = `<span style="font-variant-numeric: tabular-nums;">⏱ ${latencySec}s</span><span>·</span><span>${speedHint}</span>${extrasHTML}`;
       streamBubble.appendChild(latencyRow);
       // SIDIX 2.0: hide confidence & feedback untuk agent mode (conversational)
       // Metadata epistemic hanya ditampilkan di strict_mode / research — nanti bisa

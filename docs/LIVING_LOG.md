@@ -8433,3 +8433,96 @@ Foundation siap. Saat sentence-transformers + ENV set di production,
 semantic cache instant aktif tanpa code change.
 
 NO PIVOT. Direction LOCKED.
+
+---
+
+## 2026-04-27 (vol 20-closure) — Tutup Vol 20 Original Sprint (B + C + E)
+
+User: *"masih bisa kerjain 2-3 task lagi. Eksekusi yang paling impactful"*.
+Pilihan: tutup Vol 20 original (Tasks B + C + E) — modul standalone Vol 19
+sudah ditunggu wire dari sini.
+
+### Wire [IMPL]
+
+**Task C — CodeAct enrich done event** (kedua endpoint):
+- `/ask`: `maybe_enrich_with_codeact(session.final_answer)` setelah session
+  ready, sebelum build `_response`. Replace dengan enriched kalau executed.
+  Tag `_codeact_found / _executed / _action_id / _duration_ms` di response.
+- `/ask/stream`: same hook setelah `run_react`, sebelum stream tokens. Wajib
+  enrich dulu supaya user lihat enriched answer (bukan raw code).
+
+**Task B — Tadabbur observability + cache short-circuit /ask/stream**:
+- Cache lookup di start /ask/stream (sebelum run_react):
+  - L1 exact via `get_ask_cache`
+  - L2 semantic via `semantic_cache.lookup` (kalau enabled + cacheable)
+  - HIT: short-circuit — yield meta + tokens dari cached answer (0.005s/word)
+    + done event. Bypass run_react entirely. Total latency <100ms vs 5-30s.
+- Cache store post-success di end /ask/stream:
+  - L1 + L2 store kalau confidence_score >= 0.7
+  - Tanpa wiring ini, cache tidak pernah populate karena frontend exclusive
+    pakai stream
+- Tadabbur `adaptive_trigger` decision di-log + meta tag `_tadabbur_eligible`
+  + `_tadabbur_score`. **Belum swap** ke `tadabbur_mode.tadabbur` full
+  (butuh session adapter, defer ke Vol 20e). Sekarang frontend bisa
+  observe deep-mode eligibility.
+
+**Task E — Frontend cache hit indicator** (`SIDIX_USER_UI/src/main.ts`):
+- Capture `_cache_hit / _cache_layer / _cache_similarity / _cache_domain`
+  dari meta event
+- Capture `_codeact_found / _executed / _duration_ms`
+- Capture `_tadabbur_eligible / _score`
+- Render di latency footer:
+  - `⚡ cache exact` atau `⚡ cache semantic (sim 0.96)` (replace speed hint)
+  - `▶ code executed (15ms)` (status-ready color)
+  - `🧭 deep-mode eligible (score 0.65)` (sky color)
+  - `domain: factual` (parchment-400)
+
+### Test [TEST]
+
+5 smoke test pass:
+- Module imports OK (codeact, tadabbur, response_cache, semantic_cache, domain, embedding)
+- adaptive_trigger: deep Q scored, casual blocked (too short), code blocked
+- **codeact EXECUTE confirmed**: 1234*567+89 = 699767 (15ms duration)
+- L1 exact cache: store + retrieve OK
+- L2 semantic + domain integration: factual detected, score 1.0000
+
+### Effect
+
+Sebelum Vol 20-closure:
+- /ask done event: confidence + epistemic info, no code execute
+- /ask/stream: NO cache check (cache never hit untuk frontend user!)
+- Tadabbur: built but tidak observe-able dari user
+- Frontend: tidak tahu kalau cache hit / code executed
+
+Setelah:
+- /ask + /ask/stream: code block di answer execute via sandbox, replace
+  dengan enriched (literal computation, akurasi numerik)
+- /ask/stream cache short-circuit: cached query <100ms total (vs 5-30s LLM)
+- Tadabbur eligibility visible di meta + frontend badge
+- Frontend latency footer rich: cache layer + codeact + deep-mode + domain
+
+### Doc [DOC]
+
+- CHANGELOG [2.1.4] entry — Vol 20-Closure (B + C + E)
+- HANDOFF doc updated — Vol 20 ORIGINAL CLOSED milestone
+- Research note 237 (vol 20-closure detail)
+
+### Yang DEFER Vol 20e+
+
+1. Tadabbur full swap (run tadabbur_mode.tadabbur instead of run_react)
+   — butuh session adapter dari TadabburResult ke Session shape
+2. Install sentence-transformers di production (deploy step)
+3. Stash backend semantic cache mirror
+4. Drift detection weekly job
+5. EngramaBench 4-axis continual_memory upgrade (Q3)
+6. Complexity-tier routing (Q3)
+7. SAS-L pattern di cot_system_prompts (Q3)
+8. BadStyle defense di corpus_to_training (Q3)
+
+### Filosofi Vol 20
+
+Vol 20 = "Wire Sprint" complete (a/b/b+/c/closure). 4 modul Vol 19
+standalone sekarang semua jalan di production /ask flow. Foundation
+Vol 21+ siap accelerate. Tesla 100x percobaan compound.
+
+NO PIVOT. Direction LOCKED. Vol 20 milestone CLEAN.

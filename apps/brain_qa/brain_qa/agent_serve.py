@@ -3187,6 +3187,26 @@ def create_app() -> "FastAPI":
         except Exception:
             pass
 
+        # ── Vol 20-Closure C: CodeAct enrich done event ──────────────────────
+        # Scan final_answer untuk code block. Kalau ada → execute via sandbox →
+        # enrich answer dengan computed result. Wang CodeAct 2024 pattern.
+        # Sangat berharga untuk pertanyaan computation ("hitung 1234*567").
+        _codeact_meta = {}
+        try:
+            from .codeact_integration import maybe_enrich_with_codeact
+            _ce = maybe_enrich_with_codeact(session.final_answer, timeout_seconds=10)
+            if _ce.found_code:
+                _codeact_meta = {
+                    "_codeact_found": True,
+                    "_codeact_executed": _ce.executed,
+                    "_codeact_action_id": _ce.code_action_id,
+                    "_codeact_duration_ms": _ce.duration_ms,
+                }
+                if _ce.executed and _ce.enriched_answer:
+                    session.final_answer = _ce.enriched_answer
+        except Exception as _e:
+            log.debug("[codeact_integration] enrich error: %s", _e)
+
         _response = {
             "answer": session.final_answer,
             "citations": ui_citations[: min(5, req.k)],
@@ -3207,6 +3227,7 @@ def create_app() -> "FastAPI":
             "orchestration_digest": getattr(session, "orchestration_digest", ""),
             "case_frame_ids": getattr(session, "case_frame_ids", ""),
             "praxis_matched_frame_ids": getattr(session, "praxis_matched_frame_ids", ""),
+            **_codeact_meta,
         }
 
         # ── Vol 20: Response cache store (post-success) ──────────────────────
@@ -3331,8 +3352,101 @@ def create_app() -> "FastAPI":
             except Exception as e:
                 log.debug("[stream] persona route skip: %s", e)
 
-            # ── 2b. Jalankan ReAct ───────────────────────────────────────────
+            # ── Vol 20-Closure: Cache short-circuit (L1 exact + L2 semantic) ─
+            # Frontend pakai stream exclusively, tanpa wiring di sini cache
+            # tidak pernah hit untuk user normal. Hit = stream cached answer
+            # word-by-word instant (<100ms total).
             t_start = time.time()
+            _stream_cache_mode = "strict" if req.strict_mode else ("simple" if req.simple_mode else "agent")
+            _stream_cached_resp = None
+            _stream_cache_layer = None
+            _stream_cache_similarity = None
+            _stream_cache_domain_used = None
+            try:
+                from .response_cache import is_cacheable, get_ask_cache, set_ask_cache
+                _cacheable_s, _ = is_cacheable(
+                    req.question, persona=effective_persona, mode=_stream_cache_mode,
+                    has_user_context=False, is_current_events=False,
+                )
+                if _cacheable_s:
+                    # L1 exact
+                    _hit_l1 = get_ask_cache(req.question, effective_persona, _stream_cache_mode)
+                    if _hit_l1:
+                        _stream_cached_resp = _hit_l1
+                        _stream_cache_layer = "exact"
+                    else:
+                        # L2 semantic
+                        try:
+                            from .semantic_cache import get_semantic_cache
+                            from .domain_detector import detect_domain
+                            _sc = get_semantic_cache()
+                            if _sc.enabled:
+                                _stream_cache_domain_used = detect_domain(req.question, effective_persona)
+                                _hit_l2 = _sc.lookup(
+                                    query=req.question, persona=effective_persona,
+                                    lora_version="v1", system_prompt="",
+                                    domain=_stream_cache_domain_used,
+                                    msg_history_len=0, temperature=0.0,
+                                )
+                                if _hit_l2:
+                                    _stream_cached_resp, _stream_cache_similarity = _hit_l2
+                                    _stream_cache_layer = "semantic"
+                        except Exception as _e:
+                            log.debug("[stream] L2 cache lookup error: %s", _e)
+            except Exception as _e:
+                log.debug("[stream] cache lookup error: %s", _e)
+
+            if _stream_cached_resp:
+                # Short-circuit: stream cached answer instant
+                _bump_metric(f"ask_stream_cache_hit_{_stream_cache_layer}")
+                _cached_answer = _stream_cached_resp.get("answer", "") if isinstance(_stream_cached_resp, dict) else str(_stream_cached_resp)
+                _meta_cache = {
+                    "type": "meta",
+                    "session_id": _stream_cached_resp.get("session_id", "cached") if isinstance(_stream_cached_resp, dict) else "cached",
+                    "_cache_hit": True,
+                    "_cache_layer": _stream_cache_layer,
+                    "_cache_latency_ms": int((time.time() - t_start) * 1000),
+                }
+                if _stream_cache_similarity is not None:
+                    _meta_cache["_cache_similarity"] = round(_stream_cache_similarity, 4)
+                if _stream_cache_domain_used:
+                    _meta_cache["_cache_domain"] = _stream_cache_domain_used
+                yield f"data: {_json.dumps(_meta_cache)}\n\n"
+                # Stream cached answer word-by-word (faster than usual: 0.005s vs 0.02s)
+                _words = _cached_answer.split(" ")
+                for i, w in enumerate(_words):
+                    _t = w + (" " if i < len(_words) - 1 else "")
+                    yield f"data: {_json.dumps({'type':'token','text':_t})}\n\n"
+                    await asyncio.sleep(0.005)
+                _done_cache = {
+                    "type": "done", "persona": effective_persona,
+                    "session_id": _meta_cache["session_id"],
+                    "conversation_id": effective_conversation_id,
+                    "confidence": _stream_cached_resp.get("confidence", "tinggi") if isinstance(_stream_cached_resp, dict) else "tinggi",
+                    "_cache_hit": True, "_cache_layer": _stream_cache_layer,
+                }
+                if _stream_cache_similarity is not None:
+                    _done_cache["_cache_similarity"] = round(_stream_cache_similarity, 4)
+                yield f"data: {_json.dumps(_done_cache)}\n\n"
+                return
+
+            # ── Vol 20-Closure B: Tadabbur observability (decision + meta) ───
+            # Adaptive trigger decision di-log tapi BELUM swap ke tadabbur_mode
+            # full (butuh session adapter, defer ke Vol 20e). Sekarang frontend
+            # bisa observe decision via meta event.
+            _tadabbur_decision = None
+            try:
+                from .tadabbur_auto import adaptive_trigger
+                _tadabbur_decision = adaptive_trigger(req.question)
+                if _tadabbur_decision.should_trigger:
+                    log.info(
+                        "[stream] tadabbur trigger detected (score=%.2f) but full swap defer Vol 20e",
+                        _tadabbur_decision.score,
+                    )
+            except Exception as _e:
+                log.debug("[stream] tadabbur decision error: %s", _e)
+
+            # ── 2b. Jalankan ReAct ───────────────────────────────────────────
             try:
                 session = run_react(
                     question=req.question,
@@ -3349,6 +3463,24 @@ def create_app() -> "FastAPI":
                 err = _json.dumps({"type": "error", "message": str(e)})
                 yield f"data: {err}\n\n"
                 return
+
+            # ── Vol 20-Closure C: CodeAct enrich (post-react, pre-stream) ────
+            # Scan answer untuk code block, execute, replace dengan enriched.
+            # Wajib SEBELUM stream tokens supaya user lihat enriched answer.
+            _stream_codeact_meta = {}
+            try:
+                from .codeact_integration import maybe_enrich_with_codeact
+                _ce_s = maybe_enrich_with_codeact(session.final_answer, timeout_seconds=10)
+                if _ce_s.found_code:
+                    _stream_codeact_meta = {
+                        "_codeact_found": True,
+                        "_codeact_executed": _ce_s.executed,
+                        "_codeact_duration_ms": _ce_s.duration_ms,
+                    }
+                    if _ce_s.executed and _ce_s.enriched_answer:
+                        session.final_answer = _ce_s.enriched_answer
+            except Exception as _e:
+                log.debug("[stream] codeact enrich error: %s", _e)
 
             rate_limit.record_daily_use(dq_key)
             _store_session(session)
@@ -3387,7 +3519,7 @@ def create_app() -> "FastAPI":
                 pass
 
             # ── 5. Kirim meta + quota info ─────────────────────────────────────
-            meta = _json.dumps({
+            _meta_payload = {
                 "type": "meta",
                 "session_id": session.session_id,
                 "confidence": session.confidence,
@@ -3400,7 +3532,12 @@ def create_app() -> "FastAPI":
                     "remaining": quota_after.get("remaining", 9999),
                     "tier":      quota_after.get("tier", "guest"),
                 },
-            })
+                **_stream_codeact_meta,
+            }
+            if _tadabbur_decision and _tadabbur_decision.should_trigger:
+                _meta_payload["_tadabbur_eligible"] = True
+                _meta_payload["_tadabbur_score"] = _tadabbur_decision.score
+            meta = _json.dumps(_meta_payload)
             yield f"data: {meta}\n\n"
 
             # ── 6. Stream token per kata ───────────────────────────────────────
@@ -3484,8 +3621,46 @@ def create_app() -> "FastAPI":
             except Exception:
                 pass
 
+            # ── Vol 20-Closure: Cache store post-success di stream ────────────
+            # Tanpa wiring ini, frontend (yang exclusive pakai stream) tidak
+            # pernah populate cache → cache short-circuit di start tidak
+            # pernah hit. Threshold confidence_score >= 0.7 anti-poison.
+            try:
+                from .response_cache import is_cacheable, set_ask_cache
+                _cacheable_post, _ = is_cacheable(
+                    req.question, persona=effective_persona, mode=_stream_cache_mode,
+                    has_user_context=False, is_current_events=False,
+                )
+                if _cacheable_post:
+                    _conf_s = getattr(session, "confidence_score", 0.0) or 0.0
+                    if _conf_s >= 0.7:
+                        _store_payload = {
+                            "answer": answer,
+                            "confidence": session.confidence,
+                            "session_id": session.session_id,
+                            "persona": session.persona,
+                        }
+                        set_ask_cache(_store_payload, req.question, effective_persona, _stream_cache_mode)
+                        # L2 semantic store juga (kalau enabled)
+                        try:
+                            from .semantic_cache import get_semantic_cache
+                            from .domain_detector import detect_domain
+                            _sc_post = get_semantic_cache()
+                            if _sc_post.enabled:
+                                _sc_post.store(
+                                    query=req.question, response=_store_payload,
+                                    persona=effective_persona, lora_version="v1",
+                                    system_prompt="",
+                                    domain=detect_domain(req.question, effective_persona),
+                                    output=answer,
+                                )
+                        except Exception as _e:
+                            log.debug("[stream] L2 store error: %s", _e)
+            except Exception as _e:
+                log.debug("[stream] cache store error: %s", _e)
+
             # ── 10. Done event ─────────────────────────────────────────────────
-            event = _json.dumps({
+            _done_payload = {
                 "type": "done",
                 "persona": session.persona,
                 "session_id": session.session_id,
@@ -3500,8 +3675,12 @@ def create_app() -> "FastAPI":
                     "remaining": quota_after.get("remaining", 9999),
                     "tier":      quota_after.get("tier", "guest"),
                 },
-            })
-            yield f"data: {event}\n\n"
+                **_stream_codeact_meta,
+            }
+            if _tadabbur_decision and _tadabbur_decision.should_trigger:
+                _done_payload["_tadabbur_eligible"] = True
+                _done_payload["_tadabbur_score"] = _tadabbur_decision.score
+            yield f"data: {_json.dumps(_done_payload)}\n\n"
 
         return SR(generate(), media_type="text/event-stream")
 

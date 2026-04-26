@@ -6,6 +6,60 @@ Semua perubahan signifikan dicatat di sini. Format: `[versi] — tanggal — rin
 
 ---
 
+## [2.1.4] — 2026-04-27 — Vol 20-Closure (B + C + E) — Vol 20 Original CLOSED
+
+### Vol 20-Closure (commit pending) — Wire Tasks B + C + E ke /ask + /ask/stream
+
+#### Task C — CodeAct enrich done event (kedua endpoint)
+- `/ask`: `maybe_enrich_with_codeact()` setelah session ready, sebelum `_response`
+- `/ask/stream`: same hook setelah `run_react`, SEBELUM stream tokens (user lihat enriched)
+- Code block di answer di-execute via `code_sandbox` (Wang CodeAct 2024 pattern)
+- Tag di response: `_codeact_found / _executed / _action_id / _duration_ms`
+- **Smoke test confirmed**: `1234 * 567 + 89 = 699767` executed in 15ms
+
+#### Task B — Tadabbur observability + cache short-circuit /ask/stream
+- **Cache short-circuit di /ask/stream start** (sebelum run_react):
+  - L1 exact via `get_ask_cache`
+  - L2 semantic via `semantic_cache.lookup` (kalau enabled + cacheable)
+  - HIT: yield meta + cached tokens (0.005s/word) + done. Bypass run_react.
+  - Total latency cached: <100ms vs 5-30s LLM
+- **Cache store post-success di /ask/stream end** (L1 + L2, confidence ≥ 0.7)
+  - Tanpa wiring ini, frontend exclusive pakai stream → cache tidak pernah populate
+- **Tadabbur `adaptive_trigger` decision logging + meta tag**:
+  - `_tadabbur_eligible: true / _tadabbur_score: 0.65` di meta + done event
+  - **Belum swap** ke `tadabbur_mode.tadabbur` full (defer Vol 20e — butuh session adapter)
+  - Sekarang frontend bisa observe deep-mode eligibility
+
+#### Task E — Frontend cache hit indicator + observability badges
+- `SIDIX_USER_UI/src/main.ts` capture cache + codeact + tadabbur dari meta event
+- Latency footer rich render:
+  - `⚡ cache exact` atau `⚡ cache semantic (sim 0.96)` (replace speed hint)
+  - `▶ code executed (15ms)` (status-ready color)
+  - `🧭 deep-mode eligible (score 0.65)` (sky color)
+  - `domain: factual` (parchment-400)
+
+### Test
+- 5 smoke test pass: import chain, adaptive_trigger (deep/casual/code), CodeAct execute confirmed, L1+L2+domain integration
+
+### Documentation
+- Research note 237 — Vol 20-Closure detail
+- HANDOFF doc updated — Vol 20 milestone CLOSED
+
+### Effect — Vol 20 Sprint Complete
+| Task | Vol | Status |
+|------|-----|--------|
+| A. response_cache di /ask | 20a | ✅ |
+| D. json_robust di 7 modul | 20a | ✅ |
+| Semantic Cache Phase B (NEW) | 20b | ✅ |
+| Comprehensive research sweep (NEW) | 20b+ | ✅ 96/104 |
+| Domain detector + embedding loader (NEW) | 20c | ✅ |
+| C. CodeAct enrich done event | 20-closure | ✅ |
+| E. Frontend cache hit indicator | 20-closure | ✅ |
+| B. Tadabbur observability + cache stream | 20-closure | ✅ |
+| Tadabbur full swap (run tadabbur instead of run_react) | Vol 20e | ⏸ defer |
+
+---
+
 ## [2.1.3] — 2026-04-27 — Vol 20c Unlock Semantic Cache (domain + embedding)
 
 ### Vol 20c (commit pending) — Domain Detector + Embedding Loader

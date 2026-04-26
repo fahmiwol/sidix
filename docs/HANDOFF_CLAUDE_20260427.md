@@ -9,18 +9,33 @@
 
 ---
 
-# ⚡ LATEST STATUS (2026-04-27, Vol 20c) — BACA INI DULU
+# ⚡ LATEST STATUS (2026-04-27, Vol 20-Closure) — Vol 20 SPRINT CLOSED
 
 ## Komit chain (terbaru di atas)
 ```
-[VOL20c]  vol 20c   unlock semantic cache: domain_detector + embedding_loader  ← LATEST
-9db1d07  vol 20b+  CHANGELOG [2.1.2] + HANDOFF latest status
-39e4289  vol 20b+  comprehensive research sweep 96/104 (92%) → note 235
-604dbd7  vol 20a+b DOC HANDOFF update
-08a7d46  vol 20b   semantic cache Phase B (riset 18 sumber → ship)
-32d91d0  vol 20a   wire response_cache + json_robust ke /ask
-9a8a878  vol 19b   HANDOFF final (sesi sebelumnya)
+[VOL20-CL] vol 20-closure  Tasks B+C+E wire — Vol 20 ORIGINAL CLOSED ← LATEST
+b139ef4   vol 20c    unlock semantic cache: domain_detector + embedding_loader
+9db1d07   vol 20b+   CHANGELOG [2.1.2] + HANDOFF latest status
+39e4289   vol 20b+   comprehensive research sweep 96/104 (92%) → note 235
+604dbd7   vol 20a+b  DOC HANDOFF update
+08a7d46   vol 20b    semantic cache Phase B (riset 18 sumber → ship)
+32d91d0   vol 20a    wire response_cache + json_robust ke /ask
+9a8a878   vol 19b    HANDOFF final (sesi sebelumnya)
 ```
+
+## Vol 20 SPRINT MILESTONE — CLOSED ✅
+Original 5 tasks (A/B/C/D/E) + 3 NEW (semantic cache, research sweep, embedding loader/domain detector) — semua ship.
+
+| Task | Vol | Status | Notes |
+|------|-----|--------|-------|
+| A. response_cache di /ask | 20a | ✅ | hit `_cache_layer="exact"` |
+| D. json.loads → robust_json_parse (7 modul) | 20a | ✅ | 9 replacement |
+| NEW: Semantic Cache Phase B | 20b | ✅ | embedding-agnostic, per-domain threshold |
+| NEW: Comprehensive research sweep (96/104 file) | 20b+ | ✅ | 10 ADOPT + 15 Q3 + 12 NICE + 22 TANGENTIAL |
+| NEW: Domain detector + 3-way embedding loader | 20c | ✅ | BGE-M3/Mamba2/MiniLM, 13/14 test |
+| C. CodeAct enrich done event | 20-closure | ✅ | execute confirmed 1234*567+89=699767 (15ms) |
+| E. Frontend cache hit indicator | 20-closure | ✅ | ⚡ + ▶ + 🧭 badges di latency footer |
+| B. Tadabbur observability + cache stream | 20-closure | ✅ | obs + meta tag (full swap defer Vol 20e) |
 
 ## Yang sudah JALAN di production /ask flow
 1. **L1 exact response_cache** — wired, hit `_cache_layer="exact"` (vol 20a)
