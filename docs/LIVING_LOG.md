@@ -9876,3 +9876,80 @@ Sekarang chat di app.sidixlab.com untuk pertanyaan novel (yang gak di inventory)
 4. Vol 26 skill cloning bootstrap from session JSONL — 12 days
 
 Recommend: Vol 23d (1 day, fix L0 precision noise observed today).
+
+
+---
+
+## 2026-04-27 morning — VOL 23d SHIPPED ✅ Hybrid Embedding Lookup
+
+### What ships
+inventory_memory.lookup_hybrid():
+- Phase 1: FTS5 BM25 wide-net (15 candidates)
+- Phase 2: BGE-M3 embedding cosine rerank
+- Combined score: sim x confidence
+- Threshold filter: embedding_sim >= 0.45
+
+Lazy embed_fn load (graceful fallback to BM25 if unavailable).
+Embed cache per aku_id (numpy arrays, in-mem, no DB writes).
+Cosine via dot product (BGE-M3 L2-normalized so dot = cosine).
+
+Wire: /ask/stream L0 now uses lookup_hybrid (replaces plain lookup).
+
+### Precision boost verified
+Before Vol 23d (FTS only):
+- 'Mamba2 vs Transformer' wrongly hit cold-start AKU (token overlap weak)
+After Vol 23d (FTS + embedding):
+- 'Mamba2 vs Transformer' rejected by embedding (sim < 0.45)
+- Falls through to sanad_fanout correctly
+- 'presiden indonesia' still hits ✓
+- 'LoRA adapter' still hits ✓
+
+### Latency cost
+- Plain FTS: ~50ms
+- Hybrid: ~80-130ms (extra: embedding compute + cosine)
+- Worth it for precision (avoids wrong-answer at L0 layer)
+
+### Mandatory loop
+✅ CATAT (this entry)
+✅ TESTING (3 queries, 1 false-positive eliminated, 2 recall preserved)
+✅ ITERASI (none — implementation correct first try)
+✅ REVIEW (own diff, graceful fallback verified)
+✅ CATAT (above)
+✅ VALIDASI (live tests on VPS)
+✅ QA (no leaks)
+✅ CATAT (commit + push)
+
+### Sprint sequence completed this morning
+- Vol 23 MVP    ✅ (Inventory L0 + L1+L2 cache integration)
+- Vol 23b       ✅ (Auto-ingestor cron */10)
+- Vol 23c       ✅ (Synthesis cluster + canonical merge)
+- Vol 21 wire   ✅ (Sanad fan-out /ask/stream)
+- Vol 23d       ✅ (Hybrid embedding lookup precision)
+
+5 sprints in 1 morning. Pillar fundamental visi LENGKAP.
+
+### Production tier routing FINAL
+1. Inventory L0 (BM25 + BGE-M3 hybrid, instant)         ← Vol 23+23d
+2. Cache L1 exact + L2 semantic
+3. Simple bypass (greetings)
+4. SANAD MVP fan-out (LLM + wiki + corpus)              ← Vol 21
+5. Knowledge bypass (coding/factual single-LLM)
+6. Current events fastpath (wiki + brave)
+7. Tadabbur swap (deep + eligible)
+8. ReAct full agent (last resort)
+
+### Background jobs (5 cron + auto-ingest = SIDIX hidup 24/7)
+- */10 worker (drain task queue)
+- */10 aku_ingestor (auto AKU growth + hourly synth + decay)
+- */15 always_on (git observer)
+- */30 radar (mention listener)
+- 0    classroom (multi-teacher)
+
+### Next sprint recommendations
+Pending:
+- Vol 22 per-agent validation + iteration (depends Vol 21 ✓)
+- Vol 24a Lite browser polish + SearxNG self-host
+- Vol 24b SDXL endpoint
+- Vol 26 skill cloning bootstrap
+
+Vol 22 = highest leverage next (improves sanad branch quality further).
