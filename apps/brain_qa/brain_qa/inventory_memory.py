@@ -253,17 +253,27 @@ def lookup(
     """
     if not query.strip():
         return []
+    # FTS5 needs OR-token query for natural lang match (vs phrase strict).
+    # Tokenize: lowercase, strip punctuation, drop stopwords + short tokens
+    import re
+    stopwords = {"siapa", "apa", "kapan", "yang", "itu", "ini", "dari",
+                 "ke", "di", "dan", "atau", "the", "is", "what", "who", "of"}
+    tokens = re.findall(r"\w+", query.lower())
+    keep = [t for t in tokens if t not in stopwords and len(t) >= 3]
+    if not keep:
+        keep = tokens  # fallback if all stopwords
+    if not keep:
+        return []
+    # Build OR query: word1 OR word2 OR ...
+    fts_query = " OR ".join(keep[:8])  # cap at 8 tokens
     with _conn() as c:
-        # FTS query with BM25 ranking (built-in to fts5)
-        # Escape special FTS chars
-        safe_q = query.replace('"', '""').strip()
         try:
             rows = c.execute(
                 "SELECT aku.* FROM aku JOIN aku_fts ON aku.aku_id = aku_fts.aku_id "
                 "WHERE aku_fts MATCH ? AND aku.confidence >= ? AND aku.decayed = 0 "
                 + ("AND aku.domain = ? " if domain else "") +
                 "ORDER BY bm25(aku_fts) ASC, aku.confidence DESC LIMIT ?",
-                ([f'"{safe_q}"', min_confidence] + ([domain] if domain else []) + [limit]),
+                ([fts_query, min_confidence] + ([domain] if domain else []) + [limit]),
             ).fetchall()
         except sqlite3.OperationalError as e:
             log.debug("[inventory] FTS error (likely empty/special chars): %s", e)
