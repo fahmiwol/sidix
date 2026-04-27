@@ -321,3 +321,93 @@ pasar Indonesia/SEA dengan persona-distinct voice.
 inspiration (static-to-generative) — semua sebagai METODE, bukan ideologi.
 
 Itu SIDIX yang sedang dibangun. Ini canonical reference per 2026-04-27.
+
+
+---
+
+## 🔮 DIMENSI VISIONER — Proactive Foresight Agent
+
+User clarification 2026-04-27: SIDIX bukan reactive AI. SIDIX **proactive
+foresight agent** — melihat trend, memproyeksi masa depan, memulai riset
+sebelum mainstream sadar.
+
+### What this means architecturally
+
+| Capability | Implementation |
+|---|---|
+| Trend sensing | radar (cron */30) extended ke arxiv/HN/GitHub trending + AI/creative paper RSS |
+| Weak signal aggregation | Inventory tag emerging topics by frequency + recency growth |
+| Future projection | Synthesis loop generates "trajectory hypotheses" (LLM-assisted, multi-source) |
+| Preemptive research | task_queue auto-populated dengan emerging-topic queries |
+| Vision artifact | output mode: "Where X is heading 2027-2030" reports per persona perspective |
+| Compound advantage | SIDIX corpus berisi riset 6-24 bulan ahead of mainstream attention |
+
+### Operational pattern
+
+```
+WEEKLY:
+1. Radar scan: arxiv (CS.AI/CS.CV/CS.CL), HN top, GitHub trending, Twitter/Threads tech
+2. Cluster emerging signals (frequency + velocity)
+3. ALEY persona: synthesize "trend hypothesis" — apa yang sedang emerge?
+4. OOMAR persona: project commercial implication 2-5 tahun
+5. UTZ persona: imagine creative/visual implications
+6. ABOO persona: identify technical readiness gaps
+7. AYMAN persona: reframe untuk general audience
+8. Output: weekly trend report + auto-add 10 research tasks ke queue
+```
+
+### Examples of "future research now" topics SIDIX should be doing
+
+Per 2026-Q2 (today):
+- DoRA + persona stylometry (paper masih awal, belum mainstream → SIDIX riset duluan)
+- Mamba2 long-context creative reasoning
+- Sub-billion parameter creative-specialized models
+- AI-generated 3D assets pipelines (Tencent Hunyuan3D + variants)
+- Persona-as-weight vs persona-as-prompt (research gap)
+- Embodied agent for creative workflows (multi-tool autonomous)
+- Sanad-style consensus mechanisms for AI safety (novel paradigm)
+
+SIDIX research these NOW so by 2027-2028 has 1-2 year head start.
+
+### Vision artifact mode (new output type)
+
+User can ask: *"SIDIX, gimana bentuk creative agent 2028?"*
+SIDIX response:
+- Synthesizes trends from radar data + corpus
+- Each persona contributes lens (visual, technical, business, academic, casual)
+- Output: structured projection document + risks + opportunities + first-mover advantages
+
+This is **5-persona democratic foresight** — not single-LLM extrapolation.
+
+### Why this matters for hero use-case
+
+Beyond "brief → multi-artifact creative pipeline", SIDIX hero gets bigger:
+
+> *"AI Agent yang nggak cuma eksekusi creative brief hari ini, tapi sudah
+> punya riset 2 tahun ke depan tentang creative tech. Ketika user kasih
+> brief, SIDIX bisa kasih: solusi sekarang + heads-up trend 6 bulan ke
+> depan + opsi inovasi yang belum ada di market."*
+
+ChatGPT/Claude reactive (jawab apa yang ditanya). SIDIX proactive (jawab +
+predict + warn + suggest emerging path).
+
+### Pattern: Tesla / Bezos / Jobs visioner mode
+
+Tesla research AC saat dunia masih DC.
+Bezos research e-commerce saat internet masih curious.
+Jobs research touch UI saat phone masih Blackberry.
+
+**SIDIX harus dibangun untuk research masa depan creative AI sebelum
+mainstream sadar.** Itu compound advantage paling besar untuk underdog
+yang gak punya budget OpenAI scale.
+
+Cara konkret:
+1. Cron weekly trend scan (extend radar)
+2. Auto-populate research queue (extend task generator)
+3. Per-persona synthesis (5 lens)
+4. Output "vision artifact" mode (new endpoint)
+5. Inventory tag "emerging" untuk AKU yang dari trend research
+6. LoRA retrain prioritize emerging topics (data freshness)
+
+Effort: 1-2 minggu untuk MVP foresight pipeline. **Critical strategic
+investment** — kompon dengan waktu, makin awal makin besar lead.
