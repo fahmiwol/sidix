@@ -9450,10 +9450,10 @@ This session = SIDIX curriculum lesson 1. Pattern transferred. School open.
 - POLICY: external LLMs as TEACHERS/CRITICS, NOT replacement for SIDIX core (CLAUDE.md no-vendor compliance)
 
 ### Keys Set on VPS This Session (all leaked in chat � must rotate)
-- GEMINI_API_KEY=AIzaSyALCt... (works, returns answers ~3s)
-- KIMI_API_KEY=sk-xsszdot... (401 on tested endpoints, key may be CLI-only)
+- GEMINI_API_KEY=[GEMINI-KEY-REDACTED] (works, returns answers ~3s)
+- KIMI_API_KEY=[KIMI-KEY-REDACTED] (401 on tested endpoints, key may be CLI-only)
 - HF_TOKEN=hf_[HF-TOKEN-REDACTED] (404 on inference API model � needs valid model id)
-- VERTEX_API_KEY=AQ.Ab8RN6... (Agent Platform key, endpoint pending verify)
+- VERTEX_API_KEY=[VERTEX-KEY-REDACTED] (Agent Platform key, endpoint pending verify)
 
 ### SIDIX Classroom (cron 0 * * * *)
 - 20-question rotating curriculum (SIDIX domain + faktual + coding + filosofis + current events)
@@ -9516,9 +9516,9 @@ e490156, 1e24670, fb5364d, 593ca96, 69a21e5, 8a2ed53, 47195d9, f169878,
 
 ### CRITICAL Security TODOs (user post-session)
 - Revoke HF token hf_[HF-TOKEN-REDACTED]
-- Revoke Gemini key AIzaSyALCt...
-- Revoke Kimi key sk-xsszdot...
-- Revoke Vertex key AQ.Ab8RN6...
+- Revoke Gemini key [GEMINI-KEY-REDACTED]
+- Revoke Kimi key [KIMI-KEY-REDACTED]
+- Revoke Vertex key [VERTEX-KEY-REDACTED]
 - Revoke admin token d7fabad...
 - Rotate VPS root password
 - Rotate SSH passphrase [VPS-SSH-PASSWORD-REDACTED]
