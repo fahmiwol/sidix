@@ -10786,3 +10786,34 @@ Salah satu Pydantic model yang ditambah recent (CreativeBriefRequest dari Sprint
 3. Fix sesuai pattern Pydantic 2.x
 4. Test offline (import + schema_json gen)
 5. Deploy + verify GET /openapi.json 200
+
+
+### Sprint 14g LIVE VERIFIED ✅ — /openapi.json 500 → 200 OK
+
+#### Result
+- /openapi.json: 500 → 200 OK (151KB, 270 paths, OpenAPI 3.1.0)
+- /docs (Swagger UI): broken → accessible
+- /creative/brief, /visioner/weekly, /agent/council, /agent/generate, /agent/foresight: ALL registered di spec
+- Schemas: CreativeBriefRequest + CouncilRequest + AgentGenerateRequest + AgentGenerateResponse + ForesightRequest all in components.schemas
+
+#### Root cause + fix
+PydanticUserError "class-not-fully-defined" — 3 inline class:
+- CouncilRequest (line 766) di create_app() function scope
+- GenerateRequest (line 982) shadow module-top GenerateRequest
+- GenerateResponse (line 988)
+
+Fix: move semua ke module top-level (lines 444-485), rename inline ones (Generate → AgentGenerate) untuk avoid shadow.
+
+#### Defensive sweep
+Audit grep "    class .*Request.*BaseModel" post-fix = empty. Zero inline. Pattern recurrence prevented.
+
+#### Pre-Execution Alignment Check (per CLAUDE.md 6.4)
+- No North Star conflict (bug fix, no direction change) ✓
+- No pivot conflict (no persona/prompt edit) ✓
+- 10 hard rules preserved ✓
+- Verdict: PROCEED → SHIPPED
+
+#### Side benefits compound
+- Swagger UI /docs accessible untuk demo ke customer/dev integration
+- OpenAPI spec available untuk codegen / SDK gen automatic
+- Cleaner API discovery untuk future integration
