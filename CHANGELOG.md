@@ -1,3 +1,54 @@
+# [2.5.0] — 2026-04-27 late evening v2 — Scenario Tree + TTS Voice (Multi-modal Complete)
+
+### Sprint 19 — Scenario Tree Explorer (ALEY 2-level branching)
+- ALEY speculation extended dengan 2 sub-scenarios per main jalur
+- 9 nodes structure (3 main + 6 sub) di JSON schema
+- Reuse Sprint 18 _extract_json_block() untuk scenario_tree + optimal_path
+- 3 iterasi (V1 schema literal-echo, V2 backend timeout, V3 trim+JSON-only) → LIVE iter #7 70s success
+- Honest caveat: LLM creative variance flatten beberapa sub_scenarios — content quality EXCELLENT, structure 70% rigid
+- Per note 248 line 472 EXPLICIT mandate
+
+### Sprint 14d — TTS Persona Voice (🗣️ MULUT embodiment)
+- Module enhance: runpod_media.py +generate_tts() function
+- Pipeline gen_voice flag (opt-in) — UTZ persona LLM generate brand voice script → TTS via mighan-media-worker tool=tts
+- Edge-TTS (CPU-light, no GPU heavy) → Indonesian voice id-ID-ArdiNeural default
+- Output: .data/creative_briefs/<slug>/audio/brand_voice.mp3
+- LIVE verified: 48KB valid MP3 dalam 237s (cold start dominant)
+- Per note 248 line 50 EXPLICIT embodiment "🗣️ MULUT = audio output (TTS, voice persona)"
+
+### Iter #6 + #7 (Sprint 19) — diagnose-before-iter discipline applied
+- #6: backend timeout 180s (verbose prompt) — replaced descriptive placeholders + trimmed
+- #7: max_tokens 1500→1100 + JSON-only output → SUCCESS dalam 70s
+- 7 iter total dengan 7 different root causes — pattern memory `feedback_diagnose_before_iter` validated
+
+### Notes baru
+- 259: Scenario tree explorer
+- 260: TTS brand voice
+
+### Compound multi-modal capability cumulative
+- 🎨 Visual: PNG hero asset (Sprint 14b)
+- 🎲 3D: GLB wiring (Sprint 14e, LIVE pending GPU)
+- 🗣️ Audio: MP3 brand voice Indonesian (Sprint 14d) ← BARU
+- 📜 Prose: creative + brand + copy + landing (Sprint 14)
+- 📊 Strategic: OOMAR commercial + ALEY research (Sprint 14c)
+- 🧠 Wisdom: 5-stage judgment (Sprint 16)
+- 📋 Structured JSON: risk + impact + scenario (Sprint 18 + 19)
+- 🌐 Trend: visioner autonomous (Sprint 15)
+
+### Endpoints summary cumulative
+- POST /creative/brief (Sprint 14+14b+14c+14d+14e) — full bundle
+- GET /visioner/weekly (Sprint 15) — autonomous trend
+- POST /agent/wisdom (Sprint 16+18+19) — judgment + structured
+
+### Session metric (2026-04-27 full day)
+- 12 sprint shipped (12, 14, 14b, 14c, 14d, 14e wiring, 14g, 15, 16, 18, 19, discipline)
+- 7 iterasi total dengan 7 distinct root causes
+- 12 research notes baru (249-260)
+- 40+ commits to main
+- 0 credential introduced session-wise
+
+---
+
 # [2.4.0] — 2026-04-27 late evening — Wisdom Layer + Risk Register Structured
 
 ### Sprint 14g — Fix /openapi.json 500 (Pydantic forward-ref)
