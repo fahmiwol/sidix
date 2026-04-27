@@ -11036,3 +11036,37 @@ LLM flattened A1/A2 + C1/C2 ke top-level paths. Hanya Path B yang nested correct
 = 7 iterations dengan 7 different root causes. Pattern lesson: diagnose-before-iter prevents blind code rewrite.
 
 #### Note 259 finalized dengan complete iter timeline + honest variance documented.
+
+
+---
+
+## 2026-04-27 LATE EVENING — Sprint 14d START — TTS Persona Voice
+
+### Pre-Execution Alignment Check (per CLAUDE.md 6.4)
+- Note 248 line 50 EXPLICIT: "🗣️ MULUT = audio output (TTS, voice persona)"
+- Pivot 2026-04-25: TTS mechanical, no epistemic conflict ✓
+- 10 hard rules: own RunPod (mighan-media-worker tool=tts), 5 persona, MIT, self-hosted ✓
+- Anti-halusinasi: TTS rendering mechanical, low halusinasi risk ✓
+- Verdict: PROCEED
+
+### Impact analysis
+Paling berdampak diantara: 14d TTS (NEW capability) > 14f Shap-E (fallback) > 19 iter #8 (polish) > 20 Integrated (high budget burn).
+Sprint 14d: NEW capability + LOW budget + embodiment mandate + demo-able audio.
+
+### Scope MVP
+- runpod_media.py: tambah generate_tts(text, lang, speed) function
+- creative_pipeline.py: gen_voice flag, generate brand voice script via UTZ persona LLM call → send to TTS → save MP3
+- Output: .data/creative_briefs/<slug>/audio/brand_voice.mp3
+- Embed di report.md
+- ENV: tidak butuh tambah var (RUNPOD_MEDIA_ENDPOINT_ID sudah set)
+
+### API contract (per /root/mighantect-3d/runpod-media-worker/media_server.py GenerateTTSRequest)
+POST /v2/{ENDPOINT}/run dengan input.tool=tts
+- text: string
+- language: id (default Indonesian) | en | etc
+- speed: 1.0 (default)
+- speaker_wav: optional voice clone
+
+Response: {output: {success, audio_base64, format, duration, voice}}
+
+Edge-TTS = no GPU heavy, lebih cepat dari SDXL/TripoSR. Cold start mungkin <30s.

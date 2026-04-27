@@ -447,6 +447,8 @@ def creative_brief_pipeline(
     gen_images_n: int = 3,
     gen_3d: bool = False,
     gen_3d_format: str = "glb",
+    gen_voice: bool = False,
+    voice_lang: str = "id",
     enrich_personas: Optional[list[str]] = None,
 ) -> dict[str, Any]:
     """
@@ -525,6 +527,49 @@ def creative_brief_pipeline(
         except Exception as e:
             rendered_images.append({"success": False, "error": f"image gen fail: {e}"})
 
+    # Sprint 14d: Optional brand voice TTS dari concept + brand
+    rendered_voice: dict[str, Any] = {}
+    if gen_voice and persist:
+        # Generate ~30-60 sec brand voice script via UTZ (concise, tagline-focused)
+        try:
+            voice_script_system = (
+                "Kamu UTZ — creative director SIDIX. Voice: 'aku', ekspresif, playful. "
+                "Bahasa Indonesia.\n\n"
+                "TUGAS: Tulis 30-50 detik brand voice script untuk maskot/brand ini. "
+                "Format: 3-4 kalimat conversational, tone hangat ramah audience target. "
+                "Mulai dengan hook kuat (1 kalimat), inti value (1-2 kalimat), CTA hangat (1 kalimat).\n"
+                "Output: HANYA script teks (3-4 kalimat). NO markdown, NO heading, NO quote marks."
+            )
+            concept_excerpt = next((s.content for s in d.stages if s.stage == "concept"), "")[:500]
+            brand_excerpt = next((s.content for s in d.stages if s.stage == "brand"), "")[:500]
+            script_prompt = (
+                f"BRIEF: {brief}\n\nCONCEPT:\n{concept_excerpt}\n\n"
+                f"BRAND:\n{brand_excerpt}\n\nTulis brand voice script."
+            )
+            script_text, _ = ollama_generate(
+                script_prompt, system=voice_script_system,
+                max_tokens=200, temperature=0.7,
+            )
+            script_clean = (script_text or "").strip().strip('"').strip()
+
+            from .runpod_media import generate_tts, media_available
+            if not media_available():
+                rendered_voice = {
+                    "success": False,
+                    "error": "RUNPOD_MEDIA_ENDPOINT_ID env not set or endpoint unreachable",
+                }
+            elif not script_clean:
+                rendered_voice = {"success": False, "error": "voice script generation gagal"}
+            else:
+                audio_dir = BRIEFS_DIR / d.slug / "audio"
+                rendered_voice = generate_tts(
+                    script_clean, output_dir=audio_dir,
+                    label="brand_voice", language=voice_lang,
+                )
+                rendered_voice["script"] = script_clean
+        except Exception as e:
+            rendered_voice = {"success": False, "error": f"voice gen fail: {e}"}
+
     # Sprint 14e: Optional 3D mascot from rendered hero_mascot.png
     rendered_3d: list[dict[str, Any]] = []
     if gen_3d and persist:
@@ -584,6 +629,15 @@ def creative_brief_pipeline(
                         md += f"_Source 2D_: `{Path(m3d.get('source_image','')).name}`\n\n"
                     else:
                         md += f"### ❌ 3D fail: {m3d.get('error','unknown')}\n\n"
+            if rendered_voice:
+                md += "\n\n## 🗣️ Brand Voice Audio (Sprint 14d — TTS via mighan-media-worker)\n\n"
+                if rendered_voice.get("success"):
+                    rel = f"audio/{rendered_voice['filename']}"
+                    md += f"**Audio**: [`{rel}`]({rel}) ({rendered_voice.get('size_bytes',0)} bytes, "
+                    md += f"voice: {rendered_voice.get('voice','?')}, lang: {rendered_voice.get('language','?')})\n\n"
+                    md += f"**Script**:\n\n> {rendered_voice.get('script','(no script)')}\n\n"
+                else:
+                    md += f"❌ Voice gen fail: {rendered_voice.get('error','unknown')}\n\n"
             (target / "report.md").write_text(md, encoding="utf-8")
 
     return {
@@ -595,6 +649,7 @@ def creative_brief_pipeline(
         "paths": d.paths,
         "rendered_images": rendered_images,
         "rendered_3d": rendered_3d,
+        "rendered_voice": rendered_voice,
     }
 
 
