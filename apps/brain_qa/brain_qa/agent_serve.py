@@ -2608,6 +2608,17 @@ def create_app() -> "FastAPI":
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"contradiction detect fail: {e}")
 
+    @app.post("/admin/inventory/auto-resolve", tags=["Performance"])
+    async def inventory_auto_resolve_endpoint(request: Request, dry_run: bool = True, max_resolve: int = 5):
+        """Vol 23f: auto-resolve contradictions via fresh sanad re-validation."""
+        if not _admin_ok(request):
+            raise HTTPException(status_code=403, detail="Akses ditolak")
+        try:
+            from . import inventory_memory
+            return await inventory_memory.auto_resolve_via_sanad(max_resolve=max_resolve, dry_run=dry_run)
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"auto-resolve fail: {e}")
+
     @app.post("/admin/inventory/synthesize", tags=["Performance"])
     def inventory_synthesize_endpoint(request: Request, dry_run: bool = True):
         """Vol 23c: cluster + canonicalize duplicate AKUs."""

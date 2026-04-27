@@ -532,6 +532,91 @@ def mark_contradicting(aku_a: str, aku_b: str) -> bool:
     return True
 
 
+async def auto_resolve_via_sanad(max_resolve: int = 5, dry_run: bool = False) -> dict:
+    """
+    Vol 23f: Detect contradictions, run fresh sanad to break tie, resolve.
+
+    For each contradiction:
+    1. Reconstruct question from subject (best-guess via predicate hint)
+    2. Run sanad_orchestrator.run_sanad() — fresh multi-source check
+    3. Compare new answer to both contender AKUs (4-gram Jaccard)
+    4. Winner = AKU closer to fresh sanad answer
+    5. Call resolve_contradiction(winner, loser)
+
+    Returns stats: detected, resolved, dry_run mode.
+    """
+    import asyncio as _asyncio
+    contradictions = detect_contradictions()
+    if not contradictions:
+        return {"detected": 0, "resolved": 0, "dry_run": dry_run}
+
+    resolved = []
+    skipped = []
+    for c in contradictions[:max_resolve]:
+        # Reconstruct question from subject + predicate
+        subj = c["aku_a"]["subject"]
+        pred = c["aku_a"]["predicate"]
+        # Heuristic: build natural language question
+        if pred == "identitas":
+            q = f"siapa {subj}"
+        elif pred == "definisi":
+            q = f"apa itu {subj}"
+        elif pred == "cara":
+            q = f"bagaimana cara {subj}"
+        elif pred == "penjelasan":
+            q = f"jelaskan {subj}"
+        elif pred == "perbedaan":
+            q = f"apa perbedaan {subj}"
+        elif pred == "waktu":
+            q = f"kapan {subj}"
+        else:
+            q = f"apa {subj}"
+
+        try:
+            from .sanad_orchestrator import run_sanad
+            sanad_result = await _asyncio.wait_for(run_sanad(q, persona="ALEY"), timeout=20.0)
+            fresh_claim = sanad_result.validated_claim or ""
+            if not fresh_claim:
+                skipped.append({"reason": "no fresh consensus", "question": q})
+                continue
+
+            # Compare similarity
+            a_sim = _jaccard_4gram(fresh_claim.lower(), c["aku_a"]["object"].lower())
+            b_sim = _jaccard_4gram(fresh_claim.lower(), c["aku_b"]["object"].lower())
+            if abs(a_sim - b_sim) < 0.05:
+                # Inconclusive: skip
+                skipped.append({"reason": "inconclusive", "a_sim": round(a_sim, 3),
+                                "b_sim": round(b_sim, 3), "question": q})
+                continue
+
+            winner_id = c["aku_a"]["id"] if a_sim > b_sim else c["aku_b"]["id"]
+            loser_id = c["aku_b"]["id"] if a_sim > b_sim else c["aku_a"]["id"]
+
+            if not dry_run:
+                resolve_contradiction(winner_id, loser_id)
+            resolved.append({
+                "winner": winner_id,
+                "loser": loser_id,
+                "question": q,
+                "fresh_answer_preview": fresh_claim[:150],
+                "winner_similarity": round(max(a_sim, b_sim), 3),
+                "loser_similarity": round(min(a_sim, b_sim), 3),
+                "applied": not dry_run,
+            })
+        except Exception as e:
+            skipped.append({"reason": f"sanad error: {str(e)[:100]}", "question": q})
+
+    return {
+        "detected": len(contradictions),
+        "considered": min(len(contradictions), max_resolve),
+        "resolved": len(resolved),
+        "skipped": len(skipped),
+        "dry_run": dry_run,
+        "resolutions": resolved,
+        "skip_reasons": skipped,
+    }
+
+
 def resolve_contradiction(canonical_id: str, loser_id: str) -> bool:
     """
     Resolve contradiction: mark loser as decayed, boost canonical confidence.
@@ -672,5 +757,6 @@ __all__ = [
     "AKU", "ingest", "lookup", "lookup_hybrid", "lookup_exact",
     "stats", "decay_old", "synthesize",
     "detect_contradictions", "mark_contradicting", "resolve_contradiction",
+    "auto_resolve_via_sanad",
     "format_lookup_for_render",
 ]
