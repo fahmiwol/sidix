@@ -346,6 +346,121 @@ async def _ask_gemini(client: httpx.AsyncClient, question: str, system: str) -> 
                               error=str(e)[:200])
 
 
+async def _ask_deepseek(client: httpx.AsyncClient, question: str, system: str) -> ProviderAnswer:
+    """DeepSeek API — free credits, OpenAI-compatible. DeepSeek-V3 / R1."""
+    api_key = os.environ.get("DEEPSEEK_API_KEY", "").strip()
+    t0 = time.time()
+    if not api_key:
+        return ProviderAnswer(provider="deepseek", text="", duration_ms=0,
+                              available=False, error="DEEPSEEK_API_KEY not set")
+    try:
+        model = os.environ.get("DEEPSEEK_MODEL", "deepseek-chat")  # deepseek-chat or deepseek-reasoner
+        r = await client.post(
+            "https://api.deepseek.com/v1/chat/completions",
+            headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
+            json={
+                "model": model,
+                "messages": [
+                    {"role": "system", "content": system},
+                    {"role": "user", "content": question},
+                ],
+                "temperature": 0.4,
+                "max_tokens": 400,
+            },
+            timeout=20.0,
+        )
+        if r.status_code != 200:
+            return ProviderAnswer(provider="deepseek", text="", duration_ms=int((time.time()-t0)*1000),
+                                  error=f"HTTP {r.status_code}: {r.text[:200]}")
+        data = r.json()
+        text = (data.get("choices") or [{}])[0].get("message", {}).get("content", "").strip()
+        return ProviderAnswer(provider="deepseek", text=text,
+                              duration_ms=int((time.time()-t0)*1000),
+                              model=model)
+    except Exception as e:
+        return ProviderAnswer(provider="deepseek", text="",
+                              duration_ms=int((time.time()-t0)*1000),
+                              error=str(e)[:200])
+
+
+async def _ask_mistral(client: httpx.AsyncClient, question: str, system: str) -> ProviderAnswer:
+    """Mistral La Plateforme — free tier, OpenAI-compatible."""
+    api_key = os.environ.get("MISTRAL_API_KEY", "").strip()
+    t0 = time.time()
+    if not api_key:
+        return ProviderAnswer(provider="mistral", text="", duration_ms=0,
+                              available=False, error="MISTRAL_API_KEY not set")
+    try:
+        # Free models on Mistral: open-mistral-nemo, mistral-small-latest, etc
+        model = os.environ.get("MISTRAL_MODEL", "open-mistral-nemo")
+        r = await client.post(
+            "https://api.mistral.ai/v1/chat/completions",
+            headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
+            json={
+                "model": model,
+                "messages": [
+                    {"role": "system", "content": system},
+                    {"role": "user", "content": question},
+                ],
+                "temperature": 0.4,
+                "max_tokens": 400,
+            },
+            timeout=20.0,
+        )
+        if r.status_code != 200:
+            return ProviderAnswer(provider="mistral", text="", duration_ms=int((time.time()-t0)*1000),
+                                  error=f"HTTP {r.status_code}: {r.text[:200]}")
+        data = r.json()
+        text = (data.get("choices") or [{}])[0].get("message", {}).get("content", "").strip()
+        return ProviderAnswer(provider="mistral", text=text,
+                              duration_ms=int((time.time()-t0)*1000),
+                              model=model)
+    except Exception as e:
+        return ProviderAnswer(provider="mistral", text="",
+                              duration_ms=int((time.time()-t0)*1000),
+                              error=str(e)[:200])
+
+
+async def _ask_cohere(client: httpx.AsyncClient, question: str, system: str) -> ProviderAnswer:
+    """Cohere Command R+ — free tier (1000 calls/month)."""
+    api_key = os.environ.get("COHERE_API_KEY", "").strip()
+    t0 = time.time()
+    if not api_key:
+        return ProviderAnswer(provider="cohere", text="", duration_ms=0,
+                              available=False, error="COHERE_API_KEY not set")
+    try:
+        model = os.environ.get("COHERE_MODEL", "command-r-plus")
+        r = await client.post(
+            "https://api.cohere.com/v2/chat",
+            headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
+            json={
+                "model": model,
+                "messages": [
+                    {"role": "system", "content": system},
+                    {"role": "user", "content": question},
+                ],
+                "temperature": 0.4,
+                "max_tokens": 400,
+            },
+            timeout=20.0,
+        )
+        if r.status_code != 200:
+            return ProviderAnswer(provider="cohere", text="", duration_ms=int((time.time()-t0)*1000),
+                                  error=f"HTTP {r.status_code}: {r.text[:200]}")
+        data = r.json()
+        # Cohere v2 chat returns: {"message": {"content": [{"text": "..."}]}}
+        msg = data.get("message", {})
+        contents = msg.get("content") or []
+        text = " ".join(c.get("text", "") for c in contents if isinstance(c, dict)).strip()
+        return ProviderAnswer(provider="cohere", text=text,
+                              duration_ms=int((time.time()-t0)*1000),
+                              model=model)
+    except Exception as e:
+        return ProviderAnswer(provider="cohere", text="",
+                              duration_ms=int((time.time()-t0)*1000),
+                              error=str(e)[:200])
+
+
 async def _ask_vertex(client: httpx.AsyncClient, question: str, system: str) -> ProviderAnswer:
     """
     Google Vertex AI / Gemini Agent Platform Model API.
@@ -420,6 +535,9 @@ _PROVIDER_FN = {
     "vertex": _ask_vertex,
     "kimi": _ask_kimi,
     "openrouter": _ask_openrouter,
+    "deepseek": _ask_deepseek,
+    "mistral": _ask_mistral,
+    "cohere": _ask_cohere,
     "ownpod": _ask_ownpod,
 }
 
@@ -444,7 +562,9 @@ async def consensus_async(
     - Diverse perspective for creative/research tasks
     """
     if providers is None:
-        providers = ["ownpod", "gemini", "vertex", "kimi", "openrouter", "groq", "together", "hf", "cloudflare"]
+        providers = ["ownpod", "gemini", "vertex", "kimi", "openrouter",
+                     "groq", "together", "hf", "cloudflare",
+                     "deepseek", "mistral", "cohere"]
 
     system = (
         f"Kamu salah satu dari beberapa AI assistant menjawab user. Persona: {persona}. "
@@ -479,6 +599,9 @@ def list_available_providers() -> dict[str, bool]:
         "vertex": bool(os.environ.get("VERTEX_API_KEY", "").strip()),
         "kimi": bool(os.environ.get("KIMI_API_KEY", "").strip()),
         "openrouter": bool(os.environ.get("OPENROUTER_API_KEY", "").strip()),
+        "deepseek": bool(os.environ.get("DEEPSEEK_API_KEY", "").strip()),
+        "mistral": bool(os.environ.get("MISTRAL_API_KEY", "").strip()),
+        "cohere": bool(os.environ.get("COHERE_API_KEY", "").strip()),
         "ownpod": bool(os.environ.get("RUNPOD_API_KEY", "").strip()),
     }
 

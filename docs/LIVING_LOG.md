@@ -9524,3 +9524,58 @@ e490156, 1e24670, fb5364d, 593ca96, 69a21e5, 8a2ed53, 47195d9, f169878,
 - Rotate SSH passphrase Mighara22!!
 
 ALL keys above were leaked in chat history. Must rotate before public.
+
+
+---
+
+## Update: 12 LLM Providers Total (added DeepSeek + Mistral + Cohere)
+
+User dropped reference URLs:
+- github.com/topics/free-ai-api
+- github.com/mnfst/awesome-free-llm-apis  
+- developer.puter.com/tutorials/free-unlimited-openai-api/
+
+Pool now: 12 providers (groq, together, hf, cloudflare, gemini, vertex, kimi,
+openrouter, deepseek, mistral, cohere, ownpod). All FREE tier, opt-in via env.
+
+### Providers added this iteration
+- **DeepSeek**: deepseek-chat, OpenAI-compatible, free credits.
+  Endpoint: api.deepseek.com/v1
+  Sign: platform.deepseek.com
+  Env: DEEPSEEK_API_KEY
+
+- **Mistral**: open-mistral-nemo (free), mistral-small-latest.
+  Endpoint: api.mistral.ai/v1
+  Sign: console.mistral.ai
+  Env: MISTRAL_API_KEY
+
+- **Cohere**: command-r-plus, free tier 1000 calls/month.
+  Endpoint: api.cohere.com/v2
+  Sign: dashboard.cohere.com/api-keys
+  Env: COHERE_API_KEY
+
+### Future provider candidates (not yet adapted, reference for next session)
+- Puter.js — proxy GPT-4o + Claude free unlimited (puter.js, JS-side only — would need server proxy)
+- Replicate — free credits (api.replicate.com)
+- Fireworks AI — free credits (api.fireworks.ai)
+- DeepInfra — free credits
+- Anyscale Endpoints — discontinued
+- Ollama remote — community endpoints variable
+
+### OpenRouter Coverage Note
+OpenRouter alone gives access to:
+- meta-llama/llama-3.3-70b-instruct:free (free)
+- google/gemini-flash-1.5-8b-exp:free (free)
+- qwen/qwen-2.5-coder-32b-instruct:free (free)
+- mistralai/mistral-7b-instruct:free (free)
+- nousresearch/hermes-3-llama-3.1-405b:free (free, big!)
+- many others labeled :free
+
+Setting only OPENROUTER_API_KEY gives access to 5-10 free models = covers
+most adapters above WITHOUT needing individual provider keys.
+
+Recommendation: get one OpenRouter key first for breadth, then add specific
+provider keys later for latency/quality optimization.
+
+### Final Provider Count
+12 native adapters + OpenRouter universal gateway = effective access to 200+ models.

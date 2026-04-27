@@ -222,3 +222,30 @@ Pagi nanti user bisa cek `tail .data/classroom_log.jsonl` untuk lihat
 perdebatan multi-LLM tentang topik kurikulum SIDIX.
 
 Compound learning. Sanad applied to AI training. **Curriculum is open.**
+
+
+---
+
+## Final pool size: 12 providers (added 2026-04-27 dawn)
+
+After user shared github.com/mnfst/awesome-free-llm-apis, added 3 more:
+
+| Provider | Model | Endpoint | Env var |
+|---|---|---|---|
+| **deepseek** | deepseek-chat | api.deepseek.com/v1 | DEEPSEEK_API_KEY |
+| **mistral** | open-mistral-nemo | api.mistral.ai/v1 | MISTRAL_API_KEY |
+| **cohere** | command-r-plus | api.cohere.com/v2 | COHERE_API_KEY |
+
+Total now: groq + together + hf + cloudflare + gemini + vertex + kimi +
+openrouter + deepseek + mistral + cohere + ownpod = **12 providers**.
+
+### Future expansion candidates (logged for Vol 28+)
+- Puter.js (proxy free GPT-4o, JS-side, would need server proxy adapter)
+- Replicate / Fireworks / DeepInfra (free credits, OpenAI-compatible)
+- Local Ollama community endpoints (variable reliability)
+
+### Strategic recommendation
+**Single OpenRouter key** = effective access to 5-10 free models including
+LLaMA 3.3 70B, Gemini Flash, Qwen, Hermes 3 405B. Less key management,
+more flexibility. Native adapters serve when latency-critical or specific
+provider features needed.
