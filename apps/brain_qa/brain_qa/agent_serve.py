@@ -3713,10 +3713,10 @@ def create_app() -> "FastAPI":
                     yield f"data: {_json.dumps({'type':'meta','_phase':'sanad_fanout','_phase_detail':'Multi-source consensus (LLM + wiki + corpus)...'})}\n\n"
                     _sanad_result = await run_sanad(req.question, persona=effective_persona)
                     _sanad_ms = int((time.time() - _t_sanad_start) * 1000)
-                    if _sanad_result.consensus_claim:
+                    if _sanad_result.validated_claim:
                         log.info(
                             "[stream] sanad MVP %dms branches=%s",
-                            _sanad_ms, _sanad_result.contributing_shadows,
+                            _sanad_ms, _sanad_result.contributing_branches,
                         )
                         # Render consensus via persona-flavoring LLM call
                         from .runpod_serverless import hybrid_generate
@@ -3741,14 +3741,14 @@ def create_app() -> "FastAPI":
                             "confidence": "tinggi",
                             "_sanad_active": True,
                             "_sanad_branches_total": len(_sanad_result.all_responses),
-                            "_sanad_branches_contributing": len(_sanad_result.contributing_shadows),
-                            "_sanad_contributors": _sanad_result.contributing_shadows,
+                            "_sanad_branches_contributing": len(_sanad_result.contributing_branches),
+                            "_sanad_contributors": _sanad_result.contributing_branches,
                             "_sanad_total_duration_ms": _sanad_result.total_duration_ms,
                             "_sanad_render_duration_ms": _sanad_ms,
                             "_citations": _sanad_result.citations[:10],
                         }
                         yield f"data: {_json.dumps(_sanad_meta)}\n\n"
-                        _sanad_words = (_sanad_text or _sanad_result.consensus_claim).split(" ")
+                        _sanad_words = (_sanad_text or _sanad_result.validated_claim).split(" ")
                         for i, w in enumerate(_sanad_words):
                             _t = w + (" " if i < len(_sanad_words) - 1 else "")
                             yield f"data: {_json.dumps({'type':'token','text':_t})}\n\n"
