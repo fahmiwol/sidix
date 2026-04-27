@@ -1369,6 +1369,24 @@ def create_app() -> "FastAPI":
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"visioner failed: {e}")
 
+    # ── GET /agent/odoa — Sprint 23: ODOA Daily Tracker ──────────────────────
+    @app.get("/agent/odoa", tags=["Supermodel"])
+    def agent_odoa(date: Optional[str] = None, persist: bool = True):
+        """
+        Sprint 23 (note 248 line 109 EXPLICIT): ODOA daily aggregate dari
+        .data/* + AYMAN warm narrative. One Day One Achievement tracking.
+        Compound dengan KITABAH (Sprint 22+22b).
+        """
+        _bump_metric("agent_odoa")
+        try:
+            from .agent_odoa import odoa_daily
+        except Exception as e:
+            raise HTTPException(status_code=503, detail=f"agent_odoa unavailable: {e}")
+        try:
+            return odoa_daily(date_str=date, persist=persist)
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"odoa failed: {e}")
+
     # ── POST /creative/iterate — Sprint 22: KITABAH Auto-iterate ─────────────
     @app.post("/creative/iterate", tags=["Supermodel"])
     def creative_iterate(req: KitabahIterateRequest, request: Request):
