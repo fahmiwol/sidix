@@ -9740,3 +9740,60 @@ Compound learning compound across days/weeks.
 - Vol 21 wire sanad → /ask/stream
 - Vol 24 SDXL endpoint
 - Vol 26 skill cloning
+
+
+---
+
+## 2026-04-27 morning — VOL 23c SHIPPED ✅ Synthesis Loop Live
+
+### What ships
+- inventory_memory.synthesize() — cluster + canonical merge
+  - 4-gram Jaccard subject (>=0.5) → cluster
+  - 4-gram Jaccard object (>=0.45) → merge dup to canonical
+  - Blend confidence + reinforcement count + dedup sources
+  - Soft-delete weaker dups (decayed=1)
+  - Dry-run mode
+
+- Wired to ingestor cron (hourly tick after decay)
+- Admin endpoint: POST /admin/inventory/synthesize?dry_run=true|false
+
+### Live test result
+- Pre-synth: 8 AKUs, 2x sanad duplicates
+- Post-synth: 8 total, 7 active, 1 decayed (sanad dup merged)
+- avg_conf 0.669 → 0.679 (canonical strengthened)
+
+### Compound effect
+Per cron cycle:
+- Auto-ingestor adds new AKU (from worker/classroom/tasks)
+- Synthesis merges duplicates within hourly tick
+- Decay drops old low-conf
+- Net effect: inventory grows in QUALITY not just QUANTITY
+
+### Cron schedule final (5 jobs autonomous 24/7)
+- */10 worker             (drain task queue, dispatch shadow_pool)
+- */10 aku_ingestor       (auto AKU ingest + hourly synth + decay)
+- */15 always_on          (git observer)
+- */30 radar              (mention listener)
+- 0 hourly classroom      (multi-teacher consensus)
+
+### Inventory health metrics
+- Bootstrap: 8 AKUs (avg 0.619)
+- After auto-ingest cycle: avg 0.669 (reinforcement)
+- After synth merge: avg 0.679 + 1 canonicalized
+- Trend: confidence climbing, dups merging
+
+### Sprint pending
+- Vol 21 wire sanad → /ask/stream (HIGH IMPACT next)
+- Vol 24 SDXL endpoint
+- Vol 26 skill cloning
+- Vol 23d: embedding-based similarity (BGE-M3) untuk synth precision
+
+### POST-TASK PROTOCOL
+✅ CATAT (this entry)
+✅ TESTING (synth dry-run + apply, both ok)
+✅ ITERASI (threshold tune 0.7→0.45 untuk catch paraphrase)
+✅ REVIEW (own diff)
+✅ CATAT (above)
+✅ VALIDASI (admin endpoints live)
+✅ QA (no leaked secrets)
+✅ CATAT (commit + push)
