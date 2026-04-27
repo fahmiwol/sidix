@@ -9625,3 +9625,71 @@ deepseek, mistral, cohere, ownpod (canonical SIDIX LoRA)
 - Kimi Code CLI ~/.local/bin/kimi (v1.39.0)
 
 ### Files Output (notes 235-247 + constitution + 7 docs + 7 scripts + 8 modules)
+
+
+---
+
+## 2026-04-27 morning — VOL 23 MVP SHIPPED ✅ Inventory Memory L0 LIVE
+
+### What shipped (commits 397e6a7 → 24c8641)
+1. apps/brain_qa/brain_qa/inventory_memory.py (370 lines)
+   - SQLite + FTS5 (no extra deps, stdlib)
+   - AKU dataclass: subject/predicate/object/context/confidence/source_chain/etc
+   - API: ingest, lookup, lookup_exact, stats, decay_old, format_lookup_for_render
+   - Reinforcement on duplicate ingest
+
+2. scripts/sidix_aku_bootstrap.py (mine existing logs)
+   - shadow_experience.jsonl + classroom_log.jsonl + classroom_pairs.jsonl + task_results.jsonl
+   - Heuristic question parse: siapa/apa itu/bagaimana/jelaskan → (subject, predicate)
+   - Domain classifier: fiqh/coding/politics/science/business/ai_research/medis
+
+3. agent_serve.py L0 wire (BEFORE L1 cache, fastest path)
+   - Lookup conf>=0.55 → format AKUs as LLM context → tight render call
+   - Skip orchestration when inventory has answer
+   - Telemetry: ask_stream_inventory_l0_hit metric
+
+4. Admin endpoints: /admin/inventory/stats, /admin/inventory/lookup
+
+### Live test results
+- 8 AKUs bootstrapped from overnight classroom (Prabowo, sanad, ReAct, RAG, LoRA, IKN, etc)
+- Test 1: 'siapa presiden indonesia 2024' → L0 HIT 1.56s (2 AKUs)
+- Test 2: 'apa itu LoRA adapter di AI' → L0 HIT 2.32s (1 AKU)
+- Test 3: 'jelaskan ReAct dalam AI agent' → L0 HIT 2.42s (3 AKUs)
+
+### Bug encountered + fixed (iteration log)
+- Iter 1: FTS phrase search too strict ("...") → 0 hits
+  Fix: tokenize + drop stopwords + OR query (commit 04974d4)
+- Iter 2: L0 threshold 0.7 too high vs bootstrap AKUs at 0.6
+  Fix: lower to 0.55 (commit 24c8641)
+
+### Lessons
+- FTS5 OR query > phrase for natural Indonesian
+- Bootstrap confidence calibration matters — start lower, build via reinforcement
+- L0 cache before L1 = correct order (L0 instant, L1 expects exact match)
+
+### Vol 23 next iterations (Vol 23b/c/d)
+- Background synthesis loop (cluster + merge + decay)
+- Per-domain confidence threshold (fiqh 0.85, casual 0.5)
+- Auto-ingest from new shadow_experience cycles
+- Contradiction detection (when 2 AKUs disagree on same predicate)
+
+### POST-TASK PROTOCOL completed:
+✅ CATAT (this entry)
+✅ TESTING (3 live tests, all hit L0)
+✅ ITERASI (FTS bug + threshold bug, both fixed)
+✅ REVIEW (own diff, no boundary violation)
+✅ CATAT (this final log)
+✅ VALIDASI (UI ready to test, knowledge_bypass + inventory_l0 layered correctly)
+✅ QA (security scan: no leaked secrets in commits)
+✅ CATAT (commit messages with WHY + push to main)
+
+### Push status
+Main branch latest: 24c8641
+VPS deployed: yes (pm2 restart confirmed online)
+Cron jobs still active (worker draining 30 new tasks → more AKUs incoming)
+
+### Pending tugas next session
+- Vol 23b: synthesis loop (cluster duplicates, merge to canonical)
+- Vol 21 wire sanad_orchestrator → /ask/stream
+- Vol 24 SDXL endpoint deploy
+- Vol 26 skill cloning from Claude Code session JSONL
