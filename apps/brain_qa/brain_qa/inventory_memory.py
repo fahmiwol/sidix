@@ -344,6 +344,119 @@ def decay_old(days: int = 30, threshold: float = 0.5) -> int:
         return cur.rowcount
 
 
+def _jaccard_4gram(a: str, b: str) -> float:
+    """Cheap similarity: 4-char ngram Jaccard. Fast for short strings."""
+    if not a or not b:
+        return 0.0
+    set_a = set(a[i:i+4] for i in range(len(a) - 3))
+    set_b = set(b[i:i+4] for i in range(len(b) - 3))
+    if not set_a or not set_b:
+        return 0.0
+    return len(set_a & set_b) / len(set_a | set_b)
+
+
+def synthesize(
+    *,
+    same_subject_threshold: float = 0.6,
+    same_object_threshold: float = 0.7,
+    dry_run: bool = False,
+) -> dict:
+    """
+    Vol 23c: Synthesis pass over inventory.
+    - Cluster AKUs by similar subject (>=threshold)
+    - Within cluster, find duplicates (similar object) → merge: keep highest
+      confidence, blend sources, increment reinforcement
+    - Soft-delete (decayed=1) the weaker duplicates
+
+    Returns stats: clusters_found, merges_applied, akus_decayed
+    """
+    with _conn() as c:
+        rows = c.execute(
+            "SELECT * FROM aku WHERE decayed=0 ORDER BY confidence DESC"
+        ).fetchall()
+
+    akus = [_row_to_aku(r) for r in rows]
+    n_in = len(akus)
+
+    # 1. Greedy cluster by subject similarity
+    clusters: list[list[AKU]] = []
+    for a in akus:
+        placed = False
+        for cluster in clusters:
+            if _jaccard_4gram(a.subject.lower(), cluster[0].subject.lower()) >= same_subject_threshold:
+                cluster.append(a)
+                placed = True
+                break
+        if not placed:
+            clusters.append([a])
+
+    # 2. Within each cluster, find pairs with similar object → merge
+    merges = []  # list of (canonical_id, decay_id)
+    for cluster in clusters:
+        if len(cluster) < 2:
+            continue
+        # Sort by confidence desc — first wins as canonical
+        cluster.sort(key=lambda x: (x.confidence, x.reinforcement_count), reverse=True)
+        canonical = cluster[0]
+        for dup in cluster[1:]:
+            obj_sim = _jaccard_4gram(canonical.object.lower(), dup.object.lower())
+            if obj_sim >= same_object_threshold:
+                merges.append((canonical.aku_id, dup.aku_id, obj_sim))
+
+    if dry_run:
+        return {
+            "input_akus": n_in,
+            "clusters_found": len(clusters),
+            "multi_member_clusters": sum(1 for c in clusters if len(c) > 1),
+            "merge_candidates": len(merges),
+            "dry_run": True,
+            "sample_merges": merges[:5],
+        }
+
+    # 3. Apply: blend confidence + sources, soft-delete duplicate
+    if merges:
+        with _conn() as c:
+            for canonical_id, dup_id, sim in merges:
+                # Get both AKUs
+                can_row = c.execute("SELECT * FROM aku WHERE aku_id=?", (canonical_id,)).fetchone()
+                dup_row = c.execute("SELECT * FROM aku WHERE aku_id=?", (dup_id,)).fetchone()
+                if not can_row or not dup_row:
+                    continue
+                # Blend: max conf, sum reinforcement, merge sources
+                new_conf = min(1.0, max(can_row["confidence"], dup_row["confidence"]) + 0.05)
+                new_reinforce = can_row["reinforcement_count"] + dup_row["reinforcement_count"]
+                can_sources = json.loads(can_row["source_chain"] or "[]")
+                dup_sources = json.loads(dup_row["source_chain"] or "[]")
+                merged_sources = can_sources + dup_sources
+                # Dedup
+                seen = set()
+                uniq = []
+                for s in merged_sources:
+                    key = s.get("url", "") + s.get("provider", "")
+                    if key in seen:
+                        continue
+                    seen.add(key)
+                    uniq.append(s)
+                # Update canonical
+                c.execute(
+                    "UPDATE aku SET confidence=?, reinforcement_count=?, source_chain=?, "
+                    "last_seen_ts=? WHERE aku_id=?",
+                    (new_conf, new_reinforce, json.dumps(uniq, ensure_ascii=False),
+                     int(time.time()), canonical_id),
+                )
+                # Soft-delete dup
+                c.execute("UPDATE aku SET decayed=1 WHERE aku_id=?", (dup_id,))
+            c.commit()
+
+    return {
+        "input_akus": n_in,
+        "clusters_found": len(clusters),
+        "multi_member_clusters": sum(1 for cl in clusters if len(cl) > 1),
+        "merges_applied": len(merges),
+        "dry_run": False,
+    }
+
+
 def format_lookup_for_render(akus: list[AKU]) -> str:
     """Format AKU lookup result as LLM context string."""
     if not akus:
@@ -362,5 +475,5 @@ def format_lookup_for_render(akus: list[AKU]) -> str:
 
 __all__ = [
     "AKU", "ingest", "lookup", "lookup_exact",
-    "stats", "decay_old", "format_lookup_for_render",
+    "stats", "decay_old", "synthesize", "format_lookup_for_render",
 ]

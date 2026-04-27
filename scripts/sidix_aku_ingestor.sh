@@ -237,9 +237,17 @@ if p.exists():
 
 # Decay daily (only on hourly tick — minute=0)
 n_decayed = 0
+n_synth_merges = 0
 now = datetime.now(timezone.utc)
 if now.minute < 10:  # within first 10 min of hour
     n_decayed = decay_old(days=30, threshold=0.5)
+    # Vol 23c: synthesis loop hourly (cluster duplicates, canonicalize)
+    try:
+        from brain_qa.inventory_memory import synthesize
+        sresult = synthesize(dry_run=False)
+        n_synth_merges = sresult.get("merges_applied", 0)
+    except Exception as e:
+        print(f"[synthesize error] {e}")
 
 total = n_shadow + n_class + n_pairs + n_tasks
 log_entry = {
@@ -251,6 +259,7 @@ log_entry = {
     "from_pairs": n_pairs,
     "from_tasks": n_tasks,
     "decayed": n_decayed,
+    "synth_merges": n_synth_merges,
     "stats_after": stats(),
 }
 

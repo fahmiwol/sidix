@@ -2596,6 +2596,17 @@ def create_app() -> "FastAPI":
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"inventory stats fail: {e}")
 
+    @app.post("/admin/inventory/synthesize", tags=["Performance"])
+    def inventory_synthesize_endpoint(request: Request, dry_run: bool = True):
+        """Vol 23c: cluster + canonicalize duplicate AKUs."""
+        if not _admin_ok(request):
+            raise HTTPException(status_code=403, detail="Akses ditolak")
+        try:
+            from . import inventory_memory
+            return inventory_memory.synthesize(dry_run=dry_run)
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"synthesize fail: {e}")
+
     @app.get("/admin/inventory/lookup", tags=["Performance"])
     def inventory_lookup_endpoint(request: Request, query: str = "", min_conf: float = 0.6):
         """Vol 23 MVP: test inventory FTS lookup."""
