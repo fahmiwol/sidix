@@ -3696,6 +3696,76 @@ def create_app() -> "FastAPI":
                     log.warning("[stream] simple bypass failed, fallback to full flow: %s", _e)
                     # Fall through to normal tadabbur/run_react path
 
+            # ── Vol 21 MVP: SANAD MULTI-BRANCH FAN-OUT (feature-flagged) ─────
+            # Wire sanad_orchestrator: parallel LLM + wiki + corpus branches.
+            # Only triggered when SIDIX_SANAD_MVP=1 in env. Default OFF to
+            # avoid regression. When ON: standard-tier questions get multi-source
+            # consensus instead of single-LLM knowledge_bypass.
+            _sanad_enabled = os.environ.get("SIDIX_SANAD_MVP", "0").strip() == "1"
+            if _sanad_enabled and _tier_decision_s is not None and _tier_decision_s.tier in ("standard", "deep") and not _tadabbur_swap_active:
+                try:
+                    from .sanad_orchestrator import run_sanad
+                    _bump_metric("ask_stream_sanad_mvp")
+                    _t_sanad_start = time.time()
+                    yield f"data: {_json.dumps({'type':'meta','_phase':'sanad_fanout','_phase_detail':'Multi-source consensus (LLM + wiki + corpus)...'})}\n\n"
+                    _sanad_result = await run_sanad(req.question, persona=effective_persona)
+                    _sanad_ms = int((time.time() - _t_sanad_start) * 1000)
+                    if _sanad_result.consensus_claim:
+                        log.info(
+                            "[stream] sanad MVP %dms branches=%s",
+                            _sanad_ms, _sanad_result.contributing_shadows,
+                        )
+                        # Render consensus via persona-flavoring LLM call
+                        from .runpod_serverless import hybrid_generate
+                        _sanad_sys = (
+                            f"Kamu SIDIX persona {effective_persona}. Berikut KONSENSUS dari "
+                            "multi-source (LLM + wiki + corpus). Jawab user singkat (max 3 "
+                            "kalimat) berdasarkan konsensus ini. Sebut [FAKTA] kalau ada "
+                            "agreement multi-source kuat. Persona-aware tone."
+                        )
+                        loop = asyncio.get_event_loop()
+                        _sanad_text, _sanad_mode = await loop.run_in_executor(
+                            None,
+                            lambda: hybrid_generate(
+                                prompt=req.question, system=_sanad_sys,
+                                corpus_context=_sanad_result.render_context[:4000],
+                                max_tokens=350, temperature=0.4,
+                            ),
+                        )
+                        _sanad_meta = {
+                            "type": "meta",
+                            "session_id": f"sanad-{int(time.time()*1000)}",
+                            "confidence": "tinggi",
+                            "_sanad_active": True,
+                            "_sanad_branches_total": len(_sanad_result.all_responses),
+                            "_sanad_branches_contributing": len(_sanad_result.contributing_shadows),
+                            "_sanad_contributors": _sanad_result.contributing_shadows,
+                            "_sanad_total_duration_ms": _sanad_result.total_duration_ms,
+                            "_sanad_render_duration_ms": _sanad_ms,
+                            "_citations": _sanad_result.citations[:10],
+                        }
+                        yield f"data: {_json.dumps(_sanad_meta)}\n\n"
+                        _sanad_words = (_sanad_text or _sanad_result.consensus_claim).split(" ")
+                        for i, w in enumerate(_sanad_words):
+                            _t = w + (" " if i < len(_sanad_words) - 1 else "")
+                            yield f"data: {_json.dumps({'type':'token','text':_t})}\n\n"
+                            await asyncio.sleep(0.01)
+                        _sanad_done = {
+                            "type": "done", "persona": effective_persona,
+                            "session_id": _sanad_meta["session_id"],
+                            "conversation_id": effective_conversation_id,
+                            "confidence": "tinggi",
+                            "_sanad_active": True,
+                            "citations": _sanad_result.citations[:10],
+                        }
+                        yield f"data: {_json.dumps(_sanad_done)}\n\n"
+                        return
+                    else:
+                        log.warning("[stream] sanad MVP no consensus, fallback")
+                except Exception as _e:
+                    log.warning("[stream] sanad MVP error: %s", _e)
+                    # Fall through
+
             # ── Vol 20-fu7: KNOWLEDGE BYPASS (coding/factual/casual standard tier) ─
             # Question yang butuh JAWABAN LANGSUNG dari LLM knowledge (bukan
             # web/current data). Examples: "cara implementasi binary search",
