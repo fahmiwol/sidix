@@ -1,3 +1,72 @@
+# [2.6.0] — 2026-04-28 — Self-Critique + Self-Iterate (RASA + KITABAH + Shap-E)
+
+### Sprint 14f — Shap-E text-to-3D fallback (paralel agent)
+- runpod_media.generate_3d_from_text() — Shap-E mode=shape via mighan-media-worker
+- creative_pipeline.gen_3d_mode param: auto | triposr | shape (auto picks triposr if mascot_img exists, else shape)
+- Unblocks 3D path saat GPU supply throttled (TripoSR queue blocked)
+
+### Sprint 21 — 🎭 RASA Aesthetic/Quality Scorer
+- agent_rasa.py module + POST /agent/rasa endpoint
+- 4-dimension scoring (relevance/aesthetic/brand_fit/audience_fit, 1-5 scale)
+- Persona delegation: ALEY relevance + UTZ aesthetic + OOMAR brand_fit + AYMAN audience_fit
+- Single LLM call (BUKAN 4 separate = 4x hemat)
+- Output: prose markdown + structured JSON (overall_score + verdict + top_priority_improvement)
+- Reuse Sprint 18 _extract_json_block()
+- LIVE verified: 178.7s, 4 dims all 4/5, overall 4.0, verdict iterate
+- Per note 248 line 50 EXPLICIT (Embodiment 🎭 RASA)
+- Embodiment progress: 11/15 organs (73%)
+
+### Sprint 22 — KITABAH Auto-iterate (Generation-Test Validation Loop)
+- agent_kitabah.py module + POST /creative/iterate endpoint
+- Loop: creative produce → RASA validate → if score < threshold, regen with improvement context
+- Max iter cap 1-5 (budget control), threshold 1.0-5.0
+- Output: best_iteration (highest score) + full history + stopped_reason
+- Persist: .data/kitabah_loops/<slug>/{history.json, summary.md}
+- Per note 248 line 109-114 EXPLICIT (Wahdah/Kitabah/ODOA self-learning protocol)
+- LIVE attempt #1 budget under-spec (522s timeout) — pure infrastructure issue
+
+### Sprint 22b — KITABAH Cache Reuse (compound Sprint 20 smart cache)
+- _existing_creative_artifact() helper (mirror Sprint 20 _existing_creative)
+- IterationStep.creative_cache_hit field tracking
+- Iter 0: cache check via _slugify(brief) → reuse if exists (~5s vs ~400s)
+- Iter 2+ tetap fresh (brief augmented different)
+- Bug fix: len(... if x in meta else 0) → TypeError. Replaced with len(meta.get('asset_prompts') or [])
+- Test offline 3/3 pass
+- Solves Sprint 22 LIVE budget blocker
+
+### Notes baru cumulative
+- 261: Integrated Wisdom Output Mode (Sprint 20)
+- 262: RASA Aesthetic Quality Scorer (Sprint 21)
+- 263: Shap-E text-to-3D fallback (Sprint 14f, paralel agent)
+- 264: KITABAH Auto-iterate (Sprint 22)
+- 265: KITABAH Cache Reuse (Sprint 22b, this version)
+
+### Endpoints summary cumulative
+- POST /creative/brief (Sprint 14+14b+14c+14d+14e+14f)
+- POST /creative/iterate (Sprint 22+22b) ← BARU
+- POST /agent/rasa (Sprint 21) ← BARU
+- POST /agent/integrated (Sprint 20)
+- POST /agent/wisdom (Sprint 16+18+19)
+- GET /visioner/weekly (Sprint 15)
+- GET /openapi.json + /docs (Sprint 14g)
+
+### Embodiment progress (note 248 line 40-65)
+- 🎭 RASA SHIPPED Sprint 21 → 11/15 organs (73%)
+- Pending: 👁️ MATA, 👂 TELINGA, 🎯 INTUISI, full DoRA reproduksi
+
+### Iteration history total cumulative (sesi 2026-04-27 + 28)
+- 8 iterasi dengan 8 distinct root causes documented (Pydantic body, async polling, alignment, infrastructure, budget config, schema, prompt verbosity, curl timeout, JSON truncation, len(0) TypeError)
+- Memory feedback_diagnose_before_iter.md validated repeatedly
+
+### Session metric (cumulative 2026-04-27 + 2026-04-28 morning)
+- 16 sprint shipped (12, 14, 14b, 14c, 14d, 14e wiring, 14f, 14g, 15, 16, 18, 19, 20, 21, 22 wiring, 22b)
+- 14 LIVE verified, 2 wiring + offline (Sprint 14e + 22)
+- 17 research notes baru (249-260, 262, 263, 264, 265)
+- 60+ commits to main
+- 0 credential introduced session-wise
+
+---
+
 # [2.5.0] — 2026-04-27 late evening v2 — Scenario Tree + TTS Voice (Multi-modal Complete)
 
 ### Sprint 19 — Scenario Tree Explorer (ALEY 2-level branching)
