@@ -10545,3 +10545,24 @@ User confirm: RunPod ada 2 endpoint (vLLM 24GB + mighan-media-worker 48GB). Medi
 - Cek dokumentasi/code repo untuk method calling media worker
 
 Reference: note 248 line 178-198 (hero use-case full bundling)
+
+### Sprint 14b BUILD + DEPLOY ✅ — RunPod mighan-media-worker wired
+
+- Module baru: apps/brain_qa/brain_qa/runpod_media.py (244 lines)
+- creative_pipeline.py: +gen_images flag, +rendered_images list, +image embed di report.md
+- agent_serve.py: CreativeBriefRequest +gen_images +gen_images_n
+- API contract: POST /v2/{MEDIA_ENDPOINT_ID}/runsync dengan input.tool=image
+- ENV setup: RUNPOD_MEDIA_ENDPOINT_ID di /opt/sidix/.env (copied from /root/.env)
+- VPS verification: media_available() returns True from brain context
+- Pattern reference: /root/mighantect-3d/runpod-media-worker/media_server.py
+
+### LIVE test in flight
+Brief: Maskot ulat kuning kawaii brand snack anak
+Flags: skip copy+landing, gen_images=true, gen_images_n=3
+Expected: 3 hero asset PNG di .data/creative_briefs/<slug>/images/
+Cold start: SDXL 60-120s + 3 renders 30-60s each = ~5-8 min total
+
+### Compound 4-sprint sesi
+Sprint 12 + Sprint 14 + Sprint 14b + Sprint 15 = full creative agent stack
+brief Indonesia → CT-driven UTZ thinking → 8 prompts + 3 actual PNG hero asset
++ autonomous trend sensing setiap minggu compound
