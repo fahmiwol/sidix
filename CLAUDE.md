@@ -132,6 +132,80 @@ kerja = waste energy. Catatan adalah memori eksternal SIDIX.
 - "ini kecil, gak perlu dicatat" → tidak ada yang terlalu kecil
 - "sudah obvious dari commit message" → commit message ≠ context lengkap
 
+### 6.4. ⚠️ PRE-EXECUTION ALIGNMENT CHECK — Mandatory (2026-04-27 evening LOCK)
+
+User directive eksplisit setelah catch alignment gap di Sprint 14c:
+*"analisa dulu sebelum analisa, jangan sampe kontradiksi. kalau usha expired
+dan bentrok dengan rencana akhir, ya jangan di eksekusi, kasih remark atau
+apa lah."*
+
+**SEBELUM edit file yang touch persona / prompt / agent behavior, WAJIB**:
+
+```
+1. RE-READ NORTH STAR — research_notes/248 first 50 lines
+   (latest direction lock — Self-Evolving AI Creative Agent)
+
+2. CHECK LATEST PIVOT — grep "PIVOT YYYY-MM-DD" sections di CLAUDE.md,
+   identify yang paling baru. Per 2026-04-27:
+   - 2026-04-26: DEFINITION + DIRECTION LOCK (note 248) ← latest
+   - 2026-04-25: LIBERATION SPRINT (epistemik kontekstual, tool-aggressive)
+   - 2026-04-19: IDENTITAS LOCK 3-layer
+
+3. SELF-AUDIT — apa yang akan saya tulis ada di list anti-pattern
+   pivot terbaru? Misalnya:
+   - ❌ "Pakai [SPEKULASI]/[FAKTA]/[OPINI]/[TIDAK TAHU] tag bila..."
+     instruction di prompt creative/casual (anti pivot 2026-04-25)
+   - ❌ Blanket epistemik label per-paragraf (anti pivot 2026-04-25)
+   - ❌ "Saya adalah X dengan pendekatan Y" boilerplate persona
+     (anti pivot 2026-04-25)
+   - ❌ Prioritize corpus untuk current events (anti pivot 2026-04-25)
+   - ❌ Klaim spiritual entity / religious AI (anti note 248)
+   - ❌ Drop 5 persona / drop sanad / drop epistemic 4-label sebagai
+     option (anti note 248 hard rules)
+
+4. IF CONFLICT — STOP execute. Tulis remark eksplisit ke user:
+   "Instruction ini bentrok dengan pivot YYYY-MM-DD. Lanjut atau
+   redirect?"
+   JANGAN execute blindly walaupun copy dari research note lama.
+
+5. IF ALIGNED — proceed dengan loop mandatory (CATAT TESTING ITERASI
+   REVIEW VALIDASI QA CATAT)
+```
+
+**Familiarity bias trap** (root cause Sprint 14c gap):
+
+Agent yang familiar dengan framing lama (pre-pivot) akan otomatis copy
+pattern ke prompt baru tanpa cek pivot terbaru. SELALU verify against
+source-of-truth dokumen, BUKAN mental model lama.
+
+**Anti-pattern yang HARUS dihindari**:
+- ❌ "Saya tau ini benar dari memory/research note" → research note lama
+  bisa pre-pivot, WAJIB cek pivot terbaru
+- ❌ Copy template prompt dari file existing tanpa audit alignment
+- ❌ Skip audit karena "ini cuma minor edit"
+- ❌ Self-justify alignment tanpa cite spesifik baris pivot doc
+
+**Lesson dari Sprint 14c (2026-04-27)**: ALEY system prompt tertulis
+*"Pakai [SPEKULASI] tag bila claim tidak bisa di-back hard data"* —
+copy bias dari epistemic-as-differentiator framing pre-pivot 2026-04-25.
+Detail full audit di research_notes/254. User catch saved compound integrity.
+
+**ANTI-HALUSINASI rule** (user directive 2026-04-27 evening):
+*"jangan sampai masuk ke dalam hallucinate lagi, nggak ada arah yang jelas."*
+
+Setiap claim atau eksekusi WAJIB punya **basis konkret** dari salah satu:
+- Cite line di CLAUDE.md / note 248 / pivot dokumen tertentu (line N)
+- Cite output `git log` / `grep` / `read file` yang barusan di-run
+- Cite test result actual (TIDAK boleh "saya yakin" tanpa output verifikasi)
+
+Kalau tidak punya basis konkret → **STOP**, ambil basis dulu (read file, run grep,
+verify), atau **kasih remark eksplisit**: *"Saya tidak yakin — perlu verifikasi
+dulu. Lanjut cek file X / run command Y?"*
+
+JANGAN gabungkan asumsi + memory + framing lama → **itu jalan ke halusinasi**.
+Setiap output harus traceable ke source-of-truth, bukan compound dari mental
+model yang mungkin sudah expired.
+
 ### 6.5. ⚠️ POST-TASK PROTOCOL — Loop Mandatory (2026-04-27 LOCK)
 
 User directive eksplisit: *"Catat, testing, iterasi, training, Review, Catat,

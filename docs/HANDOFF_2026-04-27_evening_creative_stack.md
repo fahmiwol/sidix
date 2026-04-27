@@ -138,11 +138,30 @@ Revoke leaked Gemini/Kimi/Vertex API keys (kalau ada)
 ## SARAN SARAN PERTAMA SESI BARU
 
 1. Baca CLAUDE.md + note 248 + this handoff + tail LIVING_LOG (200 baris)
-2. Konfirmasi: "Sudah baca. SIDIX = Self-Evolving AI Creative Agent. 4 sprint
-   shipped 27/4 evening. Lanjut Sprint 14e 3D mascot (close hero 80→100%)
-   atau Sprint 14d TTS atau prioritas lain?"
-3. Tunggu redirect → eksekusi
-4. JANGAN re-pivot. JANGAN tanya tech trade-off detail.
+2. **WAJIB**: baca CLAUDE.md section 6.4 "PRE-EXECUTION ALIGNMENT CHECK" —
+   anti-halusinasi + anti-familiarity-bias rule. Compound integrity dari
+   sesi 2026-04-27 onwards.
+3. Konfirmasi: "Sudah baca. SIDIX = Self-Evolving AI Creative Agent. 6 sprint
+   shipped 27/4 evening. Pre-exec alignment check ON. Lanjut Sprint 14e 3D
+   mascot (close hero 80→100%) atau Sprint 14d TTS atau prioritas lain?"
+4. Tunggu redirect → eksekusi
+5. JANGAN re-pivot. JANGAN tanya tech trade-off detail.
+
+## CRITICAL DISCIPLINE (2026-04-27 evening LOCK)
+
+User catch alignment gap di Sprint 14c (`[SPEKULASI]` blanket label per bullet
+ALEY = anti pivot 2026-04-25 LIBERATION SPRINT). Iterasi #3 fix shipped + LIVE
+verified. Tapi gap itu tidak boleh terulang.
+
+**Rule baru per CLAUDE.md section 6.4**:
+- Sebelum edit prompt/persona: re-read note 248 + grep latest pivot di CLAUDE.md
+- Self-audit: apa yang akan ditulis ada di list anti-pattern pivot terbaru?
+- Kalau conflict → STOP, kasih remark, jangan execute blindly
+- Setiap claim wajib basis konkret (cite file/line/output), bukan asumsi/memory
+- Familiarity bias = root cause halusinasi, antidote = verify against SSOT
+
+Detail di research_notes/254 (alignment audit + lesson learned + self-audit
+checklist).
 
 ## VISI INTI (carry forward)
 
