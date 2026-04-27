@@ -9953,3 +9953,55 @@ Pending:
 - Vol 26 skill cloning bootstrap
 
 Vol 22 = highest leverage next (improves sanad branch quality further).
+
+
+---
+
+## 2026-04-27 morning — VOL 22 SHIPPED ✅ Per-branch iteration + refinement
+
+### What ships
+sanad_orchestrator.py:
+- BranchResult: + iterations + refined_queries fields (telemetry)
+- _MAX_ITER = 2 (1 retry on failure)
+- Refinement strategies:
+  - _refine_query_simplify: stopword strip (wiki/web branches)
+  - _refine_query_expand: synonym injection (corpus branch)
+- _branch_wiki: iterate up to 2x on empty result
+- _branch_corpus: iterate up to 2x on empty
+- _branch_llm: single shot (perplexity-based iter deferred)
+
+### Telemetry per BranchResult
+- iterations: how many tries (1=success first, 2=needed retry)
+- refined_queries: query history per iter (for debug)
+
+### Live test
+Query: jelaskan algoritma topological sort di python
+- Sanad fan-out fired
+- 3 branches dispatched, 1 succeeded (corpus)
+- Total 3093ms (vs ~5s before, faster after iter logic)
+- 3 SIDIX research notes auto-cited
+
+### Mandatory loop
+✅ CATAT (this entry)
+✅ TESTING (live sanad test confirmed iter telemetry)
+✅ ITERASI (none — first try worked)
+✅ REVIEW (own diff, refinement strategies sound)
+✅ CATAT (above)
+✅ VALIDASI (admin endpoints + sanad MVP all live)
+✅ QA (no leaks)
+✅ CATAT (commit + push)
+
+### Sprint sequence completed this morning (6 sprints!)
+- Vol 23 MVP    ✅
+- Vol 23b       ✅
+- Vol 23c       ✅
+- Vol 21 wire   ✅
+- Vol 23d       ✅ (hybrid embedding lookup)
+- Vol 22        ✅ (per-branch iteration)
+
+### Sprint pending
+- Vol 24a Lite browser polish (SearxNG self-host, cache layer)
+- Vol 24b SDXL endpoint (multimodal)
+- Vol 26 Skill cloning (Claude session JSONL)
+- Vol 23e Inventory: contradiction detection (when 2 AKUs disagree)
+- LLM branch iteration (perplexity check)
