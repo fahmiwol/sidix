@@ -220,6 +220,91 @@ async def _ask_ownpod(client: httpx.AsyncClient, question: str, system: str) -> 
                               error=str(e)[:200])
 
 
+async def _ask_kimi(client: httpx.AsyncClient, question: str, system: str) -> ProviderAnswer:
+    """Moonshot AI Kimi (kimi-latest, free tier $5 credit)."""
+    api_key = os.environ.get("KIMI_API_KEY", "").strip()
+    t0 = time.time()
+    if not api_key:
+        return ProviderAnswer(provider="kimi", text="", duration_ms=0,
+                              available=False, error="KIMI_API_KEY not set")
+    try:
+        # Moonshot OpenAI-compatible endpoint
+        model = os.environ.get("KIMI_MODEL", "kimi-latest")
+        r = await client.post(
+            "https://api.moonshot.ai/v1/chat/completions",
+            headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
+            json={
+                "model": model,
+                "messages": [
+                    {"role": "system", "content": system},
+                    {"role": "user", "content": question},
+                ],
+                "temperature": 0.4,
+                "max_tokens": 400,
+            },
+            timeout=20.0,
+        )
+        if r.status_code != 200:
+            return ProviderAnswer(provider="kimi", text="", duration_ms=int((time.time()-t0)*1000),
+                                  error=f"HTTP {r.status_code}: {r.text[:200]}")
+        data = r.json()
+        text = (data.get("choices") or [{}])[0].get("message", {}).get("content", "").strip()
+        return ProviderAnswer(provider="kimi", text=text,
+                              duration_ms=int((time.time()-t0)*1000),
+                              model=model)
+    except Exception as e:
+        return ProviderAnswer(provider="kimi", text="",
+                              duration_ms=int((time.time()-t0)*1000),
+                              error=str(e)[:200])
+
+
+async def _ask_openrouter(client: httpx.AsyncClient, question: str, system: str) -> ProviderAnswer:
+    """
+    OpenRouter — universal gateway to 200+ models with single API key.
+    Free models available: meta-llama/llama-3.3-70b-instruct:free,
+    google/gemini-flash-1.5-8b-exp:free, qwen/qwen-2.5-coder-32b-instruct:free, etc.
+    """
+    api_key = os.environ.get("OPENROUTER_API_KEY", "").strip()
+    t0 = time.time()
+    if not api_key:
+        return ProviderAnswer(provider="openrouter", text="", duration_ms=0,
+                              available=False, error="OPENROUTER_API_KEY not set")
+    try:
+        # Default to a FREE model. User can override via OPENROUTER_MODEL env var.
+        model = os.environ.get("OPENROUTER_MODEL", "meta-llama/llama-3.3-70b-instruct:free")
+        r = await client.post(
+            "https://openrouter.ai/api/v1/chat/completions",
+            headers={
+                "Authorization": f"Bearer {api_key}",
+                "Content-Type": "application/json",
+                "HTTP-Referer": "https://sidixlab.com",  # OpenRouter requires this
+                "X-Title": "SIDIX",
+            },
+            json={
+                "model": model,
+                "messages": [
+                    {"role": "system", "content": system},
+                    {"role": "user", "content": question},
+                ],
+                "temperature": 0.4,
+                "max_tokens": 400,
+            },
+            timeout=20.0,
+        )
+        if r.status_code != 200:
+            return ProviderAnswer(provider="openrouter", text="", duration_ms=int((time.time()-t0)*1000),
+                                  error=f"HTTP {r.status_code}: {r.text[:200]}")
+        data = r.json()
+        text = (data.get("choices") or [{}])[0].get("message", {}).get("content", "").strip()
+        return ProviderAnswer(provider="openrouter", text=text,
+                              duration_ms=int((time.time()-t0)*1000),
+                              model=model)
+    except Exception as e:
+        return ProviderAnswer(provider="openrouter", text="",
+                              duration_ms=int((time.time()-t0)*1000),
+                              error=str(e)[:200])
+
+
 async def _ask_gemini(client: httpx.AsyncClient, question: str, system: str) -> ProviderAnswer:
     """Google Gemini free tier (gemini-flash-latest, gen-lang)."""
     api_key = os.environ.get("GEMINI_API_KEY", "").strip()
@@ -267,6 +352,8 @@ _PROVIDER_FN = {
     "hf": _ask_hf,
     "cloudflare": _ask_cloudflare,
     "gemini": _ask_gemini,
+    "kimi": _ask_kimi,
+    "openrouter": _ask_openrouter,
     "ownpod": _ask_ownpod,
 }
 
@@ -291,7 +378,7 @@ async def consensus_async(
     - Diverse perspective for creative/research tasks
     """
     if providers is None:
-        providers = ["ownpod", "gemini", "groq", "together", "hf", "cloudflare"]
+        providers = ["ownpod", "gemini", "kimi", "openrouter", "groq", "together", "hf", "cloudflare"]
 
     system = (
         f"Kamu salah satu dari beberapa AI assistant menjawab user. Persona: {persona}. "
@@ -323,6 +410,8 @@ def list_available_providers() -> dict[str, bool]:
         "cloudflare": bool(os.environ.get("CF_API_TOKEN", "").strip()
                            and os.environ.get("CF_ACCOUNT_ID", "").strip()),
         "gemini": bool(os.environ.get("GEMINI_API_KEY", "").strip()),
+        "kimi": bool(os.environ.get("KIMI_API_KEY", "").strip()),
+        "openrouter": bool(os.environ.get("OPENROUTER_API_KEY", "").strip()),
         "ownpod": bool(os.environ.get("RUNPOD_API_KEY", "").strip()),
     }
 
