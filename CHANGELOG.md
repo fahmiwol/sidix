@@ -62,7 +62,7 @@
 - 8 iterasi total dengan 8 distinct root causes documented
 - 19 research notes baru (249-260, 262-267)
 - 80+ commits to main
-- Multiple security sanitizations (Mighara22 + hf_YlAQ + Gemini/Kimi/Vertex partial)
+- Multiple security sanitizations forward-applied (VPS-SSH + HF-token + Gemini/Kimi/Vertex partial). Per memory `security_credential_redact_pattern.md`, literal credential strings yang sebelumnya leaked di old commits sekarang scrubbed di HEAD. User action item: rotate semua leaked credentials per HANDOFF v6 security debt.
 - 0 NEW credential introduced session-wise
 
 ---
