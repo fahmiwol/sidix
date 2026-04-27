@@ -357,8 +357,8 @@ def _jaccard_4gram(a: str, b: str) -> float:
 
 def synthesize(
     *,
-    same_subject_threshold: float = 0.6,
-    same_object_threshold: float = 0.7,
+    same_subject_threshold: float = 0.5,
+    same_object_threshold: float = 0.45,
     dry_run: bool = False,
 ) -> dict:
     """
