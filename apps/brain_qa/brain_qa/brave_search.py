@@ -32,10 +32,15 @@ log = logging.getLogger(__name__)
 _BRAVE_URL = "https://search.brave.com/search?q={q}"
 _USER_AGENT = "SIDIX-LiteBrowser/0.2 (https://sidixlab.com)"
 _TIMEOUT = 8.0
-_MIN_INTERVAL = 1.0  # min sec between requests (politeness)
+_MIN_INTERVAL = 3.0  # min sec between requests (more polite, less 429)
 
 _last_request_at: float = 0.0
 _rate_lock = asyncio.Lock()
+
+# 429 backoff: when rate-limited, skip all brave calls for N seconds
+_429_until: float = 0.0
+_CACHE_TTL = 300.0  # cache results 5 min to avoid repeat brave calls
+_result_cache: dict = {}  # query -> (timestamp, BraveHit list)
 
 
 @dataclass
@@ -49,9 +54,27 @@ async def brave_search_async(query: str, max_results: int = 5) -> list[BraveHit]
     """
     Brave Search via HTML scrape. Returns top-N hits.
 
-    Rate-limit aware: waits at least _MIN_INTERVAL between requests.
+    Rate-limit aware:
+    - Min 3s between requests (asyncio.Lock)
+    - 5-min cache per query (avoid repeat 429)
+    - 60s global backoff after 429
     """
-    global _last_request_at
+    global _last_request_at, _429_until
+
+    # 1. Check cache first
+    now = time.time()
+    cached = _result_cache.get(query)
+    if cached:
+        ts, hits = cached
+        if now - ts < _CACHE_TTL:
+            log.debug("[brave_search] cache hit query=%r", query[:60])
+            return hits
+
+    # 2. Check 429 backoff
+    if now < _429_until:
+        log.debug("[brave_search] in 429 backoff for %.1fs more, skip", _429_until - now)
+        return []
+
     async with _rate_lock:
         elapsed = time.time() - _last_request_at
         if elapsed < _MIN_INTERVAL:
@@ -67,6 +90,11 @@ async def brave_search_async(query: str, max_results: int = 5) -> list[BraveHit]
                 r = await c.get(url, follow_redirects=True)
             _last_request_at = time.time()
 
+            if r.status_code == 429:
+                # Rate-limited: backoff 60s, return empty
+                _429_until = time.time() + 60.0
+                log.warning("[brave_search] 429 — backing off 60s")
+                return []
             if r.status_code != 200:
                 log.warning("[brave_search] status %d for query=%r", r.status_code, query[:60])
                 return []
@@ -100,6 +128,12 @@ async def brave_search_async(query: str, max_results: int = 5) -> list[BraveHit]
                         break
 
             log.info("[brave_search] '%s' -> %d hits", query[:60], len(hits))
+            # Cache result (even empty, to avoid repeat hits)
+            _result_cache[query] = (time.time(), hits)
+            # Bound cache size (drop oldest if >100 entries)
+            if len(_result_cache) > 100:
+                oldest = min(_result_cache.items(), key=lambda kv: kv[1][0])
+                _result_cache.pop(oldest[0], None)
             return hits
 
         except Exception as e:
