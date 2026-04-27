@@ -3702,7 +3702,10 @@ def create_app() -> "FastAPI":
             # avoid regression. When ON: standard-tier questions get multi-source
             # consensus instead of single-LLM knowledge_bypass.
             _sanad_enabled = os.environ.get("SIDIX_SANAD_MVP", "0").strip() == "1"
-            if _sanad_enabled and _tier_decision_s is not None and _tier_decision_s.tier in ("standard", "deep") and not _tadabbur_swap_active:
+            # Note: _tadabbur_swap_active defined LATER in flow. Sanad fires
+            # first when flag on; deep+eligible tadabbur path skipped if sanad
+            # finds consensus. To prefer tadabbur, disable SIDIX_SANAD_MVP.
+            if _sanad_enabled and _tier_decision_s is not None and _tier_decision_s.tier in ("standard", "deep"):
                 try:
                     from .sanad_orchestrator import run_sanad
                     _bump_metric("ask_stream_sanad_mvp")
