@@ -346,12 +346,78 @@ async def _ask_gemini(client: httpx.AsyncClient, question: str, system: str) -> 
                               error=str(e)[:200])
 
 
+async def _ask_vertex(client: httpx.AsyncClient, question: str, system: str) -> ProviderAnswer:
+    """
+    Google Vertex AI / Gemini Agent Platform Model API.
+    Different endpoint from standard Gemini API (generativelanguage).
+    Uses Agent Platform Model API: aiplatform.googleapis.com
+    Key format: starts with AQ. (Agent Platform Key)
+    """
+    api_key = os.environ.get("VERTEX_API_KEY", "").strip()
+    t0 = time.time()
+    if not api_key:
+        return ProviderAnswer(provider="vertex", text="", duration_ms=0,
+                              available=False, error="VERTEX_API_KEY not set")
+    try:
+        # Agent Platform endpoint (key in URL or header)
+        model = os.environ.get("VERTEX_MODEL", "gemini-2.0-flash")
+        # Try AI Platform endpoint with API key
+        url = f"https://aiplatform.googleapis.com/v1/publishers/google/models/{model}:generateContent"
+        r = await client.post(
+            url,
+            headers={
+                "x-goog-api-key": api_key,
+                "Content-Type": "application/json",
+            },
+            json={
+                "systemInstruction": {"parts": [{"text": system}]},
+                "contents": [{"parts": [{"text": question}]}],
+                "generationConfig": {
+                    "temperature": 0.4,
+                    "maxOutputTokens": 400,
+                },
+            },
+            timeout=20.0,
+        )
+        if r.status_code != 200:
+            # Fallback: try generativelanguage endpoint with this key (some Agent Platform keys work there)
+            r2 = await client.post(
+                f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent",
+                headers={"x-goog-api-key": api_key, "Content-Type": "application/json"},
+                json={
+                    "systemInstruction": {"parts": [{"text": system}]},
+                    "contents": [{"parts": [{"text": question}]}],
+                    "generationConfig": {"temperature": 0.4, "maxOutputTokens": 400},
+                },
+                timeout=15.0,
+            )
+            if r2.status_code != 200:
+                return ProviderAnswer(provider="vertex", text="",
+                                      duration_ms=int((time.time()-t0)*1000),
+                                      error=f"both endpoints failed: aip {r.status_code}, glang {r2.status_code}: {r2.text[:150]}")
+            r = r2
+        data = r.json()
+        candidates = data.get("candidates") or []
+        text = ""
+        if candidates:
+            parts = (candidates[0].get("content") or {}).get("parts") or []
+            text = " ".join(p.get("text", "") for p in parts).strip()
+        return ProviderAnswer(provider="vertex", text=text,
+                              duration_ms=int((time.time()-t0)*1000),
+                              model=model)
+    except Exception as e:
+        return ProviderAnswer(provider="vertex", text="",
+                              duration_ms=int((time.time()-t0)*1000),
+                              error=str(e)[:200])
+
+
 _PROVIDER_FN = {
     "groq": _ask_groq,
     "together": _ask_together,
     "hf": _ask_hf,
     "cloudflare": _ask_cloudflare,
     "gemini": _ask_gemini,
+    "vertex": _ask_vertex,
     "kimi": _ask_kimi,
     "openrouter": _ask_openrouter,
     "ownpod": _ask_ownpod,
@@ -378,7 +444,7 @@ async def consensus_async(
     - Diverse perspective for creative/research tasks
     """
     if providers is None:
-        providers = ["ownpod", "gemini", "kimi", "openrouter", "groq", "together", "hf", "cloudflare"]
+        providers = ["ownpod", "gemini", "vertex", "kimi", "openrouter", "groq", "together", "hf", "cloudflare"]
 
     system = (
         f"Kamu salah satu dari beberapa AI assistant menjawab user. Persona: {persona}. "
@@ -410,6 +476,7 @@ def list_available_providers() -> dict[str, bool]:
         "cloudflare": bool(os.environ.get("CF_API_TOKEN", "").strip()
                            and os.environ.get("CF_ACCOUNT_ID", "").strip()),
         "gemini": bool(os.environ.get("GEMINI_API_KEY", "").strip()),
+        "vertex": bool(os.environ.get("VERTEX_API_KEY", "").strip()),
         "kimi": bool(os.environ.get("KIMI_API_KEY", "").strip()),
         "openrouter": bool(os.environ.get("OPENROUTER_API_KEY", "").strip()),
         "ownpod": bool(os.environ.get("RUNPOD_API_KEY", "").strip()),
