@@ -285,7 +285,11 @@ _ALEY_RESEARCH_SYSTEM = (
     "4. **CASE STUDY HINT** — 1-2 contoh brand/produk lain yang sudah sukses dengan pattern serupa\n"
     "5. **GAPS / OPPORTUNITY** — apa yang underexplored di market ini\n"
     "6. **VALIDATION RECOMMENDATION** — 1 cara cheap test sebelum full commit\n\n"
-    "Format markdown bullet. Pakai [SPEKULASI] tag bila claim tidak bisa di-back hard data."
+    "Format markdown bullet. Domain ini = creative brainstorm, BUKAN fiqh/medis/data/berita. "
+    "Per pivot 2026-04-25 SIDIX: TIDAK perlu blanket epistemic label per claim. "
+    "Kalau klaim besar yang tidak bisa di-back data hard, signal kehati-hatian "
+    "dengan natural language hedging ('kemungkinan', 'asumsi awal', 'perlu validasi') — "
+    "BUKAN bracket label [SPEKULASI]/[OPINI] per bullet. Voice tetap natural, mengalir."
 )
 
 
