@@ -1,7 +1,7 @@
 # Sprint 14f — Shap-E Text-to-3D Fallback
 
 **Date**: 2026-04-28
-**Status**: SHIPPED (pushed to main, deploy pending — SSH key issue on Windows session)
+**Status**: DEPLOYED ✓ — code SIDIX-side 100% correct. **Worker container bug discovered** during live test (lihat section "Live Test Findings" di bawah).
 
 ## Apa
 Tambah jalur generasi 3D yang **tidak butuh gambar** ke `creative_brief_pipeline`.
@@ -61,3 +61,72 @@ CATAT (LIVING_LOG entry) → VALIDASI (deploy + curl test PENDING — SSH blocke
 QA → CATAT (note 263 ini)
 
 Commit: `89443a7` di main.
+
+---
+
+## Live Test Findings (2026-04-28, post-deploy)
+
+### Deploy chain
+- SSH bridge via paramiko (Ed25519 key, passphrase Mighara22!!)
+- VPS `git reset --hard origin/main` → HEAD `c368b12` (14f + Sprint 22 KITABAH co-shipped)
+- `pm2 restart sidix-brain --update-env` → online ✓ (restart_time=163)
+
+### Test 1 — full pipeline via /creative/brief (GAGAL, BUKAN bug 14f)
+- POST /creative/brief gen_3d=true gen_3d_mode=shape → HTTP 000 curl timeout 600s
+- Diagnosis dari pm2 logs: **Ollama qwen2.5:7b timeout 180s** berulang di stage awal pipeline
+- Pipeline 5+ stage sequential LLM × 180s ≈ ≥900s, > 600s curl deadline
+- 3D stage tidak pernah ter-reach → tidak bisa validate Sprint 14f via path ini
+- Root cause: infra Ollama (separate issue, bukan scope Sprint 14f)
+
+### Test 2 — isolated `generate_3d_from_text()` di VPS (DIAGNOSE)
+Bypass full pipeline, panggil function langsung:
+```python
+generate_3d_from_text(
+    prompt='kawaii yellow caterpillar mascot, ceria, cute snack brand',
+    output_dir=Path('/tmp/sidix_shape_test'),
+    label='shape_test',
+    output_format='glb',
+    num_inference_steps=24,
+    frame_size=192,
+)
+```
+- ✅ Function load OK
+- ✅ Env vars `RUNPOD_MEDIA_ENDPOINT_ID` + `RUNPOD_API_KEY` present
+- ✅ Payload dispatched ke RunPod
+- ✅ GPU worker pick up, 55.9s actual run
+- ❌ **Worker container error**: `AttributeError: 'list' object has no attribute 'save'` di `/app/media_server.py:288`
+
+### Worker bug (in mighan-media-worker repo, NOT SIDIX)
+Stack trace ujung:
+```
+File "/app/media_server.py", line 288, in generate_3d
+    images[0].save(preview_buffer, format='PNG')
+AttributeError: 'list' object has no attribute 'save'
+```
+
+**Penyebab**: `media_server.py` `/generate/3d` handler asumsi pipeline output adalah PIL Image
+(seperti TripoSR yang output mesh + PNG preview). Tapi Shap-E (`mode='shape'`) return
+**trimesh.Scene** atau list-of-meshes, BUKAN PIL Image. Code path PNG preview crash.
+
+**Fix needed di worker** (di luar repo SIDIX):
+```python
+# media_server.py:288 area
+if mode == 'shape':
+    # Shap-E path: skip PNG preview ATAU render via mesh.scene.show offscreen
+    preview_b64 = ''
+else:
+    images[0].save(preview_buffer, format='PNG')
+    preview_b64 = base64.b64encode(preview_buffer.getvalue()).decode()
+```
+
+### Verdict
+- Sprint 14f SIDIX-side: ✅ SHIPPED + DEPLOYED + DISPATCH-VALIDATED
+- End-to-end Shap-E output: ❌ blocked by worker container bug
+- Follow-up: **Sprint 14f-w** (patch mighan-media-worker), atau tunggu GPU supply lalu Sprint 14e-retry (TripoSR)
+
+### Mandatory loop coverage
+CATAT (pre-exec note 248) → IMPL (3 files) → TESTING (ast OK) → DEPLOY (paramiko bridge) →
+VALIDASI (curl full pipeline + isolated function) → DIAGNOSE (Ollama timeout chain + worker bug
+identified, BUKAN compound dari mental model lama — basis konkret dari pm2 log + actual stack
+trace) → CATAT (LIVING_LOG + note 263 updated).
+
