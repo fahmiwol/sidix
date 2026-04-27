@@ -3500,10 +3500,12 @@ def create_app() -> "FastAPI":
             # Before L1 cache, check inventory.db for pre-validated AKU.
             # Hit = answer in <100ms with sanad chain. Self-grown knowledge.
             try:
-                from .inventory_memory import lookup as _inv_lookup, format_lookup_for_render
-                # MVP: 0.55 threshold (bootstrap AKUs at 0.6, reinforce builds up).
-                # Future: per-domain threshold (fiqh/medis higher, casual lower).
-                _inv_hits = _inv_lookup(req.question, min_confidence=0.55, limit=3)
+                # Vol 23d: hybrid lookup (BM25 + BGE-M3 embedding rerank).
+                # Falls back to plain BM25 if embed_fn unavailable.
+                # Threshold 0.55 (bootstrap AKUs at 0.6, reinforce builds up).
+                from .inventory_memory import lookup_hybrid as _inv_lookup, format_lookup_for_render
+                _inv_hits = _inv_lookup(req.question, min_confidence=0.55, limit=3,
+                                        embedding_threshold=0.45)
                 if _inv_hits:
                     _bump_metric("ask_stream_inventory_l0_hit")
                     _t_inv_start = time.time()

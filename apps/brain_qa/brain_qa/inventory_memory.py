@@ -53,6 +53,50 @@ log = logging.getLogger(__name__)
 _DB_PATH = Path("/opt/sidix/.data/inventory.db")
 _DB_PATH.parent.mkdir(parents=True, exist_ok=True)
 
+# Embedding cache: aku_id → numpy array (lazy populated)
+_embed_cache: dict = {}
+_embed_fn = None
+
+def _get_embed_fn():
+    """Lazy-load BGE-M3 embedding fn from embedding_loader. Returns None if unavailable."""
+    global _embed_fn
+    if _embed_fn is None:
+        try:
+            from .embedding_loader import load_embed_fn
+            _embed_fn = load_embed_fn()
+        except Exception as e:
+            log.debug("[inventory] embed_fn load fail: %s", e)
+            _embed_fn = False  # mark as tried-and-failed (avoid retry)
+    return _embed_fn if _embed_fn else None
+
+
+def _embed_aku_text(aku: "AKU"):
+    """Embed AKU's combined text. Cached by aku_id."""
+    if aku.aku_id in _embed_cache:
+        return _embed_cache[aku.aku_id]
+    embed_fn = _get_embed_fn()
+    if embed_fn is None:
+        return None
+    text = f"{aku.subject}: {aku.object}"  # subject + object combined
+    try:
+        v = embed_fn(text)
+        _embed_cache[aku.aku_id] = v
+        return v
+    except Exception as e:
+        log.debug("[inventory] embed fail for %s: %s", aku.aku_id, e)
+        return None
+
+
+def _cosine_sim(a, b) -> float:
+    """Cosine similarity of two L2-normalized vectors."""
+    if a is None or b is None:
+        return 0.0
+    try:
+        import numpy as np
+        return float(np.dot(a, b))  # L2-normalized → dot = cosine
+    except Exception:
+        return 0.0
+
 
 # ── Schema bootstrap ────────────────────────────────────────────────────────
 
@@ -281,6 +325,60 @@ def lookup(
     return [_row_to_aku(r) for r in rows]
 
 
+def lookup_hybrid(
+    query: str,
+    *,
+    min_confidence: float = 0.55,
+    limit: int = 5,
+    fts_pool: int = 15,
+    embedding_threshold: float = 0.45,
+) -> list[AKU]:
+    """
+    Vol 23d: Hybrid lookup. FTS5 candidate fetch + BGE-M3 embedding rerank.
+
+    Step 1: FTS5 fetches top fts_pool candidates (BM25 ranked, cheap).
+    Step 2: Embedding similarity rerank — cosine query vs aku.subject+object.
+    Step 3: Filter by embedding_threshold + confidence, return top-K.
+
+    If embedding_fn unavailable: graceful fallback to plain BM25 ranking.
+    """
+    if not query.strip():
+        return []
+    # Phase 1: FTS5 wide net
+    candidates = lookup(query, min_confidence=min_confidence, limit=fts_pool)
+    if not candidates:
+        return []
+    # Phase 2: embedding rerank if available
+    embed_fn = _get_embed_fn()
+    if embed_fn is None:
+        # Graceful fallback: return top-K from FTS only
+        return candidates[:limit]
+    try:
+        q_vec = embed_fn(query)
+    except Exception:
+        return candidates[:limit]
+    # Score each candidate by embedding similarity × confidence
+    scored = []
+    for aku in candidates:
+        a_vec = _embed_aku_text(aku)
+        if a_vec is None:
+            scored.append((aku, 0.5 * aku.confidence, 0.5))  # neutral if embed fail
+            continue
+        sim = _cosine_sim(q_vec, a_vec)
+        # Combined score: similarity × confidence (high in both = strong hit)
+        combined = sim * aku.confidence
+        scored.append((aku, combined, sim))
+    # Filter + sort
+    valid = [(a, c, s) for a, c, s in scored if s >= embedding_threshold]
+    valid.sort(key=lambda x: x[1], reverse=True)
+    log.info(
+        "[inventory] hybrid: %d FTS candidates → %d embedding-passed (top sim=%.3f)",
+        len(candidates), len(valid),
+        valid[0][2] if valid else 0,
+    )
+    return [a for a, _, _ in valid[:limit]]
+
+
 def lookup_exact(subject: str, predicate: str) -> Optional[AKU]:
     """Direct lookup by subject + predicate (skip FTS, exact match)."""
     with _conn() as c:
@@ -474,6 +572,6 @@ def format_lookup_for_render(akus: list[AKU]) -> str:
 
 
 __all__ = [
-    "AKU", "ingest", "lookup", "lookup_exact",
+    "AKU", "ingest", "lookup", "lookup_hybrid", "lookup_exact",
     "stats", "decay_old", "synthesize", "format_lookup_for_render",
 ]
