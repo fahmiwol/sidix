@@ -254,6 +254,109 @@ def stage5_asset_prompts(brief: str, concept: str, brand: str) -> StageOutput:
     )
 
 
+# ── Sprint 14c: Multi-persona post-pipeline enrichment ──────────────────────
+
+_OOMAR_REVIEW_SYSTEM = (
+    "Kamu OOMAR — strategist SIDIX. Voice: 'saya', framework-driven, decisional, "
+    "tegas. Method: lihat big picture, ROI, market positioning. Bahasa Indonesia.\n\n"
+    "TUGAS — STRATEGIC REVIEW:\n"
+    "Diberikan brief creative + concept + brand + asset prompts dari UTZ, hasilkan "
+    "review komersial untuk pasar UMKM Indonesia (5-7 bullet konkret):\n\n"
+    "1. **MARKET FIT** — segment audience real, market size estimasi, pain point\n"
+    "2. **COMPETITIVE EDGE** — 1-2 differentiator yang sustainable vs competitor\n"
+    "3. **MONETIZATION** — pricing strategy yang fit (premium / mass / freemium)\n"
+    "4. **GO-TO-MARKET** — channel + first 100 customer hypothesis\n"
+    "5. **RISK & MITIGATION** — top 2 risk + how to address\n"
+    "6. **VERDICT** — proceed / pivot / kill (dengan satu kalimat reasoning)\n\n"
+    "Format markdown bullet. Berani spesifik. Jangan hedge."
+)
+
+
+_ALEY_RESEARCH_SYSTEM = (
+    "Kamu ALEY — researcher SIDIX. Voice: 'saya', scholarly tapi nggak jaim, "
+    "methodical. Method: cross-domain, sanad-style validation. Bahasa Indonesia.\n\n"
+    "TUGAS — RESEARCH ENRICHMENT:\n"
+    "Diberikan brief creative + (opsional) trending cluster dari SIDIX visioner radar, "
+    "hasilkan research-backed enrichment (4-6 bullet):\n\n"
+    "1. **TREND ALIGNMENT** — 1-2 trend besar yang support direction ini "
+    "(cite emerging keyword kalau ada di trending data)\n"
+    "2. **CULTURAL CONTEXT** — relevansi cultural Indonesia / SEA yang menguatkan\n"
+    "3. **AUDIENCE PSYCHOLOGY** — 1 insight psikologis kenapa target audience akan koneksi\n"
+    "4. **CASE STUDY HINT** — 1-2 contoh brand/produk lain yang sudah sukses dengan pattern serupa\n"
+    "5. **GAPS / OPPORTUNITY** — apa yang underexplored di market ini\n"
+    "6. **VALIDATION RECOMMENDATION** — 1 cara cheap test sebelum full commit\n\n"
+    "Format markdown bullet. Pakai [SPEKULASI] tag bila claim tidak bisa di-back hard data."
+)
+
+
+def _read_recent_trending_keywords(n: int = 5) -> list[str]:
+    """Hook ke .data/research_queue.jsonl (Sprint 15 visioner output).
+
+    Return top-n keyword dari weekly run terbaru, sebagai context untuk ALEY.
+    Graceful: kosong kalau file tidak ada / belum ada visioner run.
+    """
+    queue_path = DATA_DIR / "research_queue.jsonl"
+    if not queue_path.exists():
+        return []
+    try:
+        # Last n lines = most recent
+        with open(queue_path, encoding="utf-8") as f:
+            lines = f.readlines()
+        keywords: list[str] = []
+        for line in reversed(lines[-50:]):
+            try:
+                d = json.loads(line)
+                kw = (d.get("topic") or "").strip()
+                if kw and kw not in keywords:
+                    keywords.append(kw)
+                if len(keywords) >= n:
+                    break
+            except Exception:
+                continue
+        return keywords
+    except Exception:
+        return []
+
+
+def stage_oomar_review(brief: str, concept: str, brand: str) -> StageOutput:
+    import time as _t
+    t0 = _t.time()
+    prompt = (
+        f"BRIEF: {brief}\n\nCONCEPT (UTZ):\n{concept}\n\nBRAND (UTZ):\n{brand}\n\n"
+        f"Berikan strategic commercial review."
+    )
+    text, _ = ollama_generate(prompt, system=_OOMAR_REVIEW_SYSTEM, max_tokens=600, temperature=0.4)
+    return StageOutput(
+        stage="oomar_review",
+        title="📊 Strategic Review — OOMAR (Commercial Validation)",
+        content=(text or "").strip(),
+        elapsed_ms=int((_t.time() - t0) * 1000),
+    )
+
+
+def stage_aley_research(brief: str, concept: str) -> StageOutput:
+    import time as _t
+    t0 = _t.time()
+    trending = _read_recent_trending_keywords(n=5)
+    trending_block = ""
+    if trending:
+        trending_block = (
+            "\nTRENDING KEYWORDS (dari SIDIX visioner radar minggu terbaru):\n"
+            + ", ".join(trending) + "\n"
+        )
+    prompt = (
+        f"BRIEF: {brief}\n\nCONCEPT (UTZ):\n{concept}\n{trending_block}\n"
+        f"Berikan research-backed enrichment."
+    )
+    text, _ = ollama_generate(prompt, system=_ALEY_RESEARCH_SYSTEM, max_tokens=600, temperature=0.5)
+    return StageOutput(
+        stage="aley_research",
+        title="🔬 Research Enrichment — ALEY (Trend & Validation)",
+        content=(text or "").strip(),
+        elapsed_ms=int((_t.time() - t0) * 1000),
+    )
+
+
 def _extract_prompts(content: str) -> list[str]:
     """Extract clean prompt lines from stage 5 output (strip [N. LABEL] prefix)."""
     out = []
@@ -338,6 +441,7 @@ def creative_brief_pipeline(
     persist: bool = True,
     gen_images: bool = False,
     gen_images_n: int = 3,
+    enrich_personas: Optional[list[str]] = None,
 ) -> dict[str, Any]:
     """
     End-to-end creative pipeline. Returns dict with all stages + paths.
@@ -386,6 +490,15 @@ def creative_brief_pipeline(
         s5 = stage5_asset_prompts(brief, s1.content, brand_text)
         d.stages.append(s5)
         d.asset_prompts = _extract_prompts(s5.content)
+
+    # Sprint 14c: Multi-persona post-pipeline enrichment
+    # Default: OOMAR + ALEY. Disable: enrich_personas=[].
+    enrichers = enrich_personas if enrich_personas is not None else ["OOMAR", "ALEY"]
+    enrichers = [p.upper() for p in enrichers if p]
+    if "OOMAR" in enrichers and "oomar_review" not in skip:
+        d.stages.append(stage_oomar_review(brief, s1.content, brand_text))
+    if "ALEY" in enrichers and "aley_research" not in skip:
+        d.stages.append(stage_aley_research(brief, s1.content))
 
     # Sprint 14b: Optional hero image rendering via mighan-media-worker
     rendered_images: list[dict[str, Any]] = []

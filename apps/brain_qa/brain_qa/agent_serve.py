@@ -453,6 +453,7 @@ class CreativeBriefRequest(BaseModel):
     persist: bool = True
     gen_images: bool = False
     gen_images_n: int = 3
+    enrich_personas: Optional[list[str]] = None  # default ["OOMAR","ALEY"], [] to disable
 
 
 class WhitelistAddRequest(BaseModel):
@@ -1316,6 +1317,7 @@ def create_app() -> "FastAPI":
                 persist=req.persist,
                 gen_images=req.gen_images,
                 gen_images_n=req.gen_images_n,
+                enrich_personas=req.enrich_personas,
             )
         except ValueError as e:
             raise HTTPException(status_code=400, detail=str(e))

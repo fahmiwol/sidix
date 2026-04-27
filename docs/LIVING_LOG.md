@@ -10591,3 +10591,28 @@ Sprint 12 + 14 + 14b + 15 = SIDIX accept brief Indonesia → CT-driven UTZ think
 
 #### Mandatory loop coverage Sprint 14b
 CATAT (start) -> IMPL (runpod_media + wire) -> TESTING (offline pass) -> ITERASI #1 (FastAPI body) -> DEPLOY -> VALIDASI #1 (in-queue gagal interpretasi) -> ITERASI #2 (async /run polling) -> DEPLOY -> VALIDASI #2 LIVE PNG sukses -> QA (no leak, security clean) -> CATAT (note 252)
+
+
+---
+
+## 2026-04-27 sesi-baru — Sprint 14c START — Multi-persona post-pipeline enrichment
+
+### Scope
+Deliverable creative_pipeline saat ini = UTZ only (creative voice). Tambah post-pipeline review layer:
+- OOMAR critique: commercial viability untuk UMKM Indonesia, pricing strategy, market positioning, ROI signal
+- ALEY enrichment: trend/research support dari corpus + (kalau visioner data ada) trending cluster terbaru
+
+### Hasil expected
+Deliverable berubah dari "creative output saja" jadi "consulting-grade bundle":
+- creative (UTZ) + commercial validation (OOMAR) + research-backed (ALEY)
+- Demo angle ke UMKM: "SIDIX gak cuma kasih maskot, tapi explain kenapa direction ini commercially viable + apa trend yang support keputusan ini"
+
+### Implementation
+- Param baru: enrich_personas: list[str] = None (default ["OOMAR", "ALEY"])
+- Stage 6+: post-pipeline enrichment, gunakan PERSONA_DESCRIPTIONS dari cot_system_prompts.py (Sprint 12 lens)
+- ALEY hook ke .data/research_queue.jsonl (Sprint 15 visioner output) bila tersedia
+- Append ke report.md sebagai "Strategic Review" section
+- Cost: 2 LLM calls extra per pipeline run (cheap relative to image gen)
+
+### Compound
+Sprint 12 (CT lens 5 persona) + Sprint 14 (UTZ creative) + Sprint 14c (OOMAR+ALEY review) + Sprint 15 (visioner trend feed)
