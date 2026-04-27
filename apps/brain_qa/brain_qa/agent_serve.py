@@ -532,6 +532,19 @@ class RasaRequest(BaseModel):
     persist: bool = True
 
 
+class KitabahIterateRequest(BaseModel):
+    """Sprint 22 — KITABAH Auto-iterate (generation-test validation loop).
+
+    Per note 248 line 109-114 EXPLICIT (Wahdah/Kitabah/ODOA self-learning
+    protocol): "KITABAH → generation-test validation (produce → validate own
+    output)". Loop creative → RASA → iterate with feedback.
+    """
+    brief: str
+    max_iter: int = 3
+    score_threshold: float = 4.0
+    persist: bool = True
+
+
 class WhitelistAddRequest(BaseModel):
     """Tambahkan email atau user_id ke whitelist (admin only)."""
     email: Optional[str] = None
@@ -1355,6 +1368,35 @@ def create_app() -> "FastAPI":
             )
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"visioner failed: {e}")
+
+    # ── POST /creative/iterate — Sprint 22: KITABAH Auto-iterate ─────────────
+    @app.post("/creative/iterate", tags=["Supermodel"])
+    def creative_iterate(req: KitabahIterateRequest, request: Request):
+        """
+        Sprint 22 (note 248 line 109-114 EXPLICIT KITABAH): generation-test
+        validation loop. creative → RASA → iterate with improvement feedback.
+        Max iterations cap untuk budget control.
+        """
+        _enforce_rate(request)
+        _enforce_daily(request)
+        _bump_metric("creative_iterate")
+        if not (req.brief or "").strip():
+            raise HTTPException(status_code=400, detail="brief kosong")
+        try:
+            from .agent_kitabah import kitabah_iterate
+        except Exception as e:
+            raise HTTPException(status_code=503, detail=f"agent_kitabah unavailable: {e}")
+        try:
+            return kitabah_iterate(
+                req.brief,
+                max_iter=max(1, min(req.max_iter, 5)),  # cap 1-5
+                score_threshold=max(1.0, min(req.score_threshold, 5.0)),
+                persist=req.persist,
+            )
+        except ValueError as e:
+            raise HTTPException(status_code=400, detail=str(e))
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"kitabah failed: {e}")
 
     # ── POST /agent/rasa — Sprint 21: 🎭 RASA Aesthetic/Quality Scorer ───────
     @app.post("/agent/rasa", tags=["Supermodel"])

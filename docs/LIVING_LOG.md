@@ -11257,3 +11257,35 @@ Pending: 👁️ MATA, 👂 TELINGA, 🎯 INTUISI, full DoRA reproduksi
 [IMPL] agent_serve.CreativeBriefRequest.gen_3d_mode field + passthrough
 [TEST] ast.parse OK on 3 files
 [NOTE] Unblocks 3D path when GPU supply throttled (TripoSR queue blocked) — Shap-E lighter, may succeed
+
+---
+
+## 2026-04-28 sesi-baru — Sprint 22 START — KITABAH Auto-iterate (Generation-Test Validation Loop)
+
+### Pre-Execution Alignment Check (per CLAUDE.md 6.4)
+- Note 248 line 109-114 EXPLICIT (Wahdah/Kitabah/ODOA): "KITABAH → generation-test validation (produce → validate own output)"
+- PERFECT pattern match: creative produce → RASA validate → iterate with feedback
+- Pivot 2026-04-25: orchestrator workflow, no persona prompt change → no conflict
+- 10 hard rules: own LLM, 5 persona, MIT, self-hosted ✓
+- Anti-halusinasi: validate dengan RASA scoring grounded di artifact existing ✓
+- Budget consciousness: max 3 iterations cap = controlled (~7-8 min worst case)
+- Verdict: PROCEED
+
+### Scope MVP
+- File baru: agent_kitabah.py
+- Function: kitabah_iterate(brief, max_iter=3, score_threshold=4.0) → dict
+- Loop:
+  1. Run creative (with previous improvement context kalau iter > 0)
+  2. Run RASA score
+  3. If overall_score >= threshold OR iter >= max_iter → STOP
+  4. Else: extract top_priority_improvement → inject sebagai context untuk next creative regen → loop
+- Output: best iteration (highest overall_score) + full history
+- Persist: .data/kitabah_loops/<slug>/{iter_1, iter_2, iter_3, best.md, history.json}
+
+### Endpoint baru
+POST /creative/iterate
+Body: {"brief": "...", "max_iter": 3, "score_threshold": 4.0, "persist": true}
+
+### Compound stack
+Sprint 14 creative + Sprint 21 RASA + Sprint 22 KITABAH loop = self-iterate refinement
+= SIDIX KITABAH self-learning protocol per note 248
