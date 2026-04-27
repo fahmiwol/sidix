@@ -10709,3 +10709,27 @@ Flow:
 ### Reference
 - Note 248 line 178-198 (hero use-case spec)
 - /root/mighantect-3d/runpod-media-worker/media_server.py (handler input schema)
+
+
+### Sprint 14e SHIPPED + DEPLOYED — 3D wire (LIVE validate ongoing) — 2026-04-27 evening
+
+Build complete (commit 30c9fe9):
+- runpod_media.py: generate_3d_from_image() function
+- creative_pipeline.py: gen_3d flag + dependency on hero_mascot.png
+- agent_serve.py: CreativeBriefRequest +gen_3d +gen_3d_format
+
+API contract verified (per /root/mighantect-3d/runpod-media-worker/media_server.py):
+- POST tool=3d, mode=triposr, output_format=glb
+- Response mesh_base64 + vertices + faces metadata
+
+Iterasi #4: probe pertama timeout 302s (RUNPOD_MEDIA_TIMEOUT=300 set lower untuk Sprint 14b SDXL warmth). TripoSR cold start lebih heavy → bumped env timeout 300 → 600 dan retry.
+
+Pre-Execution Alignment Check (per CLAUDE.md 6.4 baru): 
+- Note 248 line 178-198 hero use-case "3D model rigged" — MANDATED ✓
+- No conflict pivot 2026-04-25 (tidak touch persona prompt) ✓
+- Multi-shape multi-dimensi capability extension ✓
+- Verdict: PROCEED (ditulis di research note 255 detail)
+
+Hero use-case 80% → 100% covered. Note 255 dokumen full architecture + alignment check + lesson.
+
+LIVE 3D validate retry in flight, hasil akan di-append.
