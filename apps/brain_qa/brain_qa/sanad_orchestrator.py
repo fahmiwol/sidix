@@ -45,7 +45,7 @@ import asyncio
 import logging
 import time
 from dataclasses import dataclass, field
-from typing import Optional
+from typing import Optional, List
 
 log = logging.getLogger(__name__)
 
@@ -53,7 +53,49 @@ log = logging.getLogger(__name__)
 _TIMEOUT_LLM = 12.0
 _TIMEOUT_WIKI = 8.0
 _TIMEOUT_CORPUS = 4.0
-_TIMEOUT_TOTAL = 20.0  # whole sanad budget
+_TIMEOUT_TOTAL = 25.0  # whole sanad budget (raised for Vol 22 iter)
+
+# Vol 22: per-branch iteration config
+_MAX_ITER = 2  # MVP: 1 retry on failure (total 2 attempts)
+_MIN_RELEVANCE_FOR_ACCEPT = 0.3  # below this, retry with refined query
+
+
+# ── Vol 22: Query refinement strategies (per branch type) ─────────────────────
+
+_STOPWORDS_ID_EN = {
+    "siapa", "apa", "kapan", "dimana", "bagaimana", "kenapa", "mengapa",
+    "yang", "ini", "itu", "saja", "juga", "kah",
+    "sekarang", "saat", "ini", "hari",
+    "tolong", "mohon", "ya", "dong",
+    "berapa", "manakah", "adakah",
+    "who", "what", "when", "where", "why", "how", "which",
+    "is", "are", "was", "were", "the", "a", "an",
+    "now", "today", "currently", "current",
+    "please", "tell", "me", "us",
+    "explain", "jelaskan", "describe",
+}
+
+
+def _refine_query_simplify(query: str) -> str:
+    """Strip stopwords + punctuation. Used for retry on web/wiki branches."""
+    import re
+    q = query.lower().strip().rstrip("?!.,;:")
+    tokens = re.findall(r"\w+", q)
+    keep = [t for t in tokens if t not in _STOPWORDS_ID_EN and len(t) >= 3]
+    return " ".join(keep) if keep else q
+
+
+def _refine_query_expand(query: str) -> str:
+    """Add common synonyms for corpus retry."""
+    additions = []
+    ql = query.lower()
+    if "ai" in ql or "kecerdasan" in ql:
+        additions.append("artificial intelligence machine learning")
+    if "fiqh" in ql or "hukum" in ql:
+        additions.append("syariah mazhab")
+    if "code" in ql or "coding" in ql or "python" in ql:
+        additions.append("programming algorithm implementation")
+    return query + " " + " ".join(additions) if additions else query
 
 
 @dataclass
@@ -67,6 +109,8 @@ class BranchResult:
     duration_ms: int = 0
     error: Optional[str] = None    # set if branch failed
     fingerprint: str = ""          # for clustering (MVP: lowercase claim)
+    iterations: int = 1            # Vol 22: how many tries this branch made
+    refined_queries: list[str] = field(default_factory=list)  # query history per iter
 
 
 @dataclass
@@ -125,28 +169,48 @@ async def _branch_llm(question: str, persona: str) -> BranchResult:
 
 
 async def _branch_wiki(question: str) -> BranchResult:
-    """Wikipedia lookup branch — primary public knowledge source."""
+    """Wikipedia lookup branch — Vol 22: with iteration on empty result."""
     t0 = time.time()
+    queries_tried = []
     try:
         from .wiki_lookup import wiki_lookup_fast, format_for_llm_context, to_citations
         loop = asyncio.get_event_loop()
-        results = await asyncio.wait_for(
-            loop.run_in_executor(None, lambda: wiki_lookup_fast(question, max_articles=3)),
-            timeout=_TIMEOUT_WIKI,
-        )
+        results = []
+        current_q = question
+        for iter_num in range(1, _MAX_ITER + 1):
+            queries_tried.append(current_q)
+            try:
+                results = await asyncio.wait_for(
+                    loop.run_in_executor(None, lambda q=current_q: wiki_lookup_fast(q, max_articles=3)),
+                    timeout=_TIMEOUT_WIKI,
+                )
+                if results:
+                    break  # got hits, exit iter loop
+                # Empty: refine for next iter
+                if iter_num < _MAX_ITER:
+                    current_q = _refine_query_simplify(current_q)
+                    if current_q == queries_tried[-1]:
+                        break  # refinement no-op, give up
+                    log.debug("[wiki] iter %d: refined '%s'", iter_num + 1, current_q[:60])
+            except asyncio.TimeoutError:
+                break
+
         if not results:
             return BranchResult(branch="wiki", claim="", relevance=0, sources=[],
                                 duration_ms=int((time.time() - t0) * 1000),
-                                error="empty results")
+                                error="empty results after iter",
+                                iterations=len(queries_tried),
+                                refined_queries=queries_tried)
         context = format_for_llm_context(results, max_chars=3000)
-        # MVP: take first article extract as claim
         primary = results[0].extract[:500]
-        relevance = min(1.0, 0.6 + 0.1 * len(results))  # more results = more confidence
+        relevance = min(1.0, 0.6 + 0.1 * len(results))
         return BranchResult(
             branch="wiki", claim=primary, raw_text=context,
             relevance=relevance, sources=to_citations(results),
             duration_ms=int((time.time() - t0) * 1000),
             fingerprint=primary.lower()[:200],
+            iterations=len(queries_tried),
+            refined_queries=queries_tried,
         )
     except asyncio.TimeoutError:
         return BranchResult(branch="wiki", claim="", relevance=0, sources=[],
@@ -160,22 +224,41 @@ async def _branch_wiki(question: str) -> BranchResult:
 
 
 async def _branch_corpus(question: str, persona: str = "AYMAN") -> BranchResult:
-    """Corpus BM25 search branch — local SIDIX knowledge via agent_tools."""
+    """Corpus BM25 search branch — Vol 22: with iteration on empty/low-rel."""
     t0 = time.time()
+    queries_tried = []
     try:
         from .agent_tools import _tool_search_corpus
         loop = asyncio.get_event_loop()
-        result = await asyncio.wait_for(
-            loop.run_in_executor(
-                None,
-                lambda: _tool_search_corpus({"query": question, "k": 3, "persona": persona}),
-            ),
-            timeout=_TIMEOUT_CORPUS,
-        )
-        if not result.success or not result.output.strip():
+        result = None
+        current_q = question
+        for iter_num in range(1, _MAX_ITER + 1):
+            queries_tried.append(current_q)
+            try:
+                result = await asyncio.wait_for(
+                    loop.run_in_executor(
+                        None,
+                        lambda q=current_q: _tool_search_corpus({"query": q, "k": 3, "persona": persona}),
+                    ),
+                    timeout=_TIMEOUT_CORPUS,
+                )
+                if result and result.success and result.output.strip():
+                    break  # got result
+                # Refine: expand query (synonym injection)
+                if iter_num < _MAX_ITER:
+                    current_q = _refine_query_expand(current_q)
+                    if current_q == queries_tried[-1]:
+                        break
+                    log.debug("[corpus] iter %d: expanded '%s'", iter_num + 1, current_q[:60])
+            except asyncio.TimeoutError:
+                break
+
+        if not result or not result.success or not result.output.strip():
             return BranchResult(branch="corpus", claim="", relevance=0, sources=[],
                                 duration_ms=int((time.time() - t0) * 1000),
-                                error=result.error or "empty")
+                                error=(result.error if result else "no result") or "empty",
+                                iterations=len(queries_tried),
+                                refined_queries=queries_tried)
         # MVP: take output as claim (already formatted with snippets)
         primary = result.output[:1500]
         sources = [
@@ -191,6 +274,8 @@ async def _branch_corpus(question: str, persona: str = "AYMAN") -> BranchResult:
             relevance=relevance, sources=sources,
             duration_ms=int((time.time() - t0) * 1000),
             fingerprint=primary.lower()[:200],
+            iterations=len(queries_tried),
+            refined_queries=queries_tried,
         )
     except asyncio.TimeoutError:
         return BranchResult(branch="corpus", claim="", relevance=0, sources=[],
