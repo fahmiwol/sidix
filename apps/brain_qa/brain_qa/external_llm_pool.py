@@ -220,11 +220,53 @@ async def _ask_ownpod(client: httpx.AsyncClient, question: str, system: str) -> 
                               error=str(e)[:200])
 
 
+async def _ask_gemini(client: httpx.AsyncClient, question: str, system: str) -> ProviderAnswer:
+    """Google Gemini free tier (gemini-flash-latest, gen-lang)."""
+    api_key = os.environ.get("GEMINI_API_KEY", "").strip()
+    t0 = time.time()
+    if not api_key:
+        return ProviderAnswer(provider="gemini", text="", duration_ms=0,
+                              available=False, error="GEMINI_API_KEY not set")
+    try:
+        model = os.environ.get("GEMINI_MODEL", "gemini-flash-latest")
+        # Gemini API uses systemInstruction separate from contents
+        r = await client.post(
+            f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent",
+            headers={"X-goog-api-key": api_key, "Content-Type": "application/json"},
+            json={
+                "systemInstruction": {"parts": [{"text": system}]},
+                "contents": [{"parts": [{"text": question}]}],
+                "generationConfig": {
+                    "temperature": 0.4,
+                    "maxOutputTokens": 400,
+                },
+            },
+            timeout=15.0,
+        )
+        if r.status_code != 200:
+            return ProviderAnswer(provider="gemini", text="", duration_ms=int((time.time()-t0)*1000),
+                                  error=f"HTTP {r.status_code}: {r.text[:200]}")
+        data = r.json()
+        candidates = data.get("candidates") or []
+        text = ""
+        if candidates:
+            parts = (candidates[0].get("content") or {}).get("parts") or []
+            text = " ".join(p.get("text", "") for p in parts).strip()
+        return ProviderAnswer(provider="gemini", text=text,
+                              duration_ms=int((time.time()-t0)*1000),
+                              model=model)
+    except Exception as e:
+        return ProviderAnswer(provider="gemini", text="",
+                              duration_ms=int((time.time()-t0)*1000),
+                              error=str(e)[:200])
+
+
 _PROVIDER_FN = {
     "groq": _ask_groq,
     "together": _ask_together,
     "hf": _ask_hf,
     "cloudflare": _ask_cloudflare,
+    "gemini": _ask_gemini,
     "ownpod": _ask_ownpod,
 }
 
@@ -249,7 +291,7 @@ async def consensus_async(
     - Diverse perspective for creative/research tasks
     """
     if providers is None:
-        providers = ["ownpod", "groq", "together", "hf", "cloudflare"]
+        providers = ["ownpod", "gemini", "groq", "together", "hf", "cloudflare"]
 
     system = (
         f"Kamu salah satu dari beberapa AI assistant menjawab user. Persona: {persona}. "
@@ -280,6 +322,7 @@ def list_available_providers() -> dict[str, bool]:
         "hf": bool(os.environ.get("HF_TOKEN", "").strip()),
         "cloudflare": bool(os.environ.get("CF_API_TOKEN", "").strip()
                            and os.environ.get("CF_ACCOUNT_ID", "").strip()),
+        "gemini": bool(os.environ.get("GEMINI_API_KEY", "").strip()),
         "ownpod": bool(os.environ.get("RUNPOD_API_KEY", "").strip()),
     }
 
