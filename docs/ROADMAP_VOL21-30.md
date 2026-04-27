@@ -255,3 +255,43 @@ This roadmap = canonical reference. Update per ship per Vol. Notes 239-244
 contain detailed architecture; this doc is sprint-level operational plan.
 
 User vision: 100+ users, ≤2s repeat, distributed sanad. Vol 21-30 = path there.
+
+
+---
+
+## SPRINT STATUS UPDATE — 2026-04-27
+
+### COMPLETED
+- ✅ Vol 23 MVP (Inventory Memory) — shipped + 8 AKUs live
+- ✅ Vol 23b (Auto-ingestor) — cron */10 active
+- ✅ Vol 23c (Synthesis loop) — first merge applied
+
+### IN PROGRESS / NEXT SPRINT
+- 🟡 Vol 21 (Sanad wire) — code exists, wire to /ask/stream pending
+- 🔵 Vol 24 (SDXL image gen) — ready to start (independent)
+- 🔵 Vol 23d (BGE-M3 embedding synth) — quick polish
+
+### NOT STARTED
+- Vol 22 (per-agent validation)
+- Vol 25 (Hafidz Shadows full)
+- Vol 26 (skill cloning)
+- Vol 27+ (self-modification, edge distribution)
+
+### Updated dependency graph
+```
+Vol 20 ✅ (all sub-fu shipped)
+   ↓
+Vol 23 ✅ → Vol 23b ✅ → Vol 23c ✅
+   ↓
+Vol 21 (next) → Vol 22
+   ↓
+Vol 24 (parallel) → Vol 25 → Vol 26
+   ↓
+Vol 27 → 28 → 29 → 30
+```
+
+### Progress %
+- Vol 20 family: 100%
+- Vol 21: 30% (code scaffolded, wire pending)
+- Vol 23: 80% (MVP+b+c done; d/embedding-synth pending)
+- Vol 24+: 0%

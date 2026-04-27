@@ -147,3 +147,74 @@ RunPod:        endpoint ws3p5ryxtlambj, vLLM v2.14.0, Qwen2.5-7B + LoRA
 ## Final Thought
 
 SIDIX has more autonomous infrastructure than visible. daily_growth + LearnAgent + autonomous_researcher all exist as code, just not scheduled. Tonight's closure: enable cron schedules so SIDIX literally works while user sleeps. Tomorrow: assess overnight outputs.
+
+
+---
+
+## 2026-04-27 morning — UPDATE STATE (Vol 23 + 23b + 23c shipped)
+
+### Headline numbers (UPDATED)
+```
+Code corpus:         1,182 docs + AKU inventory (8 total, 7 active)
+Active tools:        49 (added: brave_search, wiki_lookup, shadow_pool, hyperx, kimi_code, inventory)
+Personas LOCKED:     5 (UTZ, ABOO, OOMAR, ALEY, AYMAN)
+Latency p50:
+  - halo (simple bypass):       1.2s
+  - presiden (inventory L0):    1.56s ← NEW lowest path
+  - LoRA (inventory L0):        2.32s
+  - binary search (knowledge):  3.6s
+  - current_events (wiki+brave): 4-5s warm
+LLM:                 Qwen2.5-7B + LoRA SIDIX (RunPod)
+Embedding:           BGE-M3 active (CPU, 512-dim)
+Inventory:           SQLite + FTS5, 8 AKUs (avg conf 0.679, growing)
+Concurrent users:    ~20+ tested
+Code files:          ~92 modules in apps/brain_qa/brain_qa/
+```
+
+### Brain region NEW status
+- Hippocampus (Inventory + LoRA): ✅✅✅ (was ✅✅🔵 — now FULL)
+  - inventory_memory.py + auto-ingest cron + synthesis loop ALL LIVE
+  - Background continuous synthesis active
+
+### Sprint shipped this morning
+| Vol | Feature | Status | Commits |
+|---|---|---|---|
+| 23 MVP | Inventory L0 lookup | ✅ LIVE | 397e6a7, 04974d4, 24c8641 |
+| 23b | Auto-ingestor cron */10 | ✅ LIVE | 9a35274 |
+| 23c | Synthesis loop (cluster + merge) | ✅ LIVE | b9bc5c6, 59f5641 |
+
+### Cron schedule (5 jobs 24/7)
+```
+*/10 worker         → 30 task queue draining
+*/10 aku_ingestor   → AKU ingest + hourly synth + decay
+*/15 always_on      → git observer + mini growth
+*/30 radar          → mention listener
+0    classroom      → multi-teacher consensus
+```
+
+### Tier routing /ask/stream (final order)
+1. Inventory L0 (instant, conf>=0.55)         ← Vol 23 NEW
+2. L1 cache exact + L2 semantic
+3. Simple bypass (greetings)
+4. Knowledge bypass (coding/factual)          ← Vol 20-fu7 NEW
+5. Current events fastpath (wiki + brave)     ← Vol 20-fu5/6
+6. Tadabbur (deep tier)
+7. ReAct (full agent fallback)
+
+### Outstanding bugs
+- HF 404 (model id) — fixed earlier (mistral-7b-instruct-v0.3)
+- Vertex AI 404 — DEFER (Agent Platform key may need OAuth)
+- Kimi 401 — DEFER (key may be invalid for moonshot.ai endpoint)
+- Brave 429 burst — handled with cache + 60s backoff (Vol 20-fu6)
+
+### Known to work
+- gemini (active, classroom proven)
+- ownpod (canonical, all paths)
+- brave_search (with cache + backoff)
+- wiki_lookup (Wikipedia API)
+- inventory L0 (3 queries verified)
+
+### Next sprint = Vol 21 wire
+Dependencies all ✓ (Vol 23 inventory + external_llm_pool + brave + wiki).
+Wire sanad_orchestrator.run_sanad() → /ask/stream behind feature flag.
+Effort: 3-5 hari. Impact: 5/5 visi-aligned.
