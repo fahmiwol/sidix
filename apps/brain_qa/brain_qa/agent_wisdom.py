@@ -210,7 +210,8 @@ def stage_impact_analysis(topic: str, context: str, aha_summary: str) -> WisdomS
         f"TOPIK: {topic}\n\nKONTEKS: {context}\n\nAHA MOMENT (UTZ):\n{aha_summary}\n\n"
         f"Berikan multi-stakeholder impact analysis 2-5 langkah ke depan."
     )
-    text, _ = ollama_generate(prompt, system=_OOMAR_IMPACT_SYSTEM, max_tokens=600, temperature=0.4)
+    # Sprint 18: bump max_tokens 600 → 1100 untuk accommodate prose + JSON block
+    text, _ = ollama_generate(prompt, system=_OOMAR_IMPACT_SYSTEM, max_tokens=1100, temperature=0.4)
     return WisdomStage(
         capability="impact",
         persona="OOMAR",
@@ -256,7 +257,8 @@ def stage_risk_analysis(topic: str, context: str) -> WisdomStage:
     import time as _t
     t0 = _t.time()
     prompt = f"TOPIK: {topic}\n\nKONTEKS: {context}\n\nBerikan risk register adversarial."
-    text, _ = ollama_generate(prompt, system=_ABOO_RISK_SYSTEM, max_tokens=600, temperature=0.45)
+    # Sprint 18: bump max_tokens 600 → 1100 untuk accommodate prose + JSON block
+    text, _ = ollama_generate(prompt, system=_ABOO_RISK_SYSTEM, max_tokens=1100, temperature=0.45)
     return WisdomStage(
         capability="risk",
         persona="ABOO",
