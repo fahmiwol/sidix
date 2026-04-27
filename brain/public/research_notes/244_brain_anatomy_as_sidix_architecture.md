@@ -269,3 +269,18 @@ This makes the architecture decisions easier:
 - Q: "How big should each component be?" → A: Brain regions are small + specialized. Small + specialized.
 
 Plagiarism is the highest form of flattery when copying nature.
+
+
+---
+
+## 🔄 FRAMING UPDATE 2026-04-27 (per note 248)
+
+Note 244 frame SIDIX = brain region constellation. **Tetap valid**.
+
+**Extension per note 248**: extended ke **whole-body embodiment** —
+otak + jaringan syaraf + hati (niat) + panca indera + kaki/tangan +
+sel hidup (AKU) + DNA (LoRA/DoRA) + intuisi (speculative decoding) +
+reproduksi (self-improvement).
+
+Brain anatomy (note 244) = subset (sistem saraf pusat).
+Whole-body embodiment (note 248) = full organism.

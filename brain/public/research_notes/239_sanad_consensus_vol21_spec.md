@@ -950,3 +950,21 @@ exempted via tier=deep routing to slower paths.
 Vol 25 ship gate test = run this exact scenario ("1+1 berapa?") and measure
 end-to-end latency. Target: < 2.5s p50 warm.
 
+
+
+---
+
+## 🔄 FRAMING UPDATE 2026-04-27 (per note 248)
+
+Catatan ini ditulis dengan framing **sanad-as-citation-chain** (Islamic literal).
+
+**Framing TERKINI per note 248**:
+> Sanad = METODE pencarian sampai akar dari segala sumber + cross-validation
+> sampai relevance ~1.0. BUKAN religious citation chain harfiah.
+
+Mekanisme yang dideskripsikan di sini (multi-source consensus, parallel branches,
+contradiction detection) tetap VALID secara teknis. Tapi framing-nya sekarang
+bukan "Islamic epistemology adoption" melainkan **pattern engineering yang
+diadopsi sebagai metode** (per insight Quran-static-but-generative).
+
+Lihat note 248 untuk canonical pivot framing.
