@@ -10663,3 +10663,49 @@ Familiarity bias bahaya: agent yang familiar dengan epistemic-as-differentiator 
 
 #### User vigilance > agent familiarity
 Tipe pertanyaan "apa udah align?" = paling valuable untuk catch drift.
+
+
+---
+
+## 2026-04-27 sesi-baru evening — Sprint 14e START — 3D mascot via TripoSR
+
+### Pre-Execution Alignment Check (per CLAUDE.md 6.4 baru)
+- Note 248 line 178-198: hero use-case explicit menyebut "3D model rigged" — MANDATED ✅
+- Pivot 2026-04-25: tidak touch persona prompt instruction → no conflict ✅
+- Pivot 2026-04-26: multi-shape multi-dimensi capability extension → aligned ✅
+- 10 ❌ rules: RUNPOD_3D_ENDPOINT_ID = own RunPod (mighan-media-worker handles 3D too), self-hosted ✅
+Verdict: PROCEED.
+
+### Scope
+Close hero use-case 80
+
+---
+
+## 2026-04-27 sesi-baru evening — Sprint 14e START — 3D mascot via TripoSR
+
+### Pre-Execution Alignment Check (per CLAUDE.md 6.4 baru)
+- Note 248 line 178-198: hero use-case explicit menyebut "3D model rigged" - MANDATED ✓
+- Pivot 2026-04-25: tidak touch persona prompt instruction → no conflict ✓
+- Pivot 2026-04-26: multi-shape multi-dimensi capability extension → aligned ✓
+- 10 hard rules: RUNPOD_3D_ENDPOINT_ID = own RunPod, self-hosted ✓
+Verdict: PROCEED.
+
+### Scope
+Close hero use-case 80% → 100%. 3D model = missing piece.
+
+Media worker (per /root/mighantect-3d/runpod-media-worker/media_server.py) sudah support tool="3d" → image-to-3D via TripoSR/Hunyuan3D/Shap-E.
+
+Flow:
+1. Sprint 14b kasih 3 PNG hero (mascot/logo/social).
+2. Sprint 14e ambil hero_mascot.png → kirim ke media_worker tool=3d → output GLB/OBJ.
+3. Save ke .data/creative_briefs/<slug>/3d/ + embed di report.md.
+
+### Implementation
+- runpod_media.py: tambah generate_3d_from_image(image_path, ...) function
+- creative_pipeline.py: param baru gen_3d: bool = False (opt-in karena heavy)
+- Logic: if gen_images and gen_3d → ambil mascot 2D PNG → call 3D endpoint → save mesh
+- Endpoint: same /creative/brief, body field gen_3d
+
+### Reference
+- Note 248 line 178-198 (hero use-case spec)
+- /root/mighantect-3d/runpod-media-worker/media_server.py (handler input schema)

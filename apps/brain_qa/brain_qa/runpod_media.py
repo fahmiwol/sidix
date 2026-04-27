@@ -234,6 +234,95 @@ def generate_image(
 
 # ── Hero asset generation helpers ────────────────────────────────────────────
 
+def generate_3d_from_image(
+    image_path: Path | str,
+    *,
+    output_dir: Path | str,
+    label: str = "hero_3d",
+    output_format: str = "glb",
+    mode: str = "triposr",
+    remove_bg: bool = True,
+) -> dict[str, Any]:
+    """
+    Sprint 14e: image-to-3D via mighan-media-worker (unified, tool=3d).
+    Per /root/mighantect-3d/runpod-media-worker/media_server.py Generate3DRequest.
+
+    Input: existing PNG file (mis. hero_mascot.png dari Sprint 14b)
+    Output: GLB/OBJ/FBX mesh file ke output_dir/<label>.<format>
+    """
+    cfg = _media_config()
+    if not cfg:
+        return {
+            "success": False,
+            "error": "RUNPOD_MEDIA_ENDPOINT_ID belum di-set di env",
+            "label": label,
+        }
+
+    # Read input image as base64
+    img_path = Path(image_path)
+    if not img_path.exists():
+        return {"success": False, "label": label, "error": f"input image not found: {image_path}"}
+    try:
+        img_b64 = base64.b64encode(img_path.read_bytes()).decode("ascii")
+    except Exception as e:
+        return {"success": False, "label": label, "error": f"image read fail: {e}"}
+
+    payload = {
+        "input": {
+            "tool": "3d",
+            "image": img_b64,
+            "mode": mode,
+            "remove_bg": bool(remove_bg),
+            "output_format": output_format,
+        }
+    }
+
+    t0 = time.time()
+    try:
+        resp = _run_async_with_polling(payload, cfg)
+    except urllib.error.HTTPError as e:
+        return {"success": False, "label": label, "error": f"HTTP {e.code}: {e.reason}"}
+    except Exception as e:
+        return {"success": False, "label": label, "error": f"runpod call fail: {e}"}
+
+    elapsed_ms = int((time.time() - t0) * 1000)
+
+    out = resp.get("output") or {}
+    if not out.get("success"):
+        return {
+            "success": False, "label": label,
+            "error": out.get("error", "no mesh returned"),
+            "elapsed_ms": elapsed_ms,
+            "raw_status": resp.get("status"),
+        }
+
+    mesh_b64 = out.get("mesh_base64", "")
+    if not mesh_b64:
+        return {"success": False, "label": label, "error": "mesh_base64 missing", "elapsed_ms": elapsed_ms}
+
+    out_path = Path(output_dir) / f"{label}.{output_format}"
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        out_path.write_bytes(base64.b64decode(mesh_b64))
+    except Exception as e:
+        return {"success": False, "label": label, "error": f"decode/write fail: {e}", "elapsed_ms": elapsed_ms}
+
+    return {
+        "success": True,
+        "label": label,
+        "path": str(out_path),
+        "filename": out_path.name,
+        "size_bytes": out_path.stat().st_size,
+        "format": out.get("format", output_format),
+        "vertices": out.get("vertices"),
+        "faces": out.get("faces"),
+        "mode": out.get("mode", mode),
+        "generation_time_s": out.get("generation_time"),
+        "elapsed_ms": elapsed_ms,
+        "source_image": str(img_path),
+    }
+
+
 def pick_hero_prompts(asset_prompts: list[str], n: int = 3) -> list[tuple[str, str]]:
     """
     Dari 8 asset prompts stage 5 creative_pipeline, pilih top-N hero asset

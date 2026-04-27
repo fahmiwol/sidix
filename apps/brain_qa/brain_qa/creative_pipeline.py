@@ -445,6 +445,8 @@ def creative_brief_pipeline(
     persist: bool = True,
     gen_images: bool = False,
     gen_images_n: int = 3,
+    gen_3d: bool = False,
+    gen_3d_format: str = "glb",
     enrich_personas: Optional[list[str]] = None,
 ) -> dict[str, Any]:
     """
@@ -523,23 +525,65 @@ def creative_brief_pipeline(
         except Exception as e:
             rendered_images.append({"success": False, "error": f"image gen fail: {e}"})
 
+    # Sprint 14e: Optional 3D mascot from rendered hero_mascot.png
+    rendered_3d: list[dict[str, Any]] = []
+    if gen_3d and persist:
+        # Find a successful hero_mascot image to base 3D on
+        mascot_img = next(
+            (img for img in rendered_images
+             if img.get("success") and img.get("label", "").startswith("hero_mascot")),
+            None,
+        )
+        if not mascot_img:
+            rendered_3d.append({
+                "success": False,
+                "error": "gen_3d requires gen_images=true with successful hero_mascot render",
+            })
+        else:
+            try:
+                from .runpod_media import generate_3d_from_image
+                three_d_dir = BRIEFS_DIR / d.slug / "3d"
+                res3d = generate_3d_from_image(
+                    mascot_img["path"],
+                    output_dir=three_d_dir,
+                    label="hero_mascot_3d",
+                    output_format=gen_3d_format,
+                )
+                rendered_3d.append(res3d)
+            except Exception as e:
+                rendered_3d.append({"success": False, "error": f"3d gen fail: {e}"})
+
     if persist:
         _persist(d)
-        # Re-render report.md with rendered_images embedded if any
-        if rendered_images:
+        # Re-render report.md with rendered_images + 3D embedded if any
+        if rendered_images or rendered_3d:
             target = BRIEFS_DIR / d.slug
             md = _render_report_md(d)
-            md += "\n\n## 🖼️ Rendered Hero Assets (mighan-media-worker)\n\n"
-            for img in rendered_images:
-                if img.get("success"):
-                    rel = f"images/{img['filename']}"
-                    md += f"### {img['label']}\n\n"
-                    md += f"![{img['label']}]({rel})\n\n"
-                    md += f"_size_: {img.get('width')}x{img.get('height')} · "
-                    md += f"_gen_time_: {img.get('generation_time_s', '?')}s · "
-                    md += f"_model_: {img.get('model')}\n\n"
-                else:
-                    md += f"### {img.get('label','?')} — ❌ {img.get('error','unknown')}\n\n"
+            if rendered_images:
+                md += "\n\n## 🖼️ Rendered Hero Assets (mighan-media-worker)\n\n"
+                for img in rendered_images:
+                    if img.get("success"):
+                        rel = f"images/{img['filename']}"
+                        md += f"### {img['label']}\n\n"
+                        md += f"![{img['label']}]({rel})\n\n"
+                        md += f"_size_: {img.get('width')}x{img.get('height')} · "
+                        md += f"_gen_time_: {img.get('generation_time_s', '?')}s · "
+                        md += f"_model_: {img.get('model')}\n\n"
+                    else:
+                        md += f"### {img.get('label','?')} — ❌ {img.get('error','unknown')}\n\n"
+            if rendered_3d:
+                md += "\n\n## 🎲 3D Mascot (TripoSR via mighan-media-worker)\n\n"
+                for m3d in rendered_3d:
+                    if m3d.get("success"):
+                        rel = f"3d/{m3d['filename']}"
+                        md += f"### {m3d['label']} ({m3d['format']})\n\n"
+                        md += f"- **File**: `{rel}` ({m3d.get('size_bytes',0)} bytes)\n"
+                        md += f"- **Vertices**: {m3d.get('vertices','?')}\n"
+                        md += f"- **Faces**: {m3d.get('faces','?')}\n"
+                        md += f"- **Mode**: {m3d.get('mode')} · _gen_time_: {m3d.get('generation_time_s','?')}s\n\n"
+                        md += f"_Source 2D_: `{Path(m3d.get('source_image','')).name}`\n\n"
+                    else:
+                        md += f"### ❌ 3D fail: {m3d.get('error','unknown')}\n\n"
             (target / "report.md").write_text(md, encoding="utf-8")
 
     return {
@@ -550,6 +594,7 @@ def creative_brief_pipeline(
         "asset_prompts": d.asset_prompts,
         "paths": d.paths,
         "rendered_images": rendered_images,
+        "rendered_3d": rendered_3d,
     }
 
 

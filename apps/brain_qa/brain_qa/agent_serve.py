@@ -453,6 +453,8 @@ class CreativeBriefRequest(BaseModel):
     persist: bool = True
     gen_images: bool = False
     gen_images_n: int = 3
+    gen_3d: bool = False
+    gen_3d_format: str = "glb"  # glb | obj | fbx
     enrich_personas: Optional[list[str]] = None  # default ["OOMAR","ALEY"], [] to disable
 
 
@@ -1317,6 +1319,8 @@ def create_app() -> "FastAPI":
                 persist=req.persist,
                 gen_images=req.gen_images,
                 gen_images_n=req.gen_images_n,
+                gen_3d=req.gen_3d,
+                gen_3d_format=req.gen_3d_format,
                 enrich_personas=req.enrich_personas,
             )
         except ValueError as e:
