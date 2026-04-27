@@ -1279,6 +1279,38 @@ def create_app() -> "FastAPI":
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"visioner failed: {e}")
 
+    # ── POST /creative/brief — Sprint 14: Hero Use-Case Creative Pipeline ────
+    class _CreativeBriefRequest(BaseModel):
+        brief: str
+        skip_stages: list[str] | None = None
+        persist: bool = True
+
+    @app.post("/creative/brief", tags=["Supermodel"])
+    def creative_brief(req: _CreativeBriefRequest, request: Request):
+        """
+        Sprint 14 (note 248 line 178-198): hero use-case creative pipeline.
+        Brief teks → 5-stage bundled deliverable (concept + brand + copy +
+        landing + asset prompts) dengan UTZ creative-director persona +
+        CT 4-pilar Sprint 12 sebagai cognitive engine.
+        """
+        _enforce_rate(request)
+        _enforce_daily(request)
+        _bump_metric("creative_brief")
+        if not (req.brief or "").strip():
+            raise HTTPException(status_code=400, detail="brief kosong")
+        try:
+            from .creative_pipeline import creative_brief_pipeline
+        except Exception as e:
+            raise HTTPException(status_code=503, detail=f"creative_pipeline unavailable: {e}")
+        try:
+            return creative_brief_pipeline(
+                req.brief, skip_stages=req.skip_stages, persist=req.persist
+            )
+        except ValueError as e:
+            raise HTTPException(status_code=400, detail=str(e))
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"pipeline failed: {e}")
+
     # ── GET /agent/orchestration ───────────────────────────────────────────────
     @app.get("/agent/orchestration")
     def agent_orchestration(q: str, persona: str = "UTZ"):

@@ -10411,3 +10411,36 @@ CATAT -> TESTING (syntax + smoke + live arxiv) -> ITERASI (single pass) -> TRAIN
 
 ### Mandatory loop verified (deploy)
 CATAT (intent) → TESTING (SSH connect via existing key) → ITERASI (none needed) → REVIEW (pm2 status check) → CATAT → VALIDASI (CT wired + endpoint live + cron registered) → QA (no secrets in commits) → CATAT (this entry)
+
+
+---
+
+## 2026-04-27 sesi-baru — Sprint 14 START — Creative Pipeline hero use-case
+
+### Scope MVP (realistic)
+File baru: apps/brain_qa/brain_qa/creative_pipeline.py
+Pipeline 5-stage menerima brief teks → output bundled deliverable:
+  Stage 1: Concept synthesis (verbal vision + mood + visual direction)
+  Stage 2: Brand guideline (palette + typography hint + voice tone)
+  Stage 3: Marketing copy (5 variants: short hook / medium feature / long story / CTA-driven / playful)
+  Stage 4: Landing page outline (markdown sections + copy slots)
+  Stage 5: Asset prompt bundle (SDXL/Midjourney/3D-tool ready prompts)
+
+Output:
+  - .data/creative_briefs/<slug>/report.md
+  - .data/creative_briefs/<slug>/metadata.json
+  - .data/creative_briefs/<slug>/asset_prompts.txt
+
+Endpoint baru: POST /creative/brief
+Cognitive engine: UTZ persona + CT 4-pilar lens (dari Sprint 12)
+
+### Strategi
+- Tidak butuh GPU image-gen — output = production-ready prompts yang user run sendiri di tool
+- Compound dengan Sprint 12 (CT lens UTZ creative-director: brief → konsep → visual element → brand fit → audience emotion + Gaga method)
+- Brief input compatible dengan trending cluster dari Sprint 15 visioner
+- Demo-able: 1 brief = 1 bundled deliverable lengkap
+
+### Hero example (test brief)
+"Buatkan maskot brand makanan ringan kawaii dengan kostum ulat warna kuning untuk pasar Indonesia anak-anak 6-12 tahun"
+
+### Ref note 248 line 178-198 (HERO USE-CASE) + Sprint 12 CT lens
