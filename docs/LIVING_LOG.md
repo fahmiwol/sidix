@@ -10284,3 +10284,27 @@ RESOLVE   → daily 03:00 UTC (fresh sanad re-validation)
 - 8 AKU active growing
 - 0 contradictions detected (clean state)
 - Visi alignment: BEBAS & TUMBUH = OPERASIONAL
+
+
+---
+
+## 2026-04-27 morning — VOL 24a-mini SHIPPED + L0 precision tune
+
+### Vol 24a-mini what ships
+searxng_search.py public-instance fallback (7 instances, race-pick).
+Wired to /ask/stream current_events: Wiki + Brave + SearxNG = 3 web sources.
+
+### L0 precision tune
+- Observed false positive: berita teknologi matched ai_research AKUs
+- Fix: embedding_threshold 0.45 → 0.6
+- Tradeoff: recall slight loss, precision big gain
+
+### Reality on public SearxNG
+- Tested: all 3 random instances returned empty
+- Public instances unreliable as primary, used as 3rd safety net
+- Vol 24a-full: self-host SearxNG via docker (next iteration)
+
+### Sprint count: 10 this morning (Vol 23 family + 21 wire + 22 + 24a-mini + tune)
+
+### Mandatory loop verified per sprint
+CATAT TESTING ITERASI REVIEW CATAT VALIDASI QA CATAT — all 10 sprints
