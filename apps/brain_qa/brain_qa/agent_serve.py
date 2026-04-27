@@ -3877,25 +3877,33 @@ def create_app() -> "FastAPI":
                 try:
                     from .wiki_lookup import wiki_lookup_fast, format_for_llm_context as wiki_fmt, to_citations as wiki_cites
                     from .brave_search import brave_search_async, format_for_llm_context as brave_fmt, to_citations as brave_cites
+                    from .searxng_search import searxng_search_async, format_for_llm_context as searx_fmt, to_citations as searx_cites
                     from .runpod_serverless import hybrid_generate
                     _bump_metric("ask_stream_current_events_fastpath")
                     _t_ce_start = time.time()
-                    # Yield meta phase (UX: user tahu sedang lookup multi-source)
-                    yield f"data: {_json.dumps({'type':'meta','_phase':'multi_source','_phase_detail':'Cek Wikipedia + Brave Search...'})}\n\n"
-                    # Vol 20-fu6: Wiki + Brave PARALLEL (Brave catches fresh updates Wiki may miss)
-                    _wiki_results, _brave_results = await asyncio.gather(
+                    # Vol 24a-mini: Wiki + Brave + SearxNG TRIPLE PARALLEL
+                    yield f"data: {_json.dumps({'type':'meta','_phase':'multi_source','_phase_detail':'Cek Wikipedia + Brave + SearxNG...'})}\n\n"
+                    _wiki_results, _brave_results, _searx_results = await asyncio.gather(
                         asyncio.get_event_loop().run_in_executor(None, lambda: wiki_lookup_fast(req.question, max_articles=2)),
-                        brave_search_async(req.question, max_results=4),
+                        brave_search_async(req.question, max_results=3),
+                        searxng_search_async(req.question, max_results=3),
                         return_exceptions=False,
                     )
-                    _wiki_context = wiki_fmt(_wiki_results, max_chars=2000) if _wiki_results else ""
-                    _brave_context = brave_fmt(_brave_results, max_chars=2500) if _brave_results else ""
+                    _wiki_context = wiki_fmt(_wiki_results, max_chars=1500) if _wiki_results else ""
+                    _brave_context = brave_fmt(_brave_results, max_chars=2000) if _brave_results else ""
+                    _searx_context = searx_fmt(_searx_results, max_chars=2000) if _searx_results else ""
                     _combined_ctx = ""
                     if _brave_context:
-                        _combined_ctx += f"=== Hasil Brave Search (paling fresh) ===\n{_brave_context}\n\n"
+                        _combined_ctx += f"=== Hasil Brave Search (fresh) ===\n{_brave_context}\n\n"
+                    if _searx_context:
+                        _combined_ctx += f"=== Hasil SearxNG (multi-engine: Google/Bing/etc) ===\n{_searx_context}\n\n"
                     if _wiki_context:
                         _combined_ctx += f"=== Wikipedia (untuk konteks) ===\n{_wiki_context}\n"
-                    _wiki_citations = (wiki_cites(_wiki_results) if _wiki_results else []) + (brave_cites(_brave_results) if _brave_results else [])
+                    _wiki_citations = (
+                        (wiki_cites(_wiki_results) if _wiki_results else [])
+                        + (brave_cites(_brave_results) if _brave_results else [])
+                        + (searx_cites(_searx_results) if _searx_results else [])
+                    )
                     if _combined_ctx:
                         _ce_sys = (
                             f"Kamu SIDIX, persona {effective_persona}. Jawab pertanyaan user "
@@ -3924,6 +3932,7 @@ def create_app() -> "FastAPI":
                             "_current_events_mode": _ce_mode,
                             "_wiki_articles": len(_wiki_results),
                             "_brave_results": len(_brave_results),
+                            "_searxng_results": len(_searx_results),
                             "_citations": _wiki_citations,
                         }
                         yield f"data: {_json.dumps(_ce_meta)}\n\n"
