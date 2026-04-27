@@ -10817,3 +10817,47 @@ Audit grep "    class .*Request.*BaseModel" post-fix = empty. Zero inline. Patte
 - Swagger UI /docs accessible untuk demo ke customer/dev integration
 - OpenAPI spec available untuk codegen / SDK gen automatic
 - Cleaner API discovery untuk future integration
+
+
+---
+
+## 2026-04-27 sesi-baru evening — Sprint 16 START — Wisdom Layer MVP (Aha + Impact + Risk + Speculation)
+
+### Pre-Execution Alignment Check (per CLAUDE.md 6.4) — citing eksplisit basis
+
+**1. Note 248 line 416-481 (DIMENSI INTUISI & WISDOM)**:
+- User clarification eksplisit: "SIDIX harus punya INTUISI + JUDGMENT layer beyond just knowledge"
+- 4 kemampuan wajib: Aha Moment, Dampak Analysis, Risiko Analysis, Spekulasi Terbaik
+- Note 248 line 469 menyebut Sprint 16 EXPLICITLY: "Sprint 16: Judgment synthesizer module (post-sanad layer)"
+
+**2. Per-persona judgment style (note 248 line 446-451)**:
+- UTZ aha creative, ABOO risk technical, OOMAR impact business, ALEY speculation, AYMAN synthesize
+- Reuse 5 persona Sprint 12, BUKAN add persona baru ✓
+
+**3. Pivot 2026-04-25**:
+- Wisdom = judgment domain, BUKAN sensitive (fiqh/medis/data/berita)
+- ❌ JANGAN instruct "[SPEKULASI] tag per claim"
+- Hedging natural language untuk Risk/Speculation ("kemungkinan","asumsi")
+
+**4. Hard rules note 248**:
+- ❌ Vendor LLM → own Qwen+LoRA ✓
+- ❌ Drop 5 persona → reinforce ✓
+- ❌ MIT/self-hosted → no infra change ✓
+
+**5. Anti-halusinasi CLAUDE.md 6.4**:
+- System prompt instruct "cite reasoning chain konkret" bukan fabrikasi
+- Output structured 4 sections supaya verifiable
+
+**Caveat audit**: note 248 line 471 mention "setelah Vol 21-23 mature".
+Vol 21-23 (inventory/AKU/sanad-MVP) ALREADY SHIPPED + LIVE production per LIVING_LOG. Core arch mature → Sprint 16 unblocked.
+
+### Verdict: PROCEED
+MVP scope (single-session sustainable, BUKAN full 4-6 minggu plan).
+
+### Scope
+- File baru: agent_wisdom.py
+- Function: wisdom_analyze(topic, context=None) → dict 5 stage
+- 5 stages: UTZ aha → OOMAR impact → ABOO risk → ALEY speculation → AYMAN synthesize
+- Endpoint baru: POST /agent/wisdom (standalone, bukan coupled creative_pipeline)
+- Hook visioner trending data (sama pattern Sprint 14c ALEY)
+- Output: structured analysis + markdown report

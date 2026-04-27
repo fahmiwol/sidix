@@ -490,6 +490,19 @@ class AgentGenerateResponse(BaseModel):
     persona: str
 
 
+class WisdomRequest(BaseModel):
+    """Sprint 16 — Wisdom Layer MVP request.
+
+    Per note 248 line 416-481 (DIMENSI INTUISI & WISDOM): 5-stage judgment
+    synthesizer (UTZ aha + OOMAR impact + ABOO risk + ALEY speculation +
+    AYMAN synthesis).
+    """
+    topic: str
+    context: Optional[str] = None
+    skip_capabilities: Optional[list[str]] = None  # ['aha','impact','risk','speculation','synthesis']
+    persist: bool = True
+
+
 class WhitelistAddRequest(BaseModel):
     """Tambahkan email atau user_id ke whitelist (admin only)."""
     email: Optional[str] = None
@@ -1313,6 +1326,35 @@ def create_app() -> "FastAPI":
             )
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"visioner failed: {e}")
+
+    # ── POST /agent/wisdom — Sprint 16: Wisdom Layer MVP ─────────────────────
+    @app.post("/agent/wisdom", tags=["Supermodel"])
+    def agent_wisdom(req: WisdomRequest, request: Request):
+        """
+        Sprint 16 (note 248 line 416-481): 5-persona judgment synthesizer.
+        Topic/decision → Aha (UTZ) → Impact (OOMAR) → Risk (ABOO) →
+        Speculation (ALEY) → Synthesis (AYMAN). Hooks visioner trending data.
+        """
+        _enforce_rate(request)
+        _enforce_daily(request)
+        _bump_metric("agent_wisdom")
+        if not (req.topic or "").strip():
+            raise HTTPException(status_code=400, detail="topic kosong")
+        try:
+            from .agent_wisdom import wisdom_analyze
+        except Exception as e:
+            raise HTTPException(status_code=503, detail=f"agent_wisdom unavailable: {e}")
+        try:
+            return wisdom_analyze(
+                req.topic,
+                context=req.context,
+                skip_capabilities=req.skip_capabilities,
+                persist=req.persist,
+            )
+        except ValueError as e:
+            raise HTTPException(status_code=400, detail=str(e))
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"wisdom failed: {e}")
 
     # ── POST /creative/brief — Sprint 14: Hero Use-Case Creative Pipeline ────
     @app.post("/creative/brief", tags=["Supermodel"])
