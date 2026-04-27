@@ -10566,3 +10566,28 @@ Cold start: SDXL 60-120s + 3 renders 30-60s each = ~5-8 min total
 Sprint 12 + Sprint 14 + Sprint 14b + Sprint 15 = full creative agent stack
 brief Indonesia → CT-driven UTZ thinking → 8 prompts + 3 actual PNG hero asset
 + autonomous trend sensing setiap minggu compound
+
+### Sprint 14b LIVE VERIFIED ✅ — direct probe sukses 2026-04-27
+
+#### Probe result (async /run + /status polling pattern)
+- client_elapsed: 98.8s (95s cold start + 2.93s actual SDXL gen)
+- output: hero_mascot.png 637KB, 768x768, valid PNG (magic 89504E47)
+- server gen time: 2.93s (SDXL fast mode 20 steps)
+- model: sdxl via mighan-media-worker (RunPod 48GB GPU)
+
+#### Iterasi #2 — root cause + fix
+Probe pertama (90s) kena raw_status=IN_QUEUE = RunPod runsync server-side polling timeout, code salah treat as error. Refactor ke async pattern:
+- POST /run → returns job_id instant
+- Poll /status/{job_id} setiap 4s sampai COMPLETED/FAILED
+- Default timeout bumped 300s → 480s untuk handle GPU supply low (per RunPod console warning, ADA_24/AMPERE_24 stock tipis, workers throttled)
+
+#### RunPod console state observation
+- vLLM endpoint: Ready, tapi 4 worker latest semua throttled (GPU supply low warning)
+- mighan-media-worker: 0 running 0 idle = cold start setiap request
+- Balance: $24.47 (perhatian budget — SDXL render lebih mahal dari LLM)
+
+#### Compound stack (4 sprint sesi)
+Sprint 12 + 14 + 14b + 15 = SIDIX accept brief Indonesia → CT-driven UTZ thinking → 8 prompts + 3 actual rendered hero PNG + autonomous trend sensing
+
+#### Mandatory loop coverage Sprint 14b
+CATAT (start) -> IMPL (runpod_media + wire) -> TESTING (offline pass) -> ITERASI #1 (FastAPI body) -> DEPLOY -> VALIDASI #1 (in-queue gagal interpretasi) -> ITERASI #2 (async /run polling) -> DEPLOY -> VALIDASI #2 LIVE PNG sukses -> QA (no leak, security clean) -> CATAT (note 252)
