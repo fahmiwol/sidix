@@ -3740,7 +3740,7 @@ def create_app() -> "FastAPI":
                             "session_id": f"sanad-{int(time.time()*1000)}",
                             "confidence": "tinggi",
                             "_sanad_active": True,
-                            "_sanad_branches_total": len(_sanad_result.all_responses),
+                            "_sanad_branches_total": len(_sanad_result.all_branches),
                             "_sanad_branches_contributing": len(_sanad_result.contributing_branches),
                             "_sanad_contributors": _sanad_result.contributing_branches,
                             "_sanad_total_duration_ms": _sanad_result.total_duration_ms,
