@@ -84,6 +84,13 @@ docs/SIDIX_CHECKPOINT_*.md
 .data/download_adapter.py
 .data/kaggle_upload_cell.py
 .data/kaggle_adapter/
+# Sprint 15 visioner runtime output (auto-generated weekly, not for repo)
+.data/visioner_reports/
+.data/visioner_signals.jsonl
+.data/visioner_weekly.log
+.data/research_queue.jsonl
+# Sprint 14 creative pipeline runtime output (per-brief artifacts)
+.data/creative_briefs/
 
 # ── VPS scripts (contain credentials via env var, internal use only) ─────────
 scripts/vps_*.py

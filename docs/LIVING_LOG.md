@@ -9331,20 +9331,20 @@ Spec ready for sprint planning. Implementation NOT started â€” Vol 20 closure fi
 
 ---
 
-## 2026-04-26 night — FULL SESSION CAPTURE (~12 hours, all context preserved)
+## 2026-04-26 night ï¿½ FULL SESSION CAPTURE (~12 hours, all context preserved)
 
 ### Phase 1: Vol 20-fu3 Simple Bypass (78s -> 1.2s)
 - Bug: complexity_router detected tier=simple but no short-circuit existed
-- Fix iter 1 (fu3): override agent_mode=False — WRONG (= STRICT mode, slower)
+- Fix iter 1 (fu3): override agent_mode=False ï¿½ WRONG (= STRICT mode, slower)
 - Fix iter 2 (fu3.1): re-fix flag overrides
-- Fix iter 3 (fu3.2): direct LLM bypass via local_llm.generate_sidix — returned MOCK
-- Fix iter 4 (fu3.3): switch to runpod_serverless.hybrid_generate — WORKS
+- Fix iter 3 (fu3.2): direct LLM bypass via local_llm.generate_sidix ï¿½ returned MOCK
+- Fix iter 4 (fu3.3): switch to runpod_serverless.hybrid_generate ï¿½ WORKS
 - Result: halo UI 78s -> 1.2s (37x speedup), proven live in browser
 - Commit: 06ab718
 
 ### Phase 2: Vol 20-fu5 Wikipedia Direct (DDG bypass)
 - Bug: DDG returns empty from VPS IP (rate-limited)
-- Solution: wiki_lookup.py — direct Wikipedia opensearch + extracts API
+- Solution: wiki_lookup.py ï¿½ direct Wikipedia opensearch + extracts API
 - Query simplification: strip ID/EN stopwords (siapa, sekarang, etc)
 - Result: siapa presiden indonesia 120s -> 2.14s
 - Caveat: Wikipedia article body said Jokowi (snapshot pre-2024 election)
@@ -9389,19 +9389,19 @@ Spec ready for sprint planning. Implementation NOT started â€” Vol 20 closure fi
 - NOT YET WIRED to /ask (decision: ship safely, wire next session)
 
 ### Phase 9: Always-On + Radar (24/7)
-- scripts/sidix_always_on.sh — every 15 min (git observer + mini growth)
-- scripts/sidix_radar.sh — every 30 min (Google News + Reddit + GitHub)
+- scripts/sidix_always_on.sh ï¿½ every 15 min (git observer + mini growth)
+- scripts/sidix_radar.sh ï¿½ every 30 min (Google News + Reddit + GitHub)
 - Cron added on VPS, verified running
 
-### Phase 10: SIDIX SANDBOX (the breakthrough — actual self-build)
+### Phase 10: SIDIX SANDBOX (the breakthrough ï¿½ actual self-build)
 - /opt/sidix/.sandbox/ created tonight
 - Iter 1: lxml_html_clean fix (dep split discovery)
-- Iter 2: lite_browser/v01.py — 5 URLs in 1.3s parallel
-- Iter 3: search backend discovery — search.brave.com WINS (Prabowo!)
+- Iter 2: lite_browser/v01.py ï¿½ 5 URLs in 1.3s parallel
+- Iter 3: search backend discovery ï¿½ search.brave.com WINS (Prabowo!)
 - Iter 4: brave_search.py production module
 - Iter 5: wiki+brave parallel wired to /ask/stream fastpath
 - 5 lessons logged in journal/00_genesis.md
-- First SELF-COMMIT by SIDIX Self <sidix@sidixlab.com> — commit 26d3ddc
+- First SELF-COMMIT by SIDIX Self <sidix@sidixlab.com> ï¿½ commit 26d3ddc
 - Mirrored to GitHub as fb5364d
 
 ### Phase 11: Documentation Sweep (this entry + STATE + ROADMAP + HANDOFF + AUTONOMOUS_NIGHT_PLAN)
@@ -9441,7 +9441,7 @@ This session = SIDIX curriculum lesson 1. Pattern transferred. School open.
 
 ---
 
-## 2026-04-27 dawn — FINAL ADDITIONS (multi-LLM teacher pool + classroom + Kimi Code CLI)
+## 2026-04-27 dawn ï¿½ FINAL ADDITIONS (multi-LLM teacher pool + classroom + Kimi Code CLI)
 
 ### External LLM Pool (8 -> 9 providers)
 - Built apps/brain_qa/brain_qa/external_llm_pool.py
@@ -9449,10 +9449,10 @@ This session = SIDIX curriculum lesson 1. Pattern transferred. School open.
 - Single API: consensus_async(question, providers=[...]) returns parallel ProviderAnswer list
 - POLICY: external LLMs as TEACHERS/CRITICS, NOT replacement for SIDIX core (CLAUDE.md no-vendor compliance)
 
-### Keys Set on VPS This Session (all leaked in chat — must rotate)
+### Keys Set on VPS This Session (all leaked in chat ï¿½ must rotate)
 - GEMINI_API_KEY=AIzaSyALCt... (works, returns answers ~3s)
 - KIMI_API_KEY=sk-xsszdot... (401 on tested endpoints, key may be CLI-only)
-- HF_TOKEN=hf_YlAQ... (404 on inference API model — needs valid model id)
+- HF_TOKEN=hf_YlAQ... (404 on inference API model ï¿½ needs valid model id)
 - VERTEX_API_KEY=AQ.Ab8RN6... (Agent Platform key, endpoint pending verify)
 
 ### SIDIX Classroom (cron 0 * * * *)
@@ -9476,7 +9476,7 @@ This session = SIDIX curriculum lesson 1. Pattern transferred. School open.
 - Pure Node.js, ZERO Anthropic deps
 - Wrapper: apps/brain_qa/brain_qa/hyperx_tool.py
 - Verified: Wikipedia GET 184ms, 1.2MB rendered
-- Multi-engine search aggregator (HN + GitHub + Wiby — non-blocked sources)
+- Multi-engine search aggregator (HN + GitHub + Wiby ï¿½ non-blocked sources)
 
 ### Cron Schedule Final (24/7 autonomous)
 - */15 * * * *  sidix_always_on.sh    (git observer + mini growth)
@@ -9555,12 +9555,12 @@ openrouter, deepseek, mistral, cohere, ownpod). All FREE tier, opt-in via env.
   Env: COHERE_API_KEY
 
 ### Future provider candidates (not yet adapted, reference for next session)
-- Puter.js — proxy GPT-4o + Claude free unlimited (puter.js, JS-side only — would need server proxy)
-- Replicate — free credits (api.replicate.com)
-- Fireworks AI — free credits (api.fireworks.ai)
-- DeepInfra — free credits
-- Anyscale Endpoints — discontinued
-- Ollama remote — community endpoints variable
+- Puter.js ï¿½ proxy GPT-4o + Claude free unlimited (puter.js, JS-side only ï¿½ would need server proxy)
+- Replicate ï¿½ free credits (api.replicate.com)
+- Fireworks AI ï¿½ free credits (api.fireworks.ai)
+- DeepInfra ï¿½ free credits
+- Anyscale Endpoints ï¿½ discontinued
+- Ollama remote ï¿½ community endpoints variable
 
 ### OpenRouter Coverage Note
 OpenRouter alone gives access to:
@@ -10477,3 +10477,50 @@ CATAT (start) -> IMPL -> TESTING (offline pass) -> ITERASI #1 (deploy revealed 4
 
 ### 3 Sprint sesi ini = full creative agent stack
 Sprint 12 (CT 4-pilar cognitive) + Sprint 15 (visioner trend sensing) + Sprint 14 (creative output) = SIDIX dari research note jadi production AI agent yang accept brief Indonesia dan output bundled deliverable dengan UTZ voice distinct.
+
+### QA + Review Pass â€” sesi 2026-04-27 final audit
+
+#### Security audit (semua commit sesi)
+- 6 commits di sesi: b0f281b, 6277e24, ba73c66, 3efbbe5, 18bab4b, bcbfcdd
+- Pattern checked: secret-style assignments, HF/OpenAI key prefixes, server IP, hostname, internal admin token patterns
+- Hasil: ZERO credential leak di commit content
+- Author: existing git config (tidak di-update per CLAUDE.md rule)
+
+#### Document review
+- Note 249 (CT 4-pilar) â€” clean
+- Note 250 (visioner foresight) â€” clean
+- Note 251 (creative pipeline) â€” clean
+- LIVING_LOG entries â€” clean (no IP, no token)
+
+#### Iterasi: .gitignore patched
+Runtime output Sprint 14+15 sekarang ignored:
+- .data/visioner_reports/ (weekly markdown reports)
+- .data/visioner_signals.jsonl (raw scan log)
+- .data/visioner_weekly.log (cron stdout)
+- .data/research_queue.jsonl (auto-populated tasks)
+- .data/creative_briefs/ (per-brief deliverable bundles)
+Defensive: kalau dev test pipeline lokal, output tidak bisa accidentally committed.
+
+#### Production state final (post-deploy)
+- VPS commit: bcbfcdd (was 7ba8117 pre-sesi)
+- 6 SIDIX cron jobs healthy
+- 3 endpoint baru live: /visioner/weekly, /creative/brief (+CT 4-pilar di system prompts)
+- /openapi.json 500 = known issue, defer next session
+
+#### Sesi metric
+- 3 sprint shipped (12, 14, 15)
+- 3 research notes (249, 250, 251)
+- 1 deploy + 1 fix iterasi (Pydantic body resolution)
+- 7 commits to main (incl QA gitignore patch)
+- Compound clock visioner cron live, first auto-run Sunday next week
+
+#### Mandatory loop coverage AUDIT
+```
+Sprint 12: CATAT TESTING ITERASI (none, single pass) REVIEW CATAT VALIDASI QA CATAT âœ…
+Sprint 15: CATAT TESTING ITERASI (none) REVIEW CATAT VALIDASI QA CATAT âœ…
+Deploy:    CATAT TESTING (SSH + pull + restart) REVIEW VALIDASI QA CATAT âœ…
+Sprint 14: CATAT TESTING ITERASI #1 (FastAPI body fix) REVIEW CATAT VALIDASI (LIVE) QA CATAT âœ…
+QA pass:  CATAT TESTING (grep) ITERASI (gitignore) REVIEW QA CATAT (this entry) âœ…
+```
+
+Loop integrity verified untuk semua 5 work units. Tidak ada step yang di-skip.
