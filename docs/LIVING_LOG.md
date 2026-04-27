@@ -11380,7 +11380,7 @@ Next sprint berikutnya per Pre-Exec Alignment Check (Sprint 22 LIVE retry post-2
 
 ### Sprint 14f — DEPLOY + LIVE TEST (sesi sore Windows-side)
 
-[DEPLOY] paramiko bridge (SSH key passphrase Mighara22!!) → VPS git reset --hard origin/main → c368b12 (Sprint 14f + 22 KITABAH co-shipped) → pm2 restart sidix-brain (restart_time=163, online ✓)
+[DEPLOY] paramiko bridge (SSH key auth, [REDACTED — credential pre-existing leaked di sesi earlier, lihat security debt handoff]) → VPS git reset --hard origin/main → c368b12 (Sprint 14f + 22 KITABAH co-shipped) → pm2 restart sidix-brain (restart_time=163, online ✓)
 [TEST full] curl POST /creative/brief gen_3d_mode=shape → HTTP 000 timeout 600s. Diagnosa: BUKAN bug 14f. Root cause = pm2 logs sidix-brain berulang "Ollama timeout (180s) — model=qwen2.5:7b" di stage awal pipeline (concept_master/brand_kit). Pipeline 5-stage sequential LLM × 180s timeout chain > 600s curl deadline; never reach 3D stage.
 [TEST isolated] panggil generate_3d_from_text() langsung di VPS via python3 (bypass full pipeline) — env source .env, all RUNPOD_* vars present.
   - Job dispatch SUKSES → RunPod worker pick up → 55.9s actual GPU run
@@ -11389,3 +11389,37 @@ Next sprint berikutnya per Pre-Exec Alignment Check (Sprint 22 LIVE retry post-2
 [VERDICT] Sprint 14f SIDIX-side 100% correct (function loaded, payload valid, dispatch OK, GPU run OK). Bug di **worker container code**, BUKAN SIDIX. Need follow-up: Sprint 14f-worker — patch media_server.py untuk skip PNG preview saat mode=shape (atau render via trimesh.scene.scene).
 [NEXT] Defer worker patch — worker repo terpisah dari /opt/sidix. User decide: patch worker (Sprint 14f-w) atau tunggu GPU supply normal lalu retry triposr (Sprint 14e-retry).
 [CATAT] note 263 sudah tertulis (rationale + usage). Tambah update untuk worker bug finding.
+
+---
+
+### Sprint 22b LIVE attempt — honest status (anti-halusinasi)
+
+#### Result
+- HTTP 000 in 800s (max-time exact, curl timeout)
+- kitabah_loops/ dir TIDAK ter-create
+- BUKAN code bug — offline 3/3 pass
+
+#### Diagnose-before-iter (per memory)
+Same root cause Sprint 22 LIVE attempt #1. Even dengan iter 1 cache reuse:
+- RASA iter 1: ~150-250s
+- Iter 2 fresh creative: 5 LLM × ~80s = ~400s (vLLM throttled)
+- RASA iter 2: ~150-250s
+- Total ~700-900s minimum exceed middleware/vLLM cap
+
+Pattern: 3 LIVE-pending sprints (14e, 22, 22b) dengan same root cause = vLLM cascade timeout middleware level.
+
+#### Compound observation
+- Single-stage LLM calls work (Sprint 16 131s, 21 178s, 14d 237s) ✓
+- Multi-stage cascades (5+ LLM calls in same HTTP) hit cap ✗
+- Workaround viable: single-call orchestrator (Sprint 20 smart cache 148s ✓)
+
+#### Future fix candidates
+- Async job queue + polling (compound Sprint 14b async pattern)
+- SSE streaming progress
+- BackgroundTasks FastAPI
+- Wait GPU supply improve
+
+Sprint 22b shipped (wiring + offline + deploy + bug fix iter #8) + honest LIVE-pending caveat.
+
+#### Mandatory loop coverage Sprint 22b
+CATAT (Pre-Exec Alignment) -> IMPL -> TESTING (3/3 offline pass) -> ITERASI #8 (len(0) TypeError caught + fixed) -> REVIEW -> CATAT -> VALIDASI partial (offline ✓, LIVE pending budget) -> QA -> CATAT (note 265)
