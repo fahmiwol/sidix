@@ -9418,7 +9418,7 @@ Spec ready for sprint planning. Implementation NOT started — Vol 20 closure fi
 - 3 prod deploys verified
 
 ### CRITICAL Security TODOs (User Must Do Before Next Session)
-1. Revoke HF token hf_YlAQ... at https://huggingface.co/settings/tokens
+1. Revoke HF token hf_[HF-TOKEN-REDACTED] at https://huggingface.co/settings/tokens
 2. Rotate BRAIN_QA_ADMIN_TOKEN (current d7fabad... leaked)
 3. Rotate VPS root password
 4. Rotate SSH passphrase [VPS-SSH-PASSWORD-REDACTED] (leaked)
@@ -9452,7 +9452,7 @@ This session = SIDIX curriculum lesson 1. Pattern transferred. School open.
 ### Keys Set on VPS This Session (all leaked in chat � must rotate)
 - GEMINI_API_KEY=AIzaSyALCt... (works, returns answers ~3s)
 - KIMI_API_KEY=sk-xsszdot... (401 on tested endpoints, key may be CLI-only)
-- HF_TOKEN=hf_YlAQ... (404 on inference API model � needs valid model id)
+- HF_TOKEN=hf_[HF-TOKEN-REDACTED] (404 on inference API model � needs valid model id)
 - VERTEX_API_KEY=AQ.Ab8RN6... (Agent Platform key, endpoint pending verify)
 
 ### SIDIX Classroom (cron 0 * * * *)
@@ -9515,7 +9515,7 @@ e490156, 1e24670, fb5364d, 593ca96, 69a21e5, 8a2ed53, 47195d9, f169878,
 - After classroom_pairs accumulate -> feed to LoRA retrain
 
 ### CRITICAL Security TODOs (user post-session)
-- Revoke HF token hf_YlAQ...
+- Revoke HF token hf_[HF-TOKEN-REDACTED]
 - Revoke Gemini key AIzaSyALCt...
 - Revoke Kimi key sk-xsszdot...
 - Revoke Vertex key AQ.Ab8RN6...

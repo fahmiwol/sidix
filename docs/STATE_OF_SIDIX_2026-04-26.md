@@ -117,7 +117,7 @@ https://huggingface.co/Tiranyx/sidix-lora — model card (updated this session)
 
 ## Critical Security TODOs (User Must Do)
 
-- 🔴 Revoke HF token `hf_YlAQ...` (leaked in chat)
+- 🔴 Revoke HF token `hf_[HF-TOKEN-REDACTED]` (leaked in chat)
 - 🔴 Rotate BRAIN_QA_ADMIN_TOKEN (leaked in chat)
 - 🟡 Rotate VPS root password
 - 🟡 Rotate SSH key passphrase

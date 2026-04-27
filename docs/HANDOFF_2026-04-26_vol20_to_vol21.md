@@ -159,7 +159,7 @@ CLAUDE.md                              (RunPod arch + ENV catalog earlier in ses
 
 ## 🔴 Critical Security TODOs (User Must Do Post-Session)
 
-1. **Revoke HF token** `hf_YlAQ...` at https://huggingface.co/settings/tokens
+1. **Revoke HF token** `hf_[HF-TOKEN-REDACTED]` at https://huggingface.co/settings/tokens
    - Used to push HF model card update; leaked in chat history
 2. **Rotate BRAIN_QA_ADMIN_TOKEN sekali lagi** (current value `d7fabad...` leaked in chat)
 3. **Rotate VPS root password** (low risk since password auth disabled, but prudence)
