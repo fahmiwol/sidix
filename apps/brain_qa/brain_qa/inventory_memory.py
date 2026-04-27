@@ -453,6 +453,103 @@ def _jaccard_4gram(a: str, b: str) -> float:
     return len(set_a & set_b) / len(set_a | set_b)
 
 
+def detect_contradictions(
+    *,
+    same_subject_threshold: float = 0.5,
+    object_disagreement_threshold: float = 0.3,
+) -> list[dict]:
+    """
+    Vol 23e: Detect AKU pairs that share subject+predicate but disagree on object.
+    Example: "presiden_indonesia" → "Joko Widodo" vs "Prabowo Subianto"
+             (same subject, same predicate, different object)
+
+    Returns list of contradiction reports for human review.
+    Does NOT auto-resolve — flags only. Resolution requires sanad fresh check.
+    """
+    with _conn() as c:
+        rows = c.execute(
+            "SELECT * FROM aku WHERE decayed=0 ORDER BY subject, predicate"
+        ).fetchall()
+    akus = [_row_to_aku(r) for r in rows]
+
+    contradictions = []
+    seen_pairs = set()
+
+    for i, a in enumerate(akus):
+        for j, b in enumerate(akus[i+1:], start=i+1):
+            # Skip if already paired
+            pair_key = tuple(sorted([a.aku_id, b.aku_id]))
+            if pair_key in seen_pairs:
+                continue
+            seen_pairs.add(pair_key)
+
+            # Same subject + predicate?
+            subj_sim = _jaccard_4gram(a.subject.lower(), b.subject.lower())
+            same_predicate = a.predicate.lower().strip() == b.predicate.lower().strip()
+            if not same_predicate or subj_sim < same_subject_threshold:
+                continue
+
+            # Different object?
+            obj_sim = _jaccard_4gram(a.object.lower(), b.object.lower())
+            if obj_sim < object_disagreement_threshold:
+                # CONTRADICTION: same subj+pred, different obj
+                contradictions.append({
+                    "aku_a": {"id": a.aku_id, "subject": a.subject[:80],
+                              "predicate": a.predicate, "object": a.object[:200],
+                              "confidence": a.confidence,
+                              "reinforcement": a.reinforcement_count,
+                              "last_seen": a.last_seen_ts},
+                    "aku_b": {"id": b.aku_id, "subject": b.subject[:80],
+                              "predicate": b.predicate, "object": b.object[:200],
+                              "confidence": b.confidence,
+                              "reinforcement": b.reinforcement_count,
+                              "last_seen": b.last_seen_ts},
+                    "subject_similarity": round(subj_sim, 3),
+                    "object_similarity": round(obj_sim, 3),
+                    "winner": a.aku_id if (a.confidence > b.confidence
+                                            or (a.confidence == b.confidence
+                                                and a.last_seen_ts > b.last_seen_ts)) else b.aku_id,
+                    "winner_reason": ("higher_confidence" if a.confidence != b.confidence
+                                       else "more_recent"),
+                })
+    log.info("[inventory] contradictions detected: %d pairs", len(contradictions))
+    return contradictions
+
+
+def mark_contradicting(aku_a: str, aku_b: str) -> bool:
+    """Add contradicts entries to both AKUs (bi-directional)."""
+    with _conn() as c:
+        for src, tgt in [(aku_a, aku_b), (aku_b, aku_a)]:
+            row = c.execute("SELECT contradicts FROM aku WHERE aku_id=?", (src,)).fetchone()
+            if not row:
+                continue
+            existing = json.loads(row["contradicts"] or "[]")
+            if tgt not in existing:
+                existing.append(tgt)
+                c.execute("UPDATE aku SET contradicts=? WHERE aku_id=?",
+                          (json.dumps(existing), src))
+        c.commit()
+    return True
+
+
+def resolve_contradiction(canonical_id: str, loser_id: str) -> bool:
+    """
+    Resolve contradiction: mark loser as decayed, boost canonical confidence.
+    Use after manual review or fresh sanad re-validation.
+    """
+    with _conn() as c:
+        row = c.execute("SELECT confidence FROM aku WHERE aku_id=?", (canonical_id,)).fetchone()
+        if not row:
+            return False
+        new_conf = min(1.0, row["confidence"] + 0.1)  # boost canonical
+        c.execute("UPDATE aku SET confidence=?, last_seen_ts=? WHERE aku_id=?",
+                  (new_conf, int(time.time()), canonical_id))
+        c.execute("UPDATE aku SET decayed=1 WHERE aku_id=?", (loser_id,))
+        c.commit()
+    log.info("[inventory] resolved %s vs %s — winner=%s", canonical_id, loser_id, canonical_id)
+    return True
+
+
 def synthesize(
     *,
     same_subject_threshold: float = 0.5,
@@ -573,5 +670,7 @@ def format_lookup_for_render(akus: list[AKU]) -> str:
 
 __all__ = [
     "AKU", "ingest", "lookup", "lookup_hybrid", "lookup_exact",
-    "stats", "decay_old", "synthesize", "format_lookup_for_render",
+    "stats", "decay_old", "synthesize",
+    "detect_contradictions", "mark_contradicting", "resolve_contradiction",
+    "format_lookup_for_render",
 ]

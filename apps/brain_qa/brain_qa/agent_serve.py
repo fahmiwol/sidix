@@ -2596,6 +2596,18 @@ def create_app() -> "FastAPI":
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"inventory stats fail: {e}")
 
+    @app.get("/admin/inventory/contradictions", tags=["Performance"])
+    def inventory_contradictions_endpoint(request: Request):
+        """Vol 23e: detect contradiction pairs (same subj+pred, different obj)."""
+        if not _admin_ok(request):
+            raise HTTPException(status_code=403, detail="Akses ditolak")
+        try:
+            from . import inventory_memory
+            contradictions = inventory_memory.detect_contradictions()
+            return {"count": len(contradictions), "contradictions": contradictions}
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"contradiction detect fail: {e}")
+
     @app.post("/admin/inventory/synthesize", tags=["Performance"])
     def inventory_synthesize_endpoint(request: Request, dry_run: bool = True):
         """Vol 23c: cluster + canonicalize duplicate AKUs."""
