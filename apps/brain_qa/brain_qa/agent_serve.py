@@ -3490,7 +3490,9 @@ def create_app() -> "FastAPI":
             # Hit = answer in <100ms with sanad chain. Self-grown knowledge.
             try:
                 from .inventory_memory import lookup as _inv_lookup, format_lookup_for_render
-                _inv_hits = _inv_lookup(req.question, min_confidence=0.7, limit=3)
+                # MVP: 0.55 threshold (bootstrap AKUs at 0.6, reinforce builds up).
+                # Future: per-domain threshold (fiqh/medis higher, casual lower).
+                _inv_hits = _inv_lookup(req.question, min_confidence=0.55, limit=3)
                 if _inv_hits:
                     _bump_metric("ask_stream_inventory_l0_hit")
                     _t_inv_start = time.time()
