@@ -323,6 +323,100 @@ def generate_3d_from_image(
     }
 
 
+def generate_3d_from_text(
+    prompt: str,
+    *,
+    output_dir: Path | str,
+    label: str = "hero_3d",
+    output_format: str = "glb",
+    num_inference_steps: int = 32,
+    frame_size: int = 256,
+) -> dict[str, Any]:
+    """
+    Sprint 14f: text-to-3D via Shap-E (mighan-media-worker tool=3d, mode=shape).
+
+    Berbeda dari generate_3d_from_image (TripoSR yang butuh PNG hero):
+    - INPUT: text prompt langsung (tidak depend hero_mascot.png)
+    - MODEL: openai/shap-e (lebih ringan dari TripoSR)
+    - PATH: alternatif kalau image-to-3D gagal/cold-start lama
+
+    Cocok sebagai fallback ketika:
+    - hero_mascot.png belum/gagal di-render
+    - GPU supply throttle bikin TripoSR cold-start time-out
+    - Cepat preview 3D dari brief text saja
+
+    Per /root/mighantect-3d/runpod-media-worker/media_server.py:
+    - mode='shape' → ShapEPipeline.from_pretrained('openai/shap-e')
+    - num_inference_steps default 64 di worker, bisa di-trim ke 32 untuk faster
+    - frame_size default 256
+    """
+    cfg = _media_config()
+    if not cfg:
+        return {
+            "success": False,
+            "error": "RUNPOD_MEDIA_ENDPOINT_ID belum di-set di env",
+            "label": label,
+        }
+    if not (prompt or "").strip():
+        return {"success": False, "label": label, "error": "prompt kosong"}
+
+    payload = {
+        "input": {
+            "tool": "3d",
+            "prompt": prompt.strip()[:500],  # Shap-E pakai prompt, BUKAN image
+            "mode": "shape",
+            "output_format": output_format,
+            "num_inference_steps": int(num_inference_steps),
+            "frame_size": int(frame_size),
+        }
+    }
+
+    t0 = time.time()
+    try:
+        resp = _run_async_with_polling(payload, cfg)
+    except urllib.error.HTTPError as e:
+        return {"success": False, "label": label, "error": f"HTTP {e.code}: {e.reason}"}
+    except Exception as e:
+        return {"success": False, "label": label, "error": f"runpod call fail: {e}"}
+
+    elapsed_ms = int((time.time() - t0) * 1000)
+    out = resp.get("output") or {}
+
+    if not out.get("success"):
+        return {
+            "success": False, "label": label,
+            "error": out.get("error", "no mesh returned"),
+            "elapsed_ms": elapsed_ms,
+            "raw_status": resp.get("status"),
+        }
+
+    mesh_b64 = out.get("mesh_base64", "")
+    if not mesh_b64:
+        return {"success": False, "label": label, "error": "mesh_base64 missing", "elapsed_ms": elapsed_ms}
+
+    out_path = Path(output_dir) / f"{label}.{output_format}"
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        out_path.write_bytes(base64.b64decode(mesh_b64))
+    except Exception as e:
+        return {"success": False, "label": label, "error": f"decode/write fail: {e}", "elapsed_ms": elapsed_ms}
+
+    return {
+        "success": True,
+        "label": label,
+        "path": str(out_path),
+        "filename": out_path.name,
+        "size_bytes": out_path.stat().st_size,
+        "format": out.get("format", output_format),
+        "vertices": out.get("vertices"),
+        "faces": out.get("faces"),
+        "mode": "shape",
+        "generation_time_s": out.get("generation_time"),
+        "elapsed_ms": elapsed_ms,
+        "source_prompt": prompt.strip()[:200],
+    }
+
+
 def generate_tts(
     text: str,
     *,

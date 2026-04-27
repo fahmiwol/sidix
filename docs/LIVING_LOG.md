@@ -11189,7 +11189,6 @@ Pattern: dengan vLLM GPU throttle current state, plan curl timeout = num_LLM_cal
 #### Mandatory loop coverage Sprint 20
 CATAT (Pre-Exec Alignment cite eksplisit note 248 line 473) -> IMPL (agent_integrated.py 290 lines + endpoint) -> TESTING (5/5 offline pass, smart cache reuse verified) -> ITERASI #8 (curl timeout under-spec, BUKAN code bug — diagnose-before-iter applied) -> REVIEW -> CATAT -> VALIDASI LIVE 148s HTTP 200 creative cached + wisdom 1-stage fresh -> QA -> CATAT (note 261)
 
-
 ---
 
 ## 2026-04-28 sesi-baru (post-limit reset) — Sprint 21 START — 🎭 RASA Aesthetic/Quality Scorer
@@ -11248,3 +11247,13 @@ CATAT (Pre-Exec Alignment cite eksplisit note 248 line 50) -> IMPL (agent_rasa.p
 #### Embodiment progress (note 248 line 40-65)
 🎭 RASA SHIPPED → 11/15 organs (73%)
 Pending: 👁️ MATA, 👂 TELINGA, 🎯 INTUISI, full DoRA reproduksi
+
+---
+
+## 2026-04-28 Sprint 14f — Shap-E text-to-3D fallback shipped
+
+[IMPL] runpod_media.generate_3d_from_text() — Shap-E (mode=shape) via mighan-media-worker, prompt input, no image dep
+[IMPL] creative_pipeline.gen_3d_mode param (auto|triposr|shape) — auto picks triposr if mascot_img exists, else shape
+[IMPL] agent_serve.CreativeBriefRequest.gen_3d_mode field + passthrough
+[TEST] ast.parse OK on 3 files
+[NOTE] Unblocks 3D path when GPU supply throttled (TripoSR queue blocked) — Shap-E lighter, may succeed

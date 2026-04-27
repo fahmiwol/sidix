@@ -447,6 +447,7 @@ def creative_brief_pipeline(
     gen_images_n: int = 3,
     gen_3d: bool = False,
     gen_3d_format: str = "glb",
+    gen_3d_mode: str = "auto",  # Sprint 14f: auto | triposr | shape
     gen_voice: bool = False,
     voice_lang: str = "id",
     enrich_personas: Optional[list[str]] = None,
@@ -570,33 +571,75 @@ def creative_brief_pipeline(
         except Exception as e:
             rendered_voice = {"success": False, "error": f"voice gen fail: {e}"}
 
-    # Sprint 14e: Optional 3D mascot from rendered hero_mascot.png
+    # Sprint 14e+14f: Optional 3D mascot
+    # Mode logic:
+    #   - "triposr"  → image-to-3D, REQUIRES hero_mascot.png (Sprint 14e original)
+    #   - "shape"    → text-to-3D via Shap-E, NO image dependency (Sprint 14f fallback)
+    #   - "auto"     → try triposr first if mascot image exists, else fallback to shape
     rendered_3d: list[dict[str, Any]] = []
     if gen_3d and persist:
-        # Find a successful hero_mascot image to base 3D on
+        three_d_dir = BRIEFS_DIR / d.slug / "3d"
         mascot_img = next(
             (img for img in rendered_images
              if img.get("success") and img.get("label", "").startswith("hero_mascot")),
             None,
         )
-        if not mascot_img:
-            rendered_3d.append({
-                "success": False,
-                "error": "gen_3d requires gen_images=true with successful hero_mascot render",
-            })
-        else:
+
+        # Decide mode
+        effective_mode = gen_3d_mode.lower().strip() or "auto"
+        if effective_mode == "auto":
+            effective_mode = "triposr" if mascot_img else "shape"
+
+        if effective_mode == "triposr":
+            if not mascot_img:
+                rendered_3d.append({
+                    "success": False,
+                    "mode": "triposr",
+                    "error": "triposr mode requires gen_images=true with successful hero_mascot render. "
+                             "Use gen_3d_mode='shape' for image-independent 3D.",
+                })
+            else:
+                try:
+                    from .runpod_media import generate_3d_from_image
+                    res3d = generate_3d_from_image(
+                        mascot_img["path"],
+                        output_dir=three_d_dir,
+                        label="hero_mascot_3d",
+                        output_format=gen_3d_format,
+                        mode="triposr",
+                    )
+                    rendered_3d.append(res3d)
+                except Exception as e:
+                    rendered_3d.append({"success": False, "mode": "triposr",
+                                        "error": f"3d gen fail: {e}"})
+        elif effective_mode == "shape":
+            # Sprint 14f: text-to-3D via Shap-E
+            # Build prompt from brand_kit + character_concept (Stage 2/3)
+            shape_prompt = (
+                f"{d.character_concept[:200] if hasattr(d, 'character_concept') else ''} "
+                f"{d.brand_kit[:200] if hasattr(d, 'brand_kit') else ''} "
+                f"{brief[:200]}"
+            ).strip()
+            if not shape_prompt:
+                shape_prompt = brief[:300]
             try:
-                from .runpod_media import generate_3d_from_image
-                three_d_dir = BRIEFS_DIR / d.slug / "3d"
-                res3d = generate_3d_from_image(
-                    mascot_img["path"],
+                from .runpod_media import generate_3d_from_text
+                res3d = generate_3d_from_text(
+                    shape_prompt,
                     output_dir=three_d_dir,
-                    label="hero_mascot_3d",
+                    label="hero_mascot_3d_shape",
                     output_format=gen_3d_format,
                 )
                 rendered_3d.append(res3d)
             except Exception as e:
-                rendered_3d.append({"success": False, "error": f"3d gen fail: {e}"})
+                rendered_3d.append({"success": False, "mode": "shape",
+                                    "error": f"shape-e gen fail: {e}"})
+        else:
+            rendered_3d.append({
+                "success": False,
+                "mode": effective_mode,
+                "error": f"unknown gen_3d_mode='{effective_mode}'. Valid: auto | triposr | shape",
+            })
 
     if persist:
         _persist(d)

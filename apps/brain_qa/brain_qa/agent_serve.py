@@ -455,6 +455,7 @@ class CreativeBriefRequest(BaseModel):
     gen_images_n: int = 3
     gen_3d: bool = False
     gen_3d_format: str = "glb"  # glb | obj | fbx
+    gen_3d_mode: str = "auto"  # Sprint 14f: auto | triposr (image-to-3D) | shape (text-to-3D Shap-E)
     gen_voice: bool = False  # Sprint 14d: TTS brand voice via mighan-media-worker
     voice_lang: str = "id"  # id (Indonesian) | en | etc
     enrich_personas: Optional[list[str]] = None  # default ["OOMAR","ALEY"], [] to disable
@@ -1466,6 +1467,7 @@ def create_app() -> "FastAPI":
                 gen_images_n=req.gen_images_n,
                 gen_3d=req.gen_3d,
                 gen_3d_format=req.gen_3d_format,
+                gen_3d_mode=req.gen_3d_mode,
                 gen_voice=req.gen_voice,
                 voice_lang=req.voice_lang,
                 enrich_personas=req.enrich_personas,
