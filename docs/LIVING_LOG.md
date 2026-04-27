@@ -9437,3 +9437,90 @@ ls /opt/sidix/.data/queue/notes_pending/             # drafts to review
 cat /opt/sidix/.data/radar_mentions.jsonl            # internet mentions caught
 
 This session = SIDIX curriculum lesson 1. Pattern transferred. School open.
+
+
+---
+
+## 2026-04-27 dawn — FINAL ADDITIONS (multi-LLM teacher pool + classroom + Kimi Code CLI)
+
+### External LLM Pool (8 -> 9 providers)
+- Built apps/brain_qa/brain_qa/external_llm_pool.py
+- 9 free-tier teacher backends: groq, gemini, vertex, kimi, openrouter, together, hf, cloudflare, ownpod
+- Single API: consensus_async(question, providers=[...]) returns parallel ProviderAnswer list
+- POLICY: external LLMs as TEACHERS/CRITICS, NOT replacement for SIDIX core (CLAUDE.md no-vendor compliance)
+
+### Keys Set on VPS This Session (all leaked in chat — must rotate)
+- GEMINI_API_KEY=AIzaSyALCt... (works, returns answers ~3s)
+- KIMI_API_KEY=sk-xsszdot... (401 on tested endpoints, key may be CLI-only)
+- HF_TOKEN=hf_YlAQ... (404 on inference API model — needs valid model id)
+- VERTEX_API_KEY=AQ.Ab8RN6... (Agent Platform key, endpoint pending verify)
+
+### SIDIX Classroom (cron 0 * * * *)
+- 20-question rotating curriculum (SIDIX domain + faktual + coding + filosofis + current events)
+- Hourly broadcast to ALL available teachers via consensus_async
+- Logs:
+  - .data/classroom_log.jsonl (per-cycle full transcripts)
+  - .data/classroom_pairs.jsonl (multi-teacher consensus -> training pairs)
+- First test run successful: Gemini answered Sanad question (55 chars)
+
+### Kimi Code CLI Installed
+- curl -L code.kimi.com/install.sh | bash
+- Installed v1.39.0 via uvx -> ~/.local/bin/kimi
+- Different from API: full coding agent (similar Claude Code)
+- Wrapper: apps/brain_qa/brain_qa/kimi_code_tool.py
+- Use case: delegate coding tasks via subprocess
+- TODO: interactive auth setup needed first run
+
+### HYPERX Browser (also tonight)
+- /opt/sidix/tools/hyperx-browser/ installed (npm install done)
+- Pure Node.js, ZERO Anthropic deps
+- Wrapper: apps/brain_qa/brain_qa/hyperx_tool.py
+- Verified: Wikipedia GET 184ms, 1.2MB rendered
+- Multi-engine search aggregator (HN + GitHub + Wiby — non-blocked sources)
+
+### Cron Schedule Final (24/7 autonomous)
+- */15 * * * *  sidix_always_on.sh    (git observer + mini growth)
+- */30 * * * *  sidix_radar.sh         (Google News + Reddit + GitHub mention listener)
+- 0   * * * *  sidix_classroom.sh     (multi-teacher consensus learning)
+- existing threads_daily.sh series (3x/day) + harvest + mentions
+
+### Note 247 Written
+brain/public/research_notes/247_external_llm_pool_classroom.md
+- Full architecture spec
+- Free key setup guide for 5 providers
+- Vol 21+ wire plan (pool as 8th sanad branch)
+
+### Total Session Commits (extended count beyond 30)
+e490156, 1e24670, fb5364d, 593ca96, 69a21e5, 8a2ed53, 47195d9, f169878,
+613e7a2, 90a331e, ab4487e, f4607cb, 3facd8e, 3b523e3, d3da960, 65487bb,
+3facd8e, 273fd91, f0a2c06, 06ab718, ef12c05, a8b6110, 7a9ab76, 0dfb38b, c406096
++ pending kimi_code_tool commit
+
+### What SIDIX Has Now (Final Audit)
+- Production code: brave_search, wiki_lookup, sanad_orchestrator (scaffold), external_llm_pool, hyperx_tool, kimi_code_tool
+- 9 LLM teacher providers (3 active: gemini + ownpod + others pending key fix)
+- HYPERX browser tool (working)
+- Kimi Code CLI (installed, needs auth)
+- Sandbox at /opt/sidix/.sandbox/ for self-development
+- 9 research notes (239-247, ~3000 lines architecture)
+- 4 cron jobs running autonomously
+- Self-commit capability proven (commit 26d3ddc by SIDIX Self)
+- Always-on observer catching all conversation activity
+
+### TODO Vol 21+
+- Wire external_llm_pool to sanad_orchestrator as multi-LLM branch
+- Fix HF model id (currently 404 on inference API)
+- Verify Vertex AI Agent Platform endpoint (test pending)
+- Investigate Kimi API endpoint (cn vs ai vs CLI-only)
+- After classroom_pairs accumulate -> feed to LoRA retrain
+
+### CRITICAL Security TODOs (user post-session)
+- Revoke HF token hf_YlAQ...
+- Revoke Gemini key AIzaSyALCt...
+- Revoke Kimi key sk-xsszdot...
+- Revoke Vertex key AQ.Ab8RN6...
+- Revoke admin token d7fabad...
+- Rotate VPS root password
+- Rotate SSH passphrase Mighara22!!
+
+ALL keys above were leaked in chat history. Must rotate before public.
