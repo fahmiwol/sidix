@@ -9693,3 +9693,50 @@ Cron jobs still active (worker draining 30 new tasks → more AKUs incoming)
 - Vol 21 wire sanad_orchestrator → /ask/stream
 - Vol 24 SDXL endpoint deploy
 - Vol 26 skill cloning from Claude Code session JSONL
+
+
+---
+
+## 2026-04-27 morning — VOL 23b SHIPPED ✅ Auto-Ingestor Cron Live
+
+### What it does (24/7)
+Every 10 min, mines new entries from:
+- shadow_experience.jsonl  (worker output)
+- classroom_log.jsonl       (hourly multi-teacher)
+- classroom_pairs.jsonl     (consensus extracted)
+- task_results.jsonl        (only ok=true)
+
+Each entry → infer (subject, predicate) → ingest as AKU.
+Reinforces existing AKUs (confidence climbs on duplicate).
+Daily decay: low-conf >30 days → decayed=1.
+
+### First test result
+- Mined 9 entries (shadow=1, class=7, tasks=1)
+- Total AKUs unchanged (8) but avg_conf 0.619 → 0.669
+- = Reinforcement working: existing AKUs strengthened, not duplicated
+
+### Compound math
+Per 24h max throughput:
+- Worker */10 → up to 144 task ingest attempts → ~30-50 new AKUs/day
+- Classroom hourly → 24 sessions × ~3 successful provider answers = ~72 entries/day
+- Auto-ingestor */10 → mines all above incrementally
+= ~100+ AKU strengthen/new per day if all cron jobs healthy
+
+### Vision realized
+User: BEBAS dan TUMBUH
+Now: SIDIX literally grows knowledge every 10 min, no human in loop.
+Each cycle = AKU graph nodes + edges accumulate.
+Compound learning compound across days/weeks.
+
+### Cron schedule final (5 jobs autonomous 24/7)
+- */10 worker             (drain task queue, dispatch shadow_pool)
+- */10 aku_ingestor       (NEW — auto-AKU growth from logs)
+- */15 always_on          (git observer + mini growth)
+- */30 radar              (Google News + Reddit + GitHub mention)
+- 0 hourly classroom      (multi-teacher consensus learning)
+
+### Sprint pending next
+- Vol 23c: synthesis loop (cluster duplicates, abstract patterns)
+- Vol 21 wire sanad → /ask/stream
+- Vol 24 SDXL endpoint
+- Vol 26 skill cloning
