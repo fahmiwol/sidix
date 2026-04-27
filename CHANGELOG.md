@@ -1,3 +1,58 @@
+# [2.2.0] — 2026-04-27 — Creative Agent Stack + Visioner Foresight (Sprint 12+14+14b+14c+15)
+
+### Sprint 12 — CT 4-Pilar Cognitive Engine
+- Computational Thinking 4-pilar (Dekomposisi · Pattern Recognition · Abstraksi · Algoritma) di system prompt 5 persona
+- Per-persona CT lens: UTZ creative · ABOO engineer · OOMAR strategist · ALEY researcher · AYMAN general
+- Test: 60/60 combos pass (5 persona × 3 mode × 4 literacy)
+- File: apps/brain_qa/brain_qa/cot_system_prompts.py
+
+### Sprint 14 — Creative Pipeline 5-stage hero use-case
+- POST /creative/brief endpoint
+- 5-stage UTZ pipeline: Concept → Brand → Copy (5 var) → Landing → Asset Prompts (8)
+- Output bundle: report.md + metadata.json + asset_prompts.txt
+- LIVE verified: real LLM output stage 1 ~38-52s per stage
+- File: apps/brain_qa/brain_qa/creative_pipeline.py (new)
+
+### Sprint 14b — RunPod mighan-media-worker image generation wire
+- gen_images flag → render 3 hero asset PNG (mascot/logo/social) via SDXL
+- Async /run + /status polling pattern (handle GPU cold start + supply throttle)
+- LIVE verified: 637KB PNG 768×768 generated in 98.8s (95s cold + 2.93s gen)
+- ENV: RUNPOD_MEDIA_ENDPOINT_ID added
+- File: apps/brain_qa/brain_qa/runpod_media.py (new)
+
+### Sprint 14c — Multi-persona post-pipeline enrichment
+- enrich_personas flag (default ["OOMAR","ALEY"])
+- OOMAR: commercial review (market fit, GTM, monetization, risk, verdict)
+- ALEY: research-backed enrichment with auto-pickup trending keywords from visioner
+- LIVE verified: 3 distinct persona output 212s, ALEY cite 'Creative'+'Persona' from radar
+
+### Sprint 15 — Visioner Weekly Democratic Foresight
+- /visioner/weekly endpoint + cron 0 0 * * 0 weekly autonomous
+- 4-stage pipeline: SCAN (arxiv/HN/GitHub) → CLUSTER → 5-PERSONA SYNTH → REPORT
+- Auto-populate research_queue.jsonl (10 emerging-topic tasks/week)
+- LIVE verified: 22 real signals scanned, 8 clusters, top emerging = agent/generative/lora
+- File: apps/brain_qa/brain_qa/agent_visioner.py (new)
+
+### Endpoint summary baru
+- POST /creative/brief (Sprint 14+14b+14c)
+- GET /visioner/weekly (Sprint 15)
+
+### Notes
+- 249: CT 4-pilar persona scaffolding
+- 250: Visioner weekly democratic foresight
+- 251: Creative pipeline hero use-case
+- 252: RunPod media-worker image gen
+- 253: Multi-persona enrichment
+
+### Known issue defer
+- /openapi.json 500 (pydantic schema generation bug, separate from endpoint functionality)
+
+### Compound clock STARTED
+- Visioner cron first auto-run: Sunday 2026-W19
+- 1 tahun trajectory: 52 reports + 520 emerging-topic tasks → corpus 6-12 bulan ahead
+
+---
+
 # [2.1.5] — 2026-04-26 — Vol 20-fu3/5/6 + SIDIX Sandbox Genesis
 
 ### Vol 20-fu3 Simple-Tier Direct LLM Bypass: 78s -> 1.2s halo (37x)
