@@ -443,6 +443,13 @@ class ResurrectRequest(BaseModel):
     return_intermediate: bool = False
 
 
+class CreativeBriefRequest(BaseModel):
+    """Sprint 14 — Hero use-case creative pipeline brief input."""
+    brief: str
+    skip_stages: Optional[list[str]] = None
+    persist: bool = True
+
+
 class WhitelistAddRequest(BaseModel):
     """Tambahkan email atau user_id ke whitelist (admin only)."""
     email: Optional[str] = None
@@ -1280,13 +1287,8 @@ def create_app() -> "FastAPI":
             raise HTTPException(status_code=500, detail=f"visioner failed: {e}")
 
     # ── POST /creative/brief — Sprint 14: Hero Use-Case Creative Pipeline ────
-    class _CreativeBriefRequest(BaseModel):
-        brief: str
-        skip_stages: list[str] | None = None
-        persist: bool = True
-
     @app.post("/creative/brief", tags=["Supermodel"])
-    def creative_brief(req: _CreativeBriefRequest, request: Request):
+    def creative_brief(req: CreativeBriefRequest, request: Request):
         """
         Sprint 14 (note 248 line 178-198): hero use-case creative pipeline.
         Brief teks → 5-stage bundled deliverable (concept + brand + copy +
