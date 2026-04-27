@@ -10913,3 +10913,38 @@ Pipeline Sprint 16 sudah LIVE: prose markdown 5 stage. Sprint 18 = same pipeline
 ### Demo angle
 ChatGPT/Claude: prose only.
 SIDIX wisdom Sprint 18: prose + machine-readable JSON → user paste ke spreadsheet/Notion/dashboard untuk risk register management.
+
+
+### Sprint 18 LIVE VERIFIED ✅ — Risk Register + Impact Map structured JSON
+
+#### Result (real LLM, real production, brief = launch SIDIX UMKM)
+- HTTP 200 in 261.9s
+- risk_register: 3 entries dengan probability/impact/mitigation/reasoning
+- impact_map: 4 entries (User/Audience/Brand/Ekosistem)
+- structured.json saved: 2427 bytes
+
+#### Quality observation
+- Risk #2 cite "GPU throttle" dari context = grounded (anti-halusinasi pass)
+- Indonesian-grounded: "UMKM mikro/kecil/menengah", "sinergi pelaku usaha"
+- Reasoning konkret per risk (BUKAN vague claims)
+- Severity classification (high/medium/low) per stakeholder
+
+#### Iterasi history Sprint 18
+- Build offline: 5/5 extractor tests pass
+- LIVE attempt 1 (242s, max_tokens=600): structured = {} (LLM JSON truncated)
+- Iter #5 fix: bump max_tokens 600 → 1100
+- LIVE attempt 2 (262s, max_tokens=1100): structured FULL (3 risk + 4 impact)
+
+Bukan code logic bug — pure budget under-spec. Diagnose by inspect prose ending: JSON ada tapi cut off mid-string.
+
+#### Demo-able workflow
+1. POST /agent/wisdom dengan brief + context
+2. Receive: prose markdown report.md (7.3KB) + structured.json (2.4KB)
+3. Customer paste structured.json ke spreadsheet/Notion/Airtable/dashboard
+4. Risk register management + impact mapping ready-to-action
+
+#### Compound 10-sprint sesi cumulative
+Sprint 12 + 14 + 14b + 14c + 14e + 14g + 15 + 16 + 18 + Discipline lock = SIDIX dari research note jadi production AI consulting agent dengan output multi-format (prose + structured).
+
+#### Mandatory loop coverage Sprint 18
+CATAT (start, Pre-Exec Alignment cite) -> IMPL -> TESTING (5/5 extractor pass) -> ITERASI #5 (max_tokens budget fix) -> REVIEW -> CATAT -> VALIDASI LIVE (3 risks + 4 impacts JSON valid) -> QA (no leak) -> CATAT (note 258)
