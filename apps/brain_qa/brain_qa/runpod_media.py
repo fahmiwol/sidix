@@ -53,7 +53,10 @@ from typing import Any, Optional
 log = logging.getLogger(__name__)
 
 _API_BASE = "https://api.runpod.ai/v2"
-_DEFAULT_TIMEOUT = 300  # 5 min — image gen + cold start
+# 8 min — async pattern: submit /run, poll /status. Tolerates cold start
+# 2-5 min + actual gen 15-40s. Increase via RUNPOD_MEDIA_TIMEOUT bila supply
+# GPU sedang low (per RunPod console warning).
+_DEFAULT_TIMEOUT = 480
 
 
 def _media_config() -> Optional[dict]:
@@ -86,21 +89,60 @@ def media_available() -> bool:
         return False
 
 
-def _runsync(payload: dict, cfg: dict) -> dict:
-    """POST runsync ke RunPod media endpoint."""
-    url = f"{_API_BASE}/{cfg['endpoint_id']}/runsync"
-    body = json.dumps(payload).encode("utf-8")
+def _post_json(url: str, body: dict, cfg: dict, timeout: int = 30) -> dict:
+    """POST JSON to RunPod endpoint."""
     req = urllib.request.Request(
         url,
-        data=body,
+        data=json.dumps(body).encode("utf-8"),
         headers={
             "Authorization": f"Bearer {cfg['api_key']}",
             "Content-Type": "application/json",
         },
         method="POST",
     )
-    with urllib.request.urlopen(req, timeout=cfg["timeout"]) as r:
+    with urllib.request.urlopen(req, timeout=timeout) as r:
         return json.loads(r.read().decode("utf-8"))
+
+
+def _get_status(job_id: str, cfg: dict, timeout: int = 30) -> dict:
+    """GET job status."""
+    url = f"{_API_BASE}/{cfg['endpoint_id']}/status/{job_id}"
+    req = urllib.request.Request(
+        url,
+        headers={"Authorization": f"Bearer {cfg['api_key']}"},
+    )
+    with urllib.request.urlopen(req, timeout=timeout) as r:
+        return json.loads(r.read().decode("utf-8"))
+
+
+def _run_async_with_polling(payload: dict, cfg: dict, *, poll_interval: float = 4.0) -> dict:
+    """
+    Submit async (POST /run → job_id), then poll /status until COMPLETED/FAILED.
+    Tolerant ke IN_QUEUE/IN_PROGRESS dengan client-side polling (cap cfg['timeout']).
+    """
+    url = f"{_API_BASE}/{cfg['endpoint_id']}/run"
+    submit = _post_json(url, payload, cfg, timeout=20)
+    job_id = submit.get("id")
+    if not job_id:
+        return {"output": {"success": False, "error": f"no job_id from /run: {submit}"}, "status": submit.get("status")}
+
+    deadline = time.time() + cfg["timeout"]
+    last_status = "QUEUED"
+    while time.time() < deadline:
+        try:
+            st = _get_status(job_id, cfg, timeout=15)
+        except Exception as e:
+            log.debug(f"[runpod_media] status poll err (continuing): {e}")
+            time.sleep(poll_interval)
+            continue
+        last_status = st.get("status", "?")
+        if last_status == "COMPLETED":
+            return {"output": st.get("output") or {}, "status": "COMPLETED"}
+        if last_status in ("FAILED", "CANCELLED", "TIMED_OUT"):
+            return {"output": {"success": False, "error": f"job {last_status}: {st.get('error', '')}"}, "status": last_status}
+        time.sleep(poll_interval)
+
+    return {"output": {"success": False, "error": f"client timeout after {cfg['timeout']}s, last_status={last_status}"}, "status": "CLIENT_TIMEOUT"}
 
 
 def generate_image(
@@ -147,7 +189,7 @@ def generate_image(
 
     t0 = time.time()
     try:
-        resp = _runsync(payload, cfg)
+        resp = _run_async_with_polling(payload, cfg)
     except urllib.error.HTTPError as e:
         return {"success": False, "label": label, "error": f"HTTP {e.code}: {e.reason}"}
     except Exception as e:
