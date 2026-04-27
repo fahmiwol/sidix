@@ -10341,3 +10341,53 @@ CATAT → TESTING (60/60) → ITERASI (single pass green) → TRAINING (skip, pr
 
 ### Next: Sprint 13 — DoRA persona MVP (UTZ + ABOO duluan, 3-5 hari)
 CT lens jadi anchor untuk synthetic data generation 1000-2000 Q&A per persona.
+
+
+---
+
+## 2026-04-27 sesi-baru — Sprint 15 START — Visioner Foresight Agent (weekly democratic)
+
+### Scope
+- agent_visioner.py module BARU:
+  - scan_emerging_trends(): arXiv CS.AI/CS.CV/CS.CL RSS + HN top + GitHub trending
+  - cluster_signals(): frequency + recency growth
+  - persona_synthesis(): 5 persona = 5 lens (UTZ visual / OOMAR business / ABOO tech / ALEY academic / AYMAN reframe)
+  - weekly_report(): bundle ke markdown + auto-populate research queue
+- scripts/sidix_visioner_weekly.sh: cron Sunday 00:00 UTC
+- /visioner/weekly endpoint untuk on-demand fetch
+- Output: .data/visioner_reports/YYYY-WNN.md
+- Auto-feed ke .data/research_queue.jsonl (10 task per week)
+
+### Why this sprint (15 first, not 13/14)
+- Time-compound: foresight memory growth makin awal makin besar lead
+- Existing radar infra (radar.sh */30, agent_foresight.py 4-stage) ready to extend
+- Foundation for sprint berikutnya: corpus growth jadi training data Sprint 13 DoRA, trend insight jadi brief input Sprint 14 creative pipeline
+- Demo-able: weekly trend report = artifact unique vs ChatGPT/Claude
+
+### Ref: note 248 line 346-360 (DIMENSI VISIONER), note 248 line 215-243 (Sprint 15 mandate)
+
+### Sprint 15 SHIPPED ✅ — Visioner Weekly Democratic Foresight
+
+- File baru: apps/brain_qa/brain_qa/agent_visioner.py (419 lines)
+- File baru: scripts/sidix_visioner_weekly.sh (cron Sunday 00:00 UTC)
+- Endpoint baru: GET /visioner/weekly (di agent_serve.py +25 lines)
+- Pipeline: SCAN (arxiv + HN + github) -> CLUSTER (cross-source weight) -> 5-PERSONA SYNTH -> REPORT + queue 10 tasks
+- Output: .data/visioner_reports/YYYY-WNN.md + .data/research_queue.jsonl (append)
+- Test: offline smoke (5 mock signals -> 8 clusters, queue 8) + live arxiv probe (9 real sigs)
+- Note: brain/public/research_notes/250_visioner_weekly_democratic_foresight.md
+
+### Mandatory loop verified
+CATAT -> TESTING (syntax + smoke + live arxiv) -> ITERASI (single pass) -> TRAINING (skip pipeline-only) -> REVIEW (+472 -0 clean) -> CATAT -> VALIDASI (cluster rank correct, MD valid) -> QA (security clean) -> CATAT (note 250)
+
+### Deployment notes (VPS next sync)
+- Add crontab: 0 0 * * 0 /opt/sidix/scripts/sidix_visioner_weekly.sh
+- On-demand: curl http://localhost:8765/visioner/weekly?synth=true
+- Production cron pertama akan jalan Sunday next week
+
+### Compound advantage timeline
++1 minggu = 1 report. +1 bulan = 4 reports + 40 tasks. +1 tahun = 52 reports + 520 tasks = corpus 6-12 bulan ahead of mainstream.
+
+### Next sprint queue
+- Sprint 13 DoRA persona (synthetic data dari weekly reports + CT lens Sprint 12)
+- Sprint 14 Creative pipeline (brief input dari visioner cluster)
+- Sprint 16-20 Intuisi/Wisdom layer

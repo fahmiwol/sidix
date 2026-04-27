@@ -1254,6 +1254,31 @@ def create_app() -> "FastAPI":
         )
         return result
 
+    # ── GET /visioner/weekly — Sprint 15: Weekly Democratic Foresight ─────────
+    @app.get("/visioner/weekly", tags=["Supermodel"])
+    def visioner_weekly(synth: bool = True, max_synth: int = 5):
+        """
+        Sprint 15 (note 248 line 346-360): proactive weekly trend scan +
+        5-persona democratic synthesis. Auto-populates research queue.
+
+        Args:
+          synth: jalankan 5-persona LLM synthesis (default True)
+          max_synth: cap LLM calls (default 5 cluster x 5 persona = 25 calls)
+
+        Returns: report metadata + clusters. Full markdown di .data/visioner_reports/.
+        """
+        _bump_metric("visioner_weekly")
+        try:
+            from .agent_visioner import weekly_foresight_report
+        except Exception as e:
+            raise HTTPException(status_code=503, detail=f"visioner unavailable: {e}")
+        try:
+            return weekly_foresight_report(
+                do_synth=synth, max_clusters_for_synth=max(1, min(max_synth, 8))
+            )
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"visioner failed: {e}")
+
     # ── GET /agent/orchestration ───────────────────────────────────────────────
     @app.get("/agent/orchestration")
     def agent_orchestration(q: str, persona: str = "UTZ"):
