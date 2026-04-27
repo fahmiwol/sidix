@@ -65,6 +65,30 @@ class IterationStep:
     creative_paths: dict[str, str] = field(default_factory=dict)
     rasa_paths: dict[str, str] = field(default_factory=dict)
     elapsed_ms: int = 0
+    creative_cache_hit: bool = False  # Sprint 22b: track cache reuse
+
+
+def _existing_creative_artifact(slug: str) -> Optional[dict[str, Any]]:
+    """Sprint 22b: check if creative_briefs/<slug>/ artifacts exist (compound
+    Sprint 20 smart cache pattern). Return summary dengan paths atau None."""
+    target = SIDIX_PATH / ".data" / "creative_briefs" / slug
+    report_md = target / "report.md"
+    metadata_json = target / "metadata.json"
+    if not (report_md.exists() and metadata_json.exists()):
+        return None
+    try:
+        meta = json.loads(metadata_json.read_text(encoding="utf-8"))
+        return {
+            "slug": slug,
+            "stages_count": len(meta.get("stages", [])),
+            "asset_prompts_count": len(meta.get("asset_prompts") or []),
+            "paths": {
+                "report": str(report_md),
+                "metadata": str(metadata_json),
+            },
+        }
+    except Exception:
+        return None
 
 
 def kitabah_iterate(
@@ -115,27 +139,40 @@ def kitabah_iterate(
         else:
             iter_brief = brief
 
-        # Step 1: Run creative
-        try:
-            creative_result = creative_brief_pipeline(
-                iter_brief,
-                # Slug akan beda tiap iter karena brief beda (kecuali iter 0)
-                persist=True,
-            )
-            creative_slug = creative_result.get("slug")
-            creative_paths = creative_result.get("paths", {})
-        except Exception as e:
-            history.append(IterationStep(
-                iteration=iteration + 1,
-                creative_slug="",
-                rasa_overall_score=None,
-                rasa_verdict=None,
-                top_priority_improvement=None,
-                elapsed_ms=int((_t.time() - t0) * 1000),
-                creative_paths={},
-                rasa_paths={},
-            ))
-            break
+        # Step 1: Run creative (Sprint 22b: cache reuse iter 1 kalau exists)
+        creative_cache_hit = False
+        if iteration == 0:
+            # Iter 1: try cache first (compound Sprint 20 smart caching)
+            cache_slug = _slugify(brief)  # original brief slug
+            cached = _existing_creative_artifact(cache_slug)
+            if cached:
+                creative_slug = cached["slug"]
+                creative_paths = cached["paths"]
+                creative_cache_hit = True
+        else:
+            cached = None
+
+        if not creative_cache_hit:
+            try:
+                creative_result = creative_brief_pipeline(
+                    iter_brief,
+                    persist=True,
+                )
+                creative_slug = creative_result.get("slug")
+                creative_paths = creative_result.get("paths", {})
+            except Exception as e:
+                history.append(IterationStep(
+                    iteration=iteration + 1,
+                    creative_slug="",
+                    rasa_overall_score=None,
+                    rasa_verdict=None,
+                    top_priority_improvement=None,
+                    elapsed_ms=int((_t.time() - t0) * 1000),
+                    creative_paths={},
+                    rasa_paths={},
+                    creative_cache_hit=False,
+                ))
+                break
 
         # Step 2: Run RASA
         try:
@@ -167,6 +204,7 @@ def kitabah_iterate(
             creative_paths=creative_paths,
             rasa_paths=rasa_paths,
             elapsed_ms=elapsed_ms,
+            creative_cache_hit=creative_cache_hit,
         )
         history.append(step)
 
@@ -247,16 +285,17 @@ def _render_summary_md(result: dict[str, Any]) -> str:
         "",
         "## Iteration History",
         "",
-        "| Iter | Slug | Overall Score | Verdict | Improvement |",
-        "|---|---|---|---|---|",
+        "| Iter | Cache | Slug | Overall Score | Verdict | Improvement |",
+        "|---|---|---|---|---|---|",
     ]
     for step in result.get("history", []):
         score = step.get("rasa_overall_score") or "—"
         verdict = step.get("rasa_verdict") or "—"
         imp = (step.get("top_priority_improvement") or "—")[:80]
         slug_short = (step.get("creative_slug") or "")[:40]
+        cache = "✅ hit" if step.get("creative_cache_hit") else "🔄 fresh"
         lines.append(
-            f"| {step.get('iteration','?')} | {slug_short} | {score}/5 | {verdict} | {imp} |"
+            f"| {step.get('iteration','?')} | {cache} | {slug_short} | {score}/5 | {verdict} | {imp} |"
         )
     lines.append("")
     best = result.get("best_iteration")
