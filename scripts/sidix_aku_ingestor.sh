@@ -235,19 +235,31 @@ if p.exists():
             except Exception:
                 pass
 
-# Decay daily (only on hourly tick — minute=0)
+# Decay daily + Synth hourly + Auto-resolve daily (Vol 23f)
 n_decayed = 0
 n_synth_merges = 0
+n_auto_resolved = 0
 now = datetime.now(timezone.utc)
 if now.minute < 10:  # within first 10 min of hour
     n_decayed = decay_old(days=30, threshold=0.5)
-    # Vol 23c: synthesis loop hourly (cluster duplicates, canonicalize)
+    # Vol 23c: synthesis loop hourly
     try:
         from brain_qa.inventory_memory import synthesize
         sresult = synthesize(dry_run=False)
         n_synth_merges = sresult.get("merges_applied", 0)
     except Exception as e:
         print(f"[synthesize error] {e}")
+    # Vol 23g: auto-resolve contradictions DAILY (only at hour 3 UTC = 10am WIB)
+    if now.hour == 3:
+        try:
+            from brain_qa.inventory_memory import auto_resolve_via_sanad
+            import asyncio as _ar
+            ares = _ar.run(auto_resolve_via_sanad(max_resolve=5, dry_run=False))
+            n_auto_resolved = ares.get("resolved", 0)
+            if ares.get("detected", 0) > 0:
+                print(f"[auto-resolve] detected={ares['detected']} resolved={n_auto_resolved}")
+        except Exception as e:
+            print(f"[auto-resolve error] {e}")
 
 total = n_shadow + n_class + n_pairs + n_tasks
 log_entry = {
@@ -260,6 +272,7 @@ log_entry = {
     "from_tasks": n_tasks,
     "decayed": n_decayed,
     "synth_merges": n_synth_merges,
+    "auto_resolved": n_auto_resolved,
     "stats_after": stats(),
 }
 
