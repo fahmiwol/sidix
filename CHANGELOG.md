@@ -1,3 +1,54 @@
+# [2.4.0] — 2026-04-27 late evening — Wisdom Layer + Risk Register Structured
+
+### Sprint 14g — Fix /openapi.json 500 (Pydantic forward-ref)
+- Move 3 inline classes (CouncilRequest, GenerateRequest, GenerateResponse) ke module top-level
+- Rename inline GenerateRequest → AgentGenerateRequest (avoid shadow)
+- /openapi.json: 500 → 200 OK (151KB, 270 paths)
+- /docs Swagger UI accessible
+- Convention locked: SEMUA Pydantic Request/Response wajib module top-level
+
+### Sprint 16 — Wisdom Layer MVP (5-persona judgment synthesizer)
+- Module baru: agent_wisdom.py (417 lines)
+- Pipeline 5-stage: UTZ aha → OOMAR impact → ABOO risk → ALEY speculation → AYMAN synthesis
+- Endpoint baru: POST /agent/wisdom
+- Visioner trending data hook (compound Sprint 14c pattern)
+- LIVE verified 131s 2-stage minimal scope, 0 blanket label (pivot 2026-04-25 aligned)
+- Per note 248 line 469 EXPLICIT mandate
+
+### Sprint 18 — Risk Register + Impact Map Structured JSON
+- ABOO + OOMAR prompts enhance dengan JSON block schema
+- _extract_json_block() robust parser (fenced + bare + graceful malformed)
+- wisdom_analyze return dict +structured field
+- Persist structured.json alongside report.md
+- LIVE verified 261.9s: 3 risk + 4 impact entries valid JSON
+- Iterasi #5 max_tokens 600 → 1100 (budget under-spec fix)
+- Per note 248 line 471 EXPLICIT mandate
+- Demo angle: prose + machine-parseable JSON dalam 1 LLM call
+
+### Notes baru
+- 256: /openapi.json fix Pydantic forward-ref
+- 257: Wisdom Layer MVP
+- 258: Risk Register + Impact Map structured
+
+### Iteration #5 (this version)
+Sprint 18 first probe: structured = {}, LLM JSON truncated mid-string at max_tokens=600. Diagnose by inspect prose ending. Fix: bump 600→1100. Pure budget config under-spec, BUKAN code logic bug.
+
+### Endpoints summary baru (cumulative)
+- POST /creative/brief (Sprint 14+14b+14c+14e)
+- GET /visioner/weekly (Sprint 15)
+- POST /agent/wisdom (Sprint 16+18)
+
+### Session metric (cumulative 2026-04-27 full day)
+- 10 sprint shipped (12, 14, 14b, 14c, 14e wiring, 14g, 15, 16, 18, discipline lock)
+- 5 iterasi total
+- 10 research notes baru (249-258)
+- 30+ commits to main
+- 0 credential introduced session-wise
+- Convention locked: Pre-Exec Alignment + Anti-halusinasi (CLAUDE.md 6.4) +
+  Pydantic top-level (Sprint 14g)
+
+---
+
 # [2.3.0] — 2026-04-27 evening — Discipline Lock + Sprint 14e 3D Wire
 
 ### CLAUDE.md 6.4 — Pre-Execution Alignment Check + Anti-Halusinasi rule (LOCK)
