@@ -203,6 +203,84 @@ def _aggregate_visioner_thisweek(target: date_type) -> dict[str, Any]:
     return out
 
 
+def _aggregate_wahdah_corpus_signal() -> dict[str, Any]:
+    """Sprint 24: WAHDAH corpus growth signal monitor (note 248 line 109).
+
+    MVP: count research_notes/, AKU inventory, training pairs (kalau ada).
+    Threshold detection: signal 'ready_for_lora_retrain' kalau growth indicators
+    exceed N. BUKAN actual LoRA trigger — itu defer pending Sprint 13 DoRA infra.
+
+    Self-learning trilogy completion (note 248 line 109-114):
+      - WAHDAH (this signal MVP): deep focus iteration trigger
+      - KITABAH (Sprint 22+22b): generation-test validation loop
+      - ODOA (Sprint 23): incremental innovation tracking
+    """
+    notes_dir = SIDIX_PATH / "brain" / "public" / "research_notes"
+    aku_inventory = DATA_DIR / "aku_inventory.jsonl"
+    training_pairs = DATA_DIR / "training" / "lora_pairs.jsonl"
+
+    notes_count = 0
+    if notes_dir.exists():
+        try:
+            notes_count = len([f for f in notes_dir.iterdir()
+                              if f.is_file() and f.suffix == ".md"])
+        except Exception:
+            pass
+
+    aku_entries = 0
+    if aku_inventory.exists():
+        try:
+            with open(aku_inventory, encoding="utf-8") as f:
+                aku_entries = sum(1 for _ in f)
+        except Exception:
+            pass
+
+    training_pairs_count = 0
+    if training_pairs.exists():
+        try:
+            with open(training_pairs, encoding="utf-8") as f:
+                training_pairs_count = sum(1 for _ in f)
+        except Exception:
+            pass
+
+    # Threshold heuristic (per note 248 spirit — corpus 6-12 bulan ahead):
+    # - 250+ notes = substantial corpus
+    # - 100+ AKU entries = memory mature
+    # - 1000+ training pairs = enough untuk LoRA retrain (per HF guidelines)
+    NOTES_THRESHOLD = 250
+    AKU_THRESHOLD = 100
+    PAIRS_THRESHOLD = 1000
+
+    signals = {
+        "corpus_notes_ready": notes_count >= NOTES_THRESHOLD,
+        "aku_memory_ready": aku_entries >= AKU_THRESHOLD,
+        "training_pairs_ready": training_pairs_count >= PAIRS_THRESHOLD,
+    }
+    ready_count = sum(signals.values())
+
+    # Composite signal: 2 dari 3 = "approaching", 3 dari 3 = "ready_for_lora_retrain"
+    if ready_count >= 3:
+        composite = "ready_for_lora_retrain"
+    elif ready_count == 2:
+        composite = "approaching_threshold"
+    else:
+        composite = "growing"
+
+    return {
+        "notes_count": notes_count,
+        "aku_entries": aku_entries,
+        "training_pairs_count": training_pairs_count,
+        "thresholds": {
+            "notes": NOTES_THRESHOLD,
+            "aku": AKU_THRESHOLD,
+            "pairs": PAIRS_THRESHOLD,
+        },
+        "signals": signals,
+        "composite_signal": composite,
+        "ready_count": f"{ready_count}/3",
+    }
+
+
 def _aggregate_research_queue(target: date_type) -> dict[str, Any]:
     """Count research queue entries dari target date."""
     out: dict[str, Any] = {"count": 0, "topics": []}
@@ -269,6 +347,7 @@ def odoa_daily(
         "kitabah_loops": _aggregate_kitabah(target),
         "visioner_thisweek": _aggregate_visioner_thisweek(target),
         "research_queue_today": _aggregate_research_queue(target),
+        "wahdah_corpus_signal": _aggregate_wahdah_corpus_signal(),  # Sprint 24
     }
 
     # Compute headline summary
@@ -294,7 +373,12 @@ def odoa_daily(
         f"- Integrated bundles: {metrics['integrated_reports']['count']}\n"
         f"- KITABAH loops: {metrics['kitabah_loops']['count']} runs, {metrics['kitabah_loops']['iterations_total']} iterations total\n"
         f"- Visioner this week ({metrics['visioner_thisweek']['week']}): {'available' if metrics['visioner_thisweek']['report_exists'] else 'not yet'}\n"
-        f"- Research queue today: {metrics['research_queue_today']['count']} new tasks\n\n"
+        f"- Research queue today: {metrics['research_queue_today']['count']} new tasks\n"
+        f"- WAHDAH corpus signal: {metrics['wahdah_corpus_signal']['composite_signal']} "
+        f"({metrics['wahdah_corpus_signal']['ready_count']} indicators) — "
+        f"{metrics['wahdah_corpus_signal']['notes_count']} notes, "
+        f"{metrics['wahdah_corpus_signal']['aku_entries']} AKU, "
+        f"{metrics['wahdah_corpus_signal']['training_pairs_count']} training pairs\n\n"
         f"TOTAL artifacts created: {total_artifacts}\n\n"
         f"Tulis ODOA narrative hangat 5-7 kalimat."
     )
@@ -372,6 +456,14 @@ def _render_report_md(r: dict[str, Any]) -> str:
         f"- **Visioner week** {m['visioner_thisweek']['week']}: {'✅ available' if m['visioner_thisweek']['report_exists'] else '⏸ not yet'}",
         f"- **Research queue today**: {m['research_queue_today']['count']} new tasks",
         f"  - Topics: {', '.join(m['research_queue_today']['topics'][:5])}{'...' if len(m['research_queue_today']['topics']) > 5 else ''}" if m['research_queue_today']['topics'] else "  - (none today)",
+        "",
+        "### 🧬 WAHDAH Corpus Signal (Sprint 24 — note 248 line 109)",
+        f"- **Composite signal**: `{m['wahdah_corpus_signal']['composite_signal']}` ({m['wahdah_corpus_signal']['ready_count']} indicators)",
+        f"- **Research notes**: {m['wahdah_corpus_signal']['notes_count']} (threshold {m['wahdah_corpus_signal']['thresholds']['notes']}) {'✅' if m['wahdah_corpus_signal']['signals']['corpus_notes_ready'] else '⏸'}",
+        f"- **AKU memory entries**: {m['wahdah_corpus_signal']['aku_entries']} (threshold {m['wahdah_corpus_signal']['thresholds']['aku']}) {'✅' if m['wahdah_corpus_signal']['signals']['aku_memory_ready'] else '⏸'}",
+        f"- **Training pairs**: {m['wahdah_corpus_signal']['training_pairs_count']} (threshold {m['wahdah_corpus_signal']['thresholds']['pairs']}) {'✅' if m['wahdah_corpus_signal']['signals']['training_pairs_ready'] else '⏸'}",
+        "",
+        "_WAHDAH protocol_: signal MVP saja (Sprint 24). Actual LoRA retrain trigger _defer_ pending Sprint 13 DoRA infrastructure._",
         "",
         "---",
         "",

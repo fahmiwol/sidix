@@ -11522,3 +11522,35 @@ CATAT (Pre-Exec Alignment cite) -> IMPL -> TESTING (4/4 offline pass) -> ITERASI
 12, 14, 14b, 14c, 14d, 14e wiring, 14f, 14g, 15, 16, 18, 19, 20, 21, 22 wiring, 22b, 23 + discipline lock = SIDIX = production AI partner advisor + multi-modal + self-critique (RASA) + self-iterate (KITABAH) + self-aware tracking (ODOA).
 
 Embodiment: 11/15 organs (73%) + 2/3 self-learning protocols.
+
+
+---
+
+## 2026-04-28 — Sprint 24 START — WAHDAH Trigger Monitor + ODOA Cron Auto-populate
+
+### Pre-Execution Alignment Check (per CLAUDE.md 6.4)
+- Note 248 line 109 EXPLICIT (trilogy lengkap):
+  WAHDAH = deep focus iteration (training berulang)
+- MVP scope: corpus growth threshold monitor sebagai signal/trigger,
+  BUKAN actual LoRA trigger yet (defer with Sprint 13 DoRA infrastructure)
+- Compound Sprint 23 ODOA: tambah wahdah_signal field di metrics + cron 23:00 daily
+- 10 hard rules: own data, no vendor ✓
+- Anti-halusinasi: corpus size = filesystem ground truth ✓
+- Budget: cron daily = 1 LLM call/day, low burn ✓
+- Verdict: PROCEED
+
+### Scope MVP
+- Modify agent_odoa.py: tambah _aggregate_wahdah_corpus_signal()
+  - Count research_notes/ files
+  - Count AKU inventory entries (kalau ada di .data/)
+  - Count training pairs (kalau ada generated dari corpus_to_training)
+  - Threshold detection: signal "ready_for_lora_retrain" kalau growth > N
+- Cron VPS entry: 0 23 * * * curl /agent/odoa?persist=true
+- Daily autonomous self-tracking compound dengan visioner Sunday cron
+
+### Self-learning trilogy completion target
+- WAHDAH: signal MVP (corpus monitor) — Sprint 24 ini
+- KITABAH: shipped Sprint 22+22b ✓
+- ODOA: shipped Sprint 23 + cron deployment Sprint 24 ini
+
+= 3/3 protocols touched (1 actual training trigger DEFER pending GPU+LoRA infra).
