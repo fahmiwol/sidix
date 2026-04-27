@@ -505,6 +505,21 @@ class WisdomRequest(BaseModel):
     persist: bool = True
 
 
+class IntegratedRequest(BaseModel):
+    """Sprint 20 — Integrated Wisdom Output Mode request.
+
+    Per note 248 line 473 EXPLICIT: combine creative + wisdom dalam 1 unified call.
+    Smart caching: reuse existing creative_briefs/<slug>/ kalau exist.
+    """
+    brief: str
+    context: Optional[str] = None
+    force_regen: bool = False
+    creative_skip_stages: Optional[list[str]] = None
+    wisdom_skip_capabilities: Optional[list[str]] = None
+    enrich_personas: Optional[list[str]] = None
+    persist: bool = True
+
+
 class WhitelistAddRequest(BaseModel):
     """Tambahkan email atau user_id ke whitelist (admin only)."""
     email: Optional[str] = None
@@ -1328,6 +1343,37 @@ def create_app() -> "FastAPI":
             )
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"visioner failed: {e}")
+
+    # ── POST /agent/integrated — Sprint 20: Integrated Wisdom Output Mode ────
+    @app.post("/agent/integrated", tags=["Supermodel"])
+    def agent_integrated(req: IntegratedRequest, request: Request):
+        """
+        Sprint 20 (note 248 line 473): integrated creative + wisdom dalam 1 unified call.
+        Smart caching reuse existing creative_briefs/<slug>/ untuk hemat budget.
+        """
+        _enforce_rate(request)
+        _enforce_daily(request)
+        _bump_metric("agent_integrated")
+        if not (req.brief or "").strip():
+            raise HTTPException(status_code=400, detail="brief kosong")
+        try:
+            from .agent_integrated import integrated_analysis
+        except Exception as e:
+            raise HTTPException(status_code=503, detail=f"agent_integrated unavailable: {e}")
+        try:
+            return integrated_analysis(
+                req.brief,
+                context=req.context,
+                force_regen=req.force_regen,
+                creative_skip_stages=req.creative_skip_stages,
+                wisdom_skip_capabilities=req.wisdom_skip_capabilities,
+                enrich_personas=req.enrich_personas,
+                persist=req.persist,
+            )
+        except ValueError as e:
+            raise HTTPException(status_code=400, detail=str(e))
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"integrated failed: {e}")
 
     # ── POST /agent/wisdom — Sprint 16: Wisdom Layer MVP ─────────────────────
     @app.post("/agent/wisdom", tags=["Supermodel"])

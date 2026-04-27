@@ -11123,3 +11123,37 @@ CATAT (start, Pre-Exec Alignment cite eksplisit note 248 line 50 + schema verify
 ### Pre-Sprint-20 CHECKPOINT
 Konsolidasi context selesai. State preserved untuk usage-limit safety.
 Lanjut Sprint 20 (Integrated Wisdom Output Mode) per Pre-Exec Alignment Check.
+
+
+---
+
+## 2026-04-27 ENDGAME — Sprint 20 START — Integrated Wisdom Output Mode
+
+### Pre-Execution Alignment Check (per CLAUDE.md 6.4)
+- Note 248 line 473 EXPLICIT MANDATED: "Sprint 20: Integrated wisdom output mode"
+- Pivot 2026-04-25: orchestrator endpoint, no persona prompt change → no conflict
+- 10 hard rules: own LLM, 5 persona reinforce, MIT, self-hosted ✓
+- Anti-halusinasi: orchestrator call existing endpoints, no new claim generation
+- Budget consciousness: MVP scope dengan smart caching (reuse existing artifacts)
+- Verdict: PROCEED
+
+### Scope MVP smart-caching
+- File baru: agent_integrated.py
+- Function: integrated_analysis(brief_or_topic, ...) → orchestrate creative + wisdom
+- Strategy:
+  - Slugify input → cek .data/creative_briefs/<slug>/report.md exists?
+    YES → reuse (skip creative re-generate)
+    NO → call creative_brief_pipeline (full atau partial via skip_stages)
+  - Always call wisdom_analyze (judgment fresh per topic + context dari creative result)
+  - Bundle ke unified report.md + comprehensive metadata.json
+- Endpoint: POST /agent/integrated
+- Output: .data/integrated_reports/<slug>/comprehensive_report.md + bundle.json
+
+### Why smart caching
+Worst-case Sprint 20 = 15 LLM calls + 5 GPU calls per request. Budget USD 24. Smart caching = reuse existing artifact files (creative_briefs sudah generated) untuk hemat budget tanpa lose value.
+
+### Demo angle
+1 endpoint POST /agent/integrated dengan brief → comprehensive consultation report (creative artifact + wisdom judgment + visioner trend + structured JSON). Customer paste 1 deliverable.
+
+### File budget hour
+agent_integrated.py orchestrator (smart cache + unified bundling) = 1-2 jam single session. Effort fits sustainable.
