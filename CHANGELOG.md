@@ -1,3 +1,40 @@
+# [2.3.0] — 2026-04-27 evening — Discipline Lock + Sprint 14e 3D Wire
+
+### CLAUDE.md 6.4 — Pre-Execution Alignment Check + Anti-Halusinasi rule (LOCK)
+- Mandatory check before edit prompt/persona: re-read note 248 + grep latest pivot
+- IF instruction conflict dengan pivot terbaru → STOP, kasih remark, jangan execute
+- Anti-halusinasi: setiap claim wajib basis konkret (cite file/line/output), bukan asumsi/memory lama
+- User directive 2026-04-27 evening setelah catch alignment gap di Sprint 14c
+
+### Iterasi #3 — ALEY system prompt pivot 2026-04-25 alignment fix
+- User-caught: ALEY output [SPEKULASI] tag per bullet melanggar pivot 2026-04-25
+- Fix shipped (commit f4d3447): explicit anti-blanket instruction, natural language hedging
+- LIVE re-verified: 0 blanket labels, voice natural mengalir
+- Note 254 dokumentasi full (familiarity bias trap + self-audit checklist)
+
+### Sprint 14e — 3D Mascot via TripoSR (image-to-3D)
+- generate_3d_from_image() di runpod_media.py
+- Pipeline gen_3d flag (opt-in), depend on hero_mascot.png Sprint 14b
+- Output: GLB/OBJ/FBX mesh ke .data/creative_briefs/<slug>/3d/
+- Hero use-case dari note 248 line 178-198 sekarang 100% covered (code path)
+- ⚠️ LIVE end-to-end NOT verified: 2 probe attempts CLIENT_TIMEOUT (302s + 601s)
+  IN_QUEUE → infrastructure issue (RunPod GPU supply throttle, TripoSR cold
+  start lebih heavy dari SDXL), BUKAN code issue
+- Note 255 dokumentasi full (alignment check + design rationale)
+
+### Auto-memory feedback saved
+- C:/Users/ASUS/.claude/projects/C--SIDIX-AI/memory/feedback_pre_exec_alignment.md
+- Persistent across sessions: pre-exec alignment + anti-halusinasi rules
+
+### Session metric (cumulative 2026-04-27)
+- 7 sprint shipped (12 + 14 + 14b + 14c + 14e + 15 + discipline lock)
+- 4 iterasi (Pydantic body, async polling, ALEY alignment, TripoSR timeout)
+- 7 research notes baru (249-255)
+- 21+ commits to main
+- 0 credential introduced session-wise
+
+---
+
 # [2.2.0] — 2026-04-27 — Creative Agent Stack + Visioner Foresight (Sprint 12+14+14b+14c+15)
 
 ### Sprint 12 — CT 4-Pilar Cognitive Engine

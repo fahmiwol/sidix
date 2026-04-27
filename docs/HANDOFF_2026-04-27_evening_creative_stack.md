@@ -21,19 +21,37 @@ NOT chatbot/Q&A/religious AI/generic LLM. Direction LOCKED.
 ## WHAT SHIPPED THIS SESSION (2026-04-27)
 
 ```
-Sprint 12  — CT 4-pilar cognitive engine in system prompts
-Sprint 15  — Visioner Weekly Democratic Foresight (autonomous cron)
-Sprint 14  — Creative Pipeline 5-stage hero use-case (UTZ)
-Sprint 14b — RunPod mighan-media-worker image gen wire (SDXL hero asset)
-Sprint 14c — Multi-persona post-pipeline enrichment (OOMAR + ALEY)
+Sprint 12   — CT 4-pilar cognitive engine in system prompts ✅ LIVE
+Sprint 15   — Visioner Weekly Democratic Foresight (autonomous cron) ✅ LIVE
+Sprint 14   — Creative Pipeline 5-stage hero use-case (UTZ) ✅ LIVE
+Sprint 14b  — RunPod mighan-media-worker image gen wire (SDXL hero asset) ✅ LIVE 637KB PNG
+Sprint 14c  — Multi-persona post-pipeline enrichment (OOMAR + ALEY) ✅ LIVE 0 blanket
+Sprint 14e  — 3D mascot via TripoSR (image-to-3D) ⚠️  WIRING ONLY (LIVE pending GPU)
+DISCIPLINE  — CLAUDE.md 6.4 Pre-Exec Alignment + Anti-halusinasi LOCK
 ```
 
 Plus:
-- Deploy 12+15 to VPS sync
+- Deploy 12+15 + 14 + 14b + 14c + 14e to VPS sync
 - Iterasi #1 Pydantic body fix (Sprint 14)
 - Iterasi #2 async /run polling (Sprint 14b)
+- Iterasi #3 ALEY pivot 2026-04-25 alignment fix (USER-CAUGHT)
+- Iterasi #4 TripoSR timeout bump 300→600 (gagal — infrastructure not code)
 - QA pass + .gitignore patch runtime output
-- CHANGELOG bumped: 2.1.5 → 2.2.0
+- CHANGELOG bumped: 2.1.5 → 2.2.0 → 2.3.0
+
+## SPRINT 14e LIVE STATUS — IMPORTANT (honest, anti-halusinasi)
+
+Wiring shipped + schema-verified + deploy. **TIDAK LIVE-verified** karena:
+- 2 probe attempts (302s + 601s) → CLIENT_TIMEOUT, last_status=IN_QUEUE
+- mighan-media-worker GPU supply throttled (per RunPod console warning)
+- TripoSR cold start lebih heavy dari SDXL
+- BUKAN code issue, infrastructure eksternal
+
+Untuk verify LIVE next session:
+1. Cek RunPod console workers state — apakah idle/throttled
+2. Test endpoint via console UI direct (bypass code, isolate worker)
+3. Atau retry probe via SSH+python kalau GPU supply improve
+4. Future Sprint 14f: wire `mode=shape` (Shap-E text-to-3D) sebagai fallback yang mungkin lebih ringan
 
 ## ENDPOINTS LIVE
 
