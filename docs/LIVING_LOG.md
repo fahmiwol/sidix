@@ -9579,3 +9579,49 @@ provider keys later for latency/quality optimization.
 
 ### Final Provider Count
 12 native adapters + OpenRouter universal gateway = effective access to 200+ models.
+
+
+---
+
+## 2026-04-27 dawn — JURUS 1000 BAYANGAN + SIDIX CONSTITUTION
+
+### Multi-Agent Pool (Vol 25 MVP — sesuai Naruto canon)
+- shadow_pool.py: 8 specialized shadows + ChakraBudget + Experience Transfer
+- Per Kage Bunshin canon: chakra split, korporeal, transfer pengalaman
+- 30-task queue pre-seeded
+- sidix_worker.sh cron */10 min
+
+### Constitution (NEW: docs/SIDIX_CONSTITUTION.md)
+12 sections governance + safety:
+1. Identity
+2. Boundaries (HARD: never touch /www/, other PM2 apps, /etc/, etc)
+3. Learning Framework (5 modules + sanad consensus + curriculum)
+4. Documentation Standards (where to write what)
+5. Decision Framework (6 action tiers)
+6. Self-Modification Rules (what SIDIX may/may not modify)
+7. Resource Governance (chakra budget)
+8. Privacy + Security (identity mask + no credential leak)
+9. Experimentation Rules (sandbox discipline)
+10. Amendment Process (only owner can amend)
+11. Operational Wisdom (heuristics)
+12. Sign-Off + Quick Reference Card
+
+CRITICAL safety: SIDIX MAY NEVER touch /www/wwwroot/* (other websites
+on same VPS), /etc/, or other PM2 apps (abra-website, ixonomic-*,
+mighan-ops, etc). Only own /opt/sidix/ tree.
+
+### Final Cron Schedule (4 jobs autonomous 24/7)
+- */10 worker.sh    (drains 30-task queue, dispatches to shadow_pool)
+- */15 always_on.sh (git observer + mini growth)
+- */30 radar.sh     (Google News + Reddit + GitHub mention)
+- 0    classroom.sh (multi-teacher consensus learning)
+
+### Total Provider Pool: 12 LLM teachers
+groq, gemini, vertex, kimi, openrouter, together, hf, cloudflare,
+deepseek, mistral, cohere, ownpod (canonical SIDIX LoRA)
+
+### Tools Installed
+- HYPERX Browser /opt/sidix/tools/hyperx-browser/ (28KB Node.js)
+- Kimi Code CLI ~/.local/bin/kimi (v1.39.0)
+
+### Files Output (notes 235-247 + constitution + 7 docs + 7 scripts + 8 modules)
