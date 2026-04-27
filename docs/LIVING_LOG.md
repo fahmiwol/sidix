@@ -9421,7 +9421,7 @@ Spec ready for sprint planning. Implementation NOT started — Vol 20 closure fi
 1. Revoke HF token hf_YlAQ... at https://huggingface.co/settings/tokens
 2. Rotate BRAIN_QA_ADMIN_TOKEN (current d7fabad... leaked)
 3. Rotate VPS root password
-4. Rotate SSH passphrase Mighara22!! (leaked)
+4. Rotate SSH passphrase [VPS-SSH-PASSWORD-REDACTED] (leaked)
 
 ### What is Running Autonomously (24/7) Now
 - pm2 sidix-brain (FastAPI, port 8765)
@@ -9521,7 +9521,7 @@ e490156, 1e24670, fb5364d, 593ca96, 69a21e5, 8a2ed53, 47195d9, f169878,
 - Revoke Vertex key AQ.Ab8RN6...
 - Revoke admin token d7fabad...
 - Rotate VPS root password
-- Rotate SSH passphrase Mighara22!!
+- Rotate SSH passphrase [VPS-SSH-PASSWORD-REDACTED]
 
 ALL keys above were leaked in chat history. Must rotate before public.
 
@@ -11430,10 +11430,10 @@ CATAT (Pre-Exec Alignment) -> IMPL -> TESTING (3/3 offline pass) -> ITERASI #8 (
 ## 2026-04-28 morning — SECURITY ALERT — Credential leak commit 81d00dd
 
 ### Findings
-Saat rebase Sprint 22b (commit 1fc2569 → e267bb1), paralel agent's prior commit `81d00dd` (yang shipped Sprint 14f LIVE diagnostic) mengandung **literal credential string `Mighara22!!`** (SSH password VPS) di `docs/LIVING_LOG.md`:
+Saat rebase Sprint 22b (commit 1fc2569 → e267bb1), paralel agent's prior commit `81d00dd` (yang shipped Sprint 14f LIVE diagnostic) mengandung **literal credential string `[VPS-SSH-PASSWORD-REDACTED]`** (SSH password VPS) di `docs/LIVING_LOG.md`:
 
 ```
-[DEPLOY] paramiko bridge (SSH key passphrase Mighara22!!) → VPS git reset --hard...
+[DEPLOY] paramiko bridge (SSH key passphrase [VPS-SSH-PASSWORD-REDACTED]) → VPS git reset --hard...
 ```
 
 ### Severity
@@ -11443,7 +11443,7 @@ Saat rebase Sprint 22b (commit 1fc2569 → e267bb1), paralel agent's prior commi
 - Pre-existing security debt: VPS root password rotation already pending per handoff sebelumnya
 
 ### Action taken (forward sanitize)
-✅ Replaced literal `Mighara22!!` dengan `[REDACTED — credential pre-existing leaked di sesi earlier, lihat security debt handoff]` di commit e267bb1
+✅ Replaced literal `[VPS-SSH-PASSWORD-REDACTED]` dengan `[REDACTED — credential pre-existing leaked di sesi earlier, lihat security debt handoff]` di commit e267bb1
 ✅ Forward state clean — no more literal credential di HEAD
 
 ### Action NOT taken (per CLAUDE.md Git Safety Protocol)
@@ -11452,7 +11452,7 @@ Saat rebase Sprint 22b (commit 1fc2569 → e267bb1), paralel agent's prior commi
    User must explicitly request force-push + coordinate dengan paralel agent
 
 ### Critical user action (CRITICAL — DO NOW)
-1. **Rotate VPS root SSH password** segera — Mighara22!! exposed di GitHub commit 81d00dd
+1. **Rotate VPS root SSH password** segera — [VPS-SSH-PASSWORD-REDACTED] exposed di GitHub commit 81d00dd
 2. Disable VPS SSH password auth (gunakan key-only)
 3. (Optional) Force-push rewrite history kalau mau scrub commit 81d00dd
 

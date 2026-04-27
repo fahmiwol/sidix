@@ -150,7 +150,7 @@ Verifikasi sebelum batch test high-cost: cek RunPod console.
 
 ```
 🚨 URGENT (commit 81d00dd 2026-04-28 leak):
-   Rotate VPS root password "Mighara22!!" SEGERA — paralel agent leak ke
+   Rotate VPS root password "[VPS-SSH-PASSWORD-REDACTED]" SEGERA — paralel agent leak ke
    GitHub history saat Sprint 14f LIVE diagnostic. Sanitized forward (commit
    e267bb1) tapi history commit 81d00dd tetap exposed.
    Action: rotate password + disable VPS SSH password auth (key-only).
