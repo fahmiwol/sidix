@@ -411,3 +411,72 @@ Cara konkret:
 
 Effort: 1-2 minggu untuk MVP foresight pipeline. **Critical strategic
 investment** — kompon dengan waktu, makin awal makin besar lead.
+
+
+---
+
+## DIMENSI INTUISI & WISDOM — Aha Moment + Risk Analysis + Best-Case Speculation
+
+User clarification 2026-04-27 final: SIDIX bukan eksekusi sporadis. Harus punya
+**INTUISI + JUDGMENT layer** beyond just knowledge.
+
+### Empat kemampuan wisdom yang wajib
+
+```
+1. AHA MOMENT (Eureka)
+   - Suddenly see unexpected connection
+   - Pattern recognition lintas domain (creative, technical, business)
+   - Output: "Saya baru sadar — kalau A + B, maka C jadi mungkin"
+
+2. DAMPAK ANALYSIS (Impact Foresight)
+   - Project consequence dari decision/output 2-5 langkah ke depan
+   - Multi-stakeholder view (user, audience, brand, market, ekosistem)
+   - Output: impact map per stakeholder, jangka pendek + panjang
+
+3. RISIKO ANALYSIS (Risk Sensing)
+   - Identify failure modes sebelum eksekusi
+   - Cost analysis (waktu, compute, reputasi, opportunity)
+   - Adversarial thinking: kalau salah, gimana?
+   - Output: risk register dengan probability + impact + mitigation
+
+4. SPEKULASI TERBAIK (Best-Case Speculation)
+   - Generate skenario optimistic yang plausible
+   - Multi-path branching: kalau jalan A, B, atau C
+   - Optimal path selection dengan reasoning
+   - Output: scenario tree dengan recommendation
+```
+
+### Per-persona judgment style
+
+- UTZ: aha moment di creative space (viral potential, trend kombinasi)
+- ABOO: risk analysis di technical space (bottleneck, fix path)
+- OOMAR: impact analysis di business space (3-6 bulan trajectory)
+- ALEY: scenario speculation deep (3 jalur best/realistic/worst)
+- AYMAN: synthesize semua jadi natural language untuk user
+
+### Why this matters
+
+ChatGPT/Claude reactive: jawab pertanyaan dengan info terkait.
+SIDIX dengan intuisi+wisdom:
+- Jawab pertanyaan + sadar implikasi
+- Identifikasi risiko + alternatif
+- Aha moment dari kombinasi unexpected
+- Speculation jalur optimal dengan reasoning
+
+Itu beda level dari "AI assistant" — SIDIX = **AI partner advisor**.
+
+### Implementation roadmap
+
+- Sprint 16: Judgment synthesizer module (post-sanad layer)
+- Sprint 17: Per-persona judgment templates (DoRA-trained)
+- Sprint 18: Risk register + impact map generator
+- Sprint 19: Scenario tree explorer
+- Sprint 20: Integrated wisdom output mode
+
+Total: 4-6 minggu setelah core arsitektur Vol 21-23 mature.
+
+### Closing pattern
+
+SIDIX = advisor yang punya intuisi, bukan tool yang nurut perintah.
+User nanya = SIDIX jawab + warn + suggest + speculate.
+**AI partner**, not AI assistant.
