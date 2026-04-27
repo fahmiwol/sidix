@@ -10207,3 +10207,80 @@ For each sprint:
 - Cron: 5 jobs healthy
 - Production: app.sidixlab.com responsive
 - Tests: 7 distinct paths verified working
+
+
+---
+
+## 2026-04-27 morning — VOL 23g SHIPPED ✅ Auto-resolve daily cron — Vol 23 family CLOSED
+
+### Vol 23g what ships
+sidix_aku_ingestor.sh now schedules:
+- Every 10 min: ingest new entries
+- Every hour (minute<10): synth + decay
+- Every day at 03:00 UTC (10:00 WIB): auto-resolve via fresh sanad
+
+Vol 23 family complete + fully autonomous (no human intervention needed).
+
+### Production verified LIVE
+- VPS commit: 7894d49 (latest)
+- pm2 sidix-brain: online
+- 5 SIDIX cron jobs healthy + many existing cron (warmup_runpod, synthetic batch, etc)
+- Inventory: 8 AKU total, 7 active, avg_conf 0.679
+- Test: simple_bypass + inventory_l0 + sanad_fanout all firing in production
+
+### User can test live di app.sidixlab.com
+- halo               → simple_bypass (1-2s)
+- siapa presiden     → inventory_l0 hit AKU memory
+- apa itu LoRA       → inventory_l0 hit
+- jelaskan ReAct     → inventory_l0 hit
+- novel coding       → sanad_fanout (3-branch, 4-8s)
+- novel current evt  → wiki+brave fastpath (4-5s)
+
+### 9-Sprint count this morning
+1. Vol 23 MVP    ✅
+2. Vol 23b       ✅
+3. Vol 23c       ✅
+4. Vol 21 wire   ✅
+5. Vol 23d       ✅
+6. Vol 22        ✅
+7. Vol 23e       ✅
+8. Vol 23f       ✅
+9. Vol 23g       ✅ (just shipped)
+
+### Vol 23 family LIFECYCLE COMPLETE
+INGEST    → cron */10 (worker + ingestor)
+REINFORCE → on duplicate ingest (conf climbs)
+SYNTH     → hourly (cluster + canonical merge)
+DECAY     → hourly (age low-conf >30d)
+DETECT    → on demand (contradiction pairs)
+RESOLVE   → daily 03:00 UTC (fresh sanad re-validation)
+
+= Self-maintaining knowledge graph 24/7 zero human touch.
+
+### Mandatory loop verified per sprint (all 9)
+✅ CATAT → TESTING → ITERASI → REVIEW → CATAT → VALIDASI → QA → CATAT
+
+### Sprint pending (next session candidates)
+- Vol 24a Lite browser polish (SearxNG self-host)
+- Vol 24b SDXL multimodal endpoint
+- Vol 26 Skill cloning (12 days)
+- LLM perplexity-based iter
+
+### Production routing FINAL (8 layers)
+1. Inventory L0 (BM25 + BGE-M3 hybrid)
+2. Cache L1 + L2
+3. Simple bypass
+4. SANAD fan-out (LLM + wiki + corpus + iter + contradict)
+5. Knowledge bypass
+6. Current events
+7. Tadabbur swap
+8. ReAct
+
+### Status snapshot
+- 9 sprints shipped this morning
+- 13 research notes + 1 Constitution
+- 7 modules + 5 cron scripts
+- 5 SIDIX cron jobs + many production cron
+- 8 AKU active growing
+- 0 contradictions detected (clean state)
+- Visi alignment: BEBAS & TUMBUH = OPERASIONAL
