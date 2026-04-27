@@ -10391,3 +10391,23 @@ CATAT -> TESTING (syntax + smoke + live arxiv) -> ITERASI (single pass) -> TRAIN
 - Sprint 13 DoRA persona (synthetic data dari weekly reports + CT lens Sprint 12)
 - Sprint 14 Creative pipeline (brief input dari visioner cluster)
 - Sprint 16-20 Intuisi/Wisdom layer
+
+### Sprint 12 + 15 DEPLOYED to production ✅ — 2026-04-27 sesi-baru
+
+- VPS: 7ba8117 → 6277e24 (5 commits pulled clean)
+- pm2 sidix-brain restart → online, /health 200, model_ready=True
+- Sprint 12 verified live: CT 4-pilar (DEKOMPOSISI/PATTERN RECOGNITION/ABSTRAKSI/ALGORITMA + Lens UTZ) present di prompt UTZ/creative/ahli (6375 chars)
+- Sprint 15 verified live: GET /visioner/weekly returned 22 real signals scanned (arxiv + HN), 8 clusters found, top emerging = agent/generative/lora/persona/creative
+- Cron installed: 0 0 * * 0 SIDIX_PATH=/opt/sidix /opt/sidix/scripts/sidix_visioner_weekly.sh
+- Total SIDIX cron jobs: 6 (worker, ingestor, always_on, radar, classroom, visioner)
+- Public endpoint ctrl.sidixlab.com responding /health 200 + /visioner/weekly live
+- app.sidixlab.com landing 200 OK
+- First emerging signals captured: AI agents (5 mentions), generative diffusion (6 arxiv), lora/persona/creative trends
+
+### Compound clock STARTED
+- Visioner weekly cron: first run Sunday 2026-W19 (next Sunday)
+- Manual run today populated baseline 22 signals, 8 clusters, 8 queue tasks
+- Compound timeline now active: +1 minggu = +1 report, +1 tahun = 52 reports + 520 emerging-topic research tasks
+
+### Mandatory loop verified (deploy)
+CATAT (intent) → TESTING (SSH connect via existing key) → ITERASI (none needed) → REVIEW (pm2 status check) → CATAT → VALIDASI (CT wired + endpoint live + cron registered) → QA (no secrets in commits) → CATAT (this entry)
