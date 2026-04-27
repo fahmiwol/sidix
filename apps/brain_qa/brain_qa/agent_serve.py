@@ -458,6 +458,38 @@ class CreativeBriefRequest(BaseModel):
     enrich_personas: Optional[list[str]] = None  # default ["OOMAR","ALEY"], [] to disable
 
 
+class CouncilRequest(BaseModel):
+    """Multi-Agent Council (MoA-lite) reasoning request.
+
+    Sprint 14g (2026-04-27 evening fix): moved from inline (inside create_app())
+    to module top-level so Pydantic 2.13 can resolve forward reference for
+    /openapi.json schema generation. Same pattern as Sprint 14b iterasi #1
+    fix for CreativeBriefRequest.
+    """
+    question: str
+    personas: Optional[list[str]] = None
+    allow_restricted: bool = False
+
+
+class AgentGenerateRequest(BaseModel):
+    """Sprint 14g — moved from inline to top-level for Pydantic 2.13 compat.
+
+    Endpoint /agent/generate — pure general chat tanpa ReAct overhead, direct
+    Ollama/local_llm generation dengan persona hint.
+    """
+    prompt: str
+    persona: str = "UTZ"
+    max_tokens: int = 600
+    temperature: float = 0.7
+
+
+class AgentGenerateResponse(BaseModel):
+    """Sprint 14g — companion response for /agent/generate."""
+    text: str
+    mode: str  # "ollama" | "local_lora" | "mock"
+    persona: str
+
+
 class WhitelistAddRequest(BaseModel):
     """Tambahkan email atau user_id ke whitelist (admin only)."""
     email: Optional[str] = None
@@ -763,11 +795,8 @@ def create_app() -> "FastAPI":
             "senses": probe_all()
         }
 
-    class CouncilRequest(BaseModel):
-        question: str
-        personas: list[str] | None = None
-        allow_restricted: bool = False
-
+    # Sprint 14g: CouncilRequest moved to module top-level (line ~456) for
+    # Pydantic 2.13 schema gen compat — broke /openapi.json before fix.
     @app.post("/agent/council")
     async def agent_council(req: CouncilRequest, request: Request):
         """Multi-Agent Council (MoA-lite) reasoning."""
@@ -969,19 +998,10 @@ def create_app() -> "FastAPI":
     # ── POST /agent/generate ──────────────────────────────────────────────────
     # Jiwa Sprint: pure general chat tanpa ReAct loop / tool / corpus overhead.
     # Direct generation dari Ollama/local_llm dengan persona hint.
-    class GenerateRequest(BaseModel):
-        prompt: str
-        persona: str = "UTZ"
-        max_tokens: int = 600
-        temperature: float = 0.7
-
-    class GenerateResponse(BaseModel):
-        text: str
-        mode: str  # "ollama" | "local_lora" | "mock"
-        persona: str
-
-    @app.post("/agent/generate", response_model=GenerateResponse)
-    def agent_generate(req: GenerateRequest, request: Request):
+    # Sprint 14g: AgentGenerateRequest/Response moved to module top-level
+    # (line ~470) untuk Pydantic 2.13 schema gen compat.
+    @app.post("/agent/generate", response_model=AgentGenerateResponse)
+    def agent_generate(req: AgentGenerateRequest, request: Request):
         _enforce_rate(request)
         _enforce_daily(request)
         _bump_metric("agent_generate")

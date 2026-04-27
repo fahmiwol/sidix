@@ -10756,3 +10756,33 @@ Probe attempt #2 (timeout 600s): CLIENT_TIMEOUT 601s, last_status=IN_QUEUE
 **Bukan iterasi #5 di code** — issue di infrastructure. User bisa retry kalau GPU supply RunPod improve, atau test via RunPod console direct.
 
 Sprint 14e ship status: WIRING + DEPLOY + SCHEMA-VERIFIED, LIVE pending external dependency (GPU supply).
+
+
+---
+
+## 2026-04-27 sesi-baru evening — Sprint 14g START — Fix /openapi.json 500
+
+### Pre-Execution Alignment Check (per CLAUDE.md 6.4)
+- Bug fix tidak ubah direction → no North Star conflict ✓
+- No persona/prompt edit → no pivot 2026-04-25 conflict ✓
+- 10 hard rules preserved ✓
+- Verdict: PROCEED
+
+### Scope
+Brain logs Sprint 14c reveal: GET /openapi.json → 500 Internal Server Error
+Stack trace mention: pydantic/json_schema.py generate_definitions(), generate_inner()
+Affects: Swagger UI /docs broken, codegen tools fail, OpenAPI client SDK gen.
+
+### Hypothesis (perlu verifikasi)
+Salah satu Pydantic model yang ditambah recent (CreativeBriefRequest dari Sprint 14, ChatRequest, dll) punya field schema yang gak bisa di-generate. Kemungkinan:
+- list[str] | None syntax (Python 3.10 vs Pydantic 2.x compat)
+- Optional[list[str]] tanpa default proper
+- Nested model recursive
+- Self-reference
+
+### Plan
+1. SSH grab full stack trace dari brain logs (root cause exact)
+2. Identify model + field
+3. Fix sesuai pattern Pydantic 2.x
+4. Test offline (import + schema_json gen)
+5. Deploy + verify GET /openapi.json 200
