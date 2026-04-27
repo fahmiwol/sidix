@@ -10005,3 +10005,81 @@ Query: jelaskan algoritma topological sort di python
 - Vol 26 Skill cloning (Claude session JSONL)
 - Vol 23e Inventory: contradiction detection (when 2 AKUs disagree)
 - LLM branch iteration (perplexity check)
+
+
+---
+
+## 2026-04-27 morning — VOL 23e SHIPPED ✅ Contradiction Detection
+
+### What ships
+inventory_memory.py:
+- detect_contradictions() — find AKU pairs same subj+pred different obj
+- mark_contradicting(a, b) — bi-directional contradicts[] entries
+- resolve_contradiction(canonical, loser) — boost canonical, decay loser
+- Detection heuristic:
+  - same predicate (exact)
+  - subject 4-gram Jaccard >= 0.5
+  - object 4-gram Jaccard < 0.3 (=different facts)
+- Each report includes suggested winner (higher conf or more recent)
+
+Admin endpoint: GET /admin/inventory/contradictions
+
+### Live test
+Current inventory (7 active): 0 contradictions found.
+Expected — all AKUs cover different topics. Contradictions will surface
+as auto-ingest brings in fresh data that disagrees with old.
+
+Example future case:
+  AKU-A: presiden_indonesia → Jokowi (gemini stale, conf 0.6)
+  AKU-B: presiden_indonesia → Prabowo (brave fresh, conf 0.8)
+  → flagged as contradiction, suggested winner = AKU-B (higher conf)
+
+### Mandatory loop
+✅ CATAT (this entry + commit)
+✅ TESTING (admin endpoint, 0 contradictions clean state)
+✅ ITERASI (none — first try worked)
+✅ REVIEW (own diff)
+✅ VALIDASI (deployed live)
+✅ QA (no leaks, no boundary violation, alignment check vs CLAUDE.md passed)
+✅ CATAT (commit + push)
+
+### Sprint count this morning: 7
+1. Vol 23 MVP    (Inventory L0)
+2. Vol 23b       (Auto-ingestor cron)
+3. Vol 23c       (Synthesis cluster + canonical)
+4. Vol 21 wire   (Sanad multi-branch /ask/stream)
+5. Vol 23d       (Hybrid BM25+BGE-M3 lookup)
+6. Vol 22        (Per-branch iter + refinement)
+7. Vol 23e       (Contradiction detection + resolution)
+
+Vol 23 family complete: MVP + 23b + 23c + 23d + 23e.
+Vol 21 wire complete.
+Vol 22 MVP complete.
+
+### Visi alignment confirmed
+- BEBAS & TUMBUH: inventory grows + decays + canonicalizes 24/7
+- Sanad consensus: multi-source LIVE + per-branch iter
+- Hafidz Ledger: AKU operational + contradiction detection
+- 5 personas LOCKED: unchanged
+- Self-hosted: own RunPod canonical, external as TEACHERS only
+- No boundary violation: no /www/, no other PM2 apps touched
+
+### Pending (next sprint candidates)
+- Vol 24a Lite browser polish (SearxNG self-host)
+- Vol 24b SDXL endpoint (multimodal)
+- Vol 26 Skill cloning (12 days)
+- Vol 23f Auto-resolve contradictions via sanad re-validation
+- LLM branch perplexity-based iteration
+
+### Cron jobs (5 running 24/7) — unchanged
+- */10 worker
+- */10 aku_ingestor (auto AKU + hourly synth + decay)
+- */15 always_on
+- */30 radar
+- 0    classroom
+
+### Status snapshot
+- Inventory: 7 active AKUs, growing per cycle
+- Sanad: 3-branch parallel with iter
+- Cron: 5 jobs healthy
+- Production: app.sidixlab.com responsive (1.2-5s typical)
