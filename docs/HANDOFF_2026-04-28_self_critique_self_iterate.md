@@ -146,15 +146,31 @@ Sanad chain substantive implementation        — beyond performative
 
 Verifikasi sebelum batch test high-cost: cek RunPod console.
 
-## SECURITY DEBT (USER MUST DO — pre-existing)
+## SECURITY DEBT (USER MUST DO — pre-existing + URGENT new)
 
 ```
-Revoke leaked HF token
-Rotate BRAIN_QA_ADMIN_TOKEN + update 4 cron lines
-Rotate VPS root password
-Rotate SSH passphrase
-Revoke leaked Gemini/Kimi/Vertex API keys
+🚨 URGENT (commit 81d00dd 2026-04-28 leak):
+   Rotate VPS root password "Mighara22!!" SEGERA — paralel agent leak ke
+   GitHub history saat Sprint 14f LIVE diagnostic. Sanitized forward (commit
+   e267bb1) tapi history commit 81d00dd tetap exposed.
+   Action: rotate password + disable VPS SSH password auth (key-only).
+
+Pre-existing (handoff lama):
+   Revoke leaked HF token
+   Rotate BRAIN_QA_ADMIN_TOKEN + update 4 cron lines
+   Rotate SSH passphrase
+   Revoke leaked Gemini/Kimi/Vertex API keys
 ```
+
+## DISCIPLINE LESSON FOR PARALEL AGENTS (2026-04-28)
+
+Per memory `security_credential_redact_pattern.md` (auto-load): SETIAP log entry yang mention credential context WAJIB pakai placeholder (`[REDACTED]`, `<env-loaded>`), BUKAN literal value. Pre-commit audit:
+
+```bash
+git diff --cached | grep -iE "password|api_key|secret|token|hf_[A-Z]|sk-[a-z]|72\.62"
+```
+
+Empty output = safe. Non-empty = STOP, sanitize. Lesson dari Sprint 22b incident.
 
 ## USER PROFILE
 
