@@ -135,7 +135,8 @@ async def _ask_hf(client: httpx.AsyncClient, question: str, system: str) -> Prov
                               available=False, error="HF_TOKEN not set")
     try:
         # HF Inference: chat completion endpoint
-        model = os.environ.get("HF_MODEL", "meta-llama/Llama-3.1-8B-Instruct")
+        # Default to public-accessible models (Llama-3.1 gated, need approval)
+        model = os.environ.get("HF_MODEL", "mistralai/Mistral-7B-Instruct-v0.3")
         r = await client.post(
             f"https://api-inference.huggingface.co/models/{model}/v1/chat/completions",
             headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},

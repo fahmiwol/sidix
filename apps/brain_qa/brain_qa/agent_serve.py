@@ -2585,6 +2585,34 @@ def create_app() -> "FastAPI":
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"domain detect fail: {e}")
 
+    @app.get("/admin/inventory/stats", tags=["Performance"])
+    def inventory_stats_endpoint(request: Request):
+        """Vol 23 MVP: snapshot inventory.db AKU stats."""
+        if not _admin_ok(request):
+            raise HTTPException(status_code=403, detail="Akses ditolak")
+        try:
+            from . import inventory_memory
+            return inventory_memory.stats()
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"inventory stats fail: {e}")
+
+    @app.get("/admin/inventory/lookup", tags=["Performance"])
+    def inventory_lookup_endpoint(request: Request, query: str = "", min_conf: float = 0.6):
+        """Vol 23 MVP: test inventory FTS lookup."""
+        if not _admin_ok(request):
+            raise HTTPException(status_code=403, detail="Akses ditolak")
+        try:
+            from . import inventory_memory
+            hits = inventory_memory.lookup(query, min_confidence=min_conf, limit=5)
+            return {
+                "query": query,
+                "min_confidence": min_conf,
+                "count": len(hits),
+                "akus": [a.to_dict() for a in hits],
+            }
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"inventory lookup fail: {e}")
+
     @app.get("/admin/complexity-tier", tags=["Performance"])
     def complexity_tier_endpoint(request: Request, question: str = "", persona: str = "AYMAN"):
         """Debug: classify complexity tier dari question + persona. Vol 20-fu2 #7."""
@@ -3456,6 +3484,70 @@ def create_app() -> "FastAPI":
                 _bump_metric(f"ask_stream_tier_{_tier_decision_s.tier}")
             except Exception as _e:
                 log.debug("[stream] complexity_router error: %s", _e)
+
+            # ── Vol 23 MVP: Inventory Memory L0 lookup (FASTEST path) ────────
+            # Before L1 cache, check inventory.db for pre-validated AKU.
+            # Hit = answer in <100ms with sanad chain. Self-grown knowledge.
+            try:
+                from .inventory_memory import lookup as _inv_lookup, format_lookup_for_render
+                _inv_hits = _inv_lookup(req.question, min_confidence=0.7, limit=3)
+                if _inv_hits:
+                    _bump_metric("ask_stream_inventory_l0_hit")
+                    _t_inv_start = time.time()
+                    yield f"data: {_json.dumps({'type':'meta','_phase':'inventory_l0','_phase_detail':'Lookup memory tervalidasi...'})}\n\n"
+                    # Build answer from top-K AKUs (paraphrase via short LLM call)
+                    from .runpod_serverless import hybrid_generate
+                    _inv_ctx = format_lookup_for_render(_inv_hits)
+                    _inv_sys = (
+                        f"Kamu SIDIX persona {effective_persona}. Berikut adalah PENGETAHUAN "
+                        "TERVALIDASI dari memori SIDIX (sudah cross-checked sanad). Jawab "
+                        "pertanyaan user singkat (max 3 kalimat) BERDASARKAN memori ini. "
+                        "Sebut tingkat keyakinan kalau confidence < 0.85."
+                    )
+                    loop = asyncio.get_event_loop()
+                    _inv_text, _inv_mode = await loop.run_in_executor(
+                        None,
+                        lambda: hybrid_generate(prompt=req.question, system=_inv_sys,
+                                                corpus_context=_inv_ctx,
+                                                max_tokens=300, temperature=0.3),
+                    )
+                    _inv_ms = int((time.time() - _t_inv_start) * 1000)
+                    log.info("[stream] inventory L0 hit %dms (%d AKUs)", _inv_ms, len(_inv_hits))
+                    _inv_meta = {
+                        "type": "meta",
+                        "session_id": f"inv-{int(time.time()*1000)}",
+                        "confidence": "tinggi",
+                        "_inventory_l0_hit": True,
+                        "_inventory_aku_count": len(_inv_hits),
+                        "_inventory_avg_confidence": round(
+                            sum(a.confidence for a in _inv_hits) / len(_inv_hits), 3),
+                        "_inventory_latency_ms": _inv_ms,
+                        "_citations": [
+                            {"type": "inventory_aku", "aku_id": a.aku_id,
+                             "subject": a.subject[:80], "predicate": a.predicate[:60],
+                             "confidence": round(a.confidence, 2),
+                             "reinforcement": a.reinforcement_count}
+                            for a in _inv_hits
+                        ],
+                    }
+                    yield f"data: {_json.dumps(_inv_meta)}\n\n"
+                    _inv_words = (_inv_text or _inv_hits[0].object).split(" ")
+                    for i, w in enumerate(_inv_words):
+                        _t = w + (" " if i < len(_inv_words) - 1 else "")
+                        yield f"data: {_json.dumps({'type':'token','text':_t})}\n\n"
+                        await asyncio.sleep(0.01)
+                    _inv_done = {
+                        "type": "done", "persona": effective_persona,
+                        "session_id": _inv_meta["session_id"],
+                        "conversation_id": effective_conversation_id,
+                        "confidence": "tinggi",
+                        "_inventory_l0_hit": True,
+                    }
+                    yield f"data: {_json.dumps(_inv_done)}\n\n"
+                    return
+            except Exception as _e:
+                log.debug("[stream] inventory L0 lookup error: %s", _e)
+                # Fall through
 
             # ── Vol 20-Closure: Cache short-circuit (L1 exact + L2 semantic) ─
             # Frontend pakai stream exclusively, tanpa wiring di sini cache
