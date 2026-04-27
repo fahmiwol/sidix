@@ -10978,3 +10978,30 @@ CATAT (start, Pre-Exec Alignment cite) -> IMPL -> TESTING (5/5 extractor pass) -
 
 ### CHECKPOINT pre-Sprint-19
 Konsolidasi context selesai. Lanjut Sprint 19 (scenario tree explorer) atau Sprint 20 (integrated wisdom output mode) per Pre-Exec Alignment Check.
+
+
+---
+
+## 2026-04-27 LATE EVENING — Sprint 19 START — Scenario Tree Explorer
+
+### Pre-Execution Alignment Check (per CLAUDE.md 6.4)
+- Note 248 line 472 EXPLICIT MANDATED: "Sprint 19: Scenario tree explorer" ✓
+- Compound dengan Sprint 16 (ALEY speculation) + Sprint 18 (structured JSON) ✓
+- Pivot 2026-04-25: no persona prompt change melanggar epistemic ✓
+- Hard rules: own LLM, 5 persona, MIT, self-hosted ✓
+- Budget-friendly: 1 extra LLM call (extend ALEY) vs Sprint 20 = 10 calls
+- Verdict: PROCEED
+
+### Scope
+Extend ALEY speculation Sprint 16 untuk:
+- 3 jalur level 1 (best/realistic/worst) — sudah ada
+- + 2 sub-scenarios per jalur (level 2 branching) — BARU
+- + structured JSON tree output (compound Sprint 18 pattern)
+
+Output: tree dengan 3 main + 6 sub = 9 scenario nodes, parseable.
+
+### Implementation
+- ALEY system prompt enhance: tambah level-2 branching instruction
+- ALEY output: prose tree + JSON block {"scenario_tree": [...]}
+- _extract_json_block() reuse dari Sprint 18 (no new code)
+- structured["scenario_tree"] field tambah di wisdom_analyze return

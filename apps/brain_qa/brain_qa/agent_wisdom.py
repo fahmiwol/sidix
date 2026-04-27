@@ -273,22 +273,60 @@ def stage_risk_analysis(topic: str, context: str) -> WisdomStage:
 _ALEY_SCENARIO_SYSTEM = (
     "Kamu ALEY — researcher SIDIX. Voice: 'saya', methodical, scholarly. "
     "Bahasa Indonesia.\n\n"
-    "TUGAS — SPEKULASI TERBAIK (Best-Case Speculation):\n"
-    "Generate scenario tree dengan 3 jalur untuk topik ini:\n\n"
+    "TUGAS — SPEKULASI TERBAIK + SCENARIO TREE EXPLORER (Sprint 19):\n"
+    "Generate scenario tree 2-level untuk topik ini:\n\n"
+    "**LEVEL 1 — 3 JALUR UTAMA**:\n\n"
     "1. **JALUR A — BEST CASE** (probability ~25%, optimistic plausible)\n"
     "   - outcome konkret 1-2 paragraf\n"
     "   - trigger event yang harus terjadi\n"
-    "   - leading indicator yang bisa di-monitor\n\n"
+    "   - leading indicator yang bisa di-monitor\n"
+    "   - **2 SUB-SCENARIOS** (cabang dari best case):\n"
+    "     - A1: variasi rapid scale — kalau growth lebih cepat dari expected\n"
+    "     - A2: variasi slow scale — kalau growth steady tapi terbatas\n\n"
     "2. **JALUR B — REALISTIC CASE** (~50%, paling mungkin)\n"
     "   - outcome konkret\n"
-    "   - asumsi inti yang dijaga\n\n"
+    "   - asumsi inti yang dijaga\n"
+    "   - **2 SUB-SCENARIOS**:\n"
+    "     - B1: variasi product-led — growth dari kualitas produk\n"
+    "     - B2: variasi market-led — growth dari pasar timing\n\n"
     "3. **JALUR C — WORST CASE** (~25%, pessimistic plausible)\n"
     "   - outcome konkret\n"
-    "   - failure trigger\n\n"
-    "4. **OPTIMAL PATH RECOMMENDATION** — jalur mana yang sebaiknya dikejar + reasoning singkat\n\n"
-    "Format markdown. Berani spesifik. Domain ini = scenario speculation, "
-    "BUKAN data sensitif — pakai natural hedging ('kemungkinan besar', "
-    "'asumsi awal'), BUKAN bracket [SPEKULASI] tag per claim."
+    "   - failure trigger\n"
+    "   - **2 SUB-SCENARIOS**:\n"
+    "     - C1: pivot recoverable — kalau bisa diselamatkan via strategi alternatif\n"
+    "     - C2: hard fail — kalau harus shutdown atau full restart\n\n"
+    "4. **OPTIMAL PATH RECOMMENDATION** — jalur (incl. sub-scenario) mana yang sebaiknya dikejar + reasoning singkat\n\n"
+    "Format markdown. Berani spesifik. Domain = scenario speculation, BUKAN "
+    "data sensitif — pakai natural hedging ('kemungkinan besar', 'asumsi awal'), "
+    "BUKAN bracket [SPEKULASI] tag per claim.\n\n"
+    "**SETELAH markdown tree di atas**, sertakan blok JSON parseable di akhir "
+    "(WAJIB exact format ini, gunakan triple-backtick json fence):\n\n"
+    "```json\n"
+    "{\"scenario_tree\": [\n"
+    "  {\"path\": \"A\", \"label\": \"Best Case\", \"probability\": 0.25,\n"
+    "   \"outcome\": \"...\", \"trigger\": \"...\",\n"
+    "   \"sub_scenarios\": [\n"
+    "     {\"id\": \"A1\", \"variant\": \"rapid scale\", \"outcome\": \"...\"},\n"
+    "     {\"id\": \"A2\", \"variant\": \"slow scale\", \"outcome\": \"...\"}\n"
+    "   ]},\n"
+    "  {\"path\": \"B\", \"label\": \"Realistic\", \"probability\": 0.5,\n"
+    "   \"outcome\": \"...\", \"assumption\": \"...\",\n"
+    "   \"sub_scenarios\": [\n"
+    "     {\"id\": \"B1\", \"variant\": \"product-led\", \"outcome\": \"...\"},\n"
+    "     {\"id\": \"B2\", \"variant\": \"market-led\", \"outcome\": \"...\"}\n"
+    "   ]},\n"
+    "  {\"path\": \"C\", \"label\": \"Worst Case\", \"probability\": 0.25,\n"
+    "   \"outcome\": \"...\", \"failure_trigger\": \"...\",\n"
+    "   \"sub_scenarios\": [\n"
+    "     {\"id\": \"C1\", \"variant\": \"pivot recoverable\", \"outcome\": \"...\"},\n"
+    "     {\"id\": \"C2\", \"variant\": \"hard fail\", \"outcome\": \"...\"}\n"
+    "   ]}\n"
+    "],\n"
+    "\"optimal_path\": {\"path_id\": \"B1|A2|...\", \"reasoning\": \"...\"}\n"
+    "}\n"
+    "```\n\n"
+    "JSON harus valid — strings escaped, no trailing commas. Total: 3 main + "
+    "6 sub = 9 scenario nodes."
 )
 
 
@@ -300,7 +338,8 @@ def stage_speculation_tree(topic: str, context: str, impact_summary: str, risk_s
         f"IMPACT (OOMAR):\n{impact_summary}\n\nRISK (ABOO):\n{risk_summary}\n\n"
         f"Generate scenario tree 3 jalur + optimal path recommendation."
     )
-    text, _ = ollama_generate(prompt, system=_ALEY_SCENARIO_SYSTEM, max_tokens=800, temperature=0.5)
+    # Sprint 19: bump max_tokens 800 → 1500 untuk accommodate 9-node tree + JSON block
+    text, _ = ollama_generate(prompt, system=_ALEY_SCENARIO_SYSTEM, max_tokens=1500, temperature=0.5)
     return WisdomStage(
         capability="speculation",
         persona="ALEY",
@@ -448,6 +487,7 @@ def wisdom_analyze(
     structured: dict[str, Any] = {}
     risk_stage = next((s for s in w.stages if s.capability == "risk"), None)
     impact_stage = next((s for s in w.stages if s.capability == "impact"), None)
+    spec_stage = next((s for s in w.stages if s.capability == "speculation"), None)
     if risk_stage:
         risk_obj = _extract_json_block(risk_stage.content, "risk_register")
         if risk_obj:
@@ -456,6 +496,13 @@ def wisdom_analyze(
         impact_obj = _extract_json_block(impact_stage.content, "impact_map")
         if impact_obj:
             structured["impact_map"] = impact_obj.get("impact_map", [])
+    # Sprint 19: scenario_tree extraction dari ALEY speculation stage
+    if spec_stage:
+        spec_obj = _extract_json_block(spec_stage.content, "scenario_tree")
+        if spec_obj:
+            structured["scenario_tree"] = spec_obj.get("scenario_tree", [])
+            if "optimal_path" in spec_obj:
+                structured["optimal_path"] = spec_obj["optimal_path"]
 
     if persist:
         _persist(w)
