@@ -10524,3 +10524,24 @@ QA pass:  CATAT TESTING (grep) ITERASI (gitignore) REVIEW QA CATAT (this entry) 
 ```
 
 Loop integrity verified untuk semua 5 work units. Tidak ada step yang di-skip.
+
+
+---
+
+## 2026-04-27 sesi-baru — Sprint 14b START — Wire RunPod mighan-media-worker untuk image gen
+
+### Context
+User confirm: RunPod ada 2 endpoint (vLLM 24GB + mighan-media-worker 48GB). Media worker available untuk image generation. VPS = no GPU, jadi semua image gen harus via mighan-media-worker.
+
+### Scope
+- Build runpod_media.py module (mirip pattern runpod_serverless.py untuk vLLM)
+- Wire creative_pipeline.py gen_images flag — render hero asset (mascot full + logo + social) sample 1-3 image
+- Output: image URLs ke metadata.json + report.md
+- Test live dengan hero brief
+
+### Strategi
+- Pattern: copy runpod_serverless.py architecture, adapt untuk media worker
+- Endpoint ID belum di .env VPS — harus tahu invocation contract dulu
+- Cek dokumentasi/code repo untuk method calling media worker
+
+Reference: note 248 line 178-198 (hero use-case full bundling)

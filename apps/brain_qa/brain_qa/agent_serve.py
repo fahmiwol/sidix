@@ -444,10 +444,15 @@ class ResurrectRequest(BaseModel):
 
 
 class CreativeBriefRequest(BaseModel):
-    """Sprint 14 — Hero use-case creative pipeline brief input."""
+    """Sprint 14 — Hero use-case creative pipeline brief input.
+
+    Sprint 14b adds gen_images flag to render hero asset via mighan-media-worker.
+    """
     brief: str
     skip_stages: Optional[list[str]] = None
     persist: bool = True
+    gen_images: bool = False
+    gen_images_n: int = 3
 
 
 class WhitelistAddRequest(BaseModel):
@@ -1306,7 +1311,11 @@ def create_app() -> "FastAPI":
             raise HTTPException(status_code=503, detail=f"creative_pipeline unavailable: {e}")
         try:
             return creative_brief_pipeline(
-                req.brief, skip_stages=req.skip_stages, persist=req.persist
+                req.brief,
+                skip_stages=req.skip_stages,
+                persist=req.persist,
+                gen_images=req.gen_images,
+                gen_images_n=req.gen_images_n,
             )
         except ValueError as e:
             raise HTTPException(status_code=400, detail=str(e))

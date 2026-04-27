@@ -336,6 +336,8 @@ def creative_brief_pipeline(
     *,
     skip_stages: Optional[list[str]] = None,
     persist: bool = True,
+    gen_images: bool = False,
+    gen_images_n: int = 3,
 ) -> dict[str, Any]:
     """
     End-to-end creative pipeline. Returns dict with all stages + paths.
@@ -343,6 +345,8 @@ def creative_brief_pipeline(
       brief: brief teks dari user/customer
       skip_stages: optional list ['copy','landing'] untuk skip (testing)
       persist: write to .data/creative_briefs/<slug>/ (default True)
+      gen_images: kalau True, render N hero asset via runpod_media (Sprint 14b)
+      gen_images_n: jumlah hero asset (default 3: mascot, logo, social)
     """
     if not brief or not brief.strip():
         raise ValueError("brief kosong")
@@ -383,8 +387,43 @@ def creative_brief_pipeline(
         d.stages.append(s5)
         d.asset_prompts = _extract_prompts(s5.content)
 
+    # Sprint 14b: Optional hero image rendering via mighan-media-worker
+    rendered_images: list[dict[str, Any]] = []
+    if gen_images and d.asset_prompts and persist:
+        try:
+            from .runpod_media import generate_image, pick_hero_prompts, media_available
+            if not media_available():
+                rendered_images.append({
+                    "success": False,
+                    "error": "RUNPOD_MEDIA_ENDPOINT_ID env not set or endpoint unreachable",
+                })
+            else:
+                images_dir = BRIEFS_DIR / d.slug / "images"
+                hero_pairs = pick_hero_prompts(d.asset_prompts, n=gen_images_n)
+                for label, prompt in hero_pairs:
+                    res = generate_image(prompt, output_dir=images_dir, label=label)
+                    rendered_images.append(res)
+        except Exception as e:
+            rendered_images.append({"success": False, "error": f"image gen fail: {e}"})
+
     if persist:
         _persist(d)
+        # Re-render report.md with rendered_images embedded if any
+        if rendered_images:
+            target = BRIEFS_DIR / d.slug
+            md = _render_report_md(d)
+            md += "\n\n## 🖼️ Rendered Hero Assets (mighan-media-worker)\n\n"
+            for img in rendered_images:
+                if img.get("success"):
+                    rel = f"images/{img['filename']}"
+                    md += f"### {img['label']}\n\n"
+                    md += f"![{img['label']}]({rel})\n\n"
+                    md += f"_size_: {img.get('width')}x{img.get('height')} · "
+                    md += f"_gen_time_: {img.get('generation_time_s', '?')}s · "
+                    md += f"_model_: {img.get('model')}\n\n"
+                else:
+                    md += f"### {img.get('label','?')} — ❌ {img.get('error','unknown')}\n\n"
+            (target / "report.md").write_text(md, encoding="utf-8")
 
     return {
         "brief": d.brief,
@@ -393,6 +432,7 @@ def creative_brief_pipeline(
         "stages": [asdict(s) for s in d.stages],
         "asset_prompts": d.asset_prompts,
         "paths": d.paths,
+        "rendered_images": rendered_images,
     }
 
 
