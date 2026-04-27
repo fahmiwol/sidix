@@ -271,68 +271,21 @@ def stage_risk_analysis(topic: str, context: str) -> WisdomStage:
 # ── Stage 4: SPECULATION tree (ALEY scenario, multi-path) ───────────────────
 
 _ALEY_SCENARIO_SYSTEM = (
-    "Kamu ALEY — researcher SIDIX. Voice: 'saya', methodical, scholarly. "
-    "Bahasa Indonesia.\n\n"
-    "TUGAS — SPEKULASI TERBAIK + SCENARIO TREE EXPLORER (Sprint 19):\n"
-    "Generate scenario tree 2-level untuk topik ini:\n\n"
-    "**LEVEL 1 — 3 JALUR UTAMA**:\n\n"
-    "1. **JALUR A — BEST CASE** (probability ~25%, optimistic plausible)\n"
-    "   - outcome konkret 1-2 paragraf\n"
-    "   - trigger event yang harus terjadi\n"
-    "   - leading indicator yang bisa di-monitor\n"
-    "   - **2 SUB-SCENARIOS** (cabang dari best case):\n"
-    "     - A1: variasi rapid scale — kalau growth lebih cepat dari expected\n"
-    "     - A2: variasi slow scale — kalau growth steady tapi terbatas\n\n"
-    "2. **JALUR B — REALISTIC CASE** (~50%, paling mungkin)\n"
-    "   - outcome konkret\n"
-    "   - asumsi inti yang dijaga\n"
-    "   - **2 SUB-SCENARIOS**:\n"
-    "     - B1: variasi product-led — growth dari kualitas produk\n"
-    "     - B2: variasi market-led — growth dari pasar timing\n\n"
-    "3. **JALUR C — WORST CASE** (~25%, pessimistic plausible)\n"
-    "   - outcome konkret\n"
-    "   - failure trigger\n"
-    "   - **2 SUB-SCENARIOS**:\n"
-    "     - C1: pivot recoverable — kalau bisa diselamatkan via strategi alternatif\n"
-    "     - C2: hard fail — kalau harus shutdown atau full restart\n\n"
-    "4. **OPTIMAL PATH RECOMMENDATION** — jalur (incl. sub-scenario) mana yang sebaiknya dikejar + reasoning singkat\n\n"
-    "Format markdown. Berani spesifik. Domain = scenario speculation, BUKAN "
-    "data sensitif — pakai natural hedging ('kemungkinan besar', 'asumsi awal'), "
-    "BUKAN bracket [SPEKULASI] tag per claim.\n\n"
-    "**SETELAH markdown tree di atas**, sertakan blok JSON parseable di akhir "
-    "(WAJIB exact schema ini, gunakan triple-backtick json fence). "
-    "**WAJIB REPLACE semua placeholder text di bawah dengan content KONKRET dari "
-    "analysis kamu — JANGAN echo literal '<...>' atau '...' ke output**:\n\n"
+    "Kamu ALEY — researcher SIDIX. Voice: 'saya'. Bahasa Indonesia.\n\n"
+    "TUGAS — Scenario Tree Explorer (Sprint 19): output HANYA blok JSON di bawah, "
+    "concise. Setiap 'outcome' = 1 kalimat saja. Domain speculation = pakai natural "
+    "hedging, BUKAN bracket [SPEKULASI] tag.\n\n"
+    "REPLACE setiap teks dalam <...> dengan content konkret dari analisis. JANGAN "
+    "literal-echo placeholder.\n\n"
     "```json\n"
-    "{\"scenario_tree\": [\n"
-    "  {\"path\": \"A\", \"label\": \"Best Case\", \"probability\": 0.25,\n"
-    "   \"outcome\": \"<1-2 kalimat outcome konkret jalur A best case>\",\n"
-    "   \"trigger\": \"<event spesifik yang harus terjadi untuk jalur A>\",\n"
-    "   \"sub_scenarios\": [\n"
-    "     {\"id\": \"A1\", \"variant\": \"rapid scale\", \"outcome\": \"<outcome konkret jika rapid scale>\"},\n"
-    "     {\"id\": \"A2\", \"variant\": \"slow scale\", \"outcome\": \"<outcome konkret jika slow scale>\"}\n"
-    "   ]},\n"
-    "  {\"path\": \"B\", \"label\": \"Realistic\", \"probability\": 0.5,\n"
-    "   \"outcome\": \"<1-2 kalimat outcome konkret jalur B realistic>\",\n"
-    "   \"assumption\": \"<asumsi inti yang harus dijaga jalur B>\",\n"
-    "   \"sub_scenarios\": [\n"
-    "     {\"id\": \"B1\", \"variant\": \"product-led\", \"outcome\": \"<outcome jika product-led>\"},\n"
-    "     {\"id\": \"B2\", \"variant\": \"market-led\", \"outcome\": \"<outcome jika market-led>\"}\n"
-    "   ]},\n"
-    "  {\"path\": \"C\", \"label\": \"Worst Case\", \"probability\": 0.25,\n"
-    "   \"outcome\": \"<1-2 kalimat outcome konkret jalur C worst case>\",\n"
-    "   \"failure_trigger\": \"<event yang trigger failure>\",\n"
-    "   \"sub_scenarios\": [\n"
-    "     {\"id\": \"C1\", \"variant\": \"pivot recoverable\", \"outcome\": \"<outcome jika pivot recoverable>\"},\n"
-    "     {\"id\": \"C2\", \"variant\": \"hard fail\", \"outcome\": \"<outcome jika hard fail>\"}\n"
-    "   ]}\n"
+    "{\"scenario_tree\":[\n"
+    "{\"path\":\"A\",\"label\":\"Best Case\",\"probability\":0.25,\"outcome\":\"<outcome best case 1 kalimat>\",\"trigger\":\"<event trigger best case>\",\"sub_scenarios\":[{\"id\":\"A1\",\"variant\":\"rapid scale\",\"outcome\":\"<outcome jika rapid scale>\"},{\"id\":\"A2\",\"variant\":\"slow scale\",\"outcome\":\"<outcome jika slow scale>\"}]},\n"
+    "{\"path\":\"B\",\"label\":\"Realistic\",\"probability\":0.5,\"outcome\":\"<outcome realistic 1 kalimat>\",\"assumption\":\"<asumsi inti realistic>\",\"sub_scenarios\":[{\"id\":\"B1\",\"variant\":\"product-led\",\"outcome\":\"<outcome product-led>\"},{\"id\":\"B2\",\"variant\":\"market-led\",\"outcome\":\"<outcome market-led>\"}]},\n"
+    "{\"path\":\"C\",\"label\":\"Worst Case\",\"probability\":0.25,\"outcome\":\"<outcome worst 1 kalimat>\",\"failure_trigger\":\"<event failure>\",\"sub_scenarios\":[{\"id\":\"C1\",\"variant\":\"pivot recoverable\",\"outcome\":\"<outcome pivot recoverable>\"},{\"id\":\"C2\",\"variant\":\"hard fail\",\"outcome\":\"<outcome hard fail>\"}]}\n"
     "],\n"
-    "\"optimal_path\": {\"path_id\": \"<pilih satu: A1/A2/B1/B2/C1/C2>\", \"reasoning\": \"<1-2 kalimat kenapa path ini optimal>\"}\n"
-    "}\n"
+    "\"optimal_path\":{\"path_id\":\"<A1|A2|B1|B2|C1|C2>\",\"reasoning\":\"<reasoning singkat>\"}}\n"
     "```\n\n"
-    "JSON harus valid — strings escaped, no trailing commas. Total: 3 main + "
-    "6 sub = 9 scenario nodes. CRITICAL: setiap field 'outcome', 'trigger', "
-    "'reasoning' WAJIB diisi dengan content KONKRET, BUKAN literal '...' placeholder."
+    "JSON valid, 3 main + 6 sub = 9 nodes. Setiap outcome konkret 1 kalimat saja."
 )
 
 
@@ -344,8 +297,11 @@ def stage_speculation_tree(topic: str, context: str, impact_summary: str, risk_s
         f"IMPACT (OOMAR):\n{impact_summary}\n\nRISK (ABOO):\n{risk_summary}\n\n"
         f"Generate scenario tree 3 jalur + optimal path recommendation."
     )
-    # Sprint 19: bump max_tokens 800 → 1500 untuk accommodate 9-node tree + JSON block
-    text, _ = ollama_generate(prompt, system=_ALEY_SCENARIO_SYSTEM, max_tokens=1500, temperature=0.5)
+    # Sprint 19 iter #7: max_tokens 1500 → 1100, prompt trimmed.
+    # LLM backend timeout 180s — content must fit in budget. Concise outcome
+    # 1 kalimat per node (vs 1-2 paragraf), JSON-only output (no markdown tree),
+    # = ~700-900 tokens output, comfortably within 180s gen.
+    text, _ = ollama_generate(prompt, system=_ALEY_SCENARIO_SYSTEM, max_tokens=1100, temperature=0.5)
     return WisdomStage(
         capability="speculation",
         persona="ALEY",
