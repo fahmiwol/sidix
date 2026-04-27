@@ -3591,6 +3591,70 @@ def create_app() -> "FastAPI":
                     log.warning("[stream] simple bypass failed, fallback to full flow: %s", _e)
                     # Fall through to normal tadabbur/run_react path
 
+            # ── Vol 20-fu7: KNOWLEDGE BYPASS (coding/factual/casual standard tier) ─
+            # Question yang butuh JAWABAN LANGSUNG dari LLM knowledge (bukan
+            # web/current data). Examples: "cara implementasi binary search",
+            # "apa itu RAG", "jelaskan event-driven architecture".
+            # Skip orchestration + web tools, langsung ke LLM dengan corpus context.
+            try:
+                from .domain_detector import detect_domain as _dd2
+                _domain_k = _dd2(req.question, effective_persona)
+            except Exception:
+                _domain_k = "default"
+            _is_knowledge_bypass = (
+                _tier_decision_s is not None
+                and _tier_decision_s.tier == "standard"
+                and _domain_k in ("coding", "factual", "casual", "default")
+                and len(req.question) < 200  # don't bypass long complex questions
+            )
+            if _is_knowledge_bypass:
+                try:
+                    from .runpod_serverless import hybrid_generate
+                    _bump_metric("ask_stream_knowledge_bypass")
+                    _t_kb_start = time.time()
+                    yield f"data: {_json.dumps({'type':'meta','_phase':'knowledge_direct','_phase_detail':'Jawab langsung dari pengetahuan...'})}\n\n"
+                    _kb_sys = (
+                        f"Kamu SIDIX, persona {effective_persona}. Jawab pertanyaan user "
+                        "berdasarkan pengetahuanmu (bukan web search). Singkat (max 5 kalimat), "
+                        "akurat, beri contoh kalau relevan. Untuk klaim faktual yang bisa stale, "
+                        "label [FAKTA] atau bilang 'sepengetahuan saya' kalau tidak yakin."
+                    )
+                    loop = asyncio.get_event_loop()
+                    _kb_text, _kb_mode = await loop.run_in_executor(
+                        None,
+                        lambda: hybrid_generate(prompt=req.question, system=_kb_sys,
+                                                max_tokens=400, temperature=0.5),
+                    )
+                    _kb_ms = int((time.time() - _t_kb_start) * 1000)
+                    log.info("[stream] knowledge bypass %dms (domain=%s, mode=%s)",
+                             _kb_ms, _domain_k, _kb_mode)
+                    _kb_meta = {
+                        "type": "meta",
+                        "session_id": f"kb-{int(time.time()*1000)}",
+                        "confidence": "tinggi",
+                        "_knowledge_bypass": True,
+                        "_complexity_tier": "standard",
+                        "_domain": _domain_k,
+                        "_knowledge_bypass_latency_ms": _kb_ms,
+                    }
+                    yield f"data: {_json.dumps(_kb_meta)}\n\n"
+                    _kb_words = (_kb_text or "Maaf, tidak ada jawaban.").split(" ")
+                    for i, w in enumerate(_kb_words):
+                        _t = w + (" " if i < len(_kb_words) - 1 else "")
+                        yield f"data: {_json.dumps({'type':'token','text':_t})}\n\n"
+                        await asyncio.sleep(0.01)
+                    _kb_done = {
+                        "type": "done", "persona": effective_persona,
+                        "session_id": _kb_meta["session_id"],
+                        "conversation_id": effective_conversation_id,
+                        "confidence": "tinggi",
+                        "_knowledge_bypass": True,
+                    }
+                    yield f"data: {_json.dumps(_kb_done)}\n\n"
+                    return
+                except Exception as _e:
+                    log.warning("[stream] knowledge bypass failed: %s", _e)
+
             # ── Vol 20-fu4: CURRENT EVENTS FAST-PATH (web_search → LLM) ─────
             # Domain=current_events (e.g. "siapa presiden indonesia sekarang")
             # → corpus + LoRA punya snapshot lama (training cutoff). Solusi:
