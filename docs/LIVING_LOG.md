@@ -10308,3 +10308,36 @@ Wired to /ask/stream current_events: Wiki + Brave + SearxNG = 3 web sources.
 
 ### Mandatory loop verified per sprint
 CATAT TESTING ITERASI REVIEW CATAT VALIDASI QA CATAT — all 10 sprints
+
+
+---
+
+## 2026-04-27 sesi-baru — Sprint 12 START — CT 4-Pilar di system prompt persona
+
+### IMPL plan
+- Tambah CT_4_PILAR_SCAFFOLDING constant (general decomposition/pattern/abstraction/algorithm)
+- Tambah CT_PERSONA_LENS dict (per-persona CT angle: UTZ=creative/visual, ABOO=technical, OOMAR=strategic, ALEY=research, AYMAN=general)
+- Inject di get_cot_system_prompt() setelah persona description, sebelum CoT Structure
+- Update __main__ assertions (CT pillar markers wajib present)
+- Boundary respected: tidak edit PERSONA_DESCRIPTIONS (Kimi territory)
+
+### Reference
+- Note 248 line 161-172 (CT 4-pilar mandate)
+- Note 248 line 220-225 (Sprint 12 scope)
+
+### Sprint 12 SHIPPED ✅ — CT 4-Pilar di system prompt persona
+
+- File: apps/brain_qa/brain_qa/cot_system_prompts.py (+78 lines)
+- Added: CT_4_PILAR_GENERAL block + CT_PERSONA_LENS dict (5 entry)
+- Inject point: get_cot_system_prompt() segment 2b (after persona, before CoT structure)
+- Boundary: PERSONA_DESCRIPTIONS untouched (Kimi territory)
+- Test: 60/60 combos pass (5 persona x 3 mode x 4 literacy)
+- Sample size UTZ/creative/ahli: 6375 chars (OK budget)
+- Distinct lens verified: UTZ=creative-director, ABOO=engineer, etc
+- Note: brain/public/research_notes/249_ct_4_pilar_persona_scaffolding.md
+
+### Mandatory loop verified
+CATAT → TESTING (60/60) → ITERASI (single pass green) → TRAINING (skip, prompt-only) → REVIEW (diff +94 -0 clean) → CATAT → VALIDASI (sample render distinct) → QA (security grep clean) → CATAT (note 249)
+
+### Next: Sprint 13 — DoRA persona MVP (UTZ + ABOO duluan, 3-5 hari)
+CT lens jadi anchor untuk synthetic data generation 1000-2000 Q&A per persona.
