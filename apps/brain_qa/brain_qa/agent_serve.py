@@ -520,6 +520,17 @@ class IntegratedRequest(BaseModel):
     persist: bool = True
 
 
+class RasaRequest(BaseModel):
+    """Sprint 21 — 🎭 RASA Aesthetic/Quality Scorer request.
+
+    Per note 248 line 50 EXPLICIT (Embodiment): "🎭 RASA = aesthetic/quality
+    scorer (relevance, taste, brand fit)". Reads existing creative_briefs/<slug>/
+    artifacts → 4-dimension score (1-5) + improvement suggestions.
+    """
+    slug_or_brief: str  # slug langsung atau brief teks (auto-slugify)
+    persist: bool = True
+
+
 class WhitelistAddRequest(BaseModel):
     """Tambahkan email atau user_id ke whitelist (admin only)."""
     email: Optional[str] = None
@@ -1343,6 +1354,30 @@ def create_app() -> "FastAPI":
             )
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"visioner failed: {e}")
+
+    # ── POST /agent/rasa — Sprint 21: 🎭 RASA Aesthetic/Quality Scorer ───────
+    @app.post("/agent/rasa", tags=["Supermodel"])
+    def agent_rasa(req: RasaRequest, request: Request):
+        """
+        Sprint 21 (note 248 line 50 EXPLICIT): aesthetic/quality scorer.
+        Reads creative_briefs/<slug>/ → 4-dimension score (relevance/aesthetic/
+        brand_fit/audience_fit, 1-5 scale) + structured JSON.
+        """
+        _enforce_rate(request)
+        _enforce_daily(request)
+        _bump_metric("agent_rasa")
+        if not (req.slug_or_brief or "").strip():
+            raise HTTPException(status_code=400, detail="slug_or_brief kosong")
+        try:
+            from .agent_rasa import rasa_score
+        except Exception as e:
+            raise HTTPException(status_code=503, detail=f"agent_rasa unavailable: {e}")
+        try:
+            return rasa_score(req.slug_or_brief, persist=req.persist)
+        except ValueError as e:
+            raise HTTPException(status_code=400, detail=str(e))
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"rasa failed: {e}")
 
     # ── POST /agent/integrated — Sprint 20: Integrated Wisdom Output Mode ────
     @app.post("/agent/integrated", tags=["Supermodel"])

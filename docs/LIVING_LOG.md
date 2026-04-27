@@ -11188,3 +11188,34 @@ Pattern: dengan vLLM GPU throttle current state, plan curl timeout = num_LLM_cal
 
 #### Mandatory loop coverage Sprint 20
 CATAT (Pre-Exec Alignment cite eksplisit note 248 line 473) -> IMPL (agent_integrated.py 290 lines + endpoint) -> TESTING (5/5 offline pass, smart cache reuse verified) -> ITERASI #8 (curl timeout under-spec, BUKAN code bug — diagnose-before-iter applied) -> REVIEW -> CATAT -> VALIDASI LIVE 148s HTTP 200 creative cached + wisdom 1-stage fresh -> QA -> CATAT (note 261)
+
+
+---
+
+## 2026-04-28 sesi-baru (post-limit reset) — Sprint 21 START — 🎭 RASA Aesthetic/Quality Scorer
+
+### Pre-Execution Alignment Check (per CLAUDE.md 6.4)
+- Note 248 line 50 EXPLICIT: "🎭 RASA = aesthetic/quality scorer (relevance, taste, brand fit)"
+- Pivot 2026-04-25: scoring dimension-based 1-5 scale, BUKAN blanket epistemic label
+- 10 hard rules: own LLM, 5 persona reinforce, MIT, self-hosted ✓
+- Anti-halusinasi: scoring grounded di output existing (input → score), low risk
+- Budget consciousness: LLM-only, 1-2 calls per scoring run
+- Compound dengan Sprint 14/14b/14c/16 — enhance, BUKAN replace
+- Verdict: PROCEED
+
+### Scope MVP
+- File baru: agent_rasa.py
+- Function: rasa_score(slug atau brief, ...) → dict
+- Reads .data/creative_briefs/<slug>/ artifacts
+- 4 dimension scoring:
+  1. RELEVANCE (ALEY) — kesesuaian dengan brief
+  2. AESTHETIC (UTZ) — color/style/composition harmony
+  3. BRAND_FIT (OOMAR) — brand consistency + commercial positioning
+  4. AUDIENCE_FIT (AYMAN) — target demographic resonance
+- Score 1-5 per dimension + reasoning + improvement suggestion
+- Output: prose markdown + structured JSON {scores, improvements}
+- Endpoint: POST /agent/rasa
+- Compound: tambah ke /creative/brief sebagai opt-in flag
+
+### Demo angle
+Customer dapat creative bundle dari Sprint 14, lalu RASA score 4-dimension dengan improvement suggestions = self-critique sebelum produksi. Iterative refinement workflow.
