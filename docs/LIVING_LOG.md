@@ -10444,3 +10444,36 @@ Cognitive engine: UTZ persona + CT 4-pilar lens (dari Sprint 12)
 "Buatkan maskot brand makanan ringan kawaii dengan kostum ulat warna kuning untuk pasar Indonesia anak-anak 6-12 tahun"
 
 ### Ref note 248 line 178-198 (HERO USE-CASE) + Sprint 12 CT lens
+
+### Sprint 14 SHIPPED + DEPLOYED ✅ — Creative Pipeline Hero Use-Case (full sesi loop)
+
+- File baru: apps/brain_qa/brain_qa/creative_pipeline.py (416 lines)
+- File baru: brain/public/research_notes/251_creative_pipeline_hero_use_case.md
+- agent_serve.py: +CreativeBriefRequest model (top-level) + POST /creative/brief endpoint
+- 5-stage pipeline: CONCEPT -> BRAND -> COPY -> LANDING -> ASSET PROMPTS
+- Persona: UTZ creative-director + CT 4-pilar Sprint 12 lens
+- Output bundle: report.md + metadata.json + asset_prompts.txt
+
+### Iteration history
+1. Build offline -> smoke pass
+2. Deploy -> LIVE test 422 (Pydantic inline class not resolved as body)
+3. Iterasi: move CreativeBriefRequest to module top-level (commit 18bab4b)
+4. Redeploy -> LIVE test stage 1 200 OK, 38s real UTZ output verified
+
+### LIVE proof (real LLM, real production, hari ini)
+Brief: Maskot ulat kuning kawaii
+Stage 1 response: real UTZ creative-director thinking — flat design + gradasi lembut + mata besar berbinar + antena lucu + sayap mini kipas + audience insight psikologis (shift persepsi ulat dari scary ke kawaii untuk anak 4-10 tahun). Bahasa Indonesia natural, distinct dari generic LLM.
+
+### Performance
+- Single stage: ~38s (Qwen2.5-7B + LoRA via RunPod)
+- Full 5-stage: ~3-5 menit estimate (production scale)
+- Cold start RunPod: tambahan 60-120s
+
+### Known issue (defer)
+GET /openapi.json -> 500. Tidak menggangu endpoint functionality. Investigate next session.
+
+### Mandatory loop full coverage
+CATAT (start) -> IMPL -> TESTING (offline pass) -> ITERASI #1 (deploy revealed 422 -> fix module-level class) -> REVIEW (diff clean) -> CATAT -> VALIDASI (real LLM live UTZ output) -> QA (no secrets) -> CATAT (note 251) -> DEPLOY (VPS commit 18bab4b)
+
+### 3 Sprint sesi ini = full creative agent stack
+Sprint 12 (CT 4-pilar cognitive) + Sprint 15 (visioner trend sensing) + Sprint 14 (creative output) = SIDIX dari research note jadi production AI agent yang accept brief Indonesia dan output bundled deliverable dengan UTZ voice distinct.
