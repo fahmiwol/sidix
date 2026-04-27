@@ -10637,3 +10637,29 @@ CATAT (start) -> IMPL -> TESTING (4/4 offline pass) -> ITERASI (none) -> DEPLOY 
 
 #### 5-Sprint Sesi cumulative (verified working)
 Sprint 12 CT + Sprint 14 UTZ + Sprint 14b mighan-media + Sprint 14c OOMAR/ALEY + Sprint 15 visioner = 1 brief Indonesia → bundled creative + commercial + research + 8 prompts + 3 actual PNG hero asset + autonomous radar.
+
+### Iterasi #3 ALIGNED ✅ — pivot 2026-04-25 fix LIVE verified
+
+#### User catch + saya ack
+User: "[SPEKULASI] kenapa masih ada? kan udah pivot? apa itu sudah align?"
+Saya pelajari: ALEY system prompt punya line "Pakai [SPEKULASI] tag bila claim tidak bisa di-back hard data" = exactly anti-pattern pivot 2026-04-25 (blanket per-claim labeling untuk creative/brainstorm domain).
+
+#### Fix shipped (commit f4d3447)
+Replace explicit instruction:
+- Domain creative brainstorm BUKAN sensitive
+- Natural language hedging ('kemungkinan', 'asumsi awal')
+- BUKAN bracket label per bullet
+
+#### LIVE re-verify (155.6s)
+Brief: "Maskot sapi merah ngegas brand kopi premium remaja"
+ALEY enrichment: blanket label count = 0 ✅
+Voice tetap natural mengalir (Starbucks mermaid case study, kultur kopi Indonesia, generasi muda psychology)
+
+#### Audit luas
+File lain Sprint sesi ini clean: visioner persona prompts, OOMAR review, UTZ stages 1-5, runpod_media. Hanya 1 file 1 line (ALEY) yang melanggar — sudah di-fix.
+
+#### Lesson learned (note 254)
+Familiarity bias bahaya: agent yang familiar dengan epistemic-as-differentiator framing lama bisa otomatis copy ke prompt baru tanpa cek pivot terbaru. Self-audit checklist masuk ke note 254.
+
+#### User vigilance > agent familiarity
+Tipe pertanyaan "apa udah align?" = paling valuable untuk catch drift.
