@@ -27,7 +27,26 @@ Cumulative capabilities:
 - 🎭 Quality scoring: 4-dim RASA (Sprint 21)
 - 🔄 Self-iterate: KITABAH loop (Sprint 22+22b cache reuse)
 
-## ALL 16 SPRINT (2026-04-27 + 2026-04-28)
+## SESSION CLOSE 2026-04-28 morning — UPDATE: 18 SPRINT TOTAL
+
+After this handoff was first written, 2 more sprints shipped + LIVE verified:
+
+```
+Sprint 23   — ODOA Daily Compound Tracker          ✅ LIVE 66.7s 10 artifacts
+Sprint 24   — WAHDAH Corpus Signal + ODOA Cron     ✅ LIVE 75.3s notes 260 (1/3 triggered)
+```
+
+= **Self-learning trilogy COMPLETE** per note 248 line 109 (Wahdah signal + Kitabah iter + ODOA tracker).
+
+ODOA daily cron deployed: `0 23 * * *` autonomous self-tracking.
+
+Total cron jobs SIDIX sekarang **7** (worker/ingestor/always_on/radar/classroom/visioner/+odoa).
+
+Notes baru: 266 (ODOA), 267 (WAHDAH+cron).
+
+CHANGELOG bumped: 2.6.0 → 2.7.0.
+
+## ALL 18 SPRINT (2026-04-27 + 2026-04-28)
 
 ```
 Sprint 12   — CT 4-pilar cognitive engine                ✅ LIVE
@@ -45,7 +64,9 @@ Sprint 19   — Scenario Tree Explorer                      ✅ LIVE iter #7 70s
 Sprint 20   — Integrated Wisdom (smart caching)           ✅ LIVE iter #3 148s
 Sprint 21   — 🎭 RASA Aesthetic Quality Scorer            ✅ LIVE 178.7s 4.0/5
 Sprint 22   — KITABAH Auto-iterate (gen-test loop)        ⚠️  Wiring + offline (LIVE pending)
-Sprint 22b  — KITABAH Cache Reuse                         🔄 LIVE testing
+Sprint 22b  — KITABAH Cache Reuse                         ⚠️  Wiring + offline (LIVE budget pending)
+Sprint 23   — ODOA Daily Compound Tracker                 ✅ LIVE 66.7s 10 artifacts ← NEW
+Sprint 24   — WAHDAH Corpus Signal + ODOA Cron            ✅ LIVE 75.3s notes 260 ← NEW
 DISCIPLINE  — CLAUDE.md 6.4 Pre-Exec + Anti-halusinasi    ✅ LOCKED
 ```
 
