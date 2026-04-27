@@ -78,6 +78,37 @@ def _slugify(text: str, max_len: int = 60) -> str:
     return s[:max_len] or "topic"
 
 
+# ── Sprint 18: structured JSON extractor (risk_register + impact_map) ───────
+
+def _extract_json_block(text: str, key: str) -> Optional[dict]:
+    """Extract first valid JSON block dari LLM output that contains given top-key.
+
+    Format target: ```json\n{"<key>": [...]}\n```
+    Graceful: return None kalau tidak parseable atau key tidak ada.
+    """
+    if not text:
+        return None
+    # Find ```json ... ``` blocks
+    fence_pattern = re.compile(r"```(?:json)?\s*\n?(\{.*?\})\s*\n?```", re.DOTALL)
+    for m in fence_pattern.finditer(text):
+        try:
+            parsed = json.loads(m.group(1))
+            if isinstance(parsed, dict) and key in parsed:
+                return parsed
+        except json.JSONDecodeError:
+            continue
+    # Fallback: try parse standalone JSON dict that mentions key
+    brace_pattern = re.compile(r"(\{[^{}]*\"" + re.escape(key) + r"\"\s*:\s*\[.*?\]\s*\})", re.DOTALL)
+    for m in brace_pattern.finditer(text):
+        try:
+            parsed = json.loads(m.group(1))
+            if isinstance(parsed, dict) and key in parsed:
+                return parsed
+        except json.JSONDecodeError:
+            continue
+    return None
+
+
 # ── Visioner trending hook (compound Sprint 14c pattern) ────────────────────
 
 def _read_recent_trending(n: int = 5) -> list[str]:
@@ -156,7 +187,19 @@ _OOMAR_IMPACT_SYSTEM = (
     "4. **EKOSISTEM/PARTNER** — ripple effect ke partner/supplier/ecosystem\n\n"
     "Format markdown. Berani spesifik. Quantitative kalau bisa (estimasi range). "
     "Hedging via natural language ('cenderung', 'kemungkinan besar'), BUKAN "
-    "bracket tag per claim."
+    "bracket tag per claim.\n\n"
+    "**SETELAH markdown analysis di atas**, sertakan blok JSON parseable di akhir "
+    "(WAJIB exact format ini, gunakan triple-backtick json fence):\n\n"
+    "```json\n"
+    "{\"impact_map\": [\n"
+    "  {\"stakeholder\": \"User/Customer\", \"short_term\": \"...\", \"long_term\": \"...\", \"severity\": \"high|medium|low\"},\n"
+    "  {\"stakeholder\": \"Audience/Market\", \"short_term\": \"...\", \"long_term\": \"...\", \"severity\": \"...\"},\n"
+    "  {\"stakeholder\": \"Brand/Product\", \"short_term\": \"...\", \"long_term\": \"...\", \"severity\": \"...\"},\n"
+    "  {\"stakeholder\": \"Ekosistem/Partner\", \"short_term\": \"...\", \"long_term\": \"...\", \"severity\": \"...\"}\n"
+    "]}\n"
+    "```\n\n"
+    "JSON harus valid — pastikan strings escaped, no trailing commas. "
+    "Fields short_term/long_term: 1 kalimat singkat per stakeholder."
 )
 
 
@@ -194,7 +237,18 @@ _ABOO_RISK_SYSTEM = (
     "4. **COST ANALYSIS** — waktu/compute/reputasi/opportunity cost\n\n"
     "Format markdown. JANGAN sugar coat. Berani brutal honest. Hedging via "
     "natural language ('berisiko tinggi kalau', 'gampang gagal saat'), BUKAN "
-    "bracket tag epistemik."
+    "bracket tag epistemik.\n\n"
+    "**SETELAH markdown analysis di atas**, sertakan blok JSON parseable di akhir "
+    "(WAJIB exact format ini, gunakan triple-backtick json fence):\n\n"
+    "```json\n"
+    "{\"risk_register\": [\n"
+    "  {\"risk\": \"failure mode singkat\", \"probability\": \"high|medium|low\", \"impact\": \"high|medium|low\", \"mitigation\": \"langkah konkret\", \"reasoning\": \"kenapa ini risiko nyata\"},\n"
+    "  {\"risk\": \"...\", \"probability\": \"...\", \"impact\": \"...\", \"mitigation\": \"...\", \"reasoning\": \"...\"},\n"
+    "  {\"risk\": \"...\", \"probability\": \"...\", \"impact\": \"...\", \"mitigation\": \"...\", \"reasoning\": \"...\"}\n"
+    "]}\n"
+    "```\n\n"
+    "JSON harus valid — strings escaped, no trailing commas. Top 3 risk paling "
+    "kritikal. Reasoning konkret (1 kalimat), bukan vague."
 )
 
 
@@ -388,8 +442,28 @@ def wisdom_analyze(
     if "synthesis" not in skip:
         w.stages.append(stage_synthesis(topic, aha_text, impact_text, risk_text, spec_text))
 
+    # Sprint 18: extract structured JSON from ABOO + OOMAR prose stages
+    structured: dict[str, Any] = {}
+    risk_stage = next((s for s in w.stages if s.capability == "risk"), None)
+    impact_stage = next((s for s in w.stages if s.capability == "impact"), None)
+    if risk_stage:
+        risk_obj = _extract_json_block(risk_stage.content, "risk_register")
+        if risk_obj:
+            structured["risk_register"] = risk_obj.get("risk_register", [])
+    if impact_stage:
+        impact_obj = _extract_json_block(impact_stage.content, "impact_map")
+        if impact_obj:
+            structured["impact_map"] = impact_obj.get("impact_map", [])
+
     if persist:
         _persist(w)
+        # Save structured.json bila ada structured data
+        if structured:
+            target = WISDOM_DIR / w.slug
+            (target / "structured.json").write_text(
+                json.dumps(structured, indent=2, ensure_ascii=False), encoding="utf-8"
+            )
+            w.paths["structured"] = str(target / "structured.json")
 
     return {
         "topic": w.topic,
@@ -398,6 +472,7 @@ def wisdom_analyze(
         "ts": w.ts,
         "trending_keywords": trending,
         "stages": [asdict(s) for s in w.stages],
+        "structured": structured,  # Sprint 18: machine-readable risk_register + impact_map
         "paths": w.paths,
     }
 

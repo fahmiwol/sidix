@@ -10886,3 +10886,30 @@ CATAT (start dengan Pre-Exec Alignment cite eksplisit) -> IMPL (agent_wisdom.py 
 
 #### Compound 9 sprint sesi cumulative
 Sprint 12 + 14 + 14b + 14c + 14e + 14g + 15 + 16 + Discipline lock = SIDIX dari research note jadi production AI partner advisor + creative agent stack lengkap.
+
+
+---
+
+## 2026-04-27 sesi-baru evening — Sprint 18 START — Risk Register + Impact Map structured output
+
+### Pre-Execution Alignment Check (per CLAUDE.md 6.4) — citing eksplisit
+- Note 248 line 471 EXPLICIT MANDATED: "Sprint 18: Risk register + impact map generator" ✓
+- Compound dengan Sprint 16 LIVE-verified ✓
+- Pivot 2026-04-25: risk severity (low/med/high) ≠ 4-label epistemic system, OK pakai per item ✓
+- Anti-halusinasi: structured JSON requires basis konkret per item ✓
+- 10 hard rules: own LLM, 5 persona, MIT, self-hosted ✓
+- Verdict: PROCEED
+
+### Scope MVP
+Enhance agent_wisdom.py existing ABOO Risk + OOMAR Impact stages:
+- ABOO prompt: tambah JSON block schema {risks: [{risk, probability, impact, mitigation, reasoning}]}
+- OOMAR prompt: tambah JSON block schema {impact_map: [{stakeholder, short_term, long_term, severity}]}
+- Code: extract JSON block dari prose, parse, return as structured field
+- wisdom_analyze return dict +structured field (graceful kalau JSON parse fail)
+
+### Compound dengan Sprint 16
+Pipeline Sprint 16 sudah LIVE: prose markdown 5 stage. Sprint 18 = same pipeline, output prose + structured. Bukan break Sprint 16, tapi enhance.
+
+### Demo angle
+ChatGPT/Claude: prose only.
+SIDIX wisdom Sprint 18: prose + machine-readable JSON → user paste ke spreadsheet/Notion/dashboard untuk risk register management.
