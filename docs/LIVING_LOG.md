@@ -12049,3 +12049,47 @@ OpenSearch. DDG path tetap pakai query asli (full-text handle better).
   definition chunk. Action: tulis research note "What is sanad chain"
   + reindex corpus.
 
+
+---
+
+## 2026-04-28 — VISION ALIGNMENT AUDIT (per user feedback "terasa mengulang")
+
+### NOTE [274] Vision audit 3-day systematic read
+**Trigger**: user feedback antar sesi terasa mengulang/keluar jalur, request audit
+identify mana compound vs off-track.
+
+**Method**: read sistematis 3-hari corpus tanpa compound dari memory:
+- 3 Vision SOT docs (SIDIX_DEFINITION_20260426, note 248, DIRECTION_LOCK)
+- 18 research notes 249-273 (Sprint 16-28b)
+- 11 HANDOFF docs (2026-04-25 sampai 2026-04-28)
+- LIVING_LOG terakhir 500 lines
+
+**Output**: `brain/public/research_notes/274_vision_alignment_audit_3day.md`
+
+### DECISION [274] ZERO sprint perlu terminate
+- 24 sprint dalam 3 hari = compound non-repetitif
+- Tiap sprint tambah dimensi BARU (16=judgment, 18=risk JSON, 19=scenario,
+  20=cache, 21=score, 22=loop, 23=tracker, 24=signal, 25=hybrid, 28a=inject)
+- 0 kandidat valid untuk terminate
+- 4 Pilar Vision (note 248) all served, no orphan
+
+### NOTE [274] User "mengulang" perception — 3 sebab struktural (bukan kode)
+1. Konvensi Pre-Exec Alignment Check (CLAUDE.md 6.4) IDENTIK skeleton di
+   tiap note → eye sees sameness, content beda
+2. 5 persona LOCKED (UTZ/ABOO/OOMAR/ALEY/AYMAN) muncul terus → by design
+   per 10 hard rules
+3. High velocity 24 sprint/3 hari → context overload similar look-and-feel
+
+### TODO [274] 3 quick wins next session (compound, aligned)
+1. **Sanad corpus gap** — bikin definition note + reindex (1 jam)
+   query "apa itu sanad" Sprint 28b found return "tidak ada"
+2. **RunPod warmup tuning** — investigasi log, ping rate atau FlashBoot (30 min)
+   greeting 16s cold-start mengecewakan UX
+3. **Compound chain visual** — diagram di docs/COMPOUND_CHAIN.md (30 min)
+   resolve user "terasa mengulang" via visibility
+
+### TODO [274] Sprint 29 candidates (medium, Pilar 3 close gap)
+- 29A: DoRA training pipeline → wire WAHDAH signal → trigger LoRA retrain
+  (currently signal-only, training-actual missing per note 267 line 15)
+- 29B: Vision input organ (CLIP/SigLIP local) → 13/15 embodiment
+
