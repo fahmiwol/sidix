@@ -12333,3 +12333,42 @@ Found di cron_radar.log: `radar_mentions.jsonl: No such file or directory`
 Cron jalan tiap 30 min (chmod fix), tapi log path missing → 0 mentions ever logged.
 Quick fix: ensure parent dir exists + touch file kalau belum ada.
 
+
+### TEST [Sprint 32-radar] verifikasi end-to-end (loop CLAUDE.md 6.5)
+**push pull deploy** ✓ (commit 5d3e847)
+**post-merge hook auto chmod** ✓ (verified: file mode 644→755 setelah git merge)
+**dry-run radar** ✓:
+  ```
+  [2026-04-28T07:17:38Z] [rad-1777360658] SIDIX Radar tick
+  google_news: 1 checked, 0 matched
+  reddit error: HTTP Error 403: Blocked        ← known minor (no auth)
+  github HTTPError: HTTP Error 401: Unauthorized ← known minor (no auth)
+  radar tick rad-1777360658 done
+  [2026-04-28T07:17:38Z] [rad-1777360658] radar done. Total mentions logged ever: 0
+  ```
+  → NO MORE "No such file or directory" error. Bersih.
+
+### REVIEW QA [Sprint 32-radar]:
+- Bug fix: `[ -f FILE ]` check sebelum `wc -l <` ✓ idempotent + safe
+- Side effect: tidak ada — script flow tetap sama
+- Compound: post-merge hook auto-chmod TERBUKTI jalan (bonus validation Sprint 31C)
+- Future: reddit/github auth setup untuk increase mention coverage (non-urgent)
+
+### CATAT FINAL [Sprint 32 + 32-radar]:
+**Sprint 32 (dense rebuild)**: DEFER — transformers 5.5.1 break sentence-transformers 5.4.1
+import. Mitigation: BM25 retrieval Sprint 30A cover note baru; dense untuk old
+chunks tetap fresh dari Sprint 25 build.
+
+**Sprint 32-radar**: SHIPPED + LIVE. Cron tiap 30 menit sekarang clean log,
+ready menerima mention ketika SIDIX mulai di-mention internet.
+
+**Bonus validation**: Sprint 31C post-merge hook deployed earlier session ini
+TERBUKTI active — auto-chmod jalan saat merge Sprint 32-radar. Permission silent
+fail tidak akan terjadi lagi. ✓
+
+### TODO Sprint 33+ candidates (urut priority):
+- 33A: Fix transformers/sentence-transformers compat → re-enable dense rebuild
+- 33B: Reddit/GitHub auth untuk radar (env keys + script update)
+- 33C: Investigate radar `set -e` interaction (script failed silently kalau wc fail)
+- 33D: external_llm_pool consensus timeout (worker.sh log show recurring)
+
