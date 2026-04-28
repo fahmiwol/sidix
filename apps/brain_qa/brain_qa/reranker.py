@@ -11,9 +11,10 @@ melihat query+doc bersamaan dalam satu attention. Trade-off: lebih lambat
 per pair (~10-30ms CPU per pair untuk MiniLM cross-encoder), tapi karena
 hanya pada top-K (≤20 pairs) total overhead masih acceptable (~200-600ms).
 
-Default model: `BAAI/bge-reranker-v2-m3` — multilingual (Indonesian friendly),
-top tier MTEB. Fallback: `cross-encoder/ms-marco-MiniLM-L-6-v2` (English-leaning,
-faster). Graceful disable kalau sentence-transformers tidak available.
+Default model: `cross-encoder/ms-marco-MiniLM-L-6-v2` (~110MB, ~1-2s CPU top-20).
+Sprint 27b: swapped primary — BGE-reranker-v2-m3 too slow at 22.7s CPU.
+Fallback: `BAAI/bge-reranker-v2-m3` (multilingual, top-tier MTEB, ~1.12GB).
+Graceful disable kalau sentence-transformers tidak available.
 
 Pivot alignment (CLAUDE.md 6.4):
 - Note 248: foundation retrieval = compound win, reranker = quality jump terbesar
@@ -82,9 +83,10 @@ def load_rerank_fn(model_name: Optional[str] = None) -> Optional[Callable[[str, 
         candidates = [name]
     elif name:
         log.warning("[reranker] unknown model '%s', auto fallback", name)
-        candidates = ["bge-reranker-v2-m3", "ms-marco-minilm"]
+        candidates = ["ms-marco-minilm", "bge-reranker-v2-m3"]
     else:
-        candidates = ["bge-reranker-v2-m3", "ms-marco-minilm"]
+        # Sprint 27b: MiniLM first (110MB, ~1-2s CPU). BGE fallback only if MiniLM fails.
+        candidates = ["ms-marco-minilm", "bge-reranker-v2-m3"]
 
     CE = _try_cross_encoder()
     if CE is None:

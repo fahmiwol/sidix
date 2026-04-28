@@ -7,9 +7,11 @@ module.exports = {
       interpreter: 'bash',
       env: {
         SIDIX_TYPO_PIPELINE: '1',
-        // Sprint 25 Hybrid Retrieval (2026-04-28) — flip to '1' after index rebuild
-        SIDIX_HYBRID_RETRIEVAL: '0',
-        SIDIX_RERANK: '0'
+        // Sprint 25: Hybrid BM25+Dense retrieval (LIVE 2026-04-28)
+        SIDIX_HYBRID_RETRIEVAL: '1',
+        // Sprint 27b: MiniLM reranker (~1-2s CPU) replacing BGE-reranker-v2-m3 (22.7s)
+        SIDIX_RERANK: '1',
+        SIDIX_RERANK_MODEL: 'ms-marco-minilm'
       }
     },
     {
