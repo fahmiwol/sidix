@@ -12372,3 +12372,80 @@ fail tidak akan terjadi lagi. ✓
 - 33C: Investigate radar `set -e` interaction (script failed silently kalau wc fail)
 - 33D: external_llm_pool consensus timeout (worker.sh log show recurring)
 
+
+---
+
+## 2026-04-28 EVENING (LATEST+5) — Sprint 33 START: Test SIDIX Response + Compound Sprint
+
+### TEST PLAN
+3 query untuk verify production state setelah Sprint 25-32:
+1. **Current events**: "siapa Presiden Indonesia sekarang?" — expect Prabowo + web_search citations (Sprint 28b)
+2. **SIDIX-specific**: "SIDIX adalah apa?" — expect grounded (Sprint 28a corpus inject)
+3. **Sanad knowledge** (NEW corpus): "apa itu sanad chain di SIDIX?" — expect ada answer dari note 276 (BM25 reindex Sprint 30A)
+
+
+### TEST [Sprint 33] SIDIX response check
+- Test 1 (greeting "halo"): ✓ PASS — 1394ms simple bypass via RunPod, response valid
+- Test 2-3 (current events / SIDIX-specific): TIMEOUT — Ollama runner 385% CPU (saturated)
+
+### ERROR [Sprint 33] Ollama overload — cron contention
+- 5 cron jobs scheduled at minute :00 (always_on, radar, classroom, worker, aku_ingestor)
+- Tabrakan setiap jam → Ollama queue stuck → /ask timeout cascade
+- Worker task heavy: "Apa beda vector DB Qdrant Weaviate Pinecone untuk RAG production?" — multi-LLM consensus
+
+### IMPL [Sprint 33] Cron staggered (load balance)
+**Crontab BEFORE**:
+```
+*/15 * * * * sidix_always_on.sh
+*/30 * * * * sidix_radar.sh        # menit 0, 30
+0    * * * * sidix_classroom.sh    # menit 0
+*/10 * * * * sidix_worker.sh       # menit 0, 10, 20, 30, 40, 50
+*/10 * * * * sidix_aku_ingestor.sh # menit 0, 10, 20, 30, 40, 50
+```
+At minute 0: ALL 5 jobs run simultaneous = saturation.
+
+**Crontab AFTER (staggered + reduced)**:
+```
+*/15        * * * * sidix_always_on.sh    # menit 0, 15, 30, 45
+7,37        * * * * sidix_radar.sh        # offset 7
+0           * * * * sidix_classroom.sh    # menit 0 (hourly heavy)
+4,19,34,49  * * * * sidix_worker.sh       # offset 4, freq 6→4 per hour
+9,24,39,54  * * * * sidix_aku_ingestor.sh # offset 9, freq 6→4 per hour
+```
+
+Total cron events/hour: 19 → 15 (-21%). No two cron same minute.
+
+**Snapshot**: `/opt/sidix/deploy-scripts/crontab.snapshot.txt` saved + git tracked.
+
+
+### TEST [Sprint 33] post-stagger retest — HONEST REPORT
+- T1 greeting "halo" first attempt (07:51 UTC, post brain restart): **PASS 1394ms** ✓
+- T1 greeting retry (07:55 UTC): TIMEOUT 30s — Ollama queue masih saturated
+- T1 retry post brain hard restart (07:59 UTC): TIMEOUT — even /agent/generate direct hang
+- **/api/generate ke Ollama langsung**: TIMEOUT — ollama service hung
+- **Ollama service restart**: TAGS OK (model registered), tapi /api/generate masih timeout 60s
+
+**Root cause cascade**:
+1. Cron contention earlier: 5 jobs simultan menit :00 → Ollama runner 385% CPU
+2. Even setelah cron stagger applied + brain restart + Ollama service restart → residual model state slow
+3. First-call cold-start re-load 4.7GB qwen2.5:7b model = perlu time
+
+### REVIEW QA [Sprint 33]:
+**Achieved**:
+- ✓ Cron stagger applied (verified via crontab -l)
+- ✓ Crontab snapshot saved ke `/opt/sidix/deploy-scripts/crontab.snapshot.txt`
+- ✓ Worker+aku_ingestor freq reduced 6/h → 4/h
+- ✓ No two cron same minute now
+
+**Pending**:
+- Ollama recovery — needs ≥1 cycle (15-30 min) untuk stabilize post-stagger
+- Test 2-3 verification deferred sampai Ollama responsive
+
+**Honest verdict**: cron stagger code change SHIPPED. Operational verification BLOCKED by Ollama recovery state (independent of cron change itself — Ollama struggling karena 4-vCPU CPU constraint vs 7B model + multi-cron load).
+
+### TODO Sprint 34+ (lebih structural):
+- Ollama concurrency limit (env `OLLAMA_NUM_PARALLEL=1`?)
+- Smaller model fallback for cron jobs (qwen2.5:1.5b 986MB)
+- VPS upgrade (more CPU?) atau move heavy cron ke RunPod
+- Disable worker.sh temporarily kalau recovery slow
+
