@@ -11790,3 +11790,69 @@ BM25 (baseline)        60.0%      0.350      12         45
 Hybrid BM25+Dense      75.0%      0.420      180        380      (+15.0%)
 Hybrid+Rerank          80.0%      0.460      550        900      (+20.0%)
 ============================================================
+
+---
+
+## 2026-04-28 — Sprint 25 Hybrid Retrieval DEPLOYED + Eval Results
+
+### DEPLOY [IMPL] Sprint 25 Hybrid BM25+Dense — VPS LIVE
+
+**Status**: DEPLOYED + VERIFIED ✓
+
+**Files shipped** (commit `24a617f` + worktree `claude/epic-cray-3e451f`):
+- `apps/brain_qa/brain_qa/dense_index.py` — BGE-M3 embedding index build/load/search
+- `apps/brain_qa/brain_qa/hybrid_search.py` — RRF fusion (BM25 + dense)
+- `apps/brain_qa/brain_qa/reranker.py` — cross-encoder reranker (SIDIX_RERANK gated)
+- `apps/brain_qa/brain_qa/indexer.py` — dense build appended to BM25 build
+- `apps/brain_qa/brain_qa/query.py` — hybrid path wired (gated by SIDIX_HYBRID_RETRIEVAL)
+- `apps/brain_qa/brain_qa/retrieval_eval.py` — A/B eval harness
+- `apps/brain_qa/tests/test_hybrid_retrieval.py` — 7 tests, all pass
+- `deploy-scripts/deploy_sprint25_hybrid.sh` — 6-step VPS deploy script
+- `deploy-scripts/ecosystem.config.js` — SIDIX_HYBRID_RETRIEVAL + SIDIX_RERANK added
+
+**VPS deploy log**:
+- Index build: 2171 chunks × BGE-M3 (dim=512), elapsed 43 min on 4 vCPU AMD EPYC
+- Output: `apps/brain_qa/.data/embeddings.npy` (4.3MB) + `dense_meta.json`
+- ENV flip: `SIDIX_HYBRID_RETRIEVAL=1`, `SIDIX_RERANK=0` in ecosystem.config.js
+- PM2 restart: `sidix-brain` id=23, uptime verified, corpus_doc_count=2171
+- Smoke test (Python direct): hybrid_search() returned 5 chunks, method=`hybrid`, RRF fusion confirmed
+
+### TEST [Sprint 25b] Retrieval Eval Results — 2026-04-28 03:35:11
+
+```
+============================================================
+SIDIX Retrieval Eval — Sprint 25b
+Queries: 30  |  Hit@5  |  2026-04-28 03:35:11
+============================================================
+Method                 Hit@5      MRR@5      p50 ms     p95 ms
+------------------------------------------------------------
+BM25 (baseline)        100.0%     1.000      4          8
+Hybrid BM25+Dense      100.0%     1.000      147        363  (+0.0%)
+Hybrid+Rerank          100.0%     1.000      22723      28056  (+0.0%)
+============================================================
+BM25 misses: 0/30
+```
+
+**Analisis**:
+- **Floor effect**: eval queries auto-generated dari corpus keywords → BM25 trivially lexical-match 100%. Bukan real-world signal.
+- **Hybrid latency**: +143ms per query (147ms vs 4ms BM25). Akseptabel karena total response time dominated LLM (seconds).
+- **Reranker terlalu lambat**: 22.7s p50 pada VPS CPU = unacceptable production latency. `SIDIX_RERANK=0` TETAP.
+- **Real-world impact**: Hybrid akan bantu ketika user query pakai vocabulary beda dari corpus (paraphrase, multi-lingual Arabic-Malay), yang tidak ter-capture oleh eval ini.
+
+**Keputusan**: Hybrid ON, Rerank OFF. Perlu eval set human-annotated paraphrase untuk ukur lift nyata.
+
+### DECISION Reranker model alternatives (catatan untuk Sprint 26+)
+- `BAAI/bge-reranker-v2-m3`: 22.7s p50 CPU → TERLALU LAMBAT untuk VPS
+- `cross-encoder/ms-marco-MiniLM-L-6-v2`: ~1-2s CPU → layak dicoba kalau mau aktifkan rerank
+- Atau: quantize BGE-reranker ke INT8 (sentence-transformers supports ONNX/CT2)
+- Atau: pindah rerank ke RunPod GPU (warmup sudah ada)
+
+### NOTE Sprint 26 candidates
+1. **RunPod cold start fix** — `IN_QUEUE` responses = user timeout, paling impactful untuk UX
+2. **Eval set quality** — human-annotated paraphrase queries untuk measure real hybrid lift
+3. **Lighter reranker** — MiniLM cross-encoder untuk aktifkan SIDIX_RERANK=1
+4. **Query expansion/HyDE** — generate hypothetical answer → embed → dense search
+
+### DEPLOY [model_policy] CLAUDE.md model policy commit
+- Commit `012d6d3`: tambah `## 🤖 MODEL POLICY` section (Haiku/Sonnet/Opus decision table)
+- Memory saved: `feedback_model_policy.md`
