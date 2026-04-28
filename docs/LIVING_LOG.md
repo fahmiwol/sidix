@@ -13007,3 +13007,89 @@ Lesson template structure verified:
 - Endpoint: `GET /audit/{id}` trace provenance
 - Compound dengan Sprint 36 lesson workflow
 
+
+---
+
+## 2026-04-28 EVENING (LATEST+17) — Sprint 37 START: Hafidz Ledger MVP
+
+### CATAT memulai
+**Source**: ROADMAP_SPRINT_36_PLUS.md priority 2 (skor 18/20).
+**Goal**: Provenance trail audit-able untuk lesson + skill yang akan lahir dari Sprint 36+38+ downstream.
+
+**Scope MVP** (skip full Merkle + erasure shares — Phase 4):
+- Module `hafidz_ledger.py` baru
+- SHA-256 cas_hash dari canonical content
+- isnad_chain (parent refs) tracking provenance
+- Append-only JSONL store di `.data/hafidz_ledger.jsonl`
+- Endpoint `GET /audit/{content_id}` → entry + isnad walk
+- Hook integration ke `sidix_reflect_day.sh` (preliminary entry per lesson draft)
+
+**Compound**:
+- Sprint 36 reflect_day → setiap lesson draft auto-write Hafidz entry
+- Sprint 38 future tool synthesis → setiap skill promote auto-write
+- Sprint 40 Telegram approval → owner verdict update entry
+- Note 141 spec → MVP subset
+
+
+### IMPL [Sprint 37] Hafidz Ledger MVP DEPLOYED + LIVE
+**Files** (commit d5b5165 final):
+- `apps/brain_qa/brain_qa/hafidz_ledger.py` NEW (~210 lines)
+- `apps/brain_qa/brain_qa/agent_serve.py` (+62 lines, 2 endpoints)
+- `scripts/sidix_reflect_day.sh` (+25 lines, hook write entry)
+
+**Module API** (stateless, thread-safe):
+- `compute_cas_hash(content)` — SHA-256 deterministic LF-normalize
+- `write_entry()` — append-only JSONL `.data/hafidz_ledger.jsonl`
+- `read_entry_by_id()` / `read_entry_by_hash()` — lookup
+- `trace_isnad(content_id, max_depth=10)` — walk parent chain
+- `update_owner_verdict()` — append new entry (immutable history)
+- `stats()` / `list_recent_entries()` — observability
+
+**Endpoints LIVE**:
+- `GET /audit/stats` — overview (count, by_type, by_verdict, recent_10)
+- `GET /audit/{content_id}` — single entry + isnad_trace + chain_depth
+
+### TEST [Sprint 37] OFFLINE 7/7 PASS
+- T1 CAS hash deterministic ✓ (6ae8a7555520...)
+- T2 write_entry ✓ (verdict=pending)
+- T3 read_by_id ✓ (hash match)
+- T4 child entry isnad_chain ✓
+- T5 trace_isnad depth=2 ✓ (skill-test → lesson-test)
+- T6 update_verdict last-wins ✓ (pending → approved)
+- T7 stats() count + by_type + by_verdict ✓
+
+### TEST [Sprint 37] VPS LIVE
+- Reflect_day jalan: `[hafidz] entry written: cas_hash=70c1ead4a5e4... content_id=lesson-2026-04-27` ✓
+- `/audit/lesson-2026-04-27` return entry + isnad_trace + chain_depth=1 ✓
+- ⚠ ITERASI: `/audit/_stats` route conflict dengan `/audit/{content_id}` → fix register order specific BEFORE catch-all
+- Post-iter: `/audit/stats` LIVE return: 1 entry, by_type={reflection_lesson:1}, by_verdict={pending:1} ✓
+
+### REVIEW QA + VALIDASI [Sprint 37]:
+**Achieved**:
+- ✓ Provenance trail audit-able (compound dengan Sprint 36 reflect_day)
+- ✓ Append-only immutable history (verdict update via new entry, no mutation)
+- ✓ Filosofi sanad METODE (note 248) terimplementasi konkret
+- ✓ Foundation untuk Sprint 38 (skill provenance), Sprint 40 (verdict via Telegram), Sprint 41 (tabayyun gate populate)
+
+**Sprint 37 metrics**:
+- Endpoints baru: 2 (`/audit/stats`, `/audit/{content_id}`)
+- Module size: ~210 lines (lean MVP)
+- Offline test coverage: 7/7
+- VPS LIVE verification: lesson-2026-04-27 traceable
+
+### OPTIMASI catatan Sprint 37
+- **Performance**: append-only JSONL, thread-safe lock, no DB overhead
+- **Storage**: LF-normalized hash, dedup-friendly future
+- **Future Phase 4**: Merkle tree on top of cas_hash chain (no migration cost)
+
+### TODO Sprint 38 (next: Tool Synthesis MVP)
+**Innovation 5/5 — milestone "skill pertama lahir dari SIDIX sendiri"**.
+
+Plan:
+1. `apps/brain_qa/brain_qa/tool_synthesizer.py` extend (existing module)
+2. Detector: scan REACT_STEP log untuk tool sequence repeat ≥3 dalam 7 hari
+3. Proposer: generate macro YAML `skill_id, composed_from, trigger_pattern, born_from_episodes`
+4. Sandbox: jalankan macro pada 3 supporting episodes, compare output
+5. Quarantine: skill masuk `skills/quarantine/` 7 hari minimum
+6. Hafidz Ledger entry per skill propose + promote (Sprint 37 hook)
+
