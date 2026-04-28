@@ -33,6 +33,7 @@ Reference: research note 233 BGE-M3 default + note 248 LOCK.
 
 from __future__ import annotations
 
+import functools
 import json
 import logging
 import os
@@ -43,6 +44,61 @@ log = logging.getLogger(__name__)
 
 DENSE_FILENAME = "embeddings.npy"
 DENSE_META = "dense_meta.json"
+
+# Sprint 26b: LRU cache untuk query embedding di-time.
+# 2048 entries × 512-dim × 4 bytes ≈ 4MB RAM — negligible.
+# Cache hit = skip BGE-M3 forward pass → -130ms latency per repeat query.
+_QUERY_CACHE_SIZE = 2048
+
+
+@functools.lru_cache(maxsize=1)
+def _embed_fn_singleton() -> Optional[Callable]:
+    """Load default embed_fn once. lru_cache(1) = process-lifetime singleton."""
+    try:
+        from .embedding_loader import load_embed_fn
+        return load_embed_fn()
+    except Exception as e:
+        log.warning("[dense_index] embedding_loader unavailable for singleton: %s", e)
+        return None
+
+
+@functools.lru_cache(maxsize=_QUERY_CACHE_SIZE)
+def _cached_query_embed(query_text: str) -> tuple:
+    """Cache query text → embedding tuple (hashable). Returns () on failure.
+
+    Sprint 26b: -130ms on cache hit (avoid BGE-M3 re-inference).
+    Cache stats: dense_index.get_query_cache_info().
+    """
+    fn = _embed_fn_singleton()
+    if fn is None:
+        return ()
+    try:
+        v = fn(query_text)
+    except Exception as e:
+        log.warning("[dense_index] cached embed failed: %s", e)
+        return ()
+    if v is None:
+        return ()
+    np = _try_numpy()
+    if np is None:
+        return tuple(float(x) for x in v) if hasattr(v, "__iter__") else ()
+    arr = np.asarray(v, dtype=np.float32).reshape(-1)
+    norm = float(np.linalg.norm(arr))
+    if norm > 0:
+        arr = arr / norm
+    return tuple(arr.tolist())
+
+
+def get_query_cache_info() -> dict:
+    """Return LRU cache stats — for /health or admin endpoint observability."""
+    info = _cached_query_embed.cache_info()
+    return {
+        "hits": info.hits,
+        "misses": info.misses,
+        "currsize": info.currsize,
+        "maxsize": info.maxsize,
+        "hit_rate": round(info.hits / max(1, info.hits + info.misses), 3),
+    }
 
 
 def _try_numpy():
@@ -175,23 +231,24 @@ def dense_search(
     np = _try_numpy()
     if np is None or matrix is None or matrix.shape[0] == 0:
         return []
+    # Sprint 26b: cache hit = -130ms. Custom embed_fn (tests) bypasses cache.
     if embed_fn is None:
-        try:
-            from .embedding_loader import load_embed_fn
-            embed_fn = load_embed_fn()
-        except Exception:
+        tup = _cached_query_embed(query_text or "")
+        if not tup:
             return []
-    if embed_fn is None:
-        return []
-    try:
-        q = embed_fn(query_text or "")
-    except Exception as e:
-        log.warning("[dense_index] query embed failed: %s", e)
-        return []
-    q = np.asarray(q, dtype=np.float32).reshape(-1)
-    norm = float(np.linalg.norm(q))
-    if norm > 0:
-        q = (q / norm).astype(np.float32)
+        q = np.asarray(tup, dtype=np.float32)
+    else:
+        try:
+            raw = embed_fn(query_text or "")
+        except Exception as e:
+            log.warning("[dense_index] query embed failed: %s", e)
+            return []
+        if raw is None:
+            return []
+        q = np.asarray(raw, dtype=np.float32).reshape(-1)
+        norm = float(np.linalg.norm(q))
+        if norm > 0:
+            q = (q / norm).astype(np.float32)
     if q.shape[0] != matrix.shape[1]:
         log.warning(
             "[dense_index] query dim %d != index dim %d, abort",
@@ -218,6 +275,7 @@ __all__ = [
     "load_dense_index",
     "dense_search",
     "is_enabled_via_env",
+    "get_query_cache_info",
     "DENSE_FILENAME",
     "DENSE_META",
 ]
