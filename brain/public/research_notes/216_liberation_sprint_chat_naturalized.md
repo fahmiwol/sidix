@@ -1,3 +1,5 @@
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 ---
 name: Liberation Sprint — Chat Naturalized (Casual Gate)
 description: Cara kerja casual-topic gate yang nge-strip [EXPLORATORY] + "Berdasarkan referensi" untuk chat casual, sambil tetap apply tag untuk topik sensitif (fiqh/medis/data). Kontinuasi pivot 2026-04-25 yang KIMI mulai tapi belum tuntas.

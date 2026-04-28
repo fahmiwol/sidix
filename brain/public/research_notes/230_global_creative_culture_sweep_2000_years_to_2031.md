@@ -1,5 +1,7 @@
 # 230 — Global Creative + Culture Sweep: 2000 BC → 2026 → 2031 Trend Projection
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 **Date**: 2026-04-26 (vol 18)
 **Tag**: RESEARCH / GLOBAL / CULTURE / STRATEGIC
 **Status**: Strategic intelligence brief untuk SIDIX mendunia

@@ -1,5 +1,7 @@
 # Transformer Architecture — Deep Dive
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 > Sumber: REF-2026-* (paper Vaswani 2017 + Llama 3 Technical Report + blueprint teknis Mighan)
 > Kategori: deep-learning, architecture, llm-fundamentals
 > Status: research note

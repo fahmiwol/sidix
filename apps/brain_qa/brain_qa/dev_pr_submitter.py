@@ -1,4 +1,9 @@
 """
+
+Author: Fahmi Ghani - Mighan Lab / PT Tiranyx Digitalis Nusantara
+License: MIT (see repo LICENSE) - attribution required for derivative work.
+Prior-art declaration: see repo CLAIM_OF_INVENTION.md.
+
 dev_pr_submitter.py — Sprint 40 Phase 1 (Autonomous Developer git ops)
 
 Convert applied DiffPlan + TestResult ke git commit + push + (optional) GitHub

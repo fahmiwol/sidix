@@ -1,5 +1,7 @@
 # 129 — Kausalitas, Problem Solving & Relativitas Sebab-Akibat
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 ## Sumber
 - PDF: BAB II_1811150.pdf (Metode Pemecahan Masalah — skripsi/akademik)
 - Scribd: Metode Pemecahan Masalah, Sistem Pemrosesan Informasi, Problem Solving

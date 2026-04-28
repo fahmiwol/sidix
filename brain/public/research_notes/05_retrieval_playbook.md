@@ -1,5 +1,7 @@
 # Retrieval playbook (RAG) — top‑k, hybrid, rerank
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 ## Ringkasan 10 baris
 - Retrieval itu jantung RAG: kalau kandidat dokumen salah, jawaban ikut ngawur.
 - Dense/vector search bagus buat semantik, tapi sering miss query yang butuh **exact match** (kode error, ID, istilah langka).

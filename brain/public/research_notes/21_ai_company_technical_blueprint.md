@@ -1,5 +1,7 @@
 # Blueprint Teknis: Membangun Perusahaan AI — Dari Riset Sampai Produksi
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 > Dokumen riset komprehensif. Membedah bagaimana Anthropic, OpenAI, Google AI, Meta AI,
 > dan Midjourney dibangun secara teknis — lalu memetakan jalur implementasi untuk Mighan.
 

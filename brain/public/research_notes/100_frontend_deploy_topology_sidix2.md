@@ -1,3 +1,5 @@
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 ---
 name: Frontend Deploy Topology SIDIX 2.0 — Landing + App
 description: Catatan deploy frontend SIDIX 2.0 (sidixlab.com + app.sidixlab.com) — kenapa git pull saja tidak cukup, langkah rsync + build + PM2 restart, dan helper script deploy-frontend.sh.

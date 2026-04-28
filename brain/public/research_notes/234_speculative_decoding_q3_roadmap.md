@@ -1,3 +1,5 @@
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 ---
 title: "Speculative Decoding Roadmap Q3 — SIDIX Inference Optim (synthesis 9 paper 2026)"
 date: 2026-04-27

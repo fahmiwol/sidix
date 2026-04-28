@@ -1,18 +1,18 @@
 # SIDIX Command Board — Deploy Guide
 
-> Sprint 43 Phase 2 deploy ke `ctrl.sidixlab.com/chabos` (owner-only).
+> Sprint 43 Phase 2 deploy ke `ctrl.sidixlab.com/chatbos` (owner-only).
 
 ## Pilihan routing
 
 | Path | Pros | Cons | Verdict |
 |---|---|---|---|
-| `ctrl.sidixlab.com/chabos` | Same origin sebagai API → no CORS, reuse auth backbone, hidden behind admin token | Mix UI + control plane di subdomain yang sama | ⭐ **Recommended** |
-| `sidixlab.com/chabos` | Public-friendly URL, easy share | CORS issues ke ctrl plane, mix landing + admin = security risk | ❌ Skip |
-| `chabos.sidixlab.com` | Clean separation, dedicated subdomain | DNS A record + cert provisioning extra | OK alternatif |
+| `ctrl.sidixlab.com/chatbos` | Same origin sebagai API → no CORS, reuse auth backbone, hidden behind admin token | Mix UI + control plane di subdomain yang sama | ⭐ **Recommended** |
+| `sidixlab.com/chatbos` | Public-friendly URL, easy share | CORS issues ke ctrl plane, mix landing + admin = security risk | ❌ Skip |
+| `chatbos.sidixlab.com` | Clean separation, dedicated subdomain | DNS A record + cert provisioning extra | OK alternatif |
 
-**Pilih Option 1**: `ctrl.sidixlab.com/chabos`. Reasoning:
+**Pilih Option 1**: `ctrl.sidixlab.com/chatbos`. Reasoning:
 1. **Same origin = no CORS** — board call /agent/chat, /agent/council, /sidix/* langsung tanpa browser block
-2. **Reuse admin token** — `BRAIN_QA_ADMIN_TOKEN` sudah gate ctrl plane, tinggal extend ke chabos
+2. **Reuse admin token** — `BRAIN_QA_ADMIN_TOKEN` sudah gate ctrl plane, tinggal extend ke chatbos
 3. **Owner-only** — ctrl bukan public landing, sudah private by convention
 4. **Zero DNS work** — subdomain ctrl sudah hidup
 
@@ -40,10 +40,10 @@ server {
     # ... existing SSL + brain_qa proxy_pass ...
 
     # NEW: SIDIX Command Board (owner-only)
-    location /chabos/ {
+    location /chatbos/ {
         alias /opt/sidix/SIDIX_BOARD/;
         index index.html;
-        try_files $uri $uri/ /chabos/index.html;
+        try_files $uri $uri/ /chatbos/index.html;
 
         # Optional extra layer: nginx basic auth
         # auth_basic "SIDIX Owner Only";
@@ -73,7 +73,7 @@ nginx -t && nginx -s reload
 ### 3. Test akses
 
 ```
-https://ctrl.sidixlab.com/chabos/
+https://ctrl.sidixlab.com/chatbos/
 ```
 
 Modal auth muncul → input:
@@ -102,7 +102,7 @@ Browser akan prompt 2x: nginx basic auth dulu, baru SIDIX token.
 ## Mobile PWA install
 
 Setelah deploy, buka URL di Chrome HP:
-1. Buka `https://ctrl.sidixlab.com/chabos/`
+1. Buka `https://ctrl.sidixlab.com/chatbos/`
 2. Login dengan token (cuma sekali, disimpan localStorage)
 3. Menu Chrome (⋮) → "Tambahkan ke Layar Utama"
 4. Board jadi app icon di home screen
@@ -115,7 +115,7 @@ Phase 2 enhancement: tambah `manifest.json` + service worker untuk full PWA (off
 ## Auth flow (security review)
 
 ```
-1. User buka /chabos/ → board load HTML
+1. User buka /chatbos/ → board load HTML
 2. Board JS check localStorage[sidix_board_auth_v1]
    - kalau kosong → modal auth muncul
 3. User input token + endpoint → submit
@@ -141,7 +141,7 @@ Security properties:
 Kalau bos mau matikan akses temporary:
 
 ```bash
-# Comment out location /chabos/ block di nginx
+# Comment out location /chatbos/ block di nginx
 nginx -s reload
 ```
 

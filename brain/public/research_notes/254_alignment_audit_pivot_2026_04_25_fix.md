@@ -1,5 +1,7 @@
 # 254 — Alignment Audit + Pivot 2026-04-25 Fix (User-caught gap)
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 **Date**: 2026-04-27 (sesi-baru evening, post Sprint 14c LIVE)
 **Trigger**: User catch alignment gap mid-sesi — "[SPEKULASI] kenapa masih ada? kan udah pivot?"
 **Status**: ✅ FIXED (Iterasi #3)

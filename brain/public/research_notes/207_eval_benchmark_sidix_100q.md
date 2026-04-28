@@ -1,5 +1,7 @@
 # 207 — SIDIX Eval Benchmark: 5 → 100 Pertanyaan (Phase 0)
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 **Tanggal**: 2026-04-25  
 **Tag**: [IMPL][EVAL][PHASE0]  
 **Sanad**: Sprint 10 Phase 0, MASTER_ROADMAP_2026-2027.md §Eval

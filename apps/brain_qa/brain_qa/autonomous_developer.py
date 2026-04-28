@@ -1,4 +1,9 @@
 """
+
+Author: Fahmi Ghani - Mighan Lab / PT Tiranyx Digitalis Nusantara
+License: MIT (see repo LICENSE) - attribution required for derivative work.
+Prior-art declaration: see repo CLAIM_OF_INVENTION.md.
+
 autonomous_developer.py — Sprint 40 (SIDIX Autonomous Scaffold-to-Production Builder)
 
 Main orchestrator. Pick top-priority task from dev_task_queue → optional

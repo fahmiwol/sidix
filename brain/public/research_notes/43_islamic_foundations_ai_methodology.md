@@ -1,5 +1,7 @@
 # Fondasi Keilmuan Islam untuk Metodologi AI Bertumbuh
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 > `43_islamic_foundations_ai_methodology.md`
 > Research Note — SIDIX / Mighan-brain-1
 > Sumber: Riset 23 topik khazanah Islam → metodologi AI

@@ -1,5 +1,7 @@
 # Catatan riset: Kemampuan AI Generatif dan LLM (PDF)
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 **Sumber lokal:** `c:\Users\ASUS\Downloads\Kemampuan AI Generatif dan LLM.pdf`  
 **Format:** laporan teknis berbahasa Indonesia, **19 halaman**, banyak kutipan web (akses dicatat April 2026).  
 **Judul tematik di isi:** arsitektur kognitif-generatif terpadu — sintesis visual, ketahanan linguistik, pengambilan keputusan otonom.

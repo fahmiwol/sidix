@@ -1,5 +1,7 @@
 # Note 290 — Conversation Synthesis: itu nya bisa diganti nggak sih sama white
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 **Sanad**: synthesized from external AI session (claude_session_2026-04-29_strategic_dialogue) per founder mandate 2026-04-29 — *"setiap percakapan kita juga harus bisa di sintesis sama sidix, kamu sebagai guru."*
 **Tanggal**: 2026-04-28
 **Domain**: creative

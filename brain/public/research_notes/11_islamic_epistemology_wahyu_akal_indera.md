@@ -1,5 +1,7 @@
 # Epistemologi Islam (fundamental thesis) — Wahyu, Akal, Indera
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 ## Ringkasan 10 baris
 - “Sumber pengetahuan” dalam kerangka ini: **wahyu + akal + indera**.
 - Wahyu berfungsi sebagai **validator nilai/arah**; akal & indera sebagai mesin eksplorasi.

@@ -1,5 +1,7 @@
 # Note 289 — Sprint 13 Full Iteration Journal (Anti-Mengulang)
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 **Sanad**: Bos mandate (2026-04-29): *"Catat semua di log dan dokumen, biasakan mencatat, jangan ada sedikitpun konteks, riset, iterasi, perubahan yang terlewat, jadi kita bisa tua keseluruh perjalanan kita. mendapatkan pengalaman cognitive, tidak mengulang-ngulang."*  
 **Tanggal**: 2026-04-29  
 **Tujuan**: Single source of truth untuk SEMUA iterasi Sprint 13. Future agent cek note ini, bukan ulang riset/iterasi yang sudah dilakukan.

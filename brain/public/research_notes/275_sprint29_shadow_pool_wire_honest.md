@@ -1,5 +1,7 @@
 # Note 275 — Sprint 29: 1000 Bayangan Wire (HONEST: code OK, quality BLOCKED)
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 **Tanggal**: 2026-04-28 evening  
 **Sprint**: 29  
 **Status**: ⚠ WIRED but DISABLED in production (data-driven roll-back)  

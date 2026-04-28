@@ -1,5 +1,7 @@
 # 214 — Arsitektur Empati: Respect, Supple, dan Mitigasi Advice Trap
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 **Tanggal**: 2026-04-25
 **Tag**: [EMPATHY][RESPECT][SUPPLE][ADVICE_TRAP][EQ]
 **Sanad**: Dokumen `empathy_research.pdf` (2386-6267-2-PB), Arahan User "Mighan" (2026-04-25).

@@ -1,5 +1,7 @@
 # 117 — Community Contribution Guide: Cara Mengajar SIDIX
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 ## Apa ini / What is it
 
 Panduan lengkap cara komunitas berkontribusi ke SIDIX — baik sebagai kontributor teknis maupun non-teknis. Setiap kontribusi adalah "mengajar SIDIX", dan ilmu yang diajarkan akan terus mengalir manfaatnya selama SIDIX berjalan.

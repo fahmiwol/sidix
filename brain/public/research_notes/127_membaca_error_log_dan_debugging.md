@@ -1,5 +1,7 @@
 # 127 — Membaca Error Log & Menentukan Langkah Fix
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 ## Tujuan Note Ini
 SIDIX harus bisa **membaca output log server** sendiri — mendiagnosis masalah,
 memisahkan yang darurat dari yang tidak, dan memutuskan langkah selanjutnya.

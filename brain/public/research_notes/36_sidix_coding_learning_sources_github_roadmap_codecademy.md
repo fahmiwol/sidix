@@ -1,5 +1,7 @@
 # Sumber belajar coding untuk SIDIX (kurasi cepat)
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 > Tujuan: daftar sumber **legal** dan **high-signal** untuk meningkatkan kemampuan coding + problem solving SIDIX.
 > Fokus: materi yang bisa diindeks, dataset/problem yang bisa dilatih, dan repos yang punya struktur bagus.
 

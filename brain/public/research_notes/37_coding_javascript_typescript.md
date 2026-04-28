@@ -1,5 +1,7 @@
 # JavaScript & TypeScript
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 > Sumber: Sintesis dari ECMAScript specification, TypeScript Handbook, React documentation, dan MDN Web Docs.
 > Relevan untuk: frontend developers, full-stack engineers, Node.js developers
 > Tags: javascript, typescript, react, hooks, async, promises, closures, generics, node, es2024

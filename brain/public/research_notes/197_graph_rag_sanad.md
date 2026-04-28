@@ -1,5 +1,7 @@
 # 197 — GraphRAG + Sanad Ranking
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 ## Apa
 GraphRAG = Retrieval-Augmented Generation dengan relasi konsep berbentuk graf.
 Sanad = rantai sumber (dari tradisi ilmu hadits: siapa mengatakan apa, dari siapa, ke siapa).

@@ -1,5 +1,7 @@
 # Deploy SIDIX ke VPS dengan aaPanel — Panduan Lengkap
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 ## Ringkasan
 Catatan ini mendokumentasikan proses deploy SIDIX ke VPS Ubuntu menggunakan aaPanel sebagai web server manager. Mencakup DNS setup, Python backend, Node.js frontend, Nginx reverse proxy, dan SSL.
 

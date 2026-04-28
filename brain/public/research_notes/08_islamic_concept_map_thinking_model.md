@@ -1,5 +1,7 @@
 # Concept map (Islamic studies) — fondasi cara berpikir & etika pengetahuan
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 > Target: jadi “peta konsep” untuk menyusun prinsip berpikir + etika riset + validasi sumber (sanad) dalam proyek.
 > Ini bukan kitab tafsir/hadits. Ini ringkasan konsep + rujukan.
 

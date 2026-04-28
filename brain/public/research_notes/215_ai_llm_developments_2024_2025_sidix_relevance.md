@@ -1,5 +1,7 @@
 # 215 — Perkembangan AI/LLM 2024–2025: Relevansi untuk SIDIX
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 **Tanggal**: 2026-04-25  
 **Sanad**: Riset web langsung dari arXiv, Hugging Face, GitHub, NVIDIA Blog, NeurIPS/ICML/ICLR 2024  
 **Tag**: `[FAKTA]` untuk hasil paper peer-reviewed; `[SPEKULASI]` untuk perkiraan implementasi SIDIX

@@ -1,5 +1,7 @@
 # M5 Fine-tune Prep — Format Data & Pipeline
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 > Kategori: fine-tuning, lora, m5, sidix
 > Status: draft rencana (belum dieksekusi)
 > Target: Qwen2.5-7B via LoRA, platform Google Colab Pro+

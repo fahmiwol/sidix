@@ -1,5 +1,7 @@
 # Sadra: hudhuri vs hushuli → mapping ke layer AI (presence vs representasi)
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 ## Ringkasan 10 baris
 - Sadra membedakan **pengetahuan representasional (hushuli)** vs **pengetahuan kehadiran (hudhuri)**.
 - Hushuli: “aku punya konsep tentang X” (ada jarak subjek–objek).

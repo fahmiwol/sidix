@@ -1,5 +1,7 @@
 # 195 — Distillation Pipeline SIDIX: Teacher → Student → GGUF → Ollama
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 **Tanggal**: 2026-04-24
 **Status**: [FAKTA] Implementasi awal — scripts tersedia, belum dijalankan di GPU
 **Sanad**: Dibuat berdasarkan kebutuhan VPS CPU deployment + literatur distilasi LLM

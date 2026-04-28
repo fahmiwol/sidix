@@ -1,5 +1,7 @@
 # Sanad sebagai “citation + audit trail” — sistem kerja Mighan-brain-1
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 ## Ringkasan 10 baris
 - “Sanad” di tradisi ilmu = rantai validasi yang bikin pengetahuan bisa dipercaya.
 - Versi kita untuk proyek AI: **claim discipline + sitasi + jejak keputusan**.

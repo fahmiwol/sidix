@@ -1,5 +1,7 @@
 # 186 — Persona Rename: AYMAN · ABOO · OOMAR · ALEY · UTZ
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 **Tanggal:** 2026-04-23
 **Sanad:** [DECISION] — keputusan pemilik proyek, dicatat oleh Claude Code (sesi 2026-04-23)
 **Tags:** persona, identity, rename, ihos, backward-compat

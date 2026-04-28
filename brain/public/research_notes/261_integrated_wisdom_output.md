@@ -1,5 +1,7 @@
 # 261 — Sprint 20 SHIPPED: Integrated Wisdom Output Mode (Smart Caching)
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 **Date**: 2026-04-27 (sesi-baru endgame, post-Sprint 14d)
 **Sprint**: 20 (final sprint of compound stack)
 **Status**: ✅ SHIPPED + DEPLOYED (LIVE retest in flight, 300s timeout)

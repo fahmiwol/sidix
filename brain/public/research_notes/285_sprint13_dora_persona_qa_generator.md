@@ -1,5 +1,7 @@
 # Note 285 — Sprint 13 Phase 3a: DoRA Persona Q&A Generator
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 **Sanad**: Sprint 13 Phase 3a (synthetic data pipeline) — compound dengan note 248 (5 persona LOCKED), pivot 2026-04-25 (LIBERATION persona voice distinct), Sprint 6 (classroom Claude-as-teacher, future LLM-amplify).  
 **Tanggal**: 2026-04-29  
 **Status**: SHIPPED ✅ (Phase 3a — synthetic data; Phase 3b train + 3c deploy = future sessions)

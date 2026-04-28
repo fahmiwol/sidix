@@ -1,4 +1,9 @@
 """
+
+Author: Fahmi Ghani - Mighan Lab / PT Tiranyx Digitalis Nusantara
+License: MIT (see repo LICENSE) - attribution required for derivative work.
+Prior-art declaration: see repo CLAIM_OF_INVENTION.md.
+
 claude_sessions.py — Sprint 41 v1.2 (Claude Code Session Discovery & Batch Synthesizer)
 
 Auto-discover semua Claude Code sessions di ~/.claude/projects/* dan batch-feed

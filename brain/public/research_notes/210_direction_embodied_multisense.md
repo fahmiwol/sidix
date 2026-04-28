@@ -1,5 +1,7 @@
 # 210 — Direction Baru: Embodied SIDIX + Multi-Sense Parallel
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 **Tanggal**: 2026-04-25 (sesi malam)
 **Tag**: [DECISION][DIRECTION][RESEARCH]
 **Sanad**: User direction 2026-04-25, embodied cognition research (Clark & Chalmers 2008), MoA (Wang et al. 2024), AutoGen (Microsoft 2023), Parallel Function Calling (OpenAI/Anthropic 2024)

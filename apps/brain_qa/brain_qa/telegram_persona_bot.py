@@ -1,4 +1,9 @@
 """
+
+Author: Fahmi Ghani - Mighan Lab / PT Tiranyx Digitalis Nusantara
+License: MIT (see repo LICENSE) - attribution required for derivative work.
+Prior-art declaration: see repo CLAIM_OF_INVENTION.md.
+
 telegram_persona_bot.py — Sprint 43 Phase 1 (5 Persona Discussion via Telegram)
 
 Telegram bot yang spawn 5 persona SIDIX (UTZ/ABOO/OOMAR/ALEY/AYMAN) sebagai

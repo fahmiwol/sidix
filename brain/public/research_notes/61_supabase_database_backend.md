@@ -1,5 +1,7 @@
 # Supabase sebagai Backend-as-a-Service — Panduan untuk Developer SIDIX
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 ## Apa itu Supabase?
 
 Supabase adalah platform open-source yang menyediakan PostgreSQL database dengan fitur lengkap:

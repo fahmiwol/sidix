@@ -1,5 +1,7 @@
 # Cahaya yang Satu, Pantulan yang Tak Terhingga: Keaslian dan Keragaman Tafsir Al-Qur'an
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 > `42_quran_preservation_tafsir_diversity.md`
 > Research Note — SIDIX / Mighan-brain-1
 > Sumber: Dokumen epistemologi tafsir Al-Qur'an

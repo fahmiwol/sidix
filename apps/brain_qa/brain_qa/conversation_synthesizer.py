@@ -1,4 +1,9 @@
 """
+
+Author: Fahmi Ghani - Mighan Lab / PT Tiranyx Digitalis Nusantara
+License: MIT (see repo LICENSE) - attribution required for derivative work.
+Prior-art declaration: see repo CLAIM_OF_INVENTION.md.
+
 conversation_synthesizer.py — Sprint 41 (Conversation Synthesizer, "Claude as guru")
 
 Takes a conversation transcript (founder ↔ external AI like Claude/GPT/Gemini)

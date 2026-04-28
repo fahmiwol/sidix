@@ -1,5 +1,7 @@
 # 199 — Arsitektur AI Frontier: Apa yang Membuat Model Seperti Claude Bisa "Berpikir"
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 **Tanggal**: 2026-04-24
 **Status**: [FACT] Sintesis peneliti senior dari literatur terbuka (Attention is All You Need, Chinchilla, Constitutional AI, InstructGPT, DPO, Flash Attention, dll)
 **Sanad**: Vaswani et al. 2017, Hoffmann et al. 2022 (Chinchilla), Ouyang et al. 2022 (InstructGPT), Bai et al. 2022 (Constitutional AI), Rafailov et al. 2023 (DPO), Dao et al. 2022 (Flash Attention), Su et al. 2021 (RoPE)

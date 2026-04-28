@@ -1,5 +1,7 @@
 # 122 — Token Quota System: Monetisasi & Sustainability SIDIX
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 ## Apa
 Sistem pembatasan penggunaan harian berbasis tier untuk menjaga sustainability biaya API.
 Setiap user punya limit pesan per hari, dengan opsi upgrade.

@@ -1,5 +1,7 @@
 # Git, Docker, and Linux/Bash
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 > Sumber: Sintesis dari Git documentation, Docker best practices, Linux man pages, dan praktik DevOps industri.
 > Relevan untuk: developers, DevOps engineers, system administrators, backend engineers
 > Tags: git, docker, linux, bash, devops, containers, version-control, shell-scripting, ci-cd

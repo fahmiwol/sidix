@@ -1,5 +1,7 @@
 # Note 287 — Sprint 13 Phase 3c: Persona Dispatch Wire Plan
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 **Sanad**: Sprint 13 Phase 3a (note 285) ✅ + Phase 3b prep (note 286) ✅ + Phase 3b training (kernel v4 RUNNING) → Phase 3c arsitektur disiapkan PARALEL agar zero-wait setelah training selesai.  
 **Tanggal**: 2026-04-29  
 **Status**: SCAFFOLD READY (modules disiapkan, wire ke production tunggu adapter LIVE)

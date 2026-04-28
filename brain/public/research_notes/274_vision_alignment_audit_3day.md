@@ -1,5 +1,7 @@
 # Note 274 — Vision Alignment Audit: 3-Day Sprint Map (2026-04-26 → 28)
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 **Tanggal**: 2026-04-28 evening  
 **Trigger**: user feedback *"antar sesi terasa mengulang, terasa jadi beda"* — request audit untuk identify mana compound vs off-track  
 **Method**: read sistematis 3-hari corpus (Vision SOT + 25 sprints + 11 handoff docs + LIVING_LOG), no compound dari memory  

@@ -1,5 +1,7 @@
 # Qada–Qadar & kerangka keputusan (konsep untuk fondasi AI / RAG)
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 **Tujuan dokumen ini:** menyimpan **konversi konsep** ringkas sebagai **landasan berpikir** untuk model penalaran, indeks RAG, atau prompt sistem — **bukan** fatwa, **bukan** materi khutbah/ceramah, dan **bukan** pengganti konsultasi ulama atau ahli untuk hukum/akidah spesifik.
 
 **Cara pakai:** kutipan dalam jawaban AI harus tetap mengikuti sanad/tabayyun repo; untuk hal sensitif hukum/akidah, arahkan pengguna ke sumber resmi dan ulama setempat.

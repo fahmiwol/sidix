@@ -1,5 +1,7 @@
 # 209 — Brain Upgrade: Cognitive Self-Check + Open-Minded Direction
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 **Tanggal**: 2026-04-25 (Sprint Compounding + brain direction)
 **Tag**: [IMPL][BRAIN][RESEARCH][DECISION]
 **Sanad**: Chain-of-Verification (Dhuliawala et al., Meta 2023, arXiv:2309.11495), Self-Consistency (Wang et al., 2022), user direction 2026-04-25

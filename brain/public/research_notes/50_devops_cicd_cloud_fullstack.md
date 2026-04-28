@@ -1,5 +1,7 @@
 # Research Note 50 — DevOps, CI/CD & Cloud Fullstack
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 **Tanggal**: 2026-04-17
 **Sumber**: Pengetahuan teknis + roadmap.sh best practices
 **Relevance SIDIX**: SIDIX adalah self-hosted LLM platform — deployment, monitoring, dan operasional infrastruktur adalah hal yang kritis. Note ini mencakup GitHub Actions untuk CI/CD otomatis, Docker production-grade untuk containerisasi, Nginx/Caddy sebagai reverse proxy dengan SSL, opsi hosting hemat (Hetzner/Railway/Fly.io), monitoring dengan Prometheus+Grafana, dan docker-compose.yml lengkap untuk deploy SIDIX (brain_qa + UI + Caddy) secara satu perintah.

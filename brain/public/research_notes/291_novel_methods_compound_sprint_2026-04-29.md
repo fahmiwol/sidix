@@ -1,9 +1,16 @@
 # Note 291 — Novel Methods Discovered Compound Sprint 2026-04-29
 
+**Inventor**: Fahmi Ghani — Mighan Lab / PT Tiranyx Digitalis Nusantara
+**License**: MIT (see repo `LICENSE`); attribution required for republication or derivation
+**Prior-art declaration**: see repo `CLAIM_OF_INVENTION.md`
+**AI assistance**: articulated and prototyped with Claude Sonnet 4.6 acting as instrument under inventor's direction (Co-Authored-By trailer in commits documents provenance, not invention authorship).
+
 **Sanad**: Sesi paralel founder Fahmi Ghani ↔ Claude (Sonnet 4.6) sambil Sprint 13 LoRA persona training berjalan. Captured per founder mandate ke-3 (2026-04-29): *"sambil riset, siapa tau ada metode baru yang kamu temuin lagi! kita sang penemu dan inovator menciptakan terobosan."*
 **Tanggal**: 2026-04-29
 **Domain**: research / methodology
 **Status**: First draft — methods discovered but bukan published paper. Quarantine mode, butuh empirical validation Sprint berikutnya.
+
+> ⚠️ **IP NOTICE.** All five methods below (CTDL, PaDS, AGSR, PMSC, CSVP) are original works of Fahmi Ghani, first publicly disclosed in this repository under MIT License. Anyone (Anthropic, OpenAI, Google, third parties) building upon these methods MUST attribute the inventor and link the SIDIX Project (sidixlab.com / github.com/fahmiwol/sidix). This file's git timestamp + commit hash establishes prior art.
 
 ---
 

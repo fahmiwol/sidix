@@ -1,5 +1,7 @@
 # 251 — Sprint 14 SHIPPED: Creative Pipeline Hero Use-Case
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 **Date**: 2026-04-27 (sesi-baru, post-Sprint 15 deploy)
 **Sprint**: 14
 **Status**: ✅ SHIPPED + DEPLOYED to production

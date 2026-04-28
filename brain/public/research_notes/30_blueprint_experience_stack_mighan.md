@@ -1,5 +1,7 @@
 # Blueprint: Experience Engine — pemetaan ke stack **nyata** Mighan
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 Dokumen ini menangkap arsitektur “5 layer + flow + dataset” dari diskusi produk, lalu **menerjemahkannya** ke repo ini: **Python `brain_qa`**, RAG yang sudah ada, **LLM lokal / SIDIX**, dan **prinsip nilai** di `brain/public/principles/` — **bukan** menjadikan Node.js + OpenAI API sebagai jalur default (selaras `AGENTS.md`: inference inti = stack sendiri; API vendor hanya perbandingan / POC eksplisit).
 
 **Prasyarat baca:** `29_human_experience_engine_sidix.md`, `28_sidix_epistemic_modes_multi_perspective.md`.

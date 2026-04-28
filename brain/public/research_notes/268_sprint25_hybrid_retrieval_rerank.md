@@ -1,5 +1,7 @@
 # 268 — Sprint 25: Hybrid Retrieval (BM25 + Dense BGE-M3) + Cross-Encoder Reranker
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 **Date**: 2026-04-28
 **Status**: SHIPPED (offline + integration test pass) — production wiring pending VPS deploy
 **Authority**: User directive: *"saranin yang paling fundamental dan berdampak, supaya sidix makin cepet jawabnya, makin pinter dan makin relevan"*

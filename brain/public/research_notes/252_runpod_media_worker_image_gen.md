@@ -1,5 +1,7 @@
 # 252 — Sprint 14b SHIPPED: RunPod mighan-media-worker wired untuk hero image generation
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 **Date**: 2026-04-27 (sesi-baru, post-Sprint 14)
 **Sprint**: 14b (Sprint 14 extension)
 **Status**: ✅ SHIPPED + DEPLOYED (LIVE test pending — see follow-up)

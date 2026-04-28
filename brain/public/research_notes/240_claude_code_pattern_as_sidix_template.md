@@ -1,5 +1,7 @@
 # 240 — Claude Code's Working Pattern AS the SIDIX Template
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 **Date**: 2026-04-26
 **Author**: User insight + Claude formalization
 **Status**: Meta-architectural realization (high signal)

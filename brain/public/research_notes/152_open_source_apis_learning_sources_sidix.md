@@ -1,5 +1,7 @@
 # 152. Open-Source & Public APIs — Sumber Belajar SIDIX
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 > **Domain**: data-acquisition / learning-pipeline / corpus-expansion
 > **Status**: `[FACT]` (API verified available) + `[OPINION]` (prioritas)
 > **Tanggal**: 2026-04-19

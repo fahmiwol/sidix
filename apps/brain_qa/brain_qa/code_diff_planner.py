@@ -1,4 +1,9 @@
 """
+
+Author: Fahmi Ghani - Mighan Lab / PT Tiranyx Digitalis Nusantara
+License: MIT (see repo LICENSE) - attribution required for derivative work.
+Prior-art declaration: see repo CLAIM_OF_INVENTION.md.
+
 code_diff_planner.py — Sprint 40 Phase 1 (Autonomous Developer LLM-based diff planner)
 
 Take a DevTask + repo context → produce structured code change proposal

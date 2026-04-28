@@ -1,5 +1,7 @@
 # 201 — Constitutional AI untuk SIDIX: Prinsip, Implementasi, Self-Improvement
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 **Tanggal**: 2026-04-24
 **Status**: [FACT] Berdasarkan paper Constitutional AI (Bai et al. 2022, Anthropic) + [OPINION] adaptasi untuk konteks SIDIX
 **Sanad**: Bai et al. (2022) "Constitutional AI: Harmlessness from AI Feedback"; Ganguli et al. (2023) "The Capacity for Moral Self-Correction in Large Language Models"; 4-label epistemik SIDIX (note 161)

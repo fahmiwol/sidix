@@ -1,5 +1,7 @@
 # 121 — QnA Self-Learning Pipeline: SIDIX Tumbuh dari Setiap Percakapan
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 **Tanggal:** 2026-04-18  
 **Sumber:** Implementasi qna_recorder.py + anthropic_llm.py  
 **Relevansi SIDIX:** Self-improvement, corpus growth, fine-tuning data generation

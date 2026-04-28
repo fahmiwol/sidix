@@ -1,5 +1,7 @@
 # Vite Build-Time Environment Variables — Jebakan Umum saat Deploy
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 ## Konsep Kunci: Build-time vs Runtime
 
 Ada dua cara aplikasi membaca konfigurasi:

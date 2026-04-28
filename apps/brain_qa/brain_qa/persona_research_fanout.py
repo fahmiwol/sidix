@@ -1,4 +1,9 @@
 """
+
+Author: Fahmi Ghani - Mighan Lab / PT Tiranyx Digitalis Nusantara
+License: MIT (see repo LICENSE) - attribution required for derivative work.
+Prior-art declaration: see repo CLAIM_OF_INVENTION.md.
+
 persona_research_fanout.py — Sprint 40 Phase 1 (Multi-Agent Persona Research)
 
 Implements jurus 1000 bayangan + per-persona research pattern (LOCK 2026-04-29

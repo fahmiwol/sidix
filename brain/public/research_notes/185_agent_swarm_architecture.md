@@ -1,5 +1,7 @@
 # 185 — SIDIX Agent Swarm v0.1: Arsitektur Paralel Berbasis IHOS
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 **Tanggal:** 2026-04-23
 **Sanad:** [OPINION] — adaptasi arsitektur Kimi Agent Swarm ke stack SIDIX own
 **Tags:** agent-swarm, orchestration, parallel, ihos, no-vendor-api

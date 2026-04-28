@@ -1,5 +1,7 @@
 # 115 — P2P Smart Ledger & Hafidz: Distributed Knowledge Architecture
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 ## Apa ini / What is it
 
 **Hafidz** adalah arsitektur penyimpanan pengetahuan terdistribusi yang dibangun di atas tiga pilar:

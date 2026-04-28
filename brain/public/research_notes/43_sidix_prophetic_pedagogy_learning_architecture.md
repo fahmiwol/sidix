@@ -1,4 +1,6 @@
 # Arsitektur Pembelajaran SIDIX — Adopsi Metode Pedagogis Rasulullah SAW
+
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
 *Sumber: "Metode Mengajar Rasulullah Saw (Kajian Pedagogis-Sosiologis)" — Hikmah: Jurnal Studi PAI Vol.2 No.1, 2025*
 *Diadopsi oleh: Fahmi Ghani → diproses menjadi logika sistem SIDIX*
 *Tanggal: 2026-04-17*

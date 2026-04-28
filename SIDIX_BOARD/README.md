@@ -52,12 +52,12 @@ file:///C:/SIDIX-AI/pedantic-banach-c8232d/SIDIX_BOARD/index.html
 ```
 Atau drag-drop `index.html` ke browser.
 
-### B. Subdomain `board.sidixlab.com` (production)
+### B. Subdomain `ctrl.sidixlab.com/chatbos` (production)
 Setup nginx di VPS:
 ```nginx
 server {
     listen 80;
-    server_name board.sidixlab.com;
+    server_name ctrl.sidixlab.com/chatbos;
     root /opt/sidix/SIDIX_BOARD;
     index index.html;
 
@@ -67,7 +67,7 @@ server {
     }
 }
 ```
-Plus DNS A record `board.sidixlab.com → VPS_IP`. Phase 2 deploy.
+Plus DNS A record `ctrl.sidixlab.com/chatbos → VPS_IP`. Phase 2 deploy.
 
 ### C. Subpath `app.sidixlab.com/board/`
 Reuse existing nginx, alias subpath:
@@ -108,7 +108,7 @@ Auth: `X-Sidix-Board-Token` header, generate dari env atau dashboard settings.
 
 **Phase 1 (now):** Static HTML, no build. Just `index.html`.
 **Phase 2 (later):** Add bundler (Vite optional), service worker, manifest.json, real API wire.
-**Phase 3 (production):** Deploy ke board.sidixlab.com via nginx + Let's Encrypt SSL.
+**Phase 3 (production):** Deploy ke ctrl.sidixlab.com/chatbos via nginx + Let's Encrypt SSL.
 
 ---
 

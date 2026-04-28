@@ -1,5 +1,7 @@
 # 145. Alignment Audit — Visi Awal SIDIX vs Kondisi Sekarang + 7 Growth-Hack
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 > **Domain**: ai / arsitektur / strategi
 > **Status validasi**: `partial` (overlap manual antara 15 dokumen foundational + state implementasi sekarang)
 > **Penulis**: SIDIX × Claude Sonnet 4.6 × Fahmi (mentor)

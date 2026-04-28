@@ -1,5 +1,7 @@
 # Closed-Loop Learning — Feedback User sebagai Data Training SIDIX
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 ## Visi
 
 Setiap interaksi user dengan SIDIX adalah peluang belajar.

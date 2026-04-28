@@ -1,5 +1,7 @@
 # Tan Malaka — Madilog (bridge) untuk disiplin reasoning (tanpa geser fondasi wahyu)
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 ## Ringkasan 10 baris
 - Madilog relevan sebagai latihan disiplin berpikir: **logika + dialektika + anti-khayal**.
 - Tapi fondasi nilai proyek kita tetap: **wahyu sebagai validator utama**, akal/observasi sebagai mesin.

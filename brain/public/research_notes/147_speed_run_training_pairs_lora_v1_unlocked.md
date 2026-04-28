@@ -1,5 +1,7 @@
 # 147. Speed Run Training Pairs — Growth-Hack #4 (LoRA v1 Unlocked!)
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 > **Domain**: ai / training / strategy
 > **Status validasi**: `[FACT]` (numbers verified live di production)
 > **Tanggal**: 2026-04-19

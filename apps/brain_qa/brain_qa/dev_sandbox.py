@@ -1,4 +1,9 @@
 """
+
+Author: Fahmi Ghani - Mighan Lab / PT Tiranyx Digitalis Nusantara
+License: MIT (see repo LICENSE) - attribution required for derivative work.
+Prior-art declaration: see repo CLAIM_OF_INVENTION.md.
+
 dev_sandbox.py — Sprint 40 Phase 1 (Autonomous Developer test sandbox)
 
 Run the project test suite against an applied DiffPlan untuk verify

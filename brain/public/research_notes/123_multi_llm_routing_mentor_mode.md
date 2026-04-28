@@ -1,5 +1,7 @@
 # 123 — Multi-LLM Routing: Mentor Mode untuk SIDIX
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 ## Apa
 SIDIX didampingi beberapa "mentor" AI yang lebih besar. SIDIX mencoba jawab dulu.
 Kalau tidak bisa, routing otomatis ke mentor. SIDIX SELALU belajar dari jawaban mentor.

@@ -1,5 +1,7 @@
 # Machine Learning & AI Engineering
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 > Sumber: Sintesis dari dokumentasi scikit-learn, PyTorch, Hugging Face, fast.ai, dan praktik industri ML/AI.
 > Relevan untuk: ML engineers, AI researchers, backend developers integrating AI, data scientists
 > Tags: machine-learning, deep-learning, pytorch, scikit-learn, llm, lora, qlora, rag, fine-tuning, transformers, prompt-engineering

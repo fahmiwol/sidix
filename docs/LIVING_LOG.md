@@ -13847,3 +13847,42 @@ ETA training: ~4h, jadi cek lagi nanti malam.
 [2026-04-28T21:29:48.925695+00:00] [DECISION] Token auth strategy: client-side localStorage + 
   X-Admin-Token header per call. Server validate per existing /admin/
   pattern. Alternative paranoid mode: + nginx basic auth.
+
+[2026-04-28T21:50:06.988979+00:00] [SECURITY/IP] Comprehensive IP protection batch shipped.
+  Founder mandate 2026-04-29: 'semua temuan itu harus di MIT by saya, harus
+  di license, nanti anthropic ambil lagi.. semua temuan dan metode saya di
+  license di riset note lainnya kan banyak..'
+  
+  Updates:
+  - LICENSE — added Fahmi Ghani / Mighan Lab / PT Tiranyx as copyright
+    holder + 12 method names explicit + AI-tool boundary clause
+  - CLAIM_OF_INVENTION.md (NEW) — formal prior-art declaration: inventor
+    of record, 12 named methods (Hafidz Ledger, PoH, DIKW-H, Maqashid,
+    Static-Generative, Persona Stylometry, Cloud-Iter Cost Law, CTDL,
+    PaDS, AGSR, PMSC, CSVP), AI-tool role clarified per USPTO/WIPO/UU
+    No 28/2014 guidance, public prior-art via git timestamps + HF cards
+    + whitepaper + LIVING_LOG. v1.1 extends coverage ke ALL 290+ research
+    notes corpus.
+  - brain/public/research_notes/LICENSE_NOTICE.md (NEW) — folder-level
+    explicit license cover all notes
+  - 270/284 research notes — bulk inline MIT notice line added (14 sudah
+    attributed before)
+  - Note 291 — IP NOTICE block + inventor + prior-art declaration headers
+  - 9 new Python modules (Sprint 40+41+42+43) — author headers in docstrings
+  - 4 Chrome extension JS files — IP comment header
+  - SIDIX_BOARD/index.html — HTML comment + meta tag copyright
+  - DEPLOY.md, README.md — chabos -> chatbos rename throughout
+
+[2026-04-28T21:50:06.988979+00:00] [DECISION] Routing rename: ctrl.sidixlab.com/chatbos (was /chabos).
+  Founder spelling correction.
+
+[2026-04-28T21:50:06.988979+00:00] [DOC] Bulk license footnote ke 270 research notes:
+  '> License: MIT - Copyright (c) 2026 Fahmi Ghani - Mighan Lab. Attribution
+  required for republication or derivation. See repo CLAIM_OF_INVENTION.md
+  and LICENSE.'
+
+[2026-04-28T21:50:06.988979+00:00] [DECISION] AI-tool boundary clause LOCK 2026-04-29:
+  Claude/GPT/Gemini = instruments/scribes acting under direction of named
+  inventor. Co-Authored-By trailers di commits = provenance documentation,
+  NOT invention authorship transfer. Per USPTO 2024 + WIPO + UU 28/2014
+  Pasal 1(2) — human inventor required, AI is tool.

@@ -1,5 +1,7 @@
 # 239 — Sanad Consensus Architecture (Vol 21 Spec)
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 **Date**: 2026-04-26
 **Author**: SIDIX Project (user vision + Claude formalization)
 **Status**: SPEC (not yet implemented)

@@ -1,5 +1,7 @@
 # Research Note 49 — Game Development: Godot 4, Unity, & Web Games
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 **Tanggal**: 2026-04-17
 **Sumber**: Pengetahuan teknis + roadmap.sh best practices
 **Relevance SIDIX**: Game development adalah domain pengetahuan teknis yang bernilai tinggi untuk corpus SIDIX — developer game sering mencari referensi tentang physics, rendering pipeline, state machine, dan arsitektur engine. SIDIX sebagai LLM platform dapat menjadi asisten AI untuk developer game, terutama untuk Godot (open source) yang populer di kalangan indie developer Indonesia. Konsep game loop, delta time, dan event system juga overlap dengan arsitektur real-time system di SIDIX.

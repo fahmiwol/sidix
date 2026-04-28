@@ -1,4 +1,16 @@
 /**
+ * SIDIX Pixel Chrome Extension
+ *
+ * Author:  Fahmi Ghani - Mighan Lab / PT Tiranyx Digitalis Nusantara
+ * License: MIT (see repo LICENSE) - attribution required for derivative work.
+ * Prior-art declaration: see repo CLAIM_OF_INVENTION.md
+ * Project: SIDIX (Self-Improving Distributed Intelligence eXchange)
+ * URL:     https://sidixlab.com  -  https://github.com/fahmiwol/sidix
+ *
+ * AI assistance: drafted with Claude (Sonnet 4.6) under direction of the
+ * named author. AI tools are scribes, not authors of invention.
+ */
+/**
  * SIDIX Pixel — Background Service Worker
  * Sprint 42 Phase 1 scaffold
  *
