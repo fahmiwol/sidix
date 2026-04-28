@@ -1096,7 +1096,7 @@ def create_app() -> "FastAPI":
                     temperature=req.temperature,
                 )
                 if mode == "ollama":
-                    return GenerateResponse(text=text, mode="ollama", persona=p)
+                    return AgentGenerateResponse(text=text, mode="ollama", persona=p)
         except Exception:
             pass
 
@@ -1110,11 +1110,11 @@ def create_app() -> "FastAPI":
                 temperature=req.temperature,
             )
             if mode == "local_lora":
-                return GenerateResponse(text=text, mode="local_lora", persona=p)
+                return AgentGenerateResponse(text=text, mode="local_lora", persona=p)
         except Exception:
             pass
 
-        return GenerateResponse(
+        return AgentGenerateResponse(
             text="⚠ Tidak ada engine inference yang tersedia (Ollama offline & local LLM tidak ter-load).",
             mode="mock",
             persona=p,
