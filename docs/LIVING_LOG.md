@@ -12860,3 +12860,30 @@ anti-halusinasi defense apply di lebih banyak query types.
 **Compound**: Sprint 34G fact_extractor module + Sprint 34I /ask post-process
 → extension auto apply di flow yang sama.
 
+
+### TEST [Sprint 35] VPS validation real web data
+- Q1 "siapa Presiden Indonesia 2026":
+  → Presiden Indonesia = **Prabowo** (freq=4, **high confidence**) ✓
+- Q2 "siapa CEO Tesla sekarang": NO FACT (web data tidak return jelas)
+- Q3 "siapa juara Piala Dunia 2022": web_search FAIL (DDG/brave issue)
+
+→ Sprint 35 extension WORKING untuk entity dengan web data jelas.
+Q2-3 failures = web_search reliability issue, BUKAN fact_extractor logic.
+
+### REVIEW QA + VALIDASI [Sprint 35]:
+**Achieved**:
+- ✓ 9 entity types covered (vs 2 sebelumnya)
+- ✓ Strict filter: cap 2-token name + extended stop_tokens
+- ✓ Offline test 4/4 pass
+- ✓ VPS real test: Prabowo extracted freq=4 high confidence
+
+**Defense compounding**:
+- Sprint 34G base + Sprint 35 extension = wider entity coverage
+- Setiap query "siapa <role>" yang match patterns dapat fact extraction
+- Compound dengan Sprint 34I /ask post-process auto apply di flow
+
+### TODO Sprint 36+:
+- Sprint 36: improve web_search reliability (Brave key setup, lebih banyak fallback)
+- Sprint 37: extend fact_extractor untuk numerical facts (umur, populasi, harga)
+- Sprint 38: vision input organ (CLIP/SigLIP) — 12 → 13 organ embodiment
+
