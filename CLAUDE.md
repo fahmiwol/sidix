@@ -347,6 +347,46 @@ brain/manifest.json            ← konfigurasi corpus path
 
 ---
 
+## 🤖 MODEL POLICY — Claude Agent Model Selection (2026-04-28)
+
+User directive: *"untuk development yang common use, riset, sintesis dll pake sonnet. kasih tau saya kalo ada yang kompleks, saya akan ganti ke opus. untuk cari data, kumpulin data, screening pake haiku biar irit usage dan token tapi efektif."*
+
+### Default per task type
+
+| Model | Task | Alasan |
+|---|---|---|
+| **Haiku 4.5** (`claude-haiku-4-5-20251001`) | Fetch URL, web search, screen data, bulk QA scan, format convert, grep/count corpus, simple parse | 10-50x lebih hemat token vs Sonnet. Output tidak perlu reasoning dalam. |
+| **Sonnet 4.6** (`claude-sonnet-4-6`) | **DEFAULT** — semua coding, debug, research synthesis, sprint planning, refactor, test, dokumentasi, review | Balanced quality/cost. 90%+ task SIDIX dev masuk sini. |
+| **Opus 4.7** (`claude-opus-4-7`) | Arsitektur multi-system besar, security audit serius, novel algorithm, ketika Sonnet stuck 2x iter | 5x lebih mahal dari Sonnet. Pakai hanya kalau Sonnet jelas tidak cukup. |
+
+### Kapan Agent HARUS kasih tau bos untuk switch ke Opus
+
+Agent wajib bilang *"Task ini sebaiknya pakai Opus — mau switch dulu?"* sebelum eksekusi kalau:
+- Task touch >5 file dengan architectural decision besar (bukan cuma wire/glue)
+- Security vulnerability deep analysis (bukan cuma grep scan)
+- Novel algorithm yang butuh multi-hop reasoning chain
+- Sonnet sudah 2x iterasi tapi output masih ngaco / stuck
+- Trade-off besar yang compound (infra + model + product design sekaligus)
+
+Agent **TIDAK** boleh switch model sendiri — selalu minta konfirmasi bos.
+
+### Kapan pakai Haiku (hemat token)
+
+Gunakan Haiku untuk pipeline yang bisa di-batch atau tidak butuh reasoning:
+- `web_search` → screen 20 hasil → filter relevan
+- Fetch URL → extract key fields
+- Bulk corpus scan → count / tag / deduplicate
+- Simple regex / format validation
+- Data QA pass sebelum LLM processing
+
+### Anti-pattern yang HARUS dihindari
+- ❌ Pakai Sonnet untuk task yang Haiku bisa handle (buang token)
+- ❌ Pakai Sonnet untuk task yang jelas butuh Opus tapi tidak kasih tau bos (output kualitas rendah + waste iter)
+- ❌ Switch ke Opus tanpa bilang dulu (keputusan bos, bukan agent)
+- ❌ Stuck di Sonnet >2 iter tanpa eskalasi ke Opus
+
+---
+
 ## 🔧 Konteks Deployment
 
 ### Arsitektur Hardware (LOCK 2026-04-27 — PENTING, sebelumnya tidak tercatat)
