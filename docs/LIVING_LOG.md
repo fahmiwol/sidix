@@ -13777,3 +13777,35 @@ ETA training: ~4h, jadi cek lagi nanti malam.
 [2026-04-28T21:02:02.236025+00:00] [DECISION] Sprint 43 schedule pulled forward (week 2-3 vs week 5-7
   per 12-week sequence) karena Sprint 41+42 ahead of schedule. Compound
   parallel execution sambil training jalan.
+
+[2026-04-28T21:14:55.576550+00:00] [PIVOT] Sprint 43 PIVOT - SIDIX Command Board (web) BUKAN Telegram-only.
+  Founder reasoning 2026-04-29: 'buatkan 1 url chat board... pake url apapun.
+  ada tutorial, ada approval yang dipelajari sidix, usulan atau perintah,
+  jadi sy bisa akses lewat hp atau lewat pc.'
+  
+[2026-04-28T21:14:55.576550+00:00] [IMPL] SIDIX_BOARD/index.html - single-page web dashboard (611 lines).
+  6 tab panels: Chat 5 Persona | Approval Queue | Task Queue | Pixel Captures
+  | Synthesizer | Tutorial. Mobile-responsive (PWA-friendly). Dark theme
+  matching SIDIX brand. Tabs scroll horizontal di mobile. 6 persona cards
+  (5 individual + Council). Phase 1 = stub responses, mock data. Phase 2
+  wires real /agent/chat + /agent/council + /autonomous_dev/queue +
+  /sidix/synthesize_conversation + /sidix/pixel/captures.
+
+[2026-04-28T21:14:55.576550+00:00] [TEST] Board structural sanity:
+  - 611 lines, 25,204 chars
+  - 130/130 div balanced
+  - 20/20 button balanced
+  - 6 panels, 6 tabs, 6 persona cards data attrs
+  - Visible di Claude Code Launch preview panel (verified)
+  - Tab switch JS works, persona select JS works, chat input stub works,
+    add-task stub works, synthesize stub works, API status badge
+
+[2026-04-28T21:14:55.576550+00:00] [DOC] SIDIX_BOARD/README.md created. Document 4 deploy options:
+  A. file:// local | B. subdomain board.sidixlab.com | C. subpath
+  app.sidixlab.com/board/ | D. mobile PWA install. Phase 2 API wiring
+  per panel mapped.
+
+[2026-04-28T21:14:55.576550+00:00] [DECISION] Telegram bot scaffold (telegram_persona_bot.py) di-keep
+  sebagai fallback notification channel (push notif saat approval queue
+  ada item baru) BUKAN primary UI. Board jauh lebih flexible + brand-aligned
+  + zero dependency.

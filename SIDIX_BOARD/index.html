@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SIDIX Command Board — Tiranyx Lab</title>
+<meta name="description" content="SIDIX Command Board — 5 persona advisor + approval queue + task queue + tutorial. Akses dari HP atau PC.">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0d1117;
+    --bg-2: #161b22;
+    --bg-3: #21262d;
+    --border: #30363d;
+    --text: #e6edf3;
+    --text-dim: #8b949e;
+    --accent: #58a6ff;
+    --green: #3fb950;
+    --red: #f85149;
+    --yellow: #d29922;
+    --purple: #a371f7;
+    --orange: #ff9966;
+  }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", sans-serif;
+    background: var(--bg); color: var(--text); min-height: 100vh; line-height: 1.5;
+  }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  button {
+    cursor: pointer; border: 0; padding: 8px 14px; border-radius: 6px;
+    background: var(--bg-3); color: var(--text); font-size: 13px;
+    font-family: inherit; transition: background 0.15s;
+  }
+  button:hover { background: #30363d; }
+  button.primary { background: #238636; color: #fff; }
+  button.primary:hover { background: #2ea043; }
+  button.danger { background: #da3633; color: #fff; }
+  input, textarea, select {
+    background: var(--bg-2); color: var(--text); border: 1px solid var(--border);
+    padding: 8px 12px; border-radius: 6px; font-family: inherit; font-size: 13px;
+    width: 100%;
+  }
+
+  /* ── Layout ──────────────────────────────────────────────────────────── */
+  header {
+    background: var(--bg-2); border-bottom: 1px solid var(--border);
+    padding: 12px 20px; display: flex; align-items: center; gap: 12px;
+    position: sticky; top: 0; z-index: 10;
+  }
+  header .logo {
+    font-weight: 700; font-size: 16px; color: var(--accent);
+    display: flex; align-items: center; gap: 8px;
+  }
+  header .logo::before {
+    content: ""; width: 10px; height: 10px; border-radius: 50%;
+    background: var(--green); box-shadow: 0 0 8px var(--green);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse { 50% { opacity: 0.4; } }
+  header .spacer { flex: 1; }
+  header .badge {
+    font-size: 11px; padding: 2px 8px; border-radius: 999px;
+    background: var(--bg-3); color: var(--text-dim);
+  }
+
+  nav.tabs {
+    display: flex; gap: 2px; background: var(--bg-2);
+    border-bottom: 1px solid var(--border); padding: 0 12px; overflow-x: auto;
+  }
+  nav.tabs button {
+    background: transparent; color: var(--text-dim); border-radius: 0;
+    padding: 12px 16px; border-bottom: 2px solid transparent; white-space: nowrap;
+  }
+  nav.tabs button.active {
+    color: var(--accent); border-bottom-color: var(--accent);
+    background: var(--bg);
+  }
+  nav.tabs button:hover { color: var(--text); }
+
+  main {
+    max-width: 1200px; margin: 0 auto; padding: 20px;
+  }
+
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  .grid-personas {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 12px; margin-bottom: 20px;
+  }
+  .persona-card {
+    background: var(--bg-2); border: 1px solid var(--border);
+    border-radius: 8px; padding: 16px; cursor: pointer;
+    transition: border-color 0.15s, transform 0.15s;
+  }
+  .persona-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .persona-card.selected { border-color: var(--accent); background: rgba(88, 166, 255, 0.05); }
+  .persona-card .icon { font-size: 24px; margin-bottom: 8px; }
+  .persona-card .name { font-weight: 700; font-size: 14px; }
+  .persona-card .tagline { font-size: 11px; color: var(--text-dim); margin-top: 4px; }
+
+  .chat-box {
+    background: var(--bg-2); border: 1px solid var(--border);
+    border-radius: 8px; padding: 16px; min-height: 300px;
+  }
+  .chat-messages {
+    max-height: 400px; overflow-y: auto; margin-bottom: 12px;
+    padding-right: 8px;
+  }
+  .msg {
+    padding: 10px 12px; border-radius: 8px; margin-bottom: 8px;
+    font-size: 13px; line-height: 1.6;
+  }
+  .msg.user { background: var(--bg-3); margin-left: 40px; }
+  .msg.assistant { background: rgba(88, 166, 255, 0.08); margin-right: 40px; }
+  .msg .speaker {
+    font-size: 11px; font-weight: 700; text-transform: uppercase;
+    color: var(--text-dim); margin-bottom: 4px;
+  }
+
+  .input-row { display: flex; gap: 8px; }
+  .input-row textarea {
+    flex: 1; resize: vertical; min-height: 44px; max-height: 200px;
+  }
+
+  /* ── Card / list ──────────────────────────────────────────────────── */
+  .card {
+    background: var(--bg-2); border: 1px solid var(--border);
+    border-radius: 8px; padding: 16px; margin-bottom: 12px;
+  }
+  .card .title {
+    font-weight: 600; font-size: 14px; margin-bottom: 6px;
+  }
+  .card .meta {
+    font-size: 11px; color: var(--text-dim); margin-bottom: 8px;
+  }
+  .card .actions {
+    display: flex; gap: 8px; margin-top: 12px;
+  }
+  .pill {
+    display: inline-block; padding: 2px 8px; border-radius: 999px;
+    font-size: 10px; text-transform: uppercase; font-weight: 600;
+    background: var(--bg-3); color: var(--text-dim);
+  }
+  .pill.green { background: rgba(63, 185, 80, 0.15); color: var(--green); }
+  .pill.red { background: rgba(248, 81, 73, 0.15); color: var(--red); }
+  .pill.yellow { background: rgba(210, 153, 34, 0.15); color: var(--yellow); }
+  .pill.purple { background: rgba(163, 113, 247, 0.15); color: var(--purple); }
+
+  /* ── Tutorial ──────────────────────────────────────────────────────── */
+  .tutorial-step {
+    background: var(--bg-2); border-left: 3px solid var(--accent);
+    padding: 16px 20px; margin-bottom: 12px; border-radius: 0 8px 8px 0;
+  }
+  .tutorial-step h3 {
+    font-size: 14px; font-weight: 700; margin-bottom: 6px;
+  }
+  .tutorial-step code {
+    background: var(--bg-3); padding: 2px 6px; border-radius: 4px;
+    font-family: "JetBrains Mono", monospace; font-size: 12px;
+  }
+  .tutorial-step pre {
+    background: var(--bg); padding: 12px; border-radius: 6px;
+    margin-top: 8px; overflow-x: auto; font-size: 12px;
+    border: 1px solid var(--border); font-family: "JetBrains Mono", monospace;
+  }
+
+  /* ── Stats ─────────────────────────────────────────────────────────── */
+  .stats-row {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px; margin-bottom: 20px;
+  }
+  .stat-tile {
+    background: var(--bg-2); border: 1px solid var(--border);
+    padding: 16px; border-radius: 8px;
+  }
+  .stat-tile .num {
+    font-size: 24px; font-weight: 700; color: var(--accent);
+  }
+  .stat-tile .label {
+    font-size: 11px; color: var(--text-dim); text-transform: uppercase;
+    margin-top: 4px;
+  }
+
+  /* ── Mobile ────────────────────────────────────────────────────────── */
+  @media (max-width: 768px) {
+    header { padding: 10px 14px; }
+    main { padding: 14px; }
+    .msg.user { margin-left: 20px; }
+    .msg.assistant { margin-right: 20px; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">SIDIX Command Board</div>
+  <span class="badge" id="status-badge">v0.1.0 · Phase 1</span>
+  <span class="spacer"></span>
+  <span class="badge" id="api-status">API: …</span>
+</header>
+
+<nav class="tabs">
+  <button class="active" data-tab="chat">💬 Chat 5 Persona</button>
+  <button data-tab="approvals">✅ Approval Queue</button>
+  <button data-tab="tasks">📋 Task Queue</button>
+  <button data-tab="captures">📸 Pixel Captures</button>
+  <button data-tab="synth">🧠 Synthesizer</button>
+  <button data-tab="tutorial">📖 Tutorial</button>
+</nav>
+
+<main>
+  <!-- ─── Chat Panel ─────────────────────────────────────────────────── -->
+  <div class="panel active" id="panel-chat">
+    <div class="grid-personas">
+      <div class="persona-card selected" data-persona="UTZ">
+        <div class="icon">🎨</div>
+        <div class="name">UTZ</div>
+        <div class="tagline">Creative director, visual-playful</div>
+      </div>
+      <div class="persona-card" data-persona="ABOO">
+        <div class="icon">🔧</div>
+        <div class="name">ABOO</div>
+        <div class="tagline">Engineer praktis, sharp, fail-fast</div>
+      </div>
+      <div class="persona-card" data-persona="OOMAR">
+        <div class="icon">🧭</div>
+        <div class="name">OOMAR</div>
+        <div class="tagline">Strategist, framework-driven</div>
+      </div>
+      <div class="persona-card" data-persona="ALEY">
+        <div class="icon">📚</div>
+        <div class="name">ALEY</div>
+        <div class="tagline">Researcher methodical, curious</div>
+      </div>
+      <div class="persona-card" data-persona="AYMAN">
+        <div class="icon">💛</div>
+        <div class="name">AYMAN</div>
+        <div class="tagline">Pendengar hangat, empathetic</div>
+      </div>
+      <div class="persona-card" data-persona="COUNCIL" style="border-color: var(--purple);">
+        <div class="icon">🌐</div>
+        <div class="name">COUNCIL</div>
+        <div class="tagline">5 persona paralel — multi-angle</div>
+      </div>
+    </div>
+
+    <div class="chat-box">
+      <div class="chat-messages" id="chat-messages">
+        <div class="msg assistant">
+          <div class="speaker">🎨 UTZ</div>
+          Halo bos. Pilih persona di atas, ketik pertanyaan di bawah. Council = semua 5 paralel.<br>
+          <em style="color:var(--text-dim);">Phase 1: stub response. Phase 2 wire ke /agent/chat.</em>
+        </div>
+      </div>
+      <div class="input-row">
+        <textarea id="chat-input" placeholder="Tanya yang dipilih persona…" rows="1"></textarea>
+        <button class="primary" id="btn-send">Kirim</button>
+      </div>
+    </div>
+
+    <p style="font-size:11px;color:var(--text-dim);margin-top:8px;">
+      💡 Persona dipilih: <span id="selected-persona">UTZ</span> · Voice via LoRA Sprint 13 · Self-hosted
+    </p>
+  </div>
+
+  <!-- ─── Approval Queue Panel ──────────────────────────────────────── -->
+  <div class="panel" id="panel-approvals">
+    <div class="stats-row">
+      <div class="stat-tile"><div class="num" id="ap-pending">2</div><div class="label">Pending review</div></div>
+      <div class="stat-tile"><div class="num" id="ap-approved">14</div><div class="label">Approved (today)</div></div>
+      <div class="stat-tile"><div class="num" id="ap-rejected">3</div><div class="label">Rejected (today)</div></div>
+      <div class="stat-tile"><div class="num" id="ap-escalated">1</div><div class="label">Escalated</div></div>
+    </div>
+
+    <div id="approvals-list">
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:start;gap:12px;flex-wrap:wrap;">
+          <div>
+            <div class="title">autodev-1777407997-6470 · cursor-001-mighan-canvas</div>
+            <div class="meta">
+              <span class="pill yellow">review</span>
+              <span class="pill purple">persona-fanout</span>
+              · iter 3/5 · 12 tests pass · +423 −89 lines
+            </div>
+            <div style="font-size:13px;color:var(--text);">
+              Production-ready: auth + save + deploy.<br>
+              SIDIX self-built dari scaffold Mighan canvas. Owner verdict needed.
+            </div>
+          </div>
+        </div>
+        <div class="actions">
+          <button class="primary">Approve</button>
+          <button>View diff</button>
+          <button>Request changes</button>
+          <button class="danger">Reject</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div>
+          <div class="title">autodev-1777408500-3299 · cursor-003-mighan-photo</div>
+          <div class="meta">
+            <span class="pill yellow">review</span>
+            · iter 2/5 · 8 tests pass · +267 −34 lines
+          </div>
+          <div style="font-size:13px;color:var(--text);">
+            Add background remove + filter pipeline. Reuse SDXL self-host.
+          </div>
+        </div>
+        <div class="actions">
+          <button class="primary">Approve</button>
+          <button>View diff</button>
+          <button>Request changes</button>
+          <button class="danger">Reject</button>
+        </div>
+      </div>
+    </div>
+    <p style="font-size:11px;color:var(--text-dim);">
+      💡 Sprint 40 autonomous_developer pipeline. Phase 2 wire ke /autonomous_dev/queue.
+    </p>
+  </div>
+
+  <!-- ─── Task Queue Panel ──────────────────────────────────────────── -->
+  <div class="panel" id="panel-tasks">
+    <div style="margin-bottom:16px;display:flex;gap:8px;flex-wrap:wrap;">
+      <input type="text" id="new-task-target" placeholder="Target path (e.g. Mighan-tasks/cursor-001)" style="flex:1;min-width:220px;">
+      <input type="text" id="new-task-goal" placeholder="Production-ready criteria" style="flex:2;min-width:220px;">
+      <button class="primary" id="btn-add-task">+ Queue task</button>
+    </div>
+
+    <div id="tasks-list">
+      <div class="card">
+        <div class="title">🔧 ABOO researcher → engineering benchmarks</div>
+        <div class="meta">
+          <span class="pill purple">in_progress</span> · priority 80 · spawned 3 min ago
+        </div>
+      </div>
+      <div class="card">
+        <div class="title">📚 ALEY researcher → academic precedent</div>
+        <div class="meta">
+          <span class="pill green">completed</span> · 2 paper found · 1 method extracted
+        </div>
+      </div>
+      <div class="card">
+        <div class="title">🧭 OOMAR strategy → market analysis</div>
+        <div class="meta">
+          <span class="pill yellow">pending</span> · priority 60
+        </div>
+      </div>
+    </div>
+    <p style="font-size:11px;color:var(--text-dim);">
+      💡 Sprint 40 dev_task_queue + persona_research_fanout. 1000 bayangan + 5 persona.
+    </p>
+  </div>
+
+  <!-- ─── Pixel Captures Panel ──────────────────────────────────────── -->
+  <div class="panel" id="panel-captures">
+    <div class="stats-row">
+      <div class="stat-tile"><div class="num">8</div><div class="label">Captures (today)</div></div>
+      <div class="stat-tile"><div class="num">42</div><div class="label">Total this week</div></div>
+      <div class="stat-tile"><div class="num">7</div><div class="label">Domains active</div></div>
+      <div class="stat-tile"><div class="num">12</div><div class="label">Notes generated</div></div>
+    </div>
+
+    <div class="card">
+      <div class="title">🐦 twitter.com — @sidix capture</div>
+      <div class="meta">10 menit lalu · live_typing · note 291 generated</div>
+      <div style="font-size:12px;color:var(--text-dim);">
+        "@sidix bagus banget produk Tiranyx, sintesis ini buat blog…"
+      </div>
+    </div>
+    <div class="card">
+      <div class="title">📷 instagram.com — page mention</div>
+      <div class="meta">25 menit lalu · note 290 generated</div>
+      <div style="font-size:12px;color:var(--text-dim);">
+        Influencer caption mention "@sidix metode learning baru…"
+      </div>
+    </div>
+    <p style="font-size:11px;color:var(--text-dim);">
+      💡 Sprint 42 SIDIX-as-Pixel. Install Chrome ext untuk live capture.
+    </p>
+  </div>
+
+  <!-- ─── Synthesizer Panel ─────────────────────────────────────────── -->
+  <div class="panel" id="panel-synth">
+    <div class="stats-row">
+      <div class="stat-tile"><div class="num">12</div><div class="label">Sesi Claude Code</div></div>
+      <div class="stat-tile"><div class="num">~18k</div><div class="label">Total turns</div></div>
+      <div class="stat-tile"><div class="num">290</div><div class="label">Latest note</div></div>
+      <div class="stat-tile"><div class="num">11</div><div class="label">Decisions extracted (avg)</div></div>
+    </div>
+
+    <div class="card">
+      <h3 style="margin-bottom:8px;">Quick synthesize</h3>
+      <textarea id="synth-input" rows="6" placeholder="Paste Claude/GPT/Gemini transcript di sini…"></textarea>
+      <div style="display:flex;gap:8px;align-items:center;margin-top:12px;">
+        <input id="synth-source" placeholder="Source label (e.g. claude_session_2026-04-29)" style="flex:1;">
+        <label style="font-size:12px;color:var(--text-dim);display:flex;align-items:center;gap:6px;">
+          <input type="checkbox" id="synth-fanout" style="width:auto;"> Persona fanout
+        </label>
+        <button class="primary" id="btn-synth">Synthesize</button>
+      </div>
+    </div>
+
+    <h3 style="margin:20px 0 12px 0;font-size:14px;">12 sesi Claude Code bos:</h3>
+    <div id="sessions-list">
+      <div class="card">
+        <div class="title">3b0d64ff · zen-yalow worktree</div>
+        <div class="meta">3269 turns · 28MB · last: 2026-04-26</div>
+        <button>Synthesize</button>
+      </div>
+      <div class="card">
+        <div class="title">0f516ca3 · determined-shirley</div>
+        <div class="meta">2478 turns · 18MB · last: 2026-04-27</div>
+        <button>Synthesize</button>
+      </div>
+      <div class="card">
+        <div class="title">17ab4c82 · pedantic-banach (sesi sekarang)</div>
+        <div class="meta">1625 turns · 7MB · last: 2026-04-28</div>
+        <button>Synthesize</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── Tutorial Panel ────────────────────────────────────────────── -->
+  <div class="panel" id="panel-tutorial">
+    <h2 style="margin-bottom:16px;">📖 Tutorial — SIDIX Command Board</h2>
+
+    <div class="tutorial-step">
+      <h3>1. Apa ini?</h3>
+      <p>SIDIX Command Board = single dashboard yang aggregate semua interaction surface SIDIX:</p>
+      <ul style="margin:8px 0 0 20px;color:var(--text-dim);font-size:13px;">
+        <li>Chat dengan 5 persona advisor (UTZ/ABOO/OOMAR/ALEY/AYMAN)</li>
+        <li>Approval queue untuk autonomous_developer Sprint 40</li>
+        <li>Task queue + persona research fanout</li>
+        <li>Pixel captures dari Chrome extension</li>
+        <li>Conversation Synthesizer (Claude Code session import)</li>
+      </ul>
+    </div>
+
+    <div class="tutorial-step">
+      <h3>2. Cara akses</h3>
+      <p>Board ini = static HTML, bisa diakses 4 cara:</p>
+      <ul style="margin:8px 0 0 20px;color:var(--text-dim);font-size:13px;">
+        <li><strong>Local file</strong>: buka <code>SIDIX_BOARD/index.html</code> langsung di browser</li>
+        <li><strong>Subdomain</strong>: deploy ke <code>board.sidixlab.com</code> via nginx</li>
+        <li><strong>Subpath</strong>: serve di <code>app.sidixlab.com/board/</code></li>
+        <li><strong>Mobile PWA</strong>: install dari Chrome HP "Add to Home Screen"</li>
+      </ul>
+    </div>
+
+    <div class="tutorial-step">
+      <h3>3. Akses dari HP</h3>
+      <p>Buka URL di Chrome HP → menu → "Tambahkan ke Layar Utama" → Board jadi app icon. Mobile-responsive layout otomatis.</p>
+    </div>
+
+    <div class="tutorial-step">
+      <h3>4. Approval flow (Sprint 40)</h3>
+      <p>SIDIX autonomous_developer akan submit PR ke branch <code>autonomous-dev/&lt;task-id&gt;</code>. Notifikasi muncul di tab "Approval Queue":</p>
+      <pre>Approve → merge to main + Hafidz Ledger entry
+View diff → check perubahan
+Request changes → SIDIX iter+1 dengan feedback
+Reject → close + write learning note</pre>
+    </div>
+
+    <div class="tutorial-step">
+      <h3>5. Queue task baru</h3>
+      <p>Tab "Task Queue" → input target_path + goal → klik "Queue task". SIDIX cron */30 min akan pick up:</p>
+      <pre># Atau via CLI:
+python -m brain_qa autonomous_dev queue add \
+  --target=Mighan-tasks/cursor-001-mighan-canvas \
+  --goal="production-ready: auth+save+deploy" \
+  --priority=80 \
+  --persona-fanout</pre>
+    </div>
+
+    <div class="tutorial-step">
+      <h3>6. Synthesize Claude Code session</h3>
+      <p>Tab "Synthesizer" → pilih dari 12 sesi yang sudah di-discover, klik Synthesize. Atau paste transcript ChatGPT/Gemini manual.</p>
+      <pre># CLI equivalent:
+python -m brain_qa claude_sessions list --min-turns=10
+python -m brain_qa claude_sessions synthesize --uuid=&lt;UUID-prefix&gt;
+python -m brain_qa claude_sessions batch --since=2026-04-01</pre>
+    </div>
+
+    <div class="tutorial-step">
+      <h3>7. Status sekarang</h3>
+      <p style="color:var(--text-dim);font-size:13px;">
+        ✅ Sprint 41 Conversation Synthesizer LIVE (CLI)<br>
+        ✅ Sprint 41 v1.2 claude_sessions discovery (12 sesi)<br>
+        ✅ Sprint 42 Phase 1 SIDIX Pixel Chrome extension<br>
+        ✅ Sprint 43 Phase 1 Telegram bot scaffold (deprecated, replaced by this board)<br>
+        🔄 Sprint 13 LoRA persona training (in progress)<br>
+        ⏳ Sprint 40 Phase 2 autonomous_developer LLM wire<br>
+        ⏳ Phase 2 Board: wire all panels ke real API
+      </p>
+    </div>
+
+    <div class="tutorial-step">
+      <h3>8. Kontak + repo</h3>
+      <p style="color:var(--text-dim);font-size:13px;">
+        🌐 <a href="https://sidixlab.com" target="_blank">sidixlab.com</a> ·
+        📦 <a href="https://github.com/fahmiwol/sidix" target="_blank">github.com/fahmiwol/sidix</a> ·
+        📄 <a href="https://github.com/fahmiwol/sidix/blob/main/docs/whitepaper/SIDIX_WHITEPAPER_v2.md" target="_blank">Whitepaper v2</a><br>
+        Built by Mighan Lab · MIT License · Tiranyx Lab 2026
+      </p>
+    </div>
+  </div>
+</main>
+
+<script>
+// ── Tab navigation ───────────────────────────────────────────────────
+document.querySelectorAll('nav.tabs button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('nav.tabs button').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('panel-' + btn.dataset.tab).classList.add('active');
+  });
+});
+
+// ── Persona selection ────────────────────────────────────────────────
+let selectedPersona = 'UTZ';
+document.querySelectorAll('.persona-card').forEach(card => {
+  card.addEventListener('click', () => {
+    document.querySelectorAll('.persona-card').forEach(c => c.classList.remove('selected'));
+    card.classList.add('selected');
+    selectedPersona = card.dataset.persona;
+    document.getElementById('selected-persona').textContent = selectedPersona;
+  });
+});
+
+// ── Chat send (Phase 1 stub, Phase 2 wires /agent/chat) ─────────────
+const chatInput = document.getElementById('chat-input');
+const chatMessages = document.getElementById('chat-messages');
+
+function appendMsg(speaker, text, isUser) {
+  const div = document.createElement('div');
+  div.className = 'msg ' + (isUser ? 'user' : 'assistant');
+  div.innerHTML = `<div class="speaker">${speaker}</div>${escapeHtml(text)}`;
+  chatMessages.appendChild(div);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+document.getElementById('btn-send').addEventListener('click', sendChat);
+chatInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sendChat();
+  }
+});
+
+async function sendChat() {
+  const text = chatInput.value.trim();
+  if (!text) return;
+  appendMsg('You', text, true);
+  chatInput.value = '';
+
+  // Phase 1 stub
+  setTimeout(() => {
+    const persona = selectedPersona;
+    const stubResponses = {
+      'UTZ': '🎨 UTZ: okeee, idemu menarik... metafora-nya gini... [Phase 1 stub. Phase 2 wire ke /agent/chat?persona=UTZ]',
+      'ABOO': '🔧 ABOO: stop. data-nya mana? bottleneck-nya... [Phase 1 stub. Phase 2 wire ke /agent/chat?persona=ABOO]',
+      'OOMAR': '🧭 OOMAR: saya breakdown pakai framework. trade-off... [Phase 1 stub]',
+      'ALEY': '📚 ALEY: actually itu menarik dari sudut hipotesis... [Phase 1 stub]',
+      'AYMAN': '💛 AYMAN: aku ngerti, kayak gini analogi-nya... [Phase 1 stub]',
+      'COUNCIL': '🌐 COUNCIL spawn 5 persona paralel... [Phase 1 stub]'
+    };
+    appendMsg(persona, stubResponses[persona] || '[stub]', false);
+  }, 500);
+}
+
+// ── API status check (Phase 2 wires real probe) ─────────────────────
+async function probeApi() {
+  const badge = document.getElementById('api-status');
+  // Phase 1: stub — Phase 2 fetch ctrl.sidixlab.com/health
+  badge.textContent = 'API: offline (Phase 1 stub)';
+  badge.style.color = 'var(--yellow)';
+}
+probeApi();
+
+// ── Add task stub ────────────────────────────────────────────────────
+document.getElementById('btn-add-task').addEventListener('click', () => {
+  const target = document.getElementById('new-task-target').value.trim();
+  const goal = document.getElementById('new-task-goal').value.trim();
+  if (!target || !goal) {
+    alert('Target + goal required');
+    return;
+  }
+  alert(`[Phase 1 stub] Task akan di-queue:\nTarget: ${target}\nGoal: ${goal}\n\nPhase 2 wire ke /autonomous_dev/queue/add`);
+});
+
+// ── Synthesizer stub ────────────────────────────────────────────────
+document.getElementById('btn-synth').addEventListener('click', () => {
+  const text = document.getElementById('synth-input').value.trim();
+  const source = document.getElementById('synth-source').value.trim() || 'manual_paste';
+  const fanout = document.getElementById('synth-fanout').checked;
+  if (!text) { alert('Paste transcript dulu'); return; }
+  alert(`[Phase 1 stub] Akan synthesize:\nSource: ${source}\nFanout: ${fanout}\nLength: ${text.length} chars\n\nPhase 2 wire ke /sidix/synthesize_conversation`);
+});
+
+console.log('SIDIX Command Board v0.1.0 loaded · Tiranyx Lab 2026');
+</script>
+</body>
+</html>
