@@ -13664,3 +13664,4 @@ ETA training: ~4h, jadi cek lagi nanti malam.
 - Pod v8a-d cumulative ~30 min × $0.20/hr = $0.10 spent
 - v8d ETA 4h × $0.20/hr = $0.80
 - Total projection: ~$0.90 / $20.41 ✓
+[2026-04-28T19:59:07Z] [DOC] Strategic dialogue 2026-04-29 captured ke docs/FOUNDER_DIALOGUE_2026-04-29_strategic_disclosure.md — full disclosure Adobe-of-ID + 4 produk Tiranyx + Film-Gen sub-produk + Kimi Mighan status + briket biz cash flow + build-not-buy 60/40 reconciliation. Memory: 4 file project + 3 feedback updated. Kimi & future Claude bisa baca file ini untuk full nuance.
