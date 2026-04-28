@@ -24,12 +24,13 @@ from typing import Optional
 # ── Query pattern → entity type detection ────────────────────────────────────
 
 # Pattern: "siapa <ROLE> <SCOPE>" → extract person name dari hits about ROLE
+# Sprint 35 extension: 8 entity types (Presiden, Wapres, Gubernur, Menteri,
+# CEO, Rektor, Kapolri, Panglima, Juara)
 _QUERY_PATTERNS = [
     # (regex, role_label, name_extract_regex)
     (
         re.compile(r"siapa(?:kah)?\s+(?:presiden|president)\s+(?:republik\s+)?(?:indonesia|ri)", re.I),
         "Presiden Indonesia",
-        # Find capitalized 1-3 word name preceded by relevant context
         re.compile(
             r"\b(?:Presiden|Dilantik|presiden|RI|Indonesia)\b[\s\w]{0,30}?\b"
             r"([A-Z][a-z]+(?:\s+[A-Z][a-z]+){0,2})\b",
@@ -40,6 +41,69 @@ _QUERY_PATTERNS = [
         "Wakil Presiden Indonesia",
         re.compile(
             r"\b(?:Wakil\s+Presiden|Wapres|Cawapres|Wakil)\b[\s\w]{0,30}?\b"
+            r"([A-Z][a-z]+(?:\s+[A-Z][a-z]+){0,2})\b",
+        ),
+    ),
+    # Sprint 35: Gubernur extraction
+    (
+        re.compile(r"siapa(?:kah)?\s+gubernur\s+(?:[a-zA-Z]+)", re.I),
+        "Gubernur",
+        re.compile(
+            r"\b(?:Gubernur|gubernur)\b[\s\w]{0,30}?\b"
+            r"([A-Z][a-z]+(?:\s+[A-Z][a-z]+){0,2})\b",
+        ),
+    ),
+    # Sprint 35: Menteri (specific portfolio)
+    (
+        re.compile(r"siapa(?:kah)?\s+menteri\s+", re.I),
+        "Menteri",
+        re.compile(
+            r"\b(?:Menteri|menteri|Menko|Kemenko)\b[\s\w]{0,40}?\b"
+            r"([A-Z][a-z]+(?:\s+[A-Z][a-z]+){0,2})\b",
+        ),
+    ),
+    # Sprint 35: CEO / Founder
+    (
+        re.compile(r"siapa(?:kah)?\s+(?:ceo|founder|pendiri)\s+", re.I),
+        "CEO / Founder",
+        re.compile(
+            r"\b(?:CEO|Founder|Pendiri|Co.?Founder)\b[\s\w]{0,30}?\b"
+            r"([A-Z][a-z]+(?:\s+[A-Z][a-z]+){0,2})\b",
+        ),
+    ),
+    # Sprint 35: Walikota / Bupati
+    (
+        re.compile(r"siapa(?:kah)?\s+(?:walikota|wali\s+kota|bupati)\s+", re.I),
+        "Walikota/Bupati",
+        re.compile(
+            r"\b(?:Walikota|Wali\s+Kota|Bupati)\b[\s\w]{0,30}?\b"
+            r"([A-Z][a-z]+(?:\s+[A-Z][a-z]+){0,2})\b",
+        ),
+    ),
+    # Sprint 35: Kapolri / Panglima
+    (
+        re.compile(r"siapa(?:kah)?\s+(?:kapolri|kapolda|panglima\s+tni|panglima|jenderal)", re.I),
+        "Kapolri/Panglima",
+        re.compile(
+            r"\b(?:Kapolri|Kapolda|Panglima\s+TNI|Panglima|Jenderal|Jendral)\b[\s\w]{0,30}?\b"
+            r"([A-Z][a-z]+(?:\s+[A-Z][a-z]+){0,2})\b",
+        ),
+    ),
+    # Sprint 35: Rektor universitas
+    (
+        re.compile(r"siapa(?:kah)?\s+rektor\s+", re.I),
+        "Rektor",
+        re.compile(
+            r"\b(?:Rektor|rektor)\b[\s\w]{0,30}?\b"
+            r"([A-Z][a-z]+(?:\s+[A-Z][a-z]+){0,2})\b",
+        ),
+    ),
+    # Sprint 35: Juara / Pemenang (sport, competition)
+    (
+        re.compile(r"siapa(?:kah)?\s+(?:juara|pemenang|champion|winner)\s+", re.I),
+        "Juara/Pemenang",
+        re.compile(
+            r"\b(?:Juara|Pemenang|Champion|Winner|Memenangkan|Meraih)\b[\s\w]{0,30}?\b"
             r"([A-Z][a-z]+(?:\s+[A-Z][a-z]+){0,2})\b",
         ),
     ),
@@ -54,26 +118,46 @@ _STOP_TOKENS = {
     "senin", "selasa", "rabu", "kamis", "jumat", "sabtu", "minggu",
     "januari", "februari", "maret", "april", "mei", "juni", "juli",
     "agustus", "september", "oktober", "november", "desember",
-    # Location
+    # Location (general — tapi kalau sebagai bagian nama, candidate akan ke-filter)
     "indonesia", "jakarta", "republik", "ri",
-    # Roles / generic
+    # Roles / generic — Sprint 35 extended
     "pejabat", "daftar", "lengkap", "siapa", "pelantikan", "reshuffle",
     "kabinet", "kepala", "menteri", "wakil", "presiden", "wapres",
+    "gubernur", "walikota", "bupati", "kapolri", "kapolda", "panglima",
+    "jenderal", "jendral", "rektor", "ceo", "founder", "pendiri",
+    "juara", "pemenang", "champion", "winner",
     "wikipedia", "bahasa", "republic", "president", "vice",
-    "istana", "negara", "acara", "kota", "provinsi",
+    "istana", "negara", "acara", "kota", "provinsi", "kabupaten",
+    "memenangkan", "meraih", "dilantik", "menjabat",
     # Misc
     "the", "and", "or", "untuk", "yang", "dan", "dari", "ke", "di",
+    "pada", "oleh", "dengan", "tentang", "telah",
+    # Sprint 35 verbs — common action words yang sering nyangkut di regex
+    "tegaskan", "mengumumkan", "umumkan", "menyampaikan", "sampaikan",
+    "menyatakan", "menetapkan", "memulai", "kembali", "resmi",
+    "reformasi", "kesejahteraan", "rakyat", "strategi", "visi", "misi",
+    "siaran", "pers", "berita", "kabar", "informasi",
+    # Sprint 35 known company/event nouns yang bukan person name
+    "tesla", "google", "microsoft", "apple", "amazon", "meta", "alphabet",
+    "piala", "dunia", "world", "cup", "olimpiade", "olympic",
+    "trofi", "final", "semifinal", "babak", "ronde",
 }
 
 
 def _clean_name(raw: str) -> Optional[str]:
-    """Strip stop tokens from extracted name. Return None kalau jadi kosong."""
+    """Strip stop tokens from extracted name. Return None kalau jadi kosong.
+
+    Sprint 35: cap max 2 words (most Indonesian person names are 1-2 words).
+    """
     if not raw:
         return None
     tokens = raw.strip().split()
     keep = [t for t in tokens if t.lower() not in _STOP_TOKENS]
     if not keep:
         return None
+    # Sprint 35: cap to first 2 valid tokens (anti-pollution from greedy regex)
+    if len(keep) > 2:
+        keep = keep[:2]
     cleaned = " ".join(keep)
     # Minimum length 4 char untuk valid person name
     if len(cleaned) < 4:

@@ -12839,3 +12839,24 @@ File: `agent_serve.py` (commit 1c784e9)
   • Document tree SOT
   • Cardinality + data volume snapshot
 
+
+---
+
+## 2026-04-28 EVENING (LATEST+14) — Sprint 35 START: Fact Extractor Extension
+
+### IMPL [Sprint 35] START
+**Goal**: Sprint 34G fact_extractor saat ini cuma support 2 entity types
+(Presiden, Wakil Presiden). Extend ke entity types yang lebih luas supaya
+anti-halusinasi defense apply di lebih banyak query types.
+
+**Coverage extension**:
+- Gubernur (provinsi)
+- Walikota / Bupati  
+- Menteri (kabinet position)
+- CEO / Founder (perusahaan)
+- Rektor / kapolri / panglima TNI
+- Juara / Pemenang (olahraga, kompetisi)
+
+**Compound**: Sprint 34G fact_extractor module + Sprint 34I /ask post-process
+→ extension auto apply di flow yang sama.
+
