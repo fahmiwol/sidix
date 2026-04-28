@@ -47,3 +47,4 @@
 0 0 * * 0 SIDIX_PATH=/opt/sidix /opt/sidix/scripts/sidix_visioner_weekly.sh >> /opt/sidix/.data/visioner_weekly.log 2>&1
 0 23 * * * curl -s "http://localhost:8765/agent/odoa?persist=true" >> /opt/sidix/.data/odoa_cron.log 2>&1
 * 6-22 * * * source /opt/sidix/.env && /opt/sidix/deploy-scripts/warmup_runpod.sh >> /var/log/sidix/runpod_warmup.log 2>&1
+30 2 * * * /opt/sidix/scripts/sidix_reflect_day.sh >> /opt/sidix/.data/cron_reflect_day.log 2>&1

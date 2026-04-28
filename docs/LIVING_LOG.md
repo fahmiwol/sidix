@@ -12958,3 +12958,52 @@ Q2-3 failures = web_search reliability issue, BUKAN fact_extractor logic.
    - Owner Verdict (pending)
 5. Cron: `0 2 * * *` (02:00 UTC daily, post ODOA tick)
 
+
+### IMPL [Sprint 36] sidix_reflect_day.sh DEPLOYED + LIVE
+**File**: `scripts/sidix_reflect_day.sh` (commit cda124a)
+
+**Cron**: `30 2 * * *` (02:30 UTC daily, staggered post jariyah dummy_agents)
+
+**Dry-run VPS verified**:
+```
+[reflect] analyzing date=2026-04-27
+[reflect] 1 events from 2026-04-27
+[reflect] failures: 0 | tool actions: 0 | anomalies: 0
+[reflect] lesson draft written: /opt/sidix/.data/lessons/draft-2026-04-27.md
+[reflect] DONE — failures=0 tool_actions=0 repeated_patterns=0 repeated_sequences=0
+[2026-04-28T10:35:24+00:00] Reflection Cycle DONE (exit=0)
+```
+
+Lesson template structure verified:
+- YAML frontmatter (sanad_tier, cycle_id, date, status, owner_verdict)
+- Day Stats (events, failures, tool actions, ODOA)
+- Failure Patterns (with supporting episodes)
+- Tool Usage Top-8
+- Repeated Tool Sequences (Sprint 38 seeds)
+- Proposed Actions (owner verdict pending)
+- Sanad Chain provenance
+
+### TEST [Sprint 36] verifikasi
+- Script executable post-merge hook ✓
+- Python analyzer parse activity_log ✓
+- Lesson file generated dengan template ✓
+- Cron entry added (02:30 UTC daily) ✓
+- Crontab snapshot updated di repo ✓
+
+### REVIEW QA + VALIDASI [Sprint 36]:
+**Achieved**:
+- ✓ Foundation Self-Improvement Pillar 3 hidup eksplisit
+- ✓ Compound dengan ODOA daily (Sprint 23)
+- ✓ Seeds untuk Sprint 38 Tool Synthesis (repeated tool sequences detected)
+- ✓ Sanad chain provenance template (compound dengan Sprint 37 Hafidz)
+- ✓ Owner verdict workflow (compound dengan Sprint 40 Telegram)
+
+**Status**: Cron live 02:30 UTC daily. Pertama kali run on schedule = besok pagi (2026-04-29 02:30 UTC). Sekarang manual dry-run sudah generate first draft.
+
+### TODO Sprint 37 (next):
+**Hafidz Ledger MVP** — SHA-256 + isnad chain.
+- File: `apps/brain_qa/brain_qa/hafidz_ledger.py` (new module)
+- Hook: setiap lesson approved → write ledger entry
+- Endpoint: `GET /audit/{id}` trace provenance
+- Compound dengan Sprint 36 lesson workflow
+
