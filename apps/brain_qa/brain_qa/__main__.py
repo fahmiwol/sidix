@@ -346,10 +346,12 @@ def main(argv: list[str]) -> int:
 
     # Sprint 25b — retrieval eval harness
     p_reval = sub.add_parser("retrieval_eval", help="A/B eval BM25 vs Hybrid vs Hybrid+Rerank (Sprint 25b)")
-    p_reval.add_argument("--n", type=int, default=30, help="Number of queries (max 30, default 30)")
+    p_reval.add_argument("--n", type=int, default=30, help="Number of queries")
     p_reval.add_argument("--k", type=int, default=5, help="Hit@k (default 5)")
     p_reval.add_argument("--out", default=None, help="Save JSON report to path")
     p_reval.add_argument("--index-dir", default=None, help="Index dir override")
+    p_reval.add_argument("--paraphrase", action="store_true",
+                         help="Sprint 27c: use 50 paraphrase queries (no keyword overlap)")
 
     args = parser.parse_args(argv)
 
@@ -877,12 +879,14 @@ def main(argv: list[str]) -> int:
         return 0
 
     if args.cmd == "retrieval_eval":
-        from .retrieval_eval import run_retrieval_eval, _EVAL_QUERIES
+        from .retrieval_eval import run_retrieval_eval, _EVAL_QUERIES, _EVAL_QUERIES_PARAPHRASE
+        pool = _EVAL_QUERIES_PARAPHRASE if getattr(args, "paraphrase", False) else _EVAL_QUERIES
         run_retrieval_eval(
             index_dir_override=args.index_dir,
-            n_queries=min(int(args.n), len(_EVAL_QUERIES)),
+            n_queries=min(int(args.n), len(pool)),
             k=int(args.k),
             out=args.out,
+            paraphrase=getattr(args, "paraphrase", False),
         )
         return 0
 
