@@ -13510,3 +13510,40 @@ Agent next session: baca SESSION_STATE_2026-04-29_sprint13_kaggle_running.md →
 
 ### CATAT (final + push + deploy)
 Commit + push + merge main + VPS deploy akan dilakukan setelah block ini.
+
+## 2026-04-29 evening — Sprint 13 Phase 3b Kaggle 7 iterasi → PIVOT RunPod
+
+### CATAT (v5-v7 + decision)
+v5: peft 0.19.1 needs torchao≥0.16 (Kaggle has 0.10) → v5 patch torchao>=0.16 ✓
+v6: torchao OK tapi DoRA CUDA kernel `cudaErrorNoKernelImageForDevice` di P100 ❌
+v7: plain LoRA (use_dora=False) — SAME error → bukan DoRA, tapi **PEFT/torch CUDA kernels modern tidak include P100 (CC 6.0)**
+
+### TEMUAN KOGNITIF (note 288 update)
+Hipotesis "iteration_cost ∝ opacity × stack_depth" terkonfirmasi real-time:
+- 7 iterations exposed 4-layer stack: PyTorch CUDA kernels → PEFT → DoRA/LoRA op → P100 SM_60
+- Bukan waste — structured prior untuk SIDIX corpus
+- Kaggle keeps allocating P100 (no API to request T4+) → fundamental block
+
+### IMPL [RunPod pivot]
+Bos screenshot: RunPod balance $20.41, Axolotl FT template visible (axolotl-ai-cloud v0.16.0).
+Path RunPod ditemukan: 43 GPU types tersedia, training-grade A4000/V100/L4/3090 semua ready.
+
+Files baru:
+- training/runpod_train_lora.py — standalone training script (no Jupyter), CLI args, self-upload HF
+- training/runpod_pod_orchestrator.py — Pod create/monitor/terminate via runpod SDK
+- GPU priority list: A4000 16GB ($0.20/hr) → 3090 → L4 → V100
+
+### UPDATE DOCS
+- note 288: append v7 finding + pivot decision + multi-cloud orchestrator proposal
+- SESSION_STATE iterasi table: extend ke v7 + RunPod pivot
+- Hipotesis di-validate empirically
+
+### STATUS
+Kaggle path ABANDONED (7 iter all ERROR, fundamental P100 incompat).
+RunPod path READY (modules + creds + balance).
+**Bos approval needed**: spin up Pod (recommend RTX A4000 16GB ~$0.20/hr × 3-5h ≈ $1) atau pakai Axolotl serverless template?
+
+### MANDATORY LOOP COMPLETED (this session)
+✅ CATAT pre-exec → ✅ TESTING (7 iter + diag kernel) → ✅ ITERASI (7 patches) →
+✅ REVIEW → ✅ CATAT findings → ✅ VALIDASI hypothesis (note 288) →
+✅ QA security audit → ✅ CATAT final
