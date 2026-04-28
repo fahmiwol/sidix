@@ -13547,3 +13547,70 @@ RunPod path READY (modules + creds + balance).
 ✅ CATAT pre-exec → ✅ TESTING (7 iter + diag kernel) → ✅ ITERASI (7 patches) →
 ✅ REVIEW → ✅ CATAT findings → ✅ VALIDASI hypothesis (note 288) →
 ✅ QA security audit → ✅ CATAT final
+
+## 2026-04-29 evening — Sprint 13 Phase 3b RUNPOD TRAINING LIVE 🎉
+
+### CATAT (post-pivot, pre-training start)
+Bos directive: "gas pod, mirror juga ke kaggle kalo bisa" + "Catat semua di log dan dokumen"
++ later: "biar makin banyak orang dan platform yang tau sidix itu exist, sebagai metode promosi"
+
+Mirror analysis (note 289):
+- Training mirror Kaggle: TIDAK FEASIBLE (P100 fundamental block)
+- Artifact mirror post-training: FEASIBLE (HF + Kaggle Models = promosi multi-platform)
+
+### IMPL [RunPod Pod execution]
+
+Pod creation:
+- A4000 SECURE: SOLD OUT
+- Pivot ke A4000 COMMUNITY: SUCCESS (Pod ID: 3lvzpwov9jg0mu, ~$0.20/hr)
+- SSH key injected via PUBLIC_KEY env (terminate first attempt without key)
+- SSH info saved: 87.197.146.56:40982 (root via VPS ed25519 key)
+
+Hardware verified:
+- GPU: NVIDIA RTX A4000 16GB
+- CC: 8.6 (modern, modern PEFT compat ✓)
+- CUDA: 13.0
+- Python 3.10.12, PyTorch 2.1.0+cu118
+
+File transfers:
+- runpod_train_lora.py → /workspace/
+- persona_qa_train.jsonl (4.4MB) → /workspace/
+- persona_qa_val.jsonl (487KB) → /workspace/
+
+### TEST + ITERASI v8 (training-side)
+
+v8a: pip install latest peft 0.19 + transformers + trl → typing_extensions error
+  Root cause: PyTorch 2.1.0 < 2.4 required by transformers 4.46+, plus
+  typing_extensions older than 4.10 (no get_original_bases attr)
+
+v8b: Pin compat versions: transformers==4.45.2, peft==0.13.2, trl==0.11.4,
+  typing_extensions>=4.12 → ALL INSTALL OK
+
+Training start:
+- PID 331, ALIVE @60s
+- Dataset loaded (6750 train + 750 val) ✓
+- Sample tokenized ChatML format ✓
+- Base model download: 2/4 shards (~30s each)
+- Currently: model download phase
+
+### MONITOR
+Cron `*/10 * * * * /opt/sidix/scripts/sidix_runpod_monitor.sh`:
+- Polls SSH ke Pod
+- Checks PID alive + tail train.log
+- Outputs:
+  - /opt/sidix/.data/runpod_monitor.log (append history)
+  - /opt/sidix/.data/runpod_training_state.json (current)
+
+### STATUS
+🟢 TRAINING IN-FLIGHT (RTX A4000, A4000-grade not P100, modern PEFT works)
+Expected duration: ~2-3 jam (Qwen 7B + DoRA rank-16, 7500 pairs × 3 epoch, batch 2 grad_accum 4)
+Cost projected: ~$0.60-1.00 dari balance $20.41
+Auto-upload HF: enabled di runpod_train_lora.py (HF_TOKEN sudah di Pod env)
+
+### Iteration counter (Sprint 13 totals)
+- Phase 3a (data gen): 3 marker iterasi → green
+- Phase 3b Kaggle: 7 push iterasi → ABANDONED (P100 fundamental)
+- Phase 3b RunPod: 2 install iterasi (v8a → v8b) → TRAINING ALIVE
+- Total: 12 iterasi sebelum training actually run
+- Modules lahir dari friction: persona_adapter_loader, blind_ab_test, runpod_train_lora,
+  runpod_pod_orchestrator, sidix_kaggle_monitor.sh, sidix_runpod_monitor.sh
