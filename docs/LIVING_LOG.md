@@ -13161,3 +13161,28 @@ Reason: VPS `sidix_observations.jsonl` format pakai field `kind` (git_activity, 
 - Quarantine write idempotent (overwrite OK kalau re-run same cycle)
 - Hafidz hook lazy import (no crash kalau module unavailable)
 
+
+---
+
+## 2026-04-28 LATE EVENING (LATEST+19) — Handoff Doc Commit Fix
+
+### CATAT
+Bos catch issue: HANDOFF_*.md gitignored → next session di worktree berbeda
+TIDAK BISA baca handoff. Sesi baru pagi ini stuck di state pagi (Sprint 18,
+note 267) karena di branch/worktree stale.
+
+### FIX
+Rename handoff docs ke prefix yang TIDAK match gitignore rule:
+- `docs/HANDOFF_2026-04-28_late_evening_pencipta_foundation.md` (gitignored)
+  → COPY ke `docs/SESSION_STATE_2026-04-28_late_evening.md` (committable)
+- `docs/HANDOFF_OPENER_PROMPT_2026-04-29.md` (gitignored)
+  → COPY ke `docs/SESSION_OPENER_PROMPT_2026-04-29.md` (committable)
+
+Update internal reference di opener prompt.
+
+### DOC RULE BARU (untuk sesi-sesi ke depan)
+- Files matching `docs/HANDOFF_*.md` = LOCAL ONLY (per existing .gitignore)
+- Untuk **antar-sesi continuity** pakai prefix `docs/SESSION_*.md` =
+  COMMITTABLE + visible di semua worktree post-pull.
+- Pattern adopt going forward.
+
