@@ -1,5 +1,7 @@
 # 220 — Activity Log + User Database Design (Post Own-Auth Migration)
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 **Date**: 2026-04-26 (vol 2)
 **Tag**: ARCHITECTURE / PRIVACY / FEAT
 **Status**: Backend deployed, frontend pending build+deploy

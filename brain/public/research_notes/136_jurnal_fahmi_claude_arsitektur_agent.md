@@ -1,5 +1,7 @@
 # 136. Jurnal Fahmi × Claude — Arsitektur Agent & Filosofi Murid yang Tumbuh
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 > **Domain**: ai / epistemologi
 > **Sumber**: Percakapan Fahmi Wolhuter dengan Claude (Anthropic), disalin ke
 > `jurnal-fahmi-ai-journey.html`. Arsip pribadi, 2026.

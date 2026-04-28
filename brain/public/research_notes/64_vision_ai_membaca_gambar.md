@@ -1,5 +1,7 @@
 # Vision AI — Cara AI Membaca, Memahami, dan Menganalisis Gambar
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 ## Apa itu Multimodal AI?
 
 AI generasi terbaru tidak hanya memahami teks — mereka juga bisa memproses **gambar, screenshot, diagram, foto, dan dokumen visual**. Kemampuan ini disebut **multimodal** (multi-modal = banyak jenis input).

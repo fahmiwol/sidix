@@ -1,5 +1,7 @@
 # Semantik Qur’ani ala Izutsu → knowledge graph (bukan embedding-only)
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 ## Ringkasan 10 baris
 - Qur’an bukan sekadar kumpulan kalimat; ia membentuk **network makna** (semantic fields).
 - Kata kunci seperti **iman–kufur–taqwa–zulm** saling mengunci makna lewat relasi.

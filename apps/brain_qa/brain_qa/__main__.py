@@ -402,6 +402,33 @@ def main(argv: list[str]) -> int:
                          help="Holdout ratio untuk val (default 0.10)")
     p_merge.add_argument("--seed", type=int, default=2026, help="Shuffle seed")
 
+    # Sprint 41 v1.2 — Claude Code session discovery + batch synthesizer
+    p_cs = sub.add_parser("claude_sessions",
+                          help="Sprint 41 v1.2: discover & batch-synthesize Claude Code session JSONLs")
+    p_cs.add_argument("action", choices=["list", "synthesize", "batch"],
+                       help="list = show all sessions | synthesize = one --uuid | batch = many sessions")
+    p_cs.add_argument("--uuid", default=None, help="Session UUID for synthesize action")
+    p_cs.add_argument("--project", default=None, help="Filter by project folder substring")
+    p_cs.add_argument("--min-turns", type=int, default=0, help="Min total turns to include")
+    p_cs.add_argument("--since", default=None, help="ISO date, skip older sessions")
+    p_cs.add_argument("--max-count", type=int, default=20, help="Max sessions for batch (default 20)")
+    p_cs.add_argument("--persona-fanout", action="store_true")
+    p_cs.add_argument("--notes-dir", default=None)
+
+    # Sprint 41 — Conversation Synthesizer ("Claude as guru")
+    p_convo = sub.add_parser("synthesize_conversation",
+                              help="Sprint 41: synthesize external AI session (Claude/GPT/Gemini transcript) → research note")
+    p_convo.add_argument("--file", required=True,
+                         help="Path ke file transcript (.md, .txt, atau JSONL)")
+    p_convo.add_argument("--source", default="external_ai",
+                         help='Source label, e.g. "claude_session_2026-04-29" | "chatgpt" | "gemini"')
+    p_convo.add_argument("--notes-dir", default=None,
+                         help="Override output dir (default: brain/public/research_notes)")
+    p_convo.add_argument("--persona-fanout", action="store_true",
+                         help="Enable 5-persona multi-angle analysis (Phase 2 wires LLM)")
+    p_convo.add_argument("--dry-run", action="store_true",
+                         help="Parse + extract tanpa write file")
+
     args = parser.parse_args(argv)
 
     if args.cmd == "index":
@@ -1009,6 +1036,106 @@ def main(argv: list[str]) -> int:
         )
         print(json.dumps(result, ensure_ascii=False, indent=2))
         return 0 if result.get("ok") else 1
+
+    if args.cmd == "claude_sessions":
+        # Sprint 41 v1.2 — Claude Code session discovery + batch synthesizer
+        from .claude_sessions import (
+            list_all_sessions, synthesize_session, batch_synthesize,
+            format_list_table, quick_summarize_jsonl,
+        )
+        from pathlib import Path as _Path
+
+        if args.action == "list":
+            sessions = list_all_sessions(
+                project_filter=args.project,
+                min_turns=args.min_turns,
+                since=args.since,
+            )
+            print(format_list_table(sessions))
+            print(f"\nTotal: {len(sessions)} sessions")
+            return 0
+
+        if args.action == "synthesize":
+            if not args.uuid:
+                print(json.dumps({"ok": False, "error": "--uuid required"}))
+                return 1
+            # Find session by UUID prefix match
+            sessions = list_all_sessions(project_filter=args.project)
+            matched = [s for s in sessions if s.uuid.startswith(args.uuid)]
+            if not matched:
+                print(json.dumps({"ok": False, "error": f"no session matching uuid={args.uuid}"}))
+                return 1
+            if len(matched) > 1:
+                print(json.dumps({"ok": False, "error": f"ambiguous: {len(matched)} matches"}))
+                return 1
+            notes_dir = _Path(args.notes_dir) if args.notes_dir else None
+            result = synthesize_session(
+                matched[0], notes_dir, persona_fanout=bool(args.persona_fanout),
+            )
+            print(json.dumps(result, ensure_ascii=False, indent=2))
+            return 0 if result.get("ok") else 1
+
+        if args.action == "batch":
+            sessions = list_all_sessions(
+                project_filter=args.project,
+                min_turns=args.min_turns,
+                since=args.since,
+            )
+            print(f"Found {len(sessions)} sessions matching filter, will synthesize up to {args.max_count}")
+            notes_dir = _Path(args.notes_dir) if args.notes_dir else None
+            results = batch_synthesize(
+                sessions, notes_dir,
+                persona_fanout=bool(args.persona_fanout),
+                max_count=args.max_count,
+            )
+            ok_count = sum(1 for r in results if r.get("ok"))
+            print(json.dumps({
+                "ok": ok_count == len(results),
+                "total_processed": len(results),
+                "succeeded": ok_count,
+                "failed": len(results) - ok_count,
+                "results": results,
+            }, ensure_ascii=False, indent=2))
+            return 0 if ok_count == len(results) else 1
+
+        return 1
+
+    if args.cmd == "synthesize_conversation":
+        # Sprint 41 — Conversation Synthesizer ("Claude as guru")
+        from .conversation_synthesizer import synthesize, claude_jsonl_to_markdown
+        from pathlib import Path as _Path
+        transcript_path = _Path(args.file)
+        if not transcript_path.exists():
+            print(json.dumps({"ok": False, "error": f"file not found: {args.file}"}))
+            return 1
+        # Auto-detect JSONL format (Claude Code session file)
+        if transcript_path.suffix == ".jsonl":
+            transcript = claude_jsonl_to_markdown(transcript_path)
+        else:
+            transcript = transcript_path.read_text(encoding="utf-8")
+        notes_dir = _Path(args.notes_dir) if args.notes_dir else None
+        result = synthesize(
+            transcript=transcript,
+            source_label=args.source,
+            notes_dir=notes_dir,
+            write_note=not args.dry_run,
+            persona_fanout=bool(args.persona_fanout),
+        )
+        out = {
+            "ok": True,
+            "topic": result.topic,
+            "domain": result.domain,
+            "turn_count": result.turn_count,
+            "qa_pairs": len(result.qa_pairs),
+            "decisions": len(result.decisions),
+            "facts": len(result.facts),
+            "open_questions": len(result.open_questions),
+            "note_number": result.note_number,
+            "note_path": result.note_path,
+            "dry_run": bool(args.dry_run),
+        }
+        print(json.dumps(out, ensure_ascii=False, indent=2))
+        return 0
 
     if args.cmd == "retrieval_eval":
         from .retrieval_eval import run_retrieval_eval, _EVAL_QUERIES, _EVAL_QUERIES_PARAPHRASE

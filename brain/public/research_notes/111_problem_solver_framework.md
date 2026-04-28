@@ -1,5 +1,7 @@
 # 111 — Problem Solver Framework: Multi-Domain Solving dengan Maqashid Check
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 **Tag:** `problem-solving` `maqashid` `confidence` `epistemic` `sidix` `multi-domain`  
 **Tanggal:** 2026-04-18  
 **Track:** O — Core AI Capabilities

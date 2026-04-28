@@ -1,5 +1,7 @@
 # 120 — Threads Full API Integration: SIDIX sebagai Autonomous Social Agent
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 **Tanggal:** 2026-04-18  
 **Sumber:** Meta Threads Graph API v1.0 Docs + implementasi SIDIX  
 **Relevansi SIDIX:** Social presence, learning harvest, community building, brand awareness

@@ -1,5 +1,7 @@
 # Note 284 — Sprint 39: Quarantine + Promote Flow (Pencipta Lifecycle)
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 **Sanad**: Sprint 39 compound Sprint 38b (reactor_steps.jsonl) + Sprint 37 (Hafidz Ledger) + Sprint 38 (tool_synthesis MVP).  
 **Tanggal**: 2026-04-29  
 **Status**: SHIPPED ✅

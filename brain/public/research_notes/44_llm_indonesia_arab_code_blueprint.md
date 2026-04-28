@@ -1,5 +1,7 @@
 # Research Note 44 — Blueprint LLM Indonesia-Arab-Code: Strategi Corpus, Arsitektur & Pipeline
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 > **Sumber**: Blueprint LLM Indonesia-Arab-Code: Dari Corpus hingga Outperform GPT-4 (Compass, 2026)
 > **Relevance untuk SIDIX**: Tinggi — roadmap membangun LLM trilingual + Islamic knowledge depth
 > **Tags**: llm, corpus, pretraining, indonesian, arabic, trilingual, moe, grpo, benchmark, dataset

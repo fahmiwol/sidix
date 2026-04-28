@@ -1,5 +1,7 @@
 # SQL & Databases
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 > Sumber: Sintesis dari PostgreSQL documentation, SQLAlchemy docs, Use The Index, Luke!, dan praktik industri.
 > Relevan untuk: backend developers, data engineers, data analysts, full-stack engineers
 > Tags: sql, postgresql, databases, indexes, transactions, acid, query-optimization, sqlalchemy, mongodb, redis, orm

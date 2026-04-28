@@ -25,22 +25,48 @@
     <a href="./docs/sidix-hafidz-ledger-whitepaper.pdf"><img src="https://img.shields.io/badge/Whitepaper-Proof--of--Hifdz-darkblue" alt="Whitepaper" /></a>
   <hr/>
 
-<h2>📄 Whitepaper</h2>
+<h2>📄 Whitepaper — Proof-of-Hifdz</h2>
 
 <p>
-  <a href="./docs/sidix-hafidz-ledger-whitepaper.pdf"><strong>Proof-of-Hifdz: A Knowledge-Integrity Consensus Mechanism for Self-Evolving Distributed AI</strong></a>
-</p>
-
-<p>
-  A novel consensus mechanism inspired by the 1,400-year-old Hafidz oral transmission system — 
-  translated into a distributed AI architecture where nodes earn participation rights by proving 
-  knowledge integrity, not computational power or capital.
+  <a href="./docs/sidix-hafidz-ledger-whitepaper.pdf"><strong>Proof-of-Hifdz: A Knowledge-Integrity Consensus Mechanism for Self-Evolving Distributed AI Systems</strong></a><br/>
+  <em>Fahmi Ghani · Tiranyx Lab / SIDIX Project · Bogor, Indonesia · April 2026 · MIT License</em>
 </p>
 
 <blockquote>
-  <em>To our knowledge, this is the first distributed AI consensus mechanism based on 
-  knowledge preservation rather than compute or stake.</em>
+  <strong>The Single Point of Failure Problem.</strong> Every major AI system deployed as of 2026 — Anthropic, OpenAI, Google, Meta — shares one structural vulnerability: <em>centralization</em>. Their knowledge, weights, and continuity depend entirely on a single organization's infrastructure. This is not an engineering problem. It is architectural.<br/><br/>
+  <strong>The AI systems most likely to survive are not the most powerful — they are the most distributed.</strong>
 </blockquote>
+
+<p>
+  <strong>Core Thesis.</strong> The optimal architecture for a censorship-resistant, failure-proof AI system <em>already exists</em> — and has been empirically validated for <strong>1,400 years</strong>. It is called the <strong>Hafidz system</strong>: the distributed oral preservation network used to memorize and transmit the Quran with <strong>zero textual corruption</strong> across ~10 million human nodes worldwide.
+</p>
+
+<p>
+  We propose <strong>Hafidz Ledger</strong> — a distributed knowledge-preservation architecture for self-evolving AI — and <strong>Proof-of-Hifdz</strong>, a novel consensus mechanism where nodes earn participation rights by <em>proving knowledge integrity</em>, not by burning compute (PoW), locking capital (PoS), or chasing benchmarks (Bittensor).
+</p>
+
+<table>
+  <thead><tr><th align="left">Hafidz Mechanism (1,400 years)</th><th align="left">Technical Equivalent</th></tr></thead>
+  <tbody>
+    <tr><td>Talaqqi (teacher-to-student transmission)</td><td>Peer-verified node onboarding</td></tr>
+    <tr><td>Berjamaah cross-verification</td><td>Gossip protocol + consensus voting</td></tr>
+    <tr><td>Ijazah chain (certified lineage)</td><td>Cryptographic sanad certificate chain</td></tr>
+    <tr><td>Uthmani canonical exemplar</td><td>Content-addressed hash (IPFS CID)</td></tr>
+    <tr><td>Group recitation deviation detection</td><td>Byzantine fault detection via Merkle proofs</td></tr>
+  </tbody>
+</table>
+
+<p>
+  This is <strong>Byzantine Fault Tolerance</strong> — implemented by human civilization <strong>1,200 years before the formal computer science theorem</strong>. We translate it into code.
+</p>
+
+<blockquote>
+  <em>To our knowledge, this is the first distributed AI consensus mechanism based on knowledge preservation rather than compute or stake — and the first AI architecture grounded in a preservation system with empirical validation at civilizational scale.</em>
+</blockquote>
+
+<p align="center">
+  <a href="./docs/sidix-hafidz-ledger-whitepaper.pdf"><strong>📖 Read the full whitepaper (PDF, 7 pages)</strong></a>
+</p>
     
   </p>
 

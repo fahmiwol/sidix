@@ -1,5 +1,7 @@
 # 135. Paul-Elder Critical Thinking Framework — Disiplin Berpikir untuk SIDIX
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 > **Domain**: epistemologi / ai  
 > **Sumber**: Paul, R. & Elder, L. (2010). *The Miniature Guide to Critical Thinking Concepts and Tools*. Foundation for Critical Thinking Press. Via University of Louisville Ideas To Action.  
 > **Tanggal**: 2026-04-18

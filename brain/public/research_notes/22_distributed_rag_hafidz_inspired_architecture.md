@@ -1,5 +1,7 @@
 # Arsitektur RAG Terdistribusi “Hafidz-Inspired” (CAS + Merkle Log + Governance)
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 Tujuan note ini: mengubah riset “Hafidz-inspired distributed RAG” menjadi **rencana arsitektur yang konsisten** dengan prinsip Mighan: **security-by-default, cost-aware, evidence-first, sanad/audit trail**.
 
 > Batasan: ini **bukan** ajakan membuat blockchain publik atau token ekonomi. Fokusnya: **tamper-evident + distributed storage** yang ringan untuk solo founder.

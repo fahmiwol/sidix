@@ -1,5 +1,7 @@
 # Data Structures & Algorithms
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 > Sumber: Sintesis dari CLRS (Introduction to Algorithms), LeetCode patterns, dan dokumentasi Python.
 > Relevan untuk: software engineers, competitive programmers, technical interview candidates, CS students
 > Tags: algorithms, data-structures, big-o, sorting, searching, graphs, dynamic-programming, python, interviews

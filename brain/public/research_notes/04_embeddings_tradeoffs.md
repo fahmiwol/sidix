@@ -1,5 +1,7 @@
 # Embeddings — choices & tradeoffs (RAG)
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 ## Ringkasan 10 baris
 - Embedding = cara mengubah teks jadi vektor supaya query bisa “ketemu” dokumen relevan.
 - Salah pilih embedding (atau salah setup) bikin retrieval meleset → jawaban ngarang/halu makin sering.

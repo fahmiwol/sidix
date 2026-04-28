@@ -1,5 +1,7 @@
 # Research Note 48 — Mobile Development: Flutter & React Native
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 **Tanggal**: 2026-04-17
 **Sumber**: Pengetahuan teknis + roadmap.sh best practices
 **Relevance SIDIX**: SIDIX sebagai LLM platform dapat diperluas ke mobile agar pengguna bisa mengakses brain_qa dari smartphone. Flutter atau React Native adalah pilihan utama untuk membangun SIDIX Mobile Client yang dapat melakukan query ke API SIDIX, menyimpan history offline, dan mendukung notifikasi push ketika knowledge base diperbarui.

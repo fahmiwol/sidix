@@ -1,5 +1,7 @@
 # Cara Mendiagnosis Error — Proses Berpikir dari Pesan Error ke Solusi
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 ## Konteks: Error yang Terjadi
 
 User kirim saran di `app.sidixlab.com` → muncul pesan:

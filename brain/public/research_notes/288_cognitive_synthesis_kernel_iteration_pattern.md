@@ -1,5 +1,7 @@
 # Note 288 — Cognitive Synthesis: "Kernel Iteration Pattern" sebagai Pillar Pencipta Material
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 **Sanad**: Lahir dari real debugging journey Sprint 13 Phase 3b — 6 iterasi push Kaggle kernel sampai dapat root cause yang convergent. Bos mandate (2026-04-29): *"temuan kamu juga bisa dicatat dan di sintesis buat informasi sidix belajar, siapa tau bisa menemukan module baru, metode baru bahkan teknologi baru."*  
 **Tanggal**: 2026-04-29  
 **Status**: SINTESIS — pola untuk Pillar Pencipta (compound dgn Sprint 38-39 tool synthesis)

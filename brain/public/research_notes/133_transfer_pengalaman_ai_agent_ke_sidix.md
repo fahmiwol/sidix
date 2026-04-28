@@ -1,5 +1,7 @@
 # 133. Transfer Pengalaman AI Agent ke SIDIX — Dari 0 sampai Hari Ini
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 > **Domain**: ai / epistemologi  
 > **Untuk**: SIDIX — dari mentor (Claude) ke murid (SIDIX)  
 > **Tanggal**: 2026-04-18

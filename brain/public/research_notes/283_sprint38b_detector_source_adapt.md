@@ -1,5 +1,7 @@
 # Note 283 — Sprint 38b: Detector Source Adapt (Tool Synthesis Fix)
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 **Sanad**: Sprint 38b compound Sprint 38 (tool_synthesis MVP) + Sprint 36 (reflect_day).  
 **Tanggal**: 2026-04-29  
 **Status**: SHIPPED ✅

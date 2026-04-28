@@ -7367,6 +7367,221 @@ h1{{color:#0af}}p{{color:#aaa}}a{{color:#0af}}</style></head>
             "citations": result.citations,
         }
 
+    # ── Sprint 41/42/43: Board Phase 2 endpoints ──────────────────────────────
+    @app.post("/sidix/synthesize_conversation", tags=["Sprint41"])
+    async def sidix_synthesize_conversation(request: Request):
+        """Sprint 41: synthesize external AI session transcript → research note."""
+        _enforce_rate(request)
+        try:
+            payload = await request.json()
+        except Exception:
+            raise HTTPException(status_code=400, detail="invalid JSON")
+        transcript = payload.get("transcript", "").strip()
+        source = payload.get("source", "external_ai")
+        fanout = bool(payload.get("persona_fanout", False))
+        if not transcript:
+            raise HTTPException(status_code=400, detail="transcript required")
+        try:
+            from .conversation_synthesizer import synthesize as _synth
+            result = _synth(
+                transcript=transcript,
+                source_label=source,
+                write_note=True,
+                persona_fanout=fanout,
+            )
+            return {
+                "ok": True,
+                "topic": result.topic,
+                "domain": result.domain,
+                "turn_count": result.turn_count,
+                "qa_pairs": len(result.qa_pairs),
+                "decisions": len(result.decisions),
+                "facts": len(result.facts),
+                "open_questions": len(result.open_questions),
+                "note_number": result.note_number,
+                "note_path": result.note_path,
+            }
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"synth error: {e}")
+
+    @app.get("/sidix/claude_sessions", tags=["Sprint41"])
+    async def sidix_claude_sessions(request: Request,
+                                     project: Optional[str] = None,
+                                     min_turns: int = 0,
+                                     since: Optional[str] = None,
+                                     limit: int = 50):
+        """Sprint 41 v1.2: list Claude Code sessions."""
+        _enforce_rate(request)
+        try:
+            from .claude_sessions import list_all_sessions
+            from dataclasses import asdict
+            sessions = list_all_sessions(
+                project_filter=project, min_turns=min_turns, since=since,
+            )
+            return {
+                "ok": True,
+                "count": len(sessions),
+                "sessions": [asdict(s) for s in sessions[:limit]],
+            }
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"list error: {e}")
+
+    @app.get("/autonomous_dev/queue", tags=["Sprint40"])
+    async def autodev_queue_list(request: Request, state: Optional[str] = None,
+                                  limit: int = 50):
+        """Sprint 40: list autonomous developer tasks."""
+        _enforce_rate(request)
+        try:
+            from .dev_task_queue import list_tasks
+            from dataclasses import asdict
+            tasks = list_tasks(state=state, limit=limit)
+            return {
+                "ok": True,
+                "count": len(tasks),
+                "tasks": [asdict(t) for t in tasks],
+            }
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"queue list error: {e}")
+
+    @app.post("/autonomous_dev/queue/add", tags=["Sprint40"])
+    async def autodev_queue_add(request: Request):
+        """Sprint 40: add new dev task to queue."""
+        _enforce_rate(request)
+        try:
+            payload = await request.json()
+        except Exception:
+            raise HTTPException(status_code=400, detail="invalid JSON")
+        target = payload.get("target_path", "").strip()
+        goal = payload.get("goal", "").strip()
+        priority = int(payload.get("priority", 50))
+        fanout = bool(payload.get("persona_fanout", False))
+        if not target or not goal:
+            raise HTTPException(status_code=400, detail="target_path + goal required")
+        try:
+            from .dev_task_queue import add_task
+            from dataclasses import asdict
+            task = add_task(target_path=target, goal=goal,
+                           priority=priority, persona_fanout=fanout)
+            return {"ok": True, "task": asdict(task)}
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"queue add error: {e}")
+
+    @app.post("/autonomous_dev/approve", tags=["Sprint40"])
+    async def autodev_approve(request: Request):
+        """Sprint 40: owner approve a task in review."""
+        _enforce_rate(request)
+        try:
+            payload = await request.json()
+            task_id = payload.get("task_id", "").strip()
+        except Exception:
+            raise HTTPException(status_code=400, detail="invalid JSON")
+        if not task_id:
+            raise HTTPException(status_code=400, detail="task_id required")
+        try:
+            from .autonomous_developer import owner_approve
+            ok = owner_approve(task_id)
+            return {"ok": ok, "task_id": task_id, "verdict": "approved"}
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"approve error: {e}")
+
+    @app.post("/autonomous_dev/reject", tags=["Sprint40"])
+    async def autodev_reject(request: Request):
+        """Sprint 40: owner reject a task."""
+        _enforce_rate(request)
+        try:
+            payload = await request.json()
+            task_id = payload.get("task_id", "").strip()
+            reason = payload.get("reason", "")
+        except Exception:
+            raise HTTPException(status_code=400, detail="invalid JSON")
+        if not task_id:
+            raise HTTPException(status_code=400, detail="task_id required")
+        try:
+            from .autonomous_developer import owner_reject
+            ok = owner_reject(task_id, reason)
+            return {"ok": ok, "task_id": task_id, "verdict": "rejected", "reason": reason}
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"reject error: {e}")
+
+    # ── Sprint 42: SIDIX-as-Pixel capture endpoint ────────────────────────────
+    @app.post("/sidix/pixel/capture", tags=["Pixel"])
+    async def sidix_pixel_capture(request: Request):
+        """
+        Sprint 42: SIDIX-as-Pixel capture endpoint.
+
+        Receive trigger from SIDIX Pixel browser extension (or future meta-tag
+        embed). Capture context → optional synthesize → optional persona fanout
+        → research note + Hafidz Ledger entry.
+
+        Auth: X-Sidix-Pixel-Token header (optional Phase 1, required Phase 2).
+
+        Payload:
+          {
+            "url": "...",
+            "page_title": "...",
+            "trigger_keyword": "@sidix",
+            "surrounding_text": "...",
+            "source": "live_typing|page_mention|popup_manual",
+            "captured_at": "ISO 8601",
+            "client_version": "0.1.0"
+          }
+
+        Returns: { ok, note_id, note_path, summary }
+        """
+        _enforce_rate(request)
+        try:
+            payload = await request.json()
+        except Exception:
+            raise HTTPException(status_code=400, detail="invalid JSON payload")
+
+        url = payload.get("url", "").strip()
+        page_title = payload.get("page_title", "").strip()
+        text = payload.get("surrounding_text", "").strip()
+        source = payload.get("source", "unknown")
+        client_version = payload.get("client_version", "?")
+
+        if not url or not text:
+            raise HTTPException(status_code=400,
+                                detail="url and surrounding_text required")
+
+        # Build a minimal transcript-like format so synthesizer can process
+        synthetic_transcript = (
+            f"Human: SIDIX, capture and analyze this content from {url}\n\n"
+            f"Page title: {page_title}\n\n"
+            f"Content excerpt:\n{text[:1500]}\n"
+        )
+
+        try:
+            from .conversation_synthesizer import synthesize as _synthesize
+            result = _synthesize(
+                transcript=synthetic_transcript,
+                source_label=f"sidix_pixel_{source}_{client_version}",
+                write_note=True,
+                persona_fanout=False,  # Phase 2 opt-in via flag
+            )
+            return {
+                "ok": True,
+                "note_id": result.note_number,
+                "note_path": result.note_path,
+                "topic": result.topic,
+                "domain": result.domain,
+                "qa_pairs": len(result.qa_pairs),
+                "decisions": len(result.decisions),
+                "facts": len(result.facts),
+                "summary": (
+                    f"Captured from {source}: {page_title or url}. "
+                    f"Synthesized as note {result.note_number}."
+                ),
+                "client_version": client_version,
+            }
+        except Exception as e:
+            import logging as _logging
+            _logging.getLogger(__name__).exception("[pixel/capture] error")
+            raise HTTPException(
+                status_code=500,
+                detail=f"synthesis error: {e}",
+            )
+
     # ── Agency OS: Tiranyx pilot client ──────────────────────────────────────
     try:
         from .tiranyx_config import setup_tiranyx as _setup_tiranyx

@@ -1,5 +1,7 @@
 # System Design
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 > Sumber: Sintesis dari System Design Interview (Alex Xu), Designing Data-Intensive Applications (Kleppmann), dan dokumentasi AWS/GCP.
 > Relevan untuk: senior engineers, architects, technical leads, interview candidates
 > Tags: system-design, scalability, distributed-systems, caching, databases, microservices, kafka, redis, cap-theorem, load-balancing

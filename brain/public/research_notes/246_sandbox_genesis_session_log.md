@@ -1,5 +1,7 @@
 # 246 — SIDIX Sandbox Genesis Session Log (Curriculum Lesson 1)
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 **Date**: 2026-04-26 (~23:30Z to ~00:00Z)
 **Location**: `/opt/sidix/.sandbox/` (mirrored to `apps/brain_qa/sandbox/`)
 **Purpose**: First documented SIDIX self-development session

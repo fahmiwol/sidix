@@ -1,5 +1,7 @@
 # 265 — Sprint 22b SHIPPED: KITABAH Cache Reuse (compound Sprint 20 smart cache)
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 **Date**: 2026-04-28 morning
 **Sprint**: 22b (Sprint 22 extension/optimization)
 **Status**: ✅ WIRING + OFFLINE 3/3 + DEPLOY (LIVE end-to-end pending — same pattern Sprint 14e/22)

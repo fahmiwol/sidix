@@ -1,5 +1,7 @@
 # 125 — Cara Berfikir & Mind Mapping: Pola Kognitif Claude Agent
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 ## Tujuan Note Ini
 Dokumentasi **bagaimana Claude berpikir** saat mengerjakan task di proyek SIDIX.
 Bukan tentang kode — tapi tentang **pola pikir, mind map, dan cara memproses masalah**.

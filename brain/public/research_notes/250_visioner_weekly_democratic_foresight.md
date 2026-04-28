@@ -1,5 +1,7 @@
 # 250 — Sprint 15 SHIPPED: Visioner Weekly Democratic Foresight Agent
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 **Date**: 2026-04-27 (sesi-baru, post-Sprint 12)
 **Sprint**: 15 (lompat dari 12 — 13/14 di-defer)
 **Status**: ✅ SHIPPED — module + cron + endpoint + smoke test

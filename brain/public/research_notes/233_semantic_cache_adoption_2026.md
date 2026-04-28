@@ -1,3 +1,5 @@
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 ---
 title: "Semantic Cache Adoption — SIDIX Vol 20b (synthesis 18 paper/blog 2026)"
 date: 2026-04-27

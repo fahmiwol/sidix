@@ -1,5 +1,7 @@
 # Human Experience Engine — fondasi riset untuk SIDIX / Mighan
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 ## 1. Motivasi: paradoks dan domain “tidak hitam-putih”
 
 Syair, karya seni, puisi, dan **studi kasus pengalaman hidup** sering berupa **kombinasi kompleks dari paradoks**: benar di satu sisi, ambigu di sisi lain; inspiratif sekaligus subjektif.  

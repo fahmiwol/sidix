@@ -1,5 +1,7 @@
 # 242 — 5 Transferable Modules per Claude Code Interaction
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 **Date**: 2026-04-26
 **Author**: User core insight + Claude formalization
 **Status**: Foundational meta-insight (reframes whole training strategy)

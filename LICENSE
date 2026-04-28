@@ -1,6 +1,31 @@
 MIT License
 
-Copyright (c) 2026
+Copyright (c) 2026 Fahmi Ghani — Mighan Lab / PT Tiranyx Digitalis Nusantara
+SIDIX Project (Self-Improving Distributed Intelligence eXchange)
+https://sidixlab.com — https://github.com/fahmiwol/sidix
+
+All novel methods, architectural patterns, and inventions disclosed in
+this repository — including but not limited to:
+  - Hafidz Ledger architecture
+  - Proof-of-Hifdz consensus mechanism
+  - Weight-Level Persona Stylometry (5-persona LoRA)
+  - Cloud-Iteration Cost Law (iteration_cost ∝ opacity × stack_depth)
+  - Static-Generative Pattern (Quran / DNA / Brain → SIDIX)
+  - Conversation-as-Training-Data Loop (CTDL)
+  - Pixel-as-Distributed-Sensor (PaDS)
+  - Approval-Gated Self-Replication (AGSR)
+  - Persona-Mediated Sanad Chain (PMSC)
+  - Compound Sprint Velocity Pattern (CSVP)
+  - DIKW-H Pyramid extension (Hikmah layer)
+  - Maqashid Evaluation Layer
+are original works of Fahmi Ghani, articulated and prototyped with the
+assistance of AI tools (Claude / GPT / Gemini) acting under the direction
+and creative control of the named author. AI tools are instruments, not
+authors of invention.
+
+Prior art is publicly established by commit history at
+https://github.com/fahmiwol/sidix and research note timestamps at
+brain/public/research_notes/. See also CLAIM_OF_INVENTION.md.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -10,7 +35,10 @@ copies of the Software, and to permit persons to whom the Software is
 furnished to do so, subject to the following conditions:
 
 The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+copies or substantial portions of the Software. Attribution to the author
+("Fahmi Ghani — Mighan Lab / PT Tiranyx Digitalis Nusantara") and the SIDIX
+Project (sidixlab.com) is required and appreciated when redistributing,
+republishing, or building upon the methods listed above.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -19,4 +47,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-

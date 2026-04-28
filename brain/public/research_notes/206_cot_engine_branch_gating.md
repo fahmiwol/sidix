@@ -1,5 +1,7 @@
 # 206 — CoT Engine + Branch Gating (Sprint 10)
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 **Sanad tier**: internal-impl  
 **Epistemic label**: [FACT] (implementasi langsung di codebase)  
 **Tanggal**: 2026-04-25  

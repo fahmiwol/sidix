@@ -1,5 +1,7 @@
 # Auda: Maqasid sebagai systems approach → Decision Engine non-linear
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 ## Ringkasan 10 baris
 - Auda memposisikan maqasid sebagai **framework sistem**: terbuka, holistik, multidimensi, purpose-driven.
 - Ini cocok untuk AI karena keputusan jarang single-objective; sering konflik tujuan.

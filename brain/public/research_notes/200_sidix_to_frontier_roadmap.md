@@ -1,5 +1,7 @@
 # 200 — Roadmap Teknis SIDIX: Dari v0.8 ke Model Frontier
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 **Tanggal**: 2026-04-24
 **Status**: [OPINION] Gap analysis + rencana realistis berdasarkan resource yang tersedia
 **Sanad**: Dibuat berdasarkan audit kapabilitas Note 157, pipeline Note 195, identitas Note 159, North Star docs/NORTH_STAR.md, dan literatur fine-tuning LLM 2024-2026.

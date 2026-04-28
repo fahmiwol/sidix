@@ -1,5 +1,7 @@
 # 247 — External LLM Pool + SIDIX Classroom (Multi-Teacher Background Learning)
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 **Date**: 2026-04-26 night
 **Trigger**: User dropped Gemini + Kimi keys; asked "jalankan mereka semua di background buat tanya jawab sama SIDIX, buat ruang belajar SIDIX di background"
 

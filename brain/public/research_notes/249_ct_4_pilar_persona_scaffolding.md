@@ -1,5 +1,7 @@
 # 249 — Sprint 12 SHIPPED: CT 4-Pilar di System Prompt Persona
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 **Date**: 2026-04-27 (sesi-baru, post-pivot 248)
 **Sprint**: 12 (per roadmap note 248 line 220-225)
 **Status**: ✅ SHIPPED — 60/60 prompt combos pass assertion

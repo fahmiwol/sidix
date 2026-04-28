@@ -1,5 +1,7 @@
 # 231 — Relevance + Quality Best Practice 2025-2026 untuk SIDIX
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 **Date**: 2026-04-26 (vol 19)
 **Tag**: RESEARCH / BEST-PRACTICE / IMPLEMENTATION
 **Status**: 4 modul implemented + tested + endpoint wired

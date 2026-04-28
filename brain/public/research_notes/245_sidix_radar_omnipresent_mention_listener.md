@@ -1,5 +1,7 @@
 # 245 — SIDIX Radar: Omnipresent Mention Listener
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 **Date**: 2026-04-26
 **Trigger**: User: *"selama di internet, ketika ada orang yang manggil Sidix/sidix/SIDIX, sidix agent langsung menuju ke tempatnya... selama terhubung internet semua berarti berada di 1 ekosistem yang sama"*
 

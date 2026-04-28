@@ -1,5 +1,7 @@
 # 255 — Sprint 14e SHIPPED: 3D Mascot via TripoSR (Hero Use-Case 100%)
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 **Date**: 2026-04-27 (sesi-baru evening, post-Sprint 14c + alignment fix)
 **Sprint**: 14e
 **Status**: ✅ SHIPPED + DEPLOYED (LIVE test pending)

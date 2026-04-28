@@ -1,5 +1,7 @@
 # Self-Healing AI System — SIDIX yang Bisa Memperbaiki Dirinya Sendiri
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 ## Konteks: Error yang Memunculkan Ide Ini
 
 Saat user kirim feedback via tab Saran di `app.sidixlab.com`:

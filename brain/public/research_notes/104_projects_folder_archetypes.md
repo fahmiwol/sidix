@@ -1,5 +1,7 @@
 # 104 — Projects Folder Archetypes: Pemetaan Proyek Nyata di D:\Projects
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 **Tanggal:** 2026-04-18  
 **Task:** Track L — scan D:\Projects, identifikasi pola berulang  
 **Dibuat oleh:** Claude (Sonnet 4.6) bersama Fahmi  

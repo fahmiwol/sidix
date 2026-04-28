@@ -1,5 +1,7 @@
 # 139. Daily Growth Engine — SIDIX Tumbuh Tiap Hari
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 > **Domain**: ai / self-learning
 > **Fase**: 4 (continual learning otomatis)
 > **Tanggal**: 2026-04-18

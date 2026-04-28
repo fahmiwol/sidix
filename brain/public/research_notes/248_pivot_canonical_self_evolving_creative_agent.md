@@ -1,5 +1,7 @@
 # 248 — CANONICAL PIVOT: SIDIX = Self-Evolving AI Creative Agent
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 **Date**: 2026-04-27
 **Status**: NORTH STAR — replaces all prior framing
 **Authority**: User explicit directive 2026-04-27 morning

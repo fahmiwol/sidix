@@ -1,5 +1,7 @@
 # 105 — Project Archetype System untuk SIDIX: Cara Pakai dan Desain
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 **Tanggal:** 2026-04-18  
 **Task:** Track L (lanjutan) — bagaimana archetypes dipakai SIDIX  
 **File terkait:** `apps/brain_qa/brain_qa/project_archetypes.py`  

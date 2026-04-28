@@ -1,5 +1,7 @@
 # 112 — Permanent Learning SIDIX: SPIN Self-Play, Skill Reinforcement, Meta-Skills
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 **Tag:** `permanent-learning` `spin` `self-play` `skill` `reinforcement` `meta-skill` `sidix`  
 **Tanggal:** 2026-04-18  
 **Track:** O — Core AI Capabilities

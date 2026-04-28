@@ -1,5 +1,7 @@
 # ADR ringkas — DataToken MVP + operasi storage (audit/rebalance) untuk komunitas terbatas
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 ## Status
 **Accepted (MVP lokal)** — implementasi awal ada di `apps/brain_qa` sebagai tooling operasional, bukan protokol jaringan.
 

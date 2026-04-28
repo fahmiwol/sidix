@@ -1,5 +1,7 @@
 # 142. SIDIX sebagai Entitas Mandiri — "Guru Menciptakan Murid yang Lebih Hebat"
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 > **Domain**: ai / filosofi / arsitektur
 > **Status**: Manifesto jangka panjang (prinsip yang mengikat semua Fase)
 > **Tanggal**: 2026-04-18

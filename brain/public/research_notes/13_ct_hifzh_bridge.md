@@ -1,5 +1,7 @@
 # Bridge: Computational Thinking ↔ Hifzh (menghafal Al-Qur’an)
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 ## Ringkasan 10 baris
 - Ada peluang menghubungkan CT (cara memecah masalah) dengan praktik hifzh (metode menghafal).
 - Ini penting buat “learning engine”: kita ingin belajar yang bertahap, repetitif, terstruktur, dan bisa dievaluasi.

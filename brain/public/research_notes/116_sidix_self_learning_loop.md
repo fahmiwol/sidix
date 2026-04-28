@@ -1,5 +1,7 @@
 # 116 — SIDIX Self-Learning Loop: Siklus Belajar Mandiri
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 ## Apa ini / What is it
 
 **SIDIX Self-Learning Loop** adalah pipeline otomatis yang memungkinkan SIDIX memperluas pengetahuannya secara mandiri, dari input mentah (teks, paper, Q&A) hingga kemampuan yang terinternalisasi ke dalam model weights melalui fine-tuning.

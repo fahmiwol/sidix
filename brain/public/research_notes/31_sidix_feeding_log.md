@@ -1,5 +1,7 @@
 # SIDIX — feeding log & akumulasi konteks
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 **Tujuan:** satu tempat **mengumpulkan** input, narasi, dan keputusan desain sambil pengembangan SIDIX berjalan (“feeding” berkelanjutan).  
 **Bukan** janji produk “jadi selevel X dalam 24 jam” — angka 24 jam di sini = **ritme kerja / sprint** user bila disebut; arsitektur tetap mengikuti `AGENTS.md` (own-stack, sanad/tabayyun, mode epistemik).
 

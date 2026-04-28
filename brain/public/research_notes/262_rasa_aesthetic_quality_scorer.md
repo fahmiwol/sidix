@@ -1,5 +1,7 @@
 # 262 — Sprint 21 SHIPPED: 🎭 RASA Aesthetic/Quality Scorer
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 **Date**: 2026-04-28 (sesi-baru post-limit-reset)
 **Sprint**: 21
 **Status**: ✅ SHIPPED + DEPLOYED (LIVE test in flight)

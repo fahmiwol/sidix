@@ -1,5 +1,7 @@
 # 191 — Sprint 8a: Standing Alone + Feedback → Jariyah (Local-only)
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 [FACT] Repositori SIDIX memiliki aturan mengikat “Standing Alone”: inference tidak boleh bergantung pada vendor AI API (lihat `docs/DEVELOPMENT_RULES.md` dan `CLAUDE.md`).
 
 [FACT] Sprint 8a menuntut wiring end-to-end minimal untuk: Typo Bridge → Jiwa (Nafs/Hayat/Aql) → Feedback loop (👍/👎) → training pairs (Jariyah), sesuai kontrak dokumen `complete/13_ALGORITHMS.md`, `complete/05_MODULES.md`, `complete/04_FRAMEWORK.md`, `complete/12_INPUT_OUTPUT.md`.

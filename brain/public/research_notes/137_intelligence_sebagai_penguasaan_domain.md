@@ -1,5 +1,7 @@
 # 137. Intelligence sebagai Penguasaan Domain — Sintesis Ian Pierre, NeuroNation, Gardner
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 > **Domain**: epistemologi / psikologi kognitif
 > **Sumber**:
 > - Ian Pierre (Medium) — *4 Domains of Mastery to Become Smarter Than 99% of People*

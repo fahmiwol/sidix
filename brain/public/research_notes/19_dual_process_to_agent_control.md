@@ -1,5 +1,7 @@
 # Dual Process Theory → arsitektur kontrol agent (fast vs slow)
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 ## Ringkasan 10 baris
 - Dual-process membedakan **Type/System 1** (cepat, otomatis) vs **Type/System 2** (lambat, reflektif).
 - Untuk agent AI:

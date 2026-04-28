@@ -1,5 +1,7 @@
 # Praxis L0 — Case Frames, API Trace, dan Jembatan ke Planner (Intent + Reasoning Ringan)
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 **Sumber konteks:** ringkasan dari Claude (handoff) + implementasi aktual di repo oleh sesi Cursor/Composer pada **2026-04-17**. Catatan ini supaya **SIDIX** (dan manusia) bisa menemukan pola lewat RAG setelah indeks ulang.
 
 ---

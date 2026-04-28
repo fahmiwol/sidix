@@ -1,5 +1,7 @@
 # Note 286 — Sprint 13 Phase 3b: Kaggle T4 DoRA Training Handoff
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 **Sanad**: Sprint 13 Phase 3a (note 285) selesai → Phase 3b butuh action bos di luar lingkup agent.  
 **Tanggal**: 2026-04-29  
 **Status**: HANDOFF READY — bos action items listed di bawah.

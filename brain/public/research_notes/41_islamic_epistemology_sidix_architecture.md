@@ -1,5 +1,7 @@
 # Fondasi Epistemologi SIDIX: Dari Tradisi Keilmuan ke Arsitektur AI
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 > `41_islamic_epistemology_sidix_architecture.md`
 > Research Note — SIDIX / Mighan-brain-1
 > Sumber: Dokumen filosofi publik proyek SIDIX

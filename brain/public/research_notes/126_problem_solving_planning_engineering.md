@@ -1,5 +1,7 @@
 # 126 — Problem Solving & Planning: Cara Engineer Menyerang Masalah
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 ## Tujuan Note Ini
 Dokumentasi **cara Claude merencanakan dan menyelesaikan masalah engineering**.
 Bukan sekedar "bagaimana kode ditulis" — tapi **bagaimana keputusan dibuat**

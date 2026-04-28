@@ -1,5 +1,7 @@
 # 258 — Sprint 18 SHIPPED: Risk Register + Impact Map Structured JSON
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 **Date**: 2026-04-27 (sesi-baru evening, post-Sprint 16)
 **Sprint**: 18
 **Status**: ✅ SHIPPED + DEPLOYED (LIVE test in flight)

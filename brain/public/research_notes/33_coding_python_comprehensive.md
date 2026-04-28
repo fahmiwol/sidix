@@ -1,5 +1,7 @@
 # Python Comprehensive Reference
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 > Sumber: Sintesis dari dokumentasi resmi Python, PEP documents, dan praktik industri.
 > Relevan untuk: backend developers, data scientists, AI engineers, general programmers
 > Tags: python, programming, oop, async, decorators, generators, typing, pytest, packaging

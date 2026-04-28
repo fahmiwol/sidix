@@ -1,5 +1,7 @@
 # 146. Epistemic Label Injector — Growth-Hack #1 (Sprint 1.5 jam)
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 > **Domain**: ai / epistemologi / opsec
 > **Status validasi**: `[FACT]` (modul terverifikasi via 2 endpoint test live)
 > **Tanggal**: 2026-04-19

@@ -1,5 +1,7 @@
 # 244 — Brain Anatomy as SIDIX Architecture (Mini-Apps Constellation)
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 **Date**: 2026-04-26
 **Author**: User vision + Claude formalization
 **Reference**: https://www.alodokter.com/mengenal-bagian-otak-dan-fungsinya-bagi-tubuh

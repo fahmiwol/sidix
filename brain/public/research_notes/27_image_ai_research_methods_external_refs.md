@@ -1,5 +1,7 @@
 # Referensi eksternal — metodologi penelitian AI gambar (adopsi ke Mighan)
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 **Status:** catatan orientasi; **PDF tidak di-commit** ke repo (hak cipta / ukuran). Simpan lokal di mesin peneliti.
 
 **Diperbarui:** 2026-04-15 — batch **fotogrametri, nirmana dwimatra, komposisi warna, jurnal riset** (path + olah ringkas).

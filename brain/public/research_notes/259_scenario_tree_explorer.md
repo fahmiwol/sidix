@@ -1,5 +1,7 @@
 # 259 — Sprint 19 SHIPPED: Scenario Tree Explorer (ALEY 2-Level Branching)
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 **Date**: 2026-04-27 (sesi-baru late evening, post-Sprint 18)
 **Sprint**: 19
 **Status**: ✅ SHIPPED + DEPLOYED (LIVE test in flight)

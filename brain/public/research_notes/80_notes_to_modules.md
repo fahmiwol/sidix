@@ -1,5 +1,7 @@
 # Notes to Modules — Konversi Research Notes Jadi Modul Aktif SIDIX
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 **Tanggal:** 2026-04-18
 **Tag:** IMPL, REFACTOR, ARCHITECTURE
 **Modul:** `apps/brain_qa/brain_qa/notes_to_modules.py`

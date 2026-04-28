@@ -1,3 +1,5 @@
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 ---
 name: SIDIX 2.0 Supermodel — 3 Signature Moves
 description: Tiga endpoint differentiator yang bikin SIDIX beda dari Claude/Gemini/KIMI saat launch — Burst+Refinement (Gaga creative), Two-Eyed Seeing (Mi'kmaq dual-perspective), Foresight (visionary scenario planning). Plus fix web_search trigger regex.

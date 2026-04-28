@@ -1,3 +1,5 @@
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 ---
 name: Rate Limit Strategy Free Tier — Pivot 2026-04-26
 description: Analisa pilihan strategi rate limit untuk SIDIX free tier — daily counter (current), rolling 24h window, hourly throttle, token bucket, time-based session. Trade-off + rekomendasi implementasi.

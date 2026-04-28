@@ -1,5 +1,7 @@
 # Research Note 45 — Visual AI Generatif: Dari Diffusion hingga VLM Indonesia
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 > **Sumber**: Peta Jalan Membangun AI Visual Generatif dari Nol hingga Produksi (Compass, 2026)
 > **Relevance untuk SIDIX**: Tinggi — capability visual AI, dataset strategy, Indonesia opportunities
 > **Tags**: diffusion, flux, sdxl, lora, vlm, controlnet, visual-ai, nusantara, dataset, vae, flow-matching

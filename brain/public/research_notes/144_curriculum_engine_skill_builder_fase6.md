@@ -1,5 +1,7 @@
 # 144. Curriculum Engine + Skill Builder — Fase 6 Belajar Terstruktur
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 > **Domain**: ai / arsitektur / pedagogi
 > **Fase**: 6 (terstruktur belajar harian + skill registry)
 > **Tanggal**: 2026-04-18

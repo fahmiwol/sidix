@@ -1,5 +1,7 @@
 # Sistem Knowledge Capture Otomatis — Sambil Melangkah, Ajari SIDIX
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 ## Konsep Utama
 
 "Sambil menyelam minum air" — setiap pekerjaan yang dikerjakan developer/AI agent

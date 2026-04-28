@@ -1,5 +1,7 @@
 # 100 — Survey: HuggingFace Courses & Frontier Model Releases (April 2026)
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 **Tag:** DOC | IMPL  
 **Tanggal:** 2026-04-18  
 **Tujuan:** Mengolah 9 sumber referensi AI menjadi knowledge terstruktur untuk SIDIX

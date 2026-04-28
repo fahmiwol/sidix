@@ -1,5 +1,7 @@
 # 143. Opsec Masking + LoRA Pipeline + Threads Consumer (Sprint 20 Menit)
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 > **Domain**: ai / arsitektur / opsec
 > **Fase**: 5.5 (transisi menuju mandiri)
 > **Tanggal**: 2026-04-18

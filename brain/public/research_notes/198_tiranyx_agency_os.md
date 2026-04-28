@@ -1,5 +1,7 @@
 # 198 — Tiranyx: SIDIX Agency OS Client Pertama
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 ## Apa
 Tiranyx adalah platform talent/creative agency yang menjadi client pertama SIDIX Agency OS.
 Multi-tenant: setiap agency punya persona, corpus filter, dan tool whitelist sendiri.

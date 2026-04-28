@@ -1,5 +1,7 @@
 # Backend Web Development: FastAPI, REST, Auth, and Databases
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 > Sumber: Sintesis dari dokumentasi FastAPI, RFC 7231/7235, OWASP guidelines, dan praktik industri.
 > Relevan untuk: backend developers, API designers, full-stack engineers
 > Tags: fastapi, rest-api, http, jwt, authentication, cors, websocket, sqlalchemy, postgresql, backend

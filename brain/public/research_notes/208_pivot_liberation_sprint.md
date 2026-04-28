@@ -1,5 +1,7 @@
 # 208 — SIDIX Liberation Sprint: Pivot 2026-04-25
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 **Tanggal**: 2026-04-25
 **Tag**: [DECISION][PIVOT][IMPL]
 **Sanad**: User feedback session 2026-04-25, CLAUDE.md IDENTITAS SIDIX §Layer 2-3

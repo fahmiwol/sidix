@@ -1,5 +1,7 @@
 # 260 — Sprint 14d SHIPPED: TTS Persona Voice (Embodiment 🗣️ MULUT)
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 **Date**: 2026-04-27 (sesi-baru late evening, post-Sprint 19)
 **Sprint**: 14d
 **Status**: ✅ SHIPPED + DEPLOYED (LIVE test in flight)

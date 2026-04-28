@@ -1,4 +1,6 @@
 # Agency Kit — 1-Click Agency Pipeline (6-Layer DAG)
+
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
 **[FACT]** — 2026-04-21
 
 ## Apa itu

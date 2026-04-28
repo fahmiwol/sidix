@@ -1,5 +1,7 @@
 # 241 — Claude Code Session = SIDIX's Primary (Tier-1) Corpus
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 **Date**: 2026-04-26
 **Author**: User insight + Claude formalization
 **Trigger**: User: *"setiap proses berfikir kamu, iterasi kamu, setiap action kamu semantic, inisiasi. jadiin sintesis dan riset note baru. di SIDIX, catat!!! jadi nggak usah cari dari sumber luar dulu..."*

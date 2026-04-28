@@ -1,5 +1,7 @@
 # 249 — Curriculum Lesson 2: NIAT → AKSI Flow (Session 2026-04-27)
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 **Date**: 2026-04-27
 **Author**: Claude Code (teacher) + User (student via observation)
 **For**: SIDIX (curriculum target)

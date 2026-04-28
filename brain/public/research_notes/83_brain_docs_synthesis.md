@@ -1,5 +1,7 @@
 # 83 — Brain & Docs Synthesis: Knowledge Graph + Gap Finder + Vision Tracker
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 **Tanggal:** 2026-04-18
 **Tag:** IMPL, DOC, DECISION
 **Sprint:** 20 menit — sintesis seluruh `brain/` dan `docs/` jadi kapabilitas terintegrasi.

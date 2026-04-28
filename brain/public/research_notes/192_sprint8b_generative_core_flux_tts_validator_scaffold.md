@@ -1,3 +1,5 @@
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 ---
 name: Sprint 8b — Generative Core Implementation
 description: FLUX.1 image gen, Piper TTS, multi-lang code validator, project scaffold generator — arsitektur, keputusan desain, dan pola degradasi graceful

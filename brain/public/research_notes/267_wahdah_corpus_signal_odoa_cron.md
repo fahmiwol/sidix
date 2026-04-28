@@ -1,5 +1,7 @@
 # 267 — Sprint 24 SHIPPED: WAHDAH Corpus Signal MVP + ODOA Daily Cron
 
+> **License**: MIT — Copyright (c) 2026 Fahmi Ghani · Mighan Lab / PT Tiranyx Digitalis Nusantara. Attribution required for republication or derivation. See repo `CLAIM_OF_INVENTION.md` and `LICENSE`.
+
 **Date**: 2026-04-28 morning (closing sprint pre-handoff)
 **Sprint**: 24
 **Status**: ✅ SHIPPED + DEPLOYED (LIVE retest in flight)
