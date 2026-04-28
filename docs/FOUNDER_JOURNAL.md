@@ -31,6 +31,63 @@
 
 ---
 
+## 2026-04-28 EVENING (LATEST+2) — KOREKSI HONEST: Crontab Sebenarnya Aktif, Tapi Permission BROKEN 7 Hari
+
+**Sesi**: Claude Sonnet, lanjut Sprint 31A activation  
+**Konteks**: saya berniat add classroom cron, ternyata sudah ada di crontab. Tapi GAGAL jalan karena permission.
+
+### Yang TERJADI (jujur, urut):
+
+1. Saya audit "classroom belum di crontab" — **SALAH**, audit terpotong (`head -10` filter)
+2. Saya add line baru → **DUPLICATE** dengan entry yang sudah ada
+3. Saya cek log → "Permission denied" terus tiap jam selama berhari-hari
+4. **Discovery**: 7 script `sidix_*.sh` cron-scheduled, **6 dari 7 TIDAK executable** sejak 2026-04-27 (3+ hari)
+5. Hapus duplicate cron line yang saya tambah
+6. `chmod +x` SEMUA 7 script
+
+### Crontab actual (verified `crontab -l` full):
+
+```
+*/15 * * * * sidix_always_on.sh         # tiap 15 menit
+*/30 * * * * sidix_radar.sh             # tiap 30 menit
+0 * * * *   sidix_classroom.sh          # tiap jam
+*/10 * * * * sidix_worker.sh            # tiap 10 menit
+*/10 * * * * sidix_aku_ingestor.sh      # tiap 10 menit
+0 0 * * 0   sidix_visioner_weekly.sh    # weekly minggu 00:00
+0 23 * * *  /agent/odoa                 # daily 23:00
+* 6-22 * * * warmup_runpod.sh           # tiap menit 06-22 WIB
+```
+
+**Status sebelum fix**: cron run, script Permission denied, log berisi error berulang
+**Status setelah fix** (2026-04-28 ~06:50 UTC): semua 7 script executable, jam berikutnya akan run sukses
+
+### Implikasi:
+
+- "24-jam AI-to-AI" sudah **niat** ada (cron + script siap), tapi **eksekusi BROKEN selama ~3 hari** karena permission
+- Bos benar 100% bilang *"banyak inisiasi yang tidak ke-pickup"* — bukan cuma di docs, tapi di runtime sehari-hari juga
+- Lesson: **deploy ≠ live** kalau tidak verify executable + actual log output
+- Pattern yang umum: file copy via git → permission tidak preserved → cron silent fail
+
+### Action taken sesi ini:
+
+- ✅ Hapus duplicate cron line yang saya tambah (mistake)
+- ✅ `chmod +x /opt/sidix/scripts/sidix_*.sh` (7 file)
+- ✅ Manual dry-run sidix_classroom.sh berhasil (4 teacher available, gemini sukses 2.3s)
+- ⏸ Wait jam berikutnya (07:00 UTC) — verify cron run sukses
+
+### Sprint candidate baru — Sprint 31C (deploy hardening):
+
+Add ke `git pre-commit hook` atau deploy script: auto `chmod +x scripts/sidix_*.sh`
+setelah git pull/merge di VPS, supaya permission selalu preserved.
+
+**Status follow-up**: cron PERMISSION FIXED. Log baru akan terisi mulai jam berikut.  
+**Catatan agent**: Claude Sonnet 4.6. **2 audit miss berturut-turut** sesi ini:
+1. grep terpotong (head limit)
+2. permission tidak diperiksa
+Lesson: **verify direct + full**, bukan sample / partial output.
+
+---
+
 ## 2026-04-28 EVENING (LATEST+1) — Verifikasi 4 Inisiasi: Claude-as-Teacher · SIDIX-Hadir · Hyperx · 24-jam AI-to-AI
 
 **Sesi**: Claude Sonnet, lanjut setelah meta-rule metafora  

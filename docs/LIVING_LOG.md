@@ -12222,3 +12222,37 @@ Production safety overrules wire benefit. Steps:
 - **Sprint 31B**: doc concept "SIDIX Hadir di Tiap Percakapan" eksplisit
 - **Sprint 31C**: re-frame Hyperx sebagai 👁️🤚 organ tubuh (note 244 12-organ map compound)
 
+
+---
+
+## 2026-04-28 EVENING (LATEST+2) — Sprint 31A: KOREKSI HONEST permission fix 7 cron scripts
+
+### FIX [Sprint 31A] cron permission silent failure
+**Discovery**: 7 sidix_*.sh script cron-scheduled tapi **6 tidak executable** sejak 2026-04-27 → semua silent fail "Permission denied" log error berhari-hari.
+
+**Action taken** (verified):
+- chmod +x semua 7 script: `sidix_aku_ingestor.sh`, `sidix_always_on.sh`, `sidix_autonomous_night.sh`, `sidix_classroom.sh`, `sidix_radar.sh`, `sidix_visioner_weekly.sh`, `sidix_worker.sh`
+- Verify dry-run classroom: 4 teachers available, gemini sukses 189 chars 2.3s
+- Crontab unchanged (entries sudah ada sebelumnya, saya hapus duplicate yang sempat saya tambah)
+
+**Crontab actual yang LIVE**:
+```
+*/10 * * * * sidix_worker.sh
+*/10 * * * * sidix_aku_ingestor.sh
+*/15 * * * * sidix_always_on.sh
+*/30 * * * * sidix_radar.sh
+0 * * * *   sidix_classroom.sh
+0 23 * * *  /agent/odoa cron
+0 0 * * 0   sidix_visioner_weekly.sh
+* 6-22 * * * warmup_runpod.sh
+```
+
+### LESSON Sprint 31A:
+- **deploy ≠ live**: git push tidak preserve executable bit
+- Audit harus full (jangan trust head-N output)
+- Pattern recovery: chmod +x + verify dry-run + monitor next cron tick
+
+### TODO Sprint 31C (deploy hardening):
+- Add pre-commit hook atau deploy script: auto chmod +x scripts/sidix_*.sh
+- Cron alerting: kalau log "Permission denied" → ping admin
+
