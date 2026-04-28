@@ -3572,6 +3572,62 @@ def create_app() -> "FastAPI":
                 log.warning("[ask] simple bypass failed, fallback to run_react: %s", _e)
                 # Fall through
 
+        # ── Sprint 29: 1000 Bayangan Shadow Pool dispatch (gated, MVP) ──────────
+        # Vol 25 vision (note 239+244+249): parallel specialized shadows answer
+        # in tandem, consensus picks best claim. shadow_pool.py SUDAH ada (8 shadows
+        # politics/fiqh/code/science/business/tech_news/indonesia_culture/general),
+        # tapi belum wired ke /ask. Gated env SIDIX_SHADOW_POOL=1, default OFF.
+        if (
+            os.environ.get("SIDIX_SHADOW_POOL", "").strip() in ("1", "true", "on")
+            and not req.corpus_only
+            and req.allow_web_fallback
+            and _tier_decision is not None
+            and _tier_decision.tier in ("standard", "deep")
+        ):
+            try:
+                _bump_metric("ask_shadow_pool_attempt")
+                import asyncio as _asyncio
+                from .shadow_pool import dispatch as _shadow_dispatch
+                _t_shadow = time.time()
+                _shadow_result = _asyncio.run(_shadow_dispatch(
+                    req.question,
+                    top_k=3,
+                    timeout=25.0,
+                ))
+                _shadow_ms = int((time.time() - _t_shadow) * 1000)
+                if _shadow_result.consensus_claim:
+                    _bump_metric("ask_shadow_pool_hit")
+                    log.info(
+                        "[ask] shadow pool hit shadows=%s in %dms",
+                        _shadow_result.contributing_shadows, _shadow_ms,
+                    )
+                    # Compose citations dari semua shadow sources
+                    _shadow_citations = []
+                    for _r in _shadow_result.all_responses:
+                        for _src in _r.get("sources", []):
+                            _shadow_citations.append({
+                                "type": "shadow_pool",
+                                "url": _src.get("url", ""),
+                                "title": _src.get("title", ""),
+                                "shadow": _r.get("shadow", ""),
+                                "domain": _r.get("domain", ""),
+                            })
+                    return {
+                        "answer": _shadow_result.consensus_claim,
+                        "session_id": f"shadow-{int(time.time()*1000)}",
+                        "persona": req.persona,
+                        "confidence": "tinggi",
+                        "citations": _shadow_citations,
+                        "_shadow_pool": True,
+                        "_shadow_pool_shadows": _shadow_result.contributing_shadows,
+                        "_shadow_pool_latency_ms": _shadow_ms,
+                        "_complexity_tier": _tier_decision.tier,
+                    }
+                else:
+                    log.info("[ask] shadow pool empty consensus, fallback to run_react")
+            except Exception as _e:
+                log.warning("[ask] shadow pool failed, fallback to run_react: %s", _e)
+
         session = run_react(
             question=req.question,
             persona=req.persona,
