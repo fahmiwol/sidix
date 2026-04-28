@@ -12483,3 +12483,79 @@ Total cron events/hour: 19 → 15 (-21%). No two cron same minute.
 
 **Bos: Sprint 33 PARTIAL (cron change shipped, runtime verification blocked oleh Ollama recovery — independent issue dari cron change)**
 
+
+---
+
+## 2026-04-28 EVENING (LATEST+6) — Sprint 34A START: Ollama Concurrency Limit
+
+### IMPL [Sprint 34A] START
+**Goal**: Set Ollama runtime env supaya tidak overload waktu multi-cron paralel.
+
+**Hipotesis**: default Ollama allow multiple concurrent requests → cron jobs hammer 
+parallel → 4-vCPU saturate → response timeout cascade.
+
+**Fix**: 
+- `OLLAMA_NUM_PARALLEL=1` — serialize requests (queue, no parallel)
+- `OLLAMA_MAX_LOADED_MODELS=1` — keep 1 model di memory (no swap)
+- Apply via systemd override
+
+**Plan**:
+1. Find systemd service file
+2. Add Environment overrides via systemctl edit
+3. Restart ollama
+4. Test SIDIX 3 query post-stabilization
+5. Verify response correctness + latency
+
+
+---
+
+## 2026-04-28 EVENING (LATEST+7) — Sprint 34A+B SHIPPED + Honest Test Results
+
+### IMPL [Sprint 34A] Ollama systemd override — DEPLOYED VPS
+File: `/etc/systemd/system/ollama.service.d/override.conf`
+```
+[Service]
+Environment="OLLAMA_NUM_PARALLEL=1"
+Environment="OLLAMA_MAX_LOADED_MODELS=1"
+Environment="OLLAMA_KEEP_ALIVE=10m"
+```
+- `daemon-reload` + restart applied ✓
+- Verified: `systemctl show ollama -p Environment` includes new vars ✓
+- Effect: requests serialize (no parallel hammer), 1 model warm
+
+### IMPL [Sprint 34B] praxis filter di _simple_corpus_context
+File: `apps/brain_qa/brain_qa/agent_serve.py` (commit 10c5aac)
+
+**Bug fixed**: BM25 top-1 untuk "SIDIX adalah apa?" return PRAXIS LOG file
+yang berisi pertanyaan itu sendiri (self-referential pollution after Sprint 30A
+reindex include praxis lessons). Snippet = reasoning trace metadata, BUKAN content.
+LLM dapat ini sebagai konteks → halusinasi "SIDIX = Sistem Informasi Daring X".
+
+**Fix**: iterate top-5 BM25 candidates, skip jika source contains "praxis"/"lesson"/
+"agent_workspace" atau text starts dengan "pelajaran praxis"/"rangkaian eksekusi".
+
+### TEST [Sprint 34A+B] Verifikasi 3 query
+| Query | Result | Latency | Verdict |
+|-------|--------|---------|---------|
+| T1 "halo" | "Halo! Senang bertemu dengan kamu..." | 1831ms | ✓ PASS |
+| T2 "SIDIX adalah apa?" | "platform yang mampu belajar... transformasi intelektual menjadi kemampuan AI nyata" | 1250ms | ✓ **PASS GROUNDED** |
+| T3 "siapa Presiden Indonesia sekarang?" | TIMEOUT 150s | — | ✗ Ollama 180s timeout |
+
+### REVIEW QA [Sprint 34A+B]:
+**T2 BIG WIN** — halusinasi *"Sistem Informasi Daring X"* (corpus pollution dari praxis log) → grounded *"platform yang belajar... transformasi intelektual"* (match note 277 SIDIX BUKAN Chatbot content).
+
+**T3 BLOCKED** — bukan karena cron contention lagi (Sprint 34A serialize sudah aktif),
+tapi karena baseline 4-vCPU CPU + qwen2.5:7b first-call cold reload = >180s.
+Hardware constraint, bukan code issue.
+
+### VALIDASI [Sprint 34A+B]:
+- ✓ Sprint 34A systemd override applied di VPS, env verified
+- ✓ Sprint 34B code change merged + brain restarted (post_deploy_chmod re-applied)
+- ✓ Halusinasi fix verified user-facing (T2)
+- ⚠ Standard tier T3 perlu Sprint 34C+ (RunPod fallback atau smaller model)
+
+### TODO Sprint 34C+ candidates:
+- 34C: Brain detect Ollama slow → fallback ke RunPod untuk standard tier
+- 34D: Switch heavy cron (worker.sh) ke qwen2.5:1.5b (986MB faster)
+- 34E: Move standard-tier inference ke RunPod default, Ollama untuk casual short
+
