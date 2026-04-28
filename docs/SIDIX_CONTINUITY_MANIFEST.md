@@ -42,7 +42,7 @@
 | # | Concept | Status | First mention | Code path |
 |---|---------|--------|---------------|-----------|
 | 1 | Sanad (consensus method) | LIVE | note 239 | `agent_serve.py /ask/stream` + `sanad_orchestrator.py` |
-| 2 | Hafidz Ledger (Merkle+RS) | SCAFFOLDED | note 141, 239 | spec only, endpoints proposed |
+| 2 | Hafidz Ledger (Merkle+RS) | LIVE | note 141, 239, Sprint 37 | `hafidz_ledger.py` + `/opt/sidix/.data/hafidz_ledger.jsonl` |
 | 3 | 1000 Bayangan / Shadow Pool | WIRED-BLOCKED | note 239+244+249 | `shadow_pool.py` + `agent_serve.py` (Sprint 29 wire OFF) |
 | 4 | Lite Browser / Hyperx | LIVE | note 243 | `brave_search.py` + `.sandbox/lite_browser/` |
 | 5 | Skill Cloning | PLANNED | note 243 | `skill_cloning/` proposed |
@@ -60,6 +60,7 @@
 | 17 | Wisdom Layer (aha+impact+risk+speculate) | LIVE | note 248 + Sprint 16-21 | `agent_wisdom.py` |
 | 18 | AKU Inventory (Hafidz-indexed decomposition) | PLANNED | note 141, 241 | `.data/aku_inventory.jsonl` proposed |
 | 19 | Praxis (lesson-as-training-pair cycle) | LIVE | note 249 | `praxis_runtime.py` + `.data/sidix_observations.jsonl` |
+| 20 | Tool Synthesis / Pencipta Milestone | LIVE (data accum) | note 278, 282, 283, Sprint 38-39 | `tool_synthesis.py` + `quarantine_manager.py` + `react_steps.jsonl` |
 
 ---
 
@@ -81,17 +82,20 @@
 
 ---
 
-### 2.2 Hafidz Ledger (Merkle + Reed-Solomon) — SCAFFOLDED
+### 2.2 Hafidz Ledger (SHA-256 CAS + isnad chain) — LIVE (Sprint 37)
 
-**Definisi**: Immutable AKU storage. SHA-256 hash + Merkle root + 5 erasure shares (4-of-5 recovery) + isnad chain + tabayyun quality gate.
+**Definisi**: Immutable knowledge provenance ledger. SHA-256 CAS hash + isnad chain + tabayyun quality gate + append-only JSONL.
 
-**Spec**: note 141 line 1-167 (full schema)  
-**Endpoints proposed**: `/hafidz/verify`, `/hafidz/sanad/{stem}`, `/hafidz/retrieve/{cas_hash}`
+**Sprint 37 (2026-04-28)**: LIVE di VPS. `hafidz_ledger.py` deployed + wired ke:
+- `sidix_reflect_day.sh` → reflection lessons
+- `tool_synthesis.py` → skill proposals (Sprint 38)
+- `quarantine_manager.py` → skill promote/reject (Sprint 39)
 
-**Code (proposed, not built)**:
-- `/opt/sidix/apps/brain_qa/hafidz/`
+**Code**:
+- `apps/brain_qa/brain_qa/hafidz_ledger.py` — `LedgerEntry` dataclass + `write_entry()` append-only
+- `/opt/sidix/.data/hafidz_ledger.jsonl` — live file di VPS
 
-**Compound dep**: AKU extractor (note 241) + classroom pairs (note 247) + erasure codec library (`pyeclib` or `reedsolo`)  
+**Note on scope vs spec**: Merkle + Reed-Solomon (note 141) = ASPIRATIONAL, belum built. MVP Sprint 37 = SHA-256 CAS + isnad chain (sufficient for sanad-as-governance per note 276).  
 **Vision pillar**: Memory + Continuity (immutability + verification)  
 **Hard rule check**: isnad = TECHNICAL chain-of-provenance, not religious (note 141 line 42)
 
@@ -325,6 +329,11 @@ Setiap agent baru MUST tick checklist sebelum mulai work:
 - Manifest dibuat berdasarkan deep read 19 concepts dari notes 141, 200, 239-249, dan kode existing
 - Sumber: research note 274 (vision audit), 275 (Sprint 29 honest), agent Explore deep read
 - Total status: 7 LIVE + 6 SCAFFOLDED + 6 PLANNED + 1 WIRED-BLOCKED (Sprint 29)
+
+### 2026-04-29 — Sprint 37-39 status update
+- concept #2 Hafidz Ledger: SCAFFOLDED → LIVE (Sprint 37, `hafidz_ledger.py` deployed + wired ke reflect/synthesize/quarantine)
+- concept #20 Tool Synthesis / Pencipta Milestone: NEW LIVE (data accum) (`tool_synthesis.py` Sprint 38 + `quarantine_manager.py` Sprint 39)
+- Total status: 9 LIVE + 5 SCAFFOLDED + 6 PLANNED + 1 WIRED-BLOCKED (Sprint 29) + 1 LIVE-accum
 - Compound chain map cross-pillar dibuat untuk visibility
 
 ### Future entries pakai format:

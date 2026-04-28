@@ -363,6 +363,23 @@ def main(argv: list[str]) -> int:
     p_propose.add_argument("--sequence-length", type=int, default=3,
                             help="Tools per sequence window (default 3)")
 
+    # Sprint 39 — Quarantine + Promote Flow (Pencipta milestone)
+    sub.add_parser("quarantine_review",
+                   help="Sprint 39: list all skill proposals in quarantine with age + auto-test status")
+
+    p_promote = sub.add_parser("promote_skill",
+                                help="Sprint 39: promote skill from quarantine → active (owner approve)")
+    p_promote.add_argument("--skill-id", required=True, help="skill_id to promote")
+    p_promote.add_argument("--force", action="store_true",
+                           help="Force promote even if quarantine < 7 days")
+    p_promote.add_argument("--owner-note", default="",
+                           help="Optional owner note appended to active YAML")
+
+    p_reject = sub.add_parser("reject_skill",
+                               help="Sprint 39: reject skill proposal (move to rejected/)")
+    p_reject.add_argument("--skill-id", required=True, help="skill_id to reject")
+    p_reject.add_argument("--reason", default="", help="Reason for rejection")
+
     args = parser.parse_args(argv)
 
     if args.cmd == "index":
@@ -905,6 +922,45 @@ def main(argv: list[str]) -> int:
             "files": result["files"],
         }, ensure_ascii=False, indent=2))
         return 0
+
+    if args.cmd == "quarantine_review":
+        # Sprint 39 — list all quarantine proposals
+        from .quarantine_manager import list_quarantine, auto_test_skill
+        proposals = list_quarantine()
+        out = []
+        for s in proposals:
+            test = auto_test_skill(s.skill_id)
+            out.append({
+                "skill_id": s.skill_id,
+                "composed_from": s.composed_from,
+                "frequency": s.frequency,
+                "confidence": s.confidence,
+                "age_days": s.age_days,
+                "auto_test": "passed" if test.passed else "failed",
+                "auto_test_checks": test.checks,
+                "owner_verdict": s.owner_verdict,
+                "proposed_at": s.proposed_at,
+            })
+        print(json.dumps({"count": len(out), "proposals": out}, ensure_ascii=False, indent=2))
+        return 0
+
+    if args.cmd == "promote_skill":
+        # Sprint 39 — promote skill from quarantine → active
+        from .quarantine_manager import promote_skill as _promote
+        result = _promote(
+            skill_id=args.skill_id,
+            owner_note=args.owner_note,
+            force=args.force,
+        )
+        print(json.dumps(result, ensure_ascii=False, indent=2))
+        return 0 if result.get("ok") else 1
+
+    if args.cmd == "reject_skill":
+        # Sprint 39 — reject skill proposal
+        from .quarantine_manager import reject_skill as _reject
+        result = _reject(skill_id=args.skill_id, reason=args.reason)
+        print(json.dumps(result, ensure_ascii=False, indent=2))
+        return 0 if result.get("ok") else 1
 
     if args.cmd == "retrieval_eval":
         from .retrieval_eval import run_retrieval_eval, _EVAL_QUERIES, _EVAL_QUERIES_PARAPHRASE

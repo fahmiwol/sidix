@@ -2207,6 +2207,99 @@ def create_app() -> "FastAPI":
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"skills stats fail: {e}")
 
+    # ── Sprint 39: Quarantine + Promote endpoints ──────────────────────────────
+
+    @app.get("/admin/skills/quarantine", tags=["Cognitive"])
+    def skills_quarantine_list(request: Request):
+        """Sprint 39: list all skill proposals in quarantine with age + auto-test."""
+        if not _admin_ok(request):
+            raise HTTPException(status_code=403, detail="Akses ditolak")
+        try:
+            from .quarantine_manager import list_quarantine, auto_test_skill
+            proposals = list_quarantine()
+            result = []
+            for s in proposals:
+                test = auto_test_skill(s.skill_id)
+                result.append({
+                    "skill_id": s.skill_id,
+                    "composed_from": s.composed_from,
+                    "frequency": s.frequency,
+                    "confidence": s.confidence,
+                    "age_days": s.age_days,
+                    "auto_test": "passed" if test.passed else "failed",
+                    "auto_test_checks": test.checks,
+                    "owner_verdict": s.owner_verdict,
+                    "proposed_at": s.proposed_at,
+                })
+            return {"count": len(result), "proposals": result}
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"quarantine list fail: {e}")
+
+    @app.post("/admin/skills/promote", tags=["Cognitive"])
+    async def skills_promote(request: Request):
+        """Sprint 39: promote skill from quarantine → active.
+        Body: {skill_id: "...", owner_note?: "...", force?: false}"""
+        if not _admin_ok(request):
+            raise HTTPException(status_code=403, detail="Akses ditolak")
+        try:
+            body = await request.json()
+        except Exception:
+            body = {}
+        skill_id = (body.get("skill_id") or "").strip()
+        if not skill_id:
+            raise HTTPException(status_code=400, detail="skill_id wajib")
+        try:
+            from .quarantine_manager import promote_skill as _promote
+            result = _promote(
+                skill_id=skill_id,
+                owner_note=body.get("owner_note", ""),
+                force=bool(body.get("force", False)),
+            )
+            if not result.get("ok"):
+                raise HTTPException(status_code=400, detail=result.get("error", "promote failed"))
+            return result
+        except HTTPException:
+            raise
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"promote fail: {e}")
+
+    @app.post("/admin/skills/reject", tags=["Cognitive"])
+    async def skills_reject(request: Request):
+        """Sprint 39: reject skill proposal (move to rejected/).
+        Body: {skill_id: "...", reason?: "..."}"""
+        if not _admin_ok(request):
+            raise HTTPException(status_code=403, detail="Akses ditolak")
+        try:
+            body = await request.json()
+        except Exception:
+            body = {}
+        skill_id = (body.get("skill_id") or "").strip()
+        if not skill_id:
+            raise HTTPException(status_code=400, detail="skill_id wajib")
+        try:
+            from .quarantine_manager import reject_skill as _reject
+            result = _reject(skill_id=skill_id, reason=body.get("reason", ""))
+            if not result.get("ok"):
+                raise HTTPException(status_code=400, detail=result.get("error", "reject failed"))
+            return result
+        except HTTPException:
+            raise
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"reject fail: {e}")
+
+    @app.get("/admin/skills/active", tags=["Cognitive"])
+    def skills_active_list(request: Request):
+        """Sprint 39: list all promoted (active) skills."""
+        if not _admin_ok(request):
+            raise HTTPException(status_code=403, detail="Akses ditolak")
+        try:
+            from .quarantine_manager import list_active
+            skills = list_active()
+            from dataclasses import asdict
+            return {"count": len(skills), "skills": [asdict(s) for s in skills]}
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"active list fail: {e}")
+
     @app.post("/agent/skills/synthesize", tags=["Cognitive"])
     async def skills_synthesize(request: Request):
         """Synthesize skill baru (admin gated, expensive — calls LLM 2x + sandbox).

@@ -13220,3 +13220,37 @@ Wiring SHIPPED. LIVE pending VPS git pull + brain restart.
 `react_steps.jsonl` mulai terisi setelah pertama kali user query lewat /ask (ReAct loop fire).
 Data accumulate beberapa hari → detect sequence → propose skill pertama → Pencipta milestone.
 
+
+## 2026-04-29 — Sprint 39: Quarantine + Promote Flow ✅ SHIPPED
+
+### CATAT (pre-exec)
+Pre-Exec Alignment Check: Sprint 39 = backend lifecycle management, tidak touch prompt/persona.
+Aligned NORTH_STAR (Pencipta milestone). No conflict pivot 2026-04-26.
+Compound: Sprint 37 (Hafidz), Sprint 38 (tool_synthesis), Sprint 38b (react_steps.jsonl).
+
+### IMPL [Sprint 39]
+Pencipta lifecycle gap yang diselesaikan:
+- Sprint 38 menghasilkan proposals di quarantine/ tapi tidak ada mekanisme review/approve/reject
+- Sprint 39 implements full lifecycle: quarantine → auto_test → promote/reject → active/index.json
+
+Files diubah:
+- `apps/brain_qa/brain_qa/quarantine_manager.py` — NEW: list_quarantine/auto_test/promote/reject + Hafidz hook
+- `apps/brain_qa/brain_qa/__main__.py` — tambah 3 subcommand: quarantine_review, promote_skill, reject_skill
+- `apps/brain_qa/brain_qa/agent_serve.py` — tambah 4 admin endpoint: /admin/skills/quarantine/promote/reject/active
+- `docs/SIDIX_CONTINUITY_MANIFEST.md` — concept #2 SCAFFOLDED→LIVE + concept #20 Pencipta LIVE
+- `brain/public/research_notes/284_sprint39_quarantine_promote_flow.md` — note baru
+
+Key architecture:
+- QUARANTINE_MIN_DAYS=7 (age gate, bypassable dengan force=True)
+- auto_test = structural: YAML parseable + required fields + TOOL_REGISTRY lookup
+- isnad_chain=["skill-proposal-{id}"] → sanad-as-governance per note 276
+- active/index.json = registry untuk dispatch router Sprint 40+
+
+### TEST [Sprint 39] SYNTAX 3/3 PASS
+- ast.parse quarantine_manager.py: ✓
+- ast.parse __main__.py: ✓
+- ast.parse agent_serve.py: ✓
+
+### STATUS
+SHIPPED code. LIVE pending VPS git pull + pm2 restart sidix-brain.
+Pencipta milestone: detect ✅ → propose ✅ → quarantine ✅ → promote ✅ → dispatch (Sprint 40+)
