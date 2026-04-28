@@ -3666,10 +3666,11 @@ def create_app() -> "FastAPI":
         _store_session(session)
         (None if _is_whitelisted(request) else rate_limit.record_daily_use(_daily_client_key(request)))
 
-        # ── Sprint 34I: POST-PROCESS FACT VERIFICATION ────────────────────
-        # Ekstrak fact deterministic dari web_search steps. Kalau answer LLM
-        # bertentangan dengan fact (e.g., LLM bilang Jokowi tapi web sebut Prabowo),
-        # OVERRIDE answer dengan fact verified.
+        # ── Sprint 34I+34J: POST-PROCESS FACT VERIFICATION + CLEAN FORMAT ─
+        # Ekstrak fact deterministic dari web_search steps. Tiga skenario override:
+        # (a) Answer contradicts fact (LLM bilang Jokowi, web sebut Prabowo)
+        # (b) Answer is raw web dump markdown (LLM synthesis fallback ugly format)
+        # (c) Both: replace dengan clean narrative
         try:
             from .fact_extractor import extract_fact_from_web
             _web_blob = ""
@@ -3689,18 +3690,30 @@ def create_app() -> "FastAPI":
                     _frole = _fact.get("role", "")
                     _src = (_fact.get("sources") or [""])[0]
                     _curr = (session.final_answer or "")
-                    # Override kalau current answer TIDAK contain extracted name
-                    if _fname.lower() not in _curr.lower():
+                    _curr_lower = _curr.lower()
+                    # Sprint 34J: detect raw web dump (LLM fallback ugly)
+                    _is_raw_dump = (
+                        "# hasil pencarian" in _curr_lower
+                        or _curr_lower.count("http") >= 3  # banyak raw URL
+                    )
+                    _name_missing = _fname.lower() not in _curr_lower
+                    if _name_missing or _is_raw_dump:
+                        # Build clean narrative override
                         _override = (
                             f"Berdasarkan pencarian web terkini, {_frole} adalah **{_fname}**."
                         )
                         if _src:
-                            _override += f" (Sumber: {_src})"
+                            _override += f"\n\nSumber: {_src}"
+                        # Add 2-3 supporting hits dari fact metadata
+                        _other_srcs = (_fact.get("sources") or [])[1:3]
+                        if _other_srcs:
+                            _override += "\n\nReferensi lain: " + ", ".join(_other_srcs)
+                        _reason = "name_missing" if _name_missing else "raw_dump"
                         log.info(
-                            "[ask] Sprint 34I OVERRIDE — answer didn't mention %r, force fact",
-                            _fname,
+                            "[ask] Sprint 34I+J OVERRIDE — reason=%s, force clean fact: %r",
+                            _reason, _fname,
                         )
-                        _bump_metric("ask_fact_override")
+                        _bump_metric(f"ask_fact_override_{_reason}")
                         session.final_answer = _override
         except Exception as _fact_err:
             log.debug("[ask] fact post-process skip: %s", _fact_err)
