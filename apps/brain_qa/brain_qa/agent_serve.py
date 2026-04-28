@@ -3544,7 +3544,18 @@ def create_app() -> "FastAPI":
 
         # ── Vol 20-fu3.2: SIMPLE-TIER DIRECT LLM BYPASS ──────────────────────
         # Greeting/ack → skip run_react/RAG/tools. Direct generate_sidix.
+        # Sprint 34E: kalau query butuh current events (web_search), JANGAN bypass.
+        # LLM prior tidak punya data terkini → halusinasi (kasus Jokowi vs Prabowo).
         _is_simple_bypass = _tier_decision is not None and _tier_decision.tier == "simple"
+        if _is_simple_bypass:
+            try:
+                from .agent_react import _needs_web_search
+                if _needs_web_search(req.question) and req.allow_web_fallback and not req.corpus_only:
+                    _is_simple_bypass = False  # force standard tier untuk current events
+                    _bump_metric("ask_simple_bypass_skip_for_web")
+                    log.info("[ask] simple bypass SKIPPED — needs web_search: %r", req.question[:60])
+            except Exception:
+                pass
         if _is_simple_bypass:
             try:
                 from .runpod_serverless import hybrid_generate
