@@ -402,6 +402,20 @@ def main(argv: list[str]) -> int:
                          help="Holdout ratio untuk val (default 0.10)")
     p_merge.add_argument("--seed", type=int, default=2026, help="Shuffle seed")
 
+    # Sprint 41 — Conversation Synthesizer ("Claude as guru")
+    p_convo = sub.add_parser("synthesize_conversation",
+                              help="Sprint 41: synthesize external AI session (Claude/GPT/Gemini transcript) → research note")
+    p_convo.add_argument("--file", required=True,
+                         help="Path ke file transcript (.md, .txt, atau JSONL)")
+    p_convo.add_argument("--source", default="external_ai",
+                         help='Source label, e.g. "claude_session_2026-04-29" | "chatgpt" | "gemini"')
+    p_convo.add_argument("--notes-dir", default=None,
+                         help="Override output dir (default: brain/public/research_notes)")
+    p_convo.add_argument("--persona-fanout", action="store_true",
+                         help="Enable 5-persona multi-angle analysis (Phase 2 wires LLM)")
+    p_convo.add_argument("--dry-run", action="store_true",
+                         help="Parse + extract tanpa write file")
+
     args = parser.parse_args(argv)
 
     if args.cmd == "index":
@@ -1009,6 +1023,39 @@ def main(argv: list[str]) -> int:
         )
         print(json.dumps(result, ensure_ascii=False, indent=2))
         return 0 if result.get("ok") else 1
+
+    if args.cmd == "synthesize_conversation":
+        # Sprint 41 — Conversation Synthesizer ("Claude as guru")
+        from .conversation_synthesizer import synthesize
+        from pathlib import Path as _Path
+        transcript_path = _Path(args.file)
+        if not transcript_path.exists():
+            print(json.dumps({"ok": False, "error": f"file not found: {args.file}"}))
+            return 1
+        transcript = transcript_path.read_text(encoding="utf-8")
+        notes_dir = _Path(args.notes_dir) if args.notes_dir else None
+        result = synthesize(
+            transcript=transcript,
+            source_label=args.source,
+            notes_dir=notes_dir,
+            write_note=not args.dry_run,
+            persona_fanout=bool(args.persona_fanout),
+        )
+        out = {
+            "ok": True,
+            "topic": result.topic,
+            "domain": result.domain,
+            "turn_count": result.turn_count,
+            "qa_pairs": len(result.qa_pairs),
+            "decisions": len(result.decisions),
+            "facts": len(result.facts),
+            "open_questions": len(result.open_questions),
+            "note_number": result.note_number,
+            "note_path": result.note_path,
+            "dry_run": bool(args.dry_run),
+        }
+        print(json.dumps(out, ensure_ascii=False, indent=2))
+        return 0
 
     if args.cmd == "retrieval_eval":
         from .retrieval_eval import run_retrieval_eval, _EVAL_QUERIES, _EVAL_QUERIES_PARAPHRASE
