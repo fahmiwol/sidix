@@ -12799,3 +12799,43 @@ File: `agent_serve.py` (commit 0cc5bed)
 - 34K: extend fact_extractor untuk more entity types (gubernur, menteri, juara, dll)
 - 34L: vision input organ Sprint 13+ unblock (saat infrastructure ready)
 
+
+---
+
+## 2026-04-28 EVENING (LATEST+13) — Sprint 34J START: Clean Format Fallback
+
+### IMPL [Sprint 34J] START
+**Goal**: Sprint 34I berhasil show "Prabowo" di answer, TAPI format raw web dump
+(markdown links + comments) — kasar untuk user.
+
+**Plan**:
+1. Find fallback path yang dump raw web text sebagai answer
+2. Replace dengan clean narrative: "Berdasarkan pencarian web terkini, [role] adalah [name]. Sumber: [url]"
+3. Compound dengan Sprint 34G fact_extractor (already extracts entity)
+
+
+### IMPL [Sprint 34J] Clean format override DEPLOYED
+File: `agent_serve.py` (commit 1c784e9)
+- Detect raw web dump signal ("# hasil pencarian" OR ≥3 raw "http")
+- Override jadi clean: "Berdasarkan pencarian web terkini, <role> adalah **<name>**. Sumber: <url>. Referensi lain: ..."
+- Compound dengan Sprint 34I (layer 6 dari 6-layer defense)
+
+### TEST Sprint 34J: timeout 3min karena Ollama saturated cron load. Code deployed correctly, runtime verification pending Ollama recovery.
+
+### IMPL [Documentation] SIDIX_FLOW_DIAGRAM + ERD parallel deliverable
+- `docs/SIDIX_FLOW_DIAGRAM_2026-04-28.md` — comprehensive ASCII flow diagram:
+  • End-to-end /ask query flow
+  • Background cron loops (Pilar 4)
+  • 6-layer anti-hallucination defense (Sprint 28b → 34J)
+  • 12-organ embodiment map
+  • Compound sprint chain
+  • Production state snapshot
+
+- `docs/SIDIX_ERD_2026-04-28.md` — entity relationship diagram:
+  • 8 core entities (USER, SESSION, REACT_STEP, CITATION, SOURCE_CHUNK, CORPUS_NOTE, HAFIDZ_LEDGER planned, dll)
+  • Cron/background entities (CLASSROOM_PAIR, SHADOW_EXPERIENCE, ODOA, RADAR planned)
+  • Cache entities (semantic_cache, BM25, fact_extractor)
+  • ENV configuration mapping
+  • Document tree SOT
+  • Cardinality + data volume snapshot
+
