@@ -12009,3 +12009,43 @@ LLM tetap fast-path single call, tapi grounded di corpus.
   skips retrieval entirely. Foundation retrieval quality terjamin
   baik untuk greeting → simple Q → standard ReAct → deep tadabbur.
 
+
+---
+
+## 2026-04-28 — Sprint 28b E2E Validation + Wikipedia Fallback Fix
+
+### TEST [Sprint 28b] E2E 4 query types
+- Test 1 (greeting "halo"): simple bypass, 16637ms (RunPod cold-start, warmup cron lag) ⚠
+- Test 2 ("apa itu sanad chain di SIDIX?"): standard tier, 57s, jawab "SIDIX tidak punya sanad" ⚠ (corpus gap)
+- Test 3 ("siapa Presiden Indonesia sekarang?"): **EXPOSE BUG** → web_search ConnectTimeout → LLM-only "Jokowi" hallucination
+- Test 4 (deep): deferred
+
+### FIX [Sprint 28b] Wikipedia OpenSearch query simplification — DEPLOYED ✓
+
+**File**: `apps/brain_qa/brain_qa/agent_tools.py` (commit `2a7ac13`)
+**Note**: `brain/public/research_notes/273_sprint28b_e2e_validation_web_fix.md`
+
+**Bug**: Test 3 expose chain DDG ConnectTimeout → Wikipedia fallback → query
+"siapa Presiden Indonesia sekarang 2026" return 0 results (Wikipedia matches
+TITLES, bukan free-text) → "all engines failed" → ReAct LLM-only fallback
+→ "Jokowi" hallucination (stale, term ended 2024-10-20).
+
+**Fix**: `_simplify_for_wiki()` strip interrogatives (siapa/apa/who/what),
+time-modifiers (sekarang/now/today), year tokens (2026) sebelum Wikipedia
+OpenSearch. DDG path tetap pakai query asli (full-text handle better).
+
+### TEST [Sprint 28b] post-fix verification ✓
+- Same query "siapa Presiden Indonesia sekarang?" → answer mention **Prabowo Subianto** ✓
+- citations: 5 (semua web_search) ✓
+- latency: 27.5s (acceptable)
+- Note: DDG actually responded this time (transient was) — Wikipedia fallback armed defensively for next outage
+
+### NOTE [Sprint 28b] Issues deferred
+- **RunPod cold-start (16s greeting)**: warmup cron `* 6-22 *` ada tapi GPU
+  spin-down between pings. Investigate warmup log + maybe prefer Ollama
+  for simple-tier (faster + warm).
+- **Sanad corpus gap**: query "apa itu sanad" → SIDIX bilang "tidak ada".
+  Concept ada di docs/research notes tapi tidak terindex sebagai
+  definition chunk. Action: tulis research note "What is sanad chain"
+  + reindex corpus.
+
