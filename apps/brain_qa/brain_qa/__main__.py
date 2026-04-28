@@ -380,6 +380,17 @@ def main(argv: list[str]) -> int:
     p_reject.add_argument("--skill-id", required=True, help="skill_id to reject")
     p_reject.add_argument("--reason", default="", help="Reason for rejection")
 
+    # Sprint 13 Phase 3a — DoRA Persona Stylometry: synthetic Q&A
+    p_gen_qa = sub.add_parser("gen_persona_qa",
+                               help="Sprint 13: generate persona-tagged Q&A Alpaca-style untuk DoRA training")
+    p_gen_qa.add_argument("--persona", required=True,
+                          choices=["UTZ", "ABOO", "OOMAR", "ALEY", "AYMAN", "ALL"],
+                          help="Persona target (atau ALL untuk loop semua)")
+    p_gen_qa.add_argument("--count", type=int, default=200,
+                          help="Jumlah pair per persona (default 200)")
+    p_gen_qa.add_argument("--out-dir", default="/opt/sidix/.data/training",
+                          help="Output dir untuk JSONL (default /opt/sidix/.data/training)")
+
     args = parser.parse_args(argv)
 
     if args.cmd == "index":
@@ -961,6 +972,20 @@ def main(argv: list[str]) -> int:
         result = _reject(skill_id=args.skill_id, reason=args.reason)
         print(json.dumps(result, ensure_ascii=False, indent=2))
         return 0 if result.get("ok") else 1
+
+    if args.cmd == "gen_persona_qa":
+        # Sprint 13 Phase 3a — DoRA synthetic Q&A generation
+        from .persona_qa_generator import run_generation
+        personas = (["UTZ", "ABOO", "OOMAR", "ALEY", "AYMAN"]
+                    if args.persona == "ALL" else [args.persona])
+        results = []
+        for p in personas:
+            r = run_generation(persona=p, count=int(args.count), out_dir=args.out_dir)
+            results.append(r)
+        print(json.dumps({"persona_count": len(results), "results": results},
+                          ensure_ascii=False, indent=2))
+        all_ok = all(r.get("ok") for r in results)
+        return 0 if all_ok else 1
 
     if args.cmd == "retrieval_eval":
         from .retrieval_eval import run_retrieval_eval, _EVAL_QUERIES, _EVAL_QUERIES_PARAPHRASE
