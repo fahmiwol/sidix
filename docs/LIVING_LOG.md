@@ -12887,3 +12887,49 @@ Q2-3 failures = web_search reliability issue, BUKAN fact_extractor logic.
 - Sprint 37: extend fact_extractor untuk numerical facts (umur, populasi, harga)
 - Sprint 38: vision input organ (CLIP/SigLIP) — 12 → 13 organ embodiment
 
+
+---
+
+## 2026-04-28 EVENING (LATEST+15) — Sintesis Riset Founder Drop (FS Study + Optimization Analysis)
+
+### NOTE [282] DEEP SYNTHESIS — semua 6 file dibaca (MD + HTML + DOCX × 2 dokumen)
+**Trigger**: founder drop 2 dokumen riset di `~/Downloads/rist sdx/`. Eksplisit minta:
+- "pahami, orkestrasi, pandang dari berbagai dimensi sebagai inovator dan engineer"
+- "jangan telan mentah-mentah, olah lagi, iterasi, sintesis berkali-kali"
+- "bukan mandatory, hanya insight, inspirasi, yang bisa di-adopt jika ada yang bermanfaat"
+
+**Files dibaca**:
+- FS Study (Feasibility, ide awal): MD + HTML (3 SVG diagrams!) + DOCX
+- Optimization Analysis (existing assessment): MD + HTML Dashboard + DOCX
+
+### KEY FINDINGS dari multi-format read
+**Konten core sama** di semua 3 format. TAPI HTML kasih extra value:
+1. **3 SVG diagrams** di FS Study (Sanad Gate flow, Closed-Loop Evolution, Background Cycle)
+2. **Diagram 2 Closed-Loop** kasih insight BARU: 4 pillar → mapped ke 3 LEVEL eksplisit
+   - Pattern Extract (Self Learning) → Level 1
+   - Critique Loop (Self Improve) → Level 1
+   - Tool Synthesis (Pencipta) → Level 2
+   - Frontier Hypothesis (Inovatif) → Level 3
+3. **Optimization Dashboard scorecard 8 dimensi** vs 7 di MD — extra "Sanad Multi-Source: 6/10"
+
+### SYNTHESIS verdict (multi-dimensi, critical lens)
+- **TIER 1 ADOPT** (3 items): Reflection Cycle, Tool Synthesis Quarantine, Hafidz Ledger MVP
+- **TIER 2 ADOPT-WITH-ADAPT** (2 items): Sanad Multi-Source Convergence (skip paper API MVP), Telegram workflow (verify @migharabot dulu)
+- **TIER 3 DEFER** (1 item): Dual Track Sintesis vs Imaginasi (existing routers cukup)
+- **TIER 4 REJECT** (3 items): bisnis specific, skor angka subjective, timeline week-by-week rigid
+
+### KRITIS terhadap dokumen
+- Klaim "Lapisan 3 (LoRA) jangan dikejar" applicable untuk **full fine-tune**, BUKAN LoRA rank-16 adapter (note 248 mandate Sprint 13 DoRA tetap valid)
+- Skor 7/10 = subjective signal, bukan absolute truth
+- "Realistis 12-16 minggu" depend on real velocity (SIDIX cadence sprint 25-35 anomalous fast)
+
+### REVISED SPRINT ROADMAP (dari sintesis)
+| Sprint | Item | Effort estimate |
+|--------|------|-----------------|
+| 36 | Reflection Cycle (`/reflect-day` cron) | 1-2 minggu |
+| 37 | Hafidz Ledger MVP (SHA-256 + isnad) | 1.5-2 minggu |
+| 38 | Tool Synthesis MVP (detector + quarantine) | 4-6 minggu (1.5× dokumen estimate) |
+| 39 | Daily summary email (atau Telegram if @migharabot ready) | 1-2 minggu |
+| 40 | Sanad Multi-Source 3-way (web + corpus + wiki) | 2-3 minggu |
+| 41+ | Sprint 13 DoRA persona (note 248 mandate, NOT defer) | per Sprint 13 plan |
+
