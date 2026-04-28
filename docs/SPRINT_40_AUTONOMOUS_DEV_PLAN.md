@@ -67,6 +67,42 @@ Sebuah **autonomous developer loop** di dalam SIDIX yang:
 
 ---
 
+## Multi-Agent + Persona Fan-Out (LOCK 2026-04-29 founder reminder)
+
+Founder verbatim: *"sidix juga punya jurus 1000 bayangan agent dan multi agent yang bantu dia tanya jawab, tiap2 persona juga ngajarin hal nyari informasi sendiri kumpulin ke sidiix, cognitive sintesia."*
+
+**Implication untuk autonomous_developer:** task complex JANGAN single-agent linear. Spawn 5 persona researchers paralel, masing-masing punya angle khusus, lalu synthesize.
+
+```
+DevTask (persona_fanout=True)
+    │
+    ├─ UTZ researcher → creative direction, visual trends, brand inspiration
+    ├─ ABOO researcher → engineering benchmarks, library updates, perf
+    ├─ OOMAR researcher → market analysis, competitor intel, framework
+    ├─ ALEY researcher → academic precedent, theoretical foundation
+    └─ AYMAN researcher → community/UX feedback, sentiment, narrative
+              │
+              ↓ all parallel (1000 bayangan pattern)
+       FanoutBundle(contributions, synthesis, sanad_chain)
+              │
+              ↓ feed as context to
+       code_diff_planner.plan_changes(persona_fanout=True)
+```
+
+**When to enable fan-out:**
+- ✅ Complex scaffold (e.g., new product feature, multi-file change)
+- ✅ Decisions yang butuh trade-off awareness (architecture, library choice)
+- ✅ Public-facing artifact (UI, copy, brand)
+- ❌ Trivial bug fix
+- ❌ Single-file refactor mechanical
+- ❌ Test addition
+
+**Cost-aware:** fan-out = 5x LLM cost. Default `persona_fanout=False`. Owner explicit set `True` per task atau autonomous_developer auto-enable kalau task complexity score > threshold (Phase 3).
+
+**Synthesis layer (Phase 2):** bukan averaging perspective — output structured dengan eksplisit cite per-persona contribution. Sanad chain explicit per source, sesuai prinsip Hafidz Ledger sanad-as-governance.
+
+---
+
 ## Reuse existing components (BUKAN build dari nol)
 
 | Existing | Role di Sprint 40 |
