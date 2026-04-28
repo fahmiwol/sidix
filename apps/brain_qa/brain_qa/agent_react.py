@@ -1801,6 +1801,35 @@ def _reformulate_with_context(question: str, context: list[dict]) -> str:
     return f"{question}\n\n{ref}"
 
 
+# ── Sprint 38b: REACT step logger untuk Tool Synthesis detector ──────────────
+def _log_react_step_to_file(action_name: str, session_id: str, step_num: int, persona: str) -> None:
+    """Append non-final REACT step ke react_steps.jsonl (Tool Synthesis seed data).
+
+    Format: {ts, session_id, action, persona, step}
+    Dibaca oleh tool_synthesis.detect_repeated_sequences() Sprint 38b.
+    Non-blocking — exception silently swallowed.
+    """
+    if not action_name or action_name in ("", "parallel_tools"):
+        return
+    try:
+        import json as _j
+        from datetime import datetime, timezone
+        from pathlib import Path
+        _react_log = Path("/opt/sidix/.data/react_steps.jsonl")
+        _entry = {
+            "ts": datetime.now(timezone.utc).isoformat(),
+            "session_id": session_id or "unknown",
+            "action": action_name,
+            "persona": persona,
+            "step": step_num,
+        }
+        with open(_react_log, "a", encoding="utf-8") as _f:
+            _f.write(_j.dumps(_entry, ensure_ascii=False) + "\n")
+    except Exception:
+        pass
+# ─────────────────────────────────────────────────────────────────────────────
+
+
 def run_react(
     *,
     question: str,
@@ -2467,6 +2496,7 @@ def run_react(
 
         session.steps.append(react_step)
         _praxis.record_react_step(session_id, react_step)
+        _log_react_step_to_file(action_name, session_id, step_num, persona)  # Sprint 38b
 
     else:
         # Loop habis tanpa final answer

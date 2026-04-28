@@ -46,8 +46,21 @@ from typing import Optional
 log = logging.getLogger(__name__)
 
 
-_ACTIVITY_LOG = "/opt/sidix/.data/sidix_observations.jsonl"
+_REACT_STEPS_LOG = "/opt/sidix/.data/react_steps.jsonl"   # Sprint 38b primary (action field)
+_ACTIVITY_LOG = "/opt/sidix/.data/sidix_observations.jsonl"  # fallback (kind field)
 _QUARANTINE_DIR = "/opt/sidix/.data/skills/quarantine"
+
+# Map kind values dari sidix_observations.jsonl ke tool-like names (fallback)
+_KIND_TO_TOOL: dict[str, str] = {
+    "commit_seen": "git_commit",
+    "git_activity": "git_activity",
+    "diff_stats": "git_diff",
+    "self_progress": "progress_check",
+    "self_error": "error_check",
+    "web_result": "web_search",
+    "corpus_result": "search_corpus",
+    "classroom_run": "classroom",
+}
 
 
 @dataclass
@@ -75,19 +88,82 @@ class MacroProposal:
     cycle_id: str = ""
 
 
+def _load_tool_events(window_days: int) -> list[tuple[str, str, str]]:
+    """Load (ts, session_id, tool_name) dari react_steps.jsonl (primary) atau activity_log (fallback).
+
+    Sprint 38b fix: react_steps.jsonl ditulis oleh agent_react._log_react_step_to_file()
+    dengan field `action` = nama tool ReAct yang sesungguhnya.
+    sidix_observations.jsonl pakai field `kind` (git_activity, commit_seen, dll) —
+    bukan tool call, tapi dipakai sebagai fallback kalau react_steps belum ada data.
+
+    Returns:
+        list of (ts_str, session_id, tool_name) dalam window terakhir.
+    """
+    cutoff = datetime.now(timezone.utc) - timedelta(days=window_days)
+    events: list[tuple[str, str, str]] = []
+
+    def _parse_file(path: Path, tool_field: str) -> list[tuple[str, str, str]]:
+        result = []
+        try:
+            with open(path, encoding="utf-8") as f:
+                for line in f:
+                    line = line.strip()
+                    if not line:
+                        continue
+                    try:
+                        e = json.loads(line)
+                    except Exception:
+                        continue
+                    ts_str = e.get("ts") or e.get("timestamp") or ""
+                    if not ts_str:
+                        continue
+                    try:
+                        ts = datetime.fromisoformat(ts_str.replace("Z", "+00:00"))
+                    except Exception:
+                        continue
+                    if ts < cutoff:
+                        continue
+                    tool = e.get(tool_field) or ""
+                    if not tool:
+                        continue
+                    session = e.get("session_id") or e.get("cycle_id") or "default"
+                    result.append((ts_str, session, tool))
+        except Exception as err:
+            log.debug("[tool_synth] _parse_file error %s: %s", path, err)
+        return result
+
+    # Primary: react_steps.jsonl (real ReAct tool names, Sprint 38b)
+    react_log = Path(_REACT_STEPS_LOG)
+    if react_log.exists() and react_log.stat().st_size > 10:
+        events = _parse_file(react_log, "action")
+        if events:
+            log.info("[tool_synth] source=react_steps.jsonl events=%d", len(events))
+            return events
+
+    # Fallback: sidix_observations.jsonl (kind field → mapped tool name)
+    activity = Path(_ACTIVITY_LOG)
+    if activity.exists():
+        raw = _parse_file(activity, "kind")
+        for ts_str, session, kind in raw:
+            mapped = _KIND_TO_TOOL.get(kind, kind)
+            events.append((ts_str, session, mapped))
+        if events:
+            log.info("[tool_synth] source=activity_log (fallback) events=%d", len(events))
+    else:
+        log.warning("[tool_synth] no tool event source found (react_steps + activity_log missing)")
+
+    return events
+
+
 def detect_repeated_sequences(
     window_days: int = 7,
     min_count: int = 3,
     sequence_length: int = 3,
 ) -> list[ToolSequence]:
-    """Scan activity log untuk tool sequence repeat dalam window.
+    """Scan tool events untuk repeated sequence dalam window.
 
-    Algorithm:
-    1. Load activity_log dari N hari terakhir
-    2. Extract tool actions per session
-    3. Sliding window N tools = 1 sequence
-    4. Count frequency
-    5. Return sequence yang count >= min_count
+    Sprint 38b: primary source = react_steps.jsonl (real ReAct tool calls).
+    Fallback = sidix_observations.jsonl dengan kind-to-tool mapping.
 
     Args:
         window_days: berapa hari ke belakang scan
@@ -97,42 +173,19 @@ def detect_repeated_sequences(
     Returns:
         list[ToolSequence] sorted by count desc.
     """
-    activity = Path(_ACTIVITY_LOG)
-    if not activity.exists():
-        log.warning("[tool_synth] activity log not found: %s", _ACTIVITY_LOG)
+    raw_events = _load_tool_events(window_days)
+    if not raw_events:
+        log.info("[tool_synth] 0 tool events loaded — no sequences to detect")
         return []
-
-    cutoff = datetime.now(timezone.utc) - timedelta(days=window_days)
-    seq_counter: Counter = Counter()
-    seq_supporting: dict[tuple, list[str]] = {}
-    seq_timestamps: dict[tuple, list[str]] = {}
 
     # Group tools per session/cycle untuk extract sequence
     session_tools: dict[str, list[tuple[str, str]]] = {}  # session_id → [(ts, tool)]
+    for ts_str, session, tool in raw_events:
+        session_tools.setdefault(session, []).append((ts_str, tool))
 
-    with open(activity, encoding="utf-8") as f:
-        for line in f:
-            line = line.strip()
-            if not line:
-                continue
-            try:
-                e = json.loads(line)
-            except Exception:
-                continue
-            ts_str = e.get("ts") or e.get("timestamp") or ""
-            if not ts_str:
-                continue
-            try:
-                ts = datetime.fromisoformat(ts_str.replace("Z", "+00:00"))
-            except Exception:
-                continue
-            if ts < cutoff:
-                continue
-            tool = e.get("action") or e.get("tool") or e.get("name") or ""
-            if not tool or tool == "":
-                continue
-            session = e.get("session_id") or e.get("cycle_id") or "default"
-            session_tools.setdefault(session, []).append((ts_str, tool))
+    seq_counter: Counter = Counter()
+    seq_supporting: dict[tuple, list[str]] = {}
+    seq_timestamps: dict[tuple, list[str]] = {}
 
     # Sliding window per session
     for session, items in session_tools.items():
