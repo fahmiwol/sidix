@@ -11847,7 +11847,42 @@ BM25 misses: 0/30
 - Atau: quantize BGE-reranker ke INT8 (sentence-transformers supports ONNX/CT2)
 - Atau: pindah rerank ke RunPod GPU (warmup sudah ada)
 
-### NOTE Sprint 26 candidates
+---
+
+## 2026-04-28 — Sprint 26 DEPLOYED (query cache + RunPod warmup)
+
+### IMPL [Sprint 26b] LRU Query Embedding Cache — LIVE
+
+**File**: `apps/brain_qa/brain_qa/dense_index.py` (commit `6624c4f`)
+
+- `_embed_fn_singleton()` — `lru_cache(1)`, load BGE-M3 sekali seumur proses
+- `_cached_query_embed(query_text)` — `lru_cache(2048)`, cache query → embedding tuple
+- `dense_search()` pakai cached path kalau `embed_fn=None` (production default)
+- Custom `embed_fn` (test path) bypass cache — backward compatible
+- `get_query_cache_info()` → `{hits, misses, currsize, hit_rate}` untuk observability
+- RAM overhead: 2048 × 512-dim × 4B ≈ 4MB
+- Expected impact: -130ms per repeat/similar query (cache hit skip BGE-M3 forward pass)
+
+**VPS verify**: `cache_info: maxsize=2048, hits=0, misses=0` ✓ (fresh start)
+
+### IMPL [Sprint 26a] RunPod Warmup Cron — LIVE
+
+**File**: `deploy-scripts/warmup_runpod.sh` (commit `6624c4f`)
+**Cron**: `* 6-22 * * * source /opt/sidix/.env && .../warmup_runpod.sh >> /var/log/sidix/runpod_warmup.log`
+
+- Fixed endpoint: `/v2/{ENDPOINT_ID}/health` (bukan `/v1/models` yg salah sebelumnya)
+- Auto-source `/opt/sidix/.env` dalam cron context (biar API key ter-set)
+- Peak-hours gate: 06:00-23:00 WIB — hemat cost di luar jam peak
+- Test result: HTTP 200 dari RunPod health endpoint ✓ (GPU warm)
+- PM2 dump saved: ENV persist across reboot ✓
+
+### TEST Sprint 26 verification
+- LRU cache import + maxsize: PASS ✓
+- dense_search dengan custom embed_fn: PASS (5 results) ✓
+- warmup dry-run: HTTP 200 dari ws3p5ryxtlambj ✓
+- PM2 env: SIDIX_HYBRID_RETRIEVAL=1, SIDIX_RERANK=0 ✓
+
+### NOTE Sprint 26 candidates (completed above)
 1. **RunPod cold start fix** — `IN_QUEUE` responses = user timeout, paling impactful untuk UX
 2. **Eval set quality** — human-annotated paraphrase queries untuk measure real hybrid lift
 3. **Lighter reranker** — MiniLM cross-encoder untuk aktifkan SIDIX_RERANK=1
