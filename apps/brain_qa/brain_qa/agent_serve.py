@@ -107,13 +107,26 @@ def _simple_corpus_context(question: str, *, max_chars: int = 500) -> str:
         scores = _SIMPLE_BM25["bm25"].get_scores(q_tokens)
         if not len(scores):
             return ""
-        top_idx = int(max(range(len(scores)), key=lambda i: scores[i]))
-        if scores[top_idx] <= 0.0:
-            return ""
-        snippet = (_SIMPLE_BM25["chunks"][top_idx].text or "").strip()
-        if len(snippet) > max_chars:
-            snippet = snippet[:max_chars].rsplit(" ", 1)[0] + "..."
-        return snippet
+        # Sprint 34A: pick top-N kandidat, skip praxis/lesson logs (self-referential
+        # reasoning traces yang biasanya mengandung query string sendiri)
+        ranked = sorted(range(len(scores)), key=lambda i: -scores[i])[:5]
+        chunks_obj = _SIMPLE_BM25["chunks"]
+        for idx in ranked:
+            if scores[idx] <= 0.0:
+                break
+            chunk = chunks_obj[idx]
+            src = (getattr(chunk, "source_path", "") or "").lower()
+            text_lower = (chunk.text or "").lower()
+            # Skip praxis lesson logs + agent_workspace traces
+            if "praxis" in src or "lesson" in src or "agent_workspace" in src:
+                continue
+            if "pelajaran praxis" in text_lower[:100] or "rangkaian eksekusi" in text_lower[:200]:
+                continue
+            snippet = (chunk.text or "").strip()
+            if len(snippet) > max_chars:
+                snippet = snippet[:max_chars].rsplit(" ", 1)[0] + "..."
+            return snippet
+        return ""
     except Exception as e:
         log.debug("[simple_corpus_context] failed: %s", e)
         return ""
