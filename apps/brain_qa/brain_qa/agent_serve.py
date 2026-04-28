@@ -806,6 +806,29 @@ def create_app() -> "FastAPI":
 
     # ── /health ───────────────────────────────────────────────────────────────
     # ── Sprint 37: Hafidz Ledger Audit Endpoints ─────────────────────────────
+    # Sprint 37 iterasi: register /audit/stats FIRST (specific route)
+    # before /audit/{content_id} (catch-all path param) to avoid conflict.
+    @app.get("/audit/stats")
+    def audit_stats():
+        """Hafidz Ledger overview stats."""
+        try:
+            from .hafidz_ledger import stats, list_recent_entries
+            s = stats()
+            recent = list_recent_entries(limit=10)
+            s["recent_10"] = [
+                {
+                    "content_id": e.content_id,
+                    "content_type": e.content_type,
+                    "cas_hash_short": e.cas_hash[:12],
+                    "owner_verdict": e.owner_verdict,
+                    "created_at": e.created_at,
+                }
+                for e in recent
+            ]
+            return s
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"stats error: {e}")
+
     @app.get("/audit/{content_id}")
     def audit_content(content_id: str):
         """Trace provenance dari content_id via Hafidz Ledger isnad_chain."""
@@ -844,27 +867,6 @@ def create_app() -> "FastAPI":
             raise
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"audit error: {e}")
-
-    @app.get("/audit/_stats")
-    def audit_stats():
-        """Hafidz Ledger overview stats."""
-        try:
-            from .hafidz_ledger import stats, list_recent_entries
-            s = stats()
-            recent = list_recent_entries(limit=10)
-            s["recent_10"] = [
-                {
-                    "content_id": e.content_id,
-                    "content_type": e.content_type,
-                    "cas_hash_short": e.cas_hash[:12],
-                    "owner_verdict": e.owner_verdict,
-                    "created_at": e.created_at,
-                }
-                for e in recent
-            ]
-            return s
-        except Exception as e:
-            raise HTTPException(status_code=500, detail=f"stats error: {e}")
 
     @app.get("/health")
     def health():
