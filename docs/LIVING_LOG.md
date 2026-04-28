@@ -11891,3 +11891,58 @@ BM25 misses: 0/30
 ### DEPLOY [model_policy] CLAUDE.md model policy commit
 - Commit `012d6d3`: tambah `## 🤖 MODEL POLICY` section (Haiku/Sonnet/Opus decision table)
 - Memory saved: `feedback_model_policy.md`
+
+---
+
+## 2026-04-28 — Sprint 27 DEPLOYED (Ollama fix + MiniLM reranker)
+
+### FIX [Sprint 27a] Pydantic ValidationError /agent/generate — FIXED
+
+**File**: `apps/brain_qa/brain_qa/agent_serve.py` (commit `325557a`)
+
+Endpoint `POST /agent/generate` deklarasi `response_model=AgentGenerateResponse`
+(fields: text, mode, persona) tapi 3 return sites menggunakan `GenerateResponse`
+(butuh text, model, mode, duration_ms) → Pydantic 422 ValidationError setiap call.
+
+**Fix**: Semua 3 return sites (line 1099, 1113, 1117-1121) diubah ke `AgentGenerateResponse`.
+- Line 1579 `GenerateResponse(` = endpoint BERBEDA (dead code, route duplicate). Tidak di-touch, sudah benar dalam konteksnya.
+- **Test**: `POST /agent/generate` → 200 OK, `mode: ollama`, 9040ms ✓
+
+### NOTE [Sprint 27a] Ollama Qwen2.5-7B dengan 31GB RAM — VERIFIED
+
+VPS upgrade RAM dari 15GB → 31GB. Ollama sekarang primary LLM (bukan RunPod fallback).
+- `ollama_available()` = True ✓
+- qwen2.5:7b (4.7GB model) stay warm di memory → first-token 1.07-3.4s (sebelumnya timeout 90-180s)
+- `/ask` simple tier → RunPod direct (1.4s) — RunPod masih dipakai untuk simple queries
+- `/ask` standard/deep tier → Ollama local + full RAG pipeline
+- Engine: `sidix_local` (model_mode di health endpoint) ✓
+
+### IMPL [Sprint 27b] MiniLM Cross-Encoder Reranker — LIVE
+
+**Files**: `apps/brain_qa/brain_qa/reranker.py`, `deploy-scripts/ecosystem.config.js` (commit `bb60211`)
+**Note**: `brain/public/research_notes/270_sprint27b_minilm_reranker.md`
+
+- `reranker.py`: default candidates order swapped ke `["ms-marco-minilm", "bge-reranker-v2-m3"]`
+  — MiniLM first (110MB, ~1-2s CPU) bukan BGE (1.12GB, 22.7s)
+- `ecosystem.config.js`: `SIDIX_RERANK=1`, `SIDIX_RERANK_MODEL=ms-marco-minilm`,
+  `SIDIX_HYBRID_RETRIEVAL=1` (sekarang dipersist di file, sebelumnya cuma live PM2 env)
+
+**VPS deploy**: git pull + pm2 restart --update-env + pm2 save ✓
+**SSH key**: `sidix_session_key` (sidix_vps_key_v2 expired/rotated setelah RAM upgrade reboot)
+
+### TEST Sprint 27b MiniLM reranker verification
+- PM2 env: `SIDIX_RERANK=1`, `SIDIX_RERANK_MODEL=ms-marco-minilm`, `SIDIX_HYBRID_RETRIEVAL=1` ✓
+- PM2 log: `BertForSequenceClassification LOAD REPORT from: cross-encoder/ms-marco-MiniLM-L-6-v2` ✓
+- `/health`: 200 OK, corpus_doc_count=2171 ✓
+- `/ask` standard tier: 200 OK, citations=5 ✓ (retrieval + reranker active)
+- No reranker crash/error in logs ✓
+
+### DECISION SSH key rotation post-RAM-upgrade
+- `sidix_vps_key_v2` tidak lagi berfungsi setelah VPS reboot untuk RAM upgrade
+- `sidix_session_key` masih valid
+- Action: **update SSH config** ke sidix_session_key, atau re-authorize sidix_vps_key_v2 di VPS
+
+### NOTE Sprint 27c — pending (eval set)
+Sprint 27c: human-annotated eval set 50 paraphrase queries untuk measure real hybrid retrieval lift.
+Deferred — prioritas lebih rendah dari running reranker. Kapanpun siap.
+
