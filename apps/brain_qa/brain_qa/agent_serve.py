@@ -3665,6 +3665,46 @@ def create_app() -> "FastAPI":
         )
         _store_session(session)
         (None if _is_whitelisted(request) else rate_limit.record_daily_use(_daily_client_key(request)))
+
+        # ── Sprint 34I: POST-PROCESS FACT VERIFICATION ────────────────────
+        # Ekstrak fact deterministic dari web_search steps. Kalau answer LLM
+        # bertentangan dengan fact (e.g., LLM bilang Jokowi tapi web sebut Prabowo),
+        # OVERRIDE answer dengan fact verified.
+        try:
+            from .fact_extractor import extract_fact_from_web
+            _web_blob = ""
+            for _st in (session.steps or []):
+                if str(getattr(_st, "action_name", "")) == "web_search":
+                    _web_blob += "\n" + str(getattr(_st, "observation", "") or "")
+                # Also collect from action_args citations as backup source
+                for _cit in (getattr(_st, "action_args", {}) or {}).get("_citations", []):
+                    _t = _cit.get("title", "")
+                    _u = _cit.get("url", "")
+                    if _t or _u:
+                        _web_blob += f"\n{_t} {_u}"
+            if _web_blob.strip():
+                _fact = extract_fact_from_web(req.question, _web_blob)
+                if _fact and _fact.get("name") and _fact.get("confidence") == "high":
+                    _fname = _fact["name"]
+                    _frole = _fact.get("role", "")
+                    _src = (_fact.get("sources") or [""])[0]
+                    _curr = (session.final_answer or "")
+                    # Override kalau current answer TIDAK contain extracted name
+                    if _fname.lower() not in _curr.lower():
+                        _override = (
+                            f"Berdasarkan pencarian web terkini, {_frole} adalah **{_fname}**."
+                        )
+                        if _src:
+                            _override += f" (Sumber: {_src})"
+                        log.info(
+                            "[ask] Sprint 34I OVERRIDE — answer didn't mention %r, force fact",
+                            _fname,
+                        )
+                        _bump_metric("ask_fact_override")
+                        session.final_answer = _override
+        except Exception as _fact_err:
+            log.debug("[ask] fact post-process skip: %s", _fact_err)
+
         # Konversi citations ke format UI
         ui_citations = []
         for cit in session.citations:
