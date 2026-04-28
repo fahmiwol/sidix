@@ -74,6 +74,51 @@ def _bump_metric(key: str) -> None:
     _METRICS[key] = _METRICS.get(key, 0) + 1
 
 
+# Sprint 28a: BM25 lookup cache untuk simple-tier corpus context injection.
+# Tujuan: simple bypass tetap fast (~5ms BM25), tapi LLM dapat 1 snippet
+# ground-truth dari corpus → tidak halusinasi pada definition queries.
+_SIMPLE_BM25 = {"chunks": None, "tokens": None, "bm25": None, "loaded_at": 0.0}
+
+
+def _simple_corpus_context(question: str, *, max_chars: int = 500) -> str:
+    """Return top-1 BM25 snippet untuk inject ke simple-tier system prompt.
+
+    Lazy-load BM25 sekali, cache di module. Empty string kalau gagal/no match.
+    Target: <10ms total (BM25 lookup ~3-5ms + slicing).
+    """
+    if not question or not question.strip():
+        return ""
+    try:
+        if _SIMPLE_BM25["bm25"] is None:
+            from rank_bm25 import BM25Okapi  # type: ignore
+            from .query import _load_chunks, _load_tokens
+            from .paths import default_index_dir
+            idx = default_index_dir()
+            chunks = _load_chunks(idx)
+            tokens = _load_tokens(idx)
+            if not chunks or len(tokens) != len(chunks):
+                return ""
+            _SIMPLE_BM25["chunks"] = chunks
+            _SIMPLE_BM25["tokens"] = tokens
+            _SIMPLE_BM25["bm25"] = BM25Okapi(tokens)
+            _SIMPLE_BM25["loaded_at"] = time.time()
+        from .text import tokenize
+        q_tokens = tokenize(question)
+        scores = _SIMPLE_BM25["bm25"].get_scores(q_tokens)
+        if not len(scores):
+            return ""
+        top_idx = int(max(range(len(scores)), key=lambda i: scores[i]))
+        if scores[top_idx] <= 0.0:
+            return ""
+        snippet = (_SIMPLE_BM25["chunks"][top_idx].text or "").strip()
+        if len(snippet) > max_chars:
+            snippet = snippet[:max_chars].rsplit(" ", 1)[0] + "..."
+        return snippet
+    except Exception as e:
+        log.debug("[simple_corpus_context] failed: %s", e)
+        return ""
+
+
 def _client_ip(request: Request) -> str:
     c = request.client
     return c.host if c else "unknown"
@@ -3492,11 +3537,20 @@ def create_app() -> "FastAPI":
                 from .runpod_serverless import hybrid_generate
                 _bump_metric("ask_simple_bypass")
                 _t_simple = time.time()
+                # Sprint 28a: inject 1 BM25 snippet supaya LLM tidak halusinasi
+                # pada definition queries (e.g., "SIDIX adalah apa?")
+                _ctx = _simple_corpus_context(req.question)
                 _simple_sys = (
                     f"Kamu SIDIX, persona {req.persona}. "
                     "Jawab singkat (max 2 kalimat), hangat, natural. "
                     "Jangan tampilkan citations atau analisis multi-step."
                 )
+                if _ctx:
+                    _simple_sys += (
+                        f"\n\nKonteks dari corpus SIDIX (gunakan kalau relevan, "
+                        f"jangan parafrase mentah):\n{_ctx}"
+                    )
+                    _bump_metric("ask_simple_bypass_with_corpus_ctx")
                 _simple_text, _simple_mode = hybrid_generate(
                     prompt=req.question, system=_simple_sys,
                     max_tokens=120, temperature=0.6,
@@ -3963,12 +4017,20 @@ def create_app() -> "FastAPI":
                     from .runpod_serverless import hybrid_generate
                     _bump_metric("ask_stream_simple_bypass")
                     _t_simple_start = time.time()
+                    # Sprint 28a: inject 1 BM25 snippet untuk grounding
+                    _ctx = _simple_corpus_context(req.question)
                     _simple_sys = (
                         f"Kamu SIDIX, persona {effective_persona}. "
                         "Jawab singkat (max 2 kalimat), hangat, natural. "
                         "Jangan tampilkan citations atau analisis multi-step. "
                         "Jangan tambah label epistemik untuk obrolan ringan."
                     )
+                    if _ctx:
+                        _simple_sys += (
+                            f"\n\nKonteks dari corpus SIDIX (gunakan kalau relevan, "
+                            f"jangan parafrase mentah):\n{_ctx}"
+                        )
+                        _bump_metric("ask_stream_simple_bypass_with_corpus_ctx")
                     _simple_text, _simple_mode = hybrid_generate(
                         prompt=req.question,
                         system=_simple_sys,
