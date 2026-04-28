@@ -68,7 +68,10 @@ Avg signature_score: 0.639-0.767 stable di scale.
 | v1 | ❌ ERROR (cell 5) | Dataset belum ter-mount (race) | Wait until indexed |
 | v2 | ❌ ERROR (cell 5) | Title→slug mismatch + path issue persist | id align to `mighan/sidix-dora-persona-train-v1` |
 | v3 | ❌ ERROR (cell 5) | Private dataset mount `/kaggle/input/datasets/<owner>/<slug>/` (bukan `/kaggle/input/<slug>/`) | Auto-detect via `glob.glob('/kaggle/input/**/persona_qa_train.jsonl', recursive=True)` |
-| v4 | 🟡 RUNNING | bitsandbytes 0.44.1 incompat triton 3.x | Remove pin, `pip install -U bitsandbytes peft trl accelerate datasets huggingface_hub` |
+| v4 | ❌ ERROR (cell 7) | bitsandbytes 0.49.2 CUDA kernel incompat P100 (CC 6.0) | Drop quantization, bf16 + grad checkpoint |
+| v5 | ❌ ERROR (cell 7) | peft 0.19.1 requires torchao≥0.16, Kaggle has 0.10 | Add torchao>=0.16 to install |
+| v6 | ❌ ERROR (cell 7) | DoRA-specific CUDA op tidak ada kernel image untuk P100 (CC 6.0). Fundamental: modern PEFT pre-built kernels skip SM_60 | Try plain LoRA (use_dora=False) |
+| v7 | ❌ ERROR (cell 7) | SAME `cudaErrorNoKernelImageForDevice` — bukan DoRA-specific, tapi PEFT/torch CUDA path keseluruhan tidak include P100 | **PIVOT TO RUNPOD** (Kaggle keeps allocating P100, no API to request T4+) |
 
 Diagnostic kernel `mighan/sidix-diag-mount` (COMPLETE) confirmed actual mount structure sebelum v3 patch — anti-halusinasi pattern.
 
