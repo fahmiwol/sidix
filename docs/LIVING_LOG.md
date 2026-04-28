@@ -12449,3 +12449,37 @@ Total cron events/hour: 19 → 15 (-21%). No two cron same minute.
 - VPS upgrade (more CPU?) atau move heavy cron ke RunPod
 - Disable worker.sh temporarily kalau recovery slow
 
+
+### CLOSURE [Sprint 33] — Loop CLAUDE.md 6.5 status
+**catat-push-pull-deploy-test-iter-catat-review-QA-catat**:
+
+| Step | Status |
+|------|--------|
+| 1. CATAT memulai | ✓ done |
+| 2. PUSH PULL DEPLOY (cron stagger commit ecc50a5) | ✓ done |
+| 3. TEST 1 (greeting) | ✓ PASS first attempt 1.4s, FAIL retry (30s timeout) |
+| 4. ITERASI (PM2 restart, Ollama restart) | ✓ done — ollama queue tetap struggle |
+| 5. CATAT (cron stagger applied + 4/h reduction) | ✓ done |
+| 6. REVIEW QA | PARTIAL — code change verified, runtime BLOCKED Ollama |
+| 7. CATAT FINAL | ✓ this entry |
+
+**Honest closure**:
+- Cron stagger code change SHIPPED + LIVE in crontab ✓
+- Crontab snapshot tracked di `deploy-scripts/crontab.snapshot.txt` ✓
+- post_deploy_chmod hook re-applied (post-merge issue resolved manual)
+- /ask response test FAILED to verify post-stagger karena Ollama belum recover
+
+**Diagnosis Ollama issue**:
+- 4-vCPU AMD EPYC × qwen2.5:7b 4.7GB model = baseline tight
+- Multi-cron simultan menit 0 hammer Ollama dalam 1+ jam → state corrupted
+- Service restart help model TAGS load, tapi /api/generate masih lambat (cold reload)
+- Recovery butuh waktu (estimasi 30+ menit clean run tanpa cron tambahan hammer)
+
+### Sprint 34 mandate (next session pickup):
+- **34A** (urgent): Set `OLLAMA_NUM_PARALLEL=1` + `OLLAMA_MAX_LOADED_MODELS=1` env supaya tidak overload
+- **34B**: Move heavy cron (worker, classroom) ke smaller model qwen2.5:1.5b (986MB, faster cold-start)
+- **34C**: Add health check before brain calls Ollama — kalau slow, fallback simple bypass / RunPod
+- **34D**: Disable worker cron temporarily kalau diagnostic show recurring saturation
+
+**Bos: Sprint 33 PARTIAL (cron change shipped, runtime verification blocked oleh Ollama recovery — independent issue dari cron change)**
+
