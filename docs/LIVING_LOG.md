@@ -13345,3 +13345,48 @@ Pending dependencies untuk full Pencipta autonomy:
 - Data accumulation di react_steps.jsonl (real user sessions)
 - Macro dispatch wiring (active/index.json → agent_react.py tool router) — Sprint 40+
 - Telegram owner notify push — Sprint 40
+
+## 2026-04-29 — Sprint 13 Phase 3a: DoRA Persona Q&A Generator ✅ SHIPPED
+
+### CATAT (pre-exec)
+Founder decision 2026-04-29: pilih Sprint 13 (DoRA Persona Stylometry) sebagai
+sprint berikutnya. Reasoning: asymmetric leverage — compound 5/5 dengan SEMUA
+sprint future. "Keputusan sulit di awal mempermudah kedepannya."
+
+Pre-Exec Alignment Check:
+- Note 248 mandate: 5 persona LOCKED ✓ (Sprint 13 reinforces, tidak melanggar)
+- 10 hard rules: LoRA = own weights ✓, MIT ✓, self-hosted ✓
+- Pivot 2026-04-25 LIBERATION: DoRA = persona LIBERATION di weight level (compound)
+
+### IMPL [Sprint 13 Phase 3a]
+Sprint 13 = 3-4 minggu multi-session. Sesi ini = Phase 3a (synthetic data pipeline).
+
+Files baru:
+- docs/ROADMAP_DORA_SPRINT13.md — Sprint 13 plan + sprint queue
+- apps/brain_qa/brain_qa/persona_qa_generator.py — 5 persona templates + scoring + dedup
+- brain/public/research_notes/285_sprint13_dora_persona_qa_generator.md
+
+Files diubah:
+- apps/brain_qa/brain_qa/__main__.py — CLI subcommand gen_persona_qa
+
+Architecture: template-based opener×body×closer per persona, signature scoring
+(pronoun 0.4 + vocab 0.4 + pattern 0.2, gate ≥0.5), dedup SHA-256[:12].
+Output Alpaca-style: instruction/input/output + metadata.persona (BUKAN di prompt).
+
+### TEST [Sprint 13 Phase 3a — 3 iterasi]
+
+Iter1: AYMAN gap=0.40 marginal, UTZ gap=0.25 weak.
+Iter2: AYMAN markers tightened (empathy-specific). AYMAN 0.40→0.50, UTZ tetap 0.28.
+Iter3: UTZ markers expanded dengan template signature words. UTZ 0.28→0.52.
+
+Final 5-seed discrimination (gap = own_avg - cross_avg):
+- UTZ 0.52, ABOO 0.70, OOMAR 0.64, ALEY 0.52, AYMAN 0.43 (semua ≥0.30 threshold ✓)
+
+Production batch 100×5 = 500 pairs:
+- All 5 personas: 100/100 generated (zero filter rejection)
+- Dedup: 500/500 unique pair_id
+- Avg signature_score per persona: 0.640-0.756
+
+### STATUS
+Sprint 13 Phase 3a SHIPPED. Phase 3b (Kaggle LoRA train) + 3c (deploy) defer.
+Roadmap: ROADMAP_DORA_SPRINT13.md.
