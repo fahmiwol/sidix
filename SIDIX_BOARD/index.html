@@ -730,25 +730,169 @@ async function probeApi() {
 probeApi();
 setInterval(probeApi, 30000); // refresh every 30s
 
-// ── Add task stub ────────────────────────────────────────────────────
-document.getElementById('btn-add-task').addEventListener('click', () => {
+// ── Phase 2 wire: Task Queue (Sprint 40) ────────────────────────────
+async function loadTasks() {
+  try {
+    const resp = await apiCall('/autonomous_dev/queue');
+    if (!resp.ok) return;
+    const data = await resp.json();
+    const list = document.getElementById('tasks-list');
+    if (!data.tasks || data.tasks.length === 0) {
+      list.innerHTML = '<div class="card"><em style="color:var(--text-dim);">No tasks. Add one above.</em></div>';
+      return;
+    }
+    list.innerHTML = data.tasks.map(t => {
+      const stateColor = {pending:'yellow', in_progress:'purple', review:'yellow',
+                          approved:'green', merged:'green', rejected:'red',
+                          escalated:'red', expired:'red'}[t.state] || '';
+      return `<div class="card">
+        <div class="title">${escapeHtml(t.target_path)}</div>
+        <div class="meta">
+          <span class="pill ${stateColor}">${escapeHtml(t.state)}</span>
+          ${t.persona_fanout ? '<span class="pill purple">fanout</span>' : ''}
+          · priority ${t.priority} · iter ${t.iter_count}/${t.max_iter}
+          · ${escapeHtml(t.task_id.slice(0, 24))}
+        </div>
+        <div style="font-size:12px;color:var(--text-dim);margin-top:4px;">${escapeHtml(t.goal)}</div>
+      </div>`;
+    }).join('');
+  } catch (e) { console.warn('loadTasks:', e); }
+}
+
+document.getElementById('btn-add-task').addEventListener('click', async () => {
   const target = document.getElementById('new-task-target').value.trim();
   const goal = document.getElementById('new-task-goal').value.trim();
-  if (!target || !goal) {
-    alert('Target + goal required');
-    return;
-  }
-  alert(`[Phase 1 stub] Task akan di-queue:\nTarget: ${target}\nGoal: ${goal}\n\nPhase 2 wire ke /autonomous_dev/queue/add`);
+  if (!target || !goal) { alert('Target + goal required'); return; }
+  try {
+    const resp = await apiCall('/autonomous_dev/queue/add', {
+      method: 'POST',
+      body: JSON.stringify({ target_path: target, goal, priority: 50 }),
+    });
+    if (!resp.ok) { alert('Add failed: HTTP ' + resp.status); return; }
+    const data = await resp.json();
+    alert(`✓ Task queued: ${data.task.task_id}`);
+    document.getElementById('new-task-target').value = '';
+    document.getElementById('new-task-goal').value = '';
+    await loadTasks();
+  } catch (e) { alert('Error: ' + e.message); }
 });
 
-// ── Synthesizer stub ────────────────────────────────────────────────
-document.getElementById('btn-synth').addEventListener('click', () => {
+// ── Phase 2 wire: Approval Queue (Sprint 40) ────────────────────────
+async function loadApprovals() {
+  try {
+    const resp = await apiCall('/autonomous_dev/queue?state=review');
+    if (!resp.ok) return;
+    const data = await resp.json();
+    const list = document.getElementById('approvals-list');
+    document.getElementById('ap-pending').textContent = data.count || 0;
+    if (!data.tasks || data.tasks.length === 0) {
+      list.innerHTML = '<div class="card"><em style="color:var(--text-dim);">No tasks pending review.</em></div>';
+      return;
+    }
+    list.innerHTML = data.tasks.map(t => `
+      <div class="card" data-task-id="${escapeHtml(t.task_id)}">
+        <div class="title">${escapeHtml(t.target_path)}</div>
+        <div class="meta">
+          <span class="pill yellow">review</span>
+          ${t.persona_fanout ? '<span class="pill purple">fanout</span>' : ''}
+          · iter ${t.iter_count}/${t.max_iter} · branch: ${escapeHtml(t.branch_name)}
+        </div>
+        <div style="font-size:13px;color:var(--text);margin-top:8px;">${escapeHtml(t.goal)}</div>
+        ${t.error_log ? `<div style="font-size:11px;color:var(--text-dim);margin-top:4px;font-family:monospace;">${escapeHtml(t.error_log.slice(0, 200))}</div>` : ''}
+        <div class="actions">
+          <button class="primary" onclick="approveTask('${escapeHtml(t.task_id)}')">Approve</button>
+          ${t.pr_url ? `<button onclick="window.open('${escapeHtml(t.pr_url)}', '_blank')">View PR</button>` : ''}
+          <button class="danger" onclick="rejectTask('${escapeHtml(t.task_id)}')">Reject</button>
+        </div>
+      </div>
+    `).join('');
+  } catch (e) { console.warn('loadApprovals:', e); }
+}
+
+window.approveTask = async (taskId) => {
+  if (!confirm(`Approve task ${taskId}?`)) return;
+  try {
+    const resp = await apiCall('/autonomous_dev/approve', {
+      method: 'POST',
+      body: JSON.stringify({ task_id: taskId }),
+    });
+    const data = await resp.json();
+    alert(data.ok ? `✓ Approved ${taskId}` : 'Approve failed');
+    await loadApprovals();
+  } catch (e) { alert('Error: ' + e.message); }
+};
+
+window.rejectTask = async (taskId) => {
+  const reason = prompt('Reject reason (optional):', '');
+  if (reason === null) return;
+  try {
+    const resp = await apiCall('/autonomous_dev/reject', {
+      method: 'POST',
+      body: JSON.stringify({ task_id: taskId, reason }),
+    });
+    const data = await resp.json();
+    alert(data.ok ? `✓ Rejected ${taskId}` : 'Reject failed');
+    await loadApprovals();
+  } catch (e) { alert('Error: ' + e.message); }
+};
+
+// ── Phase 2 wire: Synthesizer (Sprint 41) ───────────────────────────
+async function loadSessions() {
+  try {
+    const resp = await apiCall('/sidix/claude_sessions?min_turns=10');
+    if (!resp.ok) return;
+    const data = await resp.json();
+    const list = document.getElementById('sessions-list');
+    if (!data.sessions || data.sessions.length === 0) {
+      list.innerHTML = '<div class="card"><em style="color:var(--text-dim);">No sessions discovered.</em></div>';
+      return;
+    }
+    list.innerHTML = data.sessions.slice(0, 12).map(s => {
+      const turns = (s.user_turns || 0) + (s.assistant_turns || 0);
+      const sizeMB = ((s.size_bytes || 0) / 1024 / 1024).toFixed(1);
+      return `<div class="card">
+        <div class="title">${escapeHtml(s.uuid.slice(0, 8))} · ${escapeHtml(s.project_label || '?')}</div>
+        <div class="meta">${turns} turns · ${sizeMB}MB · last: ${escapeHtml((s.last_timestamp || '?').slice(0, 19))}</div>
+        <button onclick="synthSession('${escapeHtml(s.uuid)}')">Synthesize</button>
+      </div>`;
+    }).join('');
+  } catch (e) { console.warn('loadSessions:', e); }
+}
+
+window.synthSession = async (uuid) => {
+  alert(`[CLI command]\npython -m brain_qa claude_sessions synthesize --uuid=${uuid.slice(0,8)}\n\n(Phase 3: trigger via API endpoint)`);
+};
+
+document.getElementById('btn-synth').addEventListener('click', async () => {
   const text = document.getElementById('synth-input').value.trim();
   const source = document.getElementById('synth-source').value.trim() || 'manual_paste';
   const fanout = document.getElementById('synth-fanout').checked;
   if (!text) { alert('Paste transcript dulu'); return; }
-  alert(`[Phase 1 stub] Akan synthesize:\nSource: ${source}\nFanout: ${fanout}\nLength: ${text.length} chars\n\nPhase 2 wire ke /sidix/synthesize_conversation`);
+  try {
+    const resp = await apiCall('/sidix/synthesize_conversation', {
+      method: 'POST',
+      body: JSON.stringify({ transcript: text, source, persona_fanout: fanout }),
+    });
+    if (!resp.ok) { alert('Synth failed: HTTP ' + resp.status); return; }
+    const data = await resp.json();
+    alert(`✓ Synthesized\nNote ${data.note_number}: ${data.topic}\nDomain: ${data.domain}\nTurns: ${data.turn_count}, QA pairs: ${data.qa_pairs}, Decisions: ${data.decisions}\n\nPath: ${data.note_path}`);
+    document.getElementById('synth-input').value = '';
+  } catch (e) { alert('Error: ' + e.message); }
 });
+
+// Auto-load panels when tab opened
+document.querySelectorAll('nav.tabs button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    if (!getAuth()) return;
+    if (btn.dataset.tab === 'tasks') loadTasks();
+    if (btn.dataset.tab === 'approvals') loadApprovals();
+    if (btn.dataset.tab === 'synth') loadSessions();
+  });
+});
+// Initial load if authenticated
+if (getAuth()) {
+  setTimeout(() => { loadTasks(); loadApprovals(); loadSessions(); }, 1000);
+}
 
 console.log('SIDIX Command Board v0.1.0 loaded · Tiranyx Lab 2026');
 </script>

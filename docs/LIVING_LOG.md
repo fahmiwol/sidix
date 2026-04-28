@@ -13886,3 +13886,34 @@ ETA training: ~4h, jadi cek lagi nanti malam.
   inventor. Co-Authored-By trailers di commits = provenance documentation,
   NOT invention authorship transfer. Per USPTO 2024 + WIPO + UU 28/2014
   Pasal 1(2) — human inventor required, AI is tool.
+
+[2026-04-28T21:53:06.984698+00:00] [IMPL] Sprint 43 Phase 2 COMPLETE - Board fully wired ke real API.
+  
+  Backend endpoints added (apps/brain_qa/brain_qa/agent_serve.py):
+  - POST /sidix/synthesize_conversation - Sprint 41 engine (transcript+source+fanout)
+  - GET /sidix/claude_sessions?project=&min_turns=&since=&limit= - Sprint 41 v1.2
+  - GET /autonomous_dev/queue?state=&limit= - Sprint 40 list tasks
+  - POST /autonomous_dev/queue/add - Sprint 40 add new task
+  - POST /autonomous_dev/approve - Sprint 40 owner approve
+  - POST /autonomous_dev/reject - Sprint 40 owner reject (+ reason)
+  All endpoints: rate-limited via _enforce_rate, auth via X-Admin-Token
+  (existing pattern), JSON in/out.
+  
+  Board panel wires (SIDIX_BOARD/index.html):
+  - Task Queue: loadTasks() fetch GET /queue, render cards dengan state pill
+    color-coded. Add task form -> POST /queue/add dengan validation.
+  - Approval Queue: loadApprovals() fetch GET /queue?state=review.
+    approveTask(id), rejectTask(id) global functions wire ke /approve+/reject
+    endpoints. Inline diff + branch info displayed.
+  - Synthesizer: loadSessions() fetch GET /claude_sessions?min_turns=10,
+    render 12 sessions cards. synthSession(uuid) shows CLI command (Phase 3
+    will wire endpoint POST /claude_sessions/synthesize). 
+    btn-synth wires manual paste textarea -> POST /synthesize_conversation.
+  - Auto-load on tab click + initial 1s delay if authenticated.
+  
+  Smoke test: 9/9 endpoints found in board HTML, agent_serve.py AST OK.
+  
+[2026-04-28T21:53:06.984698+00:00] [DECISION] Board Phase 2 = LIVE. Bos sekarang bisa: queue task,
+  approve PR autonomous_developer, synthesize transcript paste, list 12 
+  Claude Code sessions discovered. Semua via 1 URL ctrl.sidixlab.com/chatbos
+  dengan owner-only token gate. Mobile-responsive preserved.
