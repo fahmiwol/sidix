@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>SIDIX Pixel</title>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+         font-size: 13px; width: 320px; margin: 0; padding: 12px;
+         background: #0d1117; color: #e6edf3; }
+  h1 { font-size: 14px; margin: 0 0 8px 0; color: #58a6ff; }
+  .status { display: flex; align-items: center; gap: 6px; margin-bottom: 12px; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; }
+  .dot.on { background: #3fb950; }
+  .dot.off { background: #f85149; }
+  button { background: #238636; color: #fff; border: 0; padding: 6px 12px;
+           border-radius: 6px; cursor: pointer; font-size: 12px; }
+  button:hover { background: #2ea043; }
+  button.secondary { background: #21262d; color: #c9d1d9; }
+  .section { margin-top: 12px; padding-top: 8px; border-top: 1px solid #30363d; }
+  .section h2 { font-size: 11px; text-transform: uppercase; color: #8b949e;
+                margin: 0 0 6px 0; }
+  .capture-item { padding: 4px 0; font-size: 11px; color: #c9d1d9;
+                  border-bottom: 1px dashed #30363d; }
+  .capture-item:last-child { border: 0; }
+  .url { color: #58a6ff; font-size: 10px; }
+  .meta { color: #8b949e; font-size: 10px; }
+  a { color: #58a6ff; text-decoration: none; }
+</style>
+</head>
+<body>
+  <h1>SIDIX Pixel <span style="font-weight:normal;color:#8b949e;">v0.1.0</span></h1>
+  <div class="status">
+    <span class="dot" id="status-dot"></span>
+    <span id="status-text">Loading…</span>
+  </div>
+
+  <div>
+    <button id="btn-capture">Capture this page</button>
+    <button id="btn-toggle" class="secondary">Toggle</button>
+    <button id="btn-options" class="secondary">Settings</button>
+  </div>
+
+  <div class="section">
+    <h2>Recent captures</h2>
+    <div id="recent-list">
+      <div class="meta">No captures yet.</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Tentang</h2>
+    <div class="meta">
+      Trigger: type <code>@sidix</code> di Twitter/IG/FB/LinkedIn/etc.<br/>
+      Powered by <a href="https://sidixlab.com" target="_blank">SIDIX</a> ·
+      Bagian dari Tiranyx ekosistem.
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

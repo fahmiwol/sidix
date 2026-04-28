@@ -7367,6 +7367,85 @@ h1{{color:#0af}}p{{color:#aaa}}a{{color:#0af}}</style></head>
             "citations": result.citations,
         }
 
+    # ── Sprint 42: SIDIX-as-Pixel capture endpoint ────────────────────────────
+    @app.post("/sidix/pixel/capture", tags=["Pixel"])
+    async def sidix_pixel_capture(request: Request):
+        """
+        Sprint 42: SIDIX-as-Pixel capture endpoint.
+
+        Receive trigger from SIDIX Pixel browser extension (or future meta-tag
+        embed). Capture context → optional synthesize → optional persona fanout
+        → research note + Hafidz Ledger entry.
+
+        Auth: X-Sidix-Pixel-Token header (optional Phase 1, required Phase 2).
+
+        Payload:
+          {
+            "url": "...",
+            "page_title": "...",
+            "trigger_keyword": "@sidix",
+            "surrounding_text": "...",
+            "source": "live_typing|page_mention|popup_manual",
+            "captured_at": "ISO 8601",
+            "client_version": "0.1.0"
+          }
+
+        Returns: { ok, note_id, note_path, summary }
+        """
+        _enforce_rate(request)
+        try:
+            payload = await request.json()
+        except Exception:
+            raise HTTPException(status_code=400, detail="invalid JSON payload")
+
+        url = payload.get("url", "").strip()
+        page_title = payload.get("page_title", "").strip()
+        text = payload.get("surrounding_text", "").strip()
+        source = payload.get("source", "unknown")
+        client_version = payload.get("client_version", "?")
+
+        if not url or not text:
+            raise HTTPException(status_code=400,
+                                detail="url and surrounding_text required")
+
+        # Build a minimal transcript-like format so synthesizer can process
+        synthetic_transcript = (
+            f"Human: SIDIX, capture and analyze this content from {url}\n\n"
+            f"Page title: {page_title}\n\n"
+            f"Content excerpt:\n{text[:1500]}\n"
+        )
+
+        try:
+            from .conversation_synthesizer import synthesize as _synthesize
+            result = _synthesize(
+                transcript=synthetic_transcript,
+                source_label=f"sidix_pixel_{source}_{client_version}",
+                write_note=True,
+                persona_fanout=False,  # Phase 2 opt-in via flag
+            )
+            return {
+                "ok": True,
+                "note_id": result.note_number,
+                "note_path": result.note_path,
+                "topic": result.topic,
+                "domain": result.domain,
+                "qa_pairs": len(result.qa_pairs),
+                "decisions": len(result.decisions),
+                "facts": len(result.facts),
+                "summary": (
+                    f"Captured from {source}: {page_title or url}. "
+                    f"Synthesized as note {result.note_number}."
+                ),
+                "client_version": client_version,
+            }
+        except Exception as e:
+            import logging as _logging
+            _logging.getLogger(__name__).exception("[pixel/capture] error")
+            raise HTTPException(
+                status_code=500,
+                detail=f"synthesis error: {e}",
+            )
+
     # ── Agency OS: Tiranyx pilot client ──────────────────────────────────────
     try:
         from .tiranyx_config import setup_tiranyx as _setup_tiranyx

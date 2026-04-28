@@ -52,6 +52,60 @@ from typing import Optional
 log = logging.getLogger(__name__)
 
 
+# ── Claude Code JSONL → markdown converter ──────────────────────────────────
+
+def claude_jsonl_to_markdown(jsonl_path: Path) -> str:
+    """Parse Claude Code session JSONL → flat markdown transcript.
+
+    Claude Code stores per-session JSONL at:
+      ~/.claude/projects/<project>/<session-uuid>.jsonl
+
+    Each line = JSON event. We extract user/assistant message turns
+    (skip system events, tool calls). Output = readable transcript
+    consumable by parse_turns().
+    """
+    import json as _json
+    lines: list[str] = []
+    with jsonl_path.open("r", encoding="utf-8") as f:
+        for raw in f:
+            try:
+                d = _json.loads(raw)
+            except Exception:
+                continue
+            t = d.get("type", "")
+            msg = d.get("message", {})
+            if not isinstance(msg, dict):
+                continue
+            role = msg.get("role", "")
+            content = msg.get("content", "")
+            text = ""
+            if isinstance(content, str):
+                text = content
+            elif isinstance(content, list):
+                # Anthropic message format: list of {type, text} or {type, content}
+                parts: list[str] = []
+                for blk in content:
+                    if not isinstance(blk, dict):
+                        continue
+                    if blk.get("type") == "text":
+                        parts.append(blk.get("text", ""))
+                    elif blk.get("type") == "tool_use":
+                        # Skip tool calls in conversation transcript
+                        continue
+                    elif blk.get("type") == "tool_result":
+                        continue
+                text = "\n".join(p for p in parts if p)
+            text = text.strip()
+            if not text:
+                continue
+            speaker_label = "Human" if role == "user" else ("Assistant" if role == "assistant" else None)
+            if speaker_label is None:
+                continue
+            lines.append(f"{speaker_label}: {text}")
+            lines.append("")
+    return "\n".join(lines)
+
+
 # ── Speaker detection patterns ────────────────────────────────────────────────
 
 # Order matters — more specific first
@@ -447,6 +501,7 @@ def synthesize(
 
 __all__ = [
     "ConversationTurn", "QAPair", "SynthesisResult",
+    "claude_jsonl_to_markdown",
     "parse_turns", "detect_topic", "detect_domain",
     "extract_qa_pairs", "extract_decisions", "extract_facts",
     "extract_open_questions", "generate_note", "synthesize",

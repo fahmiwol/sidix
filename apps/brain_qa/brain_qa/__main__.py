@@ -1026,13 +1026,17 @@ def main(argv: list[str]) -> int:
 
     if args.cmd == "synthesize_conversation":
         # Sprint 41 — Conversation Synthesizer ("Claude as guru")
-        from .conversation_synthesizer import synthesize
+        from .conversation_synthesizer import synthesize, claude_jsonl_to_markdown
         from pathlib import Path as _Path
         transcript_path = _Path(args.file)
         if not transcript_path.exists():
             print(json.dumps({"ok": False, "error": f"file not found: {args.file}"}))
             return 1
-        transcript = transcript_path.read_text(encoding="utf-8")
+        # Auto-detect JSONL format (Claude Code session file)
+        if transcript_path.suffix == ".jsonl":
+            transcript = claude_jsonl_to_markdown(transcript_path)
+        else:
+            transcript = transcript_path.read_text(encoding="utf-8")
         notes_dir = _Path(args.notes_dir) if args.notes_dir else None
         result = synthesize(
             transcript=transcript,

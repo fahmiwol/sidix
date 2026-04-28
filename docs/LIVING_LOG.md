@@ -13691,3 +13691,41 @@ ETA training: ~4h, jadi cek lagi nanti malam.
 [2026-04-28T20:41:03.811534+00:00] [DECISION] Logging discipline reinforced per founder mandate 2026-04-29:
   catat di 4 sumber - LIVING_LOG.md harian | research_notes corpus | memory file
   | git commit message. Tidak ada konteks/riset/iterasi/perubahan yang lewat.
+
+[2026-04-28T20:50:35.360301+00:00] [PLAN] Sprint 42 PLAN doc - SIDIX-as-Pixel Chrome extension MVP.
+  docs/SPRINT_42_SIDIX_AS_PIXEL_PLAN.md (250 lines).
+  Sections: yang sudah, yang akan, cara solve method, verifikasi testing,
+  optimasi Phase 2+, temuan untuk agen selanjutnya, sprint timeline,
+  owner decisions. Per founder mandate logging discipline 2026-04-29.
+
+[2026-04-28T20:50:35.360301+00:00] [IMPL] Sprint 41 v1.1 - JSONL auto-detect.
+  conversation_synthesizer.py: claude_jsonl_to_markdown() function added.
+  Auto-detect via .jsonl extension. Test: 558-turn old session -> 104 QA pairs.
+  Pass.
+
+[2026-04-28T20:50:35.360301+00:00] [IMPL] Sprint 42 Phase 1 SCAFFOLD - SIDIX Pixel Chrome Extension.
+  Folder: extension/sidix-pixel/ (8 files):
+  - manifest.json (V3, 8 host permissions, 8 default whitelist domains)
+  - content.js (regex /(?:^|\s)@sidix/i, debounced 800ms, sensitive
+    field skip, mutation observer SPA support)
+  - background.js (service worker, fetch endpoint, storage API,
+    notifications, recent_captures keep last 20)
+  - popup.html/popup.js (status dot, manual capture btn, recent list 5)
+  - options.html/options.js (endpoint+token+whitelist config)
+  - README.md (concept, files, install, privacy, backend contract, future)
+
+[2026-04-28T20:50:35.360301+00:00] [IMPL] Sprint 42 endpoint /sidix/pixel/capture WIRED di agent_serve.py.
+  POST endpoint, payload validation, build synthetic transcript, call
+  conversation_synthesizer.synthesize(), return note_id+note_path+summary.
+  Reuse Sprint 41 engine. Auth via X-Sidix-Pixel-Token (Phase 2 require).
+
+[2026-04-28T20:50:35.360301+00:00] [TEST] Syntax check 3 modified Python files PASS:
+  - agent_serve.py (7459 lines, +85 endpoint added)
+  - conversation_synthesizer.py (+JSONL converter)
+  - __main__.py (+synthesize_conversation cmd, +JSONL auto-detect)
+  AST parse no errors.
+
+[2026-04-28T20:50:35.360301+00:00] [DECISION] Logging discipline LOCK 2026-04-29 (founder mandate ke-3
+  reinforce): catat yang sudah + plan yang akan + temuan + verifikasi
+  metode + arah tujuan. Setiap sprint plan doc WAJIB section: yang sudah,
+  yang akan, cara solve, verifikasi, optimasi, temuan, arah tujuan.
