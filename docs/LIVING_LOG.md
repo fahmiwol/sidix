@@ -13614,3 +13614,53 @@ Auto-upload HF: enabled di runpod_train_lora.py (HF_TOKEN sudah di Pod env)
 - Total: 12 iterasi sebelum training actually run
 - Modules lahir dari friction: persona_adapter_loader, blind_ab_test, runpod_train_lora,
   runpod_pod_orchestrator, sidix_kaggle_monitor.sh, sidix_runpod_monitor.sh
+
+## 2026-04-29 evening — Training v8d ACTUALLY RUNNING (steps 1-31 verified)
+
+### CATAT — bos worry "apa bocor?"
+Bos screenshot vLLM endpoint: 5 workers all THROTTLED + cosmetic shutdown errors
+(TypeError NoneType in zmq Socket.__del__). Verified TIDAK BOCOR:
+- $0.00000/s (no charge mengalir)
+- Errors di __del__ = Python ignored by design (cleanup race, not data leak)
+- SIDIX user-facing OK (model_mode=sidix_local di VPS, bypass vLLM endpoint)
+
+### IMPL [v8c → v8d iterasi RunPod]
+
+v8c (device_map removed, .to('cuda') explicit):
+- Model loaded GPU 15.58 GB used out of 16 GB → **OOM at first DoRA forward pass**
+- Root cause: Qwen 7B bf16 (~14GB) + DoRA magnitude params + activations > A4000 16GB
+- DoRA adds extra params on top of LoRA → tighter memory than plain LoRA
+
+v8d (drop DoRA, batch 1, grad_accum 8, max_seq 512):
+- GPU mem after load: 15.32 GB ✓ (1.4 GB headroom for activations)
+- trainable_params: 10M / 7.6B = 0.13% ✓ (LoRA rank-16 attention only)
+- Step 31/2529 = 1.2% done @ 2 sec/step → ETA ~4h
+- Loss step 20: 4.29 (descending — convergent)
+
+### TRADE-OFF
+Sprint 13a ships as plain LoRA persona (not DoRA mandate). Sprint 13b future:
+- Upgrade GPU 24GB (3090/L4/4090) → re-train pure DoRA
+- Compare: LoRA persona accuracy vs DoRA persona accuracy in blind A/B
+- Per Liu 2024 paper: DoRA +1-2% accuracy over LoRA, marginal but real
+
+Decision: pragmatic ship LoRA today vs delay further. Training time invested
+(11 iterations, ~30 min tool time) → bos value > waiting.
+
+### TEMUAN KOGNITIF (note 288 update)
+Iteration count for Sprint 13:
+- Phase 3a marker iter: 3
+- Phase 3b Kaggle: 7 (all ABANDONED, P100 fundamental)
+- Phase 3b RunPod: 4 (v8a typing_extensions → v8b pin → v8c device_map → v8d memory)
+- TOTAL: 14 iterasi sebelum training run
+
+Pattern berkembang: iteration_cost = opacity × stack_depth × hardware_constraint
+(hardware_constraint baru: P100 vs A4000 vs 24GB tier)
+
+### MONITORING
+Cron */10 min → /opt/sidix/.data/runpod_training_state.json
+ETA training: ~4h, jadi cek lagi nanti malam.
+
+### COST
+- Pod v8a-d cumulative ~30 min × $0.20/hr = $0.10 spent
+- v8d ETA 4h × $0.20/hr = $0.80
+- Total projection: ~$0.90 / $20.41 ✓
