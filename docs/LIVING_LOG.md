@@ -13116,3 +13116,48 @@ Plan:
 - Auto-test on supporting episodes
 - Owner approve flow
 
+
+### TEST [Sprint 38] OFFLINE 5/5 PASS
+- detect_repeated_sequences (3 sequences from synthetic data) ✓
+- propose_macro (skill_id snake_case, confidence rule low/med/high) ✓
+- write_proposal_to_quarantine (YAML format clean) ✓
+- Hafidz Ledger entry created per propose ✓
+- run_synthesis full pipeline ✓
+
+### TEST [Sprint 38] VPS DRY-RUN (CLI works, format gap caught)
+```
+python3 -m brain_qa propose_skill --window-days 30 --min-count 2
+{
+  "cycle_id": "synthesis-1777373445",
+  "sequences_detected": 0,
+  "proposals_written": 0
+}
+```
+
+⚠ **Sprint 38 partial** — detector logic JALAN (0 errors), tapi 0 sequences detected.
+Reason: VPS `sidix_observations.jsonl` format pakai field `kind` (git_activity, commit_seen, etc), bukan `action`/`tool`.
+
+→ Detector source mismatch. Tool sequences perlu source berbeda (REACT_STEP log atau worker.sh task output).
+
+### Sprint 38b TODO (next iter):
+- Adapt detector untuk parse REACT_STEP log dari session storage atau classroom logs
+- Atau: hook di run_react untuk auto-log tool sequences ke khusus track file
+- Compound dengan Sprint 36 reflect_day yang sudah expose "Repeated Tool Sequences" di lesson template (output ready, just need parse)
+
+### REVIEW QA + VALIDASI [Sprint 38]:
+**Achieved**:
+- ✓ Module + CLI + Hafidz hook deployed LIVE
+- ✓ Offline test coverage 5/5 (architectural correctness verified)
+- ✓ Compound with Sprint 36 + 37 confirmed
+- ✓ MVP scope honest (skip sandbox actual + auto-test → Sprint 38c)
+
+**Pending Sprint 38b**:
+- Detector source adaptation untuk real VPS data
+- Schedule cron weekly atau on-demand trigger
+
+### OPTIMASI catatan Sprint 38
+- Module size lean ~210 lines (no PyYAML dep, manual YAML format)
+- Stateless functions, no global state pollution
+- Quarantine write idempotent (overwrite OK kalau re-run same cycle)
+- Hafidz hook lazy import (no crash kalau module unavailable)
+
