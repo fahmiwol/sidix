@@ -194,6 +194,15 @@ def main():
             login(token=hf_token)
             api = HfApi()
             api.create_repo(repo_id=args.hf_repo, exist_ok=True, private=False)
+
+            # Copy README template ke output dir kalau ada
+            readme_src = "/workspace/HF_README_TEMPLATE.md"
+            readme_dst = os.path.join(args.output_dir, "README.md")
+            if os.path.exists(readme_src):
+                import shutil
+                shutil.copy(readme_src, readme_dst)
+                print(f">>> README.md copied from template")
+
             api.upload_folder(
                 folder_path=args.output_dir,
                 repo_id=args.hf_repo,

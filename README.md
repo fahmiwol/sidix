@@ -6,7 +6,7 @@
   <p><em>Self-Hosted · Self-Learning · Self-Evolving · Own Stack · No Vendor API</em></p>
 
   <p>
-    <img src="https://img.shields.io/badge/version-v2.1.4-blue?style=flat-square" alt="Version" />
+    <img src="https://img.shields.io/badge/version-v2.7.0-blue?style=flat-square" alt="Version" />
     <img src="https://img.shields.io/badge/Free-100%25-brightgreen?style=flat-square" alt="Free" />
     <img src="https://img.shields.io/badge/Open%20Source-MIT-gold?style=flat-square" alt="Open Source MIT" />
     <img src="https://img.shields.io/badge/Self--Hosted-Own%20Stack-blue?style=flat-square" alt="Self-Hosted" />
@@ -76,7 +76,7 @@
 | **16** | Creative Agent Ecosystem (10 domain × 37 agent) | Multi-agent debate/iteration |
 | **15** | LoRA SIDIX adapter on Qwen2.5-7B | Self-trained, 4-bit QLoRA |
 
-**Production stack**: VPS (FastAPI brain · BGE-M3 CPU · 1.182 corpus docs) + RunPod GPU serverless (vLLM v2.14.0 · Qwen2.5-7B + LoRA). See [`docs/CHANGELOG.md`](CHANGELOG.md) for full version history.
+**Production stack**: VPS (FastAPI brain · BGE-M3 CPU · 2.287 corpus docs) + RunPod GPU serverless (vLLM v2.14.0 · Qwen2.5-7B + LoRA). See [`docs/CHANGELOG.md`](CHANGELOG.md) for full version history.
 
 ### Karakter: **GENIUS · KREATIF · INOVATIF**
 
