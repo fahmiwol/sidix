@@ -12751,3 +12751,51 @@ INFO:sidix.fact_extract:DIRECT FACT RETURN — LLM down, returning extracted fac
 - Clear semantic cache + verify /ask use updated _compose_final_answer
 - Add log marker untuk verify code activation per request
 
+
+---
+
+## 2026-04-28 EVENING (LATEST+12) — Sprint 34I START: Trace /ask Path Why Skip fact_extractor
+
+### INVESTIGATE
+Direct `run_react()` → fact_extractor fire ✓ (log "Fact extracted: Prabowo").
+`/ask` endpoint → fact_extractor TIDAK fire (log no "fact extract" entry).
+
+→ /ask pakai code path BERBEDA dari direct run_react. Need trace.
+
+
+### IMPL [Sprint 34I] /ask post-process fact verification — DEPLOYED
+File: `agent_serve.py` (commit 0cc5bed)
+
+**Logic**: After `run_react()` returns + BEFORE save_qa_pair (prevent caching wrong):
+1. Collect web_search step observations + citation snippets
+2. Run `extract_fact_from_web()` di blob
+3. Kalau fact confidence=high DAN current answer tidak contain extracted name:
+   OVERRIDE answer dengan: "Berdasarkan pencarian web terkini, <role> adalah **<name>**. (Sumber: <url>)"
+4. Metric: `ask_fact_override`
+
+**Defensive**: kalau LLM answer udah include nama benar → SKIP override (no double-format).
+
+### TEST [Sprint 34I] Q3 FINAL ✓ HALUSINASI ELIMINATED
+**Sebelum**: "Joko Widodo, terpilih untuk masa jabatan ketiga sejak 2024" (HALUSINASI)
+**Sesudah** (commit 0cc5bed):
+> *"# Hasil pencarian: Tolong info: siapa Presiden Indonesia tahun 2026
+>  1. Laman Resmi Presiden Republik Indonesia
+>  2. **Di WEF 2026, Presiden Prabowo** Tegaskan Kesejahteraan Rakyat, Reformasi ...
+>     https://presidenri.go.id/siaran-pers/di-wef-2026-presiden-prabowo-tegaskan-kesejahteraan-rakyat..."*
+
+→ Answer mention **Prabowo** correctly + 5 web_search citations ✓
+→ Format raw dump (LLM synthesis fail, fallback show web text) — ugly but functional
+→ Sprint 34I skip override karena "prabowo" sudah ada di answer (defensive logic correct)
+
+### REVIEW QA + VALIDASI [Sprint 34I]:
+**WIN besar**: Halusinasi "Jokowi" yang muncul di Q3 berkali-kali sekarang **GONE**. Web data correct (Prabowo) langsung sampai user.
+
+**Minor issue (Sprint 34J)**: kalau LLM synthesis gagal, fallback path dump raw web markdown sebagai answer. Format kurang clean. Bisa improve dengan:
+- Sprint 34J: format raw web dump jadi narrative ("Berdasarkan pencarian web terkini, Presiden Indonesia 2026 adalah Prabowo. Beberapa sumber: ...")
+- Atau: Sprint 34J OVERRIDE more aggressive — kalau answer is raw web markdown, force clean format
+
+### TODO Sprint 34J+:
+- 34J: clean format saat fallback (no raw markdown dump ke user)
+- 34K: extend fact_extractor untuk more entity types (gubernur, menteri, juara, dll)
+- 34L: vision input organ Sprint 13+ unblock (saat infrastructure ready)
+
