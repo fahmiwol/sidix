@@ -402,6 +402,19 @@ def main(argv: list[str]) -> int:
                          help="Holdout ratio untuk val (default 0.10)")
     p_merge.add_argument("--seed", type=int, default=2026, help="Shuffle seed")
 
+    # Sprint 41 v1.2 — Claude Code session discovery + batch synthesizer
+    p_cs = sub.add_parser("claude_sessions",
+                          help="Sprint 41 v1.2: discover & batch-synthesize Claude Code session JSONLs")
+    p_cs.add_argument("action", choices=["list", "synthesize", "batch"],
+                       help="list = show all sessions | synthesize = one --uuid | batch = many sessions")
+    p_cs.add_argument("--uuid", default=None, help="Session UUID for synthesize action")
+    p_cs.add_argument("--project", default=None, help="Filter by project folder substring")
+    p_cs.add_argument("--min-turns", type=int, default=0, help="Min total turns to include")
+    p_cs.add_argument("--since", default=None, help="ISO date, skip older sessions")
+    p_cs.add_argument("--max-count", type=int, default=20, help="Max sessions for batch (default 20)")
+    p_cs.add_argument("--persona-fanout", action="store_true")
+    p_cs.add_argument("--notes-dir", default=None)
+
     # Sprint 41 — Conversation Synthesizer ("Claude as guru")
     p_convo = sub.add_parser("synthesize_conversation",
                               help="Sprint 41: synthesize external AI session (Claude/GPT/Gemini transcript) → research note")
@@ -1023,6 +1036,69 @@ def main(argv: list[str]) -> int:
         )
         print(json.dumps(result, ensure_ascii=False, indent=2))
         return 0 if result.get("ok") else 1
+
+    if args.cmd == "claude_sessions":
+        # Sprint 41 v1.2 — Claude Code session discovery + batch synthesizer
+        from .claude_sessions import (
+            list_all_sessions, synthesize_session, batch_synthesize,
+            format_list_table, quick_summarize_jsonl,
+        )
+        from pathlib import Path as _Path
+
+        if args.action == "list":
+            sessions = list_all_sessions(
+                project_filter=args.project,
+                min_turns=args.min_turns,
+                since=args.since,
+            )
+            print(format_list_table(sessions))
+            print(f"\nTotal: {len(sessions)} sessions")
+            return 0
+
+        if args.action == "synthesize":
+            if not args.uuid:
+                print(json.dumps({"ok": False, "error": "--uuid required"}))
+                return 1
+            # Find session by UUID prefix match
+            sessions = list_all_sessions(project_filter=args.project)
+            matched = [s for s in sessions if s.uuid.startswith(args.uuid)]
+            if not matched:
+                print(json.dumps({"ok": False, "error": f"no session matching uuid={args.uuid}"}))
+                return 1
+            if len(matched) > 1:
+                print(json.dumps({"ok": False, "error": f"ambiguous: {len(matched)} matches"}))
+                return 1
+            notes_dir = _Path(args.notes_dir) if args.notes_dir else None
+            result = synthesize_session(
+                matched[0], notes_dir, persona_fanout=bool(args.persona_fanout),
+            )
+            print(json.dumps(result, ensure_ascii=False, indent=2))
+            return 0 if result.get("ok") else 1
+
+        if args.action == "batch":
+            sessions = list_all_sessions(
+                project_filter=args.project,
+                min_turns=args.min_turns,
+                since=args.since,
+            )
+            print(f"Found {len(sessions)} sessions matching filter, will synthesize up to {args.max_count}")
+            notes_dir = _Path(args.notes_dir) if args.notes_dir else None
+            results = batch_synthesize(
+                sessions, notes_dir,
+                persona_fanout=bool(args.persona_fanout),
+                max_count=args.max_count,
+            )
+            ok_count = sum(1 for r in results if r.get("ok"))
+            print(json.dumps({
+                "ok": ok_count == len(results),
+                "total_processed": len(results),
+                "succeeded": ok_count,
+                "failed": len(results) - ok_count,
+                "results": results,
+            }, ensure_ascii=False, indent=2))
+            return 0 if ok_count == len(results) else 1
+
+        return 1
 
     if args.cmd == "synthesize_conversation":
         # Sprint 41 — Conversation Synthesizer ("Claude as guru")

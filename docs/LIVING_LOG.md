@@ -13729,3 +13729,17 @@ ETA training: ~4h, jadi cek lagi nanti malam.
   reinforce): catat yang sudah + plan yang akan + temuan + verifikasi
   metode + arah tujuan. Setiap sprint plan doc WAJIB section: yang sudah,
   yang akan, cara solve, verifikasi, optimasi, temuan, arah tujuan.
+
+[2026-04-28T20:59:10.340274+00:00] [IMPL] Sprint 41 v1.2 - Claude Code sessions discovery + batch synth.
+  apps/brain_qa/brain_qa/claude_sessions.py (~190 LOC):
+  - list_all_sessions() scan ~/.claude/projects/ rekursif
+  - quick_summarize_jsonl() count user/assistant turns + timestamps
+  - synthesize_session() wrapper untuk single session
+  - batch_synthesize() loop multiple sessions
+  - format_list_table() pretty CLI output
+  CLI: python -m brain_qa claude_sessions {list|synthesize|batch}
+       --uuid=X --project=Y --since=Z --min-turns=N --max-count=M
+       --persona-fanout
+  Smoke test: list discover 12 real sessions bos (1625 sampai 3269 turns,
+  total 7-28MB JSONL, 12 projects: SIDIX worktrees + Mighan + coin variants).
+  Bos tinggal 1 command untuk synthesize semua sesi lama jadi corpus.
