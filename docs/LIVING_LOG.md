@@ -13917,3 +13917,12 @@ ETA training: ~4h, jadi cek lagi nanti malam.
   approve PR autonomous_developer, synthesize transcript paste, list 12 
   Claude Code sessions discovered. Semua via 1 URL ctrl.sidixlab.com/chatbos
   dengan owner-only token gate. Mobile-responsive preserved.
+
+[2026-04-28T22:06:19.714666+00:00] [DEPLOY-INFRA] Deploy automation prepared - 5 min one-time setup.
+  VPS publickey-only SSH enforced. GitHub Actions auto-deploy workflow + 
+  founder quickstart + nginx config block + updated deploy-frontend.sh.
+[2026-04-28T22:06:19.714666+00:00] [SECURITY] 2 credential leak events captured + memory updated.
+  BRAIN_QA_ADMIN_TOKEN v2 + VPS pass v2 leaked di chat. Mitigation: 
+  publickey-only SSH = LOW adversary risk. Used inline env var only.
+[2026-04-28T22:06:19.714666+00:00] [DOC] HANDOFF_CLAUDE_2026-04-29_END.md created - 17 commits today,
+  5 sprint LIVE, 5 novel methods IP-protected, recommended next actions.

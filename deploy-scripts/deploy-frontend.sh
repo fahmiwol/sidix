@@ -81,24 +81,47 @@ pm2 save
 
 # ─── 4. Sync LANDING ─────────────────────────────────────────────
 echo ""
-echo "📤 [4/5] Sync landing -> $LANDING_DST..."
+echo "📤 [4/6] Sync landing -> $LANDING_DST..."
 mkdir -p "$LANDING_DST"
 rsync -av --delete \
   --exclude='.git' --exclude='node_modules' --exclude='.env*' \
   "$LANDING_SRC/" "$LANDING_DST/"
 
-# ─── 5. Verify live ──────────────────────────────────────────────
+# ─── 5. Sync SIDIX_BOARD (chatbos) — Sprint 43 ───────────────────
+# Owner-only command board served at ctrl.sidixlab.com/chatbos/
+# Static files synced ke /opt/sidix/SIDIX_BOARD (nginx alias).
+# Nginx config harus punya:
+#   location /chatbos/ {
+#     alias /opt/sidix/SIDIX_BOARD/;
+#     index index.html;
+#     try_files $uri $uri/ /chatbos/index.html;
+#   }
 echo ""
-echo "✅ [5/5] Verify live endpoints..."
+echo "🤖 [5/6] Verify SIDIX_BOARD (chatbos) ready..."
+BOARD_DIR="$REPO_DIR/SIDIX_BOARD"
+if [ -d "$BOARD_DIR" ] && [ -f "$BOARD_DIR/index.html" ]; then
+  echo "   Board files OK: $BOARD_DIR/"
+  ls -la "$BOARD_DIR/" | head -8
+  # Optional: extra symlink kalau nginx alias belum di-set
+  # ln -sfn "$BOARD_DIR" "/www/wwwroot/chatbos.sidixlab.com" 2>/dev/null || true
+else
+  echo "⚠️   SIDIX_BOARD/ tidak ditemukan — skip"
+fi
+
+# ─── 6. Verify live ──────────────────────────────────────────────
+echo ""
+echo "✅ [6/6] Verify live endpoints..."
 sleep 2
 
 LANDING_TITLE=$(curl -sS --max-time 15 https://sidixlab.com/ | grep -oE '<title>[^<]+' | head -1)
 APP_VERSION=$(curl -sS --max-time 15 https://app.sidixlab.com/ | grep -oE 'SIDIX V[0-9.]+' | head -1)
 HEALTH_OK=$(curl -sS --max-time 15 https://ctrl.sidixlab.com/health | grep -oE '"status":"ok"' | head -1)
+BOARD_OK=$(curl -sS --max-time 15 https://ctrl.sidixlab.com/chatbos/ | grep -oE 'SIDIX Command Board' | head -1)
 
 echo "   Landing title : $LANDING_TITLE"
 echo "   App version   : $APP_VERSION"
 echo "   Backend health: $HEALTH_OK"
+echo "   Chatbos board : $BOARD_OK"
 
 echo ""
 echo "════════════════════════════════════════════════════════"
@@ -106,4 +129,5 @@ echo "✅ Frontend deploy selesai. HEAD=$HEAD_SHA"
 echo "   Landing: https://sidixlab.com"
 echo "   App:     https://app.sidixlab.com"
 echo "   Brain:   https://ctrl.sidixlab.com/health"
+echo "   Chatbos: https://ctrl.sidixlab.com/chatbos/  (Sprint 43, owner-only)"
 echo "════════════════════════════════════════════════════════"
