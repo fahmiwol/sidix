@@ -88,6 +88,73 @@ _EVAL_QUERIES: list[dict] = [
 ]
 
 
+# ── Paraphrase set (Sprint 27c) — natural language, NO direct keyword match ──
+# Setiap query menggunakan vocabulary BERBEDA dari corpus.
+# Keywords adalah ground-truth term yang HARUS muncul di retrieved snippet.
+# Tujuan: ukur lift hybrid (semantic) vs BM25 (lexical) ketika query
+# tidak punya overlap kata dengan corpus → BM25 floor effect ter-eliminasi.
+
+_EVAL_QUERIES_PARAPHRASE: list[dict] = [
+    # SIDIX-specific paraphrases (15)
+    {"query": "AI yang tumbuh dan belajar sendiri tanpa harus diretrain manual", "keywords": ["evolv", "growth", "learn"]},
+    {"query": "bagaimana model bahasa mengingat informasi dari dokumen referensi", "keywords": ["rag", "corpus", "retriev"]},
+    {"query": "5 karakter yang berbeda gaya bicaranya di asisten ini", "keywords": ["persona", "UTZ", "ABOO"]},
+    {"query": "siklus pemikiran bertindak observasi pada agen otonom", "keywords": ["react", "tool", "loop"]},
+    {"query": "vektor representasi makna kata untuk pencarian semantik", "keywords": ["embed", "bge", "dense"]},
+    {"query": "proses harian otomatis untuk memperbarui pengetahuan model", "keywords": ["growth", "daily", "loop"]},
+    {"query": "pelacak kesadaran diri AI sehari-hari", "keywords": ["odoa", "self", "track"]},
+    {"query": "menulis lalu memperbaiki berkali-kali sampai bagus", "keywords": ["kitab", "iter", "writ"]},
+    {"query": "penilai keindahan estetika tulisan kreatif", "keywords": ["rasa", "aesthet", "qual"]},
+    {"query": "deteksi kesatuan tema dari banyak catatan riset", "keywords": ["wahdah", "signal", "corpus"]},
+    {"query": "model 7 milyar parameter dari Alibaba untuk percakapan", "keywords": ["qwen", "7b", "instruct"]},
+    {"query": "teknik fine-tune ringan dengan rank decomposition", "keywords": ["lora", "adapter", "rank"]},
+    {"query": "GPU on-demand untuk inference tanpa setup server", "keywords": ["runpod", "serverless", "gpu"]},
+    {"query": "rantai sumber rujukan dari guru ke murid", "keywords": ["sanad", "chain", "source"]},
+    {"query": "label pengakuan ketidakpastian dalam jawaban AI", "keywords": ["epistem", "fakta", "spekul"]},
+
+    # AI / tech paraphrases (15)
+    {"query": "menggabungkan dua metode pencarian untuk hasil terbaik", "keywords": ["hybrid", "fusion", "combin"]},
+    {"query": "memberi peringkat ulang hasil pencarian dengan model lebih akurat", "keywords": ["rerank", "cross", "encod"]},
+    {"query": "memecah dokumen panjang menjadi potongan-potongan kecil", "keywords": ["chunk", "split", "segment"]},
+    {"query": "menyimpan jawaban yang sering ditanya supaya tidak lambat", "keywords": ["cache", "lru", "hit"]},
+    {"query": "menghangatkan GPU agar tidak lambat saat panggilan pertama", "keywords": ["warmup", "cold", "start"]},
+    {"query": "menjaga server tetap responsif dengan ping berkala", "keywords": ["health", "cron", "ping"]},
+    {"query": "kerangka kerja Python untuk endpoint web cepat", "keywords": ["fastapi", "uvicorn", "endpoint"]},
+    {"query": "manajer proses Node.js untuk produksi", "keywords": ["pm2", "process", "manager"]},
+    {"query": "model bahasa lokal dijalankan di komputer sendiri", "keywords": ["ollama", "local", "self-host"]},
+    {"query": "metric kemiripan antara dua vektor", "keywords": ["cosine", "similar", "dot"]},
+    {"query": "pengulangan permintaan yang gagal dengan jeda meningkat", "keywords": ["retry", "backoff", "exponen"]},
+    {"query": "menjelaskan langkah-langkah berpikir sebelum menjawab", "keywords": ["chain", "thought", "reason"]},
+    {"query": "agen yang secara aktif memilih alat sesuai kebutuhan", "keywords": ["proactiv", "agent", "tool"]},
+    {"query": "pencarian web sebagai cadangan saat dokumen tidak cukup", "keywords": ["web", "search", "fallback"]},
+    {"query": "tanda tangan digital untuk verifikasi keaslian model", "keywords": ["fingerprint", "hash", "verif"]},
+
+    # Islamic paraphrases (10)
+    {"query": "ilmu mengenal Allah dan sifat-sifat-Nya", "keywords": ["aqidah", "tauhid", "allah"]},
+    {"query": "aturan cara membaca Al-Quran dengan benar", "keywords": ["tajwid", "quran", "bacaan"]},
+    {"query": "tujuan-tujuan utama hukum Islam", "keywords": ["maqasid", "syariah", "fiqh"]},
+    {"query": "kriteria keaslian periwayatan ucapan Nabi", "keywords": ["hadith", "sahih", "perawi"]},
+    {"query": "rukun-rukun yang harus dipenuhi dalam ibadah lima waktu", "keywords": ["shalat", "rukun", "wajib"]},
+    {"query": "puasa di bulan suci umat Islam", "keywords": ["puasa", "ramadhan", "shaum"]},
+    {"query": "sedekah wajib bagi yang mampu kepada yang berhak", "keywords": ["zakat", "fitrah", "mal"]},
+    {"query": "perjalanan rohani ke Mekkah", "keywords": ["haji", "kaaba", "mekkah"]},
+    {"query": "doa minta perlindungan sebelum tidur", "keywords": ["doa", "ayat", "tidur"]},
+    {"query": "akhlak dalam berinteraksi dengan tetangga", "keywords": ["akhlak", "muamalah", "tetangga"]},
+
+    # General/casual paraphrases (10)
+    {"query": "penemu listrik bolak-balik yang kalah popularitas", "keywords": ["tesla", "edison", "listrik"]},
+    {"query": "membangun ide unik yang memecahkan masalah pasar", "keywords": ["kreatif", "inovas", "produk"]},
+    {"query": "perusahaan rintisan mencari pasar yang tepat", "keywords": ["startup", "pasar", "bisnis"]},
+    {"query": "melatih komputer untuk mengenali pola dari data", "keywords": ["machine", "learn", "data"]},
+    {"query": "bahasa pemrograman ular yang populer untuk AI", "keywords": ["python", "library", "framework"]},
+    {"query": "antarmuka untuk berbicara dengan database non-relasional", "keywords": ["nosql", "mongo", "database"]},
+    {"query": "alat kontrol versi yang dipakai developer worldwide", "keywords": ["git", "commit", "branch"]},
+    {"query": "file kompresi yang menyimpan banyak file dalam satu", "keywords": ["zip", "tar", "archive"]},
+    {"query": "protokol enkripsi untuk koneksi web yang aman", "keywords": ["https", "tls", "ssl"]},
+    {"query": "tempat penyimpanan kode terdistribusi paling populer", "keywords": ["github", "git", "repo"]},
+]
+
+
 @dataclass
 class _QueryResult:
     query: str
@@ -155,6 +222,7 @@ def run_retrieval_eval(
     k: int = 5,
     out: Optional[str] = None,
     embed_fn=None,
+    paraphrase: bool = False,
 ) -> RetrievalEvalReport:
     """Run A/B retrieval eval. Returns RetrievalEvalReport.
 
@@ -205,7 +273,9 @@ def run_retrieval_eval(
         except Exception:
             pass
 
-    queries = _EVAL_QUERIES[:n_queries]
+    # Sprint 27c: paraphrase set (no direct keyword overlap with corpus → real lift signal)
+    query_pool = _EVAL_QUERIES_PARAPHRASE if paraphrase else _EVAL_QUERIES
+    queries = query_pool[:n_queries]
     results: list[_QueryResult] = []
 
     from rank_bm25 import BM25Okapi  # type: ignore
@@ -388,16 +458,20 @@ def _cli():
     import argparse
     logging.basicConfig(level=logging.WARNING, format="%(levelname)s %(name)s: %(message)s")
     p = argparse.ArgumentParser(description="SIDIX Retrieval Eval Harness (Sprint 25b)")
-    p.add_argument("--n", type=int, default=30, help="Number of queries (max 30)")
+    p.add_argument("--n", type=int, default=30, help="Number of queries")
     p.add_argument("--k", type=int, default=5, help="Hit@k (default 5)")
     p.add_argument("--out", default=None, help="Output JSON path")
     p.add_argument("--index-dir", default=None, help="Index dir override")
+    p.add_argument("--paraphrase", action="store_true",
+                   help="Sprint 27c: use 50 paraphrase queries (no keyword overlap)")
     args = p.parse_args()
+    pool = _EVAL_QUERIES_PARAPHRASE if args.paraphrase else _EVAL_QUERIES
     run_retrieval_eval(
         index_dir_override=args.index_dir,
-        n_queries=min(args.n, len(_EVAL_QUERIES)),
+        n_queries=min(args.n, len(pool)),
         k=args.k,
         out=args.out,
+        paraphrase=args.paraphrase,
     )
 
 
@@ -405,4 +479,4 @@ if __name__ == "__main__":
     _cli()
 
 
-__all__ = ["run_retrieval_eval", "RetrievalEvalReport", "_EVAL_QUERIES"]
+__all__ = ["run_retrieval_eval", "RetrievalEvalReport", "_EVAL_QUERIES", "_EVAL_QUERIES_PARAPHRASE"]
