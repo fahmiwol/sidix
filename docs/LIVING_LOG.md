@@ -12933,3 +12933,28 @@ Q2-3 failures = web_search reliability issue, BUKAN fact_extractor logic.
 | 40 | Sanad Multi-Source 3-way (web + corpus + wiki) | 2-3 minggu |
 | 41+ | Sprint 13 DoRA persona (note 248 mandate, NOT defer) | per Sprint 13 plan |
 
+
+---
+
+## 2026-04-28 EVENING (LATEST+16) — Sprint 36 START: Reflection Cycle (`/reflect-day`)
+
+### CATAT memulai
+**Decision Sprint 36** dari ROADMAP_SPRINT_36_PLUS.md innovation scoring:
+- Innovation 5/5 (SIDIX belajar dari kegagalan diri sendiri — pertama kali)
+- Vision Alignment 5/5 (Pillar 3 + 4 OPERATING PRINCIPLES)
+- Feasibility 5/5 (1-2 minggu, compound dengan ODOA)
+- Compound Multiplier 5/5 (unlock Sprint 38 Tool Synthesis + Sprint 40 Telegram)
+- **TOTAL 20/20 — HIGHEST priority**
+
+### IMPL Sprint 36 plan
+1. Bikin `scripts/sidix_reflect_day.sh` cron-ready
+2. Logic: baca activity_log + observations + observation logs hari ini
+3. Ekstrak: failure pattern (sessions yang gagal), repeated tool sequence, anomaly response
+4. Generate `.data/lessons/draft-{tanggal}.md` dengan template:
+   - Pattern Detected
+   - Supporting Episodes (≥3)
+   - Proposed Lesson
+   - Confidence Score
+   - Owner Verdict (pending)
+5. Cron: `0 2 * * *` (02:00 UTC daily, post ODOA tick)
+
