@@ -12681,3 +12681,73 @@ LLM dapat green light abaikan web context → jawab dari training prior (Jokowi 
 Halusinasi reduced dari ASSERTIVE FALSE → HEDGED UNCERTAIN. Bukan full fix
 tapi major step closer to "anti halusinasi" principle.
 
+
+---
+
+## 2026-04-28 EVENING (LATEST+11) — Sprint 34G TEROBOSAN: Deterministic Entity Extraction
+
+### INVESTIGATE
+Q3 web_search verified return CORRECT data:
+- "Pejabat yang Dilantik **Prabowo** Hari Ini" (Kompas, 27/04/2026)
+- "Reshuffle Kabinet... Dilantik **Prabowo**" (Detik)
+- "**Prabowo Subianto** - Wikipedia"
+- "Laman Resmi Presiden Republik Indonesia"
+
+→ Web data benar 100%. Yang salah: LLM (qwen2.5:7b base, no LoRA) **ABAIKAN web** + jawab dari training prior.
+
+### TEROBOSAN [Sprint 34G]: Deterministic Entity Extraction
+Pendekatan baru — JANGAN andalkan LLM judgement, EXTRACT FACT explicit dari web SEBELUM LLM.
+
+**Module baru**: `apps/brain_qa/brain_qa/fact_extractor.py`
+- Regex NER pattern untuk "siapa X" queries
+- Frequency count entity di top-5 web hits
+- Most-frequent name = candidate answer
+- Inject sebagai `[FAKTA TERVERIFIKASI]:` di prompt → LLM forced format dengan fakta
+
+LLM jadi FORMATTER, bukan JUDGE. Truth dari web extraction yang deterministic.
+
+
+### IMPL [Sprint 34G] fact_extractor.py NEW MODULE
+File: `apps/brain_qa/brain_qa/fact_extractor.py` (commit cb45fd3)
+- Detect query pattern (siapa Presiden, siapa Wakil Presiden)
+- Regex NER over web hits (titles + snippets)
+- Frequency count + stop-token filter (time/location/role words)
+- Return structured fact: {role, name, freq, sources, confidence}
+- Verified offline: input 4 hits → output {name='Prabowo', freq=3, conf=high} ✓
+
+### IMPL [Sprint 34G] Wire ke _compose_final_answer
+File: `agent_react.py` (commit cb45fd3)
+- After web_search detected, run extract_fact_from_web()
+- Inject `[FAKTA TERVERIFIKASI]` block at TOP of system prompt
+- "[INSTRUKSI WAJIB] Sebut '<name>' sebagai jawaban. JANGAN sebutkan nama lain dari training prior"
+
+### IMPL [Sprint 34H] DIRECT FACT RETURN kalau LLM down
+File: `agent_react.py` (commit fcef499)
+- Insert in _compose_final_answer SETELAH RunPod try fail, SEBELUM local_lora try
+- If fact_extractor confidence=high + LLM dead, return:
+  - "Berdasarkan pencarian web terkini, <role> adalah **<name>**. (Sumber: <url>)"
+- Confidence 0.95 (deterministic > LLM judgment)
+
+### TEST [Sprint 34G+H] Direct run_react verified ✓
+**VPS log output (verified)**:
+```
+INFO:sidix.fact_extract:Fact extracted: Presiden Indonesia = Prabowo (freq=2, conf=high)
+ERROR:sidix.ollama:Ollama timeout (90s) — model=qwen2.5:7b
+INFO:sidix.fact_extract:DIRECT FACT RETURN — LLM down, returning extracted fact: Prabowo
+```
+
+→ Sprint 34G fact extraction WORKS ✓
+→ Sprint 34H direct return WORKS ✓ (when LLM dead, fall through to fact return)
+
+### ⚠ ISSUE FOUND [Sprint 34I — defer]
+`/ask` endpoint masih return "Jokowi" walaupun direct run_react sukses.
+**Hipotesis**: `/ask` brain process pakai code path BERBEDA — possibly:
+- Semantic cache hit dari prior wrong answer
+- Different synthesis path (not _compose_final_answer)
+- Brain caching module import pre-Sprint 34G+H
+
+### TODO Sprint 34I:
+- Trace /ask brain path: which function actually generates final answer
+- Clear semantic cache + verify /ask use updated _compose_final_answer
+- Add log marker untuk verify code activation per request
+
