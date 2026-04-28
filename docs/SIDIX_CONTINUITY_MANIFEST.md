@@ -54,7 +54,7 @@
 | 11 | Session as Primary Corpus | PLANNED | note 241 | `aku_extractor.py` proposed |
 | 12 | Brain Anatomy (25-30 mini-apps) | MIXED (10/25 LIVE) | note 244 | various |
 | 13 | Curriculum + Niat-Aksi Flow | LIVE | note 249 | `agent_serve.py` turn router |
-| 14 | DoRA Persona Stylometry | PLANNED | note 248 (Sprint 13) | proposed `persona_adapters/dora_*.safetensors` |
+| 14 | DoRA Persona Stylometry | IN_PROGRESS (Phase 3a✅ + 3b training) | note 248 + 285 + 286 + 287 (Sprint 13) | `persona_qa_generator.py` + `persona_adapter_loader.py` (scaffold) + Kaggle kernel v4 RUNNING |
 | 15 | Sanad Vol21 Spec (consensus algorithm detail) | LIVE | note 239 | `sanad_orchestrator.py` |
 | 16 | Proactive Foresight Agent (6-24mo trends) | PLANNED | note 248 | will run via `sidix_always_on.sh` |
 | 17 | Wisdom Layer (aha+impact+risk+speculate) | LIVE | note 248 + Sprint 16-21 | `agent_wisdom.py` |
@@ -334,6 +334,15 @@ Setiap agent baru MUST tick checklist sebelum mulai work:
 - concept #2 Hafidz Ledger: SCAFFOLDED → LIVE (Sprint 37, `hafidz_ledger.py` deployed + wired ke reflect/synthesize/quarantine)
 - concept #20 Tool Synthesis / Pencipta Milestone: NEW LIVE (data accum) (`tool_synthesis.py` Sprint 38 + `quarantine_manager.py` Sprint 39)
 - Total status: 9 LIVE + 5 SCAFFOLDED + 6 PLANNED + 1 WIRED-BLOCKED (Sprint 29) + 1 LIVE-accum
+
+### 2026-04-29 — Sprint 13 Phase 3a/3b status update
+- concept #14 DoRA Persona Stylometry: PLANNED → IN_PROGRESS
+  - Phase 3a synthetic data ✅ LIVE: 7500 pairs (1500/persona) di `/opt/sidix/.data/training/`
+  - Phase 3b training 🟡 RUNNING: Kaggle kernel v4 mighan/sidix-dora-persona-train-v1 (after 3 iterasi: race → slug → path → bnb pin)
+  - Phase 3c SCAFFOLD: `persona_adapter_loader.py` + `blind_ab_test.py` ready (smoke 92%)
+- HF target: huggingface.co/Tiranyx/sidix-dora-persona-v1 (created, awaiting upload post-training)
+- Kaggle dataset: kaggle.com/datasets/mighan/sidix-persona-qa-v1 (4.5MB)
+- Cron monitor: `*/15 min /opt/sidix/scripts/sidix_kaggle_monitor.sh` → breadcrumb `.data/kaggle_kernel_state.json`
 - Compound chain map cross-pillar dibuat untuk visibility
 
 ### Future entries pakai format:
