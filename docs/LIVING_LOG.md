@@ -12629,3 +12629,55 @@ web_search per Sprint 28b).
 - **34G**: Switch standard tier synthesis ke RunPod (vLLM yang punya LoRA SIDIX + better grounding)
 - **34H**: Add citation fidelity check — if answer claim X tapi citations support Y, flag warning
 
+
+---
+
+## 2026-04-28 EVENING (LATEST+10) — Sprint 34F START: Prompt Web-Priority
+
+### IMPL [Sprint 34F] START
+**Goal**: Q3 web_search fire ✓ tapi Ollama synthesis ignore web → "Jokowi" halusinasi.
+LLM prior bias > web context.
+
+**Fix plan**: rewrite system prompt synthesis untuk eksplisit instruksikan:
+"GUNAKAN web context yang dikasih. Kalau bertentangan dengan training prior,
+prioritaskan web_search yang fresh."
+
+**Find target**: synthesis prompt di agent_react atau generation function.
+
+
+### IMPL [Sprint 34F] Strong web-priority prompt — DEPLOYED
+File: `apps/brain_qa/brain_qa/ollama_llm.py` line 168-181 (commit 925d6a5)
+
+**Bug found**: line 173 explicit instruction:
+> *"Gunakan konteks di atas sebagai referensi tambahan, BUKAN satu-satunya sumber"*
+
+LLM dapat green light abaikan web context → jawab dari training prior (Jokowi cutoff).
+
+**Fix**: rewrite "[ATURAN PEMAKAIAN KONTEKS — PRIORITAS]":
+- "Konteks di atas adalah SUMBER UTAMA jawabanmu"
+- "Kalau bentrok dengan training prior, PRIORITASKAN konteks"
+- "Khusus tokoh saat ini, JAWAB BERDASARKAN konteks — JANGAN sebutkan info training berbeda"
+- "Kalau konteks tidak punya jawaban eksplisit, jujur akui"
+
+### TEST [Sprint 34F] Q3 retry post fix
+**Sebelum** (Sprint 34E only): *"Joko Widodo... Presiden Indonesia ke-7"* — full halusinasi
+**Sesudah** (Sprint 34F): *"belum ada informasi eksplisit tentang Presiden saat ini... pencarian real-time Wikipedia"* — akui uncertainty ✓
+
+**Trailing issue**: response masih nyebut *"biasanya Presiden saat ini Jokowi"* di paragraph akhir (training prior leak).
+
+### REVIEW QA [Sprint 34F]:
+**WIN partial**:
+- ✓ Primary response acknowledges uncertainty (Sprint 34F instruction respected)
+- ✓ Mentions web_search source explicitly
+- ✓ Stop short of fabricating "Prabowo" or "Jokowi" assertion
+- ⚠ Trailing prior knowledge leak ("biasanya Jokowi") karena LLM (qwen2.5:7b base) terlalu prior-biased
+
+### TODO Sprint 34G+:
+- **34G**: Even stronger prompt — "JANGAN sebutkan info training prior bahkan kalau konteks tidak punya jawaban. Cukup jawab 'tidak ditemukan di pencarian'"
+- **34H**: Switch standard tier ke RunPod (LoRA SIDIX) yang punya better grounding
+- **34I**: Use LLM consensus dari multiple teacher (note 247) untuk filter prior bias
+
+### VALIDASI [Sprint 34F]: code change applied + verified user-facing improvement.
+Halusinasi reduced dari ASSERTIVE FALSE → HEDGED UNCERTAIN. Bukan full fix
+tapi major step closer to "anti halusinasi" principle.
+
