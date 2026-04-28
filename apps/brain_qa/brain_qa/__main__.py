@@ -344,6 +344,13 @@ def main(argv: list[str]) -> int:
 
     sub.add_parser("gpu-status", help="Show GPU availability and CUDA status (graceful if torch not installed)")
 
+    # Sprint 25b — retrieval eval harness
+    p_reval = sub.add_parser("retrieval_eval", help="A/B eval BM25 vs Hybrid vs Hybrid+Rerank (Sprint 25b)")
+    p_reval.add_argument("--n", type=int, default=30, help="Number of queries (max 30, default 30)")
+    p_reval.add_argument("--k", type=int, default=5, help="Hit@k (default 5)")
+    p_reval.add_argument("--out", default=None, help="Save JSON report to path")
+    p_reval.add_argument("--index-dir", default=None, help="Index dir override")
+
     args = parser.parse_args(argv)
 
     if args.cmd == "index":
@@ -867,6 +874,16 @@ def main(argv: list[str]) -> int:
         except ImportError:
             result["note"] = "torch not installed — GPU status unavailable. Install torch to enable."
         print(json.dumps(result, ensure_ascii=False, indent=2))
+        return 0
+
+    if args.cmd == "retrieval_eval":
+        from .retrieval_eval import run_retrieval_eval, _EVAL_QUERIES
+        run_retrieval_eval(
+            index_dir_override=args.index_dir,
+            n_queries=min(int(args.n), len(_EVAL_QUERIES)),
+            k=int(args.k),
+            out=args.out,
+        )
         return 0
 
     raise RuntimeError(f"Unknown command: {args.cmd}")

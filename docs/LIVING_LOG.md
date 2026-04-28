@@ -11739,3 +11739,54 @@ Foundation untuk Sprint 25b eval harness, Sprint 25c auto-rebuild dense, Sprint 
 - Sprint 25d: tune RRF k per domain (fiqh konservatif, casual longgar)
 - Embodiment 👁️ MATA / 👂 TELINGA pending
 - Sanad substantive (note 248 line 91-99)
+
+
+---
+
+## 2026-04-28 — Sprint 25b SHIPPED — Retrieval Eval Harness + Deploy Script
+
+### Pre-Execution Alignment Check (CLAUDE.md 6.4) — PROCEED
+- Note 248: compound win via measurable improvement tracking
+- No persona/prompt edit, infrastruktur eval saja
+
+### Files added
+- apps/brain_qa/brain_qa/retrieval_eval.py — A/B eval BM25 vs Hybrid vs Hybrid+Rerank
+  - 30 queries (teknis SIDIX, AI, Islam, umum, casual, multilingual ID/EN)
+  - Metrics: Hit@k, MRR@k, p50/p95 latency per method
+  - Graceful: kalau dense index belum dibangun → BM25-only, no crash
+  - CLI: python -m brain_qa retrieval_eval --n 30 --k 5
+- deploy-scripts/deploy_sprint25_hybrid.sh — VPS one-shot deploy Sprint 25
+  - 6 steps: pip install → git pull → verify cache state → rebuild index dense → flip ENV + PM2 restart → smoke test
+- deploy-scripts/ecosystem.config.js — ENV vars SIDIX_HYBRID_RETRIEVAL + SIDIX_RERANK (default '0')
+
+### Mandatory loop coverage
+1. CATAT (Pre-Exec align)
+2. TESTING: ast.parse OK × 2 files; smoke retrieval_eval graceful OK; regression 7/7 hybrid tests
+3. ITERASI: smoke fix (test graceful n_queries=0 ketika no index, bukan assertion fail)
+4. REVIEW: diff clean, no secret leak
+5. CATAT: hasil test
+6. VALIDASI: CLI wire python -m brain_qa retrieval_eval registered
+7. QA: secret scan clean
+8. CATAT: LIVING_LOG + commit
+
+### Cara run setelah deploy VPS
+```bash
+# Jalankan deploy script dulu (sekali):
+bash /opt/sidix/deploy-scripts/deploy_sprint25_hybrid.sh
+
+# Kemudian eval A/B (run di VPS setelah index dense ada):
+cd /opt/sidix && python -m brain_qa retrieval_eval --n 30 --k 5 \
+  --out .data/retrieval_eval_sprint25b.json
+```
+
+### Expected output format
+============================================================
+SIDIX Retrieval Eval — Sprint 25b
+Queries: 30  |  Hit@5  |  2026-04-28 xx:xx:xx
+============================================================
+Method                 Hit@5      MRR@5      p50 ms     p95 ms
+------------------------------------------------------------
+BM25 (baseline)        60.0%      0.350      12         45
+Hybrid BM25+Dense      75.0%      0.420      180        380      (+15.0%)
+Hybrid+Rerank          80.0%      0.460      550        900      (+20.0%)
+============================================================

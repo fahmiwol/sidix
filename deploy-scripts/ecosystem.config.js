@@ -6,7 +6,10 @@ module.exports = {
       cwd: '/opt/sidix',
       interpreter: 'bash',
       env: {
-        SIDIX_TYPO_PIPELINE: '1'
+        SIDIX_TYPO_PIPELINE: '1',
+        // Sprint 25 Hybrid Retrieval (2026-04-28) — flip to '1' after index rebuild
+        SIDIX_HYBRID_RETRIEVAL: '0',
+        SIDIX_RERANK: '0'
       }
     },
     {
