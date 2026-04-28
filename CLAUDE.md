@@ -9,9 +9,11 @@ Proyek: **SIDIX / Mighan Model**
 User directive eksplisit: *"gaaaaaaasssssssssssss!!!! catat!! jangan berubah-ubah lagi arah sidix"* + *"tulis dengan besar supaya nggak berubah lagi. cataaaattt!!! aligment semuanya"*
 
 **WAJIB BACA URUTAN INI**:
-1. 📜 **[`docs/SIDIX_DEFINITION_20260426.md`](docs/SIDIX_DEFINITION_20260426.md)** ← **SOURCE OF TRUTH #1** (definisi formal lengkap karakter + kemampuan + arsitektur)
-2. 🔒 [`docs/DIRECTION_LOCK_20260426.md`](docs/DIRECTION_LOCK_20260426.md) ← tactical lock (8 ❌ rules + Q3 roadmap)
-3. 🗺️ **[`docs/SIDIX_CONTINUITY_MANIFEST.md`](docs/SIDIX_CONTINUITY_MANIFEST.md)** ← **SOURCE OF TRUTH #2** — 19 distinctive concepts dengan status (LIVE/SCAFFOLDED/PLANNED/WIRED-BLOCKED). Wajib cek SEBELUM start sprint baru — anti-drift, anti-repetisi, anti-melenceng. Update dengan tanggal kalau status berubah.
+1. 📜 **[`docs/SIDIX_CANONICAL_V1.md`](docs/SIDIX_CANONICAL_V1.md)** ← **SOURCE OF TRUTH #0** (NEW 2026-04-28) — single SOT consolidate notes 224+228+248+277+278. Authority over docs lain. Cite ini setiap sprint.
+2. 📜 **[`docs/SIDIX_DEFINITION_20260426.md`](docs/SIDIX_DEFINITION_20260426.md)** ← **SOURCE OF TRUTH #1** (definisi formal lengkap karakter + kemampuan + arsitektur)
+3. 🔒 [`docs/DIRECTION_LOCK_20260426.md`](docs/DIRECTION_LOCK_20260426.md) ← tactical lock (8 ❌ rules + Q3 roadmap)
+4. 🗺️ **[`docs/SIDIX_CONTINUITY_MANIFEST.md`](docs/SIDIX_CONTINUITY_MANIFEST.md)** ← **SOURCE OF TRUTH #2** — 19 distinctive concepts dengan status (LIVE/SCAFFOLDED/PLANNED/WIRED-BLOCKED). Wajib cek SEBELUM start sprint baru — anti-drift, anti-repetisi, anti-melenceng. Update dengan tanggal kalau status berubah.
+5. 📓 **[`docs/FOUNDER_JOURNAL.md`](docs/FOUNDER_JOURNAL.md)** ← **DIRECTIVE LOG founder** (NEW 2026-04-28) — append-only quote bos verbatim. WAJIB cek "PENDING DIRECTIVE" list di bawah. Setiap directive baru dari bos → append entry SEKARANG, jangan tunda.
 
 ### Quick reference:
 - **Tagline**: *"Autonomous AI Agent — Thinks, Learns & Creates"*

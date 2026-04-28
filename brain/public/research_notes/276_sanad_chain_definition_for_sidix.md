@@ -13,14 +13,37 @@ sanad_tier: primer
 
 ## Apa itu Sanad di SIDIX
 
-**Sanad** di SIDIX adalah **rantai validasi/atribusi sumber** untuk klaim apapun yang
-SIDIX hasilkan. Tujuannya: setiap jawaban bisa **ditelusuri** balik ke sumber asalnya,
-dan klaim yang punya **multiple-source agreement** dapat skor confidence lebih tinggi.
+**🚨 PENTING — KOREKSI FRAMING (user clarification 2026-04-28 evening)**:
 
-**Penting (sesuai LOCK note 248)**: Sanad di SIDIX adalah **METHOD**, BUKAN
-adopsi konsep religius. Inspirasi terminologi dari tradisi keilmuan, tapi
-implementasinya teknis: chain-of-provenance + parallel consensus + tier-weighted
-ranking.
+Sanad di SIDIX **BUKAN strict harfiah / citation chain rigid**. Yang dipakai
+adalah **SPIRIT** dari pola tradisi keilmuan: cari ke akar sumber → cross-validate
+multi-sumber → score relevance → output yang trusted. Inspirasi pola, bukan adopsi
+literal.
+
+Cite langsung note 248 line 87-94:
+> *"Tradisi keilmuan Islam punya pattern engineering yang brilliant. Kita extract POLA, BUKAN doctrine.*  
+> *Sanad sebagai METODE (bukan citation chain harfiah)*  
+> *Cari ke akar dari segala sumber → cross-validate antar sumber → score sampai relevance ~1.0 sempurna → output validated"*
+
+Sanad **wajib eksplisit hanya untuk** topik sensitif (fiqh/medis/data faktual/
+historis/statistik/klaim sains). Untuk casual chat / coding / brainstorm /
+konsep yang well-established → **skip**, kontekstual, bukan blanket (per pivot
+2026-04-25 LIBERATION).
+
+**Sanad sebagai SPIRIT, bukan ritual**:
+- Spirit: traceability + cross-validation + integrity
+- Bukan: religious citation chain copy-paste, bukan rigid mutawatir-counter
+
+---
+
+## Definisi Operasional
+
+Sanad di SIDIX adalah **rantai validasi/atribusi sumber** untuk klaim apapun yang
+SIDIX hasilkan **saat konteks butuh**. Tujuannya: setiap klaim faktual bisa
+**ditelusuri** balik ke sumber, dan klaim dengan **multi-source agreement** dapat
+skor confidence lebih tinggi.
+
+Implementasi: chain-of-provenance + parallel consensus + tier-weighted ranking.
 
 ---
 

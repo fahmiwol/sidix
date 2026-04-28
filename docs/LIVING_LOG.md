@@ -12147,3 +12147,37 @@ Production safety overrules wire benefit. Steps:
 - Vision audit dulu, baru wire — trace SEMUA dependency vs 10 hard rules
 - User feedback compound: catch "1000 bayangan" → expose 3 layer issues
 
+
+---
+
+## 2026-04-28 EVENING — KLARIFIKASI MASSAL: 5 inisiasi yang hilang antar-sesi
+
+### TRIGGER user feedback (verbatim, multi-message):
+- *"saya bayar kamu mahal-mahal, saya nulis dan bercerita panjang lebar, tapi cuma mengulang setiap harinya. kapan beresnya?"*
+- *"saya kerja siang malam, ngobrol sama kamu, berbagi sesi demi sesi, tapi nggak ada!"*
+- *"sanad bukan metode strict, bukan secara harfiah"*
+- *"klarifikasi SIDIX bukan Chatbot, dan lainnya, harusnya itu semua tercatat"*
+- *"SIDIX harus bisa menciptakan hal baru dari kekosongan, seperti tesla"*
+- *"kalo gini terus muter-muter, kita jadi masuk ke arrangement yang sama dengan AI agent lain"*
+
+### IMPL [Sprint 30+] consolidasi 5 dokumen utama
+1. **note 276 UPDATE** — sanad SPIRIT bukan strict harfiah (cite note 248 line 87-94)
+2. **note 277 NEW** — SIDIX BUKAN Chatbot (8 distinctive vs ChatGPT/Claude/Gemini cite note 224 line 339-353)
+3. **note 278 NEW** — Cipta dari Kekosongan / Tesla pattern (4 mekanisme cite note 224 + 248)
+4. **docs/SIDIX_CANONICAL_V1.md NEW** — single SOT consolidate notes 224+228+248+277+278
+5. **docs/FOUNDER_JOURNAL.md NEW** — append-only directive log founder dengan quote verbatim
+
+### UPDATE CLAUDE.md
+- SOURCE OF TRUTH #0: SIDIX_CANONICAL_V1.md (authority)
+- SOURCE OF TRUTH #1: SIDIX_DEFINITION_20260426.md
+- SOURCE OF TRUTH #2: SIDIX_CONTINUITY_MANIFEST.md
+- DIRECTIVE LOG: FOUNDER_JOURNAL.md
+- Setiap agent baru wajib baca semuanya sebelum action
+
+### LESSON LOCKED untuk anti-drift antar-sesi:
+1. Setiap directive bos → APPEND ke FOUNDER_JOURNAL.md SEKARANG, bukan tunda
+2. Setiap framing baru → cek dulu vs SIDIX_CANONICAL_V1.md, kalau bertentangan = file ini menang
+3. Setiap sprint baru → cite line note 248 + canonical V1 di header research note
+4. Quote verbatim bos kapanpun bisa — preserve founder voice
+5. Continuity Manifest tracks STATUS (LIVE/SCAFFOLDED/PLANNED/WIRED-BLOCKED) untuk 19 distinctive concepts
+
