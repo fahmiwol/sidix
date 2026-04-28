@@ -13254,3 +13254,94 @@ Key architecture:
 ### STATUS
 SHIPPED code. LIVE pending VPS git pull + pm2 restart sidix-brain.
 Pencipta milestone: detect ✅ → propose ✅ → quarantine ✅ → promote ✅ → dispatch (Sprint 40+)
+
+## 2026-04-29 — Sprint 39 LIVE VALIDATION + ITERASI ✅
+
+### REVIEW (TOOL_REGISTRY gap analysis)
+Pre-test deep check: TOOL_REGISTRY total=48 tools.
+Kind-mapped names dari `tool_synthesis._KIND_TO_TOOL` coverage:
+- `git_commit`, `git_activity`, `classroom`, `progress_check` → NOT in registry
+- `git_diff`, `web_search`, `search_corpus` → YES in registry
+
+Implikasi: proposals dari fallback path (sidix_observations.jsonl kind→tool mapping)
+akan auto_test FAIL → tidak bisa promote tanpa --force. Ini correct safety net,
+proposals dari real react_steps.jsonl pasti pass.
+
+### TEST [Sprint 39 LIVE END-TO-END]
+
+Created 2 dummy proposals di /opt/sidix/.data/skills/quarantine/ untuk live test:
+- `test_real_tools` (composed: search_corpus, web_search, search_corpus, age=8d)
+- `test_fallback_tools` (composed: git_commit, git_activity, age=-1d)
+
+**quarantine_review CLI** ✅:
+- count=2, both proposals listed dengan age_days + auto_test_checks lengkap
+- test_real_tools auto_test=passed (real tools verified in TOOL_REGISTRY)
+- test_fallback_tools auto_test=failed (kind-mapped tools tidak ada — expected)
+
+**promote_skill (without force, age=6)** ✅:
+- Returned ok=false, error="Skill baru berumur 6 hari (minimum 7)..."
+- Age gate working correctly
+
+**promote_skill (--force, age=6, iter1)** ✅:
+- ok=true, active_path created, Hafidz entry written
+- BUT BUG FOUND: source YAML masih ada di quarantine (copy bukan move)
+  → confusing: skill yang sudah promoted muncul lagi di list_quarantine
+
+### ITERASI [fix bug]
+Edit `quarantine_manager.py promote_skill()` → tambah `src.unlink()` setelah
+`_write_promote_to_hafidz()`, konsisten dengan reject_skill().
+Audit trail tetap aman: active copy + Hafidz Ledger entry persist.
+
+Commit `611ff54` → merge ke main `f744bf1` → VPS pull + restart sidix-brain.
+
+### TEST [iter2 — fix verification]
+
+Reset state, recreate test_real_tools dengan age=8 (proposed 2026-04-20).
+
+**promote_skill (no force, age=8)** ✅:
+- ok=true, warnings=[] (no force needed, age gate satisfied)
+- active/test_real_tools.yaml present dengan owner_verdict=approved + promoted_at + owner_note
+- active/index.json populated dengan composed_from + trigger_pattern
+- Hafidz entry: content_id=skill-active-test_real_tools, isnad_chain=[skill-proposal-test_real_tools]
+- **VERIFIED: source REMOVED dari quarantine** (fix working)
+
+**reject_skill (test_fallback_tools)** ✅:
+- ok=true
+- rejected/test_fallback_tools.yaml dengan owner_verdict=rejected + rejected_at + reject_reason
+- Source removed dari quarantine
+- Hafidz entry: content_id=skill-rejected-test_fallback_tools, isnad_chain=[skill-proposal-test_fallback_tools]
+
+**Admin HTTP endpoints (live curl via ctrl.sidixlab.com)** ✅:
+- GET /admin/skills/active → count=1, full SkillInfo response
+- GET /admin/skills/quarantine → count=0 (cleaned)
+- Both gated correctly by X-Admin-Token
+
+### VALIDASI [sanad-as-governance]
+Hafidz Ledger (`/opt/sidix/.data/hafidz_ledger.jsonl`) — both promote + reject
+entries:
+- ✅ cas_hash (SHA-256) populated
+- ✅ isnad_chain ke parent proposal-{skill_id} (sanad chain functional)
+- ✅ owner_verdict + tabayyun_quality_gate set correctly
+- ✅ metadata complete (composed_from, frequency, confidence, owner_note/reason)
+
+Traceability chain LIVE:
+```
+skill-active/skill-rejected → skill-proposal (via isnad_chain)
+                            → react_steps.jsonl source (via cycle_id Sprint 38b)
+```
+
+### CATAT [final state]
+- Branch: claude/pedantic-banach-c8232d (commit 611ff54)
+- Main: f744bf1 (merged + pushed)
+- VPS: synced, sidix-brain online (latest fix deployed)
+- Test data cleaned (active/quarantine/rejected dirs empty)
+- Hafidz entries kept (immutable audit trail — appropriate by design)
+
+### STATUS Sprint 39
+✅ LIVE production-ready. Pencipta lifecycle: detect → propose → quarantine →
+auto_test → promote/reject → active/rejected → Hafidz audit trail.
+
+Pending dependencies untuk full Pencipta autonomy:
+- Data accumulation di react_steps.jsonl (real user sessions)
+- Macro dispatch wiring (active/index.json → agent_react.py tool router) — Sprint 40+
+- Telegram owner notify push — Sprint 40
