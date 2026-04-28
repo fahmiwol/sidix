@@ -11946,3 +11946,33 @@ VPS upgrade RAM dari 15GB → 31GB. Ollama sekarang primary LLM (bukan RunPod fa
 Sprint 27c: human-annotated eval set 50 paraphrase queries untuk measure real hybrid retrieval lift.
 Deferred — prioritas lebih rendah dari running reranker. Kapanpun siap.
 
+
+### TEST [Sprint 27c] Paraphrase eval 50 queries — REAL LIFT SIGNAL ✓
+
+**Setup**: 50 query paraphrase tanpa keyword overlap dengan corpus
+(15 SIDIX + 15 AI/tech + 10 Islamic + 10 General). VPS, BGE-M3 dim 512,
+2171 chunks, hit@5.
+
+| Method | Hit@5 | MRR@5 | p50 ms | Δ vs BM25 |
+|--------|-------|-------|--------|-----------|
+| BM25 | 82.0% | 0.603 | 5 | — |
+| Hybrid | **88.0%** | **0.689** | 133 | **+6.0% ✓** |
+| Hybrid+Rerank (MiniLM) | 80.0% | 0.577 | 825 | **−2.0% ✗** |
+
+**Hybrid recovered**: rerank, cache, warmup, puasa, python (5 paraphrases).
+**Rerank regressed**: 6 queries — MiniLM English-bias merusak Indonesian
+semantic ordering yang sudah benar.
+
+### DECISION [Sprint 27c] SIDIX_RERANK=0 (data-driven revert)
+- Bukti: rerank −2.0% Hit@5 vs hybrid (80% vs 88%)
+- 6 hybrid wins destroyed oleh MiniLM English-bias
+- 800ms latency penalty tanpa quality gain
+- Action: ecosystem.config.js → `SIDIX_RERANK=0`, deploy + pm2 save
+- Code/model selection retained untuk future GPU/quantized rerank iter
+
+### NOTE [Sprint 27c] Reranker future paths (deferred)
+1. BGE-reranker-v2-m3 multilingual: 22.7s p50 = blocker, perlu quantize
+2. ONNX/CT2 INT8 quantization BGE: target <3s, future work
+3. Rerank on RunPod GPU: feasible, cold-start trade-off
+4. Skip rerank, focus dense quality (better embeddings, MTEB-tuned)
+
