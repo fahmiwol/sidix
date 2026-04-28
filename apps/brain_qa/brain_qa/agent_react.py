@@ -943,6 +943,33 @@ def _compose_final_answer(
             + "info eksplisit di pencarian, paling baru yang saya dapat: ...'"
         )
 
+        # ── Sprint 34G TEROBOSAN: Deterministic Entity Extraction ──────
+        # Extract fact langsung dari web hits (regex + frequency count)
+        # untuk inject sebagai AUTHORITATIVE FACT — bukan rely on LLM judgment.
+        try:
+            from .fact_extractor import extract_fact_from_web, format_fact_for_prompt
+            web_text_blob = ""
+            for st in (steps or []):
+                if str(getattr(st, "action_name", "")) == "web_search":
+                    web_text_blob += "\n" + str(getattr(st, "observation", ""))
+            if web_text_blob:
+                _fact = extract_fact_from_web(question, web_text_blob)
+                if _fact and _fact.get("name"):
+                    _fact_block = format_fact_for_prompt(_fact)
+                    # Prepend fact block ke combined_system (TOP priority)
+                    _combined_system = (
+                        f"{_fact_block}\n\n{(_combined_system or '').strip()}"
+                    )
+                    import logging as _flog
+                    _flog.getLogger("sidix.fact_extract").info(
+                        "Fact extracted: %s = %s (freq=%d, conf=%s)",
+                        _fact.get("role"), _fact.get("name"),
+                        _fact.get("frequency", 0), _fact.get("confidence"),
+                    )
+        except Exception as _fe_err:
+            import logging as _flog
+            _flog.getLogger("sidix.fact_extract").debug("skip: %s", _fe_err)
+
     # ── Coba LLM generative — Pivot 2026-04-26: hybrid (RunPod GPU + Ollama) ─
     # SIDIX_LLM_BACKEND=runpod_serverless di env aktifin GPU offload.
     # Fallback otomatis ke Ollama lokal CPU kalau RunPod fail.
