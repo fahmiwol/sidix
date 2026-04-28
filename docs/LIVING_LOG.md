@@ -12093,3 +12093,57 @@ identify mana compound vs off-track.
   (currently signal-only, training-actual missing per note 267 line 15)
 - 29B: Vision input organ (CLIP/SigLIP local) → 13/15 embodiment
 
+
+---
+
+## 2026-04-28 — Sprint 29 SHADOW POOL WIRE (HONEST: code OK, runtime DISABLED)
+
+### IMPL [Sprint 29] shadow_pool dispatch ke /ask flow (gated)
+
+**File**: `apps/brain_qa/brain_qa/agent_serve.py` (commit `ca3265c`)
+**Note**: `brain/public/research_notes/275_sprint29_shadow_pool_wire_honest.md`
+
+**Trigger**: user audit feedback — "1000 bayangan" mention di notes 239+241+244+249,
+code `shadow_pool.py` Vol 25 MVP sudah ada (8 shadows), TAPI tidak wired ke /ask.
+
+**Fix**: insert dispatch sebelum run_react, gated SIDIX_SHADOW_POOL=1, default OFF.
+
+### TEST [Sprint 29] E2E "siapa Presiden Indonesia sekarang?"
+- Wiring: ✓ dispatch fires
+- Shadows selected: shadow_id_politics + shadow_general (relevance correct)
+- Latency: 4714ms (faster than ReAct ~30s)
+- Citations: 4 type=shadow_pool ✓
+- **Answer: ⚠ SALAH** ("Jokowi" — same hallucination as pre-Sprint 28b)
+
+### ERROR [Sprint 29] 3-layer root cause
+1. `[brave_search] 429 — backing off 60s` di PM2 logs (rate limit hit, no API key)
+2. shadow's `wiki_lookup_fast()` BERBEDA dari `agent_tools._wikipedia_search()`
+   yang Sprint 28b di-patch — fix tidak propagate ke shadow path
+3. Consensus naive `max(...key=len)` → web_ctx kosong → LLM vendor (gemini) jawab dari
+   prior knowledge → "Jokowi" hallucination
+
+### NOTE [Sprint 29] VISION VIOLATION potential — external_llm_pool
+shadow_pool default `preferred_teachers=["ownpod", "gemini"]`. Gemini = vendor API.
+10 hard rules ❌ "vendor LLM API untuk inference pipeline".
+- Strict view: shadow output → direct user response → ❌ violation
+- Lenient view: distillation-only ke corpus → marginal
+- Action: Sprint 30 audit + decision
+
+### DECISION [Sprint 29] DATA-DRIVEN ROLL-BACK
+Production safety overrules wire benefit. Steps:
+1. `pm2 delete sidix-brain` + `pm2 start ecosystem.config.js` (clean restart)
+2. New PM2 id: 21, fresh from ecosystem (SIDIX_SHADOW_POOL **NOT SET**)
+3. Verify: env shows HYBRID=1, RERANK=0, NO SHADOW_POOL ✓
+4. Code commit ca3265c **TETAP** di repo, ready re-enable Sprint 30+ setelah fix
+
+### TODO [Sprint 30] candidates (order by impact)
+- 30A: Re-architect shadow_pool pakai `agent_tools._tool_web_search()` (sudah Sprint 28b-hardened) instead of brave_search → compound
+- 30B: Vision compliance audit external_llm_pool — limit ownpod only OR distillation-only mode
+- 30C alternatif: tutup gap lebih kecil (sanad corpus, RunPod warmup)
+
+### LESSON Sprint 29 (catat dalam disiplin):
+- Wire infra ≠ aktif production — rantai dependency bisa fail di tiap layer
+- Default OFF gating + test = save user dari halusinasi langsung
+- Vision audit dulu, baru wire — trace SEMUA dependency vs 10 hard rules
+- User feedback compound: catch "1000 bayangan" → expose 3 layer issues
+
