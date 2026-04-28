@@ -193,6 +193,25 @@
 </style>
 </head>
 <body>
+<!-- ─── Owner-only auth gate (modal) ───────────────────────────── -->
+<div id="auth-modal" style="display:none;position:fixed;inset:0;background:rgba(13,17,23,0.95);z-index:1000;align-items:center;justify-content:center;">
+  <div style="background:var(--bg-2);border:1px solid var(--border);border-radius:12px;padding:32px;max-width:440px;width:90%;">
+    <h2 style="margin-bottom:8px;color:var(--accent);">🔒 SIDIX Command Board</h2>
+    <p style="color:var(--text-dim);font-size:13px;margin-bottom:20px;">
+      Owner-only access. Masukkan admin token untuk lanjut.<br>
+      Token disimpan local di browser (tidak dikirim ke server selain SIDIX backend).
+    </p>
+    <input type="password" id="auth-token-input" placeholder="X-Admin-Token..." autofocus
+           style="margin-bottom:12px;font-family:monospace;">
+    <input type="text" id="auth-endpoint-input" placeholder="API endpoint (default: https://ctrl.sidixlab.com)"
+           style="margin-bottom:16px;font-family:monospace;">
+    <button class="primary" id="auth-submit" style="width:100%;padding:12px;">Unlock Board</button>
+    <p style="color:var(--text-dim);font-size:11px;margin-top:14px;text-align:center;">
+      Lupa token? Generate di VPS: <code style="background:var(--bg-3);padding:2px 6px;">grep BRAIN_QA_ADMIN_TOKEN /opt/sidix/.env</code>
+    </p>
+  </div>
+</div>
+
 <header>
   <div class="logo">SIDIX Command Board</div>
   <span class="badge" id="status-badge">v0.1.0 · Phase 1</span>
@@ -561,29 +580,140 @@ async function sendChat() {
   appendMsg('You', text, true);
   chatInput.value = '';
 
-  // Phase 1 stub
-  setTimeout(() => {
-    const persona = selectedPersona;
-    const stubResponses = {
-      'UTZ': '🎨 UTZ: okeee, idemu menarik... metafora-nya gini... [Phase 1 stub. Phase 2 wire ke /agent/chat?persona=UTZ]',
-      'ABOO': '🔧 ABOO: stop. data-nya mana? bottleneck-nya... [Phase 1 stub. Phase 2 wire ke /agent/chat?persona=ABOO]',
-      'OOMAR': '🧭 OOMAR: saya breakdown pakai framework. trade-off... [Phase 1 stub]',
-      'ALEY': '📚 ALEY: actually itu menarik dari sudut hipotesis... [Phase 1 stub]',
-      'AYMAN': '💛 AYMAN: aku ngerti, kayak gini analogi-nya... [Phase 1 stub]',
-      'COUNCIL': '🌐 COUNCIL spawn 5 persona paralel... [Phase 1 stub]'
-    };
-    appendMsg(persona, stubResponses[persona] || '[stub]', false);
-  }, 500);
+  // Show typing indicator
+  const typingDiv = document.createElement('div');
+  typingDiv.className = 'msg assistant';
+  typingDiv.innerHTML = `<div class="speaker">${selectedPersona} typing...</div><em style="color:var(--text-dim);">Calling SIDIX brain…</em>`;
+  chatMessages.appendChild(typingDiv);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+
+  try {
+    let path, body;
+    if (selectedPersona === 'COUNCIL') {
+      path = '/agent/council';
+      body = { question: text, personas: ['UTZ', 'ABOO', 'OOMAR', 'ALEY', 'AYMAN'] };
+    } else {
+      path = '/agent/chat';
+      body = { question: text, persona: selectedPersona };
+    }
+
+    const resp = await apiCall(path, {
+      method: 'POST',
+      body: JSON.stringify(body),
+    });
+
+    typingDiv.remove();
+
+    if (!resp.ok) {
+      appendMsg(selectedPersona, `⚠️ HTTP ${resp.status}: ${resp.statusText}`, false);
+      return;
+    }
+
+    const data = await resp.json();
+    if (selectedPersona === 'COUNCIL' && data.sessions) {
+      // Council mode: multi-persona response
+      appendMsg('COUNCIL synthesis', data.answer || '[empty]', false);
+    } else {
+      appendMsg(selectedPersona, data.answer || data.text || JSON.stringify(data, null, 2), false);
+    }
+  } catch (e) {
+    typingDiv.remove();
+    appendMsg(selectedPersona, `⚠️ Error: ${e.message}`, false);
+  }
 }
 
-// ── API status check (Phase 2 wires real probe) ─────────────────────
+// ── Owner-only auth gate ─────────────────────────────────────────────
+const AUTH_KEY = 'sidix_board_auth_v1';
+
+function getAuth() {
+  try {
+    const raw = localStorage.getItem(AUTH_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch { return null; }
+}
+
+function saveAuth(token, endpoint) {
+  localStorage.setItem(AUTH_KEY, JSON.stringify({ token, endpoint }));
+}
+
+function clearAuth() { localStorage.removeItem(AUTH_KEY); location.reload(); }
+
+function showAuthModal() {
+  document.getElementById('auth-modal').style.display = 'flex';
+}
+
+function hideAuthModal() {
+  document.getElementById('auth-modal').style.display = 'none';
+}
+
+document.getElementById('auth-submit').addEventListener('click', async () => {
+  const token = document.getElementById('auth-token-input').value.trim();
+  const endpoint = document.getElementById('auth-endpoint-input').value.trim()
+                   || 'https://ctrl.sidixlab.com';
+  if (!token) { alert('Token required'); return; }
+
+  // Verify token with /health endpoint
+  try {
+    const resp = await fetch(endpoint + '/health', {
+      headers: { 'X-Admin-Token': token },
+    });
+    if (resp.ok) {
+      saveAuth(token, endpoint);
+      hideAuthModal();
+      probeApi();
+    } else {
+      alert('Token invalid atau endpoint unreachable. HTTP ' + resp.status);
+    }
+  } catch (e) {
+    // Server might not validate token on /health — accept on 200 or network err
+    saveAuth(token, endpoint);
+    hideAuthModal();
+    probeApi();
+    console.warn('Auth verify network warning:', e);
+  }
+});
+
+// Show modal kalau no auth
+if (!getAuth()) showAuthModal();
+
+// ── API client ───────────────────────────────────────────────────────
+async function apiCall(path, options = {}) {
+  const auth = getAuth();
+  if (!auth) { showAuthModal(); throw new Error('not authenticated'); }
+  const url = auth.endpoint + path;
+  const headers = Object.assign({
+    'Content-Type': 'application/json',
+    'X-Admin-Token': auth.token,
+  }, options.headers || {});
+  const resp = await fetch(url, { ...options, headers });
+  if (resp.status === 401 || resp.status === 403) {
+    clearAuth();
+    throw new Error('auth expired');
+  }
+  return resp;
+}
+
+// ── API status check ─────────────────────────────────────────────────
 async function probeApi() {
   const badge = document.getElementById('api-status');
-  // Phase 1: stub — Phase 2 fetch ctrl.sidixlab.com/health
-  badge.textContent = 'API: offline (Phase 1 stub)';
-  badge.style.color = 'var(--yellow)';
+  const auth = getAuth();
+  if (!auth) { badge.textContent = 'API: locked'; badge.style.color = 'var(--yellow)'; return; }
+  try {
+    const resp = await fetch(auth.endpoint + '/health', { method: 'GET' });
+    if (resp.ok) {
+      badge.textContent = 'API: online';
+      badge.style.color = 'var(--green)';
+    } else {
+      badge.textContent = 'API: error ' + resp.status;
+      badge.style.color = 'var(--red)';
+    }
+  } catch (e) {
+    badge.textContent = 'API: offline';
+    badge.style.color = 'var(--red)';
+  }
 }
 probeApi();
+setInterval(probeApi, 30000); // refresh every 30s
 
 // ── Add task stub ────────────────────────────────────────────────────
 document.getElementById('btn-add-task').addEventListener('click', () => {

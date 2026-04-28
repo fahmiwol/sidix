@@ -13809,3 +13809,41 @@ ETA training: ~4h, jadi cek lagi nanti malam.
   sebagai fallback notification channel (push notif saat approval queue
   ada item baru) BUKAN primary UI. Board jauh lebih flexible + brand-aligned
   + zero dependency.
+
+[2026-04-28T21:29:48.925695+00:00] [IMPL] Sprint 43 Phase 2 START - Token auth gate + LLM wire.
+  SIDIX_BOARD/index.html updated:
+  - Auth modal lock (full-screen overlay, password input + endpoint input)
+  - localStorage[sidix_board_auth_v1] persistent token
+  - apiCall() helper dengan X-Admin-Token header
+  - probeApi() dengan auth + 30s refresh + visual indicator
+  - sendChat() Phase 2 wire: real fetch ke /agent/chat?persona=X
+    atau /agent/council utk COUNCIL mode (existing endpoints)
+  - Typing indicator while waiting LLM response
+  - Auto-logout pada 401/403
+  
+[2026-04-28T21:29:48.925695+00:00] [DOC] SIDIX_BOARD/DEPLOY.md - deploy guide nginx ctrl.sidixlab.com/chabos.
+  Routing decision: subpath di ctrl plane (same origin, no CORS, reuse
+  admin token). Steps: scp upload /opt/sidix/SIDIX_BOARD + nginx alias
+  config + reload. Optional extra layer nginx basic auth (paranoid mode).
+  Mobile PWA install instructions. Auth flow security review.
+  Troubleshooting matrix.
+
+[2026-04-28T21:29:48.925695+00:00] [DOC] Note 291 - 5 Novel Methods discovered compound sprint hari ini.
+  brain/public/research_notes/291_novel_methods_compound_sprint_2026-04-29.md.
+  - Method 1: CTDL (Conversation-as-Training-Data Loop)
+  - Method 2: PaDS (Pixel-as-Distributed-Sensor)
+  - Method 3: AGSR (Approval-Gated Self-Replication)
+  - Method 4: PMSC (Persona-Mediated Sanad Chain)
+  - Method 5: CSVP (Compound Sprint Velocity Pattern)
+  Each dengan: pattern diagram, why novel, empirical claim untuk validasi,
+  code reference. Plus synthesis lintas method (compound flywheel) +
+  publication action items + sanad chain (Claude rawi #1, founder ratifier).
+  Status: working hypothesis untuk validasi Sprint 44+.
+
+[2026-04-28T21:29:48.925695+00:00] [DECISION] Routing lock: ctrl.sidixlab.com/chabos (subpath di ctrl
+  plane). Reasoning: same origin = no CORS, reuse BRAIN_QA_ADMIN_TOKEN
+  backbone, owner-only by convention.
+
+[2026-04-28T21:29:48.925695+00:00] [DECISION] Token auth strategy: client-side localStorage + 
+  X-Admin-Token header per call. Server validate per existing /admin/
+  pattern. Alternative paranoid mode: + nginx basic auth.
