@@ -13390,3 +13390,52 @@ Production batch 100×5 = 500 pairs:
 ### STATUS
 Sprint 13 Phase 3a SHIPPED. Phase 3b (Kaggle LoRA train) + 3c (deploy) defer.
 Roadmap: ROADMAP_DORA_SPRINT13.md.
+
+## 2026-04-29 — Sprint 13 Phase 3a SCALE-UP + Phase 3b Handoff Prep ✅
+
+### CATAT
+Founder gas signal: scale up + Phase 3b prep. Scale 200→1500 per persona,
+plus deliverables Kaggle-ready buat bos run langsung.
+
+### IMPL [Sprint 13 Phase 3a scale + 3b handoff]
+
+Scale up:
+- Run gen_persona_qa --persona ALL --count 1500 LIVE di VPS
+- Result: 7500 pairs total (1500/persona), zero dedup collision
+- Avg signature_score per persona: 0.639-0.767 (stable di 7.5x scale)
+- Files di /opt/sidix/.data/training/persona_qa_{PERSONA}.jsonl
+
+New deliverables (Phase 3b prep):
+- apps/brain_qa/brain_qa/merge_persona_dataset.py — combine 5 JSONL +
+  train/val split 90/10 stratified per persona + final shuffle
+- CLI: `python -m brain_qa merge_persona_dataset --val-ratio 0.10`
+- training/sprint13_dora_persona_kaggle.ipynb — Jupyter notebook Kaggle T4
+  Qwen2.5-7B + DoRA rank-16 (use_dora=True PEFT 0.13+) + HF upload Cell
+- brain/public/research_notes/286_sprint13_phase3b_kaggle_handoff.md —
+  handoff doc dengan 4 bos action items (dataset upload Kaggle, HF token
+  setup, secret config, run notebook)
+
+### TEST [Sprint 13 Phase 3a scale verification]
+- 1500/persona × 5 = 7500 pairs LIVE generated, ZERO failures
+- All 5 personas pass with avg score:
+  UTZ 0.767 | ABOO 0.639 | OOMAR 0.702 | ALEY 0.740 | AYMAN 0.742
+- Dedup integrity: 7500/7500 unique pair_id (SHA-256[:12])
+- Template combinations theoretical: 64 × 300 = 19200, actual generated 1500
+  = headroom untuk LLM-amplify Phase 3a iter2 kalau perlu
+
+### REVIEW
+- merge_persona_dataset.py: clean 100 line, no dep, stratified split per
+  persona biar val set tidak skewed
+- Kaggle notebook: 6 cell — setup, dataset, base+DoRA, train, save+upload,
+  smoke test. Semua dependency pinned (transformers 4.45.2, peft 0.13.2,
+  trl 0.11.4) untuk reproducibility
+- DoRA choice (vs LoRA): direction-decomposed adapter > LoRA untuk
+  stylometry (paper Liu et al ICML 2024)
+
+### STATUS
+Sprint 13 Phase 3a scale-up SHIPPED. Phase 3b HANDOFF READY — bos action items
+lengkap di note 286. Total 4 deliverables siap pakai untuk Kaggle run.
+
+Phase 3c (deploy) standby — saya prep multi-LoRA wire di RunPod sambil bos
+jalanin Phase 3b di Kaggle. Compound: setiap step bos selesaikan, saya bisa
+lanjut step berikutnya di-parallel.
