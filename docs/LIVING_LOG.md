@@ -13186,3 +13186,37 @@ Update internal reference di opener prompt.
   COMMITTABLE + visible di semua worktree post-pull.
 - Pattern adopt going forward.
 
+
+
+---
+
+## 2026-04-29 — Sprint 38b: Detector Source Adapt ✅ SHIPPED
+
+### CATAT (pre-exec)
+Pre-Exec Alignment Check: Sprint 38b = backend Python, tidak touch prompt/persona. Aligned NORTH_STAR (Pencipta milestone). No conflict dengan pivot 2026-04-26.
+
+### IMPL [Sprint 38b]
+Root cause: `sidix_observations.jsonl` pakai field `kind` (git_activity, commit_seen) — bukan tool call. `tool_synthesis.detect_repeated_sequences()` cari field `action`/`tool` → 0 events → 0 proposals.
+
+Fix Option B dipilih: tambah REACT step logger di `agent_react.py` yang tulis `react_steps.jsonl` dengan field `action` = nama tool ReAct yang sesungguhnya.
+
+Files diubah:
+- `apps/brain_qa/brain_qa/agent_react.py` — tambah `_log_react_step_to_file()` + hook call setelah step append
+- `apps/brain_qa/brain_qa/tool_synthesis.py` — tambah `_load_tool_events()` primary/fallback logic + `_KIND_TO_TOOL` mapping
+- `brain/public/research_notes/283_sprint38b_detector_source_adapt.md` — note baru
+
+### TEST [Sprint 38b] OFFLINE 5/5 PASS
+- `_load_tool_events` primary (react_steps.jsonl): 12 events loaded ✓
+- `detect_repeated_sequences` detect sequence count=4: ✓
+- `propose_macro` output clean skill_id + confidence: ✓
+- `_load_tool_events` fallback (activity_log kind→tool): 15 events + mapping git_commit OK ✓
+- `ast.parse` syntax check tool_synthesis.py + agent_react.py: ✓
+
+### ITERASI
+0 iterasi (diagnose-before-iter: root cause jelas dari dry-run VPS output Sprint 38 LIVING_LOG)
+
+### STATUS
+Wiring SHIPPED. LIVE pending VPS git pull + brain restart.
+`react_steps.jsonl` mulai terisi setelah pertama kali user query lewat /ask (ReAct loop fire).
+Data accumulate beberapa hari → detect sequence → propose skill pertama → Pencipta milestone.
+
