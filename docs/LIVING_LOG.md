@@ -13743,3 +13743,37 @@ ETA training: ~4h, jadi cek lagi nanti malam.
   Smoke test: list discover 12 real sessions bos (1625 sampai 3269 turns,
   total 7-28MB JSONL, 12 projects: SIDIX worktrees + Mighan + coin variants).
   Bos tinggal 1 command untuk synthesize semua sesi lama jadi corpus.
+
+[2026-04-28T21:02:02.236025+00:00] [PLAN] Sprint 43 - 5 Persona Discussion Telegram bot.
+  docs/SPRINT_43_PERSONA_DISCUSSION_PLAN.md (220 lines).
+  Sections per logging discipline: yang sudah, yang akan, cara solve,
+  verifikasi, optimasi Phase 2+, temuan, timeline, owner decisions.
+
+[2026-04-28T21:02:02.236025+00:00] [IMPL] Sprint 43 Phase 1 SCAFFOLD - telegram_persona_bot.py.
+  apps/brain_qa/brain_qa/telegram_persona_bot.py (~270 LOC):
+  - PERSONAS dict (5 persona dengan emoji+tagline+command)
+  - TelegramMessage + BotResponse dataclasses
+  - parse_message() Telegram update -> structured
+  - is_authorized() owner whitelist check (TELEGRAM_OWNER_IDS env)
+  - escape_markdown_v2() Telegram MarkdownV2 escape
+  - route_command() dispatcher untuk 10 commands
+  - handle_start/persona_list/persona_query/council/save/help
+  - run_long_poll() Phase 2 entry point stub
+  
+[2026-04-28T21:02:02.236025+00:00] [TEST] Sprint 43 smoke test PASS:
+  - parse_message extract command+args+user
+  - is_authorized whitelist works (999 yes, 123 no)
+  - 10 commands route OK (/utz /aboo /oomar /aley /ayman /council 
+    /persona /start /help /save) all return non-empty
+  - Unauthorized blocked dengan Access denied message
+  - escape_markdown_v2 handles special chars
+  - PERSONAS dict 5 entries
+
+[2026-04-28T21:02:02.236025+00:00] [DOC] Yang sudah dijalanin hari ini total: 9 commits compound
+  Sprint 41 LIVE + Sprint 41 v1.1 JSONL auto-detect + Sprint 41 v1.2
+  claude_sessions discovery + Sprint 42 Phase 1 Chrome ext + Sprint 43
+  Phase 1 Telegram bot scaffold. Sprint 13 LoRA training continue ETA 25 min.
+  
+[2026-04-28T21:02:02.236025+00:00] [DECISION] Sprint 43 schedule pulled forward (week 2-3 vs week 5-7
+  per 12-week sequence) karena Sprint 41+42 ahead of schedule. Compound
+  parallel execution sambil training jalan.
