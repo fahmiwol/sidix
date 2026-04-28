@@ -13439,3 +13439,74 @@ lengkap di note 286. Total 4 deliverables siap pakai untuk Kaggle run.
 Phase 3c (deploy) standby — saya prep multi-LoRA wire di RunPod sambil bos
 jalanin Phase 3b di Kaggle. Compound: setiap step bos selesaikan, saya bisa
 lanjut step berikutnya di-parallel.
+
+## 2026-04-29 — Sprint 13 Phase 3b LIVE Pipeline + 4 Iterasi + Phase 3c Scaffold ✅
+
+### CATAT (pre-exec, alignment check)
+Bos kasih kaggle.json (legacy, mighan) + HF token (SIDIX123 write, Tiranyx).
+Saya remote end-to-end pipeline. Pre-Exec Alignment Check:
+- Sprint 13 align note 248 (5 persona LOCKED) ✓
+- Token security: chmod 600 di VPS, `.env.*` covered di .gitignore ✓
+- Anti-pattern: tidak echo token di chat output, tidak commit ke git ✓
+
+### IMPL [Phase 3b infra + Phase 3c scaffold]
+
+Cloud setup remote (semua dari VPS via CLI):
+- Tokens chmod 600: `/opt/sidix/.env.kaggle_hf` + `/root/.kaggle/kaggle.json`
+- HF repo created: `Tiranyx/sidix-dora-persona-v1` (model, public)
+- Kaggle dataset uploaded: `mighan/sidix-persona-qa-v1` (4.5MB, train+val JSONL)
+- Kaggle kernel pushed: `mighan/sidix-dora-persona-train-v1`
+- Cron monitor di VPS: `*/15 min sidix_kaggle_monitor.sh` → JSON breadcrumb
+
+Phase 3c scaffold modules:
+- `apps/brain_qa/brain_qa/persona_adapter_loader.py` — PersonaRouter, download_adapter (stub), select_adapter_for_request fallback logic
+- `apps/brain_qa/brain_qa/blind_ab_test.py` — 50 prompts test bench, auto_grade via signature_score, stub_responder smoke test
+- `brain/public/research_notes/287_sprint13_phase3c_dispatch_wire_plan.md` — full Phase 3c plan
+- `docs/SESSION_STATE_2026-04-29_sprint13_kaggle_running.md` — handoff state untuk agent next session
+- `docs/SIDIX_CONTINUITY_MANIFEST.md` — concept #14 PLANNED → IN_PROGRESS
+
+### TEST [4 iterasi kernel + scaffold smoke]
+
+Iterasi kernel push (semua di-diagnose dengan kaggle kernels output → log parse, anti-halusinasi):
+
+| v | Status | Root cause | Fix |
+|---|---|---|---|
+| 1 | ERROR cell 5 | Race condition (push <5s setelah dataset upload) | Wait until dataset indexed |
+| 2 | 409 + ERROR | Kernel id mismatch dgn title-derived slug + dataset path persist | id align ke `mighan/sidix-dora-persona-train-v1` |
+| 3 | ERROR cell 5 | Private dataset mount `/kaggle/input/datasets/<owner>/<slug>/` ≠ `/kaggle/input/<slug>/` | Auto-detect via `glob.glob('/kaggle/input/**/persona_qa_train.jsonl', recursive=True)` (verified pakai diag kernel `mighan/sidix-diag-mount` COMPLETE) |
+| 4 | RUNNING | bitsandbytes 0.44.1 incompat triton 3.x Python 3.12 | Remove pin, pip install -U latest |
+
+Phase 3c module smoke test:
+- persona_adapter_loader.py + blind_ab_test.py: ast.parse OK ✓
+- run_blind_test(stub_responder, sample_n=5): 25 responses, overall accuracy 92%, all persona ≥60% ✓ (pipeline logic sound)
+
+### ITERASI
+4 iter kernel + 1 scaffold polish. Each iter root-caused dengan log inspect SEBELUM rewrite (per memory feedback_diagnose_before_iter.md). Diag kernel (mighan/sidix-diag-mount) di-spawn untuk verify mount structure, lulus COMPLETE → confirm path issue actual, bukan tebakan.
+
+### REVIEW
+- Code: persona_adapter_loader STUB (download_adapter return placeholder) — by design, full impl di Phase 3c sesi setelah training done
+- Architecture: separation persona dispatch (router) vs adapter loading (download) — clean
+- Anti-pattern check: tidak ada token di code/log/commit (security audit clean) ✓
+- 10 hard rules: LoRA = own weights ✓, MIT ✓, self-hosted ✓, persona LOCKED ✓
+
+### CATAT (validasi findings)
+Cron monitor breadcrumb: `/opt/sidix/.data/kaggle_kernel_state.json` JSON {kernel, status, last_check}. Auto-update tiap 15 min. Agent next session bisa langsung cek file ini tanpa kaggle CLI roundtrip.
+
+### VALIDASI
+- Repo · Git · Live alignment verified: branch + main + VPS HEAD same SHA pre-commit
+- Kaggle dataset visible via API: 2 files indexed (train 4.4MB + val 487KB)
+- HF repo visible: bos confirm via screenshot (Updated 2 minutes ago at time of check)
+- Kernel v4 status RUNNING (transition dari ERROR v3 setelah notebook patch)
+
+### QA
+- Security audit: `git diff | grep -iE "37eaecbd|hf_fY|KGAT_|kaggle.json|password|api_key"` → CLEAN
+- Notebook diff inspect: tidak ada token leak di Cell content
+- Token storage: chmod 600 di VPS, tidak masuk repo
+
+### STATUS
+Sprint 13 Phase 3b 🟡 IN-FLIGHT (Kaggle kernel v4 RUNNING, ~3-5 jam expected).
+Phase 3c ✅ SCAFFOLD READY (modules + plan + handoff doc).
+Agent next session: baca SESSION_STATE_2026-04-29_sprint13_kaggle_running.md → follow decision tree.
+
+### CATAT (final + push + deploy)
+Commit + push + merge main + VPS deploy akan dilakukan setelah block ini.
