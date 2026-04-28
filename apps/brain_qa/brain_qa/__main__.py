@@ -353,6 +353,16 @@ def main(argv: list[str]) -> int:
     p_reval.add_argument("--paraphrase", action="store_true",
                          help="Sprint 27c: use 50 paraphrase queries (no keyword overlap)")
 
+    # Sprint 38 — Tool Synthesis MVP (Pencipta milestone)
+    p_propose = sub.add_parser("propose_skill",
+                                help="Sprint 38: detect repeated tool sequences + propose macro YAML")
+    p_propose.add_argument("--window-days", type=int, default=7,
+                            help="Days back to scan activity log (default 7)")
+    p_propose.add_argument("--min-count", type=int, default=3,
+                            help="Minimum frequency for proposal (default 3)")
+    p_propose.add_argument("--sequence-length", type=int, default=3,
+                            help="Tools per sequence window (default 3)")
+
     args = parser.parse_args(argv)
 
     if args.cmd == "index":
@@ -876,6 +886,24 @@ def main(argv: list[str]) -> int:
         except ImportError:
             result["note"] = "torch not installed — GPU status unavailable. Install torch to enable."
         print(json.dumps(result, ensure_ascii=False, indent=2))
+        return 0
+
+    if args.cmd == "propose_skill":
+        # Sprint 38 Tool Synthesis MVP CLI entry point
+        from .tool_synthesis import run_synthesis
+        result = run_synthesis(
+            window_days=int(args.window_days),
+            min_count=int(args.min_count),
+            sequence_length=int(args.sequence_length),
+        )
+        print(json.dumps({
+            "cycle_id": result["cycle_id"],
+            "window_days": result["window_days"],
+            "min_count": result["min_count"],
+            "sequences_detected": result["sequences_detected"],
+            "proposals_written": result["proposals_written"],
+            "files": result["files"],
+        }, ensure_ascii=False, indent=2))
         return 0
 
     if args.cmd == "retrieval_eval":

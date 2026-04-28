@@ -13093,3 +13093,26 @@ Plan:
 5. Quarantine: skill masuk `skills/quarantine/` 7 hari minimum
 6. Hafidz Ledger entry per skill propose + promote (Sprint 37 hook)
 
+
+---
+
+## 2026-04-28 EVENING (LATEST+18) — Sprint 38 START: Tool Synthesis MVP (Pencipta Milestone)
+
+### CATAT memulai
+**Source**: ROADMAP_SPRINT_36_PLUS.md priority 17/20 — innovation 5/5 (Pencipta hidup), feasibility 3/5 (4-6 minggu full).
+
+**Goal**: SIDIX literal MENCIPTA skill baru dari pattern berulang. Milestone besar: *"skill pertama lahir dari SIDIX sendiri"* = inflection point dari "agent yang pintar" → "agent yang menciptakan" (NORTH STAR core).
+
+**Scope MVP (smaller untuk session ini, sandbox sandbox iterasi 2)**:
+- Module `tool_synthesis.py`
+- Detector: scan activity_log untuk tool sequence repeat ≥3 dalam 7 hari
+- Proposer: generate macro YAML proposal (skill_id, composed_from, trigger_pattern, born_from_episodes)
+- Output ke `.data/skills/quarantine/{skill_id}.yaml`
+- Hafidz Ledger entry per propose (compound Sprint 37)
+- CLI `python -m brain_qa propose_skill`
+
+**Defer Sprint 38b** (next iter):
+- Sandbox actual execution
+- Auto-test on supporting episodes
+- Owner approve flow
+
