@@ -281,17 +281,92 @@ def answer_query_and_citations(
     if len(tokenized) != len(chunks):
         raise RuntimeError("Index corrupted: tokens length != chunks length")
 
-    bm25 = BM25Okapi(tokenized)
     q_tokens = tokenize(question)
-    scores = bm25.get_scores(q_tokens)
 
-    # Rerank by BM25 * sanad tier weight (primer > ulama > peer_review > unknown > aggregator)
-    weighted = [apply_sanad_weight(chunks[i].sanad_tier, scores[i]) for i in range(len(scores))]
-    ranked = sorted(
-        range(len(scores)),
-        key=lambda i: (-weighted[i], -scores[i]),
-    )
-    top = [i for i in ranked[: max(1, k)] if weighted[i] > 0] or ranked[: max(1, k)]
+    # Sprint 25: hybrid retrieval (BM25 + dense BGE-M3 via RRF) + optional rerank.
+    # Gated by ENV `SIDIX_HYBRID_RETRIEVAL=1`. Fallback ke pure BM25 (legacy path)
+    # kalau OFF atau dense index belum di-build atau embed_fn tidak available.
+    top: list[int]
+    used_path = "bm25"
+    try:
+        from .dense_index import is_enabled_via_env as _hybrid_on
+        from .reranker import is_enabled_via_env as _rerank_on
+    except Exception:
+        _hybrid_on = lambda: False  # noqa: E731
+        _rerank_on = lambda: False  # noqa: E731
+
+    if _hybrid_on():
+        try:
+            from .hybrid_search import hybrid_search
+            # Take generous top from each method, rerank or sanad-weight prunes after
+            top_each = max(20, k * 4)
+            final_pool = max(20, k * 4)
+            fused = hybrid_search(
+                question=question,
+                tokens_per_chunk=tokenized,
+                q_tokens=q_tokens,
+                index_dir=index_dir,
+                top_k_each=top_each,
+                final_k=final_pool,
+            )
+        except Exception:
+            fused = []
+
+        if fused:
+            used_path = fused[0][2].get("method", "hybrid") if fused[0][2] else "hybrid"
+            candidate_indices = [idx for idx, _s, _m in fused]
+
+            # Optional cross-encoder rerank (Sprint C)
+            if _rerank_on():
+                try:
+                    from .reranker import rerank_indices
+                    chunks_text = [c.text for c in chunks]
+                    reranked = rerank_indices(
+                        query=question,
+                        candidate_indices=candidate_indices,
+                        chunks_text=chunks_text,
+                        final_k=max(1, k * 2),  # leave headroom for sanad re-prune
+                    )
+                    if reranked:
+                        candidate_indices = [i for i, _ in reranked]
+                        used_path = used_path + "+rerank"
+                except Exception:
+                    pass
+
+            # Apply sanad tier weight on the reduced candidate set, then top-k.
+            # Use 1.0 as base "relevance" since sanad weight is multiplicative.
+            sanad_weighted = [
+                (i, apply_sanad_weight(chunks[i].sanad_tier, 1.0))
+                for i in candidate_indices
+            ]
+            sanad_weighted.sort(key=lambda kv: -kv[1])
+            top = [i for i, w in sanad_weighted if w > 0][: max(1, k)]
+            if not top:
+                top = [i for i, _w in sanad_weighted][: max(1, k)]
+        else:
+            # Hybrid produced nothing → fall through to BM25
+            _hybrid_failed = True
+            fused = None  # type: ignore
+    else:
+        fused = None  # type: ignore
+
+    if not fused:
+        bm25 = BM25Okapi(tokenized)
+        scores = bm25.get_scores(q_tokens)
+        weighted = [apply_sanad_weight(chunks[i].sanad_tier, scores[i]) for i in range(len(scores))]
+        ranked = sorted(
+            range(len(scores)),
+            key=lambda i: (-weighted[i], -scores[i]),
+        )
+        top = [i for i in ranked[: max(1, k)] if weighted[i] > 0] or ranked[: max(1, k)]
+        used_path = "bm25"
+
+    # Stash retrieval path for caller observability (debug only; not in citations).
+    try:
+        import logging as _log
+        _log.getLogger(__name__).debug("[retrieval] path=%s k=%d", used_path, len(top))
+    except Exception:
+        pass
 
     citations: list[Citation] = []
     for i in top:

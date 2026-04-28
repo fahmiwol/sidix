@@ -2090,13 +2090,45 @@ def _ddg_lite_search(query: str, max_results: int, timeout: float = 10.0) -> lis
     return results
 
 
+_WIKI_NOISE_WORDS = {
+    "siapa", "siapakah", "apa", "apakah", "kapan", "dimana", "di", "mana",
+    "bagaimana", "kenapa", "mengapa", "yang", "adalah",
+    "sekarang", "saat", "ini", "hari", "kini", "terbaru", "terkini",
+    "who", "what", "when", "where", "how", "why", "is", "are",
+    "the", "a", "an", "now", "today", "current", "currently", "latest",
+}
+
+
+def _simplify_for_wiki(query: str) -> str:
+    """Sprint 28b: strip interrogatives/time-modifiers/years untuk OpenSearch.
+
+    Wikipedia OpenSearch match TITLES, bukan full-text. Query polluted
+    seperti 'siapa Presiden Indonesia sekarang 2026' return 0 results,
+    sedangkan 'Presiden Indonesia' return 3 hits relevan.
+    """
+    import re as _re
+    tokens = _re.findall(r"\b[\w\-]+\b", (query or "").strip())
+    # Drop noise words (case-insensitive) dan year tokens (4-digit 19xx-21xx)
+    keep = []
+    for t in tokens:
+        tl = t.lower()
+        if tl in _WIKI_NOISE_WORDS:
+            continue
+        if _re.match(r"^(?:19|20|21)\d{2}$", t):
+            continue
+        keep.append(t)
+    return " ".join(keep) if keep else (query or "").strip()
+
+
 def _wikipedia_search(query: str, max_results: int, timeout: float = 10.0) -> list[dict]:
     """Wikipedia API — fallback factual paling reliable.
 
     Pakai opensearch endpoint (Wikipedia public, no auth, very stable).
+    Sprint 28b: simplify query first (Wikipedia matches titles, not free text).
     """
     import httpx
     out: list[dict] = []
+    simplified = _simplify_for_wiki(query)
     # Coba ID dan EN
     for lang in ("id", "en"):
         try:
@@ -2105,7 +2137,7 @@ def _wikipedia_search(query: str, max_results: int, timeout: float = 10.0) -> li
                     f"https://{lang}.wikipedia.org/w/api.php",
                     params={
                         "action": "opensearch",
-                        "search": query,
+                        "search": simplified,
                         "limit": max_results,
                         "namespace": 0,
                         "format": "json",

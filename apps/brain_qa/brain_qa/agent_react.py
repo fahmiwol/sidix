@@ -943,6 +943,33 @@ def _compose_final_answer(
             + "info eksplisit di pencarian, paling baru yang saya dapat: ...'"
         )
 
+        # ── Sprint 34G TEROBOSAN: Deterministic Entity Extraction ──────
+        # Extract fact langsung dari web hits (regex + frequency count)
+        # untuk inject sebagai AUTHORITATIVE FACT — bukan rely on LLM judgment.
+        try:
+            from .fact_extractor import extract_fact_from_web, format_fact_for_prompt
+            web_text_blob = ""
+            for st in (steps or []):
+                if str(getattr(st, "action_name", "")) == "web_search":
+                    web_text_blob += "\n" + str(getattr(st, "observation", ""))
+            if web_text_blob:
+                _fact = extract_fact_from_web(question, web_text_blob)
+                if _fact and _fact.get("name"):
+                    _fact_block = format_fact_for_prompt(_fact)
+                    # Prepend fact block ke combined_system (TOP priority)
+                    _combined_system = (
+                        f"{_fact_block}\n\n{(_combined_system or '').strip()}"
+                    )
+                    import logging as _flog
+                    _flog.getLogger("sidix.fact_extract").info(
+                        "Fact extracted: %s = %s (freq=%d, conf=%s)",
+                        _fact.get("role"), _fact.get("name"),
+                        _fact.get("frequency", 0), _fact.get("confidence"),
+                    )
+        except Exception as _fe_err:
+            import logging as _flog
+            _flog.getLogger("sidix.fact_extract").debug("skip: %s", _fe_err)
+
     # ── Coba LLM generative — Pivot 2026-04-26: hybrid (RunPod GPU + Ollama) ─
     # SIDIX_LLM_BACKEND=runpod_serverless di env aktifin GPU offload.
     # Fallback otomatis ke Ollama lokal CPU kalau RunPod fail.
@@ -1006,6 +1033,35 @@ def _compose_final_answer(
     except Exception as _llm_err:
         import logging as _log
         _log.getLogger("sidix.react").warning(f"LLM synthesis failed: {_llm_err}")
+
+    # ── Sprint 34H: DIRECT FACT RETURN kalau LLM down ──────────────────────────
+    # User mandate: jawaban HARUS BENER, ga boleh "tidak tahu". Kalau fact_extractor
+    # punya answer + LLM dead, return fact langsung dalam template natural.
+    try:
+        from .fact_extractor import extract_fact_from_web as _efw
+        web_text_blob_h = ""
+        for st in (steps or []):
+            if str(getattr(st, "action_name", "")) == "web_search":
+                web_text_blob_h += "\n" + str(getattr(st, "observation", ""))
+        if web_text_blob_h:
+            _fact_h = _efw(question, web_text_blob_h)
+            if _fact_h and _fact_h.get("name") and _fact_h.get("confidence") == "high":
+                _fname = _fact_h["name"]
+                _frole = _fact_h.get("role", "")
+                _fsources = _fact_h.get("sources", [])
+                _direct_text = (
+                    f"Berdasarkan pencarian web terkini, {_frole} adalah **{_fname}**."
+                )
+                if _fsources:
+                    _direct_text += f" (Sumber: {_fsources[0]})"
+                import logging as _flog
+                _flog.getLogger("sidix.fact_extract").info(
+                    f"DIRECT FACT RETURN — LLM down, returning extracted fact: {_fname}"
+                )
+                return (_direct_text, all_citations, 0.95, "fakta")
+    except Exception as _fact_err:
+        import logging as _flog
+        _flog.getLogger("sidix.fact_extract").debug(f"direct fact return skip: {_fact_err}")
 
     # ── Fallback: local_llm.py (Qwen2.5-7B + LoRA) ───────────────────────────
     try:

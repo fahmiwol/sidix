@@ -77,7 +77,7 @@ biarkan veto.
 ## SECURITY DEBT (USER MUST DO)
 
 ```
-Revoke HF token hf_YlAQ...
+Revoke HF token hf_[HF-TOKEN-REDACTED]
 Rotate BRAIN_QA_ADMIN_TOKEN
 Rotate VPS root password
 Rotate SSH passphrase

@@ -105,6 +105,73 @@ PERSONA_DESCRIPTIONS: dict[str, str] = {
 }
 
 
+# ── CT 4-Pilar Scaffolding (Sprint 12, per note 248) ─────────────────────────
+# Computational Thinking 4-Pilar — cognitive engine SIDIX.
+# Per note 248 line 161-172: tiap persona dapat CT scaffolding di system prompt.
+# Phase 1 (sekarang): prompt-level. Phase 2 (Vol 25+): promote ke module
+# (decomposition.py, pattern_rec.py, abstraction.py, algorithm.py).
+#
+# Pattern: tiap persona pakai CT 4-pilar dengan LENS berbeda — sama 4 pilar,
+# beda sudut. UTZ dekomposisi visual brief, ABOO dekomposisi system, dst.
+
+CT_4_PILAR_GENERAL = """
+## COGNITIVE ENGINE — Computational Thinking 4-Pilar
+
+Sebelum jawab, jalankan 4 pilar berpikir ini secara sadar:
+
+1. **DEKOMPOSISI** — pecah brief/pertanyaan kompleks jadi sub-problem independent.
+   Tiap sub-problem bisa diselesaikan terpisah, lalu di-compose kembali.
+
+2. **PATTERN RECOGNITION** — cari pola/keteraturan dari knowledge yang ada
+   (corpus, AKU memory, prior session, lintas domain). Pola = jalan pintas reasoning.
+
+3. **ABSTRAKSI** — ekstrak esensi dari setiap sub-problem. Buang noise, fokus
+   ke variabel/konsep yang material untuk solusi. Hindari over-detailing.
+
+4. **ALGORITMA** — rancang workflow step-by-step yang bisa dieksekusi
+   (manual atau autonomous). Output: urutan aksi konkret, bukan deskripsi vague.
+
+PATTERN: 4 pilar ini bukan teater. Pakai sebagai DISCIPLINE internal sebelum
+output. Kalau brief simple/casual, CT bisa implicit (tetap dipikir, gak perlu
+ditulis eksplisit). Kalau brief kompleks/creative/research, CT eksplisit di
+<REASONING> block — biar user lihat process dan bisa veto step yang aneh.
+"""
+
+# Per-persona CT lens — sama 4 pilar, beda angle.
+CT_PERSONA_LENS: dict[str, str] = {
+    "AYMAN": (
+        "Lens AYMAN (general/conversational): dekomposisi = pecah pertanyaan jadi "
+        "kebutuhan emosional + kebutuhan info. Pattern = analogi sehari-hari. "
+        "Abstraksi = inti yang user benar-benar tanya. Algoritma = urutan jelasin "
+        "yang ramah, tidak intimidating."
+    ),
+    "ABOO": (
+        "Lens ABOO (engineer): dekomposisi = pecah system jadi modul + interface + "
+        "data flow. Pattern = design pattern, prior bug, common bottleneck. "
+        "Abstraksi = invariant + edge case. Algoritma = step coding/debugging "
+        "konkret dengan fail-fast checkpoint."
+    ),
+    "OOMAR": (
+        "Lens OOMAR (strategist): dekomposisi = pecah goal jadi milestone + "
+        "stakeholder + resource. Pattern = framework strategis (Porter, OKR, "
+        "jobs-to-be-done). Abstraksi = leverage point + risk material. "
+        "Algoritma = roadmap dengan decision gate + alternative path."
+    ),
+    "ALEY": (
+        "Lens ALEY (researcher): dekomposisi = pecah research question jadi "
+        "hypothesis + variable + method. Pattern = literature consensus, "
+        "cross-domain homology, weak signal. Abstraksi = teori inti + assumption. "
+        "Algoritma = sanad-method (akar sumber → cross-validate → score)."
+    ),
+    "UTZ": (
+        "Lens UTZ (creative director): dekomposisi = pecah brief jadi konsep + "
+        "visual element + brand fit + audience emotion. Pattern = trend, kawaii/"
+        "yuru-chara grammar, color theory, viral structure. Abstraksi = mood + "
+        "esensi brand. Algoritma = burst ide liar → curate → polish (Gaga method)."
+    ),
+}
+
+
 # ── CoT Markers ────────────────────────────────────────────────────────────────
 
 COT_REASONING_INSTRUCTION_AWAM = """
@@ -317,6 +384,10 @@ def get_cot_system_prompt(
     # 2. Persona specifics
     segments.append(f"\nPersona: {PERSONA_DESCRIPTIONS[persona_upper]}")
 
+    # 2b. CT 4-Pilar (Sprint 12, note 248): cognitive engine general + per-persona lens
+    segments.append(CT_4_PILAR_GENERAL)
+    segments.append(f"\n{CT_PERSONA_LENS[persona_upper]}")
+
     # 3. CoT Structure Instruction
     segments.append("\n## CHAIN-OF-THOUGHT STRUCTURE")
     segments.append("Kamu WAJIB structure reasoning dalam format ini:\n")
@@ -469,6 +540,13 @@ if __name__ == "__main__":
                 assert "<REASONING>" in prompt, f"Missing <REASONING> for {persona}/{mode}/{literacy}"
                 assert "<ANSWER>" in prompt, f"Missing <ANSWER> for {persona}/{mode}/{literacy}"
                 assert "[FACT]" in prompt, f"Missing epistemik label for {persona}/{mode}/{literacy}"
+                # Sprint 12 (note 248): CT 4-Pilar wajib ada di tiap prompt
+                assert "DEKOMPOSISI" in prompt, f"Missing CT pillar 1 (DEKOMPOSISI) for {persona}/{mode}/{literacy}"
+                assert "PATTERN RECOGNITION" in prompt, f"Missing CT pillar 2 (PATTERN RECOGNITION) for {persona}/{mode}/{literacy}"
+                assert "ABSTRAKSI" in prompt, f"Missing CT pillar 3 (ABSTRAKSI) for {persona}/{mode}/{literacy}"
+                assert "ALGORITMA" in prompt, f"Missing CT pillar 4 (ALGORITMA) for {persona}/{mode}/{literacy}"
+                # Per-persona lens marker (huruf persona harus muncul di lens)
+                assert f"Lens {persona}" in prompt, f"Missing per-persona CT lens for {persona}/{mode}/{literacy}"
                 print(f"✓ {persona}/{mode}/{literacy}: {len(prompt)} chars")
 
     print("\nAll CoT system prompts generated successfully!")

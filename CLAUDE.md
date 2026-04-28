@@ -9,8 +9,23 @@ Proyek: **SIDIX / Mighan Model**
 User directive eksplisit: *"gaaaaaaasssssssssssss!!!! catat!! jangan berubah-ubah lagi arah sidix"* + *"tulis dengan besar supaya nggak berubah lagi. cataaaattt!!! aligment semuanya"*
 
 **WAJIB BACA URUTAN INI**:
-1. 📜 **[`docs/SIDIX_DEFINITION_20260426.md`](docs/SIDIX_DEFINITION_20260426.md)** ← **SOURCE OF TRUTH #1** (definisi formal lengkap karakter + kemampuan + arsitektur)
-2. 🔒 [`docs/DIRECTION_LOCK_20260426.md`](docs/DIRECTION_LOCK_20260426.md) ← tactical lock (8 ❌ rules + Q3 roadmap)
+0. 🚨 **[`docs/FOUNDER_JOURNAL.md`](docs/FOUNDER_JOURNAL.md)** ← **HIGHEST PRIORITY META-RULE**: "Bahasa Bos = METAFORA & ANALOGI". Spirit > literal. Setiap istilah founder = inspirasi pola, bukan spec rigid.
+1. 🌟 **[`docs/SIDIX_NORTH_STAR.md`](docs/SIDIX_NORTH_STAR.md)** ← **NORTH STAR LOCKED** (2026-04-28) — SIDIX = Penemu Inovatif Kreatif Digital, keluar dari pola sistematis AI Agent biasa.
+2. 📜 **[`docs/SIDIX_CANONICAL_V1.md`](docs/SIDIX_CANONICAL_V1.md)** ← **SOURCE OF TRUTH #0** — single SOT consolidate notes 224+228+248+277+278+279+280. Authority over docs lain.
+3. 📜 [`docs/SIDIX_DEFINITION_20260426.md`](docs/SIDIX_DEFINITION_20260426.md) ← formal definition LOCKED
+4. 🔒 [`docs/DIRECTION_LOCK_20260426.md`](docs/DIRECTION_LOCK_20260426.md) ← tactical lock (8 ❌ rules + Q3 roadmap)
+5. 🗺️ **[`docs/SIDIX_CONTINUITY_MANIFEST.md`](docs/SIDIX_CONTINUITY_MANIFEST.md)** ← 19 distinctive concepts status registry. Wajib cek SEBELUM start sprint baru.
+6. 🧠 **research note 279** ← Cara SIDIX Action (mirror otak metafora — multi-sensory · multi-perspective · iterative · embodied)
+7. 🧬 **research note 280** ← Static-Generative Pattern (Quran/DNA/Brain pola universal → SIDIX)
+8. 🔄 **research note 281** ← Sintesis Multi-Dimensi 4 inisiasi (Claude-guru, SIDIX-hadir, Hyperx, 24-jam AI-to-AI)
+9. 📓 [`docs/FOUNDER_JOURNAL.md`](docs/FOUNDER_JOURNAL.md) (re-cek) — directive log founder verbatim. Setiap directive baru dari bos → append entry SEKARANG.
+
+### ⚙️ 4 OPERATING PRINCIPLES (LOCKED 2026-04-28 founder mandate):
+
+1. **ANTI-HALUSINASI** — claim grounded di basis konkret (cite file:line, command output, test result). *"Saya tidak yakin"* > tebak. Sanad multi-dim gate untuk topik sensitif.
+2. **JAWABAN HARUS BENAR** — correctness > speed untuk fakta/data/historical/sains. Multi-source validation. Web_search untuk current events (pivot 2026-04-25).
+3. **IDE BOS DIOLAH SAMPAI SEMPURNA** — multi-dimensi (5 persona × wisdom × KITABAH refine). Bukan reduce-to-simpler.
+4. **RESPOND CEPAT · TEPAT · RELEVAN** — tier-aware latency, no off-topic verbose, konteks user-specific.
 
 ### Quick reference:
 - **Tagline**: *"Autonomous AI Agent — Thinks, Learns & Creates"*
@@ -131,6 +146,80 @@ kerja = waste energy. Catatan adalah memori eksternal SIDIX.
 - "saya akan catat nanti" → catat SEKARANG
 - "ini kecil, gak perlu dicatat" → tidak ada yang terlalu kecil
 - "sudah obvious dari commit message" → commit message ≠ context lengkap
+
+### 6.4. ⚠️ PRE-EXECUTION ALIGNMENT CHECK — Mandatory (2026-04-27 evening LOCK)
+
+User directive eksplisit setelah catch alignment gap di Sprint 14c:
+*"analisa dulu sebelum analisa, jangan sampe kontradiksi. kalau usha expired
+dan bentrok dengan rencana akhir, ya jangan di eksekusi, kasih remark atau
+apa lah."*
+
+**SEBELUM edit file yang touch persona / prompt / agent behavior, WAJIB**:
+
+```
+1. RE-READ NORTH STAR — research_notes/248 first 50 lines
+   (latest direction lock — Self-Evolving AI Creative Agent)
+
+2. CHECK LATEST PIVOT — grep "PIVOT YYYY-MM-DD" sections di CLAUDE.md,
+   identify yang paling baru. Per 2026-04-27:
+   - 2026-04-26: DEFINITION + DIRECTION LOCK (note 248) ← latest
+   - 2026-04-25: LIBERATION SPRINT (epistemik kontekstual, tool-aggressive)
+   - 2026-04-19: IDENTITAS LOCK 3-layer
+
+3. SELF-AUDIT — apa yang akan saya tulis ada di list anti-pattern
+   pivot terbaru? Misalnya:
+   - ❌ "Pakai [SPEKULASI]/[FAKTA]/[OPINI]/[TIDAK TAHU] tag bila..."
+     instruction di prompt creative/casual (anti pivot 2026-04-25)
+   - ❌ Blanket epistemik label per-paragraf (anti pivot 2026-04-25)
+   - ❌ "Saya adalah X dengan pendekatan Y" boilerplate persona
+     (anti pivot 2026-04-25)
+   - ❌ Prioritize corpus untuk current events (anti pivot 2026-04-25)
+   - ❌ Klaim spiritual entity / religious AI (anti note 248)
+   - ❌ Drop 5 persona / drop sanad / drop epistemic 4-label sebagai
+     option (anti note 248 hard rules)
+
+4. IF CONFLICT — STOP execute. Tulis remark eksplisit ke user:
+   "Instruction ini bentrok dengan pivot YYYY-MM-DD. Lanjut atau
+   redirect?"
+   JANGAN execute blindly walaupun copy dari research note lama.
+
+5. IF ALIGNED — proceed dengan loop mandatory (CATAT TESTING ITERASI
+   REVIEW VALIDASI QA CATAT)
+```
+
+**Familiarity bias trap** (root cause Sprint 14c gap):
+
+Agent yang familiar dengan framing lama (pre-pivot) akan otomatis copy
+pattern ke prompt baru tanpa cek pivot terbaru. SELALU verify against
+source-of-truth dokumen, BUKAN mental model lama.
+
+**Anti-pattern yang HARUS dihindari**:
+- ❌ "Saya tau ini benar dari memory/research note" → research note lama
+  bisa pre-pivot, WAJIB cek pivot terbaru
+- ❌ Copy template prompt dari file existing tanpa audit alignment
+- ❌ Skip audit karena "ini cuma minor edit"
+- ❌ Self-justify alignment tanpa cite spesifik baris pivot doc
+
+**Lesson dari Sprint 14c (2026-04-27)**: ALEY system prompt tertulis
+*"Pakai [SPEKULASI] tag bila claim tidak bisa di-back hard data"* —
+copy bias dari epistemic-as-differentiator framing pre-pivot 2026-04-25.
+Detail full audit di research_notes/254. User catch saved compound integrity.
+
+**ANTI-HALUSINASI rule** (user directive 2026-04-27 evening):
+*"jangan sampai masuk ke dalam hallucinate lagi, nggak ada arah yang jelas."*
+
+Setiap claim atau eksekusi WAJIB punya **basis konkret** dari salah satu:
+- Cite line di CLAUDE.md / note 248 / pivot dokumen tertentu (line N)
+- Cite output `git log` / `grep` / `read file` yang barusan di-run
+- Cite test result actual (TIDAK boleh "saya yakin" tanpa output verifikasi)
+
+Kalau tidak punya basis konkret → **STOP**, ambil basis dulu (read file, run grep,
+verify), atau **kasih remark eksplisit**: *"Saya tidak yakin — perlu verifikasi
+dulu. Lanjut cek file X / run command Y?"*
+
+JANGAN gabungkan asumsi + memory + framing lama → **itu jalan ke halusinasi**.
+Setiap output harus traceable ke source-of-truth, bukan compound dari mental
+model yang mungkin sudah expired.
 
 ### 6.5. ⚠️ POST-TASK PROTOCOL — Loop Mandatory (2026-04-27 LOCK)
 
@@ -270,6 +359,46 @@ SIDIX_LANDING/                 ← landing page sidixlab.com
 apps/brain_qa/                 ← Python FastAPI backend RAG
 brain/manifest.json            ← konfigurasi corpus path
 ```
+
+---
+
+## 🤖 MODEL POLICY — Claude Agent Model Selection (2026-04-28)
+
+User directive: *"untuk development yang common use, riset, sintesis dll pake sonnet. kasih tau saya kalo ada yang kompleks, saya akan ganti ke opus. untuk cari data, kumpulin data, screening pake haiku biar irit usage dan token tapi efektif."*
+
+### Default per task type
+
+| Model | Task | Alasan |
+|---|---|---|
+| **Haiku 4.5** (`claude-haiku-4-5-20251001`) | Fetch URL, web search, screen data, bulk QA scan, format convert, grep/count corpus, simple parse | 10-50x lebih hemat token vs Sonnet. Output tidak perlu reasoning dalam. |
+| **Sonnet 4.6** (`claude-sonnet-4-6`) | **DEFAULT** — semua coding, debug, research synthesis, sprint planning, refactor, test, dokumentasi, review | Balanced quality/cost. 90%+ task SIDIX dev masuk sini. |
+| **Opus 4.7** (`claude-opus-4-7`) | Arsitektur multi-system besar, security audit serius, novel algorithm, ketika Sonnet stuck 2x iter | 5x lebih mahal dari Sonnet. Pakai hanya kalau Sonnet jelas tidak cukup. |
+
+### Kapan Agent HARUS kasih tau bos untuk switch ke Opus
+
+Agent wajib bilang *"Task ini sebaiknya pakai Opus — mau switch dulu?"* sebelum eksekusi kalau:
+- Task touch >5 file dengan architectural decision besar (bukan cuma wire/glue)
+- Security vulnerability deep analysis (bukan cuma grep scan)
+- Novel algorithm yang butuh multi-hop reasoning chain
+- Sonnet sudah 2x iterasi tapi output masih ngaco / stuck
+- Trade-off besar yang compound (infra + model + product design sekaligus)
+
+Agent **TIDAK** boleh switch model sendiri — selalu minta konfirmasi bos.
+
+### Kapan pakai Haiku (hemat token)
+
+Gunakan Haiku untuk pipeline yang bisa di-batch atau tidak butuh reasoning:
+- `web_search` → screen 20 hasil → filter relevan
+- Fetch URL → extract key fields
+- Bulk corpus scan → count / tag / deduplicate
+- Simple regex / format validation
+- Data QA pass sebelum LLM processing
+
+### Anti-pattern yang HARUS dihindari
+- ❌ Pakai Sonnet untuk task yang Haiku bisa handle (buang token)
+- ❌ Pakai Sonnet untuk task yang jelas butuh Opus tapi tidak kasih tau bos (output kualitas rendah + waste iter)
+- ❌ Switch ke Opus tanpa bilang dulu (keputusan bos, bukan agent)
+- ❌ Stuck di Sonnet >2 iter tanpa eskalasi ke Opus
 
 ---
 

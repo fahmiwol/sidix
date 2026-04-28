@@ -203,13 +203,16 @@ def detect_tier(
             estimated_latency_class="<100ms",
         )
 
-    # Short factual (< 25 char, no deep keyword)
-    if len(q) < 25 and not _DEEP_KEYWORDS_RE.search(q):
+    # Short factual (< 60 char, no deep keyword) — Sprint 34D: bumped 25→60
+    # Reason: simple bypass + corpus inject (Sprint 28a + 34B) handles natural
+    # short queries dengan grounded answer 1-1.5s. Standard tier butuh Ollama
+    # full ReAct yang hardware-bound 4-vCPU. Better fast+grounded > slow+timeout.
+    if len(q) < 60 and not _DEEP_KEYWORDS_RE.search(q):
         return ComplexityDecision(
             tier="simple",
             matched_rules=[f"short_factual ({len(q)} char)"],
             score=0.2,
-            estimated_latency_class="<100ms",
+            estimated_latency_class="<2s",
         )
 
     # ── DEEP tier ────────────────────────────────────────────────────────────

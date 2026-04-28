@@ -90,3 +90,18 @@ def build_index(
     # Still write a small marker so users know indexing succeeded.
     (out_dir / "READY").write_text("ok\n", encoding="utf-8")
 
+    # Sprint 25 Sprint B: optional dense embedding index. Gated by ENV
+    # SIDIX_BUILD_DENSE=1 untuk control compute cost (BGE-M3 inference per chunk).
+    # Graceful: kalau embedding_loader unavailable, skip — BM25-only retrieval tetap jalan.
+    import os as _os
+    if _os.environ.get("SIDIX_BUILD_DENSE", "").strip().lower() in ("1", "true", "on", "yes"):
+        try:
+            from .dense_index import build_dense_index
+            ok = build_dense_index(chunks, out_dir=out_dir)
+            if not ok:
+                # Soft warn, BM25 index sudah persisted di atas
+                pass
+        except Exception:
+            # Never let dense failure break BM25 build
+            pass
+

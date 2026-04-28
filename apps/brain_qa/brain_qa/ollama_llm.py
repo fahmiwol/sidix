@@ -164,13 +164,21 @@ def ollama_generate(
         combined_system = SIDIX_SYSTEM
 
     # Inject corpus context ke user message kalau ada (RAG pattern)
+    # Sprint 34F: strong web-priority framing — konteks = AUTHORITY untuk
+    # current events. Pre-fix instruction "bukan satu-satunya sumber" bikin
+    # LLM abaikan web data + jawab dari training prior (kasus Jokowi vs Prabowo).
     user_message = prompt
     if corpus_context.strip():
         user_message = (
-            f"[KONTEKS DARI KNOWLEDGE BASE SIDIX]\n"
+            f"[KONTEKS RUJUKAN UTAMA — Web Search / Knowledge Base SIDIX]\n"
             f"{corpus_context.strip()}\n\n"
-            "[ATURAN PEMAKAIAN KONTEKS]\n"
-            "Gunakan konteks di atas sebagai referensi tambahan, bukan satu-satunya sumber.\n\n"
+            "[ATURAN PEMAKAIAN KONTEKS — PRIORITAS]\n"
+            "Konteks di atas adalah SUMBER UTAMA jawabanmu. Kalau ada bentrok "
+            "dengan pengetahuan training kamu (yang mungkin sudah outdated), "
+            "PRIORITASKAN konteks ini. Khusus pertanyaan tentang tokoh saat ini "
+            "(presiden, menteri, gubernur, juara, CEO, dll.), JAWAB BERDASARKAN "
+            "konteks — JANGAN sebutkan informasi training yang berbeda. "
+            "Kalau konteks tidak punya jawaban eksplisit, jujur akui.\n\n"
             f"[PERTANYAAN USER]\n"
             f"{prompt}"
         )

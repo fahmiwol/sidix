@@ -1,3 +1,335 @@
+# [2.7.0] — 2026-04-28 morning — Self-Learning Trilogy COMPLETE (RASA + KITABAH + ODOA + WAHDAH signal)
+
+### Sprint 23 — ODOA Daily Compound Improvement Tracker
+- agent_odoa.py module + GET /agent/odoa endpoint
+- Aggregate 7 sub-systems metrics (creative_briefs/rasa/wisdom/integrated/kitabah/visioner/research_queue)
+- AYMAN persona warm narrative synthesis (1 LLM call)
+- Output: prose markdown + structured JSON
+- Persist: .data/odoa_reports/<date>.md + .json
+- LIVE verified 66.7s, 10 artifacts aggregated, AYMAN narrative grounded
+- Per note 248 line 109 EXPLICIT (ODOA: incremental innovation tracking)
+
+### Sprint 24 — WAHDAH Corpus Signal MVP + ODOA Daily Cron
+- _aggregate_wahdah_corpus_signal() di agent_odoa.py
+- Threshold heuristic: 250+ notes / 100+ AKU / 1000+ training pairs
+- Composite signal: growing | approaching_threshold | ready_for_lora_retrain
+- ODOA cron VPS deployed: 0 23 * * * curl /agent/odoa?persist=true
+- LIVE verified: notes 260 (threshold 250 MET — first WAHDAH indicator triggered ✅)
+- Per note 248 line 109 EXPLICIT (WAHDAH: deep focus iteration)
+- Actual LoRA retrain trigger DEFER pending Sprint 13 DoRA infra
+
+### Notes baru cumulative
+- 266: ODOA Daily Compound Improvement Tracker (Sprint 23)
+- 267: WAHDAH Corpus Signal + ODOA Cron (Sprint 24)
+
+### Endpoints summary cumulative
+- POST /creative/brief (Sprint 14+14b+14c+14d+14e+14f)
+- POST /creative/iterate (Sprint 22+22b KITABAH self-iterate)
+- POST /agent/rasa (Sprint 21 4-dim quality scorer)
+- POST /agent/wisdom (Sprint 16+18+19)
+- POST /agent/integrated (Sprint 20 smart caching)
+- GET  /visioner/weekly (Sprint 15)
+- GET  /agent/odoa (Sprint 23+24) ← BARU
+- GET  /openapi.json + /docs (Sprint 14g)
+
+### Cron jobs SIDIX cumulative (7 total)
+```
+*/10 worker
+*/10 aku_ingestor
+*/15 always_on
+*/30 radar
+0 *  classroom
+0 0 * * 0 visioner (Sprint 15)
+0 23 * * * odoa (Sprint 24) ← BARU
+* * * * * warmup_runpod
+```
+
+### Self-learning trilogy STATUS (note 248 line 109)
+- WAHDAH: ✅ Signal MVP (Sprint 24, 1/3 indicators triggered notes=260)
+- KITABAH: ✅ Sprint 22+22b (auto-iterate loop)
+- ODOA: ✅ Sprint 23 + 24 (daily tracker + cron)
+
+= 3/3 protocols TOUCHED. Actual LoRA retrain trigger defer pending DoRA infra.
+
+### Embodiment status (note 248 line 40-65)
+- 🎭 RASA Sprint 21 + ✨ KREATIVITAS continued via KITABAH iter
+- 11/15 organs (73%) shipped
+- Pending: 👁️ MATA · 👂 TELINGA · 🎯 INTUISI · full DoRA reproduksi
+
+### Session metric (cumulative 2026-04-27 + 2026-04-28 morning)
+- 18 sprint shipped (12, 14, 14b, 14c, 14d, 14e wiring, 14f, 14g, 15, 16, 18, 19, 20, 21, 22 wiring, 22b, 23, 24)
+- 16 LIVE verified, 2 wiring + offline (14e, 22)
+- 8 iterasi total dengan 8 distinct root causes documented
+- 19 research notes baru (249-260, 262-267)
+- 80+ commits to main
+- Multiple security sanitizations forward-applied (VPS-SSH + HF-token + Gemini/Kimi/Vertex partial). Per memory `security_credential_redact_pattern.md`, literal credential strings yang sebelumnya leaked di old commits sekarang scrubbed di HEAD. User action item: rotate semua leaked credentials per HANDOFF v6 security debt.
+- 0 NEW credential introduced session-wise
+
+---
+
+# [2.6.0] — 2026-04-28 — Self-Critique + Self-Iterate (RASA + KITABAH + Shap-E)
+
+### Sprint 14f — Shap-E text-to-3D fallback (paralel agent)
+- runpod_media.generate_3d_from_text() — Shap-E mode=shape via mighan-media-worker
+- creative_pipeline.gen_3d_mode param: auto | triposr | shape (auto picks triposr if mascot_img exists, else shape)
+- Unblocks 3D path saat GPU supply throttled (TripoSR queue blocked)
+
+### Sprint 21 — 🎭 RASA Aesthetic/Quality Scorer
+- agent_rasa.py module + POST /agent/rasa endpoint
+- 4-dimension scoring (relevance/aesthetic/brand_fit/audience_fit, 1-5 scale)
+- Persona delegation: ALEY relevance + UTZ aesthetic + OOMAR brand_fit + AYMAN audience_fit
+- Single LLM call (BUKAN 4 separate = 4x hemat)
+- Output: prose markdown + structured JSON (overall_score + verdict + top_priority_improvement)
+- Reuse Sprint 18 _extract_json_block()
+- LIVE verified: 178.7s, 4 dims all 4/5, overall 4.0, verdict iterate
+- Per note 248 line 50 EXPLICIT (Embodiment 🎭 RASA)
+- Embodiment progress: 11/15 organs (73%)
+
+### Sprint 22 — KITABAH Auto-iterate (Generation-Test Validation Loop)
+- agent_kitabah.py module + POST /creative/iterate endpoint
+- Loop: creative produce → RASA validate → if score < threshold, regen with improvement context
+- Max iter cap 1-5 (budget control), threshold 1.0-5.0
+- Output: best_iteration (highest score) + full history + stopped_reason
+- Persist: .data/kitabah_loops/<slug>/{history.json, summary.md}
+- Per note 248 line 109-114 EXPLICIT (Wahdah/Kitabah/ODOA self-learning protocol)
+- LIVE attempt #1 budget under-spec (522s timeout) — pure infrastructure issue
+
+### Sprint 22b — KITABAH Cache Reuse (compound Sprint 20 smart cache)
+- _existing_creative_artifact() helper (mirror Sprint 20 _existing_creative)
+- IterationStep.creative_cache_hit field tracking
+- Iter 0: cache check via _slugify(brief) → reuse if exists (~5s vs ~400s)
+- Iter 2+ tetap fresh (brief augmented different)
+- Bug fix: len(... if x in meta else 0) → TypeError. Replaced with len(meta.get('asset_prompts') or [])
+- Test offline 3/3 pass
+- Solves Sprint 22 LIVE budget blocker
+
+### Notes baru cumulative
+- 261: Integrated Wisdom Output Mode (Sprint 20)
+- 262: RASA Aesthetic Quality Scorer (Sprint 21)
+- 263: Shap-E text-to-3D fallback (Sprint 14f, paralel agent)
+- 264: KITABAH Auto-iterate (Sprint 22)
+- 265: KITABAH Cache Reuse (Sprint 22b, this version)
+
+### Endpoints summary cumulative
+- POST /creative/brief (Sprint 14+14b+14c+14d+14e+14f)
+- POST /creative/iterate (Sprint 22+22b) ← BARU
+- POST /agent/rasa (Sprint 21) ← BARU
+- POST /agent/integrated (Sprint 20)
+- POST /agent/wisdom (Sprint 16+18+19)
+- GET /visioner/weekly (Sprint 15)
+- GET /openapi.json + /docs (Sprint 14g)
+
+### Embodiment progress (note 248 line 40-65)
+- 🎭 RASA SHIPPED Sprint 21 → 11/15 organs (73%)
+- Pending: 👁️ MATA, 👂 TELINGA, 🎯 INTUISI, full DoRA reproduksi
+
+### Iteration history total cumulative (sesi 2026-04-27 + 28)
+- 8 iterasi dengan 8 distinct root causes documented (Pydantic body, async polling, alignment, infrastructure, budget config, schema, prompt verbosity, curl timeout, JSON truncation, len(0) TypeError)
+- Memory feedback_diagnose_before_iter.md validated repeatedly
+
+### Session metric (cumulative 2026-04-27 + 2026-04-28 morning)
+- 16 sprint shipped (12, 14, 14b, 14c, 14d, 14e wiring, 14f, 14g, 15, 16, 18, 19, 20, 21, 22 wiring, 22b)
+- 14 LIVE verified, 2 wiring + offline (Sprint 14e + 22)
+- 17 research notes baru (249-260, 262, 263, 264, 265)
+- 60+ commits to main
+- 0 credential introduced session-wise
+
+---
+
+# [2.5.0] — 2026-04-27 late evening v2 — Scenario Tree + TTS Voice (Multi-modal Complete)
+
+### Sprint 19 — Scenario Tree Explorer (ALEY 2-level branching)
+- ALEY speculation extended dengan 2 sub-scenarios per main jalur
+- 9 nodes structure (3 main + 6 sub) di JSON schema
+- Reuse Sprint 18 _extract_json_block() untuk scenario_tree + optimal_path
+- 3 iterasi (V1 schema literal-echo, V2 backend timeout, V3 trim+JSON-only) → LIVE iter #7 70s success
+- Honest caveat: LLM creative variance flatten beberapa sub_scenarios — content quality EXCELLENT, structure 70% rigid
+- Per note 248 line 472 EXPLICIT mandate
+
+### Sprint 14d — TTS Persona Voice (🗣️ MULUT embodiment)
+- Module enhance: runpod_media.py +generate_tts() function
+- Pipeline gen_voice flag (opt-in) — UTZ persona LLM generate brand voice script → TTS via mighan-media-worker tool=tts
+- Edge-TTS (CPU-light, no GPU heavy) → Indonesian voice id-ID-ArdiNeural default
+- Output: .data/creative_briefs/<slug>/audio/brand_voice.mp3
+- LIVE verified: 48KB valid MP3 dalam 237s (cold start dominant)
+- Per note 248 line 50 EXPLICIT embodiment "🗣️ MULUT = audio output (TTS, voice persona)"
+
+### Iter #6 + #7 (Sprint 19) — diagnose-before-iter discipline applied
+- #6: backend timeout 180s (verbose prompt) — replaced descriptive placeholders + trimmed
+- #7: max_tokens 1500→1100 + JSON-only output → SUCCESS dalam 70s
+- 7 iter total dengan 7 different root causes — pattern memory `feedback_diagnose_before_iter` validated
+
+### Notes baru
+- 259: Scenario tree explorer
+- 260: TTS brand voice
+
+### Compound multi-modal capability cumulative
+- 🎨 Visual: PNG hero asset (Sprint 14b)
+- 🎲 3D: GLB wiring (Sprint 14e, LIVE pending GPU)
+- 🗣️ Audio: MP3 brand voice Indonesian (Sprint 14d) ← BARU
+- 📜 Prose: creative + brand + copy + landing (Sprint 14)
+- 📊 Strategic: OOMAR commercial + ALEY research (Sprint 14c)
+- 🧠 Wisdom: 5-stage judgment (Sprint 16)
+- 📋 Structured JSON: risk + impact + scenario (Sprint 18 + 19)
+- 🌐 Trend: visioner autonomous (Sprint 15)
+
+### Endpoints summary cumulative
+- POST /creative/brief (Sprint 14+14b+14c+14d+14e) — full bundle
+- GET /visioner/weekly (Sprint 15) — autonomous trend
+- POST /agent/wisdom (Sprint 16+18+19) — judgment + structured
+
+### Session metric (2026-04-27 full day)
+- 12 sprint shipped (12, 14, 14b, 14c, 14d, 14e wiring, 14g, 15, 16, 18, 19, discipline)
+- 7 iterasi total dengan 7 distinct root causes
+- 12 research notes baru (249-260)
+- 40+ commits to main
+- 0 credential introduced session-wise
+
+---
+
+# [2.4.0] — 2026-04-27 late evening — Wisdom Layer + Risk Register Structured
+
+### Sprint 14g — Fix /openapi.json 500 (Pydantic forward-ref)
+- Move 3 inline classes (CouncilRequest, GenerateRequest, GenerateResponse) ke module top-level
+- Rename inline GenerateRequest → AgentGenerateRequest (avoid shadow)
+- /openapi.json: 500 → 200 OK (151KB, 270 paths)
+- /docs Swagger UI accessible
+- Convention locked: SEMUA Pydantic Request/Response wajib module top-level
+
+### Sprint 16 — Wisdom Layer MVP (5-persona judgment synthesizer)
+- Module baru: agent_wisdom.py (417 lines)
+- Pipeline 5-stage: UTZ aha → OOMAR impact → ABOO risk → ALEY speculation → AYMAN synthesis
+- Endpoint baru: POST /agent/wisdom
+- Visioner trending data hook (compound Sprint 14c pattern)
+- LIVE verified 131s 2-stage minimal scope, 0 blanket label (pivot 2026-04-25 aligned)
+- Per note 248 line 469 EXPLICIT mandate
+
+### Sprint 18 — Risk Register + Impact Map Structured JSON
+- ABOO + OOMAR prompts enhance dengan JSON block schema
+- _extract_json_block() robust parser (fenced + bare + graceful malformed)
+- wisdom_analyze return dict +structured field
+- Persist structured.json alongside report.md
+- LIVE verified 261.9s: 3 risk + 4 impact entries valid JSON
+- Iterasi #5 max_tokens 600 → 1100 (budget under-spec fix)
+- Per note 248 line 471 EXPLICIT mandate
+- Demo angle: prose + machine-parseable JSON dalam 1 LLM call
+
+### Notes baru
+- 256: /openapi.json fix Pydantic forward-ref
+- 257: Wisdom Layer MVP
+- 258: Risk Register + Impact Map structured
+
+### Iteration #5 (this version)
+Sprint 18 first probe: structured = {}, LLM JSON truncated mid-string at max_tokens=600. Diagnose by inspect prose ending. Fix: bump 600→1100. Pure budget config under-spec, BUKAN code logic bug.
+
+### Endpoints summary baru (cumulative)
+- POST /creative/brief (Sprint 14+14b+14c+14e)
+- GET /visioner/weekly (Sprint 15)
+- POST /agent/wisdom (Sprint 16+18)
+
+### Session metric (cumulative 2026-04-27 full day)
+- 10 sprint shipped (12, 14, 14b, 14c, 14e wiring, 14g, 15, 16, 18, discipline lock)
+- 5 iterasi total
+- 10 research notes baru (249-258)
+- 30+ commits to main
+- 0 credential introduced session-wise
+- Convention locked: Pre-Exec Alignment + Anti-halusinasi (CLAUDE.md 6.4) +
+  Pydantic top-level (Sprint 14g)
+
+---
+
+# [2.3.0] — 2026-04-27 evening — Discipline Lock + Sprint 14e 3D Wire
+
+### CLAUDE.md 6.4 — Pre-Execution Alignment Check + Anti-Halusinasi rule (LOCK)
+- Mandatory check before edit prompt/persona: re-read note 248 + grep latest pivot
+- IF instruction conflict dengan pivot terbaru → STOP, kasih remark, jangan execute
+- Anti-halusinasi: setiap claim wajib basis konkret (cite file/line/output), bukan asumsi/memory lama
+- User directive 2026-04-27 evening setelah catch alignment gap di Sprint 14c
+
+### Iterasi #3 — ALEY system prompt pivot 2026-04-25 alignment fix
+- User-caught: ALEY output [SPEKULASI] tag per bullet melanggar pivot 2026-04-25
+- Fix shipped (commit f4d3447): explicit anti-blanket instruction, natural language hedging
+- LIVE re-verified: 0 blanket labels, voice natural mengalir
+- Note 254 dokumentasi full (familiarity bias trap + self-audit checklist)
+
+### Sprint 14e — 3D Mascot via TripoSR (image-to-3D)
+- generate_3d_from_image() di runpod_media.py
+- Pipeline gen_3d flag (opt-in), depend on hero_mascot.png Sprint 14b
+- Output: GLB/OBJ/FBX mesh ke .data/creative_briefs/<slug>/3d/
+- Hero use-case dari note 248 line 178-198 sekarang 100% covered (code path)
+- ⚠️ LIVE end-to-end NOT verified: 2 probe attempts CLIENT_TIMEOUT (302s + 601s)
+  IN_QUEUE → infrastructure issue (RunPod GPU supply throttle, TripoSR cold
+  start lebih heavy dari SDXL), BUKAN code issue
+- Note 255 dokumentasi full (alignment check + design rationale)
+
+### Auto-memory feedback saved
+- C:/Users/ASUS/.claude/projects/C--SIDIX-AI/memory/feedback_pre_exec_alignment.md
+- Persistent across sessions: pre-exec alignment + anti-halusinasi rules
+
+### Session metric (cumulative 2026-04-27)
+- 7 sprint shipped (12 + 14 + 14b + 14c + 14e + 15 + discipline lock)
+- 4 iterasi (Pydantic body, async polling, ALEY alignment, TripoSR timeout)
+- 7 research notes baru (249-255)
+- 21+ commits to main
+- 0 credential introduced session-wise
+
+---
+
+# [2.2.0] — 2026-04-27 — Creative Agent Stack + Visioner Foresight (Sprint 12+14+14b+14c+15)
+
+### Sprint 12 — CT 4-Pilar Cognitive Engine
+- Computational Thinking 4-pilar (Dekomposisi · Pattern Recognition · Abstraksi · Algoritma) di system prompt 5 persona
+- Per-persona CT lens: UTZ creative · ABOO engineer · OOMAR strategist · ALEY researcher · AYMAN general
+- Test: 60/60 combos pass (5 persona × 3 mode × 4 literacy)
+- File: apps/brain_qa/brain_qa/cot_system_prompts.py
+
+### Sprint 14 — Creative Pipeline 5-stage hero use-case
+- POST /creative/brief endpoint
+- 5-stage UTZ pipeline: Concept → Brand → Copy (5 var) → Landing → Asset Prompts (8)
+- Output bundle: report.md + metadata.json + asset_prompts.txt
+- LIVE verified: real LLM output stage 1 ~38-52s per stage
+- File: apps/brain_qa/brain_qa/creative_pipeline.py (new)
+
+### Sprint 14b — RunPod mighan-media-worker image generation wire
+- gen_images flag → render 3 hero asset PNG (mascot/logo/social) via SDXL
+- Async /run + /status polling pattern (handle GPU cold start + supply throttle)
+- LIVE verified: 637KB PNG 768×768 generated in 98.8s (95s cold + 2.93s gen)
+- ENV: RUNPOD_MEDIA_ENDPOINT_ID added
+- File: apps/brain_qa/brain_qa/runpod_media.py (new)
+
+### Sprint 14c — Multi-persona post-pipeline enrichment
+- enrich_personas flag (default ["OOMAR","ALEY"])
+- OOMAR: commercial review (market fit, GTM, monetization, risk, verdict)
+- ALEY: research-backed enrichment with auto-pickup trending keywords from visioner
+- LIVE verified: 3 distinct persona output 212s, ALEY cite 'Creative'+'Persona' from radar
+
+### Sprint 15 — Visioner Weekly Democratic Foresight
+- /visioner/weekly endpoint + cron 0 0 * * 0 weekly autonomous
+- 4-stage pipeline: SCAN (arxiv/HN/GitHub) → CLUSTER → 5-PERSONA SYNTH → REPORT
+- Auto-populate research_queue.jsonl (10 emerging-topic tasks/week)
+- LIVE verified: 22 real signals scanned, 8 clusters, top emerging = agent/generative/lora
+- File: apps/brain_qa/brain_qa/agent_visioner.py (new)
+
+### Endpoint summary baru
+- POST /creative/brief (Sprint 14+14b+14c)
+- GET /visioner/weekly (Sprint 15)
+
+### Notes
+- 249: CT 4-pilar persona scaffolding
+- 250: Visioner weekly democratic foresight
+- 251: Creative pipeline hero use-case
+- 252: RunPod media-worker image gen
+- 253: Multi-persona enrichment
+
+### Known issue defer
+- /openapi.json 500 (pydantic schema generation bug, separate from endpoint functionality)
+
+### Compound clock STARTED
+- Visioner cron first auto-run: Sunday 2026-W19
+- 1 tahun trajectory: 52 reports + 520 emerging-topic tasks → corpus 6-12 bulan ahead
+
+---
+
 # [2.1.5] — 2026-04-26 — Vol 20-fu3/5/6 + SIDIX Sandbox Genesis
 
 ### Vol 20-fu3 Simple-Tier Direct LLM Bypass: 78s -> 1.2s halo (37x)

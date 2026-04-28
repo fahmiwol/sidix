@@ -74,6 +74,64 @@ def _bump_metric(key: str) -> None:
     _METRICS[key] = _METRICS.get(key, 0) + 1
 
 
+# Sprint 28a: BM25 lookup cache untuk simple-tier corpus context injection.
+# Tujuan: simple bypass tetap fast (~5ms BM25), tapi LLM dapat 1 snippet
+# ground-truth dari corpus → tidak halusinasi pada definition queries.
+_SIMPLE_BM25 = {"chunks": None, "tokens": None, "bm25": None, "loaded_at": 0.0}
+
+
+def _simple_corpus_context(question: str, *, max_chars: int = 500) -> str:
+    """Return top-1 BM25 snippet untuk inject ke simple-tier system prompt.
+
+    Lazy-load BM25 sekali, cache di module. Empty string kalau gagal/no match.
+    Target: <10ms total (BM25 lookup ~3-5ms + slicing).
+    """
+    if not question or not question.strip():
+        return ""
+    try:
+        if _SIMPLE_BM25["bm25"] is None:
+            from rank_bm25 import BM25Okapi  # type: ignore
+            from .query import _load_chunks, _load_tokens
+            from .paths import default_index_dir
+            idx = default_index_dir()
+            chunks = _load_chunks(idx)
+            tokens = _load_tokens(idx)
+            if not chunks or len(tokens) != len(chunks):
+                return ""
+            _SIMPLE_BM25["chunks"] = chunks
+            _SIMPLE_BM25["tokens"] = tokens
+            _SIMPLE_BM25["bm25"] = BM25Okapi(tokens)
+            _SIMPLE_BM25["loaded_at"] = time.time()
+        from .text import tokenize
+        q_tokens = tokenize(question)
+        scores = _SIMPLE_BM25["bm25"].get_scores(q_tokens)
+        if not len(scores):
+            return ""
+        # Sprint 34A: pick top-N kandidat, skip praxis/lesson logs (self-referential
+        # reasoning traces yang biasanya mengandung query string sendiri)
+        ranked = sorted(range(len(scores)), key=lambda i: -scores[i])[:5]
+        chunks_obj = _SIMPLE_BM25["chunks"]
+        for idx in ranked:
+            if scores[idx] <= 0.0:
+                break
+            chunk = chunks_obj[idx]
+            src = (getattr(chunk, "source_path", "") or "").lower()
+            text_lower = (chunk.text or "").lower()
+            # Skip praxis lesson logs + agent_workspace traces
+            if "praxis" in src or "lesson" in src or "agent_workspace" in src:
+                continue
+            if "pelajaran praxis" in text_lower[:100] or "rangkaian eksekusi" in text_lower[:200]:
+                continue
+            snippet = (chunk.text or "").strip()
+            if len(snippet) > max_chars:
+                snippet = snippet[:max_chars].rsplit(" ", 1)[0] + "..."
+            return snippet
+        return ""
+    except Exception as e:
+        log.debug("[simple_corpus_context] failed: %s", e)
+        return ""
+
+
 def _client_ip(request: Request) -> str:
     c = request.client
     return c.host if c else "unknown"
@@ -443,6 +501,108 @@ class ResurrectRequest(BaseModel):
     return_intermediate: bool = False
 
 
+class CreativeBriefRequest(BaseModel):
+    """Sprint 14 — Hero use-case creative pipeline brief input.
+
+    Sprint 14b adds gen_images flag to render hero asset via mighan-media-worker.
+    """
+    brief: str
+    skip_stages: Optional[list[str]] = None
+    persist: bool = True
+    gen_images: bool = False
+    gen_images_n: int = 3
+    gen_3d: bool = False
+    gen_3d_format: str = "glb"  # glb | obj | fbx
+    gen_3d_mode: str = "auto"  # Sprint 14f: auto | triposr (image-to-3D) | shape (text-to-3D Shap-E)
+    gen_voice: bool = False  # Sprint 14d: TTS brand voice via mighan-media-worker
+    voice_lang: str = "id"  # id (Indonesian) | en | etc
+    enrich_personas: Optional[list[str]] = None  # default ["OOMAR","ALEY"], [] to disable
+
+
+class CouncilRequest(BaseModel):
+    """Multi-Agent Council (MoA-lite) reasoning request.
+
+    Sprint 14g (2026-04-27 evening fix): moved from inline (inside create_app())
+    to module top-level so Pydantic 2.13 can resolve forward reference for
+    /openapi.json schema generation. Same pattern as Sprint 14b iterasi #1
+    fix for CreativeBriefRequest.
+    """
+    question: str
+    personas: Optional[list[str]] = None
+    allow_restricted: bool = False
+
+
+class AgentGenerateRequest(BaseModel):
+    """Sprint 14g — moved from inline to top-level for Pydantic 2.13 compat.
+
+    Endpoint /agent/generate — pure general chat tanpa ReAct overhead, direct
+    Ollama/local_llm generation dengan persona hint.
+    """
+    prompt: str
+    persona: str = "UTZ"
+    max_tokens: int = 600
+    temperature: float = 0.7
+
+
+class AgentGenerateResponse(BaseModel):
+    """Sprint 14g — companion response for /agent/generate."""
+    text: str
+    mode: str  # "ollama" | "local_lora" | "mock"
+    persona: str
+
+
+class WisdomRequest(BaseModel):
+    """Sprint 16 — Wisdom Layer MVP request.
+
+    Per note 248 line 416-481 (DIMENSI INTUISI & WISDOM): 5-stage judgment
+    synthesizer (UTZ aha + OOMAR impact + ABOO risk + ALEY speculation +
+    AYMAN synthesis).
+    """
+    topic: str
+    context: Optional[str] = None
+    skip_capabilities: Optional[list[str]] = None  # ['aha','impact','risk','speculation','synthesis']
+    persist: bool = True
+
+
+class IntegratedRequest(BaseModel):
+    """Sprint 20 — Integrated Wisdom Output Mode request.
+
+    Per note 248 line 473 EXPLICIT: combine creative + wisdom dalam 1 unified call.
+    Smart caching: reuse existing creative_briefs/<slug>/ kalau exist.
+    """
+    brief: str
+    context: Optional[str] = None
+    force_regen: bool = False
+    creative_skip_stages: Optional[list[str]] = None
+    wisdom_skip_capabilities: Optional[list[str]] = None
+    enrich_personas: Optional[list[str]] = None
+    persist: bool = True
+
+
+class RasaRequest(BaseModel):
+    """Sprint 21 — 🎭 RASA Aesthetic/Quality Scorer request.
+
+    Per note 248 line 50 EXPLICIT (Embodiment): "🎭 RASA = aesthetic/quality
+    scorer (relevance, taste, brand fit)". Reads existing creative_briefs/<slug>/
+    artifacts → 4-dimension score (1-5) + improvement suggestions.
+    """
+    slug_or_brief: str  # slug langsung atau brief teks (auto-slugify)
+    persist: bool = True
+
+
+class KitabahIterateRequest(BaseModel):
+    """Sprint 22 — KITABAH Auto-iterate (generation-test validation loop).
+
+    Per note 248 line 109-114 EXPLICIT (Wahdah/Kitabah/ODOA self-learning
+    protocol): "KITABAH → generation-test validation (produce → validate own
+    output)". Loop creative → RASA → iterate with feedback.
+    """
+    brief: str
+    max_iter: int = 3
+    score_threshold: float = 4.0
+    persist: bool = True
+
+
 class WhitelistAddRequest(BaseModel):
     """Tambahkan email atau user_id ke whitelist (admin only)."""
     email: Optional[str] = None
@@ -645,6 +805,69 @@ def create_app() -> "FastAPI":
         print(f"[security] middleware load failed: {_e}")
 
     # ── /health ───────────────────────────────────────────────────────────────
+    # ── Sprint 37: Hafidz Ledger Audit Endpoints ─────────────────────────────
+    # Sprint 37 iterasi: register /audit/stats FIRST (specific route)
+    # before /audit/{content_id} (catch-all path param) to avoid conflict.
+    @app.get("/audit/stats")
+    def audit_stats():
+        """Hafidz Ledger overview stats."""
+        try:
+            from .hafidz_ledger import stats, list_recent_entries
+            s = stats()
+            recent = list_recent_entries(limit=10)
+            s["recent_10"] = [
+                {
+                    "content_id": e.content_id,
+                    "content_type": e.content_type,
+                    "cas_hash_short": e.cas_hash[:12],
+                    "owner_verdict": e.owner_verdict,
+                    "created_at": e.created_at,
+                }
+                for e in recent
+            ]
+            return s
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"stats error: {e}")
+
+    @app.get("/audit/{content_id}")
+    def audit_content(content_id: str):
+        """Trace provenance dari content_id via Hafidz Ledger isnad_chain."""
+        try:
+            from .hafidz_ledger import read_entry_by_id, trace_isnad
+            entry = read_entry_by_id(content_id)
+            if not entry:
+                raise HTTPException(status_code=404, detail=f"content_id not found: {content_id}")
+            chain = trace_isnad(content_id, max_depth=10)
+            return {
+                "content_id": content_id,
+                "entry": {
+                    "cas_hash": entry.cas_hash,
+                    "content_type": entry.content_type,
+                    "isnad_chain": entry.isnad_chain,
+                    "tabayyun_quality_gate": entry.tabayyun_quality_gate,
+                    "owner_verdict": entry.owner_verdict,
+                    "sources": entry.sources,
+                    "metadata": entry.metadata,
+                    "created_at": entry.created_at,
+                    "cycle_id": entry.cycle_id,
+                },
+                "isnad_trace": [
+                    {
+                        "content_id": c.content_id,
+                        "content_type": c.content_type,
+                        "cas_hash_short": c.cas_hash[:12],
+                        "owner_verdict": c.owner_verdict,
+                        "created_at": c.created_at,
+                    }
+                    for c in chain
+                ],
+                "chain_depth": len(chain),
+            }
+        except HTTPException:
+            raise
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"audit error: {e}")
+
     @app.get("/health")
     def health():
         adapter_path = find_adapter_dir()
@@ -748,11 +971,8 @@ def create_app() -> "FastAPI":
             "senses": probe_all()
         }
 
-    class CouncilRequest(BaseModel):
-        question: str
-        personas: list[str] | None = None
-        allow_restricted: bool = False
-
+    # Sprint 14g: CouncilRequest moved to module top-level (line ~456) for
+    # Pydantic 2.13 schema gen compat — broke /openapi.json before fix.
     @app.post("/agent/council")
     async def agent_council(req: CouncilRequest, request: Request):
         """Multi-Agent Council (MoA-lite) reasoning."""
@@ -954,19 +1174,10 @@ def create_app() -> "FastAPI":
     # ── POST /agent/generate ──────────────────────────────────────────────────
     # Jiwa Sprint: pure general chat tanpa ReAct loop / tool / corpus overhead.
     # Direct generation dari Ollama/local_llm dengan persona hint.
-    class GenerateRequest(BaseModel):
-        prompt: str
-        persona: str = "UTZ"
-        max_tokens: int = 600
-        temperature: float = 0.7
-
-    class GenerateResponse(BaseModel):
-        text: str
-        mode: str  # "ollama" | "local_lora" | "mock"
-        persona: str
-
-    @app.post("/agent/generate", response_model=GenerateResponse)
-    def agent_generate(req: GenerateRequest, request: Request):
+    # Sprint 14g: AgentGenerateRequest/Response moved to module top-level
+    # (line ~470) untuk Pydantic 2.13 schema gen compat.
+    @app.post("/agent/generate", response_model=AgentGenerateResponse)
+    def agent_generate(req: AgentGenerateRequest, request: Request):
         _enforce_rate(request)
         _enforce_daily(request)
         _bump_metric("agent_generate")
@@ -1006,7 +1217,7 @@ def create_app() -> "FastAPI":
                     temperature=req.temperature,
                 )
                 if mode == "ollama":
-                    return GenerateResponse(text=text, mode="ollama", persona=p)
+                    return AgentGenerateResponse(text=text, mode="ollama", persona=p)
         except Exception:
             pass
 
@@ -1020,11 +1231,11 @@ def create_app() -> "FastAPI":
                 temperature=req.temperature,
             )
             if mode == "local_lora":
-                return GenerateResponse(text=text, mode="local_lora", persona=p)
+                return AgentGenerateResponse(text=text, mode="local_lora", persona=p)
         except Exception:
             pass
 
-        return GenerateResponse(
+        return AgentGenerateResponse(
             text="⚠ Tidak ada engine inference yang tersedia (Ollama offline & local LLM tidak ter-load).",
             mode="mock",
             persona=p,
@@ -1253,6 +1464,199 @@ def create_app() -> "FastAPI":
             latency_ms=int((time.time() - _t_fs_start) * 1000),
         )
         return result
+
+    # ── GET /visioner/weekly — Sprint 15: Weekly Democratic Foresight ─────────
+    @app.get("/visioner/weekly", tags=["Supermodel"])
+    def visioner_weekly(synth: bool = True, max_synth: int = 5):
+        """
+        Sprint 15 (note 248 line 346-360): proactive weekly trend scan +
+        5-persona democratic synthesis. Auto-populates research queue.
+
+        Args:
+          synth: jalankan 5-persona LLM synthesis (default True)
+          max_synth: cap LLM calls (default 5 cluster x 5 persona = 25 calls)
+
+        Returns: report metadata + clusters. Full markdown di .data/visioner_reports/.
+        """
+        _bump_metric("visioner_weekly")
+        try:
+            from .agent_visioner import weekly_foresight_report
+        except Exception as e:
+            raise HTTPException(status_code=503, detail=f"visioner unavailable: {e}")
+        try:
+            return weekly_foresight_report(
+                do_synth=synth, max_clusters_for_synth=max(1, min(max_synth, 8))
+            )
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"visioner failed: {e}")
+
+    # ── GET /agent/odoa — Sprint 23: ODOA Daily Tracker ──────────────────────
+    @app.get("/agent/odoa", tags=["Supermodel"])
+    def agent_odoa(date: Optional[str] = None, persist: bool = True):
+        """
+        Sprint 23 (note 248 line 109 EXPLICIT): ODOA daily aggregate dari
+        .data/* + AYMAN warm narrative. One Day One Achievement tracking.
+        Compound dengan KITABAH (Sprint 22+22b).
+        """
+        _bump_metric("agent_odoa")
+        try:
+            from .agent_odoa import odoa_daily
+        except Exception as e:
+            raise HTTPException(status_code=503, detail=f"agent_odoa unavailable: {e}")
+        try:
+            return odoa_daily(date_str=date, persist=persist)
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"odoa failed: {e}")
+
+    # ── POST /creative/iterate — Sprint 22: KITABAH Auto-iterate ─────────────
+    @app.post("/creative/iterate", tags=["Supermodel"])
+    def creative_iterate(req: KitabahIterateRequest, request: Request):
+        """
+        Sprint 22 (note 248 line 109-114 EXPLICIT KITABAH): generation-test
+        validation loop. creative → RASA → iterate with improvement feedback.
+        Max iterations cap untuk budget control.
+        """
+        _enforce_rate(request)
+        _enforce_daily(request)
+        _bump_metric("creative_iterate")
+        if not (req.brief or "").strip():
+            raise HTTPException(status_code=400, detail="brief kosong")
+        try:
+            from .agent_kitabah import kitabah_iterate
+        except Exception as e:
+            raise HTTPException(status_code=503, detail=f"agent_kitabah unavailable: {e}")
+        try:
+            return kitabah_iterate(
+                req.brief,
+                max_iter=max(1, min(req.max_iter, 5)),  # cap 1-5
+                score_threshold=max(1.0, min(req.score_threshold, 5.0)),
+                persist=req.persist,
+            )
+        except ValueError as e:
+            raise HTTPException(status_code=400, detail=str(e))
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"kitabah failed: {e}")
+
+    # ── POST /agent/rasa — Sprint 21: 🎭 RASA Aesthetic/Quality Scorer ───────
+    @app.post("/agent/rasa", tags=["Supermodel"])
+    def agent_rasa(req: RasaRequest, request: Request):
+        """
+        Sprint 21 (note 248 line 50 EXPLICIT): aesthetic/quality scorer.
+        Reads creative_briefs/<slug>/ → 4-dimension score (relevance/aesthetic/
+        brand_fit/audience_fit, 1-5 scale) + structured JSON.
+        """
+        _enforce_rate(request)
+        _enforce_daily(request)
+        _bump_metric("agent_rasa")
+        if not (req.slug_or_brief or "").strip():
+            raise HTTPException(status_code=400, detail="slug_or_brief kosong")
+        try:
+            from .agent_rasa import rasa_score
+        except Exception as e:
+            raise HTTPException(status_code=503, detail=f"agent_rasa unavailable: {e}")
+        try:
+            return rasa_score(req.slug_or_brief, persist=req.persist)
+        except ValueError as e:
+            raise HTTPException(status_code=400, detail=str(e))
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"rasa failed: {e}")
+
+    # ── POST /agent/integrated — Sprint 20: Integrated Wisdom Output Mode ────
+    @app.post("/agent/integrated", tags=["Supermodel"])
+    def agent_integrated(req: IntegratedRequest, request: Request):
+        """
+        Sprint 20 (note 248 line 473): integrated creative + wisdom dalam 1 unified call.
+        Smart caching reuse existing creative_briefs/<slug>/ untuk hemat budget.
+        """
+        _enforce_rate(request)
+        _enforce_daily(request)
+        _bump_metric("agent_integrated")
+        if not (req.brief or "").strip():
+            raise HTTPException(status_code=400, detail="brief kosong")
+        try:
+            from .agent_integrated import integrated_analysis
+        except Exception as e:
+            raise HTTPException(status_code=503, detail=f"agent_integrated unavailable: {e}")
+        try:
+            return integrated_analysis(
+                req.brief,
+                context=req.context,
+                force_regen=req.force_regen,
+                creative_skip_stages=req.creative_skip_stages,
+                wisdom_skip_capabilities=req.wisdom_skip_capabilities,
+                enrich_personas=req.enrich_personas,
+                persist=req.persist,
+            )
+        except ValueError as e:
+            raise HTTPException(status_code=400, detail=str(e))
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"integrated failed: {e}")
+
+    # ── POST /agent/wisdom — Sprint 16: Wisdom Layer MVP ─────────────────────
+    @app.post("/agent/wisdom", tags=["Supermodel"])
+    def agent_wisdom(req: WisdomRequest, request: Request):
+        """
+        Sprint 16 (note 248 line 416-481): 5-persona judgment synthesizer.
+        Topic/decision → Aha (UTZ) → Impact (OOMAR) → Risk (ABOO) →
+        Speculation (ALEY) → Synthesis (AYMAN). Hooks visioner trending data.
+        """
+        _enforce_rate(request)
+        _enforce_daily(request)
+        _bump_metric("agent_wisdom")
+        if not (req.topic or "").strip():
+            raise HTTPException(status_code=400, detail="topic kosong")
+        try:
+            from .agent_wisdom import wisdom_analyze
+        except Exception as e:
+            raise HTTPException(status_code=503, detail=f"agent_wisdom unavailable: {e}")
+        try:
+            return wisdom_analyze(
+                req.topic,
+                context=req.context,
+                skip_capabilities=req.skip_capabilities,
+                persist=req.persist,
+            )
+        except ValueError as e:
+            raise HTTPException(status_code=400, detail=str(e))
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"wisdom failed: {e}")
+
+    # ── POST /creative/brief — Sprint 14: Hero Use-Case Creative Pipeline ────
+    @app.post("/creative/brief", tags=["Supermodel"])
+    def creative_brief(req: CreativeBriefRequest, request: Request):
+        """
+        Sprint 14 (note 248 line 178-198): hero use-case creative pipeline.
+        Brief teks → 5-stage bundled deliverable (concept + brand + copy +
+        landing + asset prompts) dengan UTZ creative-director persona +
+        CT 4-pilar Sprint 12 sebagai cognitive engine.
+        """
+        _enforce_rate(request)
+        _enforce_daily(request)
+        _bump_metric("creative_brief")
+        if not (req.brief or "").strip():
+            raise HTTPException(status_code=400, detail="brief kosong")
+        try:
+            from .creative_pipeline import creative_brief_pipeline
+        except Exception as e:
+            raise HTTPException(status_code=503, detail=f"creative_pipeline unavailable: {e}")
+        try:
+            return creative_brief_pipeline(
+                req.brief,
+                skip_stages=req.skip_stages,
+                persist=req.persist,
+                gen_images=req.gen_images,
+                gen_images_n=req.gen_images_n,
+                gen_3d=req.gen_3d,
+                gen_3d_format=req.gen_3d_format,
+                gen_3d_mode=req.gen_3d_mode,
+                gen_voice=req.gen_voice,
+                voice_lang=req.voice_lang,
+                enrich_personas=req.enrich_personas,
+            )
+        except ValueError as e:
+            raise HTTPException(status_code=400, detail=str(e))
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"pipeline failed: {e}")
 
     # ── GET /agent/orchestration ───────────────────────────────────────────────
     @app.get("/agent/orchestration")
@@ -3203,17 +3607,37 @@ def create_app() -> "FastAPI":
 
         # ── Vol 20-fu3.2: SIMPLE-TIER DIRECT LLM BYPASS ──────────────────────
         # Greeting/ack → skip run_react/RAG/tools. Direct generate_sidix.
+        # Sprint 34E: kalau query butuh current events (web_search), JANGAN bypass.
+        # LLM prior tidak punya data terkini → halusinasi (kasus Jokowi vs Prabowo).
         _is_simple_bypass = _tier_decision is not None and _tier_decision.tier == "simple"
+        if _is_simple_bypass:
+            try:
+                from .agent_react import _needs_web_search
+                if _needs_web_search(req.question) and req.allow_web_fallback and not req.corpus_only:
+                    _is_simple_bypass = False  # force standard tier untuk current events
+                    _bump_metric("ask_simple_bypass_skip_for_web")
+                    log.info("[ask] simple bypass SKIPPED — needs web_search: %r", req.question[:60])
+            except Exception:
+                pass
         if _is_simple_bypass:
             try:
                 from .runpod_serverless import hybrid_generate
                 _bump_metric("ask_simple_bypass")
                 _t_simple = time.time()
+                # Sprint 28a: inject 1 BM25 snippet supaya LLM tidak halusinasi
+                # pada definition queries (e.g., "SIDIX adalah apa?")
+                _ctx = _simple_corpus_context(req.question)
                 _simple_sys = (
                     f"Kamu SIDIX, persona {req.persona}. "
                     "Jawab singkat (max 2 kalimat), hangat, natural. "
                     "Jangan tampilkan citations atau analisis multi-step."
                 )
+                if _ctx:
+                    _simple_sys += (
+                        f"\n\nKonteks dari corpus SIDIX (gunakan kalau relevan, "
+                        f"jangan parafrase mentah):\n{_ctx}"
+                    )
+                    _bump_metric("ask_simple_bypass_with_corpus_ctx")
                 _simple_text, _simple_mode = hybrid_generate(
                     prompt=req.question, system=_simple_sys,
                     max_tokens=120, temperature=0.6,
@@ -3235,6 +3659,62 @@ def create_app() -> "FastAPI":
                 log.warning("[ask] simple bypass failed, fallback to run_react: %s", _e)
                 # Fall through
 
+        # ── Sprint 29: 1000 Bayangan Shadow Pool dispatch (gated, MVP) ──────────
+        # Vol 25 vision (note 239+244+249): parallel specialized shadows answer
+        # in tandem, consensus picks best claim. shadow_pool.py SUDAH ada (8 shadows
+        # politics/fiqh/code/science/business/tech_news/indonesia_culture/general),
+        # tapi belum wired ke /ask. Gated env SIDIX_SHADOW_POOL=1, default OFF.
+        if (
+            os.environ.get("SIDIX_SHADOW_POOL", "").strip() in ("1", "true", "on")
+            and not req.corpus_only
+            and req.allow_web_fallback
+            and _tier_decision is not None
+            and _tier_decision.tier in ("standard", "deep")
+        ):
+            try:
+                _bump_metric("ask_shadow_pool_attempt")
+                import asyncio as _asyncio
+                from .shadow_pool import dispatch as _shadow_dispatch
+                _t_shadow = time.time()
+                _shadow_result = _asyncio.run(_shadow_dispatch(
+                    req.question,
+                    top_k=3,
+                    timeout=25.0,
+                ))
+                _shadow_ms = int((time.time() - _t_shadow) * 1000)
+                if _shadow_result.consensus_claim:
+                    _bump_metric("ask_shadow_pool_hit")
+                    log.info(
+                        "[ask] shadow pool hit shadows=%s in %dms",
+                        _shadow_result.contributing_shadows, _shadow_ms,
+                    )
+                    # Compose citations dari semua shadow sources
+                    _shadow_citations = []
+                    for _r in _shadow_result.all_responses:
+                        for _src in _r.get("sources", []):
+                            _shadow_citations.append({
+                                "type": "shadow_pool",
+                                "url": _src.get("url", ""),
+                                "title": _src.get("title", ""),
+                                "shadow": _r.get("shadow", ""),
+                                "domain": _r.get("domain", ""),
+                            })
+                    return {
+                        "answer": _shadow_result.consensus_claim,
+                        "session_id": f"shadow-{int(time.time()*1000)}",
+                        "persona": req.persona,
+                        "confidence": "tinggi",
+                        "citations": _shadow_citations,
+                        "_shadow_pool": True,
+                        "_shadow_pool_shadows": _shadow_result.contributing_shadows,
+                        "_shadow_pool_latency_ms": _shadow_ms,
+                        "_complexity_tier": _tier_decision.tier,
+                    }
+                else:
+                    log.info("[ask] shadow pool empty consensus, fallback to run_react")
+            except Exception as _e:
+                log.warning("[ask] shadow pool failed, fallback to run_react: %s", _e)
+
         session = run_react(
             question=req.question,
             persona=req.persona,
@@ -3248,6 +3728,59 @@ def create_app() -> "FastAPI":
         )
         _store_session(session)
         (None if _is_whitelisted(request) else rate_limit.record_daily_use(_daily_client_key(request)))
+
+        # ── Sprint 34I+34J: POST-PROCESS FACT VERIFICATION + CLEAN FORMAT ─
+        # Ekstrak fact deterministic dari web_search steps. Tiga skenario override:
+        # (a) Answer contradicts fact (LLM bilang Jokowi, web sebut Prabowo)
+        # (b) Answer is raw web dump markdown (LLM synthesis fallback ugly format)
+        # (c) Both: replace dengan clean narrative
+        try:
+            from .fact_extractor import extract_fact_from_web
+            _web_blob = ""
+            for _st in (session.steps or []):
+                if str(getattr(_st, "action_name", "")) == "web_search":
+                    _web_blob += "\n" + str(getattr(_st, "observation", "") or "")
+                # Also collect from action_args citations as backup source
+                for _cit in (getattr(_st, "action_args", {}) or {}).get("_citations", []):
+                    _t = _cit.get("title", "")
+                    _u = _cit.get("url", "")
+                    if _t or _u:
+                        _web_blob += f"\n{_t} {_u}"
+            if _web_blob.strip():
+                _fact = extract_fact_from_web(req.question, _web_blob)
+                if _fact and _fact.get("name") and _fact.get("confidence") == "high":
+                    _fname = _fact["name"]
+                    _frole = _fact.get("role", "")
+                    _src = (_fact.get("sources") or [""])[0]
+                    _curr = (session.final_answer or "")
+                    _curr_lower = _curr.lower()
+                    # Sprint 34J: detect raw web dump (LLM fallback ugly)
+                    _is_raw_dump = (
+                        "# hasil pencarian" in _curr_lower
+                        or _curr_lower.count("http") >= 3  # banyak raw URL
+                    )
+                    _name_missing = _fname.lower() not in _curr_lower
+                    if _name_missing or _is_raw_dump:
+                        # Build clean narrative override
+                        _override = (
+                            f"Berdasarkan pencarian web terkini, {_frole} adalah **{_fname}**."
+                        )
+                        if _src:
+                            _override += f"\n\nSumber: {_src}"
+                        # Add 2-3 supporting hits dari fact metadata
+                        _other_srcs = (_fact.get("sources") or [])[1:3]
+                        if _other_srcs:
+                            _override += "\n\nReferensi lain: " + ", ".join(_other_srcs)
+                        _reason = "name_missing" if _name_missing else "raw_dump"
+                        log.info(
+                            "[ask] Sprint 34I+J OVERRIDE — reason=%s, force clean fact: %r",
+                            _reason, _fname,
+                        )
+                        _bump_metric(f"ask_fact_override_{_reason}")
+                        session.final_answer = _override
+        except Exception as _fact_err:
+            log.debug("[ask] fact post-process skip: %s", _fact_err)
+
         # Konversi citations ke format UI
         ui_citations = []
         for cit in session.citations:
@@ -3680,12 +4213,20 @@ def create_app() -> "FastAPI":
                     from .runpod_serverless import hybrid_generate
                     _bump_metric("ask_stream_simple_bypass")
                     _t_simple_start = time.time()
+                    # Sprint 28a: inject 1 BM25 snippet untuk grounding
+                    _ctx = _simple_corpus_context(req.question)
                     _simple_sys = (
                         f"Kamu SIDIX, persona {effective_persona}. "
                         "Jawab singkat (max 2 kalimat), hangat, natural. "
                         "Jangan tampilkan citations atau analisis multi-step. "
                         "Jangan tambah label epistemik untuk obrolan ringan."
                     )
+                    if _ctx:
+                        _simple_sys += (
+                            f"\n\nKonteks dari corpus SIDIX (gunakan kalau relevan, "
+                            f"jangan parafrase mentah):\n{_ctx}"
+                        )
+                        _bump_metric("ask_stream_simple_bypass_with_corpus_ctx")
                     _simple_text, _simple_mode = hybrid_generate(
                         prompt=req.question,
                         system=_simple_sys,

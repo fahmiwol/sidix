@@ -6,7 +6,14 @@ module.exports = {
       cwd: '/opt/sidix',
       interpreter: 'bash',
       env: {
-        SIDIX_TYPO_PIPELINE: '1'
+        SIDIX_TYPO_PIPELINE: '1',
+        // Sprint 25: Hybrid BM25+Dense retrieval (LIVE 2026-04-28, +6.0% Hit@5)
+        SIDIX_HYBRID_RETRIEVAL: '1',
+        // Sprint 27c: rerank OFF — MiniLM regressed -2% Hit@5 vs hybrid on
+        // Indonesian paraphrase queries (English-bias). Note 271 detail.
+        // Code/model selection retained for future GPU/quantized rerank iteration.
+        SIDIX_RERANK: '0',
+        SIDIX_RERANK_MODEL: 'ms-marco-minilm'
       }
     },
     {
