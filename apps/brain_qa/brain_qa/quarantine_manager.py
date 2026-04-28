@@ -341,6 +341,13 @@ def promote_skill(skill_id: str, owner_note: str = "", force: bool = False) -> d
     # Hafidz Ledger — sanad-as-governance: isnad_chain ke parent proposal
     _write_promote_to_hafidz(skill_id, dst, data, promoted_at, owner_note)
 
+    # Remove source from quarantine (konsisten dengan reject_skill)
+    # Active copy + Hafidz entry sudah di-write, jadi audit trail aman.
+    try:
+        src.unlink()
+    except Exception as e:
+        log.warning("[quarantine] could not remove quarantine source after promote: %s", e)
+
     log.info("[quarantine] PROMOTED skill '%s' → active (age=%dd force=%s)", skill_id, age_days, force)
     return {
         "ok": True,
