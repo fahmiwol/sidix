@@ -108,5 +108,9 @@ except Exception as e:
 print(f"radar tick {CYCLE_ID} done")
 PYEOF
 
-COUNT=$(wc -l < "$RADAR_LOG" 2>/dev/null || echo 0)
+if [ -f "$RADAR_LOG" ]; then
+    COUNT=$(wc -l < "$RADAR_LOG")
+else
+    COUNT=0
+fi
 echo "[$TIMESTAMP] [$CYCLE_ID] radar done. Total mentions logged ever: $COUNT"

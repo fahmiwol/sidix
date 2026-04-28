@@ -12291,3 +12291,45 @@ ln -s ../../deploy-scripts/post_deploy_chmod.sh .git/hooks/post-merge
 chmod +x deploy-scripts/post_deploy_chmod.sh
 ```
 
+
+---
+
+## 2026-04-28 EVENING (LATEST+4) — Sprint 32 START: Dense Embeddings Rebuild
+
+### IMPL [Sprint 32] — START
+**Goal**: rebuild `embeddings.npy` include 7 notes baru (274-281) supaya hybrid
+retrieval Sprint 25 +6% Hit@5 lift tetap fresh untuk corpus terbaru.
+
+**Sebelum**: 
+- chunks.jsonl mtime 06:06 UTC (BM25 reindex Sprint 30A done)
+- embeddings.npy mtime 03:17 UTC (Sprint 25 build, sebelum 7 notes baru)
+- Stale dense → query semantic ke notes baru tidak optimal
+
+**Plan**:
+1. SSH VPS → `SIDIX_BUILD_DENSE=1 python3 -m brain_qa index`
+2. BGE-M3 embed ~2300 chunks (estimate 2-4 min)
+3. Verify embeddings.npy mtime updated
+4. Test query "apa itu sanad chain di SIDIX" → expect grounded dari note 276/281
+5. Test query "Penemu Inovatif Kreatif" → expect dari NORTH_STAR-related chunks
+
+
+### ERROR [Sprint 32] dense rebuild GAGAL — transformers/sentence-transformers compat break
+**Verified VPS**:
+- transformers 5.5.1 + sentence-transformers 5.4.1 → `ModuleNotFoundError: Could not import 'PreTrainedModel'`
+- PM2 sidix-brain runtime tetap jalan (cached/lazy state — Sprint 25 build sukses 2026-04-28 03:17)
+- Standalone Python invocation `python3 -m brain_qa index` GAGAL load embed_fn
+
+**Decision**: DEFER dense rebuild. Reason:
+- Risk fix downgrade transformers → break PM2 runtime
+- Mitigation: BM25 retrieval (Sprint 30A reindex) sudah cover note 274-281 untuk lexical match
+- Sprint 28a simple-tier corpus inject pakai BM25 top-1 → grounded fine
+
+**TODO Sprint 33+** (proper fix):
+- Pin transformers version compat dengan sentence-transformers 5.4.1
+- Test di staging sebelum apply ke PM2 sidix-brain
+
+### PIVOT [Sprint 32 → Sprint 32-radar] fix radar_mentions.jsonl path bug
+Found di cron_radar.log: `radar_mentions.jsonl: No such file or directory`
+Cron jalan tiap 30 min (chmod fix), tapi log path missing → 0 mentions ever logged.
+Quick fix: ensure parent dir exists + touch file kalau belum ada.
+
