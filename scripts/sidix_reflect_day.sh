@@ -232,10 +232,39 @@ lines.extend([
 ])
 
 # Write lesson draft
+content = "\n".join(lines)
 with open(LESSON_FILE, "w", encoding="utf-8") as f:
-    f.write("\n".join(lines))
+    f.write(content)
 
 print(f"[reflect] lesson draft written: {LESSON_FILE}")
+
+# Sprint 37: write Hafidz Ledger entry untuk this lesson draft (preliminary)
+try:
+    from brain_qa.hafidz_ledger import write_entry
+    sources = [str(ACTIVITY_LOG)]
+    if (ODOA_DIR / f"odoa-{DATE}.json").exists():
+        sources.append(str(ODOA_DIR / f"odoa-{DATE}.json"))
+    entry = write_entry(
+        content=content,
+        content_id=f"lesson-{DATE}",
+        content_type="reflection_lesson",
+        isnad_chain=[],  # primary entry — no parent
+        tabayyun_quality_gate=None,  # pending owner review
+        owner_verdict="pending",
+        sources=sources,
+        metadata={
+            "events_analyzed": len(events),
+            "failures": len(failures),
+            "tool_actions": len(tool_sequences),
+            "repeated_patterns": len(repeated_failures),
+            "repeated_sequences": len(repeated_seqs),
+        },
+        cycle_id=CYCLE_ID,
+    )
+    print(f"[hafidz] entry written: cas_hash={entry.cas_hash[:12]}... content_id=lesson-{DATE}")
+except Exception as _hl_err:
+    print(f"[hafidz] skip (module not available): {_hl_err}")
+
 print(f"[reflect] DONE — failures={len(failures)} tool_actions={len(tool_sequences)} repeated_patterns={len(repeated_failures)} repeated_sequences={len(repeated_seqs)}")
 PYEOF
 

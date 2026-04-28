@@ -805,6 +805,67 @@ def create_app() -> "FastAPI":
         print(f"[security] middleware load failed: {_e}")
 
     # ── /health ───────────────────────────────────────────────────────────────
+    # ── Sprint 37: Hafidz Ledger Audit Endpoints ─────────────────────────────
+    @app.get("/audit/{content_id}")
+    def audit_content(content_id: str):
+        """Trace provenance dari content_id via Hafidz Ledger isnad_chain."""
+        try:
+            from .hafidz_ledger import read_entry_by_id, trace_isnad
+            entry = read_entry_by_id(content_id)
+            if not entry:
+                raise HTTPException(status_code=404, detail=f"content_id not found: {content_id}")
+            chain = trace_isnad(content_id, max_depth=10)
+            return {
+                "content_id": content_id,
+                "entry": {
+                    "cas_hash": entry.cas_hash,
+                    "content_type": entry.content_type,
+                    "isnad_chain": entry.isnad_chain,
+                    "tabayyun_quality_gate": entry.tabayyun_quality_gate,
+                    "owner_verdict": entry.owner_verdict,
+                    "sources": entry.sources,
+                    "metadata": entry.metadata,
+                    "created_at": entry.created_at,
+                    "cycle_id": entry.cycle_id,
+                },
+                "isnad_trace": [
+                    {
+                        "content_id": c.content_id,
+                        "content_type": c.content_type,
+                        "cas_hash_short": c.cas_hash[:12],
+                        "owner_verdict": c.owner_verdict,
+                        "created_at": c.created_at,
+                    }
+                    for c in chain
+                ],
+                "chain_depth": len(chain),
+            }
+        except HTTPException:
+            raise
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"audit error: {e}")
+
+    @app.get("/audit/_stats")
+    def audit_stats():
+        """Hafidz Ledger overview stats."""
+        try:
+            from .hafidz_ledger import stats, list_recent_entries
+            s = stats()
+            recent = list_recent_entries(limit=10)
+            s["recent_10"] = [
+                {
+                    "content_id": e.content_id,
+                    "content_type": e.content_type,
+                    "cas_hash_short": e.cas_hash[:12],
+                    "owner_verdict": e.owner_verdict,
+                    "created_at": e.created_at,
+                }
+                for e in recent
+            ]
+            return s
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"stats error: {e}")
+
     @app.get("/health")
     def health():
         adapter_path = find_adapter_dir()
