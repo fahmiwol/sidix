@@ -2,7 +2,16 @@
 sanad_tier: primer
 ---
 
-# 276 — Sanad Chain di SIDIX: Definisi, Implementasi, Cara Kerja
+# 276 — Sanad di SIDIX: Spirit Validator Multi-Dimensi (Metafora, Bukan Spec Literal)
+
+> **🚨 META-DISCLAIMER (founder rule LOCKED 2026-04-28)**: Istilah-istilah dalam dokumen
+> ini — terutama "**sanad**", "**hafidz**", "**jurus 1000 bayangan**", "**relevance score 9++**" —
+> adalah **METAFORA dan ANALOGI** dari founder, BUKAN spec literal yang harus
+> di-implement satu-satu sebagai algorithm rigid.
+> 
+> **Spirit > Mechanic**. Beberapa implementasi konkret bisa serve same spirit. Setiap
+> agent yang baca dokumen ini WAJIB internalize META-RULE di `docs/FOUNDER_JOURNAL.md`
+> entry "Bahasa Bos = METAFORA & ANALOGI" sebelum extract konten teknis di bawah.
 
 **Tanggal**: 2026-04-28 evening  
 **Sprint**: 30 A1 (Continuity Manifest follow-up)  
@@ -36,14 +45,54 @@ konsep yang well-established → **skip**, kontekstual, bukan blanket (per pivot
 
 ---
 
-## Definisi Operasional
+## Definisi Operasional (KOREKSI dari founder 2026-04-28)
 
-Sanad di SIDIX adalah **rantai validasi/atribusi sumber** untuk klaim apapun yang
-SIDIX hasilkan **saat konteks butuh**. Tujuannya: setiap klaim faktual bisa
-**ditelusuri** balik ke sumber, dan klaim dengan **multi-source agreement** dapat
-skor confidence lebih tinggi.
+**Sanad = SPIRIT VALIDATOR multi-dimensi**, integrate dengan flow **jurus 1000
+bayangan** (metafora paralel multi-perspective) dan **hafidz** (metafora memory
+recall). Bukan toggle on/off untuk "casual skip", bukan single-axis tier weight saja.
 
-Implementasi: chain-of-provenance + parallel consensus + tier-weighted ranking.
+### Flow integratif (metafora dari founder, mendinamiskan untuk implementasi):
+
+```
+User input/query
+   ↓
+[NIAT-AKSI Router] — parse intent
+   ↓
+[JURUS 1000 BAYANGAN] (metafora paralel fan-out)
+   • Multi-perspective dispatch: 5 persona berfikir paralel dari dimensi
+     masing-masing (UTZ creative, ABOO engineer, OOMAR strategic, ALEY
+     academic, AYMAN synthesis)
+   • Multi-source: corpus + web + memory + tools (semua relevan)
+   • Tiap shadow agent membawa pulang pengetahuan/informasi baru
+   ↓
+[HAFIDZ Layer] (metafora memory recall)
+   • Aggregate hasil shadow agents
+   • Track provenance chain (dari mana asal info)
+   • Cross-reference confidence per sumber
+   ↓
+[SANAD Validator Gate] ← intinya
+   • Validasi MULTI-DIMENSI:
+     ◦ Faktual (data correctness)
+     ◦ Kontekstual (relevance to query)
+     ◦ Kreatif (originality, insight value)
+     ◦ Strategic (impact projection)
+     ◦ Akademik (evidence depth)
+     ◦ Relasional (sintesis quality antar dimensi)
+   • Cross-check sampai ke AKAR provenance (bukan surface)
+   • Spirit: target relevance "9++ mendekati sempurna" (metafora kualitas tinggi)
+   ↓
+   Cukup relevan? → output multi-modal ke user
+   Belum cukup? → re-iterate (KITABAH loop) atau flag uncertain
+```
+
+**Penting** (per META-RULE bos):
+- Angka "9++" = metafora target tinggi, **bukan literal threshold algorithm**
+- "1000 bayangan" = metafora paralel multi-perspective, **count fleksibel** (8/16/100 shadows aktual)
+- "Hafidz" = metafora memory recall, **bukan literal Quran memorization protocol**
+- "Validasi sampai akar" = spirit menggali sumber, **bukan rigid graph traversal depth-N**
+
+Multiple implementasi valid asalkan **spirit terjaga**: paralel multi-perspective +
+provenance tracking + multi-dimensi validation gate sebelum render ke user.
 
 ---
 

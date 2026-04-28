@@ -9,11 +9,16 @@ Proyek: **SIDIX / Mighan Model**
 User directive eksplisit: *"gaaaaaaasssssssssssss!!!! catat!! jangan berubah-ubah lagi arah sidix"* + *"tulis dengan besar supaya nggak berubah lagi. cataaaattt!!! aligment semuanya"*
 
 **WAJIB BACA URUTAN INI**:
-1. 📜 **[`docs/SIDIX_CANONICAL_V1.md`](docs/SIDIX_CANONICAL_V1.md)** ← **SOURCE OF TRUTH #0** (NEW 2026-04-28) — single SOT consolidate notes 224+228+248+277+278. Authority over docs lain. Cite ini setiap sprint.
-2. 📜 **[`docs/SIDIX_DEFINITION_20260426.md`](docs/SIDIX_DEFINITION_20260426.md)** ← **SOURCE OF TRUTH #1** (definisi formal lengkap karakter + kemampuan + arsitektur)
-3. 🔒 [`docs/DIRECTION_LOCK_20260426.md`](docs/DIRECTION_LOCK_20260426.md) ← tactical lock (8 ❌ rules + Q3 roadmap)
-4. 🗺️ **[`docs/SIDIX_CONTINUITY_MANIFEST.md`](docs/SIDIX_CONTINUITY_MANIFEST.md)** ← **SOURCE OF TRUTH #2** — 19 distinctive concepts dengan status (LIVE/SCAFFOLDED/PLANNED/WIRED-BLOCKED). Wajib cek SEBELUM start sprint baru — anti-drift, anti-repetisi, anti-melenceng. Update dengan tanggal kalau status berubah.
-5. 📓 **[`docs/FOUNDER_JOURNAL.md`](docs/FOUNDER_JOURNAL.md)** ← **DIRECTIVE LOG founder** (NEW 2026-04-28) — append-only quote bos verbatim. WAJIB cek "PENDING DIRECTIVE" list di bawah. Setiap directive baru dari bos → append entry SEKARANG, jangan tunda.
+0. 🚨 **[`docs/FOUNDER_JOURNAL.md`](docs/FOUNDER_JOURNAL.md)** ← **HIGHEST PRIORITY META-RULE**: "Bahasa Bos = METAFORA & ANALOGI". Spirit > literal. Setiap istilah founder = inspirasi pola, bukan spec rigid.
+1. 🌟 **[`docs/SIDIX_NORTH_STAR.md`](docs/SIDIX_NORTH_STAR.md)** ← **NORTH STAR LOCKED** (2026-04-28) — SIDIX = Penemu Inovatif Kreatif Digital, keluar dari pola sistematis AI Agent biasa.
+2. 📜 **[`docs/SIDIX_CANONICAL_V1.md`](docs/SIDIX_CANONICAL_V1.md)** ← **SOURCE OF TRUTH #0** — single SOT consolidate notes 224+228+248+277+278+279+280. Authority over docs lain.
+3. 📜 [`docs/SIDIX_DEFINITION_20260426.md`](docs/SIDIX_DEFINITION_20260426.md) ← formal definition LOCKED
+4. 🔒 [`docs/DIRECTION_LOCK_20260426.md`](docs/DIRECTION_LOCK_20260426.md) ← tactical lock (8 ❌ rules + Q3 roadmap)
+5. 🗺️ **[`docs/SIDIX_CONTINUITY_MANIFEST.md`](docs/SIDIX_CONTINUITY_MANIFEST.md)** ← 19 distinctive concepts status registry. Wajib cek SEBELUM start sprint baru.
+6. 🧠 **research note 279** ← Cara SIDIX Action (mirror otak metafora — multi-sensory · multi-perspective · iterative · embodied)
+7. 🧬 **research note 280** ← Static-Generative Pattern (Quran/DNA/Brain pola universal → SIDIX)
+8. 🔄 **research note 281** ← Sintesis Multi-Dimensi 4 inisiasi (Claude-guru, SIDIX-hadir, Hyperx, 24-jam AI-to-AI)
+9. 📓 [`docs/FOUNDER_JOURNAL.md`](docs/FOUNDER_JOURNAL.md) (re-cek) — directive log founder verbatim. Setiap directive baru dari bos → append entry SEKARANG.
 
 ### Quick reference:
 - **Tagline**: *"Autonomous AI Agent — Thinks, Learns & Creates"*

@@ -1,9 +1,16 @@
 # SIDIX_CANONICAL_V1.md — Single Source of Truth
 
 > **Kanonik untuk semua framing SIDIX, Vol 21+ ke depan.**  
-> **Locked**: 2026-04-28 evening (consolidate notes 224+228+248+277+278)  
+> **Locked**: 2026-04-28 evening (consolidate notes 224+228+248+277+278+279+280 + NORTH_STAR + FOUNDER_JOURNAL)  
 > **Authority**: jika dokumen lain bertentangan dengan file ini, **file ini menang**.  
 > **Update protocol**: append-only, dengan tanggal + signature founder.
+
+> **🚨 META-RULE PALING PENTING (2026-04-28 LATEST)**:  
+> **Bahasa founder = METAFORA dan ANALOGI**. Spirit di balik istilah > literal mechanic.  
+> Istilah seperti "**jurus 1000 bayangan**", "**hafidz**", "**sanad validator**", "**otak manusia**",
+> "**Quran statis-generative**", "**penemu inovatif kreatif**" semua adalah metafora — extract spirit, manifest dengan cara native SIDIX.  
+> Detail di `docs/FOUNDER_JOURNAL.md` entry "Bahasa Bos = METAFORA & ANALOGI".  
+> Setiap agent baru WAJIB internalize ini SEBELUM baca konten teknis di bawah.
 
 ---
 
@@ -11,12 +18,15 @@
 
 ```
 1. CLAUDE.md                                       — instruksi permanen agent
-2. docs/SIDIX_DEFINITION_20260426.md               — formal definition LOCKED
-3. brain/public/research_notes/248                 — canonical pivot LOCKED
-4. THIS FILE (SIDIX_CANONICAL_V1)                  — single SOT consolidation
-5. docs/SIDIX_CONTINUITY_MANIFEST.md               — 19 distinctive concepts
-6. docs/FOUNDER_JOURNAL.md                         — directive log founder
-7. tail docs/LIVING_LOG.md                         — recent actions
+2. docs/FOUNDER_JOURNAL.md (META-RULE!)            — bahasa founder metafora-analogi (HIGHEST PRIORITY)
+3. docs/SIDIX_NORTH_STAR.md                        — Penemu Inovatif Kreatif positioning
+4. docs/SIDIX_DEFINITION_20260426.md               — formal definition LOCKED
+5. brain/public/research_notes/248                 — canonical pivot LOCKED
+6. THIS FILE (SIDIX_CANONICAL_V1)                  — single SOT consolidation
+7. docs/SIDIX_CONTINUITY_MANIFEST.md               — 19 distinctive concepts
+8. brain/public/research_notes/279                 — Cara SIDIX Action (mirror otak metafora)
+9. brain/public/research_notes/280                 — Static-Generative Pattern (Quran/DNA/Brain pola)
+10. tail docs/LIVING_LOG.md                        — recent actions
 ```
 
 ---
