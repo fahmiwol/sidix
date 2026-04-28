@@ -100,13 +100,16 @@ def main():
 
     # ── Load base + LoRA/DoRA ──────────────────────────────────────────────────
     print(">>> Loading base model (bf16) + LoRA config...")
+    # NOTE: device_map="auto" + SFTTrainer race condition (meta tensor cannot copy).
+    # Load to CPU first, then trainer auto-moves to GPU. low_cpu_mem_usage=False to
+    # avoid meta-init that breaks .to(device) downstream.
     model = AutoModelForCausalLM.from_pretrained(
         args.base_model,
         torch_dtype=torch.bfloat16,
-        device_map="auto",
         trust_remote_code=True,
-        low_cpu_mem_usage=True,
+        low_cpu_mem_usage=False,
     )
+    model = model.to("cuda")
     model.config.use_cache = False
     if args.batch_size == 1:
         model.gradient_checkpointing_enable()
