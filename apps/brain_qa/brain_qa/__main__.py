@@ -391,6 +391,17 @@ def main(argv: list[str]) -> int:
     p_gen_qa.add_argument("--out-dir", default="/opt/sidix/.data/training",
                           help="Output dir untuk JSONL (default /opt/sidix/.data/training)")
 
+    # Sprint 13 Phase 3a → 3b bridge — merge + train/val split
+    p_merge = sub.add_parser("merge_persona_dataset",
+                              help="Sprint 13: merge 5 persona JSONL → train/val split untuk Kaggle T4")
+    p_merge.add_argument("--in-dir", default="/opt/sidix/.data/training",
+                         help="Input dir berisi persona_qa_{PERSONA}.jsonl")
+    p_merge.add_argument("--out-dir", default=None,
+                         help="Output dir (default sama dgn in-dir)")
+    p_merge.add_argument("--val-ratio", type=float, default=0.10,
+                         help="Holdout ratio untuk val (default 0.10)")
+    p_merge.add_argument("--seed", type=int, default=2026, help="Shuffle seed")
+
     args = parser.parse_args(argv)
 
     if args.cmd == "index":
@@ -986,6 +997,18 @@ def main(argv: list[str]) -> int:
                           ensure_ascii=False, indent=2))
         all_ok = all(r.get("ok") for r in results)
         return 0 if all_ok else 1
+
+    if args.cmd == "merge_persona_dataset":
+        # Sprint 13 Phase 3a → 3b bridge
+        from .merge_persona_dataset import merge_and_split
+        result = merge_and_split(
+            in_dir=args.in_dir,
+            out_dir=args.out_dir,
+            val_ratio=float(args.val_ratio),
+            seed=int(args.seed),
+        )
+        print(json.dumps(result, ensure_ascii=False, indent=2))
+        return 0 if result.get("ok") else 1
 
     if args.cmd == "retrieval_eval":
         from .retrieval_eval import run_retrieval_eval, _EVAL_QUERIES, _EVAL_QUERIES_PARAPHRASE
