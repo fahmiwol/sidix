@@ -11,6 +11,7 @@ User directive eksplisit: *"gaaaaaaasssssssssssss!!!! catat!! jangan berubah-uba
 **WAJIB BACA URUTAN INI**:
 1. 📜 **[`docs/SIDIX_DEFINITION_20260426.md`](docs/SIDIX_DEFINITION_20260426.md)** ← **SOURCE OF TRUTH #1** (definisi formal lengkap karakter + kemampuan + arsitektur)
 2. 🔒 [`docs/DIRECTION_LOCK_20260426.md`](docs/DIRECTION_LOCK_20260426.md) ← tactical lock (8 ❌ rules + Q3 roadmap)
+3. 🗺️ **[`docs/SIDIX_CONTINUITY_MANIFEST.md`](docs/SIDIX_CONTINUITY_MANIFEST.md)** ← **SOURCE OF TRUTH #2** — 19 distinctive concepts dengan status (LIVE/SCAFFOLDED/PLANNED/WIRED-BLOCKED). Wajib cek SEBELUM start sprint baru — anti-drift, anti-repetisi, anti-melenceng. Update dengan tanggal kalau status berubah.
 
 ### Quick reference:
 - **Tagline**: *"Autonomous AI Agent — Thinks, Learns & Creates"*
