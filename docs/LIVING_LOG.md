@@ -11976,3 +11976,36 @@ semantic ordering yang sudah benar.
 3. Rerank on RunPod GPU: feasible, cold-start trade-off
 4. Skip rerank, focus dense quality (better embeddings, MTEB-tuned)
 
+
+---
+
+## 2026-04-28 — Sprint 28a DEPLOYED (simple-tier hallucination fix)
+
+### FIX [Sprint 28a] Simple-tier corpus snippet injection — DEPLOYED ✓
+
+**File**: `apps/brain_qa/brain_qa/agent_serve.py` (commit `241e8ee`)
+**Note**: `brain/public/research_notes/272_sprint28a_simple_bypass_corpus_inject.md`
+
+**Bug**: Query "SIDIX adalah apa?" (18 char) → complexity_router `short_factual`
+→ simple bypass → RunPod LLM TANPA corpus context → hallucinasi (jawab
+"SIDIX adalah komunitas pertanian sustainable").
+
+**Fix**: helper `_simple_corpus_context()` lakukan BM25 top-1 lookup ~5ms,
+inject snippet ke simple-bypass system prompt (both `/ask` dan `/ask/stream`).
+LLM tetap fast-path single call, tapi grounded di corpus.
+
+**Verifikasi VPS**:
+- Cold call (RunPod cold-start): 76791ms → answer mention "AI + kontribusi
+  intelektual + komunitas" ✓ (grounded, no pertanian halusinasi)
+- Warm call ("SIDIX itu apa?"): **1836ms** → answer mention "mesin inferensi
+  lokal, ReAct, BM25, kalkulator/Wikipedia tools" ✓ (highly accurate)
+
+**Latency overhead**: ~5-10ms BM25 lookup (negligible vs 1.8s RunPod LLM call).
+
+### NOTE [Sprint 28a] Compound coverage achievement
+- Sprint 25 hybrid retrieval (+6% Hit@5 standard/deep tier)
+- Sprint 28a simple-tier grounding (no more bypass without context)
+- **Result**: ALL complexity tiers grounded di corpus. No more path
+  skips retrieval entirely. Foundation retrieval quality terjamin
+  baik untuk greeting → simple Q → standard ReAct → deep tadabbur.
+
