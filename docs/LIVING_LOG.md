@@ -12256,3 +12256,38 @@ Production safety overrules wire benefit. Steps:
 - Add pre-commit hook atau deploy script: auto chmod +x scripts/sidix_*.sh
 - Cron alerting: kalau log "Permission denied" → ping admin
 
+
+---
+
+## 2026-04-28 EVENING (LATEST+3) — 4 OPERATING PRINCIPLES + Sprint 31C deploy hardening
+
+### LOCK [4 OPERATING PRINCIPLES] founder mandate
+Bos directive verbatim: *"sidix tetep anti haluccinated yah! jawabannya harus bener! ide saya kamu olah sampe harus jadi sempurna, respond cepat, tepat, relevan."*
+
+4 prinsip integrated (bukan trade-off):
+1. ANTI-HALUSINASI — grounded basis konkret, sanad multi-dim gate
+2. JAWABAN HARUS BENAR — correctness > speed untuk topik sensitif
+3. IDE BOS DIOLAH SAMPAI SEMPURNA — multi-dimensi (5 persona × wisdom × KITABAH)
+4. RESPOND CEPAT · TEPAT · RELEVAN — tier-aware, no off-topic, konteks user-specific
+
+Lock di: NORTH_STAR (section 4 principles), CANONICAL_V1 (section 0.5),
+CLAUDE.md (di IDENTITAS LOCK section), FOUNDER_JOURNAL (verbatim entry).
+
+### IMPL [Sprint 31C] post_deploy_chmod.sh — deploy hardening
+File: `deploy-scripts/post_deploy_chmod.sh`
+
+Solve: git push tidak preserve executable bit → cron silent fail (kasus
+2026-04-28 EVENING+2: 6 dari 7 sidix_*.sh broken 3+ hari).
+
+Behavior:
+- chmod +x scripts/sidix_*.sh (idempotent, safe re-run)
+- chmod +x scripts/threads_daily.sh
+- chmod +x deploy-scripts/*.sh
+- Verify output dengan ls
+
+Activation: install sebagai git post-merge hook di VPS:
+```bash
+ln -s ../../deploy-scripts/post_deploy_chmod.sh .git/hooks/post-merge
+chmod +x deploy-scripts/post_deploy_chmod.sh
+```
+

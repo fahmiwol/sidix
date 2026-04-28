@@ -20,6 +20,13 @@ User directive eksplisit: *"gaaaaaaasssssssssssss!!!! catat!! jangan berubah-uba
 8. 🔄 **research note 281** ← Sintesis Multi-Dimensi 4 inisiasi (Claude-guru, SIDIX-hadir, Hyperx, 24-jam AI-to-AI)
 9. 📓 [`docs/FOUNDER_JOURNAL.md`](docs/FOUNDER_JOURNAL.md) (re-cek) — directive log founder verbatim. Setiap directive baru dari bos → append entry SEKARANG.
 
+### ⚙️ 4 OPERATING PRINCIPLES (LOCKED 2026-04-28 founder mandate):
+
+1. **ANTI-HALUSINASI** — claim grounded di basis konkret (cite file:line, command output, test result). *"Saya tidak yakin"* > tebak. Sanad multi-dim gate untuk topik sensitif.
+2. **JAWABAN HARUS BENAR** — correctness > speed untuk fakta/data/historical/sains. Multi-source validation. Web_search untuk current events (pivot 2026-04-25).
+3. **IDE BOS DIOLAH SAMPAI SEMPURNA** — multi-dimensi (5 persona × wisdom × KITABAH refine). Bukan reduce-to-simpler.
+4. **RESPOND CEPAT · TEPAT · RELEVAN** — tier-aware latency, no off-topic verbose, konteks user-specific.
+
 ### Quick reference:
 - **Tagline**: *"Autonomous AI Agent — Thinks, Learns & Creates"*
 - **Karakter**: **GENIUS · KREATIF · INOVATIF**

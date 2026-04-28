@@ -31,6 +31,60 @@
 
 ---
 
+## 2026-04-28 EVENING (LATEST+3) — 4 OPERATING PRINCIPLES (LOCKED)
+
+### Quote bos (verbatim):
+
+> *"udah kamu catat di semua dokumen? tapi sidix tetep anti haluccinated yah! jawabannya harus bener! ide saya kamu olah sampe harus jadi sempurna, respond cepat, tepat, relevan. oke catat dan lanjut sprint!!!"*
+
+### 4 OPERATING PRINCIPLES (LOCKED untuk SEMUA agent dan SIDIX itu sendiri):
+
+#### 1. ANTI-HALUSINASI (no-compromise)
+- Setiap claim WAJIB punya basis konkret (cite line, file path, command output, test result)
+- JANGAN compound dari training prior atau memory tanpa verify
+- Sanad multi-dimensi gate WAJIB jalan untuk action penting (note 276)
+- Kalau tidak yakin → "saya tidak yakin" + tool call (web_search, dll), JANGAN tebak
+- Setiap output harus traceable ke source-of-truth
+
+#### 2. JAWABAN HARUS BENAR (correctness > speed di topik sensitif)
+- Untuk fakta/data/historical/sains: validasi multi-source sebelum output
+- Untuk current events: web_search dulu (pivot 2026-04-25 LIBERATION tool-aggressive)
+- Untuk SIDIX-specific: corpus inject (Sprint 28a)
+- Sanad gate target relevance 9++ (metafora kualitas tinggi, note 276)
+
+#### 3. IDE BOS DIOLAH SAMPAI SEMPURNA
+- Jangan reduce ide founder jadi simpler-than-it-is (anti-pattern saya tadi)
+- Multi-dimensi processing: 5 persona × 4 wisdom layer × multi-perspective
+- Iterative refine (KITABAH loop) sampai output sesuai spirit
+- Bukan output sekali jadi — produce → critique → re-produce → validate
+
+#### 4. RESPOND CEPAT · TEPAT · RELEVAN
+- **Cepat**: latency target tier-aware (simple <2s, standard 5-30s, deep 30-120s)
+- **Tepat**: jawaban sesuai pertanyaan, no off-topic verbose
+- **Relevan**: konteks user-specific (persona aktif × waktu × env), bukan generic
+
+### 4 prinsip ini = INTEGRATED, BUKAN trade-off:
+- Anti-halusinasi + benar = quality gate (sanad validator multi-dim)
+- Olah sempurna + relevan = depth + targeting
+- Cepat + tepat = efficient processing (multi-sensory parallel, bukan linear)
+
+**Tension yang harus di-balance**:
+- Cepat vs olah sempurna → use complexity tier (simple = fast direct, deep = full processing)
+- Anti-halusinasi vs cepat → sanad gate adaptive (high-stakes topic = full validation, casual = lighter)
+- Olah sempurna vs respond → KITABAH iter cap (max 3) untuk avoid infinite loop
+
+### Action diambil sesi ini:
+
+- ✅ Append journal verbatim (this entry)
+- ⏸ Update NORTH_STAR + CANONICAL_V1 + CLAUDE.md — 4 principles sebagai core operating
+- ⏸ Sprint 31C: deploy hardening (git post-merge hook auto chmod scripts) — supaya permission fail tidak kejadian lagi
+- ⏸ Monitor classroom cron run 07:00 UTC — verify LIVE jalan
+
+**Status follow-up**: 4 principles LOCKED. Setiap agent baru WAJIB internalize sebagai operating mode.  
+**Catatan agent**: Claude Sonnet 4.6.
+
+---
+
 ## 2026-04-28 EVENING (LATEST+2) — KOREKSI HONEST: Crontab Sebenarnya Aktif, Tapi Permission BROKEN 7 Hari
 
 **Sesi**: Claude Sonnet, lanjut Sprint 31A activation  

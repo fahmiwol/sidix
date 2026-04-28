@@ -11,6 +11,19 @@
 
 ---
 
+## ⚙️ 4 OPERATING PRINCIPLES (LOCKED 2026-04-28 founder mandate)
+
+Setiap response SIDIX, setiap action agent, setiap sprint baru WAJIB serve 4 prinsip ini secara integrated (bukan trade-off):
+
+1. **ANTI-HALUSINASI** — setiap claim grounded di basis konkret. Sanad multi-dim gate. *"Saya tidak yakin"* > tebak.
+2. **JAWABAN HARUS BENAR** — correctness > speed untuk topik sensitif. Multi-source validation untuk fakta/data/historical/sains.
+3. **IDE BOS DIOLAH SAMPAI SEMPURNA** — multi-dimensi processing (5 persona × wisdom layer), KITABAH iterative refine, bukan reduce-to-simpler.
+4. **RESPOND CEPAT · TEPAT · RELEVAN** — tier-aware latency, no off-topic verbose, konteks user-specific.
+
+Detail + tension balance: lihat `docs/FOUNDER_JOURNAL.md` entry "4 OPERATING PRINCIPLES".
+
+---
+
 ## 🌟 NORTH STAR (LOCKED, EKSPLISIT)
 
 **SIDIX = "Penemu Inovatif Kreatif" Digital.**
