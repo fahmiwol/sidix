@@ -11656,3 +11656,86 @@ Sesi mendatang lanjut Sprint 14e LIVE retry / Sprint 13 DoRA / Embodiment input 
 🎯 18 sprint shipped + 8 iterasi + 19 notes + 80+ commits + 7 cron + production LIVE multi-modal.
 
 SIDIX hidup. SIDIX tumbuh.
+
+
+---
+
+## 2026-04-28 — Sprint 25 SHIPPED — Hybrid Retrieval (BM25 + Dense BGE-M3) + Cross-Encoder Reranker
+
+### Pre-Execution Alignment Check (CLAUDE.md 6.4) — PROCEED
+- Note 248 line 14-28: SIDIX = AI agent, retrieval foundation = compound win
+- Pivot 2026-04-25 LIBERATION: tool-aggressive less halu via grounded chunks ✓
+- 10 hard rules: own model BGE-M3, no vendor, MIT-compatible ✓
+- Anti-pattern audit: tidak ubah persona/epistemic/identity, infrastruktur retrieval saja
+
+### User directive
+"saranin yang paling fundamental dan berdampak, supaya sidix makin cepet jawabnya, makin pinter dan makin relevan" — pilih hybrid retrieval + rerank sebagai compound foundation untuk semua hilir (DoRA, sanad substantive, knowledge gap).
+
+### Recon discovery (penting — saved 1 sprint duplicate work)
+Response-level semantic cache (Vol 20b/20c) SUDAH SHIPPED:
+- `semantic_cache.py` full module
+- `embedding_loader.py` BGE-M3 default
+- Bootstrap `agent_serve.py:644-658`
+- Lookup wired `:3459` + store `:3685` + admin endpoints `:2825`
+
+Yang BELUM ada = chunk-level dense retrieval. `query.py:284` masih `BM25Okapi.get_scores`. Pivot Sprint A → verify prod state defer ke bos SSH; fokus Sprint B+C real coding.
+
+### Files added (4)
+- apps/brain_qa/brain_qa/dense_index.py — build/load/search dense matrix, reuse embedding_loader
+- apps/brain_qa/brain_qa/hybrid_search.py — RRF fusion (k=60 Cormack 2009)
+- apps/brain_qa/brain_qa/reranker.py — cross-encoder bge-reranker-v2-m3 default
+- apps/brain_qa/tests/test_hybrid_retrieval.py — 7 tests
+
+### Files modified (2)
+- apps/brain_qa/brain_qa/indexer.py — optional dense build at end of build_index, gated SIDIX_BUILD_DENSE=1
+- apps/brain_qa/brain_qa/query.py — answer_query_and_citations hybrid path gated SIDIX_HYBRID_RETRIEVAL=1, optional rerank gated SIDIX_RERANK=1
+
+### Feature gating triple-layer (zero-blast-radius default)
+| ENV | Default | Effect |
+|---|---|---|
+| SIDIX_BUILD_DENSE | OFF | Index build skip dense, BM25-only backward compat |
+| SIDIX_HYBRID_RETRIEVAL | OFF | Query pure BM25 legacy path |
+| SIDIX_RERANK | OFF | Skip rerank, hybrid order untouched |
+
+### Mandatory loop (CLAUDE.md 6.5) — coverage lengkap
+1. CATAT — Pre-Exec alignment cite
+2. TESTING — ast.parse 5 files OK; smoke import + dense roundtrip + RRF math + rerank graceful + e2e BM25 vs hybrid path
+3. ITERASI — chunk_chars test fixture from 200 → 400 (text.py min) — single iter
+4. REVIEW — diff inspection, no PII/secret leak (grep clean)
+5. CATAT — 7/7 pytest pass + regression test_memory_store.py 8/8 pass
+6. VALIDASI — integration test wire e2e dengan mock embed verifikasi dual-path keduanya green
+7. QA — secret scan grep clean, no .env / token / password leak in diff
+8. CATAT — note 268 + LIVING_LOG entry + commit message
+
+### Test result
+```
+tests/test_hybrid_retrieval.py  7 passed in 0.26s
+tests/test_memory_store.py      8 passed (regression baseline)
+```
+
+### Production deploy checklist (defer to bos SSH)
+1. ssh + pip install sentence-transformers numpy (kalau belum)
+2. curl /admin/semantic_cache/stats verify response cache active or dormant
+3. SIDIX_BUILD_DENSE=1 python -m brain_qa index (rebuild with dense)
+4. ENV ecosystem.config.js: SIDIX_HYBRID_RETRIEVAL=1 (+ optional SIDIX_RERANK=1)
+5. pm2 restart sidix-brain --update-env
+6. Smoke: curl /agent/ask + watch [retrieval] path=hybrid log line
+
+### Compound dampak yang diharapkan (literature estimate)
+- Speed: response cache hit 60-300x; rerank prune top-20→top-3 reduce LLM ctx 1.2-2x
+- Smartness: BGE-reranker-v2-m3 nDCG@10 +15-25% vs BM25 multilingual ID
+- Relevance: dense+BM25 RRF Recall@10 +20-40% vs BM25 alone
+
+Real lift di corpus SIDIX wajib di-validate post-deploy via A/B query set (Sprint 25b candidate).
+
+### Self-learning trilogy compound
+Sprint 24 ODOA cron + WAHDAH signal monitor → corpus growth tracked.
+Sprint 25 retrieval upgrade → grounded chunks lebih akurat → less halu output → KITABAH self-iterate quality lebih baik → RASA self-critique grounded.
+Foundation untuk Sprint 25b eval harness, Sprint 25c auto-rebuild dense, Sprint 13 DoRA persona quality (better retrieval = better persona prompts).
+
+### Next sprint candidates
+- Sprint 25b: eval_harness 50 query A/B BM25 vs hybrid vs hybrid+rerank
+- Sprint 25c: auto-rebuild dense saat corpus_to_training batch baru
+- Sprint 25d: tune RRF k per domain (fiqh konservatif, casual longgar)
+- Embodiment 👁️ MATA / 👂 TELINGA pending
+- Sanad substantive (note 248 line 91-99)
