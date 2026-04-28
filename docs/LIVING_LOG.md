@@ -12559,3 +12559,73 @@ Hardware constraint, bukan code issue.
 - 34D: Switch heavy cron (worker.sh) ke qwen2.5:1.5b (986MB faster)
 - 34E: Move standard-tier inference ke RunPod default, Ollama untuk casual short
 
+
+---
+
+## 2026-04-28 EVENING (LATEST+8) — Sprint 34C START: Conversational Test + Iterasi Optimasi
+
+### TEST PLAN [Sprint 34C]
+Test SIDIX ngobrol natural — bukan cuma 3 template. 7 query beragam untuk identify
+ngaco pattern + iterasi fix yang paling impactful.
+
+Queries:
+1. Greeting natural: "halo, apa kabar?"
+2. Self-knowledge: "SIDIX adalah apa?" (verify Sprint 34B grounded persisten)
+3. Current events: "siapa Presiden Indonesia 2026?" (force web_search Sprint 28b)
+4. Corpus knowledge: "apa itu sanad chain?" (note 276)
+5. Creative/UTZ: "bantu saya bikin nama brand makanan ringan kawaii"
+6. Coding/ABOO: "tulis kode Python untuk hitung fibonacci"
+7. SIDIX distinctive: "bedanya SIDIX dengan chatbot biasa apa?"
+
+
+---
+
+## 2026-04-28 EVENING (LATEST+9) — Sprint 34C+D+E ITERASI Multi-Loop
+
+### IMPL [Sprint 34C] OLLAMA_TIMEOUT 180→60s, RUNPOD_TIMEOUT 180→60s
+File: `/opt/sidix/.env`. Effect: fail-fast prevent block cascade.
+Verified: `[RunPod] request fail: ReadTimeout: The read operation timed out` di log post 60s.
+
+### IMPL [Sprint 34D] simple-tier threshold bump 25→60 char
+File: `complexity_router.py` (commit 956538d).
+Reason: standard tier hardware-bound 4-vCPU + 7B Ollama = timeout. Simple bypass +
+corpus inject (Sprint 28a + 34B) sudah grounded 1-1.5s. Bump threshold capture
+more queries ke fast path.
+
+### ⚠ ISSUE FOUND [Sprint 34D] Trade-off: simple bypass skip web_search
+Q3 "siapa Presiden Indonesia sekarang?" (35 char) → simple tier → RunPod LLM
+prior bias → "Jokowi" (training cutoff sebelum 2024-10-20 term end).
+
+### IMPL [Sprint 34E] Skip simple bypass untuk current events
+File: `agent_serve.py` (commit fdc2928).
+Logic: di simple bypass entry, panggil `_needs_web_search(req.question)`. Match →
+force `_is_simple_bypass=False` → fallback ke standard tier ReAct (yang pakai
+web_search per Sprint 28b).
+
+### TEST [Sprint 34C+D+E] 7-Query Natural Result (post all fixes)
+
+| # | Query | Tier | Mode | Latency | Verdict |
+|---|-------|------|------|---------|---------|
+| Q1 | "halo, apa kabar?" | simple | runpod bypass | 1.16s | ✓ PASS natural |
+| Q2 | "SIDIX adalah apa?" | simple | runpod bypass + corpus inject | 1.34s | ✓ PASS GROUNDED ("platform belajar... transformasi intelektual") |
+| Q3 | "siapa Presiden Indonesia sekarang?" | simple→**escalated** | standard ReAct + web_search | 86s | ⚠ web_search FIRED 5 citations, TAPI LLM synthesis "Jokowi" (prior bias outweigh web context) |
+| Q4 | "apa itu sanad chain?" | simple | runpod bypass + corpus inject | 1.17s | ✓ PASS GROUNDED ("metafora trust transfer + validation multi-dimensi") |
+
+### REVIEW QA + VALIDASI [Sprint 34C+D+E]:
+**WIN**:
+- ✓ Sprint 34C fail-fast (no block cascade)
+- ✓ Sprint 34D simple-tier expansion captures more natural queries
+- ✓ Sprint 34E web_search fire when current events detected
+- ✓ Q1, Q2, Q4 ALL grounded + fast (<2s)
+
+**ISSUE remaining (Q3)**:
+- web_search fired correctly ✓
+- TAPI Ollama synthesis (qwen2.5:7b base, no LoRA SIDIX yet) IGNORE web context
+- Prior knowledge cutoff bias > grounded web data
+- Need: prompt engineering OR switch synthesis ke RunPod (vLLM Qwen + LoRA SIDIX)
+
+### TODO Sprint 34F+:
+- **34F**: System prompt prioritize web_search context — "GUNAKAN sumber web di atas. Kalau training prior bertentangan, percayai web_search yang fresh"
+- **34G**: Switch standard tier synthesis ke RunPod (vLLM yang punya LoRA SIDIX + better grounding)
+- **34H**: Add citation fidelity check — if answer claim X tapi citations support Y, flag warning
+
