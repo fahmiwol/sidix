@@ -429,6 +429,42 @@ def main(argv: list[str]) -> int:
     p_convo.add_argument("--dry-run", action="store_true",
                          help="Parse + extract tanpa write file")
 
+    # Sprint 40 — Autonomous Developer CLI
+    p_autodev = sub.add_parser("autodev",
+                                help="Sprint 40: Autonomous Developer — pick & work dev tasks autonomously")
+    autodev_sub = p_autodev.add_subparsers(dest="autodev_cmd", required=True)
+
+    p_ad_tick = autodev_sub.add_parser("tick",
+                                        help="Run one tick: pick top pending task + plan/apply/test/submit")
+    p_ad_tick.add_argument("--dry-run", action="store_true",
+                            help="Dry run: plan + apply log only, no actual file writes")
+    p_ad_tick.add_argument("--repo-root", default=None,
+                            help="Override repo root path (default: auto-detect from package location)")
+
+    p_ad_add = autodev_sub.add_parser("add", help="Add a new dev task to the queue")
+    p_ad_add.add_argument("target_path", help="Relative path of file/folder to work on")
+    p_ad_add.add_argument("goal", help="Human-readable goal description")
+    p_ad_add.add_argument("--priority", type=int, default=50, help="Priority 0-100 (default 50)")
+    p_ad_add.add_argument("--fanout", action="store_true",
+                          help="Enable 5-persona research fanout for this task")
+
+    p_ad_list = autodev_sub.add_parser("list", help="List dev tasks (optionally filtered by state)")
+    p_ad_list.add_argument("--state", default=None,
+                           help="Filter by state: pending|in_progress|review|approved|escalated")
+    p_ad_list.add_argument("--limit", type=int, default=20, help="Max rows (default 20)")
+
+    p_ad_approve = autodev_sub.add_parser("approve", help="Owner: approve a task in review state")
+    p_ad_approve.add_argument("task_id", help="Task ID to approve")
+
+    p_ad_reject = autodev_sub.add_parser("reject", help="Owner: reject a task in review state")
+    p_ad_reject.add_argument("task_id", help="Task ID to reject")
+    p_ad_reject.add_argument("--reason", default="", help="Rejection reason")
+
+    p_ad_changes = autodev_sub.add_parser("request_changes",
+                                           help="Owner: request changes on a task in review")
+    p_ad_changes.add_argument("task_id", help="Task ID")
+    p_ad_changes.add_argument("feedback", help="Feedback text")
+
     args = parser.parse_args(argv)
 
     if args.cmd == "index":
@@ -1148,6 +1184,67 @@ def main(argv: list[str]) -> int:
             paraphrase=getattr(args, "paraphrase", False),
         )
         return 0
+
+    if args.cmd == "autodev":
+        import json as _json
+        from .autonomous_developer import tick as _tick, owner_approve, owner_reject, owner_request_changes
+        from .dev_task_queue import add_task as _add_task, list_tasks as _list_tasks
+
+        if args.autodev_cmd == "tick":
+            repo = Path(args.repo_root) if args.repo_root else None
+            dry = True if args.dry_run else None  # None = read env AUTODEV_DRY_RUN
+            result = _tick(repo_root=repo, dry_run=dry)
+            print(_json.dumps({
+                "picked": result.picked,
+                "task_id": result.task_id,
+                "state_after": result.state_after,
+                "iter_used": result.iter_used,
+                "test_ok": result.test_ok,
+                "submitted": result.submitted,
+                "pr_url": result.pr_url,
+                "error": result.error,
+            }, ensure_ascii=False, indent=2))
+            return 0
+
+        if args.autodev_cmd == "add":
+            task = _add_task(
+                target_path=args.target_path,
+                goal=args.goal,
+                priority=args.priority,
+                persona_fanout=args.fanout,
+            )
+            print(f"Task added: {task.task_id}")
+            print(f"  target  : {task.target_path}")
+            print(f"  goal    : {task.goal}")
+            print(f"  priority: {task.priority}")
+            print(f"  branch  : {task.branch_name}")
+            return 0
+
+        if args.autodev_cmd == "list":
+            tasks = _list_tasks(state=args.state, limit=args.limit)
+            if not tasks:
+                print("(no tasks)")
+                return 0
+            for t in tasks:
+                print(f"[{t.state:12s}] {t.task_id}  P={t.priority}  iter={t.iter_count}/{t.max_iter}")
+                print(f"             {t.target_path}")
+                print(f"             {t.goal[:80]}")
+            return 0
+
+        if args.autodev_cmd == "approve":
+            ok = owner_approve(args.task_id)
+            print("approved" if ok else "ERROR: task not found or not in review state")
+            return 0 if ok else 1
+
+        if args.autodev_cmd == "reject":
+            ok = owner_reject(args.task_id, reason=args.reason)
+            print("rejected" if ok else "ERROR: task not found")
+            return 0 if ok else 1
+
+        if args.autodev_cmd == "request_changes":
+            ok = owner_request_changes(args.task_id, feedback=args.feedback)
+            print("changes requested" if ok else "ERROR: task not found or max iter reached")
+            return 0 if ok else 1
 
     raise RuntimeError(f"Unknown command: {args.cmd}")
 
