@@ -28,6 +28,18 @@ export SIDIX_DATA_DIR="${SIDIX_DATA_DIR:-/opt/sidix/.data}"
 
 cd "$SIDIX_ROOT"
 
+# Activate venv if present (same as start_brain.sh)
+if [ -f ".venv/bin/activate" ]; then
+    # shellcheck disable=SC1091
+    source .venv/bin/activate
+elif [ -f "venv/bin/activate" ]; then
+    # shellcheck disable=SC1091
+    source venv/bin/activate
+fi
+
+# brain_qa is not installed as a pip package — set PYTHONPATH explicitly
+export PYTHONPATH="$SIDIX_ROOT/apps/brain_qa:${PYTHONPATH:-}"
+
 python3 -m brain_qa autodev tick \
     --repo-root "$SIDIX_ROOT" \
     2>&1 || echo "$LOG_TAG tick exit $?"
