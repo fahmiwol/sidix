@@ -157,21 +157,47 @@ def run_pytest(repo_root: Path, paths: list[str] | None = None,
             pass
 
 
-def run_ruff(repo_root: Path) -> int:
-    """Run ruff check on brain_qa source. Return number of lint issues.
+def run_ruff(repo_root: Path,
+             paths: list[str] | None = None) -> int:
+    """Run ruff check. Return number of lint issues.
 
-    Sprint 60A: real ruff invocation replacing Phase 2 stub.
-    Targets apps/brain_qa only (skips node_modules, tests, docs).
+    Delta-mode (paths given):
+      Scan ONLY the specific files touched by the autonomous developer's diff.
+      This is the gating mode — violations in new/modified files → PR blocked.
+      Pre-existing violations in untouched files are ignored.
+
+    Full-scan mode (paths=None):
+      Scan entire apps/brain_qa. Advisory only — not gating — because the
+      baseline codebase carries ~3000+ pre-existing violations the autonomous
+      developer did not introduce.
+
     Requires ruff to be installed (`pip install ruff`).
     Returns 0 if ruff not found (non-fatal — test gate still works).
     """
-    target = repo_root / "apps" / "brain_qa"
-    if not target.is_dir():
-        log.debug("[dev_sandbox] ruff: apps/brain_qa not found, skipping")
-        return 0
+    if paths:
+        # Delta-mode: filter to .py files that exist on disk
+        py_files = [
+            str(repo_root / p) if not Path(p).is_absolute() else p
+            for p in paths
+            if p.endswith(".py")
+        ]
+        py_files = [p for p in py_files if Path(p).exists()]
+        if not py_files:
+            log.debug("[dev_sandbox] ruff delta: no .py files in touched set")
+            return 0
+        target_args = py_files
+        mode = f"delta({len(py_files)} files)"
+    else:
+        target = repo_root / "apps" / "brain_qa"
+        if not target.is_dir():
+            log.debug("[dev_sandbox] ruff: apps/brain_qa not found, skipping")
+            return 0
+        target_args = [str(target)]
+        mode = "full-scan(advisory)"
+
     try:
         proc = subprocess.run(
-            [_PYTHON_BIN, "-m", "ruff", "check", str(target),
+            [_PYTHON_BIN, "-m", "ruff", "check", *target_args,
              "--select=E,F,W,I", "--quiet"],
             cwd=str(repo_root),
             capture_output=True, text=True,
@@ -179,12 +205,12 @@ def run_ruff(repo_root: Path) -> int:
             stdin=subprocess.DEVNULL,
         )
         if proc.returncode == 0:
-            log.info("[dev_sandbox] ruff: clean (0 issues)")
+            log.info("[dev_sandbox] ruff %s: clean (0 issues)", mode)
             return 0
         # Count violation lines: each looks like "path:line:col: CODE message"
         issues = [l for l in proc.stdout.splitlines() if l.strip() and ": " in l]
         n = len(issues)
-        log.info("[dev_sandbox] ruff: %d issues found", n)
+        log.info("[dev_sandbox] ruff %s: %d issues", mode, n)
         return n
     except FileNotFoundError:
         log.debug("[dev_sandbox] ruff not installed — skip lint check")
@@ -206,21 +232,38 @@ def run_typecheck(repo_root: Path) -> int:
 def full_check(repo_root: Path, paths: list[str] | None = None) -> TestResult:
     """Run pytest + ruff + typecheck → unified TestResult.
 
-    Gate policy (Sprint 60A):
-      ok = False  iff pytest failures/errors > 0
-      ruff_issues + typecheck_issues = INFORMATIONAL only — not gating.
+    Gate policy (Sprint 60E — delta-mode ruff):
 
-    Rationale: baseline codebase carries pre-existing ruff violations that
-    the autonomous developer did not introduce.  Gating on the full count
-    would permanently block all PR submissions.  Phase 2 will switch to a
-    delta-mode gate (new violations introduced by the diff > 0 → fail).
+      paths provided (autonomous_developer supplies touched files):
+        → ruff runs in DELTA-MODE: check only files the diff touched.
+        → ruff_issues > 0 → ok = False (new violations block the PR).
+        → This makes autonomous dev fully production-quality gated.
+
+      paths=None (manual / full-scan call):
+        → ruff runs on entire apps/brain_qa (advisory; ~3000+ baseline).
+        → ruff_issues informational only — does NOT change ok.
+        → pytest failures still gate ok.
+
+    Design rationale: baseline has ~3726 pre-existing ruff violations the
+    autonomous developer did not introduce. Full-scan gating would permanently
+    block all PRs. Delta-mode is precise: SIDIX cannot INTRODUCE new lint
+    violations into files it modifies. Pre-existing violations in untouched
+    files are ignored — they are a separate cleanup task.
     """
     result = run_pytest(repo_root, paths)
-    result.ruff_issues = run_ruff(repo_root)
+    result.ruff_issues = run_ruff(repo_root, paths)   # delta if paths given
     result.typecheck_issues = run_typecheck(repo_root)
-    # Only pytest failures block the submit gate (ruff/typecheck = advisory).
+
+    # pytest always gates
     if result.pytest_failed > 0 or result.pytest_errors > 0:
         result.ok = False
+
+    # ruff gates ONLY in delta-mode (autonomous developer supplied touched paths)
+    if paths and result.ruff_issues > 0:
+        result.ok = False
+        log.warning("[dev_sandbox] ruff delta: %d violations in touched files — PR blocked",
+                    result.ruff_issues)
+
     return result
 
 

@@ -170,8 +170,12 @@ def tick(
             result.state_after = "pending"
             return result
 
-        # 5. Test (Phase 1 = stub run)
-        test_result = dev_sandbox.full_check(repo_root)
+        # 5. Test — delta-mode ruff: pass touched paths so ruff only checks
+        #    files the autonomous developer modified (not the entire codebase).
+        #    This makes the lint gate precise: SIDIX cannot introduce NEW ruff
+        #    violations into files it writes. Pre-existing violations in untouched
+        #    files are ignored (separate cleanup sprint, not this task's fault).
+        test_result = dev_sandbox.full_check(repo_root, paths=touched or None)
         result.test_ok = test_result.ok
 
         if not test_result.ok and task.iter_count < task.max_iter - 1:
