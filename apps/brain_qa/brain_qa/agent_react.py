@@ -1111,10 +1111,14 @@ def _compose_final_answer(
         "simple", "simpel", "sederhana", "cukup", "intinya", "pokoknya",
     ))
     # Sigma-2A: single-fact patterns → short answer, no long paragraphs needed
-    _is_single_fact = any(t in _q_lc for t in (
-        "apa itu", "apa kepanjangan", "apa singkatan", "berapa ", "siapa ",
-        "kapan ", "dimana ", "di mana ", "apakah ", "apa bedanya",
-    ))
+    # EXCLUDES current_event questions — those need full token space for web context synthesis
+    _is_single_fact = (
+        not _needs_web_search(question)
+        and any(t in _q_lc for t in (
+            "apa itu", "apa kepanjangan", "apa singkatan", "berapa ",
+            "kapan ", "dimana ", "di mana ", "apakah ",
+        ))
+    )
     if simple_mode:
         _max_tokens = 200
     elif _is_brief_modifier:
