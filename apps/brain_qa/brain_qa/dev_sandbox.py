@@ -204,13 +204,22 @@ def run_typecheck(repo_root: Path) -> int:
 
 
 def full_check(repo_root: Path, paths: list[str] | None = None) -> TestResult:
-    """Run pytest + ruff + typecheck → unified TestResult."""
+    """Run pytest + ruff + typecheck → unified TestResult.
+
+    Gate policy (Sprint 60A):
+      ok = False  iff pytest failures/errors > 0
+      ruff_issues + typecheck_issues = INFORMATIONAL only — not gating.
+
+    Rationale: baseline codebase carries pre-existing ruff violations that
+    the autonomous developer did not introduce.  Gating on the full count
+    would permanently block all PR submissions.  Phase 2 will switch to a
+    delta-mode gate (new violations introduced by the diff > 0 → fail).
+    """
     result = run_pytest(repo_root, paths)
     result.ruff_issues = run_ruff(repo_root)
     result.typecheck_issues = run_typecheck(repo_root)
+    # Only pytest failures block the submit gate (ruff/typecheck = advisory).
     if result.pytest_failed > 0 or result.pytest_errors > 0:
-        result.ok = False
-    if result.ruff_issues > 0 or result.typecheck_issues > 0:
         result.ok = False
     return result
 
