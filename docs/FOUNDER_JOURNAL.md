@@ -788,3 +788,80 @@ Status: **PLAN LOCKED · NO CODE YET · WAITING NEXT SESSION**
 
 Status: GAS Σ-1B sekarang. Lapor setelah `sanad_verifier.py` + unit tests selesai.
 
+
+---
+
+## 2026-04-30 — STATE HONEST + Σ-1A START
+
+### Founder reminder flow lengkap (verbatim, 3rd time):
+> INPUT → 1000 bayangan + Hafidz Ledger → 5 persona paralel (own brain/corpus/tools) → sub-agent (web/Wiki/browser/socmed) → Sanad synthesizer → OUTPUT (text/script/generative/PDF/video/dll)
+
+### Honest assessment vs vision (2026-04-30 23:00):
+- ✅ Σ-1B sanad_verifier built (step 5 of flow) — 26/26 unit tests
+- ❌ NOT YET wired ke /agent/chat (orphaned, idle)
+- ❌ 1000 bayangan paralel — orphaned (`persona_research_fanout.py` exists, only autonomous_dev)
+- ❌ Hafidz Ledger ke chat — orphaned
+- ❌ Per-persona own brain/corpus/tools — belum (Σ-1C Phase 1/2/3)
+- ❌ Browser/socmed tools — BELUM ADA (perlu Σ-1H baru)
+- ❌ Adaptive output (PDF/video/render) — text only, image partial via SDXL
+- **~10-15% vision sudah ada**
+
+### Founder directive:
+> "saya pake sonnet aman nggak sih? yaudah catet dan lanjut sprint!"
+
+Sonnet aman untuk Σ-1A (integration, bukan novel arch). Sonnet weekly 25%, all-models 81%.
+
+### Σ-1A scope (MVP, this session):
+1. Read `agent_react.py` synthesis point + `agent_serve.py` chat endpoint
+2. Wire `sanad_verifier` setelah LLM synthesis: extract sources dari ReAct steps → verify_multisource → override jika halu → append sanad footer
+3. Brand halu (Q15/Q17/Q18) fixed via override
+4. Current events tanpa web → return UNKNOWN bukan halu
+5. Deploy + re-run Σ-1G gold-set untuk validate
+6. NO fanout yet (Σ-1A.2 next session — heavy compute)
+
+
+---
+
+## 2026-04-30 23:30 — HANDOFF SESSION CLOSE (usage 85% weekly)
+
+### Founder concern (verbatim):
+
+> "saya pake sonnet aman nggak sih? yaudah catet dan lanjut sprint!"
+> "ini udha segini. apa handoff, cuma kalo handoof kamu catetan dan dokumentasi, sert diskusi, dan log nggak di deliver nanti ngaco lagi.."
+> "jangan lupa update founder jurnal juga"
+
+### Decision: STOP & HANDOFF (not continue Σ-1A)
+
+Rasional: weekly all-models 85%, 5-jam 31%, Sonnet 25%, context window 38%. Σ-1A wiring estimate 6-8h kerja — kalau di-rush sekarang risk: (a) hit weekly limit mid-sprint, (b) handoff loss kalau session timeout, (c) ngaco lagi karena rush.
+
+Founder concern valid: handoff loss = next agent ngaco. Mitigation: tulis handoff doc COMPREHENSIVE.
+
+### Action taken (this session close):
+
+1. ✅ Σ-1G done (commit 506ffc9) — baseline 8/20 = 40% + per-Q fail class inventory
+2. ✅ Σ-1B done (commit 1af27fd) — sanad_verifier.py + 26/26 unit tests
+3. ✅ HANDOFF doc written: `docs/HANDOFF_2026-04-30_anti_halu_sprint.md`
+   - TL;DR 60-detik
+   - State of art (vision flow vs current state)
+   - 3 critical halu cases dengan target fix
+   - Σ-1A spec lengkap (file paths, line numbers, validation gate)
+   - Locked decisions list (8 locks)
+   - References (read order)
+   - Session start protocol untuk agent berikutnya
+   - Endpoint info quick-ref
+4. ✅ FOUNDER_JOURNAL updated (this entry)
+
+### Pending Σ-1A (next session, fresh agent):
+
+Dokumen handoff lengkap. Agent berikutnya tinggal:
+1. Read `docs/HANDOFF_2026-04-30_anti_halu_sprint.md` full
+2. Read `CLAUDE.md` + `research_notes/296`
+3. Confirm Sonnet model
+4. Execute Σ-1A.1 (sanad-only MVP wiring) per spec
+5. Validate gate (26/26 unit + goldset re-run target 14-16/20)
+6. Commit + lapor
+
+Bos cukup bilang "gas Σ-1A" + share handoff path. Zero-loss compound integrity.
+
+### Status: SPRINT PAUSED (graceful) · NO CODE LOSS · NEXT-AGENT-READY
+
