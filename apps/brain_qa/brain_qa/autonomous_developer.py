@@ -56,8 +56,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional
 
-from . import dev_task_queue, code_diff_planner, dev_sandbox, dev_pr_submitter
-from . import persona_research_fanout
+from . import (dev_task_queue, code_diff_planner, dev_sandbox,
+               dev_pr_submitter, persona_research_fanout)
 from .cloud_run_iterator import classify_error, ErrorCategory
 
 log = logging.getLogger(__name__)
@@ -148,6 +148,21 @@ def tick(
         # 4. Apply (Sprint 59: real writes when dry_run=False)
         touched = code_diff_planner.apply_plan(plan, repo_root, dry_run=dry_run)
         log.info("[autodev] applied %d files (dry_run=%s)", len(touched), dry_run)
+
+        # Guard: if plan had file changes but none were written (e.g. size-safety
+        # guard blocked ALL modifications), treat as a failed iteration so the
+        # LLM gets another chance with the previous error as context.
+        if plan.files and not touched and not dry_run:
+            err_msg = (
+                f"iter {task.iter_count+1}: apply_plan wrote 0/{len(plan.files)} files "
+                f"— likely partial-snippet blocked by size-safety guard. "
+                f"LLM must output FULL file content for MODIFY operations."
+            )
+            log.warning("[autodev] %s", err_msg)
+            dev_task_queue.update_state(task.task_id, "pending", error_log=err_msg)
+            result.error = err_msg
+            result.state_after = "pending"
+            return result
 
         # 5. Test (Phase 1 = stub run)
         test_result = dev_sandbox.full_check(repo_root)

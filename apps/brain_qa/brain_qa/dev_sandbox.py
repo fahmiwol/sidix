@@ -24,7 +24,7 @@ import os
 import subprocess
 import tempfile
 import xml.etree.ElementTree as ET
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
 
 log = logging.getLogger(__name__)
@@ -33,6 +33,8 @@ log = logging.getLogger(__name__)
 @dataclass
 class TestResult:
     """Outcome of running tests on applied diff."""
+    __test__ = False  # prevent pytest treating this dataclass as a test class
+
     ok: bool = False
     pytest_passed: int = 0
     pytest_failed: int = 0
@@ -44,10 +46,13 @@ class TestResult:
     failure_classification: str = ""  # uses cloud_run_iterator.ErrorCategory
 
 
+import shutil as _shutil
+_PYTHON_BIN: str = "python3" if _shutil.which("python3") else "python"
+
+
 def _python_bin() -> str:
     """Return 'python3' if available, else 'python'. VPS fix (Sprint 40 E2E)."""
-    import shutil
-    return "python3" if shutil.which("python3") else "python"
+    return _PYTHON_BIN
 
 
 def run_pytest(repo_root: Path, paths: list[str] | None = None,

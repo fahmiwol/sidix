@@ -29,7 +29,7 @@ import logging
 import os
 import sqlite3
 import time
-from dataclasses import dataclass, asdict, field
+from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional
