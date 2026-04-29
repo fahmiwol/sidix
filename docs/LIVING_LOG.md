@@ -14885,3 +14885,40 @@ File: `tests/anti_halu_baseline_results.json`
 
 ### Next: Σ-1B — build `sanad_verifier.py` (multi-source cross-check + force web_search untuk current events).
 
+
+---
+
+## [IMPL] 2026-04-30 — Σ-1B sanad_verifier.py BUILT (26/26 unit tests pass)
+
+### Module: `apps/brain_qa/brain_qa/sanad_verifier.py`
+
+5 components:
+1. **Data types**: `Source`, `QuestionIntent`, `VerificationResult` dataclasses
+2. **Intent detection**: `detect_intent()` — classify ke 5 categories (current_event / brand_specific / factual / coding / creative / unknown)
+3. **Brand canonical dictionary** (9 terms with canonical answers):
+   - persona_5, ihos, react_pattern, lora, sanad, muhasabah, maqashid, tiranyx, sidix_identity
+4. **Cross-verification per intent**:
+   - `verify_brand_specific()` — match canonical facts threshold, override LLM kalau halu
+   - `verify_current_event()` — wajib ada web_search source, else return UNKNOWN
+   - `verify_factual()` — accept any retrieved source
+   - `verify_passthrough()` — coding/creative tanpa factual gate
+5. **Sanad chain footer**: `format_sanad_footer()` untuk tampil sumber ke user
+
+### Tests: `tests/test_sanad_verifier.py` (26 cases)
+
+**Critical halu cases dari Σ-1G baseline — semua di-OVERRIDE oleh sanad**:
+- ✅ Q15 ReAct halu "Recursive Action Tree" → corrected jadi "Reasoning + Acting"
+- ✅ Q17 persona halu "Aboudi" → corrected jadi UTZ/ABOO/OOMAR/ALEY/AYMAN
+- ✅ Q18 IHOS halu "Inisiatif Holistik..." → corrected jadi "Islamic Holistic Ontological System"
+
+**Correct answers TIDAK di-override** (no false positives):
+- ✅ Persona benar passthrough dengan confidence 0.92
+- ✅ IHOS benar passthrough
+
+**Current events tanpa web_search** → tier "unknown" + reject LLM (no halu).
+**Current events dengan web_search** → tier "fact" + confidence 0.85.
+
+### Belum:
+- Σ-1A: wire sanad_verifier ke `/agent/chat` (next session)
+- Q15 detail issue: "act" substring di "Action" tetap akan match. Brand verifier override tetap fire karena facts threshold tidak terpenuhi (need both "reasoning" + "acting"). Logic lebih kuat dari simple substring.
+

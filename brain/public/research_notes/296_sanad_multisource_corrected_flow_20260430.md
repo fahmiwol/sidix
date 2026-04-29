@@ -20,7 +20,9 @@ Mascot: **Option B** (image bos hero + SDXL 4 state variants via endpoint lts8dj
 
 Pacing discipline: 1 sub-task per session (usage limit context).
 
-Next: Σ-1G — `tests/test_anti_halu_goldset.py` 20-question baseline.
+**Σ-1G DONE** (2026-04-29 22:10): baseline 8/20 = 40%. 3 CRITICAL HALU teridentifikasi (ReAct definition Q15, persona Aboudi Q17, IHOS expansion Q18). Detail: `tests/anti_halu_baseline_results.json`.
+
+**Σ-1B STARTED** (2026-04-30): build `sanad_verifier.py` — brand whitelist + intent detection + required-sources + cross-verify.
 
 **Σ-3 framework LOCKED 2026-04-30**: **Next.js (App Router)** — bukan Vite. Port components dari scaffolding Vite ke Next.js. PM2 reconfig `serve dist` → `next start`. Backend FastAPI 8765 unchanged. Reasoning: SEO + multi-tool scaling + Tiranyx ecosystem long-term.
 

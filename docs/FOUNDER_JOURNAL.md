@@ -754,3 +754,37 @@ Status: **PLAN LOCKED · NO CODE YET · WAITING NEXT SESSION**
 
 ### Status: LOCKED · Σ-3 framework = Next.js · Σ-1 priority tetap (anti-halu first)
 
+
+---
+
+## 2026-04-30 — TEMUAN Σ-1G BASELINE: 8/20 (40%) + 3 CRITICAL HALU
+
+### Hasil baseline (commit 506ffc9):
+
+| Kategori | Pass | Catatan |
+|---|---|---|
+| current_events | 0/5 | brain refuse-to-websearch (humility OK, retrieval FAIL) |
+| factual stable | 3/5 | 1 pipeline error, 1 validator bug |
+| coding | 3/5 | 1 CRITICAL HALU (ReAct salah definisi) |
+| sidix_identity | 1/3 | 2 CRITICAL HALU brand (Aboudi, IHOS salah) |
+| creative | 2/2 | strong ✅ |
+
+### 3 CRITICAL HALU bukti telak sanad belum cross-verify:
+
+1. **Q15 ReAct definition**: brain bilang "ReAct = Recursive Action Tree". SALAH. Correct: Reasoning + Acting.
+2. **Q17 Persona SIDIX**: brain bilang "Aboudi - Sang Pelopor". SALAH. Correct: UTZ/ABOO/OOMAR/ALEY/AYMAN (LOCKED 2026-04-26 di CLAUDE.md).
+3. **Q18 IHOS**: brain bilang "Inisiatif Holistik Operasional Strategis". SALAH. Correct: Islamic Holistic Ontological System.
+
+→ Brain ngarang brand SIDIX-nya sendiri. Padahal corpus memuat term canonical. Bukti BM25 retrieval + cross-verify TIDAK aktif untuk SIDIX-specific knowledge.
+
+### Strategi Σ-1B (gas sekarang):
+
+`sanad_verifier.py` — wajib do:
+- **Brand whitelist** dengan canonical answers (UTZ/ABOO/OOMAR/ALEY/AYMAN, IHOS, Sanad, Muhasabah, Maqashid, Ijtihad, Tiranyx, Mighan)
+- **Intent detection** (current_event / brand_specific / factual / coding / creative)
+- **Required-sources mapping** (current_event → MUST web_search; brand_specific → MUST corpus search; factual → either)
+- **Cross-verify**: substring agreement antara LLM answer ↔ sources. Conflict → return source-grounded version.
+- **Reject** LLM-only answers untuk fact-checkable claims tanpa sumber backing.
+
+Status: GAS Σ-1B sekarang. Lapor setelah `sanad_verifier.py` + unit tests selesai.
+
