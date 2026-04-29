@@ -41,6 +41,12 @@ log = logging.getLogger(__name__)
 _API_BASE = "https://api.runpod.ai/v2"
 _DEFAULT_TIMEOUT = 180  # 3 min — handle cold start
 
+# Interactive timeout: runsync wait before falling back to Ollama.
+# If RunPod worker is warm it responds in <5s. If cold start (60-120s),
+# we bail fast and use Ollama 1.5b (2.5s CPU) rather than making the
+# user wait 2+ minutes. RunPod cold start is detected by IN_QUEUE response.
+_INTERACTIVE_SYNC_TIMEOUT = 12  # seconds for runsync in interactive mode
+
 
 def _runpod_config() -> Optional[dict]:
     api_key = os.getenv("RUNPOD_API_KEY", "").strip()
@@ -78,6 +84,7 @@ def runpod_generate(
     max_tokens: int = 512,
     temperature: float = 0.7,
     corpus_context: str = "",
+    interactive: bool = True,
 ) -> tuple[str, str]:
     """
     Generate via RunPod Serverless.
@@ -120,24 +127,34 @@ def runpod_generate(
             "Authorization": f"Bearer {cfg['api_key']}",
             "Content-Type": "application/json",
         }
-        with httpx.Client(timeout=cfg["timeout"]) as client:
+        # Interactive mode: short sync wait so we fall back to Ollama fast if cold.
+        # Batch mode: longer wait to get the GPU response.
+        sync_timeout = _INTERACTIVE_SYNC_TIMEOUT if interactive else cfg["timeout"]
+        with httpx.Client(timeout=sync_timeout) as client:
             r = client.post(url, headers=headers, json=payload)
         elapsed = time.monotonic() - t0
         log.info(f"[RunPod] {cfg['endpoint_id']} {r.status_code} in {elapsed:.1f}s")
         r.raise_for_status()
         data = r.json()
 
-        # RunPod runsync has a 90s hard cap; cold starts > 90s return IN_QUEUE.
-        # Detect and poll /status/{job_id} until COMPLETED or timeout.
-        # Use a FIXED poll window (180s) independent of runsync elapsed time,
-        # because runsync itself may have consumed most of cfg["timeout"].
-        _POLL_WINDOW = 180  # seconds to poll after IN_QUEUE
+        # RunPod runsync returns IN_QUEUE if no warm worker within sync_timeout.
+        # Interactive mode: bail fast → Ollama 1.5b (~2.5s CPU) takes over.
+        # Batch mode: poll status endpoint until COMPLETED or full timeout.
         job_status = data.get("status", "")
         job_id = data.get("id", "")
         if job_status in ("IN_QUEUE", "IN_PROGRESS") and job_id:
+            if interactive:
+                log.info(
+                    f"[RunPod] cold-start ({job_status}), skipping to Ollama fast-path. "
+                    f"job_id={job_id} (background warmup in progress)"
+                )
+                return ("", "runpod_cold_start")
+
+            # Batch mode: poll for completion
+            _POLL_WINDOW = 180
             log.info(
-                f"[RunPod] cold-start detected ({job_status}), polling {job_id} "
-                f"for up to {_POLL_WINDOW}s (runsync took {elapsed:.0f}s)"
+                f"[RunPod] batch poll: {job_status}, polling {job_id} "
+                f"for up to {_POLL_WINDOW}s"
             )
             status_url = f"{_API_BASE}/{cfg['endpoint_id']}/status/{job_id}"
             poll_start = time.monotonic()
@@ -156,7 +173,7 @@ def runpod_generate(
                         log.error(f"[RunPod] job {ps}: {pdata.get('error','')}")
                         return ("", f"runpod_error: job {ps}")
                 else:
-                    log.warning(f"[RunPod] poll timed out after {_POLL_WINDOW}s")
+                    log.warning(f"[RunPod] batch poll timed out after {_POLL_WINDOW}s")
                     return ("", "runpod_error: poll_timeout")
 
     except Exception as e:
@@ -253,10 +270,11 @@ def hybrid_generate(
                 max_tokens=max_tokens,
                 temperature=temperature,
                 corpus_context=corpus_context,
+                interactive=True,  # fast: bail on cold-start → Ollama 1.5b
             )
             if mode == "runpod" and text.strip():
                 return (text, mode)
-            log.info(f"[Hybrid] RunPod returned {mode}, fallback to local")
+            log.info(f"[Hybrid] RunPod returned {mode!r}, fallback to Ollama")
         except Exception as e:
             log.warning(f"[Hybrid] RunPod exception: {e}, fallback to local")
 
