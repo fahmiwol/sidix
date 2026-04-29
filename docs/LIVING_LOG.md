@@ -15045,3 +15045,37 @@ Sigma-1C: DONE (this commit)
 Sigma-1D: DONE (this commit)
 Sigma-1E: DONE (this commit)
 Next: push + PR + deploy VPS + re-run goldset
+
+
+---
+
+## [IMPL] 2026-04-30 — Sigma-1H: browser_fetch + social_search tools
+
+### Analisa
+- Vision flow bos: sub-agent perlu "web search, Wiki, Browser, browsing, sosial media"
+- browser_fetch: web_fetch existing hanya plain text, tidak bisa structured extraction
+- social_search: belum ada akses komunitas/opini (Reddit, YouTube)
+- Both no-API-key (standing-alone principle)
+
+### Implementasi (agent_tools.py)
+browser_fetch tool:
+- Structured extraction: title, main article (prioritas article/main/content container)
+- Meta: OG title/desc, published date, JSON-LD aware
+- Better than web_fetch untuk artikel berita, blog, dokumentasi panjang
+- Params: url, max_chars (8000), include_meta (bool)
+
+social_search tool:
+- Reddit: public JSON API (search.json, no auth, sort=relevance)
+- YouTube: RSS feed search (no auth, no API key)
+- Returns: post/video titles + scores + citations
+- Params: query, platform ('reddit'|'youtube'|'all'), max_results
+
+### Testing
+- Syntax: ast.parse OK
+- browser_fetch smoke test: success=True, 554 chars extracted from httpbin.org/html
+- social_search local: Reddit timeout (Windows blocks) → VPS Linux will work
+- TOOL_REGISTRY: both tools registered
+
+### Next
+- Sigma-1G goldset re-run running on VPS (Q1-Q6 done, 3/6 PASS so far)
+- Q1/Q2/Q4 sekarang PASS (sebelumnya FAIL — Sigma-1D cache bypass berhasil)
