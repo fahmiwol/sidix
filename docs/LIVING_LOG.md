@@ -14297,7 +14297,21 @@ Fix 3: tick() line 133 apply_plan(dry_run=True) → apply_plan(dry_run=dry_run)
 
 - TEST: VPS CLI verified
   - `python3 -m brain_qa autodev list` → shows 2 pending tasks ✅
-  - Cron script test run (AUTODEV_DRY_RUN=1) → in progress
+  - Cron script test run (AUTODEV_DRY_RUN=1) → FAILED (pytest capture issue, see below)
+
+- ERROR: pytest subprocess capture — deeper root cause found
+  - Symptom: `ValueError: I/O operation on closed file` at _pytest/capture.py:589 snap()
+  - stdin=DEVNULL fix (9620bc2) was NOT sufficient — error persisted
+  - Root cause: pytest --capture=fd (default) manages stdout/stderr at fd level
+    BUT subprocess.run(capture_output=True) has already piped those fds to parent
+    → fd-level capture creates tmpfile, writes to it, then tries seek(0) on closed file
+  - Fix: --capture=sys captures at Python sys.stdout/sys.stderr level instead of fd
+    Compatible with running inside subprocess with captured fds
+  - Commit: 7266f39
+
+- FIX: dev_sandbox.py — add `--capture=sys` to pytest subprocess cmd (commit 7266f39)
+  - Verified: 56 tests still pass locally with this flag
+  - Deployed to VPS via merge
 
 - DECISION: Cron tick = every 30 min (balanced CPU vs autonomy speed)
   - Can increase to */15 later when VPS has lighter load
