@@ -895,6 +895,15 @@ if (getAuth()) {
 }
 
 console.log('SIDIX Command Board v0.1.0 loaded · Tiranyx Lab 2026');
+
+// PWA service worker registration (Sprint 49)
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js', { scope: '/chatbos/' })
+      .then((reg) => console.log('[pwa] sw registered, scope:', reg.scope))
+      .catch((err) => console.warn('[pwa] sw register fail:', err));
+  });
+}
 </script>
 </body>
 </html>
