@@ -832,6 +832,55 @@ def _append_mode_hint(question: str, text: str, persona: str) -> str:
     return text.rstrip() + hint_block
 
 
+def _apply_sanad(question: str, llm_text: str, steps: "list[ReActStep]") -> str:
+    """
+    Σ-1A: Sanad gate — cross-verify LLM answer sebelum dikembalikan ke user.
+    - Brand-specific (persona/IHOS/ReAct/dll): override kalau halu vs canonical CLAUDE.md.
+    - Current event tanpa web_search source: return UNKNOWN daripada tebak.
+    - Coding/creative: passthrough tanpa gate.
+    Non-fatal: kalau error → return llm_text apa adanya.
+    """
+    try:
+        from .sanad_verifier import Source, verify_multisource, format_sanad_footer
+        import logging as _log
+        _log_sv = _log.getLogger("sidix.sanad")
+
+        sources: list[Source] = []
+        for st in (steps or []):
+            action_name = getattr(st, "action_name", "") or ""
+            observation = getattr(st, "observation", "") or ""
+            action_args = getattr(st, "action_args", {}) or {}
+            if action_name in ("web_search", "search_web_wikipedia", "web_fetch") and observation:
+                sources.append(Source(
+                    name="web_search",
+                    text=observation[:500],
+                    confidence=0.8,
+                    url=action_args.get("url"),
+                ))
+            elif action_name in ("search_corpus", "read_chunk", "list_sources") and observation:
+                sources.append(Source(
+                    name="search_corpus",
+                    text=observation[:500],
+                    confidence=0.7,
+                ))
+
+        result = verify_multisource(question, llm_text or "", sources)
+        final = result.answer
+        if result.rejected_llm:
+            _log_sv.warning(
+                "SANAD OVERRIDE — question='%.80s' reason='%s'",
+                question, result.reason,
+            )
+            footer = format_sanad_footer(result)
+            if footer:
+                final = final + footer
+        return final
+    except Exception as _sv_err:
+        import logging as _log
+        _log.getLogger("sidix.sanad").debug("sanad gate skip: %s", _sv_err)
+        return llm_text or ""
+
+
 def _compose_final_answer(
     question: str,
     persona: str,
@@ -1029,6 +1078,7 @@ def _compose_final_answer(
             _log.getLogger("sidix.react").info(f"LLM synthesis OK via {mode} — persona={persona}")
             # Pivot 2026-04-26: append kontekstual mode suggestion
             text = _append_mode_hint(question, text, persona)
+            text = _apply_sanad(question, text, steps)
             return (text, all_citations, 0.85, "fakta")
     except Exception as _llm_err:
         import logging as _log
@@ -1058,6 +1108,7 @@ def _compose_final_answer(
                 _flog.getLogger("sidix.fact_extract").info(
                     f"DIRECT FACT RETURN — LLM down, returning extracted fact: {_fname}"
                 )
+                _direct_text = _apply_sanad(question, _direct_text, steps)
                 return (_direct_text, all_citations, 0.95, "fakta")
     except Exception as _fact_err:
         import logging as _flog
@@ -1075,6 +1126,7 @@ def _compose_final_answer(
         if mode == "local_lora":
             import logging as _log
             _log.getLogger("sidix.react").info(f"Local LoRA synthesis OK — persona={persona}")
+            text = _apply_sanad(question, text, steps)
             return (text, all_citations, 0.75, "fakta")
     except Exception as _local_err:
         import logging as _log
@@ -1260,6 +1312,8 @@ def _compose_final_answer(
             "Tinjau isi file sebelum menjalankan di produksi; planner rule-based belum menulis file otomatis "
             "tanpa permintaan eksplisit dari klien."
         )
+
+    body = _apply_sanad(question, body, steps)
 
     # Attach user intelligence hint sebagai HTML comment (invisible di render, visible di source)
     # LLM synthesis akan baca ini nanti sebagai gaya respons yang disarankan

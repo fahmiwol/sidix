@@ -14922,3 +14922,40 @@ File: `tests/anti_halu_baseline_results.json`
 - Σ-1A: wire sanad_verifier ke `/agent/chat` (next session)
 - Q15 detail issue: "act" substring di "Action" tetap akan match. Brand verifier override tetap fire karena facts threshold tidak terpenuhi (need both "reasoning" + "acting"). Logic lebih kuat dari simple substring.
 
+
+
+---
+
+## [IMPL] 2026-04-30 — Σ-1A DONE: sanad_verifier wired ke agent_react
+
+Sprint: Σ-1A (Anti-Halu — wire sanad gate ke /agent/chat synthesis flow)
+Branch: claude/gallant-ellis-7cd14d
+
+### Yang dilakukan:
+1. Cherry-pick 3 commits dari claude/pedantic-banach-c8232d:
+   - 506ffc9 (Σ-1G goldset + baseline_results.json)
+   - 1af27fd (Σ-1B sanad_verifier.py 26 unit tests)
+   - 5f1791f (HANDOFF doc)
+2. Tambah _apply_sanad() helper di agent_react.py (sebelum _compose_final_answer)
+3. Hook sanad gate di 4 return points di _compose_final_answer:
+   - Return point 1 (LLM via runpod/ollama, was ~line 1032)
+   - Return point 2 (DIRECT FACT RETURN saat LLM down, was ~line 1061)
+   - Return point 3 (Local LoRA synthesis, was ~line 1078)
+   - Return point 4 (Corpus fallback synthesis, was ~line 1269)
+4. Tulis tests/test_agent_react_sanad_integration.py (17 integration tests)
+
+### Test results:
+- tests/test_sanad_verifier.py: 26/26 PASS
+- tests/test_agent_react_sanad_integration.py: 17/17 PASS
+- Total: 43/43 PASS
+
+### Critical halu yang sekarang ter-handle:
+- Q15 ReAct: "Recursive Action Tree" -> override ke "Reasoning + Acting (Yao 2023)"
+- Q17 Persona: "Aboudi" -> override ke UTZ/ABOO/OOMAR/ALEY/AYMAN
+- Q18 IHOS: "Inisiatif Holistik..." -> override ke "Islamic Holistic Ontological System"
+- Current event tanpa web source -> return UNKNOWN (tidak menebak)
+
+### Next:
+- Re-run Σ-1G goldset di VPS untuk validasi 14-16/20+ (up dari 8/20)
+- Σ-1C: per-persona brain (tool subset per persona)
+- Σ-1D: current events bypass cache + force web_search
