@@ -691,3 +691,37 @@ POST-correction (benar):
 
 Catatan lengkap di `brain/public/research_notes/296_sanad_multisource_corrected_flow_20260430.md`
 
+
+---
+
+## 2026-04-30 — LOCK: Σ-1 SEQUENCING + MASCOT OPTION B
+
+### Founder confirmation:
+
+> "Σ-1 sequencing: Mulai dari Σ-1G (gold-set dulu — biar ada metric pass/fail) → Σ-1B (sanad verifier core) → Σ-1A (wire fanout) → sisanya? Atau bos punya urutan lain? INI Aja!"
+> "1. Mascot B ok"
+> "karena sisa dikit tuh." (usage limit context — weekly all-models 81%, 5-jam 78%)
+
+### LOCKED DECISIONS:
+
+**Sprint Σ-1 sequencing (CONFIRMED)**:
+1. **Σ-1G** — QA gold-set 20 questions FIRST (metric pass/fail dulu sebelum implement)
+2. **Σ-1B** — Build `sanad_verifier.py` (multi-source cross-check core)
+3. **Σ-1A** — Wire `persona_research_fanout` → `/agent/chat`
+4. Sisanya (Σ-1C tool subset, Σ-1D cache bypass, Σ-1E AKU dedup, Σ-1F reflection loop) — order TBD setelah Σ-1A done, prioritas berdasarkan gold-set fail patterns
+
+**Mascot**: Option B (image bos sebagai hero + SDXL generate 4 state variants thinking/working/happy/error). Endpoint `lts8dj4c7rp4z8`. Estimate ~$0.05, ~1 jam termasuk QA.
+
+**Pacing discipline**: 1 sub-task per session, lapor, baru lanjut next sub-task. Hemat token usage limit. Catat tiap step.
+
+### NEXT ACTION (next session):
+
+Mulai **Σ-1G** — bikin `tests/test_anti_halu_goldset.py` dengan 20 questions:
+- 5 current events (presiden, ibu kota, harga emas, cuaca, juara)
+- 5 factual stable (definisi/konsep)
+- 5 coding/technical
+- 5 creative/persona-specific
+Target: pass 18/20 sebelum Σ-1B deploy. Run baseline dulu (current state = how many fail) → metric.
+
+Status: **PLAN LOCKED · NO CODE YET · WAITING NEXT SESSION**
+

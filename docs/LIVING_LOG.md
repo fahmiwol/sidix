@@ -14817,3 +14817,16 @@ Founder verbatim correction di `docs/FOUNDER_JOURNAL.md` entry 2026-04-30 follow
 
 Recommend: B.
 
+
+---
+
+## [LOCK] 2026-04-30 — Σ-1 SEQUENCE + MASCOT OPTION B CONFIRMED
+
+Founder approve: Σ-1G → Σ-1B → Σ-1A → sisanya. Mascot Option B (image bos + SDXL state variants).
+
+Pacing: 1 sub-task per session (founder noted weekly all-models usage 81%, 5-jam 78% — hemat).
+
+Next session start: Σ-1G QA gold-set 20 questions + run baseline.
+
+Detail: `research_notes/296` + `FOUNDER_JOURNAL.md` 2026-04-30 LOCK entry.
+

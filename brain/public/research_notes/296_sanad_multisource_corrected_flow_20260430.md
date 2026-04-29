@@ -12,6 +12,18 @@ Prior-art declaration: see repo CLAIM_OF_INVENTION.md.
 
 ---
 
+## STATUS UPDATE 2026-04-30 — SEQUENCE LOCKED
+
+Founder confirmed sequencing: **Σ-1G → Σ-1B → Σ-1A → sisanya**.
+
+Mascot: **Option B** (image bos hero + SDXL 4 state variants via endpoint lts8dj4c7rp4z8).
+
+Pacing discipline: 1 sub-task per session (usage limit context).
+
+Next: Σ-1G — `tests/test_anti_halu_goldset.py` 20-question baseline.
+
+---
+
 ## 1. Founder's Vision (verbatim flow)
 
 ```
