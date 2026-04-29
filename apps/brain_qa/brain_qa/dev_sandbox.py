@@ -23,6 +23,7 @@ import logging
 import os
 import subprocess
 import tempfile
+import xml.etree.ElementTree as ET
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -57,46 +58,76 @@ def run_pytest(repo_root: Path, paths: list[str] | None = None,
     """
     import time
     t0 = time.time()
-    # Output redirected to a real temp FILE, not PIPE.
-    # With capture_output=True (PIPE), Python's TextIOWrapper closes the pipe
-    # fd during process teardown BEFORE pytest flushes its TerminalWriter,
-    # causing ValueError "I/O operation on closed file" in terminalwriter.py.
-    # Using a real file avoids this: the fd stays open throughout, pytest can
-    # flush normally, we read the file content after the process exits.
-    cmd = [_python_bin(), "-m", "pytest", "--tb=short", "-q"]
+    # Strategy: --junitxml for reliable machine-readable results + tempfile for
+    # terminal output. pytest's FDCapture/TerminalWriter can raise ValueError
+    # ("I/O operation on closed file") when run as subprocess, making returncode
+    # and stdout parsing unreliable. junitxml is written per-test (not at end)
+    # so it survives a terminal crash.  We read counts from XML, not stdout.
+    xml_fd, xml_path = tempfile.mkstemp(suffix=".pytest.xml", prefix="sidix_")
+    log_fd, log_path = tempfile.mkstemp(suffix=".pytest.log", prefix="sidix_")
+    os.close(xml_fd)  # will be written by pytest, not us
+    cmd = [_python_bin(), "-m", "pytest", "--tb=short", "-q",
+           f"--junitxml={xml_path}"]
     if paths:
         cmd.extend(paths)
 
     log.info("[dev_sandbox] pytest cmd=%s", " ".join(cmd))
-    tmp_fd, tmp_path = tempfile.mkstemp(suffix=".pytest.log", prefix="sidix_")
     try:
-        with os.fdopen(tmp_fd, "w", errors="replace") as out_f:
+        with os.fdopen(log_fd, "w", errors="replace") as log_f:
             proc = subprocess.run(
                 cmd, cwd=str(repo_root),
-                stdout=out_f, stderr=out_f,
+                stdout=log_f, stderr=log_f,
                 stdin=subprocess.DEVNULL,
                 timeout=timeout,
             )
-        with open(tmp_path, errors="replace") as f:
-            out = f.read()
-        ok = proc.returncode == 0
-        # Parse summary from last 20 lines of output
+        # Read terminal log (best-effort — may be incomplete if pytest crashed)
+        try:
+            with open(log_path, errors="replace") as f:
+                out = f.read()
+        except OSError:
+            out = ""
+
+        # Parse counts from junitxml (authoritative) —────────────────────────
         passed = failed = errors = 0
-        for line in out.splitlines()[-20:]:
-            if " passed" in line or " failed" in line or " error" in line:
-                # e.g. "5 passed, 1 failed in 2.3s"
-                tokens = line.replace(",", " ").split()
-                for i, t in enumerate(tokens):
-                    if t.isdigit():
-                        n = int(t)
-                        nxt = tokens[i + 1] if i + 1 < len(tokens) else ""
-                        if "passed" in nxt:
-                            passed = n
-                        elif "failed" in nxt:
-                            failed = n
-                        elif "error" in nxt:
-                            errors = n
+        ok = False
+        try:
+            tree = ET.parse(xml_path)
+            root = tree.getroot()
+            # <testsuite tests="N" failures="M" errors="K" ...>
+            suite = root if root.tag == "testsuite" else root.find("testsuite")
+            if suite is not None:
+                tests  = int(suite.get("tests",  "0"))
+                fails  = int(suite.get("failures", "0"))
+                errs   = int(suite.get("errors",   "0"))
+                skips  = int(suite.get("skipped",  "0"))
+                passed = tests - fails - errs - skips
+                failed = fails
+                errors = errs
+                ok = (fails == 0 and errs == 0 and tests > 0)
+            else:
+                log.warning("[dev_sandbox] junitxml: no testsuite element")
+                ok = proc.returncode == 0
+        except Exception as xml_err:
+            log.warning("[dev_sandbox] junitxml parse failed: %s — fallback to returncode", xml_err)
+            ok = proc.returncode == 0
+            # Crude text parsing as fallback
+            for line in out.splitlines()[-20:]:
+                if " passed" in line or " failed" in line or " error" in line:
+                    tokens = line.replace(",", " ").split()
+                    for i, t in enumerate(tokens):
+                        if t.isdigit():
+                            n = int(t)
+                            nxt = tokens[i + 1] if i + 1 < len(tokens) else ""
+                            if "passed" in nxt:
+                                passed = n
+                            elif "failed" in nxt:
+                                failed = n
+                            elif "error" in nxt:
+                                errors = n
+
         duration = time.time() - t0
+        log.info("[dev_sandbox] pytest done: passed=%d failed=%d errors=%d ok=%s",
+                 passed, failed, errors, ok)
         return TestResult(
             ok=ok, pytest_passed=passed, pytest_failed=failed,
             pytest_errors=errors, duration_seconds=round(duration, 2),
@@ -114,10 +145,11 @@ def run_pytest(repo_root: Path, paths: list[str] | None = None,
             failure_classification="sandbox_error",
         )
     finally:
-        try:
-            os.unlink(tmp_path)
-        except OSError:
-            pass
+        for p in (xml_path, log_path):
+            try:
+                os.unlink(p)
+            except OSError:
+                pass
 
 
 def run_ruff(repo_root: Path) -> int:
