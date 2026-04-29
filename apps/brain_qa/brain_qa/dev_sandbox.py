@@ -55,7 +55,10 @@ def run_pytest(repo_root: Path, paths: list[str] | None = None,
     """
     import time
     t0 = time.time()
-    cmd = [_python_bin(), "-m", "pytest", "--tb=short", "-q"]
+    # --capture=sys: capture at Python sys.stdout level, not fd level.
+    # Avoids ValueError("I/O operation on closed file") when pytest runs
+    # as subprocess with capture_output=True (parent already owns those fds).
+    cmd = [_python_bin(), "-m", "pytest", "--tb=short", "-q", "--capture=sys"]
     if paths:
         cmd.extend(paths)
 
