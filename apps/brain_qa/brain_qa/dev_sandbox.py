@@ -55,10 +55,14 @@ def run_pytest(repo_root: Path, paths: list[str] | None = None,
     """
     import time
     t0 = time.time()
-    # --capture=sys: capture at Python sys.stdout level, not fd level.
-    # Avoids ValueError("I/O operation on closed file") when pytest runs
-    # as subprocess with capture_output=True (parent already owns those fds).
-    cmd = [_python_bin(), "-m", "pytest", "--tb=short", "-q", "--capture=sys"]
+    # -p no:capture: disable pytest's own capture entirely.
+    # When run as subprocess with capture_output=True, the parent owns
+    # stdout/stderr via PIPE.  Pytest's internal capture (fd or sys mode)
+    # creates BytesIO/tmpfile buffers that get closed during subprocess
+    # teardown → ValueError "I/O operation on closed file" in snap().
+    # Since we capture at the parent level, pytest capture is redundant.
+    # Confirmed safe: no test in this suite uses capsys/capfd fixtures.
+    cmd = [_python_bin(), "-m", "pytest", "--tb=short", "-q", "-p", "no:capture"]
     if paths:
         cmd.extend(paths)
 
