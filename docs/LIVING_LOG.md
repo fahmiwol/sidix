@@ -14620,3 +14620,42 @@ SIDIX autonomous developer sekarang:
 - Gated by ruff violations HANYA di file yang dia modifikasi
 - Notifikasi Telegram langsung ke founder saat PR disubmit
 - 191 tests pass semua
+
+---
+
+## 2026-04-29 — Snapshot Kapabilitas SIDIX (State of the System)
+
+### NOTE: Full snapshot di research_notes/295_sidix_capability_snapshot_20260429.md
+
+### Ringkasan eksekutif (semua angka dari VPS live):
+
+**Infrastruktur**: ctrl.sidixlab.com + app.sidixlab.com · PM2 online · model_ready=true
+
+**Model**: Qwen2.5-7B + LoRA adapter · 3 models loaded · BGE-M3 embedding CPU
+
+**Corpus**: 2.287 dokumen · 295 research notes · 226 Hafidz Ledger entries
+
+**Tools**: 48 tools aktif (web_search, code_sandbox, text_to_image, debate_ring, dll)
+
+**Senses**: 9/12 aktif (tool_action, web_read, creative_imagination, self_awareness,
+            persona_voice, audio_out, emotional_tone, text_write, text_read)
+
+**Autonomous Developer** (Sprint 40–60E):
+- Pipeline: pick → 5-persona fanout → plan → validate → apply → test → submit PR → notify
+- Gate: pytest 191 tests + ruff delta-mode (hanya file yang disentuh)
+- Telegram: @sidixlab_bot → notify owner setiap PR submit
+- Safety: NO auto-merge, NO path traversal, NO oversized writes
+- Ledger: 226 iterasi tercatat, 2 approved, 1 rejected, 223 pending review
+
+**Sprint selesai**: 40 · 43(scaffold) · 58A · 58B · 59 · 60A-E
+
+**Yang belum**: Telegram 2-arah (Sprint 43 Ph2) · GitHub PR via gh CLI · LoRA retrain loop · ruff baseline cleanup
+
+### DECISION: Ruff delta-mode sebagai standar autonomous quality gate
+Autonomous developer hanya bisa submit PR kalau:
+1. Semua 191 pytest pass
+2. File yang DIA tulis/modifikasi = 0 ruff violations
+3. Owner approve di Telegram → merge ke main
+
+Ini memastikan SIDIX tumbuh dengan kode yang bersih, tanpa memblokir progress
+karena warisan 3726 violations dari codebase sebelumnya.
