@@ -14014,3 +14014,94 @@ ETA training: ~4h, jadi cek lagi nanti malam.
   - Chat 5 persona via /agent/chat - LIVE dengan adapter LoRA Sprint 13
   - 15s response, UTZ voice consistency working
   - Backend endpoints Sprint 40/41/42 all responding
+
+[2026-04-29T00:34:33.243707+00:00] [INVESTIGATE] Brain restart pattern (21 restarts) - root cause IDENTIFIED.
+  
+  Findings dari pm2 logs analysis:
+  1. Restart pattern = graceful 'INFO: Shutting down' -> fresh Uvicorn start
+     dengan PyTorch re-import + semantic_cache bootstrap. NOT crash.
+  2. Qalb monitor module trigger 'health critical mem=27% cpu=98%' on 
+     transient request spike, activate 'safe mode' - tapi tidak directly
+     trigger restart.
+  3. RUNPOD_ENDPOINT_ID + Ollama fallback yang time out 60s -> Qalb detect
+     anomaly. Sudah di-fix tadi (RUNPOD_ENDPOINT_ID empty).
+  4. RSS 427MB / 31GB = 1.4% memory, CPU 1.2% steady - bukan resource 
+     pressure issue.
+  5. dmesg + journalctl bersih dari OOM kill events.
+  
+  ROOT CAUSE: 21 restarts = my own pm2 restart sidix-brain --update-env
+  commands today (deploy chatbos, env change RUNPOD_ENDPOINT, dst).
+  Tiap kali deploy ada brief downtime ~5-8s saat brain reload, kalau bos
+  hit chat saat itu -> nginx return 502.
+  
+  FIX (already applied earlier):
+  - RUNPOD_ENDPOINT_ID emptied -> chat direct ke local adapter, no timeout
+  - Brain stable post Sprint 13 deploy
+  
+  POST-MITIGATION (next):
+  - Add nginx proxy_next_upstream retry on 502 (1 retry auto)
+  - PM2 wait_ready probe before accept traffic
+  - Founder-facing: kalau saya deploy/restart, kasih notif chat 'brain
+    sedang reload 8s' biar bos retry kalau 502.
+  
+  Status sekarang: brain stable uptime aktif, no anomaly.
+
+[2026-04-29T00:34:33.243707+00:00] [VERIFICATION] Brain currently stable: PID 671149, RSS 427MB, CPU 1.2%,
+  uptime 8m+ post last restart. No crash, no OOM. Restart count 21 = me.
+
+[2026-04-29T00:48:25.509017+00:00] [SPRINT-48-LIVE] Brain Stability fix - RunPod path bypassed, local LLM path.
+  Root cause investigation:
+  - Brain restart 21x = ALL my deploy commands today (NOT auto-crash)
+  - Qalb watchdog warn-only (set env flag, no shutdown trigger)
+  - PyTorch 2.0.0+cpu < 2.4 required = adapter loaded as files but inference
+    falls back to Ollama qwen2.5:7b (CPU intensive)
+  - RunPod ReadTimeout when re-enabled = endpoint bug atau warm fail
+  Fix applied:
+  - RUNPOD_ENDPOINT_ID empty di .env (force local_llm path)
+  - Warmup cron disabled (no point if RunPod bypassed)
+  - Brain pm2 restart, model_ready=True, chat 27s response UTZ voice LIVE
+  Trade-off: chat 15-30s vs RunPod cold 60-90s. Local stable but slow.
+  Future: upgrade PyTorch >= 2.4 OR fix RunPod endpoint bug for fast path.
+
+[2026-04-29T00:48:25.509017+00:00] [SPRINT-49-LIVE] chatbos PWA proper.
+  Files added:
+  - SIDIX_BOARD/manifest.json - PWA manifest dengan name/icons/shortcuts/
+    theme_color/orientation. 3 shortcuts: Chat, Approvals, Tasks.
+  - SIDIX_BOARD/sw.js - Service Worker:
+    * Cache-first for static shell (HTML/CSS/JS) - offline capable
+    * Network-first for /agent/* /sidix/* /autonomous_dev/* (fresh data)
+    * Push notification handler (future Sprint 50+)
+    * Background revalidate for stale-while-revalidate
+  - SIDIX_BOARD/index.html updated:
+    * <link rel='manifest'> tag
+    * 4 mobile meta: theme-color, apple-mobile-web-app-capable,
+      apple-mobile-web-app-status-bar-style, apple-mobile-web-app-title
+    * Service worker registration script di JS bootstrap
+  Capabilities unlocked:
+  - HP Chrome 'Add to Home Screen' = proper PWA app icon
+  - Offline shell load (board UI cached, login modal still works)
+  - Theme color match dark UI #58a6ff blue accent
+  - Future push notif untuk approval queue alerts
+  TODO: design icon-192.png + icon-512.png (placeholder pending design).
+
+[2026-04-29T00:48:25.509017+00:00] [SPRINT-50-LIVE] Persona Test Harness.
+  apps/brain_qa/brain_qa/persona_test_harness.py (~360 LOC):
+  - PERSONA_SIGNATURES (5 persona reference: UTZ/ABOO/OOMAR/ALEY/AYMAN)
+    Each: tagline + pronouns set + vocab markers list + regex patterns +
+    min_score 0.43 baseline (Sprint 13 training methodology)
+  - TEST_PROMPTS dict: 50 total (10 per category × 5 cat:
+    creative/technical/strategic/research/supportive)
+  - score_response(text, persona) -> (pronoun, marker, pattern, total)
+    Weighted: 40% pronoun + 40% marker + 20% pattern
+  - call_chat_endpoint() POST /agent/chat dengan optional admin token
+  - run_persona_test(persona, prompts) -> list[PromptResult]
+  - run_full_harness() -> HarnessResult dengan drift_alerts
+    Drift alert kalau avg < baseline*0.85 (15 percent tolerance)
+  - write_report() ke /opt/sidix/.data/persona_test_harness/
+  Smoke test PASS:
+  - UTZ creative text: total=0.60 (above 0.43 threshold)
+  - ABOO technical text: total=0.72 (above 0.43 threshold)  
+  - Cross-persona discrimination: UTZ-text-scored-as-ABOO = 0.00 (rejector OK)
+  - 5 signatures + 50 prompts loaded
+  Use case: post-LoRA-retrain validation gate, pre-deploy smoke test,
+  weekly cron monitoring untuk persona drift.
