@@ -634,9 +634,24 @@ def _rule_based_plan(
                 "search_corpus",
                 {"query": question, "k": 5, "persona": persona},
             )
+        # Sigma-2B: general factual fallback — try corpus first before going to RunPod cold.
+        # Jika pertanyaan adalah factual 1-hop (bukan creative/casual), coba corpus
+        # sebelum langsung ke LLM. Corpus hit = fast (<1s), LLM cold = 90-150s.
+        _CASUAL_RE = re.compile(
+            r"\b(halo|hai|hey|apa kabar|gimana|bagaimana kabarmu|ceritain|curhat|lucu|"
+            r"jokes?|humor|ketawa|nanya|tanya|boleh|boleh nanya|mau tanya)\b",
+            re.IGNORECASE,
+        )
+        _is_casual = bool(_CASUAL_RE.search(question))
+        _is_factual_candidate = not _is_casual and not _needs_web_search(question) and len(question) > 5
+        if _is_factual_candidate and not corpus_only:
+            return (
+                f"Pertanyaan faktual umum. Cari konteks di korpus dulu sebelum LLM: '{question}'.",
+                "search_corpus",
+                {"query": question, "k": 3, "persona": persona},
+            )
         return (
-            "Topik umum/non-SIDIX. Jawab langsung dari kemampuan model dulu, "
-            "lalu gunakan corpus hanya bila diminta.",
+            "Pertanyaan casual/greeting. Jawab langsung dari kemampuan model.",
             "",
             {},
         )
@@ -1079,6 +1094,7 @@ def _compose_final_answer(
     # - Multi-step reasoning (jelaskan/analisa/bandingkan + multi paragraf) → 1000
     # - Default → 600
     # - simple_mode → 200
+    # Sigma-2A: "singkat/brief" modifier → 250 | single-fact "apa itu/kepanjangan" → 300
     _q_lc = question.lower()
     _is_code_q = any(t in _q_lc for t in (
         "tulis fungsi", "tulis function", "buat kode", "buat code", "implementasi",
@@ -1089,8 +1105,22 @@ def _compose_final_answer(
         "jelaskan", "analisa", "analisis", "bandingkan", "trade-off", "trade off",
         "kelebihan dan", "perbedaan antara", "explain", "compare",
     ))
+    # Sigma-2A: brief modifier overrides long_reasoning → cap at 250
+    _is_brief_modifier = any(t in _q_lc for t in (
+        "singkat", "singkatnya", "brief", "briefly", "ringkas", "pendek",
+        "simple", "simpel", "sederhana", "cukup", "intinya", "pokoknya",
+    ))
+    # Sigma-2A: single-fact patterns → short answer, no long paragraphs needed
+    _is_single_fact = any(t in _q_lc for t in (
+        "apa itu", "apa kepanjangan", "apa singkatan", "berapa ", "siapa ",
+        "kapan ", "dimana ", "di mana ", "apakah ", "apa bedanya",
+    ))
     if simple_mode:
         _max_tokens = 200
+    elif _is_brief_modifier:
+        _max_tokens = 250
+    elif _is_single_fact and not _is_code_q:
+        _max_tokens = 350
     elif _is_code_q:
         _max_tokens = 1200
     elif _is_long_reasoning:

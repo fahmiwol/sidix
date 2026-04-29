@@ -22,7 +22,7 @@ from dataclasses import dataclass
 from typing import Any, Callable, Union
 
 CHAT_URL = "https://ctrl.sidixlab.com/agent/chat"
-TIMEOUT_S = 150  # cold-start tolerance
+TIMEOUT_S = 300  # Sigma-2D: raised from 150s — RunPod token gen can take 90-150s
 
 
 @dataclass

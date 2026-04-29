@@ -62,13 +62,21 @@ _QUERY_PATTERNS = [
             r"([A-Z][a-z]+(?:\s+[A-Z][a-z]+){0,2})\b",
         ),
     ),
-    # Sprint 35: CEO / Founder
+    # Sprint 35: CEO / Founder — Sigma-2C: tambah reverse pattern (Name IS/as CEO)
     (
         re.compile(r"siapa(?:kah)?\s+(?:ceo|founder|pendiri)\s+", re.I),
         "CEO / Founder",
         re.compile(
-            r"\b(?:CEO|Founder|Pendiri|Co.?Founder)\b[\s\w]{0,30}?\b"
-            r"([A-Z][a-z]+(?:\s+[A-Z][a-z]+){0,2})\b",
+            # Pattern 1: "CEO ... Name" (role then name)
+            r"(?:"
+            r"\b(?:CEO|Founder|Pendiri|Co.?Founder|Chief Executive)\b[\s\w,]{0,40}?"
+            r"([A-Z][a-zA-Z]+(?:\s+[A-Z][a-zA-Z]+){0,2})"
+            r"|"
+            # Pattern 2: "Name is/as/became CEO" or "Name, CEO" (name then role)
+            r"([A-Z][a-zA-Z]+(?:\s+[A-Z][a-zA-Z]+){0,2})"
+            r"(?:\s*,\s*|\s+(?:is|as|became|menjadi|adalah|selaku|sebagai)\s+)"
+            r"(?:CEO|chief executive|Founder|Pendiri)"
+            r")",
         ),
     ),
     # Sprint 35: Walikota / Bupati
@@ -98,13 +106,20 @@ _QUERY_PATTERNS = [
             r"([A-Z][a-z]+(?:\s+[A-Z][a-z]+){0,2})\b",
         ),
     ),
-    # Sprint 35: Juara / Pemenang (sport, competition)
+    # Sprint 35: Juara / Pemenang (sport, competition) — Sigma-2C: subject-first patterns
     (
-        re.compile(r"siapa(?:kah)?\s+(?:juara|pemenang|champion|winner)\s+", re.I),
+        re.compile(r"(?:siapa|siapakah)\s+(?:juara|pemenang|champion|winner)\s+|juara\s+(?:piala|world\s*cup|fifa|olimpiade|asian\s*games)", re.I),
         "Juara/Pemenang",
         re.compile(
-            r"\b(?:Juara|Pemenang|Champion|Winner|Memenangkan|Meraih)\b[\s\w]{0,30}?\b"
-            r"([A-Z][a-z]+(?:\s+[A-Z][a-z]+){0,2})\b",
+            # Pattern 1: "Country/Team won/champion/juara" — subject before verb
+            r"(?:"
+            r"([A-Z][a-zA-Z]+(?:\s+[A-Z][a-zA-Z]+)?)"
+            r"\s+(?:memenangkan|meraih|menang|menjadi\s+juara|won|wins|champion|crowned|beat|defeated)"
+            r"|"
+            # Pattern 2: role-first "Juara/Champion/Winner ... Country/Team"
+            r"\b(?:Juara|Pemenang|Champion|Winner|Memenangkan|Meraih)\b[\s\w]{0,40}?\b"
+            r"([A-Z][a-zA-Z]+(?:\s+[A-Z][a-zA-Z]+)?)"
+            r")",
         ),
     ),
 ]
@@ -159,8 +174,8 @@ def _clean_name(raw: str) -> Optional[str]:
     if len(keep) > 2:
         keep = keep[:2]
     cleaned = " ".join(keep)
-    # Minimum length 4 char untuk valid person name
-    if len(cleaned) < 4:
+    # Minimum length 3 char (handles 3-char names like "Sam", "Ali", "Bob")
+    if len(cleaned) < 3:
         return None
     return cleaned
 
@@ -209,8 +224,12 @@ def extract_fact_from_web(question: str, web_output: str) -> Optional[dict]:
             sources.append(url_match.group())
             continue
         # Run name extraction on text lines
+        # Sigma-2C: support multi-group alternation patterns (group 1 OR group 2)
         for m in name_re.finditer(line):
-            raw_name = m.group(1).strip()
+            raw_name = next((g for g in m.groups() if g), None)
+            if not raw_name:
+                continue
+            raw_name = raw_name.strip()
             cleaned = _clean_name(raw_name)
             if not cleaned:
                 continue
