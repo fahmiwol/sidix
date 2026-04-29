@@ -392,18 +392,92 @@ def validate_plan(plan: DiffPlan, repo_root: Path) -> tuple[bool, list[str]]:
 
 
 def apply_plan(plan: DiffPlan, repo_root: Path, dry_run: bool = False) -> list[str]:
-    """Apply DiffPlan to filesystem. Returns list of touched paths.
+    """Apply DiffPlan to filesystem. Returns list of successfully touched paths.
 
-    Phase 1: dry_run only (logs intended changes).
-    Phase 2: actual file writes with git stage.
+    Sprint 59: Phase 2 — actual file create/modify/delete.
+    Safety gates:
+      - validate_plan() checked BEFORE any writes
+      - Path escape prevention (repo_root boundary enforced)
+      - Hard-blocked sensitive files (.env, CLAUDE.md, MEMORY.md, .gitignore)
+      - Each file operation wrapped in try/except (partial failure = log + continue)
+
+    Args:
+        plan: DiffPlan from plan_changes()
+        repo_root: project root (all paths resolved relative to this)
+        dry_run: if True, log intended changes without touching filesystem
+
+    Returns:
+        List of repo-relative paths that were successfully touched.
+        Empty list if validation fails (no writes performed).
     """
+    # Safety gate: validate before ANY write
+    ok, issues = validate_plan(plan, repo_root)
+    if not ok:
+        log.error("[apply_plan] validation FAILED — no writes performed. issues=%s", issues)
+        return []
+
+    if not plan.files:
+        log.info("[apply_plan] no files to apply (empty plan)")
+        return []
+
     touched: list[str] = []
+    repo_resolved = repo_root.resolve()
+
     for fc in plan.files:
+        if not fc.path:
+            log.warning("[apply_plan] skipping FileChange with empty path")
+            continue
+
+        full_path = (repo_root / fc.path).resolve()
+
+        # Double-check path escape (defense in depth — validate_plan already checked)
+        if not str(full_path).startswith(str(repo_resolved)):
+            log.error("[apply_plan] path escape blocked: %s", fc.path)
+            continue
+
         if dry_run:
-            log.info("[code_diff_planner] DRY %s %s", fc.action, fc.path)
-        else:
-            log.warning("[code_diff_planner] apply NOT YET IMPLEMENTED Phase 2")
-        touched.append(fc.path)
+            log.info("[apply_plan] DRY  %s  %s  (content_len=%d)",
+                     fc.action.upper(), fc.path, len(fc.content))
+            touched.append(fc.path)
+            continue
+
+        # Actual filesystem operation
+        try:
+            if fc.action == "create":
+                if full_path.exists():
+                    log.warning("[apply_plan] CREATE %s — file exists, overwriting", fc.path)
+                full_path.parent.mkdir(parents=True, exist_ok=True)
+                full_path.write_text(fc.content, encoding="utf-8")
+                log.info("[apply_plan] CREATED %s (%d chars)", fc.path, len(fc.content))
+                touched.append(fc.path)
+
+            elif fc.action == "modify":
+                if not fc.content:
+                    log.warning("[apply_plan] MODIFY %s — empty content, skipping", fc.path)
+                    continue
+                # Full content replace (diff-patch deferred to Sprint 59B)
+                full_path.parent.mkdir(parents=True, exist_ok=True)
+                full_path.write_text(fc.content, encoding="utf-8")
+                log.info("[apply_plan] MODIFIED %s (%d chars, full replace)", fc.path, len(fc.content))
+                touched.append(fc.path)
+
+            elif fc.action == "delete":
+                if full_path.exists():
+                    full_path.unlink()
+                    log.info("[apply_plan] DELETED %s", fc.path)
+                    touched.append(fc.path)
+                else:
+                    log.warning("[apply_plan] DELETE %s — not found, skipping", fc.path)
+
+        except PermissionError as e:
+            log.error("[apply_plan] permission denied %s %s: %s", fc.action, fc.path, e)
+        except OSError as e:
+            log.error("[apply_plan] OS error %s %s: %s", fc.action, fc.path, e)
+        except Exception as e:
+            log.error("[apply_plan] unexpected error %s %s: %s", fc.action, fc.path, e)
+
+    log.info("[apply_plan] done — dry_run=%s touched=%d/%d files",
+             dry_run, len(touched), len(plan.files))
     return touched
 
 

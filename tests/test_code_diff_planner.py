@@ -171,7 +171,7 @@ class TestValidatePlan:
         assert any("path escape" in i or "blocked" in i for i in issues)
 
 
-# ── apply_plan ────────────────────────────────────────────────────────────────
+# ── apply_plan (Sprint 59 — actual filesystem ops) ───────────────────────────
 
 class TestApplyPlan:
     def _repo(self) -> Path:
@@ -181,18 +181,137 @@ class TestApplyPlan:
         plan = DiffPlan(
             task_id="x",
             files=[
-                FileChange(path="apps/foo.py", action="create", content="# hi"),
-                FileChange(path="apps/bar.py", action="delete"),
+                FileChange(path="apps/foo_dry.py", action="create", content="# hi"),
+                FileChange(path="apps/brain_qa/brain_qa/code_diff_planner.py", action="modify",
+                           content="# existing content"),
             ],
         )
         touched = apply_plan(plan, self._repo(), dry_run=True)
-        assert "apps/foo.py" in touched
-        assert "apps/bar.py" in touched
+        assert "apps/foo_dry.py" in touched
+        # dry run should NOT create the file
+        assert not (self._repo() / "apps/foo_dry.py").exists()
 
     def test_empty_plan_no_touched(self):
         plan = DiffPlan(task_id="x", files=[])
         touched = apply_plan(plan, self._repo(), dry_run=True)
         assert touched == []
+
+    def test_validation_fail_blocks_all_writes(self):
+        """If validate_plan fails, apply_plan must not write anything."""
+        import tempfile
+        with tempfile.TemporaryDirectory() as tmp:
+            repo = Path(tmp)
+            plan = DiffPlan(
+                task_id="x",
+                confidence=0.9,
+                files=[FileChange(path=".env", action="modify", content="evil=1")],
+            )
+            touched = apply_plan(plan, repo, dry_run=False)
+            assert touched == []
+            assert not (repo / ".env").exists()
+
+    def test_create_file(self):
+        """apply_plan create action writes file to disk."""
+        import tempfile
+        with tempfile.TemporaryDirectory() as tmp:
+            repo = Path(tmp)
+            plan = DiffPlan(
+                task_id="t-create",
+                confidence=0.8,
+                files=[FileChange(
+                    path="apps/new_module.py",
+                    action="create",
+                    content="# Sprint 59 test\ndef hello(): return 'hi'\n",
+                )],
+            )
+            touched = apply_plan(plan, repo, dry_run=False)
+            target = repo / "apps/new_module.py"
+            assert "apps/new_module.py" in touched
+            assert target.exists()
+            assert "Sprint 59 test" in target.read_text(encoding="utf-8")
+
+    def test_modify_file(self):
+        """apply_plan modify action overwrites existing file."""
+        import tempfile
+        with tempfile.TemporaryDirectory() as tmp:
+            repo = Path(tmp)
+            existing = repo / "apps/existing.py"
+            existing.parent.mkdir(parents=True, exist_ok=True)
+            existing.write_text("# old content", encoding="utf-8")
+            plan = DiffPlan(
+                task_id="t-modify",
+                confidence=0.8,
+                files=[FileChange(
+                    path="apps/existing.py",
+                    action="modify",
+                    content="# new content Sprint 59",
+                )],
+            )
+            touched = apply_plan(plan, repo, dry_run=False)
+            assert "apps/existing.py" in touched
+            assert "new content Sprint 59" in existing.read_text(encoding="utf-8")
+
+    def test_delete_file(self):
+        """apply_plan delete action removes file from disk."""
+        import tempfile
+        with tempfile.TemporaryDirectory() as tmp:
+            repo = Path(tmp)
+            target = repo / "apps/to_delete.py"
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_text("# will be deleted", encoding="utf-8")
+            plan = DiffPlan(
+                task_id="t-delete",
+                confidence=0.8,
+                files=[FileChange(path="apps/to_delete.py", action="delete")],
+            )
+            touched = apply_plan(plan, repo, dry_run=False)
+            assert "apps/to_delete.py" in touched
+            assert not target.exists()
+
+    def test_create_nested_dirs(self):
+        """apply_plan create action creates parent directories if needed."""
+        import tempfile
+        with tempfile.TemporaryDirectory() as tmp:
+            repo = Path(tmp)
+            plan = DiffPlan(
+                task_id="t-nested",
+                confidence=0.8,
+                files=[FileChange(
+                    path="apps/brain_qa/brain_qa/new_feature/module.py",
+                    action="create",
+                    content="# nested dir test",
+                )],
+            )
+            touched = apply_plan(plan, repo, dry_run=False)
+            assert touched
+            assert (repo / "apps/brain_qa/brain_qa/new_feature/module.py").exists()
+
+    def test_modify_empty_content_skipped(self):
+        """modify with empty content should be skipped (not crash)."""
+        import tempfile
+        with tempfile.TemporaryDirectory() as tmp:
+            repo = Path(tmp)
+            plan = DiffPlan(
+                task_id="t-empty",
+                confidence=0.8,
+                files=[FileChange(path="apps/x.py", action="modify", content="")],
+            )
+            touched = apply_plan(plan, repo, dry_run=False)
+            assert touched == []  # skipped, not error
+
+    def test_path_escape_blocked_at_apply(self):
+        """Double check path escape is blocked even in apply_plan."""
+        import tempfile
+        with tempfile.TemporaryDirectory() as tmp:
+            repo = Path(tmp)
+            plan = DiffPlan(
+                task_id="t-escape",
+                confidence=0.8,
+                files=[FileChange(path="../evil.py", action="create", content="evil")],
+            )
+            touched = apply_plan(plan, repo, dry_run=False)
+            assert touched == []
+            assert not Path(tmp).parent.joinpath("evil.py").exists()
 
 
 # ── plan_changes (integration, mocked LLM) ───────────────────────────────────
