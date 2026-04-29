@@ -14272,3 +14272,35 @@ Fix 3: tick() line 133 apply_plan(dry_run=True) → apply_plan(dry_run=dry_run)
 - NOTE: Sprint 40 cron belum di-setup. Next: tambah cron entry `*/30 * * * * cd /opt/sidix && python3 -m brain_qa autodev tick`
 - NOTE: VPS main branch local merge belum di-push ke origin/main (PR route recommended)
 
+### 2026-04-29 (Sprint 40 CLI + Cron — LIVE Production)
+
+- IMPL: `brain_qa autodev` CLI subcommand (commit 4cd1979)
+  - autodev tick — run one autonomous iteration via CLI / cron
+  - autodev add <target_path> <goal> — queue new task
+  - autodev list [--state] [--limit] — view queue
+  - autodev approve/reject/request_changes — owner actions
+  - File: apps/brain_qa/brain_qa/__main__.py
+
+- IMPL: `scripts/sidix_autodev_tick.sh` — cron wrapper (commit 4cd1979)
+  - Sets PYTHONPATH=/opt/sidix/apps/brain_qa (same as start_brain.sh)
+  - Loads .env, activates venv if present
+  - AUTODEV_DRY_RUN=0 default in production
+  - chmod +x applied by post-merge hook
+
+- IMPL: Cron job installed on VPS
+  - Schedule: `*/30 * * * * /opt/sidix/scripts/sidix_autodev_tick.sh >> /var/log/sidix_autodev.log 2>&1`
+  - Runs every 30 minutes to pick + work dev tasks autonomously
+
+- FIX: PYTHONPATH missing in cron script (commit adbb0d5)
+  - brain_qa not installed as pip package — PYTHONPATH=/opt/sidix/apps/brain_qa required
+  - Followed same pattern as start_brain.sh
+
+- TEST: VPS CLI verified
+  - `python3 -m brain_qa autodev list` → shows 2 pending tasks ✅
+  - Cron script test run (AUTODEV_DRY_RUN=1) → in progress
+
+- DECISION: Cron tick = every 30 min (balanced CPU vs autonomy speed)
+  - Can increase to */15 later when VPS has lighter load
+  - AUTODEV_DRY_RUN default=0 for production (real writes enabled)
+  - Owner review still required before merge (NO auto-merge mandate)
+
