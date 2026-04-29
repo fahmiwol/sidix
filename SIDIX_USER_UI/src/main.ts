@@ -1094,13 +1094,34 @@ chatInput?.addEventListener('keydown', (e) => {
 sendBtn?.addEventListener('click', handleSend);
 
 // ════════════════════════════════════════════════════════════════════════
-// SIDIX 2.0 SUPERMODEL — 3 Mode Buttons (Burst / Two-Eyes / Foresight)
+// SIDIX 2.0 SUPERMODEL — Mode Buttons (Normal / Deep Thinking)
 // ════════════════════════════════════════════════════════════════════════
 
+const modeNormalBtn    = document.getElementById('mode-normal') as HTMLButtonElement | null;
 const modeBurstBtn     = document.getElementById('mode-burst') as HTMLButtonElement | null;
+// Legacy refs — elements removed from HTML but kept null-safe
 const modeTwoEyedBtn   = document.getElementById('mode-twoeyed') as HTMLButtonElement | null;
 const modeForesightBtn = document.getElementById('mode-foresight') as HTMLButtonElement | null;
 const modeResurrectBtn = document.getElementById('mode-resurrect') as HTMLButtonElement | null;
+
+/** Toggle gold active styling between Normal and Deep Thinking */
+function setModeActive(mode: 'normal' | 'burst') {
+  const GOLD = ['border-gold-500/50', 'bg-gold-500/15', 'text-gold-400'];
+  const DIM  = ['border-warm-600/40', 'bg-warm-700/30', 'text-parchment-300'];
+  if (mode === 'normal') {
+    GOLD.forEach(c => modeNormalBtn?.classList.add(c));
+    DIM.forEach(c  => modeNormalBtn?.classList.remove(c));
+    DIM.forEach(c  => modeBurstBtn?.classList.add(c));
+    GOLD.forEach(c => modeBurstBtn?.classList.remove(c));
+  } else {
+    GOLD.forEach(c => modeBurstBtn?.classList.add(c));
+    DIM.forEach(c  => modeBurstBtn?.classList.remove(c));
+    DIM.forEach(c  => modeNormalBtn?.classList.add(c));
+    GOLD.forEach(c => modeNormalBtn?.classList.remove(c));
+  }
+}
+
+modeNormalBtn?.addEventListener('click', () => setModeActive('normal'));
 
 function getInputOrPrompt(modeName: string, hint: string): string | null {
   const v = chatInput?.value.trim() ?? '';
@@ -1132,26 +1153,28 @@ function appendThinkingPlaceholder(label: string): HTMLDivElement {
 }
 
 modeBurstBtn?.addEventListener('click', async () => {
+  setModeActive('burst');
   const prompt = getInputOrPrompt(
-    '🌌 Burst Mode',
-    'Generate 6 ide divergen lalu Pareto-pilih 2 terbaik, synthesize jadi 1 jawaban kreatif. Cocok untuk brainstorm, design choices, strategic positioning.',
+    '🧠 Deep Thinking',
+    'Analisis mendalam: generate 6 sudut pandang → pilih 2 terbaik → synthesize menjadi 1 jawaban kreatif. Cocok untuk brainstorm, design choices, strategic positioning.',
   );
-  if (!prompt) return;
+  if (!prompt) { setModeActive('normal'); return; }
   appendMessage('user', prompt);
   if (chatInput) { chatInput.value = ''; chatInput.dispatchEvent(new Event('input')); }
-  const thinking = appendThinkingPlaceholder('🌌 Burst — exploring 3 angles...');
+  const thinking = appendThinkingPlaceholder('🧠 Deep Thinking — exploring angles...');
   try {
     const r = await agentBurst(prompt, { n: 3, topK: 2 });
     thinking.remove();
     const winnersList = r.winners.map(w =>
       `**${w.angle}** (score ${w.score.total.toFixed(2)})`
     ).join(' · ');
-    const out = `${r.final}\n\n_— Burst pipeline: ${r.n_ok}/${r.n_candidates} candidates, top angles: ${winnersList}_`;
+    const out = `${r.final}\n\n_— Deep Thinking: ${r.n_ok}/${r.n_candidates} angles, top: ${winnersList}_`;
     appendMessage('ai', out);
   } catch (e) {
     thinking.remove();
-    appendMessage('ai', `⚠️ Burst gagal: ${(e as Error).message}`);
+    appendMessage('ai', `⚠️ Deep Thinking gagal: ${(e as Error).message}`);
   }
+  setModeActive('normal');
 });
 
 modeTwoEyedBtn?.addEventListener('click', async () => {
