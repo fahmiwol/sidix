@@ -58,9 +58,15 @@ from typing import Optional
 log = logging.getLogger(__name__)
 
 # Max chars of scaffold context to send to LLM (keep prompt manageable)
-_MAX_CONTEXT_CHARS = 3000
+# Increased from 3000→8000 (Sprint 59B fix: small context → LLM can't see full file)
+_MAX_CONTEXT_CHARS = 8000
 # Max tokens for code generation response
-_PLAN_MAX_TOKENS = 1024
+# Increased from 1024→4096 (Sprint 59B fix: too small → LLM truncates modified file)
+_PLAN_MAX_TOKENS = 4096
+# Safety guard: MODIFY content must be >= this fraction of existing file size.
+# Guards against LLM generating only a partial snippet (e.g. just __version__ = '0.1.0')
+# which apply_plan() would write as a full file replacement, truncating everything else.
+_MODIFY_MIN_SIZE_RATIO = 0.5
 # Low temperature for deterministic code output
 _PLAN_TEMPERATURE = 0.2
 
@@ -166,7 +172,7 @@ Iteration: {iteration}
     {{
       "path": "<repo-relative path>",
       "action": "<create|modify|delete>",
-      "content": "<full file content kalau create, atau bagian yang diubah kalau modify>",
+      "content": "<FULL file content setelah perubahan — WAJIB sertakan SEMUA baris existing + tambahan baru. JANGAN hanya bagian yang berubah>",
       "diff": "",
       "rationale": "<kenapa file ini diubah>"
     }}
@@ -468,6 +474,22 @@ def apply_plan(plan: DiffPlan, repo_root: Path, dry_run: bool = False) -> list[s
                 if not fc.content:
                     log.warning("[apply_plan] MODIFY %s — empty content, skipping", fc.path)
                     continue
+                # Size-safety guard: if LLM generated only a partial snippet
+                # (e.g. just `__version__ = '0.1.0'`), do NOT overwrite the
+                # full existing file — that would destroy all other content.
+                # Threshold: new content must be >= 50% of existing file size.
+                if full_path.exists():
+                    existing_size = full_path.stat().st_size
+                    new_size = len(fc.content.encode("utf-8"))
+                    if existing_size > 200 and new_size < existing_size * _MODIFY_MIN_SIZE_RATIO:
+                        log.warning(
+                            "[apply_plan] MODIFY %s — content too short (%d bytes vs %d bytes "
+                            "existing, threshold %.0f%%). Likely partial snippet; skipping to "
+                            "prevent truncation. Fix: LLM must output FULL file content.",
+                            fc.path, new_size, existing_size,
+                            _MODIFY_MIN_SIZE_RATIO * 100,
+                        )
+                        continue
                 # Full content replace (diff-patch deferred to Sprint 59B)
                 full_path.parent.mkdir(parents=True, exist_ok=True)
                 full_path.write_text(fc.content, encoding="utf-8")
