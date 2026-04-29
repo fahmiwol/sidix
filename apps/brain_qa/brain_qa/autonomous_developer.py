@@ -119,14 +119,20 @@ def tick(
 
     try:
         # 1. Optional persona fan-out
+        # Sprint 60B: auto-enable for high-priority tasks (priority >= 80)
+        # even if task was added without --fanout flag.
+        use_fanout = task.persona_fanout or task.priority >= 80
+        if use_fanout and not task.persona_fanout:
+            log.info("[autodev] auto-enabling fanout (priority=%d >= 80)", task.priority)
+
         fanout_bundle = None
-        if task.persona_fanout:
+        if use_fanout:
             fanout_bundle = persona_research_fanout.gather(
                 task.task_id, task.target_path, task.goal,
             )
             log.info("[autodev] fanout %d personas", len(fanout_bundle.contributions))
 
-        # 2. Plan diff
+        # 2. Plan diff (use computed use_fanout, not raw task.persona_fanout)
         plan = code_diff_planner.plan_changes(
             task_id=task.task_id,
             target_path=task.target_path,
@@ -134,7 +140,7 @@ def tick(
             repo_root=repo_root,
             iteration=task.iter_count + 1,
             previous_error=task.error_log,
-            persona_fanout=task.persona_fanout,
+            persona_fanout=use_fanout,
         )
 
         # 3. Validate

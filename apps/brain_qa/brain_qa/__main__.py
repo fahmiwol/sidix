@@ -465,6 +465,18 @@ def main(argv: list[str]) -> int:
     p_ad_changes.add_argument("task_id", help="Task ID")
     p_ad_changes.add_argument("feedback", help="Feedback text")
 
+    # Hafidz Ledger — audit trail for autonomous developer iterations
+    p_ad_hafidz = autodev_sub.add_parser("hafidz",
+                                          help="Hafidz Ledger — audit trail per iteration (Sprint 60C)")
+    hafidz_sub = p_ad_hafidz.add_subparsers(dest="hafidz_cmd", required=True)
+    hafidz_sub.add_parser("stats", help="Show ledger stats (total entries, by verdict)")
+    p_haf_list = hafidz_sub.add_parser("list", help="List recent ledger entries")
+    p_haf_list.add_argument("--limit", type=int, default=20)
+    p_haf_get = hafidz_sub.add_parser("get", help="Get a ledger entry by content_id")
+    p_haf_get.add_argument("content_id")
+    p_haf_trace = hafidz_sub.add_parser("trace", help="Trace isnad chain for a content_id")
+    p_haf_trace.add_argument("content_id")
+
     args = parser.parse_args(argv)
 
     if args.cmd == "index":
@@ -1245,6 +1257,44 @@ def main(argv: list[str]) -> int:
             ok = owner_request_changes(args.task_id, feedback=args.feedback)
             print("changes requested" if ok else "ERROR: task not found or max iter reached")
             return 0 if ok else 1
+
+        if args.autodev_cmd == "hafidz":
+            from .hafidz_ledger import (
+                stats as _haf_stats, list_recent_entries as _haf_list,
+                read_entry_by_id as _haf_get, trace_isnad as _haf_trace,
+            )
+            if args.hafidz_cmd == "stats":
+                s = _haf_stats()
+                print(_json.dumps(s, indent=2, default=str))
+                return 0
+
+            if args.hafidz_cmd == "list":
+                entries = _haf_list(limit=args.limit)
+                if not entries:
+                    print("(no entries)")
+                    return 0
+                for e in entries:
+                    print(f"[{e.owner_verdict:8}] {e.created_at[:19]}  {e.content_id}")
+                    print(f"             type={e.content_type}  hash={e.cas_hash[:12]}...")
+                return 0
+
+            if args.hafidz_cmd == "get":
+                entry = _haf_get(args.content_id)
+                if not entry:
+                    print(f"ERROR: not found: {args.content_id}")
+                    return 1
+                print(_json.dumps(entry.__dict__, indent=2, default=str))
+                return 0
+
+            if args.hafidz_cmd == "trace":
+                chain = _haf_trace(args.content_id)
+                if not chain:
+                    print(f"(no chain found for {args.content_id})")
+                    return 0
+                for i, e in enumerate(chain):
+                    prefix = "  " * i + "→" if i > 0 else "◆"
+                    print(f"{prefix} [{e.owner_verdict}] {e.content_id}  ({e.content_type})")
+                return 0
 
     raise RuntimeError(f"Unknown command: {args.cmd}")
 

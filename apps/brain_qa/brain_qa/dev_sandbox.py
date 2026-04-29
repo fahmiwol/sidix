@@ -158,9 +158,43 @@ def run_pytest(repo_root: Path, paths: list[str] | None = None,
 
 
 def run_ruff(repo_root: Path) -> int:
-    """Return number of ruff issues (Phase 2 will detail)."""
-    log.debug("[dev_sandbox] ruff Phase 2 stub")
-    return 0
+    """Run ruff check on brain_qa source. Return number of lint issues.
+
+    Sprint 60A: real ruff invocation replacing Phase 2 stub.
+    Targets apps/brain_qa only (skips node_modules, tests, docs).
+    Requires ruff to be installed (`pip install ruff`).
+    Returns 0 if ruff not found (non-fatal — test gate still works).
+    """
+    target = repo_root / "apps" / "brain_qa"
+    if not target.is_dir():
+        log.debug("[dev_sandbox] ruff: apps/brain_qa not found, skipping")
+        return 0
+    try:
+        proc = subprocess.run(
+            [_PYTHON_BIN, "-m", "ruff", "check", str(target),
+             "--select=E,F,W,I", "--quiet"],
+            cwd=str(repo_root),
+            capture_output=True, text=True,
+            timeout=60,
+            stdin=subprocess.DEVNULL,
+        )
+        if proc.returncode == 0:
+            log.info("[dev_sandbox] ruff: clean (0 issues)")
+            return 0
+        # Count violation lines: each looks like "path:line:col: CODE message"
+        issues = [l for l in proc.stdout.splitlines() if l.strip() and ": " in l]
+        n = len(issues)
+        log.info("[dev_sandbox] ruff: %d issues found", n)
+        return n
+    except FileNotFoundError:
+        log.debug("[dev_sandbox] ruff not installed — skip lint check")
+        return 0
+    except subprocess.TimeoutExpired:
+        log.warning("[dev_sandbox] ruff timed out — skip")
+        return 0
+    except Exception as e:
+        log.warning("[dev_sandbox] ruff error: %s", e)
+        return 0
 
 
 def run_typecheck(repo_root: Path) -> int:

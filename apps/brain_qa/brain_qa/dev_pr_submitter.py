@@ -121,13 +121,50 @@ def submit(
 
 
 def notify_owner(task_id: str, summary: str, pr_url: str) -> bool:
-    """Telegram bot notification (Phase 2 wires @migharabot).
+    """Telegram bot notification. Sprint 60D: real implementation.
 
-    Phase 1: log only.
+    Requires env vars:
+      TELEGRAM_BOT_TOKEN  — from @BotFather
+      TELEGRAM_CHAT_ID    — founder's chat ID (integer) or group ID
+
+    If either var is missing → falls back to log-only (silent, returns True).
+    Uses stdlib only (urllib) — no extra dependencies.
     """
-    log.info("[dev_pr] OWNER NOTIFY (stub) task=%s summary=%s pr=%s",
-             task_id, summary, pr_url)
-    return True
+    import os, urllib.request, urllib.parse, json as _json
+
+    bot_token = os.getenv("TELEGRAM_BOT_TOKEN", "")
+    chat_id   = os.getenv("TELEGRAM_CHAT_ID", "")
+
+    if not bot_token or not chat_id:
+        log.info("[dev_pr] OWNER NOTIFY (log-only — set TELEGRAM_BOT_TOKEN+TELEGRAM_CHAT_ID) "
+                 "task=%s pr=%s", task_id, pr_url)
+        return True
+
+    try:
+        message = (
+            f"🤖 *SIDIX Autonomous Dev*\n"
+            f"Task: `{task_id}`\n"
+            f"Summary: {summary}\n"
+            f"PR: `{pr_url}`\n\n"
+            f"_Review diperlukan sebelum merge ke main._"
+        )
+        payload = _json.dumps({
+            "chat_id": chat_id,
+            "text": message,
+            "parse_mode": "Markdown",
+        }).encode("utf-8")
+        url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
+        req = urllib.request.Request(
+            url, data=payload,
+            headers={"Content-Type": "application/json"},
+        )
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            ok = resp.status == 200
+        log.info("[dev_pr] Telegram notify sent ok=%s task=%s", ok, task_id)
+        return ok
+    except Exception as e:
+        log.warning("[dev_pr] Telegram notify failed: %s — continuing", e)
+        return False  # non-fatal: PR was submitted, notification just failed
 
 
 __all__ = ["SubmitResult", "create_branch", "stage_files", "commit",
