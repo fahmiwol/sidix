@@ -14352,3 +14352,49 @@ Fix 3: tick() line 133 apply_plan(dry_run=True) → apply_plan(dry_run=dry_run)
   - AUTODEV_DRY_RUN default=0 for production (real writes enabled)
   - Owner review still required before merge (NO auto-merge mandate)
 
+### 2026-04-29 (Sprint 40 Final — dev_sandbox FULLY FIXED)
+
+- FIX: dev_sandbox.py — FINAL FIX: route stdout/stderr to /dev/null (commit f2594cf)
+  - Root cause (definitive): Python shutdown (Py_Finalize()) closes sys.stdout BEFORE
+    pytest's FDCapture teardown runs — especially triggered by Ollama timeout in any test.
+    ALL previous fixes kept a real fd open that could be closed during shutdown.
+  - Fix: `open(os.devnull, "w")` — writes NEVER raise ValueError regardless of shutdown ordering.
+  - Result data from --junitxml exclusively (counts + failure messages from <failure> elements).
+  - Removed --ignore flag (no longer needed with /dev/null approach).
+  - TEST: PYTHONPATH=/opt/sidix/apps/brain_qa python3 /tmp/test_sandbox_direct.py
+    → ok: True, pytest_passed: 191, failed: 0, errors: 0, duration_s: 115.89
+    → PASS — no capture error in output ✅
+
+- FIX: pyproject.toml — add [tool.pytest.ini_options] testpaths=["tests"] (commit 8a1c089)
+  - Without this, pytest recurses into docs/workstation_scripts/test_sdxl.py
+    which imports `diffusers` (not installed on VPS) → errors=1 → ok=False.
+  - Fix: restrict collection to tests/ directory only.
+
+- ERROR+FIX: autonomous_developer corrupted persona_research_fanout.py (Sprint 59B)
+  - Task "Add __version__ = 0.1.0 to persona_research_fanout.py" ran 5 iters.
+  - Root cause: _MAX_CONTEXT_CHARS=3000 + _PLAN_MAX_TOKENS=1024 too small to hold 431-line file.
+    LLM generated only snippet (`__version__ = '0.1.0'`), apply_plan() wrote it as full file content.
+  - File reduced from 431 lines to 2 lines. All Sprint 58B code (PERSONA_ANGLES etc.) erased.
+  - Fix 1: _MAX_CONTEXT_CHARS 3000→8000, _PLAN_MAX_TOKENS 1024→4096 (commit bd465b8)
+  - Fix 2: apply_plan() MODIFY size-safety guard — if new_content < 50% of existing file bytes →
+    skip write, log warning "Likely partial snippet; skipping to prevent truncation."
+  - Fix 3: Prompt updated — MODIFY content must be "FULL file content setelah perubahan"
+  - File restored from git (commit 29aabd4): 431 lines, PERSONA_ANGLES 5 personas ✅
+  - Rejected corrupted escalated task autodev-1777446132-8951.
+
+- TEST: dev_sandbox.run_pytest() post-restore confirmation
+  → ok: True, pytest_passed: 191, failed: 0, errors: 0 ✅
+
+- NOTE: Ollama timeout during tick() when VPS under load (post-191-test run).
+  - Tick returns test_ok=False correctly (plan generation failed, nothing to test).
+  - This is expected behavior — not a bug. Normal Ollama timeout = 90s, cold after heavy load.
+
+- DECISION: dev_sandbox subprocess stability — RESOLVED. Summary of 7-fix chain:
+  1. stdin=DEVNULL → insufficient
+  2. --capture=sys → insufficient
+  3. -p no:capture → insufficient
+  4. tempfile stdout → insufficient
+  5. --junitxml → insufficient alone
+  6. --ignore=test_agent_workspace.py → insufficient (other Ollama tests)
+  7. /dev/null stdout+stderr → ROOT FIX ✅ (writes never fail regardless of fd lifecycle)
+
