@@ -116,19 +116,47 @@ def runpod_generate(
         import httpx
         url = f"{_API_BASE}/{cfg['endpoint_id']}/runsync"
         t0 = time.monotonic()
+        headers = {
+            "Authorization": f"Bearer {cfg['api_key']}",
+            "Content-Type": "application/json",
+        }
         with httpx.Client(timeout=cfg["timeout"]) as client:
-            r = client.post(
-                url,
-                headers={
-                    "Authorization": f"Bearer {cfg['api_key']}",
-                    "Content-Type": "application/json",
-                },
-                json=payload,
-            )
+            r = client.post(url, headers=headers, json=payload)
         elapsed = time.monotonic() - t0
         log.info(f"[RunPod] {cfg['endpoint_id']} {r.status_code} in {elapsed:.1f}s")
         r.raise_for_status()
         data = r.json()
+
+        # RunPod runsync has a 90s hard cap; cold starts > 90s return IN_QUEUE.
+        # Detect and poll /status/{job_id} until COMPLETED or timeout.
+        job_status = data.get("status", "")
+        job_id = data.get("id", "")
+        if job_status in ("IN_QUEUE", "IN_PROGRESS") and job_id:
+            poll_timeout = max(30, cfg["timeout"] - int(elapsed) - 5)
+            log.info(
+                f"[RunPod] cold-start detected ({job_status}), polling {job_id} "
+                f"for up to {poll_timeout}s"
+            )
+            status_url = f"{_API_BASE}/{cfg['endpoint_id']}/status/{job_id}"
+            poll_start = time.monotonic()
+            with httpx.Client(timeout=15.0) as poller:
+                while time.monotonic() - poll_start < poll_timeout:
+                    time.sleep(4)
+                    pr = poller.get(status_url, headers=headers)
+                    pr.raise_for_status()
+                    pdata = pr.json()
+                    ps = pdata.get("status", "")
+                    log.info(f"[RunPod] poll status={ps} elapsed={time.monotonic()-poll_start:.0f}s")
+                    if ps == "COMPLETED":
+                        data = pdata
+                        break
+                    if ps in ("FAILED", "CANCELLED", "TIMED_OUT"):
+                        log.error(f"[RunPod] job {ps}: {pdata.get('error','')}")
+                        return ("", f"runpod_error: job {ps}")
+                else:
+                    log.warning(f"[RunPod] poll timed out after {poll_timeout}s")
+                    return ("", "runpod_error: poll_timeout")
+
     except Exception as e:
         log.error(f"[RunPod] request fail: {type(e).__name__}: {e}")
         return ("", f"runpod_error: {type(e).__name__}")
