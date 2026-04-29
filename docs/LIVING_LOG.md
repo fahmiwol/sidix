@@ -14319,12 +14319,19 @@ Fix 3: tick() line 133 apply_plan(dry_run=True) → apply_plan(dry_run=dry_run)
   - Root cause confirmed: Python TextIOWrapper wrapping stdout PIPE closes during process
     teardown BEFORE pytest TerminalWriter.flush() — race condition in Python subprocess cleanup
 
-- FIX FINAL: dev_sandbox.py — redirect to tempfile, not PIPE (commit 8295669)
-  - Replace capture_output=True with: tempfile.mkstemp → open fd → proc.stdout=out_f
-  - Real file fd stays open throughout subprocess lifetime (no TextIOWrapper teardown race)
-  - Read file content after proc exits, unlink in finally
-  - Verified: 56 sprint tests pass locally
-  - Deployed to VPS: commit 8295669
+- FIX ATTEMPT 4: dev_sandbox.py — redirect to tempfile, not PIPE (commit 8295669) → INSUFFICIENT
+  - Tests RAN (342s=191 tests) but 1 ERROR in pytest_errors: pytest capture crash INSIDE a test
+  - New error: capturing.pop_outerr_to_orig() → readouterr() → FDCapture.snap() → tmpfile.seek(0)
+  - This is a TEST ERROR (not subprocess teardown issue) — a specific test triggers it
+  - pytest FDCapture tmpfile gets closed somehow during a test's teardown
+
+- FIX FINAL: dev_sandbox.py — use --junitxml for authoritative results (commit 35b0dbb)
+  - junitxml is written PER-TEST during run (not at end) — survives any terminal crash
+  - Parse pass/fail/error counts from XML via xml.etree.ElementTree
+  - Fallback to text parsing if XML missing/corrupt
+  - Terminal output (log_path) still written but only used for log_excerpt (informational)
+  - ok = XML(failures == 0 and errors == 0 and tests > 0) — decoupled from returncode
+  - Verified: 56 sprint tests pass locally; VPS deployment pending verification
 
 - DECISION: Cron tick = every 30 min (balanced CPU vs autonomy speed)
   - Can increase to */15 later when VPS has lighter load
