@@ -539,6 +539,35 @@ SIDIX adalah:
 
 ---
 
+## 2026-04-29 10:45 UTC — Kimi Territory Rule Update
+
+**Sesi**: Sprint 40 QA pass — Review-Optimize-QA cycle  
+**Konteks**: Claude menemukan DeprecationWarning di `jiwa/aql.py` (Kimi's file) saat test run. Claude skip karena AGENT_WORK_LOCK. Bos koreksi.
+
+**Quote bos** (verbatim):
+> "Kimi's territory, boleh disentuh! catat! boleh disentuh,,, kalo penting dan berdampak harus disentuh dan di sesuaikan"
+
+**Klarifikasi / directive**:
+
+RULE UPDATE — berlaku sejak 2026-04-29:
+
+- **LAMA (REVOKED)**: Kimi territory = jangan disentuh sama sekali (strict AGENT_WORK_LOCK)
+- **BARU**: Kimi territory **BOLEH disentuh** jika:
+  1. Perubahan **penting** (bug, deprecation, broken import, security)
+  2. Perubahan **berdampak** ke integrasi / test / production
+  3. Perubahan **minimal** — fix spesifik, tidak redesign arsitektur Kimi
+
+- Yang **TETAP tidak boleh**: redesign, refactor besar, ubah algoritma kreativitas/jiwa, hapus fitur Kimi tanpa izin eksplisit.
+- **Protocol**: setelah edit Kimi file → catat di LIVING_LOG + notify di HANDOFF apa yang diubah.
+- **File Kimi** (masih perlu respect): `parallel_executor.py`, `jiwa/*`, `emotional_tone_engine.py`, `sensor_fusion.py`, `parallel_planner.py`
+
+**ACTION ITEM**:
+- [ ] Fix `jiwa/aql.py` — datetime.utcnow() → datetime.now(timezone.utc) (DeprecationWarning di setiap test run)
+- [ ] Update AGENT_WORK_LOCK.md dengan rule baru ini
+- [ ] Catat di CLAUDE.md ANTI-BENTROK section
+
+---
+
 ## 📋 PENDING DIRECTIVE — Belum Selesai
 
 (Update setiap session, agent baru WAJIB cek list ini)
@@ -565,3 +594,197 @@ SIDIX adalah:
 ---
 
 **END OF JOURNAL** · catat semua, hilang nol, drift nol.
+
+---
+
+## 2026-04-30 — DIRECTIVE: ANTI-HALU + UI REDESIGN + SANAD MULTI-SOURCE
+
+### Context
+Bos test app.sidixlab.com → jawaban masih ngaco (presiden Indonesia masih jawab Jokowi padahal seharusnya Prabowo per Oct 2024). Latency tinggi. UI lama belum sesuai vision Creative AI Agent playground.
+
+### Quote founder (verbatim, capture voice):
+
+> "pastiin jangan sampe hallucianted, jawabannya jangan sampe ngaco!! logicnya ada yg salah. bukannya kalo pake sanada, dia akan mencari langsung banyak sumber? gimana yg kamu terapin beneirn, pokokya terserah kamu yg petning jawabannya nggak ngaco, dan sesuai arah nortstar sidix."
+
+> "ini kamu nggak ngecek dengan bener, ga testing dan optimasi berrarti. masa jawabannya masih ngaco gitu, gimana saya mau lempar ke publik?"
+
+> "butuh berapa sprint biar dia nggak halu? cek terus, testing optimasi, testing otpimasi, teruusu! sampe layak publish."
+
+> "ubah langsung UI nya juga, sesuai ontrack menuju masa depan. dengan buil in tools dll. Pake ini design stylenya, seperti gambar yang saya lampirkan buat semirip mungkin, ini ada scafollding yang bisa dipake"
+
+> "ubah semua stylenya sekarang , chabot creati AI Agent dan Organiseme digital hiduop dan Landing page biar lebih friendly dan creative dan fun, biar seperti playground , AI agennt creative beneran."
+
+> "GPU di runpod emang dihapus? nggak bisa kombinasi? kamu udah coba test langsung dari app.sidixlab.com langsugnnya ngga? sesuai ngga?"
+
+> "kita bikin naik kelas! Set up northstart masih sama kan?"
+
+> "analisa, pahami, riset, pelan-pelan saja. jangan sampai salah langkah, jangan ngaco lagi sidixinya, sesuaikan dengan roadmap dan resource yang kita punya.."
+
+### Reference materials provided:
+- Image 1: SIDIX mascot logo (deer-robot, neon purple/cyan/pink) — playground style
+- Image 2: Brand kit (colors, typography Space Grotesk, app icon, mascot variants)
+- Image 3: Dashboard mockup ("Halo Ayudia!" greeting, sidebar nav, Built-in Tools panel, Projects, Activity feed, mascot speech bubble)
+- File: `C:\Users\ASUS\Downloads\Kimi_Agent_Sidix AI Agent Selesai\UI Baru SIDIX\app\` (React 19 + Vite scaffolding, 4 main components, shadcn/ui, 40+ components, Three.js, Framer Motion)
+- File: `PROMPT MASTER (PAKAI INI DI CLAUDE).docx` (22k chars) — multi-agent OS blueprint (Planner→Router→Executor→Synthesizer + Tiranyx tool layer + streaming + mascot state engine)
+
+### Confirmed states by Claude:
+- ✅ RunPod **NOT deleted** — endpoint `ws3p5ryxtlambj` alive, balance $18.79, workers throttled (cold). Brain env correct.
+- ✅ Northstar masih sama — LOCKED 2026-04-26: Self-Evolving AI Creative Agent, 3-fondasi (Mind+Hands+Drive), 4-pilar, 5-persona LOCKED
+- ❌ Live test from app.sidixlab.com — Claude TIDAK test sebelumnya, hanya curl localhost. Sekarang test live: 75s timeout, jawaban tidak datang
+- ❌ Sanad multi-source — Claude implementasi belum cross-verify multiple sources untuk current events. Cuma rely on AKU + corpus + LLM training
+
+### Action: STATUS = PROPOSING-SPRINT-PLAN
+Claude akan propose sprint plan ke bos sebelum eksekusi. Tidak boleh code dulu sampai bos approve.
+
+
+---
+
+## 2026-04-30 — UPDATE: ARCHITECTURE FLOW CORRECTED + GAP DISCOVERED
+
+### Founder correction (verbatim, follow-up):
+
+> "INI KESALAHAN TERBESARMU... harsunua kan kalo (INPUT) ada yang nanya... Jalanin seribu bayangan + hafidz ledger ke berbagai sumber, semua persona juga berfikir (mereka ikut tumbuh juga punya otak sendiri, corpus sendiri, tool orkestrasi dan bisa mensisntesa sesuai personanya) → sub agent (akses tools-tools yang mereka punya). kemudian ke sanad untuk di sinstesis sampai hasil relevan menhgasilkan return yang benar atau relevance score → (OUTPUT) type: render/script/genenerative product/tools/riset/PDF/video/dll"
+
+> "1 dulu, trus lanjut. Catat duulu semua rencana, semua temuan, semua log perubahan, semua yang kurang."
+
+> "Adopt atau implementasi dari folder yang saya kasih, dengan API sesuaikan fitur sixi yg ada. (mocked Halo Ayudia + 1,250 credits + Pro Plan) ini nggak usah, udah live ceritanya cuma ambil Design sistemnya, layout, scafolld, dari folder saya."
+
+> "yang dari saya. atau kalo bisa kamu propose dulu hasilnya dan SDXL runpod gimaana"
+
+### My understanding correction:
+
+PRE-correction (salah): saya treat user query dengan single-agent ReAct loop (`agent_react.py`) → halu karena single perspective, single source priority.
+
+POST-correction (benar):
+- Setiap query → **paralel fan-out**: 1000 bayangan (multi-search) + 5-persona thinking simultan
+- Setiap persona = standalone agent dengan brain/corpus/tool/synthesizer sendiri (incremental: Phase 1 tool subset, Phase 2 corpus filter, Phase 3 LoRA per-persona)
+- **Sanad** = mekanisme verifikasi cross-source (BUKAN cuma label)
+- **Hafidz Ledger** = audit trail per query
+- Output = **adaptive type** (text/script/generative/tool-result/research/PDF/video)
+
+### Gap discovered (audit existing code):
+
+✅ Infrastructure SUDAH ADA tapi **orphaned**:
+- `persona_research_fanout.py` (Sprint 58B, 5-persona ThreadPoolExecutor) — wired ke `autonomous_developer`, NOT ke `/agent/chat` user-facing
+- `hafidz_ledger.py` / `ledger.py` — wired ke autonomous_dev, NOT ke chat
+- `sanad_orchestrator.py` / `sanad_builder.py` — perlu audit dimana dipakai
+- `agent_react.py` (yang dipakai chat) = SINGLE-AGENT loop, no fan-out
+
+❌ Yang BELUM ada:
+- `sanad_verifier.py` — multi-source cross-check function
+- Wire fan-out ke `/agent/chat`
+- Per-persona tool subset / corpus filter
+- Current events bypass cache
+- AKU dedup cron
+- Reflection loop
+- QA gold-set 20 questions
+
+### Founder answers to my 3 questions:
+
+| Q | Answer |
+|---|---|
+| Sprint sequencing | "1 dulu trus lanjut" — Σ-1 ANTI-HALU first, kemudian Σ-2/Σ-3 setelah Σ-1 done |
+| UI scope | "Adopt design system + layout + scaffold dari folder saya. Pakai fitur SIDIX existing (no credits, real chat, no mock Halo Ayudia/Pro Plan/1250 credits)" |
+| Mascot | "Yang dari saya. Atau kalo bisa kamu propose dulu hasilnya dan SDXL runpod gimaana" |
+
+### Status: PROPOSING REVISED Σ-1 + MASCOT OPTIONS — awaiting bos approve
+
+Catatan lengkap di `brain/public/research_notes/296_sanad_multisource_corrected_flow_20260430.md`
+
+
+---
+
+## 2026-04-30 — LOCK: Σ-1 SEQUENCING + MASCOT OPTION B
+
+### Founder confirmation:
+
+> "Σ-1 sequencing: Mulai dari Σ-1G (gold-set dulu — biar ada metric pass/fail) → Σ-1B (sanad verifier core) → Σ-1A (wire fanout) → sisanya? Atau bos punya urutan lain? INI Aja!"
+> "1. Mascot B ok"
+> "karena sisa dikit tuh." (usage limit context — weekly all-models 81%, 5-jam 78%)
+
+### LOCKED DECISIONS:
+
+**Sprint Σ-1 sequencing (CONFIRMED)**:
+1. **Σ-1G** — QA gold-set 20 questions FIRST (metric pass/fail dulu sebelum implement)
+2. **Σ-1B** — Build `sanad_verifier.py` (multi-source cross-check core)
+3. **Σ-1A** — Wire `persona_research_fanout` → `/agent/chat`
+4. Sisanya (Σ-1C tool subset, Σ-1D cache bypass, Σ-1E AKU dedup, Σ-1F reflection loop) — order TBD setelah Σ-1A done, prioritas berdasarkan gold-set fail patterns
+
+**Mascot**: Option B (image bos sebagai hero + SDXL generate 4 state variants thinking/working/happy/error). Endpoint `lts8dj4c7rp4z8`. Estimate ~$0.05, ~1 jam termasuk QA.
+
+**Pacing discipline**: 1 sub-task per session, lapor, baru lanjut next sub-task. Hemat token usage limit. Catat tiap step.
+
+### NEXT ACTION (next session):
+
+Mulai **Σ-1G** — bikin `tests/test_anti_halu_goldset.py` dengan 20 questions:
+- 5 current events (presiden, ibu kota, harga emas, cuaca, juara)
+- 5 factual stable (definisi/konsep)
+- 5 coding/technical
+- 5 creative/persona-specific
+Target: pass 18/20 sebelum Σ-1B deploy. Run baseline dulu (current state = how many fail) → metric.
+
+Status: **PLAN LOCKED · NO CODE YET · WAITING NEXT SESSION**
+
+
+---
+
+## 2026-04-30 — LOCK: UI Σ-3 Framework = Next.js (App Router)
+
+### Founder confirmation:
+
+> "next.js lebih enak dikembangin, ringan dan seo friendly? lebih ramah python buat AI? apa saya salah? banyak tools-tools nantinya di build pake next.js kan?"
+> "confirm"
+
+### Decision: Σ-3 UI = **Next.js (App Router)** + port components dari Vite scaffolding
+
+**Reasoning** (Claude analysis, founder approve):
+- ✅ SEO friendly (SSR/SSG → Google crawl pre-rendered HTML)
+- ✅ Multi-tool/multi-page scaling (Tiranyx ecosystem: /chat, /tools/image, /tools/film, /docs, /pricing, /blog)
+- ✅ App Router file-based routing lebih clean dari React Router setup manual
+- ⚠️ Trade-off: VPS memory 80MB → ~250MB (next start vs serve dist) — masih oke di 15GB
+- ⚠️ Migration: scaffolding `UI Baru SIDIX/app/` (Vite + React 19) → Next.js. Components portable, ~3-4h port effort
+- ❌ Misconception clarified: "lebih ramah Python" tidak applicable — both call Python FastAPI via HTTP. Backend `ctrl.sidixlab.com:8765` UNCHANGED.
+
+### Implication untuk Σ-3:
+1. Start fresh Next.js project (App Router, TS, Tailwind, shadcn/ui)
+2. Port components dari scaffolding: LeftSidebar, ChatDashboard, RightPanel, ParticleBackground
+3. Apply Sidix brand colors + Space Grotesk font + mascot Option B
+4. PM2 reconfig: `sidix-ui` ganti command `serve dist` → `next start -p 4000`
+5. Backend FastAPI Python di port 8765 — TIDAK BERUBAH
+
+### Status: LOCKED · Σ-3 framework = Next.js · Σ-1 priority tetap (anti-halu first)
+
+
+---
+
+## 2026-04-30 — TEMUAN Σ-1G BASELINE: 8/20 (40%) + 3 CRITICAL HALU
+
+### Hasil baseline (commit 506ffc9):
+
+| Kategori | Pass | Catatan |
+|---|---|---|
+| current_events | 0/5 | brain refuse-to-websearch (humility OK, retrieval FAIL) |
+| factual stable | 3/5 | 1 pipeline error, 1 validator bug |
+| coding | 3/5 | 1 CRITICAL HALU (ReAct salah definisi) |
+| sidix_identity | 1/3 | 2 CRITICAL HALU brand (Aboudi, IHOS salah) |
+| creative | 2/2 | strong ✅ |
+
+### 3 CRITICAL HALU bukti telak sanad belum cross-verify:
+
+1. **Q15 ReAct definition**: brain bilang "ReAct = Recursive Action Tree". SALAH. Correct: Reasoning + Acting.
+2. **Q17 Persona SIDIX**: brain bilang "Aboudi - Sang Pelopor". SALAH. Correct: UTZ/ABOO/OOMAR/ALEY/AYMAN (LOCKED 2026-04-26 di CLAUDE.md).
+3. **Q18 IHOS**: brain bilang "Inisiatif Holistik Operasional Strategis". SALAH. Correct: Islamic Holistic Ontological System.
+
+→ Brain ngarang brand SIDIX-nya sendiri. Padahal corpus memuat term canonical. Bukti BM25 retrieval + cross-verify TIDAK aktif untuk SIDIX-specific knowledge.
+
+### Strategi Σ-1B (gas sekarang):
+
+`sanad_verifier.py` — wajib do:
+- **Brand whitelist** dengan canonical answers (UTZ/ABOO/OOMAR/ALEY/AYMAN, IHOS, Sanad, Muhasabah, Maqashid, Ijtihad, Tiranyx, Mighan)
+- **Intent detection** (current_event / brand_specific / factual / coding / creative)
+- **Required-sources mapping** (current_event → MUST web_search; brand_specific → MUST corpus search; factual → either)
+- **Cross-verify**: substring agreement antara LLM answer ↔ sources. Conflict → return source-grounded version.
+- **Reject** LLM-only answers untuk fact-checkable claims tanpa sumber backing.
+
+Status: GAS Σ-1B sekarang. Lapor setelah `sanad_verifier.py` + unit tests selesai.
+
