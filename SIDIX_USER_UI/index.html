@@ -232,7 +232,7 @@
               <span id="label-about">Tentang SIDIX</span>
             </button>
             <!-- Tutorial / Bantuan: penjelasan persona, mode supermodel, checkbox -->
-            <button id="btn-tutorial" class="contrib-pill hidden md:flex" title="Tutorial: persona, mode Burst/Two-Eyed/Foresight/Resurrect, opsi chat">
+            <button id="btn-tutorial" class="contrib-pill hidden md:flex" title="Tutorial: persona SIDIX + mode Normal/Deep Thinking">
               <i data-lucide="graduation-cap" class="w-3 h-3"></i>
               <span>Tutorial</span>
             </button>
@@ -429,7 +429,7 @@
 
           <label class="block text-[11px] text-parchment-400 mb-1 mt-2 uppercase tracking-wider">Judul</label>
           <input id="feedback-title" type="text" maxlength="120"
-                 placeholder="Contoh: Response factual masih salah / mode Burst lambat"
+                 placeholder="Contoh: Response factual masih salah / Deep Thinking timeout / bug persona"
                  class="w-full bg-warm-800 border border-warm-600 rounded-lg px-3 py-2 text-sm text-parchment-100 placeholder:text-parchment-600 focus:outline-none focus:border-gold-500/40" />
 
           <label class="block text-[11px] text-parchment-400 mb-1 mt-3 uppercase tracking-wider">Deskripsi</label>
@@ -490,22 +490,20 @@
             </section>
 
             <section>
-              <h3 class="text-gold-400 font-semibold text-sm mb-2 uppercase tracking-wider">🛠️ 4 Mode Supermodel</h3>
+              <h3 class="text-gold-400 font-semibold text-sm mb-2 uppercase tracking-wider">🛠️ 2 Mode Chat</h3>
               <ul class="space-y-2 ml-1">
-                <li>🌌 <strong class="text-parchment-100">Burst</strong> — Generate 6 ide divergen paralel, Pareto-pilih 2 terbaik, synthesize jadi 1 jawaban kreatif. <em>Cocok: brainstorm, naming, design choice.</em></li>
-                <li>👁 <strong class="text-parchment-100">Two Eyes</strong> — Dual perspective: scientific (data, mekanisme) + maqashid (etis, hikmah) → sintesis. <em>Cocok: pertanyaan etis/strategis.</em></li>
-                <li>🔮 <strong class="text-parchment-100">Foresight</strong> — Scan web+corpus → leading/lagging signals → 3 skenario (base/bull/bear) → narasi visioner. <em>Cocok: prediksi trend, market, technology.</em></li>
-                <li>🌿 <strong class="text-parchment-100">Resurrect</strong> — Surface ide/tokoh/metode yang DULU brilliant tapi sekarang dilupakan tren. <em>Cocok: research, fresh angle, mental model.</em></li>
+                <li>✦ <strong class="text-parchment-100">Normal</strong> — SIDIX routing otomatis: web search + corpus + reasoning sesuai konteks pertanyaan. Cocok untuk semua pertanyaan sehari-hari.</li>
+                <li>🧠 <strong class="text-parchment-100">Deep Thinking</strong> — Analisis mendalam: multi-angle brainstorm, pilih sudut pandang terbaik, synthesize jadi 1 jawaban kreatif. <em>Cocok: ide kompleks, pilihan strategis, brainstorm.</em></li>
               </ul>
-              <p class="text-[11px] text-parchment-500 mt-2">⏱️ Mode ini butuh 30-90 detik (multi-step LLM call). Kalau cepat, pakai chat biasa.</p>
+              <p class="text-[11px] text-parchment-500 mt-2">⏱️ Deep Thinking butuh 30-90 detik. Untuk pertanyaan cepat, gunakan Normal (default).</p>
             </section>
 
             <section>
-              <h3 class="text-gold-400 font-semibold text-sm mb-2 uppercase tracking-wider">⚙️ Opsi Chat</h3>
+              <h3 class="text-gold-400 font-semibold text-sm mb-2 uppercase tracking-wider">⚙️ Routing Otomatis</h3>
               <ul class="space-y-1.5 ml-1">
-                <li><strong class="text-parchment-100">Korpus saja</strong> — Hanya cari di knowledge base lokal SIDIX, web search OFF.</li>
-                <li><strong class="text-parchment-100">Fallback web</strong> (default ON) — Boleh fetch live dari DuckDuckGo + Wikipedia untuk pertanyaan factual.</li>
-                <li><strong class="text-parchment-100">Mode ringkas</strong> — Response pendek (max 200 token). Untuk jawaban cepat.</li>
+                <li>SIDIX secara otomatis memilih sumber terbaik: knowledge base lokal, web search, atau reasoning — tergantung pertanyaanmu.</li>
+                <li>Pertanyaan tentang berita/harga/info terkini → otomatis web search.</li>
+                <li>Pertanyaan coding/teknis → corpus + reasoning lokal.</li>
               </ul>
             </section>
 
@@ -513,8 +511,8 @@
               <h3 class="text-gold-400 font-semibold text-sm mb-2 uppercase tracking-wider">💡 Tips</h3>
               <ul class="space-y-1.5 ml-1 list-disc list-inside">
                 <li>Tanya casual seperti ngobrol — SIDIX ngerti typo dan bahasa campur.</li>
-                <li>Untuk factual yang butuh data terkini ("siapa presiden sekarang"), biarkan Fallback web ON.</li>
-                <li>Pakai mode Supermodel hanya kalau butuh deeper analysis.</li>
+                <li>Untuk data terkini ("siapa presiden sekarang"), cukup tanya langsung — SIDIX auto web search.</li>
+                <li>Gunakan Deep Thinking kalau perlu analisis mendalam atau brainstorm ide.</li>
                 <li>Login Google di pojok atas untuk save history + persona preferences.</li>
               </ul>
             </section>
