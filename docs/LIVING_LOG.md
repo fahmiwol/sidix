@@ -14478,3 +14478,55 @@ Fix 3: tick() line 133 apply_plan(dry_run=True) → apply_plan(dry_run=dry_run)
 **Kesimpulan**: Sprint 40/58B/59 FULLY on track dengan North Star dan founder mandate.
 Tidak ada halusinasi arah. Semua deliverable konkret dan terverifikasi di VPS.
 
+
+---
+
+## 2026-04-29 — Sprint 60 Deploy (ruff · auto-fanout · Hafidz CLI · Telegram)
+
+### IMPL: Sprint 60A — run_ruff() wired (dev_sandbox.py)
+- Real ruff invocation via subprocess, targeting `apps/brain_qa` only
+- Counts E/F/W/I violations; non-fatal if ruff not installed (FileNotFoundError silenced)
+- Module-level `_PYTHON_BIN` cached at import (VPS `python3` compatibility)
+- **Discovery**: baseline codebase = 3726 ruff violations pre-existing → ruff made INFORMATIONAL only
+- Gate policy: `ok=True` iff pytest 0 failures. ruff_issues = advisory metric only
+- Phase 2 plan: delta-mode gate (count only violations in touched files by the diff)
+
+### IMPL: Sprint 60B — auto-fanout for priority >= 80 (autonomous_developer.py)
+- `use_fanout = task.persona_fanout or task.priority >= 80`
+- High-priority tasks (>= 80) auto-trigger 5-persona research fan-out
+- `plan_changes()` receives computed `use_fanout` (not raw `task.persona_fanout`)
+- Founder mandate: Jurus 1000 Bayangan on critical tasks, tanpa manual flag
+
+### IMPL: Sprint 60C — `autodev hafidz` CLI (\_\_main\_\_.py)
+- `python -m apps.brain_qa.brain_qa autodev hafidz stats` → JSON ledger summary
+- `autodev hafidz list [--limit N]` → recent entries with verdict + timestamp
+- `autodev hafidz get <content_id>` → full entry JSON
+- `autodev hafidz trace <content_id>` → isnad chain (indented)
+- VPS test: 136 entries in ledger (130 autonomous_dev_iteration, 2 approved, 1 rejected)
+
+### IMPL: Sprint 60D — Telegram notify_owner() (dev_pr_submitter.py)
+- Pure stdlib (urllib.request) — zero new deps
+- Reads TELEGRAM_BOT_TOKEN + TELEGRAM_CHAT_ID from env (log-only fallback if missing)
+- Markdown-formatted PR alert to founder's Telegram chat
+- **TODO**: owner must add env vars to /opt/sidix/.env:
+  `TELEGRAM_BOT_TOKEN=<from @BotFather>`
+  `TELEGRAM_CHAT_ID=<founder's chat ID or group ID>`
+  then `pm2 restart sidix-brain --update-env`
+
+### TEST: Live QA Results (VPS 2026-04-29)
+```
+full_check(): ok=True  pytest=191p/0f  ruff=3726 (advisory)  type=0
+hafidz stats: 136 entries, 2 approved, 1 rejected, 133 pending
+ctrl.sidixlab.com/health: status=ok, model_ready=true
+pm2 sidix-brain: online (restarted with Sprint 60 code)
+```
+
+### DECISION: ruff gate = informational (not blocking) for Sprint 60A
+Rationale: existing 3726 violations mean gating would permanently block all
+autonomous PR submissions. Phase 2 will implement delta-mode: count violations
+ONLY in files touched by the autonomous developer's diff → fail if delta > 0.
+
+### DEPLOY
+- Commit: 908c5e9 (fix: ruff informational gate) + 65cd2d6 (Sprint 60 A-D)
+- Branch: claude/pedantic-banach-c8232d
+- VPS: git pull → pm2 restart sidix-brain → /health verified ✅
