@@ -14234,3 +14234,41 @@ Fix 3: tick() line 133 apply_plan(dry_run=True) → apply_plan(dry_run=dry_run)
 
 [TOTAL TEST] 191 tests passing (131 → 163 → 191 across 3 sprints today)
 
+### 2026-04-29 (VPS Deployment — Sprint 58B + 59 + 40 E2E LIVE)
+
+- IMPL: VPS deployment semua sprint Sprint 58A+58B+59+40E2E via SSH
+  - git fetch + merge ke branch claude/pedantic-banach-c8232d di /opt/sidix
+  - sidix-brain restarted via PM2 untuk pick up perubahan
+  - PM2 save untuk persist config
+
+- TEST: 191 tests passing di VPS production (`python3 -m pytest tests/ -q`)
+  - Duration: 266.61s — semua green
+  - Warning: PytestCollectionWarning TestResult (cosmetic, pre-existing)
+
+- ERROR: dev_sandbox.run_pytest() subprocess crash pada SSH heredoc context
+  - Root cause: _pytest/capture.py line 704 readouterr fails saat stdin=PIPE
+  - Terjadi HANYA ketika parent process stdin adalah heredoc pipe
+  - Tidak terjadi pada cron/normal execution context
+
+- FIX: dev_sandbox.py — tambah `stdin=subprocess.DEVNULL` ke subprocess.run()
+  - File: apps/brain_qa/brain_qa/dev_sandbox.py
+  - Commit: 9620bc2
+  - Verifikasi: VPS pull + merge OK
+
+- ERROR: dev_sandbox.run_pytest() subprocess gagal — `python` binary tidak ada di VPS
+  - VPS hanya punya `python3`, tidak ada symlink `python`
+  - Root cause: run_pytest() hardcode `["python", "-m", "pytest"]`
+
+- FIX: dev_sandbox.py — tambah `_python_bin()` helper (shutil.which)
+  - Return "python3" if which("python3") else "python"
+  - Commit: db13817
+
+- TEST: Live smoke test tick() di VPS (via /tmp/tick_smoke.py)
+  - picked: True
+  - LLM via ollama (qwen2.5:7b) ✅
+  - apply_plan dry_run=True: 1 file touched ✅
+  - state_after: pending (pytest retry scheduled — stdin fix applied after)
+
+- NOTE: Sprint 40 cron belum di-setup. Next: tambah cron entry `*/30 * * * * cd /opt/sidix && python3 -m brain_qa autodev tick`
+- NOTE: VPS main branch local merge belum di-push ke origin/main (PR route recommended)
+
