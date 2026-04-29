@@ -41,6 +41,12 @@ class TestResult:
     failure_classification: str = ""  # uses cloud_run_iterator.ErrorCategory
 
 
+def _python_bin() -> str:
+    """Return 'python3' if available, else 'python'. VPS fix (Sprint 40 E2E)."""
+    import shutil
+    return "python3" if shutil.which("python3") else "python"
+
+
 def run_pytest(repo_root: Path, paths: list[str] | None = None,
                timeout: int = 600) -> TestResult:
     """Run pytest. Returns TestResult.
@@ -49,7 +55,7 @@ def run_pytest(repo_root: Path, paths: list[str] | None = None,
     """
     import time
     t0 = time.time()
-    cmd = ["python", "-m", "pytest", "--tb=short", "-q"]
+    cmd = [_python_bin(), "-m", "pytest", "--tb=short", "-q"]
     if paths:
         cmd.extend(paths)
 
