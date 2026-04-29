@@ -129,19 +129,21 @@ def runpod_generate(
 
         # RunPod runsync has a 90s hard cap; cold starts > 90s return IN_QUEUE.
         # Detect and poll /status/{job_id} until COMPLETED or timeout.
+        # Use a FIXED poll window (180s) independent of runsync elapsed time,
+        # because runsync itself may have consumed most of cfg["timeout"].
+        _POLL_WINDOW = 180  # seconds to poll after IN_QUEUE
         job_status = data.get("status", "")
         job_id = data.get("id", "")
         if job_status in ("IN_QUEUE", "IN_PROGRESS") and job_id:
-            poll_timeout = max(30, cfg["timeout"] - int(elapsed) - 5)
             log.info(
                 f"[RunPod] cold-start detected ({job_status}), polling {job_id} "
-                f"for up to {poll_timeout}s"
+                f"for up to {_POLL_WINDOW}s (runsync took {elapsed:.0f}s)"
             )
             status_url = f"{_API_BASE}/{cfg['endpoint_id']}/status/{job_id}"
             poll_start = time.monotonic()
             with httpx.Client(timeout=15.0) as poller:
-                while time.monotonic() - poll_start < poll_timeout:
-                    time.sleep(4)
+                while time.monotonic() - poll_start < _POLL_WINDOW:
+                    time.sleep(5)
                     pr = poller.get(status_url, headers=headers)
                     pr.raise_for_status()
                     pdata = pr.json()
@@ -154,7 +156,7 @@ def runpod_generate(
                         log.error(f"[RunPod] job {ps}: {pdata.get('error','')}")
                         return ("", f"runpod_error: job {ps}")
                 else:
-                    log.warning(f"[RunPod] poll timed out after {poll_timeout}s")
+                    log.warning(f"[RunPod] poll timed out after {_POLL_WINDOW}s")
                     return ("", "runpod_error: poll_timeout")
 
     except Exception as e:
