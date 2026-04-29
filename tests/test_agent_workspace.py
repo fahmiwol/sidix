@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import sys
 from pathlib import Path
+from unittest.mock import patch
 
 import pytest
 
@@ -53,15 +54,31 @@ def test_workspace_write_requires_allow_restricted(monkeypatch, tmp_path):
 
 
 def test_run_react_build_intent_includes_workspace_list(monkeypatch, tmp_path):
+    """Build intent → workspace_list dipilih rule-based (tanpa LLM nyata).
+
+    LLM calls di-mock supaya test tidak butuh Ollama/RunPod live.
+    Tanpa mock, Ollama timeout (~90s) di-CI menyebabkan pytest FDCapture
+    crash yang merusak seluruh test session.
+    """
     monkeypatch.setenv("BRAIN_QA_AGENT_WORKSPACE", str(tmp_path))
     (tmp_path / "README.md").write_text("# stub", encoding="utf-8")
-    session = run_react(
-        question="Buatkan aplikasi kalkulator sederhana dalam Python",
-        persona="INAN",
-        corpus_only=True,
-        allow_web_fallback=False,
-        max_steps=8,
-    )
+
+    # Mock hybrid_generate (RunPod/Ollama router di agent_react.py baris ~1006)
+    # dan ollama_generate sebagai double-safety kalau fallback branch diambil.
+    # Keduanya return stub string — cukup untuk test assertion di bawah.
+    with patch("brain_qa.runpod_serverless.hybrid_generate",
+               return_value=("Baik, saya buatkan kalkulator Python.", "runpod")), \
+         patch("brain_qa.ollama_llm.ollama_generate",
+               return_value=("Baik, saya buatkan kalkulator Python.", "ollama")), \
+         patch("brain_qa.ollama_llm.ollama_available", return_value=True):
+        session = run_react(
+            question="Buatkan aplikasi kalkulator sederhana dalam Python",
+            persona="INAN",
+            corpus_only=True,
+            allow_web_fallback=False,
+            max_steps=8,
+        )
+
     names = [s.action_name for s in session.steps if s.action_name]
     # Build intent terdeteksi → langsung workspace_list (bypass corpus)
     assert "workspace_list" in names
