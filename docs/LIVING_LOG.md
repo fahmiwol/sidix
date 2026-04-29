@@ -14783,3 +14783,37 @@ No code fix needed — `interactive fast-fail` handles this correctly.
 - fix(runpod): fixed 180s poll window independent of runsync elapsed time
 - fix(runpod): interactive fast-fail on cold start → Ollama 1.5b fallback
 
+
+---
+
+## [DECISION] 2026-04-30 — Architecture flow CORRECTED + Sprint Σ-1 REVISED
+
+Founder catch: saya rush tanpa baca scaffolding/master prompt + pakai single-agent ReAct untuk user chat (akibatnya halu). Vision benar = paralel fan-out (1000 bayangan + 5-persona simultan + sanad cross-verify) yang selama ini cuma dipakai autonomous_dev background, BUKAN user chat.
+
+### Discovered: Infrastructure SUDAH ADA, just NOT WIRED to /agent/chat
+- `persona_research_fanout.py` (Sprint 58B) ✅ exists, wired only to autonomous_developer
+- `hafidz_ledger.py` ✅ exists, wired only to autonomous_dev iterations
+- `sanad_orchestrator.py` / `sanad_builder.py` ✅ exist
+- `agent_react.py` (used by /agent/chat) = single-agent, no fan-out
+
+### Sprint Σ-1 REVISED scope:
+- Σ-1A: Wire `persona_research_fanout` → `/agent/chat` (auto-trigger for current events / complex Q)
+- Σ-1B: Build NEW `sanad_verifier.py` (multi-source cross-check function)
+- Σ-1C: Per-persona tool subset (Phase 1)
+- Σ-1D: Current events bypass cache
+- Σ-1E: AKU dedup + decay cron (root cause Jokowi vs Prabowo conflict)
+- Σ-1F: Reflection loop (LLM self-check vs evidence)
+- Σ-1G: QA gold-set 20 questions (target 18/20 pass)
+
+Estimate: 24-30h dev, 4-5 days focused.
+
+Detail full di `research_notes/296_sanad_multisource_corrected_flow_20260430.md`.
+Founder verbatim correction di `docs/FOUNDER_JOURNAL.md` entry 2026-04-30 follow-up.
+
+### Mascot proposal (3 opsi) — awaiting founder choice:
+- A: Pakai PNG image bos langsung (zero gen cost)
+- B: Image bos sebagai hero + SDXL generate 4 state variants (thinking/working/happy/error) ~$0.05 ~1h
+- C: Trace ke SVG manual (~1-2 hari illustrator)
+
+Recommend: B.
+
