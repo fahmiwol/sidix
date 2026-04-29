@@ -14389,6 +14389,13 @@ Fix 3: tick() line 133 apply_plan(dry_run=True) → apply_plan(dry_run=dry_run)
   - Tick returns test_ok=False correctly (plan generation failed, nothing to test).
   - This is expected behavior — not a bug. Normal Ollama timeout = 90s, cold after heavy load.
 
+- FIX: test_agent_workspace.py — mock LLM calls (commit 0be9463)
+  - test_run_react_build_intent_includes_workspace_list memanggil run_react() tanpa mock.
+  - Ollama timeout (90s+) under load → pytest FDCapture crash → corrupt session.
+  - Fix: patch brain_qa.runpod_serverless.hybrid_generate + ollama_llm.ollama_generate
+    → return stub response instantly. workspace_list assertion is rule-based (pure Python).
+  - TEST: 4/4 tests pass in 9.4s (sebelumnya: 90s+ + crash). VPS: 191 passed ok=True ✅
+
 - DECISION: dev_sandbox subprocess stability — RESOLVED. Summary of 7-fix chain:
   1. stdin=DEVNULL → insufficient
   2. --capture=sys → insufficient
