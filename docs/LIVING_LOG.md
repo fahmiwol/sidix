@@ -14152,3 +14152,48 @@ ETA training: ~4h, jadi cek lagi nanti malam.
 [NOTE] Harness scoring logic validated. run_full_harness() + write_report() LIVE.
   Recommended: weekly cron trigger for production drift monitoring.
 
+
+## 2026-04-29 Sprint 59 — apply_plan() Phase 2 LIVE
+
+[IMPL] Sprint 59: actual filesystem write di apply_plan()
+  - create: mkdir -p + write_text(content)
+  - modify: write_text(content) full replace (diff-patch = Sprint 59B)
+  - delete: unlink() jika exists, warn jika missing
+  - Safety: validate_plan() gate SEBELUM write, double-check path escape
+  - Per-op try/except: partial failure log + continue, tidak crash
+
+[TEST] 7 filesystem tests baru (tempdir isolated):
+  create file, modify file, delete file, nested dirs,
+  empty content skip, validation-fail blocks all, path escape double-check
+  28 tests test_code_diff_planner.py — all green
+
+[COMMIT] 65fc6a6 feat(sprint-59): apply_plan() actual filesystem write
+
+## 2026-04-29 Sprint 58B — Persona Research Fanout LIVE
+
+[IMPL] Sprint 58B: persona_research_fanout.gather() full implementation
+  - 5 persona parallel via ThreadPoolExecutor (max_workers=5)
+  - Per-persona: tailored system prompt (voice LOCK) + research prompt
+  - LLM fallback chain: generate_sidix() → ollama_generate() → stub
+  - _parse_findings(): bullet extraction, dedup, cap 8 items
+  - Timeout: 90s per persona (Ollama VPS estimate)
+  - Cognitive synthesis: 6th LLM call merges all 5 findings
+  - Sanad chain: per-persona confidence + duration_ms + error tracked
+  - Graceful degradation: timeout/error = empty contribution, not crash
+  - FanoutBundle: confidence = avg successful personas, duration_ms total
+
+[IMPL] plan_changes() persona_fanout=True sekarang pakai gather() real
+  - bundle.synthesis prepend ke plan.rationale
+  - contributions dict di plan.persona_contributions
+
+[TEST] 25 tests test_persona_research_fanout.py — all green
+  TestParseFindings (8), TestResearchOnePersona (4), TestSynthesizeContributions (3)
+  TestGather (8), TestSynthesize (2)
+
+[TEST] 163 total suite — all green (was 131 pre-sprint-58A)
+
+[DECISION] Sonnet: Sprint 59 (file I/O, clear scope) + Sprint 58B (ThreadPoolExecutor,
+  established pattern) — keduanya tidak butuh Opus.
+  Opus threshold: >5 file architectural decision besar / security audit serius /
+  novel algorithm / stuck 2x iter.
+

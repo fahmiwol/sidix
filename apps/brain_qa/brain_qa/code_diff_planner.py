@@ -348,17 +348,30 @@ def plan_changes(
     log.info("[code_diff_planner] done task=%s mode=%s files=%d confidence=%.2f",
              task_id, llm_mode, len(plan.files), plan.confidence)
 
-    # Step 5: Attach persona contributions placeholder if fanout requested
+    # Step 5: Real persona fanout if requested (Sprint 58B)
     if persona_fanout:
-        # Full persona fanout via persona_research_fanout.gather() — Sprint 58B
-        # For now, mark contributions as pending (multi-agent fan-out next sprint)
-        plan.persona_contributions = {
-            "UTZ": "[Sprint 58B] creative direction fanout pending",
-            "ABOO": f"[primary] {plan.summary}",
-            "OOMAR": "[Sprint 58B] strategy context fanout pending",
-            "ALEY": "[Sprint 58B] academic precedent fanout pending",
-            "AYMAN": "[Sprint 58B] community/UX fanout pending",
-        }
+        try:
+            from .persona_research_fanout import gather as _fanout_gather
+            bundle = _fanout_gather(task_id, target_path, goal)
+            plan.persona_contributions = {
+                p: {
+                    "findings": c.findings,
+                    "confidence": c.confidence,
+                    "angle": c.angle,
+                    "error": c.error,
+                }
+                for p, c in bundle.contributions.items()
+            }
+            # Prepend synthesis to plan rationale
+            if bundle.synthesis:
+                plan.rationale = (
+                    f"[Persona Synthesis]\n{bundle.synthesis}\n\n"
+                    f"[Planner Rationale]\n{plan.rationale}"
+                )
+            log.info("[code_diff_planner] fanout done success=%d/%d",
+                     bundle.successful_personas, bundle.total_personas)
+        except Exception as e:
+            log.warning("[code_diff_planner] fanout failed: %s — continuing without fanout", e)
 
     return plan
 

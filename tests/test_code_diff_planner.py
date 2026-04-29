@@ -363,21 +363,50 @@ class TestPlanChanges:
         assert plan.confidence < 0.5  # degraded but not exception
 
     def test_persona_fanout_marks_contributions(self):
-        """persona_fanout=True should mark 5 persona contributions."""
+        """persona_fanout=True triggers real gather() and populates contributions."""
+        from brain_qa.persona_research_fanout import FanoutBundle, PersonaContribution
+
+        mock_bundle = FanoutBundle(
+            task_id="fanout-test",
+            contributions={
+                p: PersonaContribution(persona=p, angle="angle", findings=["f1"], confidence=0.7)
+                for p in ("UTZ", "ABOO", "OOMAR", "ALEY", "AYMAN")
+            },
+            synthesis="All personas agree: modular approach.",
+            confidence=0.7,
+            total_personas=5,
+            successful_personas=5,
+        )
+
         with patch("brain_qa.code_diff_planner._call_llm",
-                   return_value=(self._VALID_RESPONSE, "ollama")):
-            plan = plan_changes(
-                task_id="fanout-test",
-                target_path="apps/brain_qa/brain_qa/code_diff_planner.py",
-                goal="Complex task",
-                repo_root=Path(__file__).parent.parent,
-                persona_fanout=True,
-            )
+                   return_value=(self._VALID_RESPONSE, "ollama")), \
+             patch("brain_qa.code_diff_planner._fanout_gather" if False else
+                   "brain_qa.persona_research_fanout.gather",
+                   return_value=mock_bundle):
+
+            # Patch the import inside plan_changes
+            import brain_qa.persona_research_fanout as _fanout_mod
+            original_gather = _fanout_mod.gather
+            _fanout_mod.gather = lambda *a, **k: mock_bundle
+
+            try:
+                plan = plan_changes(
+                    task_id="fanout-test",
+                    target_path="apps/brain_qa/brain_qa/code_diff_planner.py",
+                    goal="Complex task",
+                    repo_root=Path(__file__).parent.parent,
+                    persona_fanout=True,
+                )
+            finally:
+                _fanout_mod.gather = original_gather
+
         assert "UTZ" in plan.persona_contributions
         assert "ABOO" in plan.persona_contributions
         assert "OOMAR" in plan.persona_contributions
         assert "ALEY" in plan.persona_contributions
         assert "AYMAN" in plan.persona_contributions
+        # Synthesis prepended to rationale
+        assert "Persona Synthesis" in plan.rationale
 
     def test_previous_error_in_prompt(self):
         """previous_error should appear in the user prompt."""
