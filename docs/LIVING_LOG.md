@@ -14959,3 +14959,89 @@ Branch: claude/gallant-ellis-7cd14d
 - Re-run Σ-1G goldset di VPS untuk validasi 14-16/20+ (up dari 8/20)
 - Σ-1C: per-persona brain (tool subset per persona)
 - Σ-1D: current events bypass cache + force web_search
+
+
+---
+
+## [IMPL] 2026-04-30 — Sigma-1C + Sigma-1D + Sigma-1E DONE
+
+Sprint batch: bos minta "gas semua" — 3 sprint dieksekusi paralel.
+
+### Sigma-1D: Cache bypass untuk current_event (agent_react.py run_react)
+- Tambah `_skip_cache` check sebelum `answer_dedup.get_cached_answer()`
+- Kalau `_needs_web_search(question)=True` AND `allow_web_fallback=True` AND `not corpus_only`
+  → set cached=None, force full ReAct loop
+- Root cause fix: Q1/Q3/Q4 dari Sigma-1G gagal karena cache return jawaban lama
+  tanpa trigger web_search ulang
+
+### Sigma-1C Phase 1: Per-persona tool priority (agent_react.py _compose_final_answer)
+- Tambah `_PERSONA_TOOL_HINT` dict (5 persona × tool priority hint)
+- Inject ke `_system_persona` yang masuk ke LLM system prompt
+- UTZ=creative/image, ABOO=code/corpus, OOMAR=web/strategy, ALEY=corpus/wiki, AYMAN=web/empati
+- LLM sekarang "tahu" dari sudut mana sintesis + tool apa yang relevan
+
+### Sigma-1E: Brand canon inject ke system prompt (agent_react.py _compose_final_answer)
+- Tambah detect_intent check: kalau brand_specific → inject canonical answer ke system prompt
+- Format: [CANONICAL FACT — WAJIB PAKAI PERSIS INI] + canonical + [END CANONICAL FACT]
+- Pre-halu prevention: LLM tahu jawaban benar SEBELUM generate (bukan hanya post-override)
+- Dual-layer anti-halu: Sigma-1E (pre) + Sigma-1A (post-override)
+
+Tests: 43/43 masih PASS (26 unit + 17 integration)
+
+
+---
+
+## [ANALISA + SPRINT LOG] 2026-04-30 — Full Sprint Protocol Sigma-1C/D/E
+
+### ANALISA AWAL (sebelum eksekusi)
+- Baseline Sigma-1G: 8/20 = 40%. 3 critical halu + 5 current event fail.
+- Root cause mapping:
+  A. Current events fail [Q1,Q3,Q4]: cache return stale answer, web_search tidak di-trigger ulang
+  B. Brand halu [Q15/Q17/Q18]: LLM generate dari training prior tanpa canonical lookup
+  C. No web source tapi tetap "jawab": sanad gate belum ada (Sigma-1A sudah fix ini)
+- Metode yang dipilih:
+  - Sigma-1D = cache bypass (targeted, tidak break existing flow)
+  - Sigma-1C = system prompt injection (ringan, tidak touch routing)
+  - Sigma-1E = pre-generation canonical inject (dual layer dengan Sigma-1A post-override)
+
+### IMPLEMENTASI DETAIL
+Sigma-1D (agent_react.py line ~2020):
+  + `_skip_cache = _needs_web_search(q) and allow_web_fallback and not corpus_only`
+  + `cached = None if _skip_cache else answer_dedup.get_cached_answer(...)`
+
+Sigma-1C (agent_react.py _compose_final_answer):
+  + `_PERSONA_TOOL_HINT` dict 5 persona
+  + Append ke `_system_persona` sebelum masuk ke `_combined_system`
+
+Sigma-1E (agent_react.py _compose_final_answer):
+  + `detect_intent(question)` → kalau brand_specific → `brand_canonical_answer(term)` → inject ke system
+  + Format: [CANONICAL FACT — WAJIB PAKAI PERSIS INI] block
+
+### TESTING
+- python tests/test_sanad_verifier.py: 26/26 PASS (no regression)
+- python tests/test_agent_react_sanad_integration.py: 17/17 PASS (no regression)
+- Syntax check ast.parse: OK
+- Total: 43/43 PASS
+
+### VALIDASI (target setelah deploy ke VPS)
+- Re-run Sigma-1G goldset
+- Expected: Q1/Q3/Q4 sekarang trigger web_search → jawaban dari real data
+- Expected: Q15/Q17/Q18 brand canon inject → LLM generate benar (pre), sanad override (post)
+- Target: 14-16/20+ (up dari 8/20 baseline)
+
+### REVIEW (diff audit)
+- Tidak ada vendor API, tidak ada secret, tidak ada Kimi territory touch
+- Direction lock check: tidak ada perubahan persona voice, tidak ada drop sanad chain
+- Security: tidak ada credential leak
+
+### OPTIMASI (noted for next sprint)
+- Sigma-1H: browser tool + social media scraper (tools baru)
+- Sigma-2: latency optimization paralel (avg 87-138s terlalu lambat)
+- Re-run goldset setelah VPS deploy untuk konfirmasi angka
+
+### STATUS
+Sigma-1A: DONE (commit a4ebc34)
+Sigma-1C: DONE (this commit)
+Sigma-1D: DONE (this commit)
+Sigma-1E: DONE (this commit)
+Next: push + PR + deploy VPS + re-run goldset

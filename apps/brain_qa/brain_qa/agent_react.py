@@ -909,7 +909,58 @@ def _compose_final_answer(
             _system_persona = PERSONA_DESCRIPTIONS.get(persona.upper(), "")
         except Exception:
             pass
-    # ───────────────────────────────────────────────────────────────────────────
+    # ── Σ-1C Phase 1: per-persona tool priority hint (injected ke LLM system) ─
+    # Setiap persona punya "default lens" berbeda → LLM tahu dari sudut mana
+    # untuk mensintesis jawaban + tool apa yang relevan.
+    _PERSONA_TOOL_HINT: dict[str, str] = {
+        "UTZ": (
+            "Kamu persona UTZ — Creative Director. Sintesis dari sudut kreatif/visual. "
+            "Prioritas tool: brainstorm, image_gen, web_search (trend/inspirasi). "
+            "Jawab dengan energi kreatif, ide liar, metafora visual."
+        ),
+        "ABOO": (
+            "Kamu persona ABOO — Systems Builder. Sintesis dari sudut teknikal/engineering. "
+            "Prioritas tool: code_sandbox, search_corpus (doc/spec), web_fetch (changelog). "
+            "Jawab presisi, code-first, benchmark konkret."
+        ),
+        "OOMAR": (
+            "Kamu persona OOMAR — Strategic Architect. Sintesis dari sudut strategi/bisnis. "
+            "Prioritas tool: web_search (market/competitor), roadmap_tools, orchestration_plan. "
+            "Jawab dengan framework bisnis, analisis tradeoff, roadmap konkret."
+        ),
+        "ALEY": (
+            "Kamu persona ALEY — Polymath Researcher. Sintesis dari sudut akademik/riset. "
+            "Prioritas tool: search_corpus, wiki_lookup, pdf_extract. "
+            "Jawab dengan citation chain, epistemik label, referensi silang."
+        ),
+        "AYMAN": (
+            "Kamu persona AYMAN — Empathic Integrator. Sintesis dari sudut komunitas/user. "
+            "Prioritas tool: web_search (opini/feedback), search_corpus (konteks). "
+            "Jawab hangat, relatable, empati, narrative-driven."
+        ),
+    }
+    _persona_tool_hint = _PERSONA_TOOL_HINT.get((persona or "").upper(), "")
+    if _persona_tool_hint and _system_persona:
+        _system_persona = f"{_system_persona}\n\n{_persona_tool_hint}"
+    elif _persona_tool_hint:
+        _system_persona = _persona_tool_hint
+    # ── Σ-1E: Inject BRAND_CANON ke system prompt (pre-halu prevention) ─────
+    # LLM perlu "tahu" canonical facts SEBELUM generate — bukan hanya post-override.
+    # Kalau pertanyaan menyangkut brand term, sertakan canonical ke system context.
+    try:
+        from .sanad_verifier import detect_intent as _sv_detect, brand_canonical_answer as _sv_canon
+        _sv_intent = _sv_detect(question)
+        if _sv_intent.primary == "brand_specific" and _sv_intent.brand_term:
+            _canon = _sv_canon(_sv_intent.brand_term)
+            if _canon:
+                _brand_inject = (
+                    f"\n\n[CANONICAL FACT — WAJIB PAKAI PERSIS INI]\n{_canon}\n"
+                    "[END CANONICAL FACT]"
+                )
+                _system_persona = (_system_persona or "") + _brand_inject
+    except Exception:
+        pass
+    # ─────────────────────────────────────────────────────────────────────────
     all_citations: list[dict] = []
     obs_blocks: list[str] = []
 
@@ -2017,7 +2068,14 @@ def run_react(
     except Exception:
         pass
 
-    cached = answer_dedup.get_cached_answer(persona, working_question)
+    # Σ-1D: bypass cache untuk current_event — jawaban terkini TIDAK boleh dari cache
+    # (cache mungkin menyimpan jawaban lama yang sudah expire)
+    _skip_cache = (
+        _needs_web_search(working_question)
+        and allow_web_fallback
+        and not corpus_only
+    )
+    cached = None if _skip_cache else answer_dedup.get_cached_answer(persona, working_question)
     if cached is not None:
         session.final_answer = _apply_maqashid_mode_gate(session, working_question, persona, cached)
         session.finished = True
