@@ -15079,3 +15079,28 @@ social_search tool:
 ### Next
 - Sigma-1G goldset re-run running on VPS (Q1-Q6 done, 3/6 PASS so far)
 - Q1/Q2/Q4 sekarang PASS (sebelumnya FAIL — Sigma-1D cache bypass berhasil)
+
+## [TEST] 2026-04-30 — Sigma-1G Goldset FINAL: 15/20 = 75% (+35pp)
+
+### Hasil Validasi
+Goldset 20 pertanyaan selesai di VPS (ctrl.sidixlab.com/agent/chat):
+- **OVERALL: 15/20 = 75%** (baseline: 8/20 = 40%)
+- current_events: 3/5 (dari 0/5) — cache bypass Sigma-1D BERHASIL
+- factual: 3/5 (dari 2/5) — Q8/Q9/Q10 fixed; Q6/Q7 timeout REGRESSION
+- coding: 4/5 (dari 3/5) — Q14 LoRA fixed via brand_canon (3ms cache hit!)
+- sidix_identity: 3/3 (dari 1/3) — Q17 persona + Q18 IHOS FIXED via Sigma-1E+1A!
+- creative: 2/2 maintained
+
+### Critical Halu FIXED
+- Q17 "5 persona SIDIX" → "UTZ/ABOO/OOMAR/ALEY/AYMAN" (bukan "Aboudi/Farhan/...")
+- Q18 "IHOS" → "Islamic Holistic Ontological System" (bukan "Inisiatif Holistik...")
+- Q14 "LoRA" → "Low-Rank Adaptation, adapter, fine-tuning" (canonical via brand_canon)
+
+### Regression (Sigma-2 Target)
+- Q6 (Python lang), Q7 (HTTP), Q15 (ReAct) → timeout 150s
+- Root cause: Sigma-1C persona prompt overhead menyebabkan extra tool rounds
+- Fix: parallel tool execution (Sigma-2 scope), adaptive timeout per query complexity
+
+### Artifacts
+- tests/anti_halu_baseline_results_post_sigma1.json — full 20Q JSON results
+- brain/public/research_notes/297_sigma1_anti_halu_sprint_20260430.md — updated dengan tabel final
