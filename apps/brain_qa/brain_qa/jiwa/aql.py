@@ -10,7 +10,7 @@ from __future__ import annotations
 import hashlib
 import logging
 import threading
-from datetime import datetime
+from datetime import datetime, timezone
 
 log = logging.getLogger("sidix.jiwa.aql")
 
@@ -103,7 +103,7 @@ def _append_training_pair(
     )
     os.makedirs(data_dir, exist_ok=True)
 
-    today = datetime.utcnow().strftime("%Y-%m-%d")
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     fpath = os.path.join(data_dir, f"pairs_{today}.jsonl")
 
     entry = {
@@ -114,7 +114,7 @@ def _append_training_pair(
         "source": "jiwa_aql_auto",
         "hash": content_hash,
         "user_feedback": user_feedback or "",
-        "created_at": datetime.utcnow().isoformat(),
+        "created_at": datetime.now(timezone.utc).isoformat(),
     }
 
     with open(fpath, "a", encoding="utf-8") as f:

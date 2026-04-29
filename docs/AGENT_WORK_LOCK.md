@@ -11,7 +11,7 @@ yang bisa menghasilkan merge conflict atau logic yang saling override.
 
 ### Sebelum edit file apapun:
 1. Baca section "FILE OWNERSHIP" di bawah
-2. Kalau file masuk zona "MILIK KIMI" → **STOP, jangan edit**
+2. Kalau file masuk zona "MILIK KIMI" → **BOLEH disentuh Claude** jika: (a) bug/deprecation/broken import/security, (b) berdampak ke integrasi/test/production, (c) perubahan minimal & spesifik. JANGAN redesign atau refactor besar. Catat di LIVING_LOG + HANDOFF. **[Update: founder directive 2026-04-29]**
 3. Kalau file masuk zona "MILIK CLAUDE" → **STOP, jangan edit** (untuk Kimi)
 4. Kalau file masuk "SHARED" → baca aturan khusus di bawah
 5. Kalau tidak yakin → **tulis di LIVING_LOG dulu, minta konfirmasi user**

@@ -539,6 +539,35 @@ SIDIX adalah:
 
 ---
 
+## 2026-04-29 10:45 UTC — Kimi Territory Rule Update
+
+**Sesi**: Sprint 40 QA pass — Review-Optimize-QA cycle  
+**Konteks**: Claude menemukan DeprecationWarning di `jiwa/aql.py` (Kimi's file) saat test run. Claude skip karena AGENT_WORK_LOCK. Bos koreksi.
+
+**Quote bos** (verbatim):
+> "Kimi's territory, boleh disentuh! catat! boleh disentuh,,, kalo penting dan berdampak harus disentuh dan di sesuaikan"
+
+**Klarifikasi / directive**:
+
+RULE UPDATE — berlaku sejak 2026-04-29:
+
+- **LAMA (REVOKED)**: Kimi territory = jangan disentuh sama sekali (strict AGENT_WORK_LOCK)
+- **BARU**: Kimi territory **BOLEH disentuh** jika:
+  1. Perubahan **penting** (bug, deprecation, broken import, security)
+  2. Perubahan **berdampak** ke integrasi / test / production
+  3. Perubahan **minimal** — fix spesifik, tidak redesign arsitektur Kimi
+
+- Yang **TETAP tidak boleh**: redesign, refactor besar, ubah algoritma kreativitas/jiwa, hapus fitur Kimi tanpa izin eksplisit.
+- **Protocol**: setelah edit Kimi file → catat di LIVING_LOG + notify di HANDOFF apa yang diubah.
+- **File Kimi** (masih perlu respect): `parallel_executor.py`, `jiwa/*`, `emotional_tone_engine.py`, `sensor_fusion.py`, `parallel_planner.py`
+
+**ACTION ITEM**:
+- [ ] Fix `jiwa/aql.py` — datetime.utcnow() → datetime.now(timezone.utc) (DeprecationWarning di setiap test run)
+- [ ] Update AGENT_WORK_LOCK.md dengan rule baru ini
+- [ ] Catat di CLAUDE.md ANTI-BENTROK section
+
+---
+
 ## 📋 PENDING DIRECTIVE — Belum Selesai
 
 (Update setiap session, agent baru WAJIB cek list ini)
