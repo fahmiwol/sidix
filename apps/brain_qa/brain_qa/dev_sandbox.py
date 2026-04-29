@@ -21,6 +21,7 @@ from __future__ import annotations
 
 import logging
 import os
+import shutil as _shutil
 import subprocess
 import tempfile
 import xml.etree.ElementTree as ET
@@ -29,10 +30,13 @@ from pathlib import Path
 
 log = logging.getLogger(__name__)
 
+_PYTHON_BIN: str = "python3" if _shutil.which("python3") else "python"
+
 
 @dataclass
 class TestResult:
     """Outcome of running tests on applied diff."""
+
     __test__ = False  # prevent pytest treating this dataclass as a test class
 
     ok: bool = False
@@ -44,10 +48,6 @@ class TestResult:
     duration_seconds: float = 0.0
     log_excerpt: str = ""           # last ~2000 chars of output
     failure_classification: str = ""  # uses cloud_run_iterator.ErrorCategory
-
-
-import shutil as _shutil
-_PYTHON_BIN: str = "python3" if _shutil.which("python3") else "python"
 
 
 def _python_bin() -> str:
@@ -208,7 +208,7 @@ def run_ruff(repo_root: Path,
             log.info("[dev_sandbox] ruff %s: clean (0 issues)", mode)
             return 0
         # Count violation lines: each looks like "path:line:col: CODE message"
-        issues = [l for l in proc.stdout.splitlines() if l.strip() and ": " in l]
+        issues = [ln for ln in proc.stdout.splitlines() if ln.strip() and ": " in ln]
         n = len(issues)
         log.info("[dev_sandbox] ruff %s: %d issues", mode, n)
         return n
@@ -250,8 +250,15 @@ def full_check(repo_root: Path, paths: list[str] | None = None) -> TestResult:
     violations into files it modifies. Pre-existing violations in untouched
     files are ignored — they are a separate cleanup task.
     """
-    result = run_pytest(repo_root, paths)
-    result.ruff_issues = run_ruff(repo_root, paths)   # delta if paths given
+    # pytest ALWAYS runs the full test suite — paths here are source files,
+    # not test paths.  Passing touched source files to pytest would make it
+    # try to collect tests from e.g. "brain_qa/foo.py" → finds 0 tests →
+    # ok=False (wrong).  Always run all tests unconditionally.
+    result = run_pytest(repo_root)
+
+    # ruff: delta-mode (check only touched source files) when paths given,
+    # otherwise advisory full-scan (does not gate ok).
+    result.ruff_issues = run_ruff(repo_root, paths)
     result.typecheck_issues = run_typecheck(repo_root)
 
     # pytest always gates
