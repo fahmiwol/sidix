@@ -14530,3 +14530,60 @@ ONLY in files touched by the autonomous developer's diff → fail if delta > 0.
 - Commit: 908c5e9 (fix: ruff informational gate) + 65cd2d6 (Sprint 60 A-D)
 - Branch: claude/pedantic-banach-c8232d
 - VPS: git pull → pm2 restart sidix-brain → /health verified ✅
+
+---
+
+## 2026-04-29 — Sprint 60E: Ruff Delta-Mode (sesuai visi autonomous)
+
+### ANALISA & KEPUTUSAN: Mengapa harus delta-mode?
+Visi: SIDIX autonomous developer harus bisa submit PR tanpa blocker.
+Problem: full-scan ruff → 3726 violations baseline → ok=False selalu → stuck.
+Solution: delta-mode — ruff hanya scan file yang DI-TOUCH oleh diff.
+- SIDIX tidak bisa introduce ruff violations ke file yang dia modify
+- Pre-existing violations di file yang tidak disentuh = advisory saja
+- Phase 2 akan clean up 3726 baseline (sprint tersendiri)
+
+### IMPL: dev_sandbox.run_ruff() — delta-mode parameter
+```python
+def run_ruff(repo_root, paths=None):
+    if paths:
+        # delta-mode: only .py files in touched set that exist
+        py_files = [p for p in paths if p.endswith('.py') and Path(p).exists()]
+        target_args = py_files  # scan ONLY these
+    else:
+        target_args = [str(repo_root / "apps/brain_qa")]  # full advisory scan
+```
+
+### IMPL: full_check() — pytest always full-suite, ruff gets delta paths
+Bug ditemukan + fix:
+- Bug: `run_pytest(repo_root, paths=touched)` → pytest scan source files bukan test files → tests=0 → ok=False (wrong!)
+- Fix: `run_pytest(repo_root)` selalu full suite. Paths hanya untuk ruff.
+- `full_check(root, paths=touched)` → ruff delta gate, pytest full suite
+
+### IMPL: autonomous_developer.tick() — pass touched paths
+```python
+test_result = dev_sandbox.full_check(repo_root, paths=touched or None)
+```
+touched = list of files the diff actually wrote. Passed to ruff delta-mode.
+
+### FIX: ruff violations in dev_sandbox.py (3 issues)
+- E402: `import shutil` bukan di top (karena sebelumnya di bawah dataclass) → fix: pindah ke atas
+- I001: import block not sorted → fix: sorted with shutil
+- E741: variable `l` ambiguous → fix: renamed to `ln`
+Result: dev_sandbox.py sendiri = 0 ruff violations ✅
+
+### TELEGRAM SETUP
+- Bot @sidixlab_bot verified ✅ (token confirmed via /getMe)
+- TELEGRAM_BOT_TOKEN ditambah ke /opt/sidix/.env
+- TELEGRAM_CHAT_ID: belum diset — user perlu kirim /start ke @sidixlab_bot
+- Setelah user send message → getUpdates → ambil chat_id → set .env → restart brain
+
+### TEST LOKAL
+- 191 tests pass ✅
+- dev_sandbox.py: 0 ruff violations (delta clean)
+- Syntax check: OK
+
+### DEPLOY STATUS
+- Commit: 4489ada (fix: ruff delta-mode bugs)
+- VPS: git pull → live QA running (T1/T2/T3 scenario test)
+- Hasil live QA: PENDING (monitor running)
