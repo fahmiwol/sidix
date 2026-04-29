@@ -15104,3 +15104,32 @@ Goldset 20 pertanyaan selesai di VPS (ctrl.sidixlab.com/agent/chat):
 ### Artifacts
 - tests/anti_halu_baseline_results_post_sigma1.json — full 20Q JSON results
 - brain/public/research_notes/297_sigma1_anti_halu_sprint_20260430.md — updated dengan tabel final
+
+## [TEST] 2026-04-30 — Sigma-2 Goldset FINAL: 19/20 = 95% (+55pp dari baseline)
+
+### Hasil Validasi
+- **OVERALL: 19/20 = 95%** (Sigma-1: 15/20 = 75%, Baseline: 8/20 = 40%)
+- current_events: 5/5 (PERFECT — termasuk Q3 CEO OpenAI PERTAMA KALI PASS!)
+- factual: 5/5 (PERFECT — Q6/Q7 timeout fixed dengan adaptive max_tokens)
+- coding: 4/5 (Q12 let/const JS timeout 300s — 1 remaining)
+- sidix_identity: 3/3 (maintained)
+- creative: 2/2 (maintained)
+
+### Fixes yang berhasil
+- Q3 CEO OpenAI: PASS via fact_extractor reverse-pattern fix
+- Q5 FIFA 2022: PASS via juara subject-first pattern fix
+- Q6 Python: PASS via max_tokens 600→350 (corpus-first routing)
+- Q7 HTTP: PASS via corpus-first cache hit (3ms!)
+- Q15 ReAct singkat: PASS 167s via max_tokens 1000→250
+
+### Satu kegagalan tersisa
+- Q12 "perbedaan let dan const JS" → timeout 300s
+- Root cause: _is_long_reasoning=True → 1000 tokens → RunPod takes 300s+
+- Fix Sigma-3: cap "perbedaan" to 500 tokens, or streaming response
+
+### Sprint progression
+8/20 baseline → 15/20 Sigma-1 (+35pp) → 19/20 Sigma-2 (+55pp total)
+
+### Artifacts
+- tests/anti_halu_baseline_results_post_sigma2.json
+- brain/public/research_notes/298_sigma2_latency_entity_fix_20260430.md
