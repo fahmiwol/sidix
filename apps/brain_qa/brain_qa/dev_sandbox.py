@@ -63,7 +63,7 @@ def run_pytest(repo_root: Path, paths: list[str] | None = None,
     try:
         proc = subprocess.run(
             cmd, cwd=str(repo_root), capture_output=True, text=True,
-            timeout=timeout,
+            timeout=timeout, stdin=subprocess.DEVNULL,
         )
         out = (proc.stdout or "") + "\n" + (proc.stderr or "")
         ok = proc.returncode == 0
