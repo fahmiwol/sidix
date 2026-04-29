@@ -1,3 +1,8 @@
+[tool.pytest.ini_options]
+# Only collect tests from tests/ directory — prevents collecting
+# workstation/utility scripts in docs/ or deploy-scripts/.
+testpaths = ["tests"]
+
 [tool.ruff]
 line-length = 100
 target-version = "py311"
