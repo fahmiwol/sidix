@@ -20,7 +20,9 @@ Reference: docs/SPRINT_40_AUTONOMOUS_DEV_PLAN.md
 from __future__ import annotations
 
 import logging
+import os
 import subprocess
+import tempfile
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -55,28 +57,32 @@ def run_pytest(repo_root: Path, paths: list[str] | None = None,
     """
     import time
     t0 = time.time()
-    # -p no:capture: disable pytest's own capture entirely.
-    # When run as subprocess with capture_output=True, the parent owns
-    # stdout/stderr via PIPE.  Pytest's internal capture (fd or sys mode)
-    # creates BytesIO/tmpfile buffers that get closed during subprocess
-    # teardown → ValueError "I/O operation on closed file" in snap().
-    # Since we capture at the parent level, pytest capture is redundant.
-    # Confirmed safe: no test in this suite uses capsys/capfd fixtures.
-    cmd = [_python_bin(), "-m", "pytest", "--tb=short", "-q", "-p", "no:capture"]
+    # Output redirected to a real temp FILE, not PIPE.
+    # With capture_output=True (PIPE), Python's TextIOWrapper closes the pipe
+    # fd during process teardown BEFORE pytest flushes its TerminalWriter,
+    # causing ValueError "I/O operation on closed file" in terminalwriter.py.
+    # Using a real file avoids this: the fd stays open throughout, pytest can
+    # flush normally, we read the file content after the process exits.
+    cmd = [_python_bin(), "-m", "pytest", "--tb=short", "-q"]
     if paths:
         cmd.extend(paths)
 
     log.info("[dev_sandbox] pytest cmd=%s", " ".join(cmd))
+    tmp_fd, tmp_path = tempfile.mkstemp(suffix=".pytest.log", prefix="sidix_")
     try:
-        proc = subprocess.run(
-            cmd, cwd=str(repo_root), capture_output=True, text=True,
-            timeout=timeout, stdin=subprocess.DEVNULL,
-        )
-        out = (proc.stdout or "") + "\n" + (proc.stderr or "")
+        with os.fdopen(tmp_fd, "w", errors="replace") as out_f:
+            proc = subprocess.run(
+                cmd, cwd=str(repo_root),
+                stdout=out_f, stderr=out_f,
+                stdin=subprocess.DEVNULL,
+                timeout=timeout,
+            )
+        with open(tmp_path, errors="replace") as f:
+            out = f.read()
         ok = proc.returncode == 0
-        # Crude parsing — extract summary
+        # Parse summary from last 20 lines of output
         passed = failed = errors = 0
-        for line in (proc.stdout or "").splitlines()[-20:]:
+        for line in out.splitlines()[-20:]:
             if " passed" in line or " failed" in line or " error" in line:
                 # e.g. "5 passed, 1 failed in 2.3s"
                 tokens = line.replace(",", " ").split()
@@ -107,6 +113,11 @@ def run_pytest(repo_root: Path, paths: list[str] | None = None,
             ok=False, log_excerpt=f"sandbox error: {e}",
             failure_classification="sandbox_error",
         )
+    finally:
+        try:
+            os.unlink(tmp_path)
+        except OSError:
+            pass
 
 
 def run_ruff(repo_root: Path) -> int:
