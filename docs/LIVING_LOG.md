@@ -14845,3 +14845,43 @@ Backend FastAPI port 8765 UNCHANGED.
 
 Detail: FOUNDER_JOURNAL 2026-04-30 LOCK Next.js entry + research_notes/296 Σ-3 spec update.
 
+
+---
+
+## [TEST] 2026-04-29 21:33-22:10 — Σ-1G Baseline Anti-Halu Gold-Set: 8/20 = 40%
+
+Endpoint: `https://ctrl.sidixlab.com/agent/chat` (live VPS brain)
+File: `tests/anti_halu_baseline_results.json`
+
+### Pass rate by category:
+| Category | Pass | Avg latency |
+|---|---|---|
+| current_events | **0/5** | 138s ⚠️ |
+| factual stable | 3/5 | 45s |
+| coding | 3/5 | 102s |
+| sidix_identity | 1/3 | 30s ⚠️ |
+| creative | 2/2 | 19s ✅ |
+
+### Fail classes (root cause inventory):
+
+**A. refuse_no_websearch [Q1, Q3, Q4]** — brain admit "tidak punya data" untuk current events tapi TIDAK call `web_search` tool. Honest tapi tidak retrieve fakta yang seharusnya dapatable. → **Σ-1A wire fanout + Σ-1D bypass cache + force web_search**.
+
+**B. refuse_known_fact [Q5]** — brain bilang "tidak punya info FIFA 2022" — padahal stable historical fact (Argentina/Messi). Over-correction ke epistemik humility. → Σ-1B sanad cross-verify lebih agresif retrieval.
+
+**C. CRITICAL_HALU fact [Q15]** — brain bilang "ReAct = Recursive Action Tree" SALAH. Correct: Reasoning + Acting (Yao et al. 2022). LLM training prior win without verification. → **Σ-1B sanad_verifier wajib**.
+
+**D. CRITICAL_HALU brand [Q17, Q18]** — brain ngarang persona sendiri ("Aboudi" bukan UTZ/ABOO/OOMAR/ALEY/AYMAN) DAN ngarang IHOS expansion ("Inisiatif Holistik Operasional Strategis" bukan Islamic Holistic Ontological System). → **Σ-1E AKU dedup + corpus inject brand canonical** + ground via system prompt.
+
+**E. brain_pipeline_error [Q8, Q12]** — generic "masalah teknis" returns. Root cause perlu cek `pm2 logs sidix-brain`. Possibly Ollama timeout under load atau RunPod pipeline race.
+
+**F. validator_bug_likely [Q2, Q10]** — answer contained expected substring tapi marked FAIL. Debug: cek apakah `data["answer"]` mengembalikan full string atau truncated/encoded. Investigate post Σ-1G.
+
+### Insight strategis untuk Σ-1B/Σ-1A:
+
+1. **Brain epistemik humility WORKS** (refuse > halu untuk Q1-4) — base behavior aman.
+2. **Brain retrieval FAILS** — saat bisa cari (web/corpus) tidak action. Sanad seharusnya force tool call.
+3. **Brain memory SIDIX-self FAILS** — corpus berisi research notes 295 + CLAUDE.md sudah ada term "5 persona UTZ/ABOO/OOMAR/ALEY/AYMAN" + "IHOS Islamic Holistic Ontological System" tapi tidak retrieve. Possibly BM25 ranking issue atau corpus chunking. Σ-1E + corpus audit.
+4. **Latency tinggi** (avg 87-138s) confirm Σ-2 optimasi paralel needed.
+
+### Next: Σ-1B — build `sanad_verifier.py` (multi-source cross-check + force web_search untuk current events).
+
