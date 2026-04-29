@@ -1,3 +1,40 @@
+# [2.8.0] — 2026-04-29 — Sprint 60 COMPLETE: Autonomous Developer Fully Operational
+
+### Sprint 60A — run_ruff() wired (dev_sandbox.py)
+- Real ruff invocation via subprocess targeting apps/brain_qa only
+- Import order fixed (E402/I001), variable rename (E741 `l` → `ln`)
+- dev_sandbox.py sendiri = 0 ruff violations
+
+### Sprint 60B — Auto-fanout for priority >= 80 (autonomous_developer.py)
+- Tasks dengan priority >= 80 otomatis 5-persona research fan-out
+- plan_changes() menerima computed use_fanout bukan raw task flag
+
+### Sprint 60C — `autodev hafidz` CLI (__main__.py)
+- `autodev hafidz stats` → JSON ledger summary (226 entries per 29 Apr)
+- `autodev hafidz list [--limit N]` → recent entries
+- `autodev hafidz get <content_id>` → full entry JSON
+- `autodev hafidz trace <content_id>` → isnad chain
+
+### Sprint 60D — Telegram notify_owner() LIVE (dev_pr_submitter.py)
+- Bot: @sidixlab_bot → @fahmiwol13 (chat_id=1020487700)
+- Pure stdlib urllib.request, zero extra deps
+- Env-conditional: TELEGRAM_BOT_TOKEN + TELEGRAM_CHAT_ID di /opt/sidix/.env
+- VERIFIED: pesan masuk ke HP founder ✅
+
+### Sprint 60E — Ruff Delta-Mode Gate (dev_sandbox.py + autonomous_developer.py)
+- full_check(paths=touched) → ruff scan HANYA file yang diff sentuh
+- ruff violations di file baru/modified → ok=False → PR blocked
+- Pre-existing 3726 violations di file lain = advisory only (tidak gate)
+- pytest selalu full suite (191 tests), tidak terpengaruh paths
+- VERIFIED live: T1(advisory ok) T2(clean ok) T3(dirty blocked) ✅
+
+### Infrastructure
+- VPS: git pull + pm2 restart sidix-brain --update-env
+- 191 tests pass, model_ready=true, 48 tools aktif
+- Corpus: 2287 docs, 295 research notes, 226 Hafidz Ledger entries
+
+---
+
 # [2.7.0] — 2026-04-28 morning — Self-Learning Trilogy COMPLETE (RASA + KITABAH + ODOA + WAHDAH signal)
 
 ### Sprint 23 — ODOA Daily Compound Improvement Tracker

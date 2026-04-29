@@ -48,23 +48,88 @@ Detail teknis identitas ini di `CLAUDE.md` section "IDENTITAS SIDIX".
 - **Epistemic labels** `[FACT]/[OPINION]/[SPECULATION]/[UNKNOWN]` wajib
 - **Sanad chain** di note approved
 
-### Tools terdaftar di `agent_tools.py` TOOL_REGISTRY (9 aktif + 1 disabled)
-| Tool | Permission | Status |
-|---|---|---|
-| `search_corpus` | open | ✅ aktif (BM25 + sanad-tier weighted rerank) |
-| `read_chunk` | open | ✅ aktif |
-| `list_sources` | open | ✅ aktif |
-| `calculator` | open | ✅ aktif |
-| `search_web_wikipedia` | open | ✅ aktif (Wikipedia API resmi) |
-| `orchestration_plan` | open | ✅ aktif |
-| `workspace_list` | open | ✅ aktif |
-| `workspace_read` | open | ✅ aktif |
-| `workspace_write` | restricted | ✅ aktif (butuh allow_restricted) |
-| `roadmap_list/next_items/mark_done/item_references` | open | ✅ aktif (4 tool) |
-| `web_fetch` | open | ✅ **aktif 2026-04-19** (httpx + BeautifulSoup, strip HTML → teks bersih) |
-| `code_sandbox` | open | ✅ **aktif 2026-04-19** (Python subprocess `-I -B`, timeout 10s, tempdir cwd, pattern block os.system/socket) |
-| `web_search` | open | ✅ **aktif 2026-04-19** (DuckDuckGo HTML + own parser, no vendor search API) |
-| `pdf_extract` | open | ✅ **aktif 2026-04-19** (pdfplumber own-stack, workspace path-traversal guard) |
+### Tools terdaftar di `agent_tools.py` TOOL_REGISTRY — **48 tools aktif** (update 2026-04-29)
+
+**UPDATE 2026-04-29**: dari 9 → 48 tools aktif. Data dari live VPS (`/health` endpoint).
+
+#### Pencarian & Informasi
+| Tool | Status |
+|------|--------|
+| `search_corpus` | ✅ BM25 + sanad-tier rerank (2287 docs) |
+| `read_chunk` | ✅ aktif |
+| `list_sources` | ✅ aktif |
+| `search_web_wikipedia` | ✅ Wikipedia API + fallback |
+| `web_fetch` | ✅ httpx + BeautifulSoup, strip HTML |
+| `web_search` | ✅ DuckDuckGo HTML own parser |
+| `pdf_extract` | ✅ pdfplumber, workspace guard |
+| `graph_search` | ✅ knowledge graph query |
+
+#### Coding & Development
+| Tool | Status |
+|------|--------|
+| `code_sandbox` | ✅ Python subprocess `-I -B`, timeout 10s |
+| `code_analyze` | ✅ aktif |
+| `code_validate` | ✅ aktif |
+| `shell_run` | ✅ sandboxed shell |
+| `test_run` | ✅ pytest runner |
+| `git_status/diff/log/commit_helper` | ✅ git ops (4 tools) |
+| `scaffold_project` | ✅ project scaffold generator |
+| `workspace_list/read/write/patch` | ✅ file workspace (4 tools) |
+| `project_map` | ✅ project structure map |
+| `prompt_optimizer` | ✅ LLM prompt optimizer |
+
+#### Kreasi & Media
+| Tool | Status |
+|------|--------|
+| `text_to_image` | ✅ RunPod SDXL (cold start) |
+| `text_to_speech` | ✅ TTS output |
+| `speech_to_text` | ✅ audio transcribe |
+| `analyze_audio` | ✅ audio analysis |
+| `generate_thumbnail` | ✅ thumbnail gen |
+| `generate_ads` | ✅ iklan copy + visual |
+| `generate_brand_kit` | ✅ brand identity |
+| `generate_content_plan` | ✅ content calendar |
+| `generate_copy` | ✅ copywriting |
+| `plan_campaign` | ✅ campaign strategy |
+
+#### Reasoning & Multi-Agent
+| Tool | Status |
+|------|--------|
+| `orchestration_plan` | ✅ multi-step plan |
+| `debate_ring` | ✅ 2-agent debate |
+| `llm_judge` | ✅ LLM evaluator |
+| `muhasabah_refine` | ✅ self-reflection loop |
+| `concept_graph` | ✅ conceptual graph |
+| `calculator` | ✅ safe math eval |
+| `social_radar` | ✅ social signal monitor |
+| `curator_run` | ✅ content curation + rank |
+| `self_inspect` | ✅ SIDIX inspect own state |
+
+#### Bisnis & Roadmap
+| Tool | Status |
+|------|--------|
+| `roadmap_list/next_items/mark_done/item_references` | ✅ roadmap ops (4 tools) |
+| `agency_kit` | ✅ agency project brief |
+
+### Autonomous Developer (Sprint 40–60E, 2026-04-29 COMPLETE)
+
+Pipeline berjalan otomatis setiap 30 menit di VPS:
+```
+pick task → 5-persona fan-out (UTZ/ABOO/OOMAR/ALEY/AYMAN, parallel)
+→ code_diff_planner (LLM generate full file, context 8000 chars)
+→ validate_plan (security: no path traversal, no system files)
+→ apply_plan (real writes, size-safety guard ≥50%)
+→ full_check:
+     pytest full suite (191 tests, ~70s)
+     ruff DELTA-MODE (scan only touched files, violations = blocked)
+→ dev_pr_submitter (git branch + commit + push)
+→ notify_owner Telegram (@sidixlab_bot → @fahmiwol13)
+→ hafidz_ledger (audit trail, 226 entries per 2026-04-29)
+```
+
+**Quality gate**: pytest pass + ruff delta = 0 violations baru → PR submitted
+**Safety**: NO auto-merge, owner approve required sebelum merge ke main
+**CLI**: `python -m brain_qa autodev hafidz stats/list/get/trace`
 
 ### Autonomous learning (backend-only, tidak di-trigger dari chat UI)
 - `learn_agent.py` — fetch→dedup→queue→index→auto-note. Sudah tested: arXiv 15, MusicBrainz 10, GitHub 15 (lihat notes 154-156).

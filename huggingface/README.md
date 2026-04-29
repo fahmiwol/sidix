@@ -118,39 +118,54 @@ ollama run sidixlab/sidix-lora
 | LoRA alpha | 128 |
 | Target modules | q_proj, v_proj, k_proj, o_proj |
 | Training GPU | Kaggle T4 (15GB) |
-| Training data | SIDIX corpus (~1,182 documents, Indonesian/English/Arabic) |
-| Domains | Islamic epistemology, creative writing, coding, brand strategy, content planning |
+| Training data | SIDIX corpus (**2,287 documents**, Indonesian/English/Arabic) |
+| Research notes | **295 notes** (growing autonomously) |
+| Domains | AI/ML, creative writing, coding, brand strategy, content planning |
 | Languages | Indonesian (primary), English, Arabic |
+| Last updated | 2026-04-29 |
 
 ---
 
-## 🎯 5 Personas
+## 🎯 5 Personas (LOCKED 2026-04-26)
 
-SIDIX menyesuaikan gaya, kedalaman, dan framing berdasarkan konteks:
+SIDIX menyesuaikan gaya, kedalaman, dan framing berdasarkan konteks. 5 persona berjalan **paralel** sebagai "5 cortical specialists" untuk topik penting:
 
-| Persona | Spesialisasi |
-|---|---|
-| **MIGHAN** | Sintesis riset, long-form, epistemologi Islam |
-| **TOARD** | Data, logika, analisis terstruktur, code review |
-| **FACH** | Technical deep-dive, system design, implementasi |
-| **HAYFAR** | Pengajaran, kurikulum, penjelasan ramah pemula |
-| **INAN** | Tugas harian, kreatif, percakapan umum |
+| Persona | Voice | Spesialisasi |
+|---|---|---|
+| **UTZ** | Kreatif, visual | Design thinking, creative direction, inovasi |
+| **ABOO** | Engineer, presisi | System design, coding, technical deep-dive |
+| **OOMAR** | Strategist, bisnis | Roadmap, GTM, market strategy, execution |
+| **ALEY** | Akademik, riset | Literature review, epistemologi, analisis mendalam |
+| **AYMAN** | Hangat, komunitas | Daily tasks, percakapan umum, user empathy |
 
 ---
 
-## 🛠️ 35 Active Tools
+## 🛠️ 48 Active Tools (updated 2026-04-29)
 
-SIDIX bukan sekadar chatbot — ia adalah **agent** dengan 35 tools aktif:
+SIDIX bukan sekadar chatbot — ia adalah **agent** dengan 48 tools aktif:
 
 ```
-Knowledge: search_corpus · read_chunk · concept_graph
-Web:       web_fetch · web_search · pdf_extract  
+Knowledge: search_corpus · read_chunk · concept_graph · graph_search
+Web:       web_fetch · web_search · pdf_extract · wiki_lookup
 Code:      code_sandbox · code_analyze · code_validate · project_map
-Creative:  generate_copy · brand_kit · plan_campaign · generate_ads
-Image:     text_to_image (SDXL self-hosted)
-Meta:      self_inspect · orchestration_plan · muhasabah_refine
-Growth:    prompt_optimizer · roadmap_* · workspace_*
+           shell_run · test_run · scaffold_project · workspace_*
+           git_status/diff/log/commit_helper
+Creative:  generate_copy · generate_brand_kit · plan_campaign
+           generate_ads · generate_thumbnail · generate_content_plan
+Image:     text_to_image (SDXL self-hosted via RunPod)
+Audio:     text_to_speech · speech_to_text · analyze_audio
+Reasoning: debate_ring · llm_judge · muhasabah_refine · orchestration_plan
+           self_inspect · social_radar · curator_run
+Bisnis:    agency_kit · roadmap_* · prompt_optimizer · calculator
 ```
+
+### 🤖 Autonomous Developer (Sprint 40–60, 2026-04-29)
+
+SIDIX sekarang bisa **develop dirinya sendiri** secara autonomous:
+- Pick task dari queue → 5-persona research fan-out (parallel)
+- Generate kode → validate → tulis ke disk → test (pytest + ruff delta-mode)
+- Submit PR → notify founder via Telegram → owner approve → merge
+- Hafidz Ledger: audit trail setiap iterasi (220+ entries)
 
 ---
 

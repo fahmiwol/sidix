@@ -14659,3 +14659,57 @@ Autonomous developer hanya bisa submit PR kalau:
 
 Ini memastikan SIDIX tumbuh dengan kode yang bersih, tanpa memblokir progress
 karena warisan 3726 violations dari codebase sebelumnya.
+
+---
+
+## 2026-04-29 — SESSION CLOSE (Sesi selesai, istirahat)
+
+### Semua yang dikerjakan sesi ini (Sprint 40 E2E → Sprint 60E):
+
+**Sprint 40 E2E** (disambung dari sesi sebelumnya):
+- pytest FDCapture crash → FIXED: stdout/stderr → /dev/null + junitxml
+- tick() wired end-to-end: pick→plan→apply→test→submit→notify
+- 191 tests pass ✅
+
+**Sprint 58B** (5-persona fanout):
+- ThreadPoolExecutor(5): UTZ/ABOO/OOMAR/ALEY/AYMAN research paralel
+- persona_research_fanout.gather() → synthesis → plan_changes()
+
+**Sprint 59** (apply_plan real writes):
+- size-safety guard (≥50% existing size)
+- context 3000→8000 chars, tokens 1024→4096
+
+**Sprint 60A**: run_ruff() wired (real lint, VPS ruff v0.15.12)
+**Sprint 60B**: auto-fanout untuk task priority >= 80
+**Sprint 60C**: autodev hafidz CLI (stats/list/get/trace)
+**Sprint 60D**: Telegram notify_owner() LIVE (@sidixlab_bot → @fahmiwol13) ✅
+**Sprint 60E**: Ruff delta-mode gate — SIDIX tidak bisa introduce ruff violations baru
+
+**Directive penting yang diproses**:
+- Kimi territory rule update: "boleh disentuh kalau penting dan berdampak" → updated AGENT_WORK_LOCK
+- North Star alignment check → semua sprint ON TRACK
+- aql.py datetime.utcnow() deprecated → fix datetime.now(timezone.utc)
+
+### State VPS saat session close:
+```
+sidix-brain : online, 395MB
+sidix-ui    : online, 83MB
+/health     : status=ok, model_ready=true, tools=48, corpus=2287
+191 tests   : PASS
+Hafidz      : 226 entries (220 autonomous_dev, 2 approved, 1 rejected)
+Telegram    : @sidixlab_bot → @fahmiwol13 (LIVE)
+git branch  : claude/pedantic-banach-c8232d (31 commits ahead)
+```
+
+### Pending untuk sesi berikutnya:
+- CTA "What next?" di frontend (user request di akhir sesi)
+- Sprint 43 Phase 2: Telegram 2-arah chat ke SIDIX
+- Sprint 61: GitHub PR via `gh` CLI (bukan placeholder)
+- Sprint 62: Ruff baseline cleanup (3726 violations warisan)
+- Sprint 63: LoRA retrain auto-loop (nightly_lora wired ke autonomous_dev)
+
+### CATATAN UNTUK AGENT BERIKUTNYA:
+Baca `research_notes/295_sidix_capability_snapshot_20260429.md` untuk snapshot
+lengkap. Baca `tail -100 docs/LIVING_LOG.md`. Cek git log untuk commits sesi ini.
+JANGAN ulangi audit dari awal — semua sudah tercatat.
+
