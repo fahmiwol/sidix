@@ -13951,3 +13951,39 @@ ETA training: ~4h, jadi cek lagi nanti malam.
 [2026-04-29T00:00:39.005674+00:00] [SECURITY] Deploy key still active di authorized_keys VPS.
   Need cleanup: hapus dari ~/.ssh/authorized_keys atau persist sebagai
   GitHub Actions secret untuk future auto-deploy.
+
+[2026-04-29T00:13:24.966628+00:00] [IMPL] Sprint 47 LIVE - Format Classifier + Provenance Metadata.
+  Adopt 2 konsep dari Majlis SIDIX framework (selective, BUKAN full pivot).
+  Folder existing apps/brain_qa/brain_qa/, NO modules/majlis/, NO master switch.
+  
+  Sprint 47A - format_classifier.py (~250 LOC):
+  - 3-tier registry inspired by Lapis 5 Fluid Materialization
+  - Tier 1: 6 standard formats (research_note, code_prototype, skill_macro,
+    experiment_protocol, visual_diagram, methodology_doc)
+  - Tier 2: 5 emergent formats (sub_agent_definition, language_construct,
+    ritual_pattern, architectural_blueprint, ontology_extension) - owner review
+  - Tier 3: UNCATEGORIZED - sign of innovation, owner defines new format
+  - classify(content, hint_format, threshold) -> FormatDecision
+  - Confidence threshold 0.35 default. Below = Tier 3.
+  - Score by trigger keyword frequency match.
+  
+  Sprint 47B - provenance_metadata.py (~230 LOC):
+  - ProvenanceMeta dataclass: trust_score, abstraction_level, source_type,
+    status, domain_tags, urgency
+  - 5 source types: agent_feed, user_input, owner_manual, owner_proactive,
+    sidix_autonomous (default trust scores 0.5/1.0/0.9/0.6/0.7)
+  - 6 statuses: raw, processed, quarantine, available, consumed, archived
+  - Backward compat: encode ke metadata dict via to_dict(), schema_version
+    'provenance_meta_v1', NO change to LedgerEntry fields
+  - Convenience constructors: for_owner_manual, for_sidix_autonomous, etc
+  - write_with_provenance() wrapper around hafidz_ledger.write_entry()
+  - parse_provenance() reader for analytics
+  
+  7/7 smoke tests PASS:
+  - format_classifier: research_note classified, code classified,
+    gibberish -> UNCATEGORIZED tier=3
+  - provenance_metadata: owner_manual trust=1.0, sidix_autonomous status=
+    quarantine, round-trip parse, validation rejects out-of-range
+  
+  Author header + IP attribution di kedua file. Inspired-by Majlis cited
+  but BUKAN modul Majlis dedicated.
