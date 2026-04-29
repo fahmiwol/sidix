@@ -54,54 +54,50 @@ def run_pytest(repo_root: Path, paths: list[str] | None = None,
                timeout: int = 600) -> TestResult:
     """Run pytest. Returns TestResult.
 
-    Phase 1: minimal subprocess invocation.
+    Root-cause fix (Sprint 40 final):
+    pytest's FDCapture/TerminalWriter writes to sys.stdout during Python
+    shutdown (Py_Finalize()), AFTER the underlying fd is already closed by
+    the subprocess machinery — especially when Ollama times out and pytest
+    error teardown runs during interpreter shutdown.  Routing stdout+stderr
+    to /dev/null (writes always succeed, never block) eliminates the race
+    entirely.  All result data comes from --junitxml which is written
+    per-testcase and survives a terminal crash.  Failure details are
+    extracted from <failure>/<error> XML child elements.
     """
     import time
     t0 = time.time()
-    # Strategy: --junitxml for reliable machine-readable results + tempfile for
-    # terminal output. pytest's FDCapture/TerminalWriter can raise ValueError
-    # ("I/O operation on closed file") when run as subprocess, making returncode
-    # and stdout parsing unreliable. junitxml is written per-test (not at end)
-    # so it survives a terminal crash.  We read counts from XML, not stdout.
+
     xml_fd, xml_path = tempfile.mkstemp(suffix=".pytest.xml", prefix="sidix_")
-    log_fd, log_path = tempfile.mkstemp(suffix=".pytest.log", prefix="sidix_")
-    os.close(xml_fd)  # will be written by pytest, not us
+    os.close(xml_fd)  # pytest will write to this path itself
+
     cmd = [_python_bin(), "-m", "pytest", "--tb=short", "-q",
            f"--junitxml={xml_path}"]
     if paths:
         cmd.extend(paths)
-    else:
-        # test_agent_workspace.py uses the full ReAct + Ollama pipeline.
-        # Under CPU load (e.g. while running 190+ other tests), Ollama times
-        # out, the error teardown corrupts pytest's FDCapture tmpfile, and
-        # the capture crash corrupts junitxml output — making ok unreliable.
-        # TODO: remove --ignore once test_agent_workspace.py is properly
-        # mocked/fixed (tracked in separate task).
-        cmd += ["--ignore=tests/test_agent_workspace.py"]
+    # NOTE: no --ignore flag needed — /dev/null eliminates FDCapture crash
 
     log.info("[dev_sandbox] pytest cmd=%s", " ".join(cmd))
     try:
-        with os.fdopen(log_fd, "w", errors="replace") as log_f:
+        # Route stdout+stderr to /dev/null.  This is the key fix: writes to
+        # /dev/null never raise ValueError regardless of shutdown ordering,
+        # so pytest's FDCapture teardown cannot crash the subprocess.
+        # All result data is read from junitxml below.
+        with open(os.devnull, "w") as devnull_f:
             proc = subprocess.run(
                 cmd, cwd=str(repo_root),
-                stdout=log_f, stderr=log_f,
+                stdout=devnull_f, stderr=devnull_f,
                 stdin=subprocess.DEVNULL,
                 timeout=timeout,
             )
-        # Read terminal log (best-effort — may be incomplete if pytest crashed)
-        try:
-            with open(log_path, errors="replace") as f:
-                out = f.read()
-        except OSError:
-            out = ""
 
-        # Parse counts from junitxml (authoritative) —────────────────────────
+        # Parse counts + failure messages from junitxml ───────────────────────
         passed = failed = errors = 0
         ok = False
+        log_lines: list[str] = []
         try:
             tree = ET.parse(xml_path)
             root = tree.getroot()
-            # <testsuite tests="N" failures="M" errors="K" ...>
+            # <testsuite tests="N" failures="M" errors="K" skipped="J" ...>
             suite = root if root.tag == "testsuite" else root.find("testsuite")
             if suite is not None:
                 tests  = int(suite.get("tests",  "0"))
@@ -112,34 +108,31 @@ def run_pytest(repo_root: Path, paths: list[str] | None = None,
                 failed = fails
                 errors = errs
                 ok = (fails == 0 and errs == 0 and tests > 0)
+
+                # Extract failure/error messages for log_excerpt so callers
+                # can see WHY tests failed without needing stdout capture.
+                for tc in suite.iter("testcase"):
+                    name = f"{tc.get('classname','')}.{tc.get('name','')}"
+                    for child in tc:
+                        if child.tag in ("failure", "error"):
+                            msg = (child.get("message") or "")[:300]
+                            body = (child.text or "")[-500:]
+                            log_lines.append(f"[{child.tag.upper()}] {name}: {msg}\n{body}")
             else:
                 log.warning("[dev_sandbox] junitxml: no testsuite element")
                 ok = proc.returncode == 0
         except Exception as xml_err:
             log.warning("[dev_sandbox] junitxml parse failed: %s — fallback to returncode", xml_err)
             ok = proc.returncode == 0
-            # Crude text parsing as fallback
-            for line in out.splitlines()[-20:]:
-                if " passed" in line or " failed" in line or " error" in line:
-                    tokens = line.replace(",", " ").split()
-                    for i, t in enumerate(tokens):
-                        if t.isdigit():
-                            n = int(t)
-                            nxt = tokens[i + 1] if i + 1 < len(tokens) else ""
-                            if "passed" in nxt:
-                                passed = n
-                            elif "failed" in nxt:
-                                failed = n
-                            elif "error" in nxt:
-                                errors = n
 
         duration = time.time() - t0
         log.info("[dev_sandbox] pytest done: passed=%d failed=%d errors=%d ok=%s",
                  passed, failed, errors, ok)
+        excerpt = "\n\n".join(log_lines)[-2000:] if log_lines else ""
         return TestResult(
             ok=ok, pytest_passed=passed, pytest_failed=failed,
             pytest_errors=errors, duration_seconds=round(duration, 2),
-            log_excerpt=out[-2000:],
+            log_excerpt=excerpt,
         )
     except subprocess.TimeoutExpired:
         return TestResult(
@@ -153,11 +146,10 @@ def run_pytest(repo_root: Path, paths: list[str] | None = None,
             failure_classification="sandbox_error",
         )
     finally:
-        for p in (xml_path, log_path):
-            try:
-                os.unlink(p)
-            except OSError:
-                pass
+        try:
+            os.unlink(xml_path)
+        except OSError:
+            pass
 
 
 def run_ruff(repo_root: Path) -> int:
