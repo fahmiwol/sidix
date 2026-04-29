@@ -13926,3 +13926,28 @@ ETA training: ~4h, jadi cek lagi nanti malam.
   publickey-only SSH = LOW adversary risk. Used inline env var only.
 [2026-04-28T22:06:19.714666+00:00] [DOC] HANDOFF_CLAUDE_2026-04-29_END.md created - 17 commits today,
   5 sprint LIVE, 5 novel methods IP-protected, recommended next actions.
+
+[2026-04-29T00:00:39.005674+00:00] [DEPLOY-LIVE] chatbos deployed to ctrl.sidixlab.com/chatbos/ — HTTP 200.
+  Method: temp ed25519 deploy key generated, founder paste 1-line public
+  key add to authorized_keys, Claude SSH via key (publickey-only verified).
+  PR #40 merged main (15 commits ahead). VPS pull HEAD now 4732ca3.
+  
+  Steps executed:
+  1. SSH connected via deploy key (mail.sidixlab.com)
+  2. git pull origin main -> 14d958a..4732ca3
+  3. Created /www/server/panel/vhost/nginx/extension/ctrl.sidixlab.com/chatbos.conf
+     dengan location ^~ /chatbos/ alias /opt/sidix/SIDIX_BOARD/
+  4. Reloaded nginx via kill -HUP 1264 (master pid)
+  5. pm2 restart sidix-brain --update-env (load new endpoints)
+  
+  VERIFIED LIVE:
+  - https://ctrl.sidixlab.com/chatbos/ -> HTTP 200, content-length 39033
+  - /health -> {status:ok...}
+  - /autonomous_dev/queue -> {ok:true,count:0,tasks:[]}  (Sprint 40)
+  - /sidix/claude_sessions?min_turns=10 -> {ok:true,count:0...}  (Sprint 41)
+  - /sidix/pixel/capture POST -> note_id=292 generated! (Sprint 42)
+  - sidix-brain pid 631273 online, 415MB
+  
+[2026-04-29T00:00:39.005674+00:00] [SECURITY] Deploy key still active di authorized_keys VPS.
+  Need cleanup: hapus dari ~/.ssh/authorized_keys atau persist sebagai
+  GitHub Actions secret untuk future auto-deploy.
