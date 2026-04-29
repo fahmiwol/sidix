@@ -14830,3 +14830,18 @@ Next session start: Σ-1G QA gold-set 20 questions + run baseline.
 
 Detail: `research_notes/296` + `FOUNDER_JOURNAL.md` 2026-04-30 LOCK entry.
 
+
+---
+
+## [LOCK] 2026-04-30 — UI Σ-3 = Next.js App Router (port from Vite scaffolding)
+
+Founder confirm Next.js untuk vision multi-tool/multi-page + SEO long-term (Tiranyx ecosystem scaling).
+
+Components dari scaffolding `UI Baru SIDIX/app/` (Vite + React 19) akan di-port ke Next.js: LeftSidebar, ChatDashboard, RightPanel, ParticleBackground.
+
+PM2 reconfig nanti di Σ-3: `serve dist -p 4000` → `next start -p 4000`.
+
+Backend FastAPI port 8765 UNCHANGED.
+
+Detail: FOUNDER_JOURNAL 2026-04-30 LOCK Next.js entry + research_notes/296 Σ-3 spec update.
+

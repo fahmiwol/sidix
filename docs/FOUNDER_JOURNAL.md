@@ -725,3 +725,32 @@ Target: pass 18/20 sebelum Σ-1B deploy. Run baseline dulu (current state = how 
 
 Status: **PLAN LOCKED · NO CODE YET · WAITING NEXT SESSION**
 
+
+---
+
+## 2026-04-30 — LOCK: UI Σ-3 Framework = Next.js (App Router)
+
+### Founder confirmation:
+
+> "next.js lebih enak dikembangin, ringan dan seo friendly? lebih ramah python buat AI? apa saya salah? banyak tools-tools nantinya di build pake next.js kan?"
+> "confirm"
+
+### Decision: Σ-3 UI = **Next.js (App Router)** + port components dari Vite scaffolding
+
+**Reasoning** (Claude analysis, founder approve):
+- ✅ SEO friendly (SSR/SSG → Google crawl pre-rendered HTML)
+- ✅ Multi-tool/multi-page scaling (Tiranyx ecosystem: /chat, /tools/image, /tools/film, /docs, /pricing, /blog)
+- ✅ App Router file-based routing lebih clean dari React Router setup manual
+- ⚠️ Trade-off: VPS memory 80MB → ~250MB (next start vs serve dist) — masih oke di 15GB
+- ⚠️ Migration: scaffolding `UI Baru SIDIX/app/` (Vite + React 19) → Next.js. Components portable, ~3-4h port effort
+- ❌ Misconception clarified: "lebih ramah Python" tidak applicable — both call Python FastAPI via HTTP. Backend `ctrl.sidixlab.com:8765` UNCHANGED.
+
+### Implication untuk Σ-3:
+1. Start fresh Next.js project (App Router, TS, Tailwind, shadcn/ui)
+2. Port components dari scaffolding: LeftSidebar, ChatDashboard, RightPanel, ParticleBackground
+3. Apply Sidix brand colors + Space Grotesk font + mascot Option B
+4. PM2 reconfig: `sidix-ui` ganti command `serve dist` → `next start -p 4000`
+5. Backend FastAPI Python di port 8765 — TIDAK BERUBAH
+
+### Status: LOCKED · Σ-3 framework = Next.js · Σ-1 priority tetap (anti-halu first)
+

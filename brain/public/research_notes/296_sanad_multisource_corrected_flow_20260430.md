@@ -22,6 +22,8 @@ Pacing discipline: 1 sub-task per session (usage limit context).
 
 Next: Σ-1G — `tests/test_anti_halu_goldset.py` 20-question baseline.
 
+**Σ-3 framework LOCKED 2026-04-30**: **Next.js (App Router)** — bukan Vite. Port components dari scaffolding Vite ke Next.js. PM2 reconfig `serve dist` → `next start`. Backend FastAPI 8765 unchanged. Reasoning: SEO + multi-tool scaling + Tiranyx ecosystem long-term.
+
 ---
 
 ## 1. Founder's Vision (verbatim flow)
