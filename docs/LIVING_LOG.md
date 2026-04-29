@@ -14309,9 +14309,22 @@ Fix 3: tick() line 133 apply_plan(dry_run=True) → apply_plan(dry_run=dry_run)
     Compatible with running inside subprocess with captured fds
   - Commit: 7266f39
 
-- FIX: dev_sandbox.py — add `--capture=sys` to pytest subprocess cmd (commit 7266f39)
-  - Verified: 56 tests still pass locally with this flag
-  - Deployed to VPS via merge
+- FIX ATTEMPT 2: dev_sandbox.py — add `--capture=sys` (commit 7266f39) → INSUFFICIENT
+  - New error: _pytest/capture.py:451 SysCapture.snap() → same ValueError different path
+  - BytesIO buffer closed during subprocess teardown
+
+- FIX ATTEMPT 3: dev_sandbox.py — add `-p no:capture` (commit e10a17c) → INSUFFICIENT
+  - Error moved to terminalwriter.py:165 TerminalWriter.write() → same ValueError
+  - Duration=368s: tests RAN (191 completed) but pytest crashed writing final "=== N passed ==="
+  - Root cause confirmed: Python TextIOWrapper wrapping stdout PIPE closes during process
+    teardown BEFORE pytest TerminalWriter.flush() — race condition in Python subprocess cleanup
+
+- FIX FINAL: dev_sandbox.py — redirect to tempfile, not PIPE (commit 8295669)
+  - Replace capture_output=True with: tempfile.mkstemp → open fd → proc.stdout=out_f
+  - Real file fd stays open throughout subprocess lifetime (no TextIOWrapper teardown race)
+  - Read file content after proc exits, unlink in finally
+  - Verified: 56 sprint tests pass locally
+  - Deployed to VPS: commit 8295669
 
 - DECISION: Cron tick = every 30 min (balanced CPU vs autonomy speed)
   - Can increase to */15 later when VPS has lighter load
