@@ -14197,3 +14197,40 @@ ETA training: ~4h, jadi cek lagi nanti malam.
   Opus threshold: >5 file architectural decision besar / security audit serius /
   novel algorithm / stuck 2x iter.
 
+
+## 2026-04-29 Sprint 40 E2E — autonomous_developer.tick() full integration
+
+[IMPL] Sprint 40 E2E: wired full pipeline end-to-end
+
+Fix 1: dev_task_queue._QUEUE_DB configurable via SIDIX_DATA_DIR env var
+  - Was: hardcoded /opt/sidix/.data (unwriteable on dev machine)
+  - Now: Path(os.getenv("SIDIX_DATA_DIR", "/opt/sidix/.data"))
+  - Enables: test isolation via monkeypatch + tmp_path
+
+Fix 2: tick() dry_run parameter + env var
+  - New signature: tick(repo_root=None, dry_run=None)
+  - None → reads AUTODEV_DRY_RUN env var ("1"=dry, "0"=real writes)
+  - Production default: AUTODEV_DRY_RUN=0 (real writes, Sprint 59 live)
+  - Tests: dry_run=True (filesystem isolated)
+
+Fix 3: tick() line 133 apply_plan(dry_run=True) → apply_plan(dry_run=dry_run)
+  - Sprint 59 now fully wired into the orchestrator
+
+[TEST] 28 integration tests test_autonomous_developer_e2e.py — all green
+  - TestTickNoTask: empty queue → not_picked
+  - TestTickHappyPath (8): picked/task_id/test_ok/submitted/state_review/pr_url/no_error/fanout
+  - TestTickTestFail (2): retry (iter remaining) + escalate (max iter)
+  - TestTickSubmitFail (1): submit fail → escalated
+  - TestTickPlanValidationFail (1): .env blocked, not written (security gate)
+  - TestOwnerActions (5): approve/reject/request_changes/wrong_state/nonexistent
+  - TestDryRunEnvVar (2): env var captured, explicit param overrides env
+  - TestDevTaskQueue (8): add/pick/priority/empty/state/invalid_state/list/branch/get_none
+
+[REVIEW QA] full self-audit passed:
+  - Security: .env write blocked by validation (test verified)
+  - Secret scan: CLEAN (no credentials in diff)
+  - State machine: all transitions correct in DB after tick()
+  - Warning: TestResult naming in dev_sandbox.py (cosmetic, pre-existing, not our regression)
+
+[TOTAL TEST] 191 tests passing (131 → 163 → 191 across 3 sprints today)
+

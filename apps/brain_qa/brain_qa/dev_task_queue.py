@@ -26,6 +26,7 @@ Reference: docs/SPRINT_40_AUTONOMOUS_DEV_PLAN.md
 from __future__ import annotations
 
 import logging
+import os
 import sqlite3
 import time
 from dataclasses import dataclass, asdict, field
@@ -35,7 +36,8 @@ from typing import Optional
 
 log = logging.getLogger(__name__)
 
-_DATA_DIR = Path("/opt/sidix/.data")
+# Configurable via env for testing + different deployments (Sprint 40 E2E)
+_DATA_DIR = Path(os.getenv("SIDIX_DATA_DIR", "/opt/sidix/.data"))
 _QUEUE_DB = _DATA_DIR / "autonomous_dev" / "task_queue.sqlite3"
 
 VALID_STATES = (

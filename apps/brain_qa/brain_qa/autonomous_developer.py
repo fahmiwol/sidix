@@ -49,6 +49,7 @@ Reference:
 from __future__ import annotations
 
 import logging
+import os
 import time
 from dataclasses import dataclass
 from datetime import datetime, timezone
@@ -77,14 +78,29 @@ class TickResult:
     error: str = ""
 
 
-def tick(repo_root: Optional[Path] = None) -> TickResult:
+def tick(
+    repo_root: Optional[Path] = None,
+    dry_run: Optional[bool] = None,
+) -> TickResult:
     """One cron iteration: pick top pending task + work it.
+
+    Args:
+        repo_root: project root for context + file writes (default: repo root)
+        dry_run: if True, apply_plan logs but does NOT write files.
+                 Default: read AUTODEV_DRY_RUN env var (0=real, 1=dry).
+                 Production VPS: set AUTODEV_DRY_RUN=0 to enable real writes.
+                 Tests: pass dry_run=True to isolate from filesystem.
 
     Returns TickResult dengan summary. Cron caller logs ke
     /var/log/sidix_autodev.log.
     """
     repo_root = repo_root or _REPO_ROOT
-    log.info("[autodev] tick start repo_root=%s", repo_root)
+
+    # Env var override: AUTODEV_DRY_RUN=1 = safe mode (no actual writes)
+    if dry_run is None:
+        dry_run = os.getenv("AUTODEV_DRY_RUN", "0") == "1"
+
+    log.info("[autodev] tick start repo_root=%s dry_run=%s", repo_root, dry_run)
 
     task = dev_task_queue.pick_next()
     if task is None:
@@ -129,9 +145,9 @@ def tick(repo_root: Optional[Path] = None) -> TickResult:
             result.state_after = dev_task_queue.get_task(task.task_id).state
             return result
 
-        # 4. Apply (Phase 1 = dry_run)
-        touched = code_diff_planner.apply_plan(plan, repo_root, dry_run=True)
-        log.info("[autodev] applied %d files (dry_run Phase 1)", len(touched))
+        # 4. Apply (Sprint 59: real writes when dry_run=False)
+        touched = code_diff_planner.apply_plan(plan, repo_root, dry_run=dry_run)
+        log.info("[autodev] applied %d files (dry_run=%s)", len(touched), dry_run)
 
         # 5. Test (Phase 1 = stub run)
         test_result = dev_sandbox.full_check(repo_root)
