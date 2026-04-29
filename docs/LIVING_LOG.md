@@ -14713,3 +14713,73 @@ Baca `research_notes/295_sidix_capability_snapshot_20260429.md` untuk snapshot
 lengkap. Baca `tail -100 docs/LIVING_LOG.md`. Cek git log untuk commits sesi ini.
 JANGAN ulangi audit dari awal — semua sudah tercatat.
 
+
+---
+
+## [IMPL] 2026-04-29 — UI Simplification + Backend Response Fix (Session Lanjutan)
+
+### UI Toolbar Simplification — DONE & DEPLOYED
+
+**Perubahan**: Ganti 4 mode button (Burst/TwoEyes/Foresight/Resurrect) + 3 checkbox
+(Korpus saja/Fallback web/Mode ringkas/Bantuan) dengan 2 button bersih:
+- ✦ **Normal** (default active, gold styling, auto-routing — web+corpus+reasoning otomatis)
+- 🧠 **Deep Thinking** (wraps agentBurst: multi-angle brainstorm, pilih 2 terbaik, synthesize)
+
+Hidden checkboxes di DOM untuk JS compatibility (defaults: web=ON, corpus-only=OFF, simple=OFF).
+Help modal diupdate: hapus dokumentasi 4-mode lama, ganti dengan penjelasan Normal+Deep Thinking.
+
+File diubah:
+- `SIDIX_USER_UI/index.html` — toolbar + help modal text
+- `SIDIX_USER_UI/src/main.ts` — tambah `modeNormalBtn`, `setModeActive()`, Normal click handler,
+  update Burst handler label jadi "Deep Thinking"
+
+VPS deploy: build 1.42s, pm2 restart sidix-ui ✅
+Verified live: app.sidixlab.com shows "Normal" + "Deep Thinking" only, no old buttons.
+
+### RunPod Cold-Start Fix — DONE & DEPLOYED
+
+**Root cause**: RunPod `/runsync` blocks up to 120s (cfg timeout) before returning `IN_QUEUE`.
+Then 180s poll window. Total = 300s before Ollama fallback. User sees timeout.
+
+**Fix 1**: `_INTERACTIVE_SYNC_TIMEOUT = 12s` — runsync fails fast if no warm worker.
+If RunPod returns IN_QUEUE within 12s → immediately return `("", "runpod_cold_start")`.
+`hybrid_generate` sees empty text → falls to Ollama 1.5b (~2.5s).
+Total cold-start UX: ~15s (12s RunPod attempt + 3s Ollama).
+
+**Fix 2**: For batch mode (background tasks), still polls 180s.
+
+**Fix 3**: Removed per-request elapsed-based poll_timeout calculation (was causing 30s limit).
+
+File: `apps/brain_qa/brain_qa/runpod_serverless.py`
+
+### [TEST] Latency Profile Post-Fix:
+
+```
+Cached answer (semantic/session cache):  3-14ms  (instant)
+Fresh question (RunPod cold → Ollama):   ~87s    (12s + ReAct loop)
+Direct Ollama 1.5b (no ReAct):           2.1s    (bare generation)
+```
+
+**Root cause 87s**: ReAct loop runs max_steps=6 iterations, each with:
+- LLM action selection (~5s for Ollama 1.5b + full SIDIX_SYSTEM prompt)
+- Tool execution: web_search 10-30s, corpus BM25 <1s
+
+**Still pending**: Optimize ReAct step count / tool selection for simple questions.
+**Known issue**: Cached "presiden Indonesia" answer is stale (Jokowi, bukan Prabowo).
+Perlu: cache invalidation atau web_search for current events bypass cache.
+
+### RunPod Workers Status (2026-04-29 16:xx UTC):
+```
+workers: throttled=3, ready=0, idle=0
+inQueue: 3 (our test requests)
+```
+RunPod workers throttled = platform-level cold. Workers will self-activate when queue grows.
+No code fix needed — `interactive fast-fail` handles this correctly.
+
+### Commits sesi ini:
+- feat(ui): simplify chat toolbar — Normal + Deep Thinking only
+- fix(ui): update help modal + tutorial text for simplified 2-mode UI
+- fix(runpod): poll status endpoint when runsync returns IN_QUEUE (cold start)
+- fix(runpod): fixed 180s poll window independent of runsync elapsed time
+- fix(runpod): interactive fast-fail on cold start → Ollama 1.5b fallback
+
