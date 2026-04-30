@@ -1171,6 +1171,23 @@ def create_app() -> "FastAPI":
             planner_savings=getattr(session, "planner_savings", 0.0),
         )
 
+    # ── GET /dashboard ─ public visi coverage dashboard (HTML) ────────────────
+    @app.get("/dashboard")
+    def get_dashboard():
+        """Serve simple HTML dashboard untuk visi coverage real-time."""
+        from fastapi.responses import HTMLResponse, FileResponse
+        from pathlib import Path as _P
+        # Find dashboard.html
+        candidates = [
+            _P("/opt/sidix") / "SIDIX_USER_UI" / "public" / "dashboard.html",
+            _P("/opt/sidix") / "SIDIX_USER_UI" / "dist" / "dashboard.html",
+            _P(__file__).resolve().parents[3] / "SIDIX_USER_UI" / "public" / "dashboard.html",
+        ]
+        for fp in candidates:
+            if fp.exists():
+                return FileResponse(fp, media_type="text/html")
+        return HTMLResponse("<h1>Dashboard not found</h1><p>Run: cd /opt/sidix && git pull</p>", status_code=404)
+
     # ── GET /agent/sidix_state ─────────────────────────────────────────────────
     # Sprint Monitoring — single endpoint summarize SIDIX state untuk dashboard,
     # daily_synthesis cron, dan agent self-bootstrap (Phase 1). Public read-only.
@@ -1572,6 +1589,22 @@ def create_app() -> "FastAPI":
 
         elapsed_ms = int((_time.monotonic() - _t0) * 1000)
 
+        # Sprint Creative 100%: persona deliverable validator (auto-quality gate)
+        persona_compliance = None
+        if req.persona and synthesis.answer:
+            try:
+                from .persona_deliverable_validator import validate_persona_output
+                pd_score = validate_persona_output(req.persona.upper(), synthesis.answer)
+                persona_compliance = {
+                    "persona": pd_score.persona,
+                    "compliant": pd_score.compliant,
+                    "score": pd_score.score,
+                    "rules_passed": pd_score.rules_passed,
+                    "rules_failed": pd_score.rules_failed,
+                }
+            except Exception as _val_err:
+                log.debug(f"[chat_holistic] persona validator skip: {_val_err}")
+
         return {
             "answer": synthesis.answer,
             "duration_ms": elapsed_ms,
@@ -1590,6 +1623,8 @@ def create_app() -> "FastAPI":
             "suggested_tools": output_detection.suggested_tools,
             # Sprint 5 Phase 2: actual tool output attachments
             "attachments": attachments,
+            # Sprint Creative 100%: persona deliverable compliance score
+            "persona_compliance": persona_compliance,
         }
 
     # ── POST /agent/generate ──────────────────────────────────────────────────
