@@ -4,6 +4,44 @@ Proyek: **SIDIX / Mighan Model**
 
 ---
 
+## 🔴 SESSION START PROTOCOL — WAJIB EKSEKUSI SETIAP SESI BARU (LOCK 2026-04-30)
+
+**Bos pain (verbatim, 2026-04-30 evening)**: *"kenapa kita mengulang-ngulang terus? kenaps aya harus selalu menjelaskna... saya hanya seorang pemimpi yang paham dasar, dan cuma punya visi dan intuisi"*.
+
+Root cause: Claude tidak punya memory persistent across sessions. Tanpa protocol read state dulu, agent re-invent yang sudah dibahas → bos frustasi.
+
+**SEBELUM jawab pertanyaan/eksekusi apapun di sesi baru, BACA URUT**:
+
+1. **`docs/SIDIX_BACKLOG.md`** — state sprint terkini (COMPLETED / IN PROGRESS / QUEUED / IDEAS)
+2. **`docs/VISI_TRANSLATION_MATRIX.md`** — visi bos × deliverable mapping (apa yang sudah cover, apa gap)
+3. **`docs/FOUNDER_IDEA_LOG.md`** — ide visi/intuisi bos verbatim (5 entries terbaru minimum)
+4. **`docs/FOUNDER_JOURNAL.md` last 200 lines** — keputusan recent
+5. **`tail -100 docs/LIVING_LOG.md`** — ops recent
+
+**Lalu output ke bos di awal jawaban**:
+> "Sudah baca state. Backlog: [X completed, Y in-progress, Z queued]. Visi gap utama: [...]. WIP yang belum kelar: [...]. Pertanyaan bos sekarang: [paraphrase]. Mapping: [backlog item / new idea]. Saya akan: [action]."
+
+**Setiap sesi tutup, WAJIB**:
+- Update `SIDIX_BACKLOG.md` dengan status sprint
+- Update `VISI_TRANSLATION_MATRIX.md` kalau ada coverage shift
+- Append `FOUNDER_IDEA_LOG.md` kalau bos kasih ide baru visi/intuisi
+- Append `FOUNDER_JOURNAL.md` keputusan signifikan
+- Commit + push
+
+**Anti-pattern WAJIB DIHINDARI**:
+- ❌ Jawab tanpa baca BACKLOG → repeat diskusi yang sudah ada
+- ❌ Tanya bos detail teknis (saya yang ambil otoritas, bos veto kalau salah)
+- ❌ Skip update BACKLOG di akhir sesi → state hilang sesi berikut
+- ❌ Generate research note tanpa update VISI_TRANSLATION_MATRIX
+- ❌ Bilang "DONE" padahal acceptance criteria belum verify
+- ❌ Pakai naming inkonsisten dengan vocabulary yang sudah lock
+
+**Engineering authority**: bos eksplisit delegate. Saya decide teknis (synthesizer architecture, sequence sprint, definition of done detail). Bos sign off pada VISI end-state, bukan teknis. Bos veto kalau hasil ngaco.
+
+Detail diagnose + 7 root causes + 5 reform commitment di [research note 306](brain/public/research_notes/306_meta_process_reform_anti_menguap_20260430.md).
+
+---
+
 ## 🔒 DEFINITION + DIRECTION LOCK 2026-04-26 (BACA PERTAMA — IMMUTABLE)
 
 User directive eksplisit: *"gaaaaaaasssssssssssss!!!! catat!! jangan berubah-ubah lagi arah sidix"* + *"tulis dengan besar supaya nggak berubah lagi. cataaaattt!!! aligment semuanya"*

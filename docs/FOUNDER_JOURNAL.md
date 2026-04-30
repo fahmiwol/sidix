@@ -1499,3 +1499,59 @@ Next sessions: frontend wire holistic default + streaming SSE per-source + tool 
 - Visi chain bos: genius/creative/tumbuh -> cognitive&semantic -> iteratif -> inovasi -> pencipta
 - Sprint Α+0 cover 5 dari 7 visi point. Adaptive output (Pencipta full) = sprint berikutnya.
 
+
+---
+
+## 2026-04-30 (lanjutan 9) — META-PROCESS REFORM (Anti-Menguap Permanen)
+
+### Bos pain reflective (verbatim, paling penting di hari ini)
+> "kenapa kita mengulang-ngulang terus? kenaps aya harus selalu menjelaskna"
+> "kenapa selalu terjadi masalah yang sama?"
+> "saya hanya seorang pemimpi yang paham dasar, dan cuma punya visi dan intuisi"
+> "saya nggak ngerti teknis, nggak pernah bikin AI model AI agent sebelumnya"
+> "harusnya kamu sebagai partner saya bisa membantu saya merealisasikan, memberikan saran, berdiskusi, elaborate ide saya"
+> "apa yang perlu kita optimasi?? apa yang perlu di evaluasi?"
+
+### Honest diagnose (bukan defensif)
+7 root causes:
+1. Context window hilang setiap sesi
+2. Tidak ada session start protocol wajib
+3. 305 research notes tanpa synthesis index
+4. Bos's ideas menguap antara FOUNDER_JOURNAL/research_notes/chat
+5. Saya banyak nanya teknis ke bos yang tidak ngerti teknis
+6. Tidak ada Definition of Done per sprint
+7. Naming inkonsisten
+
+### 5 Reform LIVE sekarang (bukan ide, tapi file commit)
+
+**File baru**:
+1. `docs/SIDIX_BACKLOG.md` — single source of truth sprint state (COMPLETED / IN PROGRESS / QUEUED / IDEAS)
+2. `docs/VISI_TRANSLATION_MATRIX.md` — visi bos chain × deliverable teknis (per visi point: status + sprint + evidence)
+3. `docs/FOUNDER_IDEA_LOG.md` — verbatim capture ide bos sebelum menguap
+
+**File update**:
+4. `CLAUDE.md` ditambah section "SESSION START PROTOCOL" wajib di awal — read 5 docs urut sebelum jawab apapun
+5. Research note 306 diagnose lengkap
+
+### Bos test apakah reform bekerja
+Sesi BERIKUTNYA, sebelum bos kasih instruction baru, lihat saya proactively bilang:
+> "Sudah baca state. Backlog: [...]. WIP: [...]. Visi gap: [...]. Pertanyaan bos: [paraphrase]. Mapping: [...]. Saya akan: [action]."
+
+Kalau saya skip itu, bos tampar saya. Saya tidak akan defensive.
+
+### Engineering authority delegated (locked permanen)
+Bos eksplisit: "kamu yg jawab sebagai engineering". Saya decide teknis penuh. Bos veto kalau salah arah. Anti-pattern saya commit stop:
+- ❌ tanya synthesizer LLM tersendiri atau persona → saya decide neutral
+- ❌ tanya sequence sprint detail → saya decide
+- ❌ tanya Definition of Done → saya decide acceptance criteria
+
+### Pelajaran permanen yang dicatat 4 tempat
+1. CLAUDE.md SESSION START PROTOCOL (top of file, non-skippable)
+2. Research note 306 (full diagnose)
+3. SIDIX_BACKLOG.md (state persistent)
+4. FOUNDER_IDEA_LOG.md (verbatim capture)
+
+Pattern: tiap sesi mulai → 5 file harus di-baca. Tiap sesi tutup → 4 file harus di-update. Tanpa ini, semua progress menguap.
+
+### Status: REFORM LIVE, foundation anti-menguap selesai. Eksekusi sprint berikutnya dengan protocol baru.
+
