@@ -1453,3 +1453,49 @@ Total ~7 session, realistic 1-2 minggu post limit reset.
 
 3. **Catat dulu sebelum jawab**. Bos eksplisit: "catat dulu laporan kamu di atas, di journal dan dimanapun, biar ga meguap diksusi kita". Pattern: setiap diskusi besar -> research note + FOUNDER_JOURNAL entry sebelum lanjut. Anti-menguap protocol.
 
+
+---
+
+## 2026-04-30 (lanjutan 8) — VISI BESAR LOCKED: Adobe-of-Indonesia + Sprint Α+0 GAS
+
+### Bos visi besar (verbatim, harus diingat permanen)
+> "Tujuan besar saya kan membangun perusahaan teknologi creative pertama di indonesia, seperti adobe, canva, corel, unity, unreal engine, blender, sketcup, design, audio, video, film dll semua industri creative berbasis teknologi"
+
+> "sprint kalo ada yang bisa dan langsung berdampak besar!! kayaknya harus bareng deh A + 0?"
+
+> "web_search + search_corpus + persona_fanout (5 persona ringkas) simultan + API + index + tools, + multi agent (1000 bayangan) dll + dan sumber lainnya"
+
+### LOCK: SIDIX positioning
+SIDIX = BRAIN/foundation, BUKAN endpoint product. Creative tools (image gen, video, 3D, audio, design) ride DI ATAS SIDIX. Setiap tool panggil SIDIX untuk reasoning + multi-perspective creative synthesis.
+
+Tiranyx ecosystem (per memory):
+- SIDIX (AI Agent BRAIN)
+- Mighan (3D)
+- Ixonomic (creator platform)
+- Platform-X
+- Film-Gen sub-product (bundle image+video+TTS+audio+3D)
+
+### LOCK: Sprint Α + 0 Combined GAS
+Bos minta bareng. Saya gas dengan scope full (web + corpus + dense_index + persona_fanout + tool registry + sanad + synthesizer paralel).
+
+Implementation tonight (sisa token realistic):
+1. Skeleton multi_source_orchestrator.py
+2. Skeleton cognitive_synthesizer.py
+3. Endpoint /agent/chat_holistic (paralel ke /agent/chat existing, no break)
+4. Update help modal "ROUTING OTOMATIS" -> "JURUS SERIBU BAYANGAN"
+5. Test 1 probe + commit + deploy
+
+Next sessions: frontend wire holistic default + streaming SSE per-source + tool registry auto-detect + external API integration + production hardening.
+
+### Decisions saya ambil (engineering authority)
+1. Endpoint terpisah `/agent/chat_holistic` dulu (zero risk break existing)
+2. Synthesizer = neutral Qwen2.5 base (no persona bias)
+3. asyncio.gather return_exceptions=True (stability built-in)
+4. Persona fanout ringkas 80-150 tokens/persona (hemat compute)
+5. Tool registry call via heuristic match (dense embedding cosine)
+
+### Catatan permanen
+- Detail teknis di research note 305
+- Visi chain bos: genius/creative/tumbuh -> cognitive&semantic -> iteratif -> inovasi -> pencipta
+- Sprint Α+0 cover 5 dari 7 visi point. Adaptive output (Pencipta full) = sprint berikutnya.
+

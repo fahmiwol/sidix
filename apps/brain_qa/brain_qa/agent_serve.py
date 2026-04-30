@@ -1171,6 +1171,54 @@ def create_app() -> "FastAPI":
             planner_savings=getattr(session, "planner_savings", 0.0),
         )
 
+    # ── POST /agent/chat_holistic ──────────────────────────────────────────────
+    # Sprint Α (Jurus Seribu Bayangan) — visi bos 2026-04-30: REPLACE pattern
+    # "routing otomatis pilih 1 sumber" dengan multi-source paralel default.
+    # Mengerahkan SEMUA resource SIDIX simultan: web + corpus + dense_index +
+    # persona_fanout 5 + tool_registry → sanad verify → cognitive_synthesizer.
+    @app.post("/agent/chat_holistic")
+    async def agent_chat_holistic(req: ChatRequest, request: Request):
+        _enforce_rate(request)
+        _enforce_daily(request)
+        _bump_metric("agent_chat_holistic")
+
+        if not req.question.strip():
+            raise HTTPException(status_code=400, detail="question tidak boleh kosong")
+
+        try:
+            from .multi_source_orchestrator import MultiSourceOrchestrator
+            from .cognitive_synthesizer import CognitiveSynthesizer
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"holistic_unavailable: {e}")
+
+        import time as _time
+        _t0 = _time.monotonic()
+
+        orchestrator = MultiSourceOrchestrator()
+        synthesizer = CognitiveSynthesizer(max_tokens=600, temperature=0.65)
+
+        # Phase 1: gather paralel
+        bundle = await orchestrator.gather_all(req.question)
+
+        # Phase 2: synthesize
+        debug_flag = bool(request.query_params.get("debug"))
+        synthesis = await synthesizer.synthesize(bundle, debug=debug_flag)
+
+        elapsed_ms = int((_time.monotonic() - _t0) * 1000)
+
+        return {
+            "answer": synthesis.answer,
+            "duration_ms": elapsed_ms,
+            "confidence": synthesis.confidence,
+            "n_sources": synthesis.n_sources,
+            "sources_used": synthesis.sources_used,
+            "method": synthesis.method,
+            "synthesis_latency_ms": synthesis.latency_ms,
+            "orchestrator_latency_ms": bundle.total_latency_ms,
+            "orchestrator_errors": bundle.errors,
+            "debug_bundle": synthesis.debug_bundle if debug_flag else None,
+        }
+
     # ── POST /agent/generate ──────────────────────────────────────────────────
     # Jiwa Sprint: pure general chat tanpa ReAct loop / tool / corpus overhead.
     # Direct generation dari Ollama/local_llm dengan persona hint.
