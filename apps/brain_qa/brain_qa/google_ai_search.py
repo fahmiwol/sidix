@@ -76,7 +76,7 @@ def _google_ai_search_sync(query: str, max_results: int = 5) -> list[GoogleAIHit
 
         # Note: google_search_tool requires specific API enablement.
         # Fallback to plain Gemini prompt with explicit search instruction.
-        model = genai.GenerativeModel("gemini-2.0-flash")
+        model = genai.GenerativeModel("gemini-1.5-flash")
 
         prompt = (
             f"Kamu adalah asisten riset. Cari fakta terkini dan akurat tentang: {query}\n\n"

@@ -39,6 +39,7 @@ _rate_lock = asyncio.Lock()
 
 # 429 backoff: when rate-limited, skip all brave calls for N seconds
 _429_until: float = 0.0
+_429_backoff_seconds: float = 300.0
 _CACHE_TTL = 300.0  # cache results 5 min to avoid repeat brave calls
 _result_cache: dict = {}  # query -> (timestamp, BraveHit list)
 
@@ -84,7 +85,12 @@ async def brave_search_async(query: str, max_results: int = 5) -> list[BraveHit]
         try:
             async with httpx.AsyncClient(
                 http2=True,
-                headers={"User-Agent": _USER_AGENT},
+                headers={
+                    "User-Agent": _USER_AGENT,
+                    "Accept-Encoding": "gzip, deflate",  # FIX: disable brotli (decoder fails)
+                    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+                    "Accept-Language": "en-US,en;q=0.9,id;q=0.8",
+                },
                 timeout=_TIMEOUT,
             ) as c:
                 r = await c.get(url, follow_redirects=True)
@@ -92,7 +98,7 @@ async def brave_search_async(query: str, max_results: int = 5) -> list[BraveHit]
 
             if r.status_code == 429:
                 # Rate-limited: backoff 60s, return empty
-                _429_until = time.time() + 60.0
+                _429_until = time.time() + _429_backoff_seconds
                 log.warning("[brave_search] 429 — backing off 60s")
                 return []
             if r.status_code != 200:

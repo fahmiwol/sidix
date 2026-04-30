@@ -26,13 +26,13 @@ log = logging.getLogger(__name__)
 # Public SearxNG instances (community-maintained list)
 # Rotated randomly to spread load. Add/remove via env SEARXNG_INSTANCES.
 _DEFAULT_INSTANCES = [
-    "https://searx.be",
-    "https://searx.tiekoetter.com",
-    "https://search.bus-hit.me",
-    "https://baresearch.org",
+    # Updated 2026-04-30: rotated list after instance failures
     "https://search.sapti.me",
+    "https://baresearch.org",
+    "https://searx.tiekoetter.com",
+    "https://search.projectsegfault.com",
+    "https://search.bus-hit.me",
     "https://priv.au",
-    "https://search.privacyguides.net",
 ]
 
 _USER_AGENT = "SIDIX-LiteBrowser/0.3 (https://sidixlab.com)"
@@ -54,27 +54,56 @@ _CACHE_TTL = 300.0
 
 
 async def _try_instance(client: httpx.AsyncClient, instance: str, query: str) -> list[SearxHit]:
-    """Try one SearxNG instance. Returns hits or [] on fail."""
-    url = f"{instance}/search?q={quote_plus(query)}&format=json"
+    """Try one SearxNG instance. Returns hits or [] on fail.
+
+    Fallback: if JSON fails, try HTML scrape.
+    """
+    # Try JSON API first
+    url_json = f"{instance}/search?q={quote_plus(query)}&format=json&language=id&engines=google,bing,duckduckgo"
     try:
-        r = await client.get(url, timeout=_TIMEOUT, follow_redirects=True)
-        if r.status_code != 200:
-            log.debug("[searxng] %s status %d", instance, r.status_code)
-            return []
-        data = r.json()
-        results = data.get("results", []) or []
-        hits = []
-        for x in results[:10]:
-            hits.append(SearxHit(
-                title=(x.get("title") or "")[:200],
-                url=x.get("url", ""),
-                snippet=(x.get("content") or "")[:400],
-                engine=x.get("engine", "?"),
-            ))
-        return hits
+        r = await client.get(url_json, timeout=_TIMEOUT, follow_redirects=True)
+        if r.status_code == 200:
+            data = r.json()
+            results = data.get("results", []) or []
+            hits = []
+            for x in results[:10]:
+                hits.append(SearxHit(
+                    title=(x.get("title") or "")[:200],
+                    url=x.get("url", ""),
+                    snippet=(x.get("content") or "")[:400],
+                    engine=x.get("engine", "?"),
+                ))
+            if hits:
+                return hits
     except Exception as e:
-        log.debug("[searxng] %s error: %s", instance, e)
-        return []
+        log.debug("[searxng] %s JSON error: %s", instance, e)
+
+    # Fallback: HTML scrape
+    url_html = f"{instance}/search?q={quote_plus(query)}&language=id"
+    try:
+        from selectolax.parser import HTMLParser
+        r = await client.get(url_html, timeout=_TIMEOUT, follow_redirects=True)
+        if r.status_code == 200:
+            tree = HTMLParser(r.text)
+            results = tree.css(".result")
+            hits = []
+            for res in results[:10]:
+                title_el = res.css_first("h3 a, .result-title a, .title a")
+                snippet_el = res.css_first(".content, .result-content, p, .snippet")
+                url_el = res.css_first("a[href]")
+                if title_el:
+                    hits.append(SearxHit(
+                        title=(title_el.text() or "")[:200],
+                        url=url_el.attributes.get("href", "") if url_el else "",
+                        snippet=(snippet_el.text() or "")[:400] if snippet_el else "",
+                        engine="html_scrape",
+                    ))
+            return hits
+    except Exception as e:
+        log.debug("[searxng] %s HTML error: %s", instance, e)
+
+    log.debug("[searxng] %s all methods failed", instance)
+    return []
 
 
 async def searxng_search_async(query: str, max_results: int = 5) -> list[SearxHit]:
