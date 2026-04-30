@@ -31,9 +31,20 @@ export interface ChatResponse {
 export interface HealthResponse {
   status: string;
   model_ready: boolean;
+  model_mode?: string;
   corpus_doc_count?: number;
   sessions_cached?: number;
   tools_available?: number;
+  anon_daily_quota_cap?: number;
+  engine_build?: string;
+  wikipedia_fallback_available?: boolean;
+  senses?: {
+    total: number;
+    active: number;
+    inactive: number;
+    broken: number;
+    list: string[];
+  };
 }
 
 export async function chat(req: ChatRequest, signal?: AbortSignal): Promise<ChatResponse> {
@@ -60,12 +71,8 @@ export async function health(signal?: AbortSignal): Promise<HealthResponse> {
 }
 
 /**
- * Stream chat — uses /agent/generate/stream endpoint (existing in brain).
- * Returns AsyncIterable of token events.
- *
- * NOTE: /agent/generate/stream BELUM go through ReAct loop / sanad gate /
- * persona. Itu raw LLM gen. Untuk full agent path streaming, perlu Sigma-4A
- * (streaming SSE backend wrapper untuk /agent/chat). Defer.
+ * Stream chat — uses /agent/generate/stream (raw LLM, BUKAN full ReAct).
+ * Untuk full agent path streaming, perlu Sigma-4A wrapper. Defer.
  */
 export async function* streamGenerate(
   prompt: string,
