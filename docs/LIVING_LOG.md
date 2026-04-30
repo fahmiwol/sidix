@@ -15658,3 +15658,15 @@ Sprint Tumbuh REAL state was 20% (broken auth), bukan 40%. Sekarang 50% (auth fi
 **No dependencies**: NO vendor API di production inference path. Bobot tersimpan di VPS, bisa fine-tune/distill/modify kapan saja.
 
 **Refer**: brain/public/research_notes/310_sidix_model_independence_path.md
+
+## 2026-04-30 — IMPL: Sprint Fase B Prep — Dataset ID/SEA Collector
+
+**Tag**: IMPL + DOC
+**File**: `scripts/dataset_id_sea_collector.py` (NEW)
+**Sources** (4): wikipedia_id (featured/culture seeds), umkm (Wikipedia kategori bisnis), brand_lokal (15 brand seeds), idioms (peribahasa).
+**Output format**: JSONL instruction-tuning `{instruction, input, output, source, theme, lang, license, collected_at}` — siap pakai SFT/LoRA.
+**Smoke**: idioms 3 pairs + brand_lokal 14 pairs collected. Quality OK (CC BY-SA 4.0 attributed).
+**Path**: `dataset/id_sea/<YYYY-MM-DD>/<source>.jsonl` + `_index.json`
+**Cron** (TODO deploy VPS): `0 2 * * * cd /opt/sidix && python3 scripts/dataset_id_sea_collector.py`
+**Compound**: 30 hari run = ~10K pairs target → trigger Fase B fine-tune SIDIX-Text v1.
+**Refer**: research_notes/310 (model independence path Fase A→D)

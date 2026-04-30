@@ -348,3 +348,18 @@ Setiap agent (Claude/GPT/Gemini/SIDIX) yang kerja di proyek ini WAJIB ikuti prot
 - **Evidence**: commit b825525
 - **Status**: LIVE.
 
+
+### Sprint Fase B Prep — Dataset Indonesia/SEA Collector
+- **Visi mapping**: Model Independence Path (note 310) — Fase B = fine-tune ID/SEA
+- **Date**: 2026-04-30 evening
+- **Deliverable**: `scripts/dataset_id_sea_collector.py`
+  - 4 sub-collector: Wikipedia ID featured, UMKM corpus, brand lokal, idioms
+  - Output JSONL instruction-tuning format (`{instruction, input, output, source, theme, lang, license, collected_at}`)
+  - Per-day folder `dataset/id_sea/<YYYY-MM-DD>/<source>.jsonl` + `_index.json`
+  - License tracked CC BY-SA 4.0 (Wikipedia)
+- **Smoke test**: idioms 3 pairs + brand_lokal 14 pairs → quality OK, JSONL valid
+- **Cron**: `0 2 * * *` daily run (perlu deploy ke VPS)
+- **Acceptance**: ✅ syntax OK, smoke test 17 pairs collected from Wikipedia ID
+- **Status**: SCRIPT READY. Cron deploy + 30-day accumulation = ~10K pairs target untuk SIDIX-Text v1 fine-tune.
+- **Compound**: tiap hari corpus tumbuh → bulan ke-3 dataset siap fine-tune actual.
+- **Refer**: research_notes/310, scripts/dataset_id_sea_collector.py
