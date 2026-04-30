@@ -1,0 +1,12 @@
+# SIDIX Auto-Harvest Cron Schedule
+# Install: crontab -e (sebagai root di VPS)
+# atau: crontab /opt/sidix/apps/brain_qa/crontab.example
+
+# Auto-harvest setiap 6 jam (00:00, 06:00, 12:00, 18:00 UTC)
+0 */6 * * * cd /opt/sidix/apps/brain_qa && python3 scripts/harvest_cron.py >> /var/log/sidix_harvest.log 2>&1
+
+# Cleanup log lama (simpan 7 hari)
+0 2 * * * find /opt/sidix/brain/public/omnyx_knowledge -name "harvest_*.md" -mtime +30 -delete
+
+# Optional: harvest dengan custom topics (non-default)
+# 30 8 * * * cd /opt/sidix/apps/brain_qa && python3 scripts/harvest_cron.py --topics "AI Indonesia,teknologi 2025" >> /var/log/sidix_harvest_custom.log 2>&1
