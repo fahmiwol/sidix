@@ -1,0 +1,16 @@
+{
+  "name": "sidix-wa-bridge",
+  "version": "0.1.0",
+  "description": "WhatsApp bridge for SIDIX MCP — send/receive WA messages via Baileys",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js"
+  },
+  "dependencies": {
+    "@whiskeysockets/baileys": "^6.7.9",
+    "express": "^4.18.2",
+    "qrcode-terminal": "^0.12.0"
+  }
+}

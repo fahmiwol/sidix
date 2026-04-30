@@ -1,0 +1,44 @@
+{
+  "name": "SIDIX — Self-Hosted AI Agent",
+  "short_name": "SIDIX",
+  "description": "Self-hosted AI agent with epistemic integrity. Honest, cited, verifiable answers. 100% local inference. MIT licensed.",
+  "start_url": "https://app.sidixlab.com/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#120F09",
+  "theme_color": "#D4A853",
+  "lang": "id",
+  "dir": "ltr",
+  "categories": ["productivity", "education", "utilities"],
+  "icons": [
+    {
+      "src": "/sidix-logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/og-image.png",
+      "sizes": "1200x630",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/og-image.png",
+      "sizes": "1200x630",
+      "type": "image/png",
+      "platform": "wide",
+      "label": "SIDIX landing page"
+    }
+  ],
+  "related_applications": [
+    {
+      "platform": "webapp",
+      "url": "https://app.sidixlab.com/",
+      "id": "sidix-webapp"
+    }
+  ],
+  "prefer_related_applications": false
+}

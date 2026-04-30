@@ -1,0 +1,12 @@
+FROM python:3.11-slim
+WORKDIR /app
+# Copy only inference-relevant code (no UI, no scripts)
+COPY apps/brain_qa/requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+COPY apps/brain_qa/ ./apps/brain_qa/
+COPY brain/public/ ./brain/public/
+COPY brain/manifest.json ./brain/manifest.json
+# Build index at startup
+RUN python -m brain_qa index
+EXPOSE 8765
+CMD ["python", "-m", "brain_qa", "serve", "--host", "0.0.0.0", "--port", "8765"]

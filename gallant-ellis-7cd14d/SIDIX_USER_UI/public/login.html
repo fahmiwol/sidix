@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign In · SIDIX</title>
+  <meta name="description" content="Masuk ke SIDIX dengan akun Google. AI Agent gratis, self-hosted, open source." />
+  <meta name="robots" content="noindex,follow" />
+
+  <!-- Google Identity Services (per Codelabs reference) -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+
+  <style>
+    :root {
+      --bg: #0a0908;
+      --bg-card: #16130f;
+      --bg-input: #1f1c17;
+      --border: #3a342c;
+      --text: #f5e6c4;
+      --text-dim: #b8a888;
+      --gold: #d4a853;
+      --green: #6eae7c;
+      --red: #d97a5a;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+      background: linear-gradient(135deg, #0a0908 0%, #16130f 100%);
+      color: var(--text);
+      display: flex; align-items: center; justify-content: center;
+      padding: 20px;
+    }
+    .card {
+      width: 100%; max-width: 420px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 36px 28px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+      text-align: center;
+    }
+    .logo {
+      width: 64px; height: 64px;
+      margin: 0 auto 16px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, #d4a853 0%, #8a6e35 100%);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 32px;
+    }
+    h1 {
+      font-family: Georgia, serif;
+      font-size: 28px;
+      letter-spacing: 1px;
+      color: var(--gold);
+      margin: 0 0 6px;
+    }
+    .tagline {
+      font-size: 12px;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin: 0 0 24px;
+    }
+    .desc {
+      font-size: 13px;
+      color: var(--text-dim);
+      line-height: 1.6;
+      margin: 0 0 28px;
+    }
+    .btn-area {
+      display: flex; flex-direction: column; align-items: center;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .alt-text {
+      font-size: 11px;
+      color: var(--text-dim);
+      margin: 8px 0 0;
+    }
+    .alt-text a { color: var(--gold); text-decoration: none; }
+    .alt-text a:hover { text-decoration: underline; }
+    .features {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      margin-top: 24px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+    }
+    .feature {
+      font-size: 11px;
+      color: var(--text-dim);
+      text-align: left;
+      padding: 6px 8px;
+    }
+    .feature .icon { color: var(--gold); margin-right: 6px; }
+
+    .alert {
+      padding: 12px 14px;
+      border-radius: 8px;
+      margin: 12px 0;
+      font-size: 12px;
+      display: none;
+    }
+    .alert-error {
+      background: rgba(217, 122, 90, 0.15);
+      border: 1px solid rgba(217, 122, 90, 0.3);
+      color: var(--red);
+      display: block;
+    }
+    .alert-success {
+      background: rgba(110, 174, 124, 0.15);
+      border: 1px solid rgba(110, 174, 124, 0.3);
+      color: var(--green);
+      display: block;
+    }
+
+    .footer {
+      text-align: center;
+      font-size: 10px;
+      color: var(--text-dim);
+      margin-top: 24px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+    .footer a { color: var(--gold); text-decoration: none; margin: 0 6px; }
+
+    .loading {
+      display: inline-block;
+      width: 20px; height: 20px;
+      border: 2px solid rgba(212, 168, 83, 0.3);
+      border-top-color: var(--gold);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="logo">🛡️</div>
+    <h1>SIDIX</h1>
+    <p class="tagline">AI Agent · Self-Hosted</p>
+
+    <p class="desc">
+      Masuk dengan Google untuk akses tanpa batas, riwayat percakapan,
+      dan persona personalisasi.
+    </p>
+
+    <div id="status-msg"></div>
+
+    <div class="btn-area">
+      <!-- Google Identity Services button (per Codelabs reference) -->
+      <div id="g_id_onload"
+           data-client_id=""
+           data-context="signin"
+           data-ux_mode="popup"
+           data-callback="handleGoogleCredential"
+           data-auto_prompt="false">
+      </div>
+      <div class="g_id_signin"
+           data-type="standard"
+           data-shape="pill"
+           data-theme="filled_black"
+           data-text="signin_with"
+           data-size="large"
+           data-locale="id"
+           data-logo_alignment="left">
+      </div>
+
+      <p class="alt-text">
+        Belum punya akun Google? <a href="https://accounts.google.com/signup" target="_blank">Daftar gratis</a>
+      </p>
+    </div>
+
+    <div class="features">
+      <div class="feature"><span class="icon">✓</span>Casual chat natural</div>
+      <div class="feature"><span class="icon">✓</span>4 mode Supermodel</div>
+      <div class="feature"><span class="icon">✓</span>30 pesan/hari gratis</div>
+      <div class="feature"><span class="icon">✓</span>Privacy-first</div>
+    </div>
+
+    <div class="footer">
+      <a href="/">← Kembali</a> ·
+      <a href="https://sidixlab.com/privacy.html" target="_blank">Privacy</a> ·
+      <a href="https://github.com/fahmiwol/sidix" target="_blank">GitHub</a>
+    </div>
+  </div>
+
+  <script>
+    // Resolve API base — same origin kalau served dari brain_qa, atau ctrl.sidixlab.com
+    const API_BASE = (() => {
+      const host = window.location.host;
+      if (host.includes('ctrl.')) return ''; // same origin
+      return 'https://ctrl.sidixlab.com';
+    })();
+
+    function showMsg(html, type = 'error') {
+      const el = document.getElementById('status-msg');
+      el.innerHTML = `<div class="alert alert-${type}">${html}</div>`;
+    }
+
+    // ── Init: fetch Google Client ID dari backend, set ke g_id_onload ──
+    async function initGoogleClientId() {
+      try {
+        const res = await fetch(`${API_BASE}/auth/config`);
+        const data = await res.json();
+        const clientId = data.google_client_id || '';
+        if (!clientId) {
+          showMsg('⚠️ Google Sign-In belum dikonfigurasi. Hubungi admin.');
+          return;
+        }
+        document.getElementById('g_id_onload').setAttribute('data-client_id', clientId);
+      } catch (e) {
+        showMsg(`⚠️ Gagal load config: ${e.message}`);
+      }
+    }
+    initGoogleClientId();
+
+    // ── Callback: handle Google credential ──
+    window.handleGoogleCredential = async function(response) {
+      showMsg('<span class="loading"></span> Memverifikasi...', 'success');
+      try {
+        const res = await fetch(`${API_BASE}/auth/google`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ credential: response.credential }),
+        });
+        if (!res.ok) {
+          const err = await res.text();
+          throw new Error(`${res.status}: ${err.slice(0, 120)}`);
+        }
+        const data = await res.json();
+
+        // Save session JWT + user info ke localStorage
+        localStorage.setItem('sidix_session_jwt', data.session_jwt);
+        localStorage.setItem('sidix_user_id', data.user.id);
+        localStorage.setItem('sidix_user_email', data.user.email);
+        localStorage.setItem('sidix_user_name', data.user.name);
+        localStorage.setItem('sidix_user_picture', data.user.picture);
+
+        showMsg(`✓ Selamat datang, ${data.user.name || data.user.email}!`, 'success');
+
+        // Redirect ke chat UI
+        const next = new URLSearchParams(window.location.search).get('next') || '/';
+        setTimeout(() => { window.location.href = next; }, 800);
+      } catch (e) {
+        showMsg(`⚠️ Login gagal: ${e.message}`);
+      }
+    };
+  </script>
+</body>
+</html>

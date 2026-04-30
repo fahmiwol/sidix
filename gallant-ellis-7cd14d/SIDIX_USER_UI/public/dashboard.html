@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SIDIX Dashboard — Visi Coverage Real-Time</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "Space Grotesk", system-ui, sans-serif;
+    background: linear-gradient(135deg, #080F1A 0%, #151A2E 100%);
+    color: #E6E9F7;
+    min-height: 100vh;
+    padding: 32px;
+  }
+  .container { max-width: 1100px; margin: 0 auto; }
+  header {
+    display: flex; align-items: center; gap: 16px; margin-bottom: 32px;
+    padding-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .logo {
+    width: 48px; height: 48px;
+    background: linear-gradient(135deg, #FF6EC7, #7C5CFF, #00D2FF);
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 22px; color: white;
+  }
+  h1 { font-size: 28px; font-weight: 700; }
+  .subtitle { font-size: 13px; color: #8B92B4; margin-top: 4px; }
+  .grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 24px;
+    margin-bottom: 24px;
+  }
+  @media (max-width: 768px) { .grid { grid-template-columns: 1fr; } }
+  .card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 16px; padding: 24px;
+  }
+  .card h2 {
+    font-size: 14px; font-weight: 600; color: #FFB34D;
+    text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 16px;
+  }
+  .visi-row {
+    display: flex; align-items: center; gap: 12px; padding: 8px 0;
+  }
+  .visi-label { width: 160px; font-size: 14px; font-weight: 500; }
+  .visi-bar {
+    flex: 1; height: 8px; background: rgba(255,255,255,0.06);
+    border-radius: 4px; overflow: hidden; position: relative;
+  }
+  .visi-fill {
+    height: 100%; border-radius: 4px;
+    background: linear-gradient(90deg, #7C5CFF, #00D2FF);
+    transition: width 0.6s ease-out;
+  }
+  .visi-fill.full { background: linear-gradient(90deg, #22C55E, #10B981); }
+  .visi-pct {
+    width: 60px; text-align: right; font-size: 13px; font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+  .stat {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.04);
+    font-size: 13px;
+  }
+  .stat:last-child { border-bottom: none; }
+  .stat-label { color: #8B92B4; }
+  .stat-value { color: #E6E9F7; font-weight: 500; font-family: monospace; }
+  .overall {
+    text-align: center; padding: 20px 0;
+  }
+  .overall-pct {
+    font-size: 56px; font-weight: 700;
+    background: linear-gradient(135deg, #FF6EC7, #7C5CFF, #00D2FF);
+    -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent;
+    line-height: 1;
+  }
+  .overall-label {
+    font-size: 12px; color: #8B92B4; text-transform: uppercase;
+    letter-spacing: 0.1em; margin-top: 8px;
+  }
+  .gap-list {
+    margin-top: 12px; font-size: 12px; color: #FFB34D;
+  }
+  .gap-list li {
+    padding: 6px 0; line-height: 1.5;
+  }
+  .footer {
+    margin-top: 32px; padding-top: 20px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 12px; color: #5A6080;
+  }
+  .footer a { color: #00D2FF; text-decoration: none; }
+  .footer a:hover { text-decoration: underline; }
+  .pulse { animation: pulse 2s ease-in-out infinite; }
+  @keyframes pulse { 50% { opacity: 0.5; } }
+  .refreshing { color: #FFB34D; }
+  .timestamp { font-family: monospace; font-size: 11px; color: #5A6080; }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="logo">S</div>
+    <div>
+      <h1>SIDIX Dashboard</h1>
+      <p class="subtitle">Northstar Visi Coverage · Real-Time State Monitoring</p>
+    </div>
+    <div style="margin-left: auto; text-align: right;">
+      <div id="last-update" class="timestamp">Loading...</div>
+      <div id="refresh-status" style="font-size: 11px; margin-top: 4px;">⟳ refresh tiap 30s</div>
+    </div>
+  </header>
+
+  <div class="grid">
+    <div class="card">
+      <h2>🌟 Visi Coverage</h2>
+      <div id="visi-rows"></div>
+      <div class="overall" style="margin-top: 16px;">
+        <div class="overall-pct" id="overall-pct">--</div>
+        <div class="overall-label">Overall Northstar</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>📊 Stats</h2>
+      <div id="stats-rows"></div>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <h2>🎨 Adaptive Output (Pencipta)</h2>
+      <div id="output-types"></div>
+      <p style="font-size: 11px; color: #5A6080; margin-top: 12px; line-height: 1.5;">
+        7 OutputType detected via heuristic regex Phase 1. 5 tools wired Phase 3
+        (image_gen / TTS / video storyboard / 3D prompt / structured).
+        Phase 4 actual pipelines pending: Mighan-3D + Film-Gen.
+      </p>
+    </div>
+
+    <div class="card">
+      <h2>⚠️ Remaining Gaps</h2>
+      <ul class="gap-list" id="gaps-list"></ul>
+      <p style="font-size: 11px; color: #5A6080; margin-top: 12px; line-height: 1.5;">
+        Sisa visi gap inheren butuh waiting cycles (LoRA training 24-48h)
+        atau multi-session work (Phase 4 video + 3D pipelines).
+      </p>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div>
+      SIDIX v0.1 · Self-hosted · MIT License · 🇮🇩
+    </div>
+    <div>
+      <a href="/agent/sidix_state" target="_blank">/agent/sidix_state JSON</a> ·
+      <a href="https://github.com/fahmiwol/sidix" target="_blank">GitHub</a>
+    </div>
+  </div>
+</div>
+
+<script>
+const VISI_LABELS = {
+  genius: '🧠 Genius',
+  creative: '🎨 Creative',
+  tumbuh: '🌱 Tumbuh',
+  cognitive_semantic: '🔍 Cognitive & Semantic',
+  iteratif: '🔁 Iteratif',
+  inovasi: '💡 Inovasi',
+  pencipta: '✨ Pencipta',
+};
+
+const BRAIN_QA_BASE = window.location.origin.replace('app.', 'ctrl.');
+
+async function fetchState() {
+  const status = document.getElementById('refresh-status');
+  status.textContent = '⟳ refreshing...';
+  status.classList.add('pulse', 'refreshing');
+  try {
+    const res = await fetch(`${BRAIN_QA_BASE}/agent/sidix_state`, { cache: 'no-store' });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    render(data);
+    document.getElementById('last-update').textContent =
+      new Date(data.timestamp).toLocaleString('id-ID');
+    status.textContent = '✓ ' + new Date().toLocaleTimeString('id-ID');
+    status.classList.remove('pulse', 'refreshing');
+  } catch (e) {
+    status.textContent = '✗ ' + e.message;
+    status.classList.remove('pulse');
+    status.style.color = '#EF4444';
+  }
+}
+
+function render(data) {
+  const visi = data.northstar_visi_coverage_estimate || {};
+  const visiContainer = document.getElementById('visi-rows');
+  visiContainer.innerHTML = '';
+  for (const [key, label] of Object.entries(VISI_LABELS)) {
+    const pct = (visi[key] || 0) * 100;
+    const isFull = pct >= 100;
+    const row = document.createElement('div');
+    row.className = 'visi-row';
+    row.innerHTML = `
+      <div class="visi-label">${label}</div>
+      <div class="visi-bar">
+        <div class="visi-fill ${isFull ? 'full' : ''}" style="width: ${pct}%;"></div>
+      </div>
+      <div class="visi-pct" style="${isFull ? 'color:#22C55E' : ''}">${pct.toFixed(0)}%</div>
+    `;
+    visiContainer.appendChild(row);
+  }
+  document.getElementById('overall-pct').textContent =
+    Math.round((visi.overall || 0) * 100) + '%';
+
+  // Stats
+  const statsContainer = document.getElementById('stats-rows');
+  statsContainer.innerHTML = '';
+  const stats = [
+    ['Research Notes', data.corpus?.research_notes || 0],
+    ['Brand Canon', data.cognitive?.brand_canon_count || 0],
+    ['Persona Count', data.cognitive?.persona_count || 0],
+    ['Persona Fanout', data.multi_source_orchestrator?.persona_fanout_count || 0],
+    ['LoRA Datasets', data.tumbuh_pipeline?.lora_dataset_count || 0],
+    ['Tools Wired', (data.adaptive_output?.tools_wired_phase3 || []).length],
+  ];
+  stats.forEach(([k, v]) => {
+    const r = document.createElement('div');
+    r.className = 'stat';
+    r.innerHTML = `<span class="stat-label">${k}</span><span class="stat-value">${v}</span>`;
+    statsContainer.appendChild(r);
+  });
+
+  // Output types
+  const outContainer = document.getElementById('output-types');
+  const types = data.adaptive_output?.output_types_supported || [];
+  const tools = data.adaptive_output?.tools_wired_phase3 || [];
+  outContainer.innerHTML = `
+    <div style="font-size: 12px; color: #8B92B4; margin-bottom: 8px;">
+      Output Types Detected (${types.length})
+    </div>
+    <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+      ${types.map(t => `<span style="font-size: 11px; padding: 4px 10px; border-radius: 12px; background: rgba(124,92,255,0.15); color: #A78BFA;">${t}</span>`).join('')}
+    </div>
+    <div style="font-size: 12px; color: #8B92B4; margin: 12px 0 8px;">
+      Tools Wired Phase 3 (${tools.length})
+    </div>
+    <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+      ${tools.map(t => `<span style="font-size: 11px; padding: 4px 10px; border-radius: 12px; background: rgba(34,197,94,0.15); color: #22C55E;">${t}</span>`).join('')}
+    </div>
+  `;
+
+  // Gaps
+  const gapsContainer = document.getElementById('gaps-list');
+  const gaps = data.remaining_gaps || {};
+  gapsContainer.innerHTML = Object.entries(gaps)
+    .map(([key, value]) => `<li>• ${value}</li>`)
+    .join('');
+}
+
+fetchState();
+setInterval(fetchState, 30000);
+</script>
+</body>
+</html>

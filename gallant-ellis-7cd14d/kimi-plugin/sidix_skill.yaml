@@ -1,0 +1,211 @@
+# SIDIX-SocioMeter Skill for Kimi
+# Place this file in: ~/.config/kimi/skills/ or Kimi skills directory
+
+skill:
+  name: sidix
+  display_name: "🔷 SIDIX-SocioMeter"
+  version: "1.0.0"
+  description: |
+    AI Agent berbasis IHOS (Islamic Holistic Ontological System) untuk:
+    - Creative content generation (copywriting, branding, marketing)
+    - Competitor intelligence & social media analysis
+    - Code generation dengan dokumentasi
+    - Maqashid filter (CREATIVE/ACADEMIC/IJTIHAD/GENERAL)
+    - Multilingual typo-resilient (6+ bahasa)
+    - Self-training & self-healing (7 Pilar Jiwa)
+  
+  author: "SIDIX Team"
+  icon: "🔷"
+  license: "MIT"
+  
+  # How to invoke this skill
+  activation:
+    commands:
+      - "/sidix"
+      - "/sociometer" 
+      - "/nasihah"
+    mentions:
+      - "@SIDIX"
+      - "@Sociometer"
+    keywords:
+      - "SIDIX"
+      - "Sociometer"
+      - "maqashid"
+      - "naskh"
+      - "raudah"
+      - "sanad"
+      - "jariyah"
+      - "nasihah"
+      - "ihos"
+  
+  # Tools provided by this skill
+  tools:
+    - name: nasihah_creative
+      description: "Generate creative content dengan Maqashid filter"
+      parameters:
+        - name: brief
+          type: string
+          required: true
+        - name: persona
+          type: string
+          enum: ["AYMAN", "ABOO", "OOMAR", "ALEY", "UTZ"]
+          default: "AYMAN"
+    
+    - name: nasihah_analyze
+      description: "Analyze competitor, market, trends"
+      parameters:
+        - name: data
+          type: string
+          required: true
+        - name: analysis_type
+          type: string
+          enum: ["competitor", "market", "trends", "sentiment"]
+          default: "competitor"
+    
+    - name: nasihah_design
+      description: "Generate visual content"
+      parameters:
+        - name: prompt
+          type: string
+          required: true
+        - name: format
+          type: string
+          enum: ["image", "thumbnail", "logo", "banner"]
+          default: "image"
+    
+    - name: nasihah_code
+      description: "Generate code dengan test cases"
+      parameters:
+        - name: task
+          type: string
+          required: true
+        - name: language
+          type: string
+          default: "python"
+    
+    - name: maqashid_check
+      description: "Evaluasi content dengan Maqashid filter"
+      parameters:
+        - name: content
+          type: string
+          required: true
+        - name: mode
+          type: string
+          enum: ["CREATIVE", "ACADEMIC", "IJTIHAD", "GENERAL"]
+          required: true
+    
+    - name: typo_normalize
+      description: "Normalize typo multilingual"
+      parameters:
+        - name: text
+          type: string
+          required: true
+  
+  # MCP / HTTP: templat self-hosted. Repo default tidak menyertakan modul brain.sociometer.mcp_server.
+  # Aktifkan setelah Anda menjalankan endpoint sendiri — lihat docs/KIMI_INTEGRATION_GUIDE.md dan kimi-plugin/bridge.py.
+  mcp:
+    enabled: false
+    # Setelah deploy brain_qa / MCP sendiri, aktifkan enabled: true dan isi server + fallback
+    # (contoh URL di docs/KIMI_INTEGRATION_GUIDE.md; jembatan HTTP: kimi-plugin/bridge.py).
+  
+  # Multilingual support
+  multilingual:
+    enabled: true
+    auto_detect: true
+    languages:
+      - code: id
+        name: "Indonesian"
+        typo_correction: true
+      - code: en
+        name: "English"
+        typo_correction: true
+      - code: ar-latin
+        name: "Arabizi"
+        typo_correction: true
+      - code: ms
+        name: "Malay"
+        typo_correction: true
+      - code: tl
+        name: "Tagalog"
+        typo_correction: true
+      - code: hi-latin
+        name: "Hinglish"
+        typo_correction: true
+  
+  # Personas
+  personas:
+    AYMAN:
+      name: "Ayman"
+      mode: "IJTIHAD"
+      specialty: "Creative leadership, branding strategy, copywriting"
+      icon: "🎯"
+    ABOO:
+      name: "Aboo"
+      mode: "ACADEMIC"
+      specialty: "Research, analysis, documentation, deep thinking"
+      icon: "📚"
+    OOMAR:
+      name: "Oomar"
+      mode: "IJTIHAD"
+      specialty: "Execution, operations, implementation"
+      icon: "⚔️"
+    ALEY:
+      name: "Aley"
+      mode: "GENERAL"
+      specialty: "Communication, user interaction, explanation"
+      icon: "💬"
+    UTZ:
+      name: "Utz"
+      mode: "CREATIVE"
+      specialty: "Design, visual, art, unconventional ideas"
+      icon: "🎨"
+  
+  # Response format
+  response:
+    format: markdown
+    include_metadata: true
+    metadata_fields:
+      - cqf_score
+      - persona_used
+      - maqashid_mode
+      - sanad_chain
+      - detected_language
+      - corrections_made
+    
+    templates:
+      creative: |
+        ✨ **{title}**
+        
+        {content}
+        
+        ---
+        📊 CQF: {cqf_score} | 🎭 {persona} | ⚖️ {maqashid}
+      
+      analysis: |
+        📊 **{title}**
+        
+        {content}
+        
+        ---
+        📊 Confidence: {confidence} | 🔗 {sanad}
+      
+      error: |
+        ⚠️ **SIDIX Notice**
+        
+        {message}
+        
+        💡 {suggestion}
+  
+  # Health check
+  health_check:
+    enabled: true
+    endpoint: "http://localhost:8765/health"
+    interval: 60
+    timeout: 5
+  
+  # Logging
+  logging:
+    level: info
+    file: "~/.config/kimi/logs/sidix.log"
+    max_size: "10MB"
+    max_files: 5

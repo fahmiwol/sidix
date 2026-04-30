@@ -1,0 +1,26 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+Disallow: /.git/
+Disallow: /.env
+Disallow: /*?utm_*
+
+# Sitemap
+Sitemap: https://sidixlab.com/sitemap.xml
+
+# Crawl delay (be nice)
+Crawl-delay: 1
+
+# Block known scrapers / bad bots (politely)
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: DotBot
+Disallow: /

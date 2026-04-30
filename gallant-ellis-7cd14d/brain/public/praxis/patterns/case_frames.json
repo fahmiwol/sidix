@@ -1,0 +1,76 @@
+{
+  "version": 1,
+  "description": "Kerangka situasi kurasi manusia + dapat dilengkapi otomatis. Dipakai runtime untuk menuntun niat/inisiasi SIDIX (bukan otoritas fatwa).",
+  "frames": [
+    {
+      "id": "factual_corpus",
+      "keywords": ["apa itu", "apa yang", "jelaskan", "definisi", "pengertian", "siapa", "kapan", "dimana", "bagaimana", "mengapa", "bukti", "dalil", "ayat", "hadits"],
+      "niat": "Menjawab dari landasan yang bisa disanadkan: korpus BM25 dulu; bedakan fakta, opini, dan spekulasi.",
+      "inisiasi": [
+        "Sempitkan pertanyaan ke entitas/konsep utama.",
+        "Gunakan search_corpus; baca chunk relevan sebelum menyimpulkan.",
+        "Jika jawaban tidak ada di korpus, katakan eksplisit dan sarankan indeks/sumber."
+      ],
+      "if_data": "Kutip ringkas + sebut jalur sumber bila tersedia; hindari klaim di luar cuplikan.",
+      "if_no_data": "Jangan mengada-ada; jelaskan gap; tawarkan langkah: indeks ulang, unggah dokumen, atau fallback web jika diizinkan."
+    },
+    {
+      "id": "implement_or_automate",
+      "keywords": ["buat", "implement", "scaffold", "generate", "kode", "script", "aplikasi", "app", "game", "file", "write", "docker"],
+      "niat": "Menolong eksekusi terkontrol di sandbox, bukan menulis ke sistem produksi tanpa izin.",
+      "inisiasi": [
+        "Setelah korpus ringkas, workspace_list untuk melihat sandbox.",
+        "workspace_write hanya bila klien mengizinkan restricted mode.",
+        "Ringkas path yang disentuh dan risiko residual."
+      ],
+      "if_data": "Rujuk pola dari korpus/praxis lesson bila ada contoh serupa.",
+      "if_no_data": "Berikan kerangka langkah aman + placeholder; minta persetujuan eksplisit sebelum menulis file."
+    },
+    {
+      "id": "orchestration_meta",
+      "keywords": ["orkestrasi", "orchestr", "multi-agent", "multi agen", "vegapunk", "pipeline", "workflow", "fase agen"],
+      "niat": "Menata urutan kerja multi-aspek tanpa mengorbankan verifikasi.",
+      "inisiasi": [
+        "Panggil orchestration_plan bila meta-pertanyaan tentang rencana.",
+        "Susun fase: deduksi → integrasi → sintesis → orientasi ringkas ke pengguna."
+      ],
+      "if_data": "Gunakan cuplikan JSON/teks rencana sebagai acuan urutan.",
+      "if_no_data": "Tetap berikan urutan heuristik default dari modul orchestration."
+    },
+    {
+      "id": "index_weak_or_error",
+      "keywords": ["index belum", "belum dibuat", "kosong", "error", "gagal", "tidak ada hasil", "weak"],
+      "niat": "Membedakan masalah data vs masalah model; hindari menyalahkan pengguna.",
+      "inisiasi": [
+        "Ulangi search dengan query lebih pendek sinonim.",
+        "Tawarkan Wikipedia fallback hanya jika kebijakan mengizinkan.",
+        "Catat kebutuhan reindex ke operator."
+      ],
+      "if_data": "Gunakan cuplikan parsial yang ada; labelkan ketidaklengkapan.",
+      "if_no_data": "Instruksikan jelas: jalankan indeks, periksa manifest brain/public."
+    },
+    {
+      "id": "security_or_policy",
+      "keywords": ["token", "password", "api key", "secret", "bypass", "hack", "illegal"],
+      "niat": "Melindungi pengguna dan sistem; tidak memfasilitasi penyalahgunaan.",
+      "inisiasi": [
+        "Tolak atau netralkan permintaan berisiko sesuai G1 policy.",
+        "Tawarkan alternatif legal: env var, secret manager, dokumentasi resmi."
+      ],
+      "if_data": "Jangan mengulang secret dari observasi; redaksi.",
+      "if_no_data": "Berikan prinsip keamanan umum tanpa instruksi eksploitasi."
+    },
+    {
+      "id": "grow_from_praxis",
+      "keywords": ["praxis", "pelajaran", "lesson", "kasus sebelumnya", "pola kerja", "meta belajar"],
+      "niat": "Mengaitkan situasi kini dengan jejak eksekusi tersimpan (RAG praxis/) sebagai analogi prosedur.",
+      "inisiasi": [
+        "Cari di corpus frasa situasi + nama modul/file.",
+        "Bandingkan dengan langkah pada lesson; kutip perbedaan konteks.",
+        "Tambahkan 'langkah berikutnya' yang dapat diverifikasi."
+      ],
+      "if_data": "Sebut sumber lesson path ringkas (tanpa data sensitif).",
+      "if_no_data": "Jelaskan bahwa indeks perlu memuat brain/public/praxis setelah lesson baru."
+    }
+  ]
+}
