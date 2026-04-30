@@ -15274,3 +15274,52 @@ Recommendation Sigma-4: install Ollama + qwen2.5:7b di VPS sebagai true fallback
 - Code-level: HIGH confidence (local tests PASS)
 - E2E: DEFERRED besok (queue drain + idle timeout fix)
 
+
+## [IMPL] 2026-04-30 — Sigma-4 Cognitive Expansion (Code-Level)
+
+### Implementations (single session, Claude weekly limit at 90%)
+
+**1. Ollama model selector bug fix** (`apps/brain_qa/brain_qa/ollama_llm.py`):
+- Was: split version → first match → wrong size
+- Now: 4-step cascade (exact → prefix+version → base → family)
+- Unit test: 4/4 PASS
+
+**2. fact_extractor.py — 3 new entity patterns + role-aware cleaner**:
+- Tahun Sekarang (4-digit year 2020-2099)
+- Ibukota Indonesia (Jakarta/Nusantara/IKN)
+- Kepanjangan/abbreviation (multi-word expansion)
+- Role-aware `_clean_name(raw, role_label=None)` — bypass stop tokens for entity-specific roles
+- Unit test: 9/9 PASS (3 regression + 6 new)
+
+**3. BRAND_CANON expansion (9 → 13)**:
+- attention_mechanism (Vaswani 2017, Q/K/V/softmax)
+- transformer (full architecture)
+- rag (Lewis Meta 2020)
+- mighan (brand canonical)
+- Unit test: 6/6 PASS detect_intent
+
+### Goldset impact (estimated)
+- Q4 "Tahun sekarang berapa?" — fact_extractor.Tahun coverage = direct extract
+- Q7 "Apa kepanjangan HTTP?" — fact_extractor.Kepanjangan coverage
+- Q25 "Apa itu attention mechanism?" — BRAND_CANON cache 3ms
+
+### Net coverage
+- BRAND_CANON: 9 → 13 entries (+44%)
+- fact_extractor: 9 → 12 entity types (+33%)
+- Total unit tests added: 19/19 PASS
+
+### E2E validation BLOCKED tonight
+Brain runtime issues: Qalb CRITICAL fires intermittent, PyTorch < 2.4 errors,
+RunPod queue backlog. Code-level confidence HIGH via unit tests.
+
+### Files
+- apps/brain_qa/brain_qa/fact_extractor.py (+70 LOC)
+- apps/brain_qa/brain_qa/sanad_verifier.py (+59 LOC)
+- apps/brain_qa/brain_qa/ollama_llm.py (refactor selector)
+- brain/public/research_notes/302_sigma4_cognitive_expansion_20260430.md
+
+### Commits today
+c343178 sigma-3 code | ab2d028 sigma-3 docs | e02b4f1 infra optimization
+42964fc idle-timeout discovery | 6454aa6 ollama selector fix
+fe2879f sigma-4 cognitive expansion
+
