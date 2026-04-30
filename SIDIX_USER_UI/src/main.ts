@@ -1143,7 +1143,8 @@ modeHolisticBtn?.addEventListener('click', async () => {
   appendMessage('user', question);
   if (chatInput) { chatInput.value = ''; chatInput.dispatchEvent(new Event('input')); }
 
-  // Live progress card — show events real-time as they stream
+  // Live progress card — show 8 parallel sources visualized real-time
+  // Sprint UX-fix 2026-04-30: visi bos = SEMUA paralel sekaligus, bukan sequential
   const progressWrap = document.createElement('div');
   progressWrap.className = 'flex justify-start animate-fsu';
   const progressBubble = document.createElement('div');
@@ -1152,9 +1153,39 @@ modeHolisticBtn?.addEventListener('click', async () => {
     <div class="flex items-center gap-2 mb-3">
       <span>🌟</span>
       <span class="font-semibold text-gold-400">Jurus Seribu Bayangan</span>
+      <span class="text-[10px] text-parchment-500">— 8 sumber paralel sekaligus</span>
       <span id="holistic-elapsed" class="text-[10px] text-parchment-500 ml-auto" style="font-variant-numeric: tabular-nums;">0.0s</span>
     </div>
-    <div id="holistic-progress" class="space-y-1 mb-3 text-xs text-parchment-400"></div>
+    <!-- 8-chip parallel state grid: web | corpus | dense | tools | UTZ | ABOO | OOMAR | ALEY | AYMAN -->
+    <div id="holistic-grid" class="grid grid-cols-3 gap-1.5 mb-3 text-[11px]" style="font-variant-numeric: tabular-nums;">
+      <div class="chip-source flex items-center gap-1.5 px-2 py-1 rounded border border-parchment-700/40 bg-warm-800/40" data-src="web">
+        <span class="chip-icon text-parchment-500">⏳</span>
+        <span class="text-parchment-300">🌐 web</span>
+        <span class="chip-time ml-auto text-[9px] text-parchment-500">…</span>
+      </div>
+      <div class="chip-source flex items-center gap-1.5 px-2 py-1 rounded border border-parchment-700/40 bg-warm-800/40" data-src="corpus">
+        <span class="chip-icon text-parchment-500">⏳</span>
+        <span class="text-parchment-300">📚 corpus</span>
+        <span class="chip-time ml-auto text-[9px] text-parchment-500">…</span>
+      </div>
+      <div class="chip-source flex items-center gap-1.5 px-2 py-1 rounded border border-parchment-700/40 bg-warm-800/40" data-src="dense">
+        <span class="chip-icon text-parchment-500">⏳</span>
+        <span class="text-parchment-300">🧬 dense</span>
+        <span class="chip-time ml-auto text-[9px] text-parchment-500">…</span>
+      </div>
+      <div class="chip-source flex items-center gap-1.5 px-2 py-1 rounded border border-parchment-700/40 bg-warm-800/40" data-src="tools">
+        <span class="chip-icon text-parchment-500">⏳</span>
+        <span class="text-parchment-300">🛠 tools</span>
+        <span class="chip-time ml-auto text-[9px] text-parchment-500">…</span>
+      </div>
+      <div class="chip-source flex items-center gap-1.5 px-2 py-1 rounded border border-parchment-700/40 bg-warm-800/40 col-span-2" data-src="persona_fanout">
+        <span class="chip-icon text-parchment-500">⏳</span>
+        <span class="text-parchment-300">👥 5 persona (UTZ·ABOO·OOMAR·ALEY·AYMAN)</span>
+        <span class="chip-time ml-auto text-[9px] text-parchment-500">…</span>
+      </div>
+    </div>
+    <div id="holistic-meta" class="text-[10px] text-parchment-500 mb-2 hidden"></div>
+    <div id="holistic-progress" class="space-y-0.5 mb-2 text-[10px] text-parchment-500 max-h-20 overflow-y-auto opacity-70"></div>
     <div id="holistic-answer" class="text-sm leading-relaxed whitespace-pre-wrap mt-2"></div>
   `;
   progressWrap.appendChild(progressBubble);
@@ -1164,6 +1195,29 @@ modeHolisticBtn?.addEventListener('click', async () => {
   const progressEl = progressBubble.querySelector('#holistic-progress') as HTMLDivElement;
   const answerEl = progressBubble.querySelector('#holistic-answer') as HTMLDivElement;
   const elapsedEl = progressBubble.querySelector('#holistic-elapsed') as HTMLSpanElement;
+  const gridEl = progressBubble.querySelector('#holistic-grid') as HTMLDivElement;
+  const metaEl = progressBubble.querySelector('#holistic-meta') as HTMLDivElement;
+
+  // Helper: update chip status real-time saat source_complete event arrive
+  const updateChip = (source: string, success: boolean, latencyMs: number) => {
+    const chip = gridEl?.querySelector(`[data-src="${source}"]`);
+    if (!chip) return;
+    const icon = chip.querySelector('.chip-icon') as HTMLSpanElement;
+    const time = chip.querySelector('.chip-time') as HTMLSpanElement;
+    if (success) {
+      icon.textContent = '✓';
+      icon.className = 'chip-icon text-emerald-400';
+      chip.classList.remove('border-parchment-700/40', 'bg-warm-800/40');
+      chip.classList.add('border-emerald-500/40', 'bg-emerald-900/20');
+    } else {
+      icon.textContent = '✗';
+      icon.className = 'chip-icon text-red-400';
+      chip.classList.remove('border-parchment-700/40', 'bg-warm-800/40');
+      chip.classList.add('border-red-500/40', 'bg-red-900/20');
+    }
+    time.textContent = `${(latencyMs / 1000).toFixed(1)}s`;
+    time.className = 'chip-time ml-auto text-[9px] ' + (success ? 'text-emerald-400/70' : 'text-red-400/70');
+  };
 
   const startTime = Date.now();
   const elapsedTimer = setInterval(() => {
@@ -1256,20 +1310,29 @@ modeHolisticBtn?.addEventListener('click', async () => {
       onStart: (_q, outputType) => {
         addProgressLine(`Query received${outputType ? ` (output: ${outputType})` : ''}`);
       },
-      onOrchestratorStart: () => addProgressLine('Mengerahkan resource paralel...'),
+      onOrchestratorStart: () => {
+        addProgressLine('Mengerahkan 8 sumber paralel sekaligus...');
+      },
       onSourceComplete: (source, success, latencyMs) => {
+        // Update chip visual real-time (jurus 1000 bayangan = paralel state visible)
+        updateChip(source, success, latencyMs);
+        // Log audit (low-prominence, di bawah grid)
         const labels: Record<string, string> = {
-          web: 'web_search (DuckDuckGo + Wikipedia)',
-          corpus: 'corpus search (BM25)',
-          dense: 'semantic embedding (dense_index)',
-          persona_fanout: '5 persona research (UTZ/ABOO/OOMAR/ALEY/AYMAN)',
-          tools: 'tool registry',
+          web: '🌐 web_search (DDG + Wikipedia)',
+          corpus: '📚 corpus BM25',
+          dense: '🧬 dense embedding',
+          persona_fanout: '👥 5 persona Ollama',
+          tools: '🛠 tool registry',
         };
         const label = labels[source] || source;
-        addProgressLine(`${label} (${(latencyMs / 1000).toFixed(1)}s)`, success ? 'ok' : 'fail');
+        addProgressLine(`${label} ${success ? '✓' : '✗'} (${(latencyMs / 1000).toFixed(1)}s)`, success ? 'ok' : 'fail');
       },
       onOrchestratorDone: (n, totalMs) => {
-        addProgressLine(`Orchestrator done: ${n} sources successful (${(totalMs / 1000).toFixed(1)}s)`, 'ok');
+        if (metaEl) {
+          metaEl.classList.remove('hidden');
+          metaEl.textContent = `🌟 ${n} sumber sukses paralel · total ${(totalMs / 1000).toFixed(1)}s · cognitive synthesizer merging...`;
+        }
+        addProgressLine(`Orchestrator done: ${n}/5 sources (${(totalMs / 1000).toFixed(1)}s)`, 'ok');
       },
       onSynthesisStart: () => addProgressLine('Cognitive synthesizer merging...'),
       onToken: (text) => {
@@ -1729,11 +1792,12 @@ async function handleSend() {
     if (!timerEl || !labelEl) return;
     const elapsed = (Date.now() - thinkStart) / 1000;
     timerEl.textContent = `${elapsed.toFixed(1)}s`;
-    // Escalate hint biar user tahu kenapa lama
-    if (elapsed > 60 && !isImageIntent) labelEl.textContent = 'Mikir lebih dalam... (mungkin perlu web search)';
-    else if (elapsed > 30 && !isImageIntent) labelEl.textContent = 'Riset multi-langkah, sabar ya...';
-    else if (elapsed > 15 && !isImageIntent) labelEl.textContent = 'Menyusun jawaban...';
-    else if (elapsed > 5 && !isImageIntent) labelEl.textContent = 'Mencari konteks relevan...';
+    // Sprint UX-fix: jangan tampilkan label sequential "berfase-fase" yang misleading.
+    // Mode klasik = single-source ReAct; tampilkan label NETRAL + arahkan ke Holistic
+    // kalau user mau multi-source paralel (jurus 1000 bayangan).
+    if (isImageIntent) return;
+    if (elapsed > 30) labelEl.textContent = 'Berpikir lama — coba klik 🌟 Holistic untuk multi-source paralel';
+    else labelEl.textContent = 'Berpikir... (mode klasik · single-source)';
   }, 100);
   const stopThinkingTimer = () => clearInterval(thinkingTimerInterval);
 
