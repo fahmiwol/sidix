@@ -1190,11 +1190,12 @@ modeHolisticBtn?.addEventListener('click', async () => {
   attachmentsEl.className = 'mt-3 space-y-2';
   progressBubble.appendChild(attachmentsEl);
 
-  const renderAttachment = (att: { type: string; url: string; prompt?: string; mode?: string }) => {
+  const renderAttachment = (att: { type: string; url: string; prompt?: string; mode?: string; text?: string }) => {
     const wrap = document.createElement('div');
     wrap.className = 'rounded-lg overflow-hidden border border-gold-500/30 bg-warm-700/30';
+    const fullUrl = att.url ? (att.url.startsWith('http') ? att.url : `${BRAIN_QA_BASE}${att.url}`) : '';
+
     if (att.type === 'image') {
-      const fullUrl = att.url.startsWith('http') ? att.url : `${BRAIN_QA_BASE}${att.url}`;
       wrap.innerHTML = `
         <img src="${fullUrl}" alt="${att.prompt || ''}"
              class="w-full max-w-md rounded-lg"
@@ -1205,8 +1206,46 @@ modeHolisticBtn?.addEventListener('click', async () => {
           ${att.prompt ? ` · prompt: "${att.prompt.slice(0, 60)}..."` : ''}
         </div>
       `;
+    } else if (att.type === 'audio') {
+      wrap.innerHTML = `
+        <div class="p-3">
+          ${fullUrl ? `<audio controls class="w-full"><source src="${fullUrl}" type="audio/wav"/>Audio tidak tersedia di browser ini.</audio>` :
+            `<div class="text-xs text-amber-300">🔊 TTS generated tapi URL tidak ditemukan</div>`}
+          <div class="mt-2 text-[10px] text-parchment-400">
+            🔊 Text-to-Speech (Coqui-TTS / pyttsx3)
+            ${att.text ? ` · "${att.text.slice(0, 80)}..."` : ''}
+          </div>
+        </div>
+      `;
+    } else if (att.type === 'video_storyboard') {
+      wrap.innerHTML = `
+        <div class="p-4">
+          <div class="text-xs text-gold-400 mb-2 font-semibold">🎬 Video Storyboard</div>
+          <div class="text-sm text-parchment-200 whitespace-pre-wrap">${(att.text || '').slice(0, 800)}</div>
+          <div class="mt-3 text-[10px] text-parchment-500 italic">
+            Phase 3: text-only storyboard. Phase 4 (next): wire ke Film-Gen pipeline (Tiranyx ekosistem).
+          </div>
+        </div>
+      `;
+    } else if (att.type === '3d_prompt') {
+      wrap.innerHTML = `
+        <div class="p-4">
+          <div class="text-xs text-gold-400 mb-2 font-semibold">🎲 3D Prompt Spec</div>
+          <pre class="text-xs text-parchment-200 whitespace-pre-wrap font-mono">${(att.text || '').slice(0, 800)}</pre>
+          <div class="mt-3 text-[10px] text-parchment-500 italic">
+            Phase 3: text-only mesh/material spec. Phase 4 (next): wire ke Mighan-3D pipeline.
+          </div>
+        </div>
+      `;
+    } else if (att.type === 'structured') {
+      wrap.innerHTML = `
+        <div class="p-4">
+          <div class="text-xs text-gold-400 mb-2 font-semibold">📊 Structured Data</div>
+          <div class="text-sm text-parchment-200 prose prose-invert prose-sm max-w-none">${(att.text || '').slice(0, 1500)}</div>
+        </div>
+      `;
     } else {
-      wrap.innerHTML = `<div class="p-3 text-xs">📎 Attachment: ${att.type} → ${att.url}</div>`;
+      wrap.innerHTML = `<div class="p-3 text-xs">📎 ${att.type} → ${att.url || '(no url)'}</div>`;
     }
     attachmentsEl.appendChild(wrap);
     if (chatMessages) chatMessages.scrollTop = chatMessages.scrollHeight;

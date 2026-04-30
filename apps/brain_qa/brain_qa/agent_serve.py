@@ -1232,9 +1232,11 @@ def create_app() -> "FastAPI":
                 chunk = answer[i:i + chunk_size]
                 yield f"data: {json.dumps({'type': 'token', 'text': chunk})}\n\n"
 
-            # Sprint 5 Phase 2: tool invocation untuk adaptive output (image_gen)
+            # Sprint 5 Phase 3: multi-modal tool invocation (image / audio / video / 3d / structured)
             attachments = []
-            if output_detection.output_type.value == "image_prompt":
+            out_type = output_detection.output_type.value
+
+            if out_type == "image_prompt":
                 yield f"data: {json.dumps({'type': 'tool_invoke', 'tool': 'image_gen', 'message': 'Generating image...'})}\n\n"
                 try:
                     from .agent_tools import _tool_text_to_image
@@ -1256,6 +1258,54 @@ def create_app() -> "FastAPI":
                         yield f"data: {json.dumps({'type': 'tool_error', 'tool': 'image_gen', 'error': img_result.error or 'unknown'})}\n\n"
                 except Exception as e:
                     yield f"data: {json.dumps({'type': 'tool_error', 'tool': 'image_gen', 'error': str(e)[:100]})}\n\n"
+
+            elif out_type == "audio_tts":
+                yield f"data: {json.dumps({'type': 'tool_invoke', 'tool': 'tts', 'message': 'Synthesizing speech...'})}\n\n"
+                try:
+                    from .agent_tools import _tool_text_to_speech
+                    tts_text = (synthesis.answer or req.question)[:500]
+                    tts_result = await _asyncio.to_thread(
+                        _tool_text_to_speech,
+                        {"text": tts_text, "lang": "id"},
+                    )
+                    if tts_result.success:
+                        import re as _re
+                        out_path = ""
+                        for line in (tts_result.output or "").split("\n"):
+                            m = _re.search(r"`([^`]+)`", line)
+                            if m:
+                                out_path = m.group(1)
+                                break
+                        attachment = {
+                            "type": "audio",
+                            "url": f"/generated/audio/{out_path.split('/')[-1]}" if out_path else "",
+                            "text": tts_text[:200],
+                            "mode": "tts",
+                        }
+                        attachments.append(attachment)
+                        yield f"data: {json.dumps({'type': 'attachment', 'attachment': attachment})}\n\n"
+                    else:
+                        yield f"data: {json.dumps({'type': 'tool_error', 'tool': 'tts', 'error': tts_result.error or 'unknown'})}\n\n"
+                except Exception as e:
+                    yield f"data: {json.dumps({'type': 'tool_error', 'tool': 'tts', 'error': str(e)[:100]})}\n\n"
+
+            elif out_type in ("video_storyboard", "3d_prompt", "structured"):
+                # Text-only output (Phase 3) — wrap synthesis.answer dengan type metadata
+                attachment = {
+                    "type": out_type.replace("_prompt", "").replace("_storyboard", "_storyboard"),
+                    "url": "",
+                    "text": synthesis.answer or "",
+                    "mode": "text_only_phase3",
+                }
+                # Normalize types
+                if out_type == "3d_prompt":
+                    attachment["type"] = "3d_prompt"
+                elif out_type == "video_storyboard":
+                    attachment["type"] = "video_storyboard"
+                elif out_type == "structured":
+                    attachment["type"] = "structured"
+                attachments.append(attachment)
+                yield f"data: {json.dumps({'type': 'attachment', 'attachment': attachment})}\n\n"
 
             elapsed_ms = int((_time.monotonic() - _t0) * 1000)
 
@@ -1305,22 +1355,19 @@ def create_app() -> "FastAPI":
         debug_flag = bool(request.query_params.get("debug"))
         synthesis = await synthesizer.synthesize(bundle, debug=debug_flag)
 
-        # Sprint 5+: Adaptive Output - actual tool invocation (Pencipta Phase 2)
-        # Kalau output_type=IMAGE_PROMPT, invoke image_gen tool real, return URL.
+        # Sprint 5 Phase 3: Adaptive Output - multi-modal tool invocation (Pencipta)
+        # Branch per output_type: IMAGE / AUDIO_TTS / VIDEO_STORYBOARD / 3D / STRUCTURED
         attachments: list[dict] = []
-        if output_detection.output_type.value == "image_prompt":
+        out_type = output_detection.output_type.value
+
+        if out_type == "image_prompt":
             try:
                 import asyncio as _asyncio
                 from .agent_tools import _tool_text_to_image
-                # Pakai user question langsung sebagai prompt (LLM yang lebih advanced
-                # bisa optimize prompt nanti — Phase 2.5 prompt engineer)
-                img_args = {
-                    "prompt": req.question,
-                    "width": 1024,
-                    "height": 1024,
-                    "steps": 4,
-                }
-                img_result = await _asyncio.to_thread(_tool_text_to_image, img_args)
+                img_result = await _asyncio.to_thread(
+                    _tool_text_to_image,
+                    {"prompt": req.question, "width": 1024, "height": 1024, "steps": 4},
+                )
                 if img_result.success and img_result.citations:
                     cit = img_result.citations[0]
                     attachments.append({
@@ -1329,8 +1376,69 @@ def create_app() -> "FastAPI":
                         "prompt": cit.get("prompt", req.question),
                         "mode": cit.get("mode", "unknown"),
                     })
-            except Exception as _img_err:
-                log.warning(f"[chat_holistic] image_gen fail: {_img_err}")
+            except Exception as _err:
+                log.warning(f"[chat_holistic] image_gen fail: {_err}")
+
+        elif out_type == "audio_tts":
+            try:
+                import asyncio as _asyncio
+                from .agent_tools import _tool_text_to_speech
+                # Synthesize SIDIX answer (synthesis.answer) sebagai audio
+                tts_text = (synthesis.answer or req.question)[:500]  # cap 500 char
+                tts_result = await _asyncio.to_thread(
+                    _tool_text_to_speech,
+                    {"text": tts_text, "lang": "id"},
+                )
+                if tts_result.success:
+                    # Parse output untuk extract path (markdown lines)
+                    out_path = ""
+                    for line in (tts_result.output or "").split("\n"):
+                        if "out_path" in line.lower() or "Output:" in line:
+                            # extract backtick path
+                            import re as _re
+                            m = _re.search(r"`([^`]+)`", line)
+                            if m:
+                                out_path = m.group(1)
+                                break
+                    attachments.append({
+                        "type": "audio",
+                        "url": f"/generated/audio/{out_path.split('/')[-1]}" if out_path else "",
+                        "text": tts_text,
+                        "mode": "tts",
+                    })
+            except Exception as _err:
+                log.warning(f"[chat_holistic] tts fail: {_err}")
+
+        elif out_type == "video_storyboard":
+            # Phase 3 Pencipta: text-only multi-scene storyboard (no actual video gen yet)
+            # Synthesizer sudah generate scene-by-scene format via adaptive_output_hint.
+            # Frontend render sebagai structured display.
+            attachments.append({
+                "type": "video_storyboard",
+                "url": "",  # placeholder — actual video gen Phase 4
+                "text": synthesis.answer or "",
+                "mode": "text_only_storyboard",
+            })
+
+        elif out_type == "3d_prompt":
+            # Phase 3 Pencipta: text-only 3D mesh/material spec (no actual mesh gen yet)
+            # Future: wire ke Mighan-3D pipeline (Tiranyx ekosistem).
+            attachments.append({
+                "type": "3d_prompt",
+                "url": "",  # placeholder — actual 3D gen Phase 4 (Mighan-3D bridge)
+                "text": synthesis.answer or "",
+                "mode": "text_only_spec",
+            })
+
+        elif out_type == "structured":
+            # Synthesizer already format markdown table/list per adaptive hint.
+            # No additional tool, just flag for frontend render style.
+            attachments.append({
+                "type": "structured",
+                "url": "",
+                "text": synthesis.answer or "",
+                "mode": "markdown_table",
+            })
 
         elapsed_ms = int((_time.monotonic() - _t0) * 1000)
 
