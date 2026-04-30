@@ -28,7 +28,7 @@ from typing import Optional
 log = logging.getLogger(__name__)
 
 # ── Config ───────────────────────────────────────────────────────────────────
-_CRITIQUE_DATA_DIR = Path(".data/critique")
+_CRITIQUE_DATA_DIR = Path("/opt/sidix/.data/critique")
 _MIN_RELEVAN_FOR_PASS = 9.5
 _MIN_SOURCES_FOR_PASS = 2
 _MAX_HALU_SCORE = 0.3  # lower = better
@@ -181,7 +181,7 @@ def run_daily_critique(
     trigger corpus_to_training if improvements found.
     """
     t0 = time.time()
-    sessions_dir = sessions_dir or Path(".data/sessions")
+    sessions_dir = sessions_dir or Path("/opt/sidix/.data/sessions")
     out_dir = out_dir or _CRITIQUE_DATA_DIR
     out_dir.mkdir(parents=True, exist_ok=True)
 
