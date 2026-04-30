@@ -331,3 +331,20 @@ Setiap agent (Claude/GPT/Gemini/SIDIX) yang kerja di proyek ini WAJIB ikuti prot
 - **Evidence**: commit daa3d37
 - **Status**: LIVE Phase 3. Phase 4 next: actual Film-Gen + Mighan-3D pipeline wire.
 - **Visi shift**: Pencipta 60% → **75%**.
+
+### Sprint Monitoring — /agent/sidix_state Endpoint
+- **Visi mapping**: Self-Bootstrap Phase 1 (SIDIX baca state sendiri) + Cognitive
+- **Date**: 2026-04-30 evening
+- **Deliverable**: GET /agent/sidix_state — public read-only state aggregator
+  - corpus stats (research notes count + latest mtime)
+  - anti-menguap docs mtime (5 docs)
+  - Tumbuh pipeline (LoRA datasets + daily synthesis)
+  - Multi-source orchestrator config + persona fanout
+  - Cognitive (brand canon + persona count)
+  - Adaptive output (7 OutputType + 5 tools Phase 3)
+  - Northstar visi coverage estimate (overall 85%)
+- **Plus**: SIDIX_AUTO_COMMIT_SYNTHESIS=1 di .env (daily synthesis besok auto-commit)
+- **Acceptance**: ✅ endpoint return 200 + complete JSON, deploy LIVE
+- **Evidence**: commit b825525
+- **Status**: LIVE.
+
