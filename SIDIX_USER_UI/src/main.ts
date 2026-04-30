@@ -1023,13 +1023,11 @@ let backendOnline = false;
 /** Snapshot terakhir GET /health — untuk tab Model tanpa fetch ganda */
 let lastHealth: HealthResponse | null = null;
 
-function formatStatusLine(h: HealthResponse): string {
-  const docs = h.corpus_doc_count ?? 0;
-  const mode = h.model_mode ?? '—';
-  const ready =
-    h.model_ready === true ? 'LoRA' : h.model_ready === false ? 'mock' : '';
-  const bit = ready ? ` · ${mode}/${ready}` : ` · ${mode}`;
-  return `Online · ${docs} dok${bit}`;
+function formatStatusLine(_h: HealthResponse): string {
+  // UX-fix 2026-04-30: hide jargon teknis (corpus_doc_count, model_mode, LoRA).
+  // User awam tidak butuh tahu detail backend. Status sederhana = sinyal "alive".
+  // Detail teknis tetap accessible via /dashboard atau gear menu (advanced).
+  return 'Hidup · siap mencipta';
 }
 
 async function pingBackend() {
@@ -1103,13 +1101,37 @@ const modeForesightBtn = document.getElementById('mode-foresight') as HTMLButton
 const modeResurrectBtn = document.getElementById('mode-resurrect') as HTMLButtonElement | null;
 const modeHolisticBtn  = document.getElementById('mode-holistic') as HTMLButtonElement | null;
 
-function getInputOrPrompt(modeName: string, hint: string): string | null {
+// UX-fix 2026-04-30: Mode buttons jadi sticky toggle state (bukan window.prompt popup).
+// Visi 1000 Bayangan default = Holistic ON. User toggle mode = ganti state, send berikut
+// pakai mode aktif. Empty input + click mode = visual feedback (hint), no popup browser.
+type ChatMode = 'classic' | 'holistic' | 'burst' | 'twoeyed' | 'foresight' | 'resurrect';
+let activeMode: ChatMode = 'holistic'; // default per visi 1000 bayangan
+
+function setActiveMode(mode: ChatMode) {
+  activeMode = mode;
+  // Visual highlight: gold ring untuk mode aktif
+  const allModeBtns: Array<[HTMLButtonElement | null, ChatMode]> = [
+    [modeBurstBtn, 'burst'],
+    [modeTwoEyedBtn, 'twoeyed'],
+    [modeForesightBtn, 'foresight'],
+    [modeResurrectBtn, 'resurrect'],
+    [modeHolisticBtn, 'holistic'],
+  ];
+  for (const [btn, m] of allModeBtns) {
+    if (!btn) continue;
+    if (m === mode) {
+      btn.classList.add('mode-active');
+      btn.setAttribute('aria-pressed', 'true');
+    } else {
+      btn.classList.remove('mode-active');
+      btn.setAttribute('aria-pressed', 'false');
+    }
+  }
+}
+
+function getCurrentInput(): string | null {
   const v = chatInput?.value.trim() ?? '';
-  if (v) return v;
-  // Empty input → prompt user
-  const prompted = window.prompt(`${modeName}\n\n${hint}\n\nKetik prompt:`);
-  if (prompted && prompted.trim()) return prompted.trim();
-  return null;
+  return v || null;
 }
 
 function appendThinkingPlaceholder(label: string): HTMLDivElement {
