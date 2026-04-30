@@ -16082,6 +16082,19 @@ Sprint Tumbuh REAL state was 20% (broken auth), bukan 40%. Sekarang 50% (auth fi
 
 
 
+### 2026-04-30 (bagian 16 — FIX: SourceResult missing source + DDG blocked + Wikipedia fallback)
+
+- **ERROR:** `SourceResult.__init__() missing 1 required positional argument: 'source'` — `omnyx_direction.py:488` memanggil `SourceResult(success=True, ...)` tanpa arg wajib `source`.
+  - **FIX:** Tambah `source=r.tool_name` → commit `157d08c`.
+- **ERROR:** DDG (`html.duckduckgo.com`, `lite.duckduckgo.com`, `api.duckduckgo.com`) semua `ConnectTimeout` dari VPS IP. Mojeek tetap 403.
+  - **FIX:** Tambah `_wikipedia_search_async()` sebagai fallback ketiga. Wikipedia API `id.wikipedia.org/w/api.php` confirmed reachable (0.9s). Timeout DDG dikurangi 10→5s. Commit `1461c1a`.
+- **TEST:** `chat_holistic` via localhost → 70.5s, answer "Presiden Indonesia saat ini adalah Prabowo Subianto", citations: `[web_search, corpus, persona_fanout]`. ✅
+- **TEST:** `chat_holistic` via `https://ctrl.sidixlab.com` → 6.1s, fallback path, answer valid. ✅
+- **TEST:** `app.sidixlab.com` loads HTML dengan `index-5_PRSEo-.js`. JS bundle references `ctrl.sidixlab.com/agent/chat_holistic`. ✅
+- **NOTE:** Playwright `libasound.so.2` — library ADA di `/usr/lib/x86_64-linux-gnu/libasound.so.2`, tapi masih error di Chromium. `playwright install-deps chromium` dijalankan background.
+- **NOTE:** Latency issue — ~70s via synthesis path (persona_fanout 45s + Ollama synthesis 20s). Fallback path (ReAct) lebih cepat 6s. Perlu optimize (reduce persona fanout atau skip untuk simple queries).
+- **DECISION:** Wikipedia fallback sufficient for now. DDG permanently blocked dari VPS IP — jangan waste timeout.
+
 ### 2026-04-30 (bagian 15 — HANDOFF: Validasi Live + Sprint Auto-Harvest)
 
 - **DEPLOY STATUS:** Commit `21fea1f` deployed di VPS, backend `sidix-brain` jalan, endpoint `/agent/chat_holistic` verified (confidence: tinggi, 1485ms).
