@@ -15351,3 +15351,48 @@ fe2879f sigma-4 cognitive expansion
 - Post-Sigma-3 Q12 fix: **20/20** confirmed
 - Post-Sigma-3E (25Q with Q21-25): pending full goldset run, code-level confidence HIGH
 
+
+## [INFRA-FIX] 2026-04-30 — Brain Stability via PyTorch Upgrade
+
+### Akar masalah
+PyTorch 2.0.0 vs transformers 5.5.1 needs >= 2.4 = cascade error:
+- transformers "Disabling PyTorch" -> nn.Module reference broken
+- sentence_transformers fail to load -> semantic_cache bootstrap fail
+- dense_index embedding_loader unavailable
+- Brain hidup tapi setengah lumpuh -> jawaban lambat + kadang ngaco + offline
+
+### Fix
+`pip install --upgrade torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu`
+
+Verified:
+- sentence_transformers loads OK
+- MiniLM 384-dim embeddings work
+- semantic_cache bootstraps via MiniLM fallback
+- BGE-M3 still fails (CVE-2025-32434 needs torch>=2.6, defer)
+
+### User-perceived impact (live probes)
+- "dimana new york?" 128s ngaco -> 45s quality answer (NYC + state context, addresses ambiguity)
+- "saya mau bikin app design tools" offline timeout -> 143s 2124 char answer with Sigma-3D Metafora Visual structure (creative methodology LIVE in production)
+
+### Side issues catat
+- Dense index dim mismatch (384 MiniLM vs 512 BGE-M3 corpus) - need rebuild index OR torch 2.6
+- Goldset 25Q sequential still hangs at Q2 due to RunPod cold-cycle (independent issue)
+
+### Northstar audit
+- Thinks: 75% (foundation solid)
+- Learns: 60% (cron DNA active, corpus->LoRA pipeline unverified)
+- Creates: 30% (Sigma-3D LIVE, creative tools UI pending)
+- Proactive: 15% (Sigma-5+ scope)
+
+### Frontend SIDIX_USER_UI status
+4 quick prompts + 4 Supermodel modes + 5 persona + help modal = mature foundation.
+Pending: streaming display, tool exec indicator, image preview panel, multi-draft display.
+
+### Files
+- brain/public/research_notes/303_brain_stability_pytorch_fix_narrative_20260430.md - full narrative
+- (no code commit needed - PyTorch upgrade is system-level pip)
+
+### Action item bos
+- RunPod console: Idle timeout 60s -> 300s (sequential query fix)
+- Test app.sidixlab.com besok pagi: 3 query golden flow
+
