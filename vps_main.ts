@@ -1156,15 +1156,14 @@ function appendThinkingPlaceholder(label: string): HTMLDivElement {
 }
 
 // 🌟 Sprint Α: Holistic Mode — Jurus Seribu Bayangan (multi-source paralel + SSE streaming)
-modeHolisticBtn?.addEventListener('click', async () => {
-  const question = getInputOrPrompt(
+
+// Extracted from modeHolisticBtn event listener for reuse by handleSend
+async function doHolistic(question: string) {
+
     '🌟 Jurus Seribu Bayangan (Holistic)',
     'Mengerahkan SEMUA resource paralel: web search + knowledge base + semantic embedding + 5 persona research + tools simultan. Sanad cross-verify multi-source. Cognitive synthesizer (neutral) merge jadi 1 jawaban with attribution. Multi-perspective default.',
   );
-  if (!question) return;
 
-  appendMessage('user', question);
-  if (chatInput) { chatInput.value = ''; chatInput.dispatchEvent(new Event('input')); }
 
   // Live progress card — show 8 parallel sources visualized real-time
   // Sprint UX-fix 2026-04-30: visi bos = SEMUA paralel sekaligus, bukan sequential
@@ -1371,7 +1370,6 @@ modeHolisticBtn?.addEventListener('click', async () => {
       onToolError: (tool, error) => addProgressLine(`Tool ${tool} error: ${error}`, 'fail'),
       onDone: (meta) => {
         clearInterval(elapsedTimer);
-        sendBtn.disabled = false;
         addProgressLine(
           `Done: confidence=${meta.confidence}, ${meta.nSources} sources, method=${meta.method}, ${(meta.durationMs / 1000).toFixed(1)}s total`,
           'ok',
@@ -1379,15 +1377,25 @@ modeHolisticBtn?.addEventListener('click', async () => {
       },
       onError: (msg) => {
         clearInterval(elapsedTimer);
-        sendBtn.disabled = false;
         addProgressLine(`Error: ${msg}`, 'fail');
       },
     });
   } catch (e) {
     clearInterval(elapsedTimer);
-    sendBtn.disabled = false;
     addProgressLine(`Exception: ${(e as Error).message}`, 'fail');
   }
+}
+
+modeHolisticBtn?.addEventListener('click', async () => {
+  const question = getInputOrPrompt(
+    '🌟 Jurus Seribu Bayangan (Holistic)',
+    'Mengerahkan SEMUA resource paralel: web search + knowledge base + semantic embedding + 5 persona research + tools simultan. Sanad cross-verify multi-source. Cognitive synthesizer (neutral) merge jadi 1 jawaban with attribution. Multi-perspective default.',
+  );
+  if (!question) return;
+
+  appendMessage('user', question);
+  if (chatInput) { chatInput.value = ''; chatInput.dispatchEvent(new Event('input')); }
+  await doHolistic(question);
 });
 
 modeBurstBtn?.addEventListener('click', async () => {
@@ -1784,18 +1792,18 @@ async function handleSend() {
     // count ≤ FREE_CHAT_LIMIT: chat gratis, lanjut normal
   }
 
-  // ── Auto-mode routing: holistic default ───────────────────────────────────
-  if (activeMode === 'holistic') {
-    sendBtn.disabled = true;
-    modeHolisticBtn?.click();
-    return;
-  }
-
   chatInput.value = '';
   chatInput.style.height = 'auto';
   sendBtn.disabled = true;
 
   appendMessage('user', question);
+
+  // ── Auto-mode routing: holistic default ───────────────────────────────────
+  if (activeMode === 'holistic') {
+    await doHolistic(question);
+    sendBtn.disabled = false;
+    return;
+  }
 
   // Thinking indicator — dengan hint khusus kalau minta gambar + REAL-TIME TIMER
   const q_lower = question.toLowerCase();

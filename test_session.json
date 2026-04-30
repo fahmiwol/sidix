@@ -1,0 +1,14 @@
+{
+  "session_id": "session_test_001",
+  "question": "Apa itu SIDIX?",
+  "final_answer": "SIDIX adalah Penemu Inovatif Kreatif Digital dengan pendekatan Islamic Epistemology.",
+  "persona": "AYMAN",
+  "citations": [{"source_path": "brain/public/principles/01_prinsip_inti.md", "source_title": "Prinsip Inti"}],
+  "confidence_score": 0.92,
+  "created_at": "2026-04-30T15:00:00+00:00",
+  "error": "",
+  "answer_type": "fakta",
+  "relevan_score": 9.5,
+  "sanad_tier": "primer",
+  "iteration_count": 1
+}

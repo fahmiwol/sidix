@@ -238,3 +238,10 @@
   border-radius: 9999px;
   transition: width 0.5s ease;
 }
+
+/* ── Mode button active state ──────────────────────────────────────────────── */
+.mode-active {
+  border-color: rgba(212, 160, 23, 0.8) !important;
+  box-shadow: 0 0 0 2px rgba(212, 160, 23, 0.3);
+  background-color: rgba(212, 160, 23, 0.10);
+}

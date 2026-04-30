@@ -1,0 +1,4 @@
+import base64
+with open('patch_auto_holistic.py','rb') as f:
+    data = f.read()
+print(base64.b64encode(data).decode())
