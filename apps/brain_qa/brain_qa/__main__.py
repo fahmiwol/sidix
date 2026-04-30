@@ -429,6 +429,10 @@ def main(argv: list[str]) -> int:
     p_convo.add_argument("--dry-run", action="store_true",
                          help="Parse + extract tanpa write file")
 
+    # OTAK+ Self-Critique (Phase 1 scaffold)
+    sub.add_parser("daily_self_critique",
+                   help="OTAK+: evaluate yesterday's outputs for halu, drift, gaps")
+
     args = parser.parse_args(argv)
 
     if args.cmd == "index":
@@ -1147,6 +1151,12 @@ def main(argv: list[str]) -> int:
             out=args.out,
             paraphrase=getattr(args, "paraphrase", False),
         )
+        return 0
+
+    if args.cmd == "daily_self_critique":
+        from .daily_self_critique import run_daily_critique
+        report = run_daily_critique()
+        print(json.dumps(report.__dict__, indent=2, ensure_ascii=False, default=str))
         return 0
 
     raise RuntimeError(f"Unknown command: {args.cmd}")

@@ -4406,6 +4406,9 @@ def create_app() -> "FastAPI":
                             "_sanad_contributors": _sanad_result.contributing_branches,
                             "_sanad_total_duration_ms": _sanad_result.total_duration_ms,
                             "_sanad_render_duration_ms": _sanad_ms,
+                            "relevan_score": round(_sanad_result.relevan_score, 2),
+                            "sanad_tier": _sanad_result.sanad_tier,
+                            "iteration_count": _sanad_result.iteration_count,
                             "_citations": _sanad_result.citations[:10],
                         }
                         yield f"data: {_json.dumps(_sanad_meta)}\n\n"
@@ -4420,6 +4423,9 @@ def create_app() -> "FastAPI":
                             "conversation_id": effective_conversation_id,
                             "confidence": "tinggi",
                             "_sanad_active": True,
+                            "relevan_score": round(_sanad_result.relevan_score, 2),
+                            "sanad_tier": _sanad_result.sanad_tier,
+                            "iteration_count": _sanad_result.iteration_count,
                             "citations": _sanad_result.citations[:10],
                         }
                         yield f"data: {_json.dumps(_sanad_done)}\n\n"
