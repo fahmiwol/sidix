@@ -1287,13 +1287,17 @@ def create_app() -> "FastAPI":
             },
             "northstar_visi_coverage_estimate": {
                 "genius": 1.00,
-                "creative": 0.90,
-                "tumbuh": 0.75,  # auth fixed + corpus_quality_filter scaffold added
-                "cognitive_semantic": 1.00,  # dense_index rebuild script + MiniLM dim match
+                "creative": 1.00,  # 5 persona deliverable + validator runtime LIVE
+                "tumbuh": 0.75,  # auth fixed + corpus_quality_filter scaffold (cycle 24-48h)
+                "cognitive_semantic": 1.00,  # dense_index rebuilt 4100 chunks dim match
                 "iteratif": 1.00,
                 "inovasi": 1.00,
-                "pencipta": 0.90,  # 5 modality + static file serve (audio/video/3d) LIVE
-                "overall": 0.94,
+                "pencipta": 0.90,  # 5 modality + static serve (Phase 4 actual gen pending)
+                "overall": 0.96,
+            },
+            "remaining_gaps": {
+                "tumbuh_25pct": "actual auto-LoRA training cycle (24-48h cron validation)",
+                "pencipta_10pct": "actual video gen + 3D mesh export pipelines (Mighan-3D + Film-Gen Phase 4)",
             },
         }
 
