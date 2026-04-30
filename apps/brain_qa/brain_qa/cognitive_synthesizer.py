@@ -203,14 +203,29 @@ class CognitiveSynthesizer:
         system, user, sources_used = _build_synthesis_prompt(bundle.query, bundle)
 
         try:
-            from .runpod_serverless import hybrid_generate
-            answer, mode = await asyncio.to_thread(
-                hybrid_generate,
-                user,
-                system=system,
-                max_tokens=self.max_tokens,
-                temperature=self.temperature,
-            )
+            # UX-fix 2026-04-30: prefer Ollama local (qwen2.5:7b sudah loaded di VPS RAM)
+            # untuk hindari RunPod cold-start 60-120s yang dominan latency.
+            # Fallback hybrid_generate kalau Ollama unavailable.
+            from .ollama_llm import ollama_available, ollama_generate
+            if ollama_available():
+                answer, mode = await asyncio.to_thread(
+                    ollama_generate,
+                    user,
+                    system=system,
+                    max_tokens=self.max_tokens,
+                    temperature=self.temperature,
+                    model="qwen2.5:7b",
+                )
+                mode = f"ollama_local_{mode}"
+            else:
+                from .runpod_serverless import hybrid_generate
+                answer, mode = await asyncio.to_thread(
+                    hybrid_generate,
+                    user,
+                    system=system,
+                    max_tokens=self.max_tokens,
+                    temperature=self.temperature,
+                )
             elapsed_ms = int((time.monotonic() - t0) * 1000)
 
             confidence = "tinggi" if n >= 4 else ("sedang" if n >= 2 else "rendah")
