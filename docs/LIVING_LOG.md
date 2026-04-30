@@ -15827,3 +15827,22 @@ Sprint Tumbuh REAL state was 20% (broken auth), bukan 40%. Sekarang 50% (auth fi
 - `SETUP_CRON.sh`
 - `scripts/daily_synthesis.sh`
 - `apps/brain_qa/brain_qa/agent_serve.py` (baris 4399–4424)
+
+### 2026-04-30 (bagian 3 — VPS deploy + OTAK+ live)
+
+- **DEPLOY:** Merge `origin/work/gallant-ellis-7cd14d` ke `claude/gallant-ellis-7cd14d` di VPS `/opt/sidix`. Resolve 2 conflicts: `docs/LIVING_LOG.md` (keep theirs), `scripts/daily_synthesis.sh` (keep theirs).
+- **FIX:** `apps/brain_qa/brain_qa/agent_serve.py` — patch `_store_session()` untuk juga persist session ke `.data/sessions/session_{id}.json`. OTAK+ self-critique sekarang punya data untuk dievaluasi.
+- **FIX:** `apps/brain_qa/brain_qa/daily_self_critique.py` — ubah path relatif `.data/sessions` dan `.data/critique` jadi absolut `/opt/sidix/.data/...` supaya jalan dari cron dan CLI modul.
+- **TEST:** `python3 -m brain_qa daily_self_critique` di VPS → evaluated=1, passed=0, failed=1, avg_relevan=9.5, coverage_gap=1 (expected: test session hanya 1 source, minimum 2 untuk pass).
+- **TEST:** `scripts/daily_synthesis.sh` jalan → `.data/daily_state/2026-04-30.md` dibuat (sessions=0, corpus=797, git=claude/gallant-ellis-7cd14d @ 19a678a).
+- **TEST:** Health check VPS → status=ok, model_ready=true, corpus_doc_count=2287.
+- **CRON:** Terinstall 6 job: 02:00 Learn, 03:00 OTAK+, 04:00 Growth, 04:30 Queue, 14:00 Learn, 22:00 Synthesis.
+- **LOGROTATE:** `/etc/logrotate.d/sidix` configured.
+- **NOTE:** VPS commit `fee82e6` berisi patch OTAK+ — belum di-push ke remote (VPS HTTPS auth). Commit lokal Windows sudah push ke `work/gallant-ellis-7cd14d`. Next sync: pull dari lokal Windows atau cherry-pick `fee82e6`.
+- **NOTE:** `sidix-brain` restart count 75 — butuh monitoring. Sebagian besar restart dari sebelum deploy (dense_index dim mismatch + web_search bug). Patch terbaru belum address root cause tersebut.
+- **NOTE:** Session persistence baru mulai dari deploy ini — session sebelumnya tidak tersimpan di disk, hanya di in-memory cache.
+
+**Refer:**
+- VPS path: `/opt/sidix`
+- Branch VPS: `claude/gallant-ellis-7cd14d` @ `fee82e6`
+- `.data/sessions/`, `.data/critique/`, `.data/daily_state/`
