@@ -1019,3 +1019,76 @@ Catat di:
 - Sigma-4 plan: warmup + streaming SSE
 
 **Status**: Sigma-3A/B/D/E DONE | Sigma-3C → Sigma-4A/B | Sesi tutup
+
+---
+
+## Sesi 2026-04-30 (lanjutan 2) — Infra Cost Optimization
+
+**Bos directive**: *"saya udah terminate tapi ada lagi ada lagi"* + *"saya nggak tau, ngggak ngerti, yang saya tau sidix harus jawab bener... kamu pikirin sebagai asisten saya, sebagai kaka yang ngajarin sidix supaya jadi seperti kamu."*
+
+### Yang dikerjakan (tanggung jawab penuh dari sisi Claude)
+
+**Diagnosa**: workers spawn terus karena 2 faktor:
+1. RunPod default permissive (Max=3+, Active>0, FlashBoot OFF)
+2. 8+ cron jobs high-frequency kirim traffic ke brain (every 15-30 min)
+
+**Action 1 — RunPod (founder execute)**:
+Bos set Max=1, Active=0, Idle=60s, FlashBoot=ON. Setting optimal.
+
+**Action 2 — Cron diet (Claude execute via SSH)**:
+- Backup crontab dulu
+- 7 cron paused (lemak operasional, bukan DNA)
+- 6 cron tetap (foundational growth)
+- Reversible: cron di-COMMENT bukan delete, bisa restore kapan saja
+
+### Filosofi yang diterapkan
+
+**"DNA cron vs Lemak cron"** — frame yang saya pakai untuk decide:
+- DNA = bikin SIDIX TUMBUH (corpus growth, training signal, weekly optimization). KEEP.
+- Lemak = bikin SIDIX SIBUK tanpa hasil compound (queue check pada queue kosong, dummy traffic, observation yang bisa daily). PAUSE.
+
+**Anti-pattern yang dipotong**: dummy_agents.py jariyah. Awalnya didesain untuk paksa brain warm dengan dummy traffic. Setelah FlashBoot enabled (cold-start 2s), jariyah jadi pure cost waste.
+
+**Lesson**: setiap kali ada feature baru di infra (FlashBoot), RE-AUDIT design lama. Pattern yang dulu optimal bisa jadi anti-pattern.
+
+### Trust delegation moment
+
+Bos eksplisit bilang "kamu pikirin sebagai asisten saya". Saya ambil keputusan tanpa minta approve baris-per-baris, tapi:
+1. Backup dulu sebelum modify (reversibility)
+2. Mark dengan SIGMA3-PAUSE (audit trail)
+3. Jelaskan reasoning di research note (note 301)
+4. List eksplisit yang KEEP vs PAUSE (transparansi)
+
+Ini contoh autonomy responsible — bukan slow with permission, bukan fast without trace. Cepat + reversible + traceable.
+
+### Sigma-4A Streaming = REPRIORITIZE
+
+Dengan FlashBoot ON (cold-start 2s), masalah perceived latency utama sudah resolved. Streaming sekarang nice-to-have bukan must-have.
+
+New Sigma-4 priority:
+1. Verify cost stabilization 24 jam
+2. Re-run 25Q goldset (sekarang aman dari RunPod throttle)
+3. Selective cron re-enable (kalau cost OK)
+4. Streaming SSE (last priority)
+
+### Quote yang relevan
+> "yang saya tau sidix harus jawab bener, harus kerja dengan bener hasilnya"
+
+Bos right call: focus pada CORRECTNESS (Sigma-1/2/3) dan COST CONTROL (this session). Streaming/UX polish later.
+
+> "kakak yang ngajarin sidix supaya jadi seperti kamu"
+
+Yang diajar ke SIDIX malam ini:
+- Cron design dengan filosofi DNA-vs-Lemak
+- Cost-aware infra config (FlashBoot, scale-to-zero)
+- Reversible action pattern (backup → modify → marker)
+- Re-audit design saat infra feature baru tersedia
+
+### Status
+- Infra: optimized
+- Cost projection: $16.77 balance tahan ~17-30 hari (vs 4-7 hari sebelumnya)
+- Cron: 7 paused, 6 active (DNA loop tetap jalan)
+- Sigma-3 code: deployed dan tinggal validate via goldset re-run
+- Sigma-4A streaming: defer
+
+**Sesi tutup. Besok: validate cost stabilization + re-run 25Q goldset.**

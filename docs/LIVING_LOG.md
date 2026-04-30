@@ -15200,3 +15200,48 @@ Sprint progression target: 19/20 → 23/25 (maintains 92%+ with harder goldset)
 2. Re-run 25Q goldset → target 22-23/25 = 88-92%
 3. Sigma-4A streaming SSE backend
 
+
+## [INFRA] 2026-04-30 — RunPod Cost Optimization + Cron Diet
+
+### Trigger
+Founder concern: workers terus spawn meski di-terminate. Balance $24 → $16.77 dalam 3 hari (~$2.5/hari burn).
+
+### Diagnosa
+1. RunPod Max Workers = 3+ dengan Active > 0 → workers running terus-menerus
+2. **8+ cron jobs high-frequency** memanggil brain endpoint (every 15-30 min)
+3. `dummy_agents.py` (jariyah) sudah counterproductive setelah FlashBoot tersedia
+4. FlashBoot OFF → cold-start 60-120s tiap spawn
+
+### Action
+
+**RunPod console (founder action)**:
+- Max Workers 3 → **1**
+- Active Workers → **0** (scale-to-zero)
+- Idle timeout → **60s**
+- **FlashBoot → ON** (game changer: cold-start 60-120s → 2s)
+- Execution timeout → 600s
+
+**VPS crontab (Claude action via SSH)**:
+- 7 cron PAUSED dengan marker `# [SIGMA3-PAUSE 2026-04-30]`:
+  - sidix_always_on.sh (15min) — observation, low yield
+  - sidix_worker.sh (15min) — autonomous worker, queue empty
+  - sidix_aku_ingestor.sh (15min) — AKU ingest, bisa daily
+  - sidix_radar.sh (30min) — trend, bisa daily
+  - sidix_autodev_tick.sh (30min) — autodev, queue empty
+  - dummy_agents.py × 2 (jariyah) — counterproductive after FlashBoot
+- 6 cron tetap ACTIVE (DNA growth):
+  - learn/run + process_queue, synthetic/batch, sidix/grow, odoa, prompt_optimize
+
+Backup crontab: `/opt/sidix/.data/crontab_backup_20260430_132013.txt`
+
+### Expected Cost
+- Pre: $2.5-5/hari (balance habis 4-7 hari)
+- Post: <$1/hari (balance $16.77 tahan ~17-30 hari)
+
+### Files
+- deploy-scripts/warmup_runpod_v2.sh (alternatif jika Active=0 tidak cukup)
+- brain/public/research_notes/301_infra_cost_optimization_runpod_cron_20260430.md
+
+### Sigma-4A Streaming
+DEFER. Setelah FlashBoot ON, cold-start 2s = perceived latency acceptable tanpa streaming. Streaming jadi nice-to-have bukan must-have. Re-prioritize.
+
