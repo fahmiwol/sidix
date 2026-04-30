@@ -1119,12 +1119,23 @@ def _compose_final_answer(
             "kapan ", "dimana ", "di mana ", "apakah ",
         ))
     )
+    # Sigma-3A: simple comparison detection — caps at 500 (non-code) or 700 (code)
+    # Real-world comparison rarely needs >500 tokens; 1000 caused 240s timeouts
+    _is_simple_comparison = any(t in _q_lc for t in (
+        "perbedaan ", "bandingkan", "compare ", "versus ", " vs ", " vs.",
+        "beda antara", "beda dari", "selisih antara", "difference between",
+        "comparison of", "kelebihan dan kekurangan",
+    ))
     if simple_mode:
         _max_tokens = 200
     elif _is_brief_modifier:
         _max_tokens = 250
     elif _is_single_fact and not _is_code_q:
         _max_tokens = 350
+    elif _is_simple_comparison and not _is_code_q:
+        _max_tokens = 500
+    elif _is_simple_comparison and _is_code_q:
+        _max_tokens = 700
     elif _is_code_q:
         _max_tokens = 1200
     elif _is_long_reasoning:
@@ -1821,6 +1832,11 @@ def _apply_hygiene(final_answer: str) -> str:
         return final_answer
     try:
         text = final_answer
+
+        # Sigma-3B: strip "[⚠️ SANAD MISSING]" entirely (legacy cache + edge cases).
+        # Setelah Sigma-3B, label ini tidak lagi user-visible. Backstop untuk
+        # cached answers yang masih punya label dari pre-Sigma-3.
+        text = _re_hygiene.sub(r"\[⚠️ SANAD MISSING\]\s*", "", text)
 
         # 1. Dedupe labels/footers
         for pattern in _HYGIENE_DEDUPE_PATTERNS:

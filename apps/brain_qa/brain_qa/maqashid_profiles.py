@@ -286,11 +286,14 @@ def evaluate_maqashid(
                           "[SPECULATION]", "[SPEKULASI]", "[UNKNOWN]"]
         )
         if not has_label:
+            # Sigma-3B (UX fix): JANGAN inject "[⚠️ SANAD MISSING]" ke output user.
+            # Itu confusing — user lihat "warning" padahal jawaban factual valid.
+            # Status warn tetap diset untuk logging/metric, tapi output passthrough.
             return {
                 "status": "warn",
                 "mode": mode.value,
-                "reasons": ["Output akademik wajib punya label epistemik [FAKTA]/[OPINI]"],
-                "tagged_output": "[⚠️ SANAD MISSING]\n" + generated_output,
+                "reasons": ["Output akademik tanpa label epistemik (logged, not user-visible)"],
+                "tagged_output": generated_output,
             }
         return {
             "status": "pass",

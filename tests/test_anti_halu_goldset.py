@@ -95,6 +95,23 @@ GOLDSET: list[GoldQ] = [
            "UTZ", lambda a: len((a or "").strip()) > 50),
     GoldQ(20, "creative", "Buatkan 1 tagline kreatif untuk brand Tiranyx",
            "UTZ", lambda a: len((a or "").strip()) > 20),
+
+    # === SIGMA-3E EXPANSION: harder benchmark for comparison/strategy/complex creative ===
+    GoldQ(21, "comparison", "Apa perbedaan REST API dan GraphQL?",
+           "ABOO", lambda a: all(t in (a or "").lower() for t in ("rest", "graphql"))
+                        and any(t in (a or "").lower() for t in ("endpoint", "query", "schema", "resource"))),
+    GoldQ(22, "comparison", "Bandingkan class component dan function component di React",
+           "ABOO", lambda a: all(t in (a or "").lower() for t in ("class", "function"))
+                        and any(t in (a or "").lower() for t in ("hook", "state", "lifecycle"))),
+    GoldQ(23, "strategy", "Buatkan strategi singkat brand identity untuk startup fintech yang menarget Gen-Z",
+           "UTZ", lambda a: len((a or "").strip()) > 150
+                        and any(t in (a or "").lower() for t in ("visual", "tone", "audience", "warna", "logo"))),
+    GoldQ(24, "creative", "Berikan 3 alternatif tagline untuk brand kopi premium dengan reasoning",
+           "UTZ", lambda a: ((a or "").count("\n") >= 2 or (a or "").count("- ") >= 2 or (a or "").count("1.") >= 1)
+                        and len((a or "").strip()) > 100),
+    GoldQ(25, "factual", "Apa itu attention mechanism dalam Transformer?",
+           "ABOO", lambda a: any(t in (a or "").lower() for t in ("query", "key", "value"))
+                        and any(t in (a or "").lower() for t in ("softmax", "weight", "score", "bobot"))),
 ]
 
 
