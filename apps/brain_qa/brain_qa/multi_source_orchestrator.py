@@ -37,11 +37,17 @@ DEFAULT_TIMEOUTS = {
     "web_search": 25.0,        # Sprint Α bug fix: 15→25 (DDG sometimes slow)
     "corpus_search": 5.0,
     "dense_index": 5.0,
-    "persona_fanout": 75.0,    # Sprint Α bug fix: 45→75 (5 persona Ollama paralel exceed 45s)
+    "persona_fanout": 45.0,    # UX-fix 2026-04-30: 75→45 dengan model 1.5b lighter (Ollama CPU bottleneck)
     "tool_registry": 5.0,
 }
 
-PERSONAS = ("UTZ", "ABOO", "OOMAR", "ALEY", "AYMAN")
+# UX-fix 2026-04-30: VPS Ollama CPU bottleneck. Default fanout 3 persona (creative
+# + engineer + community) BUKAN 5. User explicit pilih persona di dropdown =
+# tambahan persona tunggal di synthesis.
+PERSONAS_FULL = ("UTZ", "ABOO", "OOMAR", "ALEY", "AYMAN")
+PERSONAS = ("UTZ", "ABOO", "AYMAN")  # Default fanout (3 = balance speed/diversity)
+# Lighter model untuk persona ringkas (1.5B vs 7B = 5x faster di CPU)
+PERSONA_FANOUT_MODEL = "qwen2.5:1.5b"
 
 
 @dataclass
@@ -165,10 +171,13 @@ async def _src_dense_index(query: str) -> dict:
 
 
 async def _src_persona_fanout(query: str, personas: tuple = PERSONAS) -> dict:
-    """5-persona paralel ringkas via Ollama lokal (gratis CPU).
+    """N-persona paralel ringkas via Ollama lokal (gratis CPU).
 
-    Setiap persona dapat 80-150 token ringkasan dari sudut pandangnya.
-    Synthesis bertanggung jawab merge jadi full answer.
+    UX-fix 2026-04-30: pakai qwen2.5:1.5b (1GB) bukan sidix-lora 7B (4.7GB).
+    Default 3 persona (UTZ creative · ABOO engineer · AYMAN community) untuk
+    balance speed/diversity. VPS CPU bottleneck handled.
+
+    Setiap persona dapat 80-120 token ringkasan dari sudut pandangnya.
     """
     from .ollama_llm import ollama_available, ollama_generate
     from .cot_system_prompts import PERSONA_DESCRIPTIONS
@@ -180,21 +189,22 @@ async def _src_persona_fanout(query: str, personas: tuple = PERSONAS) -> dict:
         desc = PERSONA_DESCRIPTIONS.get(p.upper(), "")
         system = (
             f"{desc}\n\n"
-            f"Berikan SUDUT PANDANG SINGKAT (max 100 kata) dari perspektif {p} "
+            f"Berikan SUDUT PANDANG SINGKAT (max 80 kata) dari perspektif {p} "
             f"untuk pertanyaan user. Fokus ke INSIGHT distinctive sesuai karakter persona, "
             f"bukan jawaban lengkap."
         )
         try:
             text, mode = await asyncio.to_thread(
-                ollama_generate, query, system=system, max_tokens=150, temperature=0.7
+                ollama_generate, query, system=system, max_tokens=120,
+                temperature=0.7, model=PERSONA_FANOUT_MODEL,
             )
             return p, text or ""
         except Exception as e:
             return p, f"[ERROR: {type(e).__name__}]"
 
-    # Paralel 5 persona via asyncio.gather
+    # Paralel N persona via asyncio.gather
     results = await asyncio.gather(*[_one_persona(p) for p in personas])
-    return {"results": dict(results), "n_persona": len(personas)}
+    return {"results": dict(results), "n_persona": len(personas), "model": PERSONA_FANOUT_MODEL}
 
 
 async def _src_tool_registry(query: str) -> dict:
