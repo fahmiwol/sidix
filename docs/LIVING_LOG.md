@@ -15396,3 +15396,47 @@ Pending: streaming display, tool exec indicator, image preview panel, multi-draf
 - RunPod console: Idle timeout 60s -> 300s (sequential query fix)
 - Test app.sidixlab.com besok pagi: 3 query golden flow
 
+
+## [IMPL] 2026-04-30 — SIDIX_NEXT_UI Initial Scaffold
+
+### Trigger
+Bos frustration: "kamu inget nggak pemabahsan itu seperti menguap saja? banyak yg kita bahas." UI lock decision dari 2026-04-30 (FOUNDER_JOURNAL line 731-755) sudah ada tapi belum di-execute.
+
+### Yang dibikin
+- `SIDIX_NEXT_UI/` folder paralel ke `SIDIX_USER_UI/` (yang lama tetap LIVE, tidak break app.sidixlab.com)
+- Next.js 15 App Router + TS + Tailwind v3 + lucide-react + framer-motion (manual scaffold, tanpa create-next-app, hemat token)
+- Brand tokens locked: Space Grotesk + #7C5CFF (purple) #00D2FF (cyan) #FF6EC7 (pink) #0B0F2A #FFFFFF
+- 3 components ported dari Kimi scaffolding `UI Baru SIDIX/app/src/components/`:
+  - LeftSidebar (Chat/Agent/Tools/Projects/Knowledge/Integrations/History) — TANPA mock pricing card
+  - ChatDashboard wire REAL ke POST /agent/chat (no mock Halo Ayudia/1250 credits)
+  - RightPanel Built-in Tools placeholder (real wire post-reset)
+- API client `lib/sidix-client.ts`: chat() + health() + streamGenerate()
+- Layout 3-column responsive (250px/flex/320px-lg-only)
+- Loading state transparan dengan timer real ("SIDIX sedang berpikir... 12s")
+- Error state graceful (no cryptic "SIDIX offline")
+
+### Yang DEFER (post limit reset)
+- ParticleBackground (Three.js polish)
+- Auth Supabase + real greeting + quota display
+- Streaming SSE wrapper untuk /agent/chat (existing stream cuma raw LLM /agent/generate/stream)
+- Mobile sidebar collapse
+- Mascot Option B (SDXL state variants)
+- Deploy PM2 reconfig + nginx routing
+
+### Naming conflict yang diakui
+Saya pakai "Sigma-1/Sigma-2/Sigma-3" overlap dengan locked Σ-1A/B/C/D/E/F (anti-halu fanout) + Σ-3 (UI redesign).
+Going forward: pakai nama eksplisit "Sprint Anti-Halu Q1" / "Sprint Latency" / "Sprint UI Migration" untuk hindari ambiguitas.
+
+### RunPod EngineCore_DP0 died (catat untuk pattern recognition)
+2026-04-30 06:20:06 [error] Engine core proc EngineCore_DP0 died unexpectedly
+TypeError 'NoneType' is not callable di asyncio cleanup (zmq sockets, async_llm.py)
+Worker terminated, 7 jobs in queue, auto-recovery initializing.
+
+Diagnose: vLLM engine internal crash. Possible causes: OOM, dependency mismatch, RunPod platform issue.
+Action: monitor + auto-recovery. Pattern berulang -> redeploy endpoint baru.
+
+### Files
+- SIDIX_NEXT_UI/* (10 files: package.json, next.config, tsconfig, tailwind.config, postcss, app/*, components/*, lib/*)
+- docs/FOUNDER_JOURNAL.md updated dengan recall + naming conflict + RunPod log + plan
+- LIVING_LOG entry ini
+

@@ -1237,3 +1237,86 @@ Quote hari ini yang harus diingat:
 > "saya nggak ngerti, saya solo founder, saya belum punya pengalaman bangun ai sebelumnya. jadi kamu bantu saya juga mikir, diskusi"
 
 Kakak SIDIX nemenin. Kita compound bareng.
+
+---
+
+## 2026-04-30 (lanjutan 5) — RECALL: UI Lock + RunPod Engine Crash + Naming Conflict
+
+### Bos frustration (verbatim)
+> "Okeudah kamu catata semua??di semua log dan founder journal?"
+> "trus sebelum itu. UI upgrade kapan?"
+> "ubah jadi next.js: C:\Users\ASUS\Downloads\Kimi_Agent_Sidix AI Agent Selesai\UI Baru SIDIX\app dari design sitem itu, kamu inget nggak pemabahsan itu seperti menguap saja? banyak yg kita bahas."
+
+### Honest acknowledgment
+Bos benar. Saya TIDAK ingat detail pembahasan UI di sesi sebelumnya karena context window di-compact tiap sesi. Pembahasan menguap, dan saya kontribusi ke masalah itu kalau saya tidak proactively re-read FOUNDER_JOURNAL sebelum spoon-feed dari user.
+
+Setelah search FOUNDER_JOURNAL line 600-755, saya recall lock decisions:
+
+### LOCKED UI DECISIONS (recap supaya tidak menguap lagi)
+
+1. **Framework**: **Next.js (App Router)** — bukan Vite/CRA
+2. **Source scaffolding**: `C:\Users\ASUS\Downloads\Kimi_Agent_Sidix AI Agent Selesai\UI Baru SIDIX\app\` — React 19 + Vite + shadcn (40 components) + Three.js + Framer Motion
+3. **4 main components to port**: LeftSidebar, ChatDashboard, RightPanel, ParticleBackground
+4. **Brand**: Space Grotesk, neon (#7C5CFF #00D2FF #FF6EC7 #0B0F2A #FFFFFF), mascot deer-robot dari Bogor
+5. **Buang mock data**: Hapus "Halo Ayudia", "Pro Plan", "1,250 Credits", "Healthy Drink Campaign" dummy → wire ke fitur SIDIX real
+6. **PM2**: `sidix-ui` ganti command `serve dist` → `next start -p 4000`
+7. **Backend FastAPI** di `ctrl.sidixlab.com:8765` — TIDAK BERUBAH
+8. **Sequencing**: Σ-1 anti-halu first (DONE 95%), kemudian Σ-3 UI
+
+### NAMING CONFLICT YANG SAYA BIKIN (perlu disebut clearly)
+
+Saya pakai naming "Sigma-1/Sigma-2/Sigma-3" untuk anti-halu/latency/comparison-cap di sesi kerja saya. ITU OVERLAP dengan terminologi LOCK existing yang sudah pakai Σ-1/Σ-2/Σ-3 untuk fase berbeda:
+- Σ-1A/B/C/D/E/F = anti-halu fanout + sanad multi-source
+- Σ-3 = UI redesign (Next.js lock)
+
+Solusi: dari sekarang saya pakai nama **"Sprint Anti-Halu Q1"**, **"Sprint Latency"**, **"Sprint Cognitive Expansion"**, **"Sprint UI Migration"** supaya tidak overlap dengan Σ.
+
+### RunPod EngineCore_DP0 DIED (fresh issue, screenshot bos)
+
+```
+2026-04-30 06:20:06 [error] Engine core proc EngineCore_DP0 died unexpectedly, shutting down client
+2026-04-30 06:20:05 [warning] EngineCore_DP0 pid=293 (Worker pid=299) WorkerProc was terminated
++ TypeErrors di asyncio cleanup (zmq sockets) — exception ignored
++ 7 jobs in queue, 0 running, worker initializing
+```
+
+**Diagnose**:
+- vLLM engine crash internal (Qwen2.5-7B + LoRA)
+- Penyebab kemungkinan: OOM (model loading + KV cache), atau dependency mismatch, atau RunPod platform issue
+- Worker initializing again = auto-recovery in progress
+
+**Action**: monitor balance + auto-recovery. Kalau berulang, redeploy endpoint dengan model baru atau check vLLM version. Catat untuk pattern recognition.
+
+### PLAN UI MIGRATION KONKRIT (resumed dari lock)
+
+**Folder target**: `C:\SIDIX-AI\gallant-ellis-7cd14d\SIDIX_NEXT_UI\` (parallel ke SIDIX_USER_UI lama, tidak break LIVE app.sidixlab.com)
+
+**Sequence**:
+1. ✅ Catat decision lock (DONE — entry ini)
+2. ⏳ Init `SIDIX_NEXT_UI` dengan Next.js 15 App Router + TS + Tailwind + shadcn
+3. ⏳ Setup brand: Space Grotesk via @next/font + tailwind tokens (#7C5CFF dll)
+4. ⏳ Port 4 components dari Kimi scaffolding, adapt ke Next.js:
+   - `LeftSidebar.tsx` → `app/(chat)/_components/LeftSidebar.tsx`
+   - `ChatDashboard.tsx` → `app/(chat)/_components/ChatDashboard.tsx`
+   - `RightPanel.tsx` → `app/(chat)/_components/RightPanel.tsx`
+   - `ParticleBackground.tsx` → `app/(chat)/_components/ParticleBackground.tsx`
+5. ⏳ Replace mock data:
+   - "Halo Ayudia" → user real dari Supabase auth
+   - "1,250 Credits" → real quota dari `/quota/status` endpoint
+   - "Pro Plan" → tier dari user profile
+   - Campaign cards mock → real chat history
+   - Built-in Tools panel → real tools registry dari brain
+6. ⏳ API client `lib/sidix-client.ts`:
+   - `POST ctrl.sidixlab.com/agent/chat` (existing)
+   - `GET ctrl.sidixlab.com/health`
+   - `GET ctrl.sidixlab.com/quota/status`
+7. ⏳ Layout: 3-column flex (LeftSidebar 250px / ChatDashboard flex / RightPanel ~300px)
+8. ⏳ Streaming SSE prep (Sprint berikutnya — `agent/generate/stream` endpoint sudah ada)
+9. ⏳ PM2 reconfig: ganti `serve dist` → `next start -p 4000` ATAU deploy ke subdomain `next.sidixlab.com` paralel
+
+**Estimated tokens for full migration**: ~80-120k (multi-session work). Tonight: minimum scaffold + 1 component port.
+
+### NEXT IMMEDIATE STEP (sisa token sesi ini)
+
+Init Next.js minimal scaffolding + port ChatDashboard sebagai proof of concept. Sisanya post limit reset.
+
