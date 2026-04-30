@@ -147,3 +147,30 @@ Setiap entry di file ini WAJIB punya translation:
 - Atau sprint langsung dieksekusi (link commit)
 
 Tanpa translation = idea bos masuk file tapi menguap juga (cuma di-archive, tidak actionable).
+
+---
+
+## 2026-04-30 evening — SIDIX Self-Bootstrap (Visi Tertinggi)
+
+### Bos verbatim (paling deep di hari ini):
+> "saya sudah bekerja 2 bulan membangun sidix siang malam, mengahbiskan biaya mengguakan dedikasi setngah waktu saya, harusnya harapn saya di hari ini, sidix sudah bisa meggantikan kamu, sudah bisa membangun dirinya sendiri. sudah bisa say perintah untuk membangun dirinya sendiri, mengcloning dirinya sendiri. sehingga dia belajar langsung."
+
+> "Framework yang saya jelaskan setiapp hari selalu ilang dan menguap. saya selau kehilangan konteks, selalu! padahala catatannya ada. kalo nggak disuruh baca, nggak akan ngerti, maen eksekusi secara sporadis, tanpa tau lagi bikin apa."
+
+> "kamu pastikan dengan agent manapun saya bekerja, mereka tau sedang membangun apa, sedang ngerjain apa, bukan asal tulis asala ekskusi tanpa tau buat apa."
+
+### Translation:
+- Visi tertinggi: SIDIX self-bootstrap — replace agent eksternal
+- Pain: bos sudah dedicate 2 bulan + biaya, hasil belum sesuai
+- Pain: framework menguap, agent tidak baca catatan, asal eksekusi
+- Goal universal: protocol untuk SEMUA agent (Claude/GPT/Gemini/SIDIX), bukan Claude-only
+
+### Infrastructure dibangun (2026-04-30 evening lanjutan 10):
+1. docs/AGENT_ONBOARDING.md - universal agent protocol
+2. docs/SIDIX_FRAMEWORKS.md - capture semua framework bos permanen
+3. docs/SIDIX_SELF_BOOTSTRAP_ROADMAP.md - path konkret Phase 0-4 (SIDIX replace eksternal)
+4. docs/TASK_CARD_TEMPLATE.md - format wajib sebelum eksekusi
+5. CLAUDE.md updated point ke 9 docs urut wajib baca
+
+### Status: ✅ INFRASTRUCTURE LIVE, expectation set permanent
+

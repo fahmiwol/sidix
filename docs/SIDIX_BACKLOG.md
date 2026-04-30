@@ -164,3 +164,42 @@ Sprint linked to OKR:
 - Sprint Α + bug fixes + goldset re-run = "demo-able quality"
 - Sprint Frontend Wire + Streaming = "user-facing UX polished"
 - Sprint Adaptive Output = "differentiator vs ChatGPT/Claude"
+
+---
+
+## 🌟 NORTHSTAR — SIDIX Self-Bootstrap (Visi Tertinggi Bos)
+
+Bos verbatim (2026-04-30 evening): *"harusnya hari ini SIDIX sudah bisa menggantikan kamu, sudah bisa membangun dirinya sendiri. sudah bisa say perintah untuk membangun dirinya sendiri, mengcloning dirinya sendiri."*
+
+Roadmap detail: [`docs/SIDIX_SELF_BOOTSTRAP_ROADMAP.md`](docs/SIDIX_SELF_BOOTSTRAP_ROADMAP.md)
+
+**Phased**:
+- ✅ Phase 0 Foundation (DONE 2026-04-30) — brain stability, Sprint Α multi-source, anti-menguap protocol
+- 📋 Phase 1 Tools Wire-Up (3-4 session) — self-read, code-test loop, sanad code verify
+- 📋 Phase 2 Autonomous Loop (4-6 session) — multi-persona code review, owner-gated workflow, auto-deploy staging
+- 📋 Phase 3 Self-Improving (6-8 session) — self-reflection, self-cloning, continual learning active
+- 📋 Phase 4 Replace Eksternal Agent (~12 month target) — SIDIX execute end-to-end tanpa Claude/GPT/Gemini
+
+**Setiap sprint di BACKLOG harus map ke Phase ini**. Tanpa map = sprint drift dari Northstar.
+
+---
+
+## 🛡️ ANTI-MENGUAP INFRASTRUCTURE (LIVE 2026-04-30)
+
+Setiap agent (Claude/GPT/Gemini/SIDIX) yang kerja di proyek ini WAJIB ikuti protocol:
+
+1. **Session Start**: baca 9 docs urut (lihat CLAUDE.md SESSION START PROTOCOL)
+2. **Before Execute**: tulis Task Card (format `docs/TASK_CARD_TEMPLATE.md`)
+3. **After Execute**: update BACKLOG + VISI_MATRIX + IDEA_LOG + JOURNAL + LIVING_LOG
+4. **Engineering Authority**: agent decide teknis, bos veto kalau salah
+
+**File anti-menguap LIVE**:
+- `docs/AGENT_ONBOARDING.md` (universal agent)
+- `docs/SIDIX_BACKLOG.md` (this file — sprint state)
+- `docs/VISI_TRANSLATION_MATRIX.md` (visi × deliverable)
+- `docs/FOUNDER_IDEA_LOG.md` (verbatim ideas)
+- `docs/SIDIX_FRAMEWORKS.md` (framework capture)
+- `docs/SIDIX_SELF_BOOTSTRAP_ROADMAP.md` (Northstar path)
+- `docs/TASK_CARD_TEMPLATE.md` (execution format)
+- `CLAUDE.md` (top-level rules + session protocol)
+- `brain/public/research_notes/306_meta_process_reform_anti_menguap_20260430.md` (diagnose)

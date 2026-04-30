@@ -6,17 +6,27 @@ Proyek: **SIDIX / Mighan Model**
 
 ## 🔴 SESSION START PROTOCOL — WAJIB EKSEKUSI SETIAP SESI BARU (LOCK 2026-04-30)
 
-**Bos pain (verbatim, 2026-04-30 evening)**: *"kenapa kita mengulang-ngulang terus? kenaps aya harus selalu menjelaskna... saya hanya seorang pemimpi yang paham dasar, dan cuma punya visi dan intuisi"*.
+**Bos pain (verbatim, 2026-04-30 evening)**: *"kenapa kita mengulang-ngulang terus? kenaps aya harus selalu menjelaskna... saya hanya seorang pemimpi yang paham dasar, dan cuma punya visi dan intuisi... framework yang saya jelaskan setiap hari selalu ilang dan menguap... kalo nggak disuruh baca, nggak akan ngerti, main eksekusi secara sporadis, tanpa tau lagi bikin apa"*.
 
-Root cause: Claude tidak punya memory persistent across sessions. Tanpa protocol read state dulu, agent re-invent yang sudah dibahas → bos frustasi.
+**Bos message ke semua agent (Claude/GPT/Gemini/SIDIX self-bootstrap)**: *"kamu pastikan dengan agent manapun saya bekerja, mereka tau sedang membangun apa, sedang ngerjain apa, bukan asal tulis asal eksekusi tanpa tau buat apa"*.
+
+Root cause: Agent tidak punya memory persistent across sessions. Tanpa protocol read state dulu, agent re-invent yang sudah dibahas → bos frustasi.
+
+**🚨 PRIMARY ENTRY POINT untuk SEMUA agent**: [`docs/AGENT_ONBOARDING.md`](docs/AGENT_ONBOARDING.md) — wajib baca pertama, bukan Claude-specific.
 
 **SEBELUM jawab pertanyaan/eksekusi apapun di sesi baru, BACA URUT**:
 
-1. **`docs/SIDIX_BACKLOG.md`** — state sprint terkini (COMPLETED / IN PROGRESS / QUEUED / IDEAS)
-2. **`docs/VISI_TRANSLATION_MATRIX.md`** — visi bos × deliverable mapping (apa yang sudah cover, apa gap)
-3. **`docs/FOUNDER_IDEA_LOG.md`** — ide visi/intuisi bos verbatim (5 entries terbaru minimum)
-4. **`docs/FOUNDER_JOURNAL.md` last 200 lines** — keputusan recent
-5. **`tail -100 docs/LIVING_LOG.md`** — ops recent
+1. **[`docs/AGENT_ONBOARDING.md`](docs/AGENT_ONBOARDING.md)** — universal agent protocol
+2. **[`docs/SIDIX_BACKLOG.md`](docs/SIDIX_BACKLOG.md)** — state sprint (COMPLETED/IN PROGRESS/QUEUED/IDEAS)
+3. **[`docs/VISI_TRANSLATION_MATRIX.md`](docs/VISI_TRANSLATION_MATRIX.md)** — visi bos × deliverable, coverage %
+4. **[`docs/FOUNDER_IDEA_LOG.md`](docs/FOUNDER_IDEA_LOG.md)** — ide visi/intuisi bos verbatim (5 entries minimum)
+5. **[`docs/SIDIX_FRAMEWORKS.md`](docs/SIDIX_FRAMEWORKS.md)** — semua framework bos (jurus seribu bayangan, sanad, 5 persona, dll)
+6. **[`docs/SIDIX_SELF_BOOTSTRAP_ROADMAP.md`](docs/SIDIX_SELF_BOOTSTRAP_ROADMAP.md)** — visi tertinggi: SIDIX replace agent eksternal
+7. **[`docs/TASK_CARD_TEMPLATE.md`](docs/TASK_CARD_TEMPLATE.md)** — format wajib sebelum eksekusi
+8. **`docs/FOUNDER_JOURNAL.md` last 200 lines** — keputusan recent
+9. **`tail -100 docs/LIVING_LOG.md`** — ops recent
+
+**Sebelum eksekusi APAPUN (edit code, panggil tool, write file)**: tulis **TASK CARD** dulu (format `docs/TASK_CARD_TEMPLATE.md`). Tanpa Task Card = "asal eksekusi tanpa tau buat apa" = melanggar protocol.
 
 **Lalu output ke bos di awal jawaban**:
 > "Sudah baca state. Backlog: [X completed, Y in-progress, Z queued]. Visi gap utama: [...]. WIP yang belum kelar: [...]. Pertanyaan bos sekarang: [paraphrase]. Mapping: [backlog item / new idea]. Saya akan: [action]."
