@@ -15670,3 +15670,10 @@ Sprint Tumbuh REAL state was 20% (broken auth), bukan 40%. Sekarang 50% (auth fi
 **Cron** (TODO deploy VPS): `0 2 * * * cd /opt/sidix && python3 scripts/dataset_id_sea_collector.py`
 **Compound**: 30 hari run = ~10K pairs target → trigger Fase B fine-tune SIDIX-Text v1.
 **Refer**: research_notes/310 (model independence path Fase A→D)
+
+## 2026-04-30 evening — DECISION: E2E Seamless Live Truth (lock)
+
+**Tag**: DECISION + DOC + ERROR (trust gap caught)
+**Trigger**: Bos catch — saya report holistic LIVE OK via internal curl, browser test belum OK.
+**Action**: Memory file `feedback_e2e_seamless_live_truth.md` + FOUNDER_JOURNAL append + MEMORY.md index update.
+**SOP commit**: setiap deploy claim WAJIB user-side verify (browser/Chrome MCP), bukan internal curl. Lihat memory file untuk detail anti-pattern.
