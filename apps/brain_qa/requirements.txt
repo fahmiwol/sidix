@@ -9,7 +9,7 @@ reedsolo==1.7.0
 # serve — brain_qa HTTP API untuk SIDIX UI
 fastapi>=0.111.0
 uvicorn[standard]>=0.29.0
-python-multipart>=0.0.9
+python-multipart>=0.0.27
 
 # Local inference (Qwen + LoRA) — pip install when using SIDIX generate with adapter
 # torch>=2.2.0
