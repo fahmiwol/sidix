@@ -174,3 +174,48 @@ Tanpa translation = idea bos masuk file tapi menguap juga (cuma di-archive, tida
 
 ### Status: ✅ INFRASTRUCTURE LIVE, expectation set permanent
 
+
+---
+
+## 2026-04-30 evening — Cowork Workflow Brainstorm (Token-Efficient + Cognitive)
+
+### Bos verbatim:
+> "apa yg saya dapat? saya kan bangun sidix aj gratis, dan opensource"
+> "bisa nggak kamu lakuin, buat custom interface atau aplikasi atau tools atau plugin atau skill yang menggabungkan cowork, claude chat, claude design dan claude code. Khusus untuk membahas Sidix"
+> "dengan analisa dan riset mendalam dan cognitive, tapi menggunakan token yang rendah. tapi bekerja seperti Opus 5.0 bahkan"
+> "cost tetep murah, efektif, tidak harus mulai sesi baru terus, tidak perlu handoff... tanpa ada ide menguap, diskusi menguap, temuan menguap, semua bisa di iterasi dan di sintesis, cognitive tiap harinya"
+
+### Translation: 6 Opsi Workflow Token-Efficient
+
+A. Claude Code Skills + Hooks (cheapest, $0, 1-2 hari)
+B. MCP Server `sidix-context` universal (Claude/Cursor/ChatGPT compatible, 3-5 hari)
+C. SIDIX-as-Companion-Agent self-eating dogfood (Phase 4 Self-Bootstrap aligned)
+D. Hybrid A+B+C — RECOMMENDED sweet spot (1-2 minggu, $0-5/mo)
+E. Persistent Memory Layer (no custom build, sebagian sudah aktif via Claude Code memory)
+F. "SIDIX Cowork" web app long-term (Q2 2027, contributor onboarding flagship)
+
+### Apa yang Bos Dapat (Beyond Money):
+1. Komunitas open-source leverage
+2. Pioneer position "AI Agent Indonesia" (credential publik untuk pitch)
+3. Top-of-funnel Tiranyx ecosystem (Adobe Reader → Photoshop pattern)
+4. Data + insights regional (Indonesia/SEA moat)
+5. Social impact + meaning (democratize AI)
+
+Plus untuk komunitas Anthropic global: anti-menguap protocol pattern bos dorong saya bangun = solusi universal Claude users (memory loss, repeat).
+
+### Token-saving tactics (semua opsi):
+1. Tiered model routing (Haiku/Sonnet/Opus)
+2. Context digest, not full file (BACKLOG 500 LOC → 50 LOC digest)
+3. Cached common queries (state, visi chain)
+4. Semantic pre-filtering (dense_index pick 2-3 relevant note)
+5. Daily compound synthesis (cron yesterday → 1 paragraph state)
+6. Streaming context inject (just-in-time vs all upfront)
+
+### Rekomendasi sequence:
+- Minggu ini: Opsi A Claude Code Skills
+- Bulan depan: Opsi D Hybrid MCP+SIDIX (transformatif)
+- Q2-Q3 2027: Opsi F SIDIX Cowork web app
+
+### Status: BRAINSTORM ONLY — bos pilih push ke sprint mana
+### Detail: research note 307
+
