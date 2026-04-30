@@ -15647,3 +15647,14 @@ Audit cron logs ditemukan Sprint Tumbuh pipeline BROKEN sejak 5 hari:
 Sprint Tumbuh REAL state was 20% (broken auth), bukan 40%. Sekarang 50% (auth fixed, queue auto-populate dari cron 04:00 UTC besok). Full pipeline cycle complete = next 24-48 jam validation.
 
 ### No commit (operational fix VPS-side)
+
+## 2026-04-30 — DECISION: Model Independence Path Locked (Fase A→D)
+
+**Tag**: DECISION + DOC
+**Trigger**: User question "ini semua bisa dikembangin kan? tumbuh bareng sidix? nggak ketergantungan sama mereka?" + "catet yah biar bisa tumbuh dan punya model sendiri juga.."
+**Outcome**: Strategy 4-fase (A=as-is, B=fine-tune ID/SEA, C=distill, D=own arch) di-lock di research note 310.
+
+**Honest dependencies**: GPU compute (sewa/beli), original Big Tech research knowledge (transfer bukan API), upstream updates (retrain LoRA bila ada).
+**No dependencies**: NO vendor API di production inference path. Bobot tersimpan di VPS, bisa fine-tune/distill/modify kapan saja.
+
+**Refer**: brain/public/research_notes/310_sidix_model_independence_path.md
