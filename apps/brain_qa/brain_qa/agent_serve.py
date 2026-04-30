@@ -1188,16 +1188,21 @@ def create_app() -> "FastAPI":
         try:
             from .multi_source_orchestrator import MultiSourceOrchestrator
             from .cognitive_synthesizer import CognitiveSynthesizer
+            from .output_type_detector import detect_output_type, OutputType
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"holistic_unavailable: {e}")
 
         async def _event_generator():
             """Yield SSE events for real-time UX."""
             import time as _time
+            import asyncio as _asyncio
             _t0 = _time.monotonic()
 
-            # Initial event: query received
-            yield f"data: {json.dumps({'type': 'start', 'query': req.question[:100]})}\n\n"
+            # Sprint 5 Phase 2: detect output type early
+            output_detection = detect_output_type(req.question)
+
+            # Initial event: query received + output type hint
+            yield f"data: {json.dumps({'type': 'start', 'query': req.question[:100], 'output_type': output_detection.output_type.value, 'output_confidence': output_detection.confidence})}\n\n"
 
             orchestrator = MultiSourceOrchestrator()
             synthesizer = CognitiveSynthesizer(max_tokens=600, temperature=0.65)
@@ -1227,9 +1232,34 @@ def create_app() -> "FastAPI":
                 chunk = answer[i:i + chunk_size]
                 yield f"data: {json.dumps({'type': 'token', 'text': chunk})}\n\n"
 
+            # Sprint 5 Phase 2: tool invocation untuk adaptive output (image_gen)
+            attachments = []
+            if output_detection.output_type.value == "image_prompt":
+                yield f"data: {json.dumps({'type': 'tool_invoke', 'tool': 'image_gen', 'message': 'Generating image...'})}\n\n"
+                try:
+                    from .agent_tools import _tool_text_to_image
+                    img_result = await _asyncio.to_thread(
+                        _tool_text_to_image,
+                        {"prompt": req.question, "width": 1024, "height": 1024, "steps": 4},
+                    )
+                    if img_result.success and img_result.citations:
+                        cit = img_result.citations[0]
+                        attachment = {
+                            "type": "image",
+                            "url": cit.get("url", ""),
+                            "prompt": cit.get("prompt", req.question),
+                            "mode": cit.get("mode", "unknown"),
+                        }
+                        attachments.append(attachment)
+                        yield f"data: {json.dumps({'type': 'attachment', 'attachment': attachment})}\n\n"
+                    else:
+                        yield f"data: {json.dumps({'type': 'tool_error', 'tool': 'image_gen', 'error': img_result.error or 'unknown'})}\n\n"
+                except Exception as e:
+                    yield f"data: {json.dumps({'type': 'tool_error', 'tool': 'image_gen', 'error': str(e)[:100]})}\n\n"
+
             elapsed_ms = int((_time.monotonic() - _t0) * 1000)
 
-            yield f"data: {json.dumps({'type': 'done', 'duration_ms': elapsed_ms, 'confidence': synthesis.confidence, 'n_sources': synthesis.n_sources, 'sources_used': synthesis.sources_used, 'method': synthesis.method})}\n\n"
+            yield f"data: {json.dumps({'type': 'done', 'duration_ms': elapsed_ms, 'confidence': synthesis.confidence, 'n_sources': synthesis.n_sources, 'sources_used': synthesis.sources_used, 'method': synthesis.method, 'output_type': output_detection.output_type.value, 'attachments': attachments})}\n\n"
 
         from fastapi.responses import StreamingResponse as _SR
         return _SR(
@@ -1275,6 +1305,33 @@ def create_app() -> "FastAPI":
         debug_flag = bool(request.query_params.get("debug"))
         synthesis = await synthesizer.synthesize(bundle, debug=debug_flag)
 
+        # Sprint 5+: Adaptive Output - actual tool invocation (Pencipta Phase 2)
+        # Kalau output_type=IMAGE_PROMPT, invoke image_gen tool real, return URL.
+        attachments: list[dict] = []
+        if output_detection.output_type.value == "image_prompt":
+            try:
+                import asyncio as _asyncio
+                from .agent_tools import _tool_text_to_image
+                # Pakai user question langsung sebagai prompt (LLM yang lebih advanced
+                # bisa optimize prompt nanti — Phase 2.5 prompt engineer)
+                img_args = {
+                    "prompt": req.question,
+                    "width": 1024,
+                    "height": 1024,
+                    "steps": 4,
+                }
+                img_result = await _asyncio.to_thread(_tool_text_to_image, img_args)
+                if img_result.success and img_result.citations:
+                    cit = img_result.citations[0]
+                    attachments.append({
+                        "type": "image",
+                        "url": cit.get("url", ""),
+                        "prompt": cit.get("prompt", req.question),
+                        "mode": cit.get("mode", "unknown"),
+                    })
+            except Exception as _img_err:
+                log.warning(f"[chat_holistic] image_gen fail: {_img_err}")
+
         elapsed_ms = int((_time.monotonic() - _t0) * 1000)
 
         return {
@@ -1293,6 +1350,8 @@ def create_app() -> "FastAPI":
             "output_confidence": output_detection.confidence,
             "output_reason": output_detection.reason,
             "suggested_tools": output_detection.suggested_tools,
+            # Sprint 5 Phase 2: actual tool output attachments
+            "attachments": attachments,
         }
 
     # ── POST /agent/generate ──────────────────────────────────────────────────

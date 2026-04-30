@@ -17,7 +17,7 @@ import {
 } from 'lucide';
 
 import {
-  checkHealth, askStream, askHolisticStream, listCorpus, uploadDocument, deleteDocument,
+  checkHealth, askStream, askHolisticStream, BRAIN_QA_BASE, listCorpus, uploadDocument, deleteDocument,
   triggerReindex, getReindexStatus, agentGenerate, submitFeedback, forgetAgentSession,
   agentBurst, agentTwoEyed, agentForesight, agentResurrect,
   BrainQAError, BRAIN_QA_BASE,
@@ -1185,9 +1185,38 @@ modeHolisticBtn?.addEventListener('click', async () => {
   const persona = (personaSel?.value ?? 'AYMAN') as Persona;
   let fullAnswer = '';
 
+  // Sprint 5 Phase 2: attachments container
+  const attachmentsEl = document.createElement('div');
+  attachmentsEl.className = 'mt-3 space-y-2';
+  progressBubble.appendChild(attachmentsEl);
+
+  const renderAttachment = (att: { type: string; url: string; prompt?: string; mode?: string }) => {
+    const wrap = document.createElement('div');
+    wrap.className = 'rounded-lg overflow-hidden border border-gold-500/30 bg-warm-700/30';
+    if (att.type === 'image') {
+      const fullUrl = att.url.startsWith('http') ? att.url : `${BRAIN_QA_BASE}${att.url}`;
+      wrap.innerHTML = `
+        <img src="${fullUrl}" alt="${att.prompt || ''}"
+             class="w-full max-w-md rounded-lg"
+             onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"/>
+        <div class="hidden p-3 text-xs text-red-300">⚠️ Image load failed: ${fullUrl}</div>
+        <div class="px-3 py-2 text-[10px] text-parchment-400 bg-warm-800/50">
+          🎨 ${att.mode === 'mock' ? 'Mock placeholder (FLUX.1 belum installed)' : 'Generated via FLUX.1'}
+          ${att.prompt ? ` · prompt: "${att.prompt.slice(0, 60)}..."` : ''}
+        </div>
+      `;
+    } else {
+      wrap.innerHTML = `<div class="p-3 text-xs">📎 Attachment: ${att.type} → ${att.url}</div>`;
+    }
+    attachmentsEl.appendChild(wrap);
+    if (chatMessages) chatMessages.scrollTop = chatMessages.scrollHeight;
+  };
+
   try {
     await askHolisticStream(question, persona, {
-      onStart: () => addProgressLine('Query received'),
+      onStart: (_q, outputType) => {
+        addProgressLine(`Query received${outputType ? ` (output: ${outputType})` : ''}`);
+      },
       onOrchestratorStart: () => addProgressLine('Mengerahkan resource paralel...'),
       onSourceComplete: (source, success, latencyMs) => {
         const labels: Record<string, string> = {
@@ -1209,6 +1238,12 @@ modeHolisticBtn?.addEventListener('click', async () => {
         answerEl.textContent = fullAnswer;
         if (chatMessages) chatMessages.scrollTop = chatMessages.scrollHeight;
       },
+      onToolInvoke: (tool, message) => addProgressLine(`🛠 ${tool}: ${message}`),
+      onAttachment: (att) => {
+        addProgressLine(`📎 Attachment received: ${att.type}`, 'ok');
+        renderAttachment(att);
+      },
+      onToolError: (tool, error) => addProgressLine(`Tool ${tool} error: ${error}`, 'fail'),
       onDone: (meta) => {
         clearInterval(elapsedTimer);
         addProgressLine(

@@ -192,22 +192,34 @@ export async function askHolistic(
  * Frontend dengarkan events untuk live progress UI:
  * "🔍 web ✓ · corpus ✓ · ALEY thinking... · synthesis..."
  */
+export interface SidixAttachment {
+  type: string; // 'image' | 'video' | 'audio' | '3d' | 'structured'
+  url: string;
+  prompt?: string;
+  mode?: string;
+}
+
 export async function askHolisticStream(
   question: string,
   persona: Persona = 'AYMAN',
   callbacks: {
-    onStart?: (query: string) => void;
+    onStart?: (query: string, outputType?: string, outputConfidence?: number) => void;
     onOrchestratorStart?: () => void;
     onSourceComplete?: (source: string, success: boolean, latencyMs: number) => void;
     onOrchestratorDone?: (nSuccessful: number, totalLatencyMs: number) => void;
     onSynthesisStart?: () => void;
     onToken: (text: string) => void;
+    onToolInvoke?: (tool: string, message: string) => void;
+    onAttachment?: (attachment: SidixAttachment) => void;
+    onToolError?: (tool: string, error: string) => void;
     onDone: (meta: {
       durationMs: number;
       confidence: string;
       nSources: number;
       sourcesUsed: string[];
       method: string;
+      outputType?: string;
+      attachments?: SidixAttachment[];
     }) => void;
     onError: (msg: string) => void;
   },
@@ -243,7 +255,7 @@ export async function askHolisticStream(
           const evt = JSON.parse(line.slice(6));
           switch (evt.type) {
             case 'start':
-              callbacks.onStart?.(evt.query);
+              callbacks.onStart?.(evt.query, evt.output_type, evt.output_confidence);
               break;
             case 'orchestrator_start':
               callbacks.onOrchestratorStart?.();
@@ -260,6 +272,15 @@ export async function askHolisticStream(
             case 'token':
               callbacks.onToken(evt.text || '');
               break;
+            case 'tool_invoke':
+              callbacks.onToolInvoke?.(evt.tool, evt.message);
+              break;
+            case 'attachment':
+              callbacks.onAttachment?.(evt.attachment);
+              break;
+            case 'tool_error':
+              callbacks.onToolError?.(evt.tool, evt.error);
+              break;
             case 'done':
               callbacks.onDone({
                 durationMs: evt.duration_ms,
@@ -267,6 +288,8 @@ export async function askHolisticStream(
                 nSources: evt.n_sources,
                 sourcesUsed: evt.sources_used || [],
                 method: evt.method || '',
+                outputType: evt.output_type,
+                attachments: evt.attachments || [],
               });
               break;
             case 'error':
