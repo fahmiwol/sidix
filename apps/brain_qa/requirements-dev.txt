@@ -3,7 +3,7 @@
 pytest>=8.0.0
 
 # Opsional — unduh dataset dari Kaggle (set KAGGLE_USERNAME + KAGGLE_KEY atau ~/.kaggle/kaggle.json)
-kagglehub>=0.3.0
+kagglehub>=1.0.1
 
 # Opsional — CLI `kaggle kernels pull ...` (butuh ~/.kaggle/kaggle.json)
 kaggle>=1.6.0
