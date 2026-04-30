@@ -134,6 +134,155 @@ export interface AgentGenerateResponse {
   duration_ms: number;
 }
 
+/**
+ * Sprint Α: Respons POST /agent/chat_holistic — Jurus Seribu Bayangan.
+ * Multi-source orchestrator paralel (web + corpus + dense + persona fanout +
+ * tools) → cognitive synthesizer neutral → 1 jawaban with attribution.
+ */
+export interface ChatHolisticResponse {
+  answer: string;
+  duration_ms: number;
+  confidence: string;
+  n_sources: number;
+  sources_used: string[];
+  method: string;
+  synthesis_latency_ms: number;
+  orchestrator_latency_ms: number;
+  orchestrator_errors: string[];
+  debug_bundle?: unknown;
+}
+
+/**
+ * Sprint Α: POST /agent/chat_holistic — Jurus Seribu Bayangan.
+ * Mengerahkan SEMUA resource paralel (default mode SIDIX, bukan routing).
+ *
+ * @param question pertanyaan user
+ * @param persona optional persona override (default: brain auto)
+ * @param signal optional AbortSignal untuk cancellation
+ */
+export async function askHolistic(
+  question: string,
+  persona?: Persona,
+  signal?: AbortSignal,
+): Promise<ChatHolisticResponse> {
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+    ..._authHeaders(),
+  };
+  const body: Record<string, unknown> = { question };
+  if (persona) body.persona = persona;
+
+  const res = await fetch(`${BRAIN_QA_BASE}/agent/chat_holistic`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(body),
+    signal,
+  });
+  if (!res.ok) {
+    throw new Error(`/agent/chat_holistic ${res.status} ${res.statusText}`);
+  }
+  return res.json();
+}
+
+/**
+ * Sprint 3: POST /agent/chat_holistic_stream — SSE streaming version.
+ * Yields events real-time: orchestrator_start → source_complete (per source)
+ * → orchestrator_done → synthesis_start → token chunks → done.
+ *
+ * Frontend dengarkan events untuk live progress UI:
+ * "🔍 web ✓ · corpus ✓ · ALEY thinking... · synthesis..."
+ */
+export async function askHolisticStream(
+  question: string,
+  persona: Persona = 'AYMAN',
+  callbacks: {
+    onStart?: (query: string) => void;
+    onOrchestratorStart?: () => void;
+    onSourceComplete?: (source: string, success: boolean, latencyMs: number) => void;
+    onOrchestratorDone?: (nSuccessful: number, totalLatencyMs: number) => void;
+    onSynthesisStart?: () => void;
+    onToken: (text: string) => void;
+    onDone: (meta: {
+      durationMs: number;
+      confidence: string;
+      nSources: number;
+      sourcesUsed: string[];
+      method: string;
+    }) => void;
+    onError: (msg: string) => void;
+  },
+  signal?: AbortSignal,
+): Promise<void> {
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+    ..._authHeaders(),
+  };
+  try {
+    const res = await fetch(`${BRAIN_QA_BASE}/agent/chat_holistic_stream`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({ question, persona }),
+      signal,
+    });
+    if (!res.ok || !res.body) {
+      callbacks.onError(`Backend error: ${res.status}`);
+      return;
+    }
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = '';
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split('\n');
+      buffer = lines.pop() || '';
+      for (const line of lines) {
+        if (!line.startsWith('data: ')) continue;
+        try {
+          const evt = JSON.parse(line.slice(6));
+          switch (evt.type) {
+            case 'start':
+              callbacks.onStart?.(evt.query);
+              break;
+            case 'orchestrator_start':
+              callbacks.onOrchestratorStart?.();
+              break;
+            case 'source_complete':
+              callbacks.onSourceComplete?.(evt.source, evt.success, evt.latency_ms);
+              break;
+            case 'orchestrator_done':
+              callbacks.onOrchestratorDone?.(evt.n_successful, evt.total_latency_ms);
+              break;
+            case 'synthesis_start':
+              callbacks.onSynthesisStart?.();
+              break;
+            case 'token':
+              callbacks.onToken(evt.text || '');
+              break;
+            case 'done':
+              callbacks.onDone({
+                durationMs: evt.duration_ms,
+                confidence: evt.confidence,
+                nSources: evt.n_sources,
+                sourcesUsed: evt.sources_used || [],
+                method: evt.method || '',
+              });
+              break;
+            case 'error':
+              callbacks.onError(evt.message || 'unknown error');
+              break;
+          }
+        } catch {
+          // skip malformed
+        }
+      }
+    }
+  } catch (err) {
+    callbacks.onError(err instanceof Error ? err.message : String(err));
+  }
+}
+
 export interface UploadResponse {
   id: string;
   filename: string;

@@ -1171,6 +1171,73 @@ def create_app() -> "FastAPI":
             planner_savings=getattr(session, "planner_savings", 0.0),
         )
 
+    # ── POST /agent/chat_holistic_stream ─────────────────────────────────────
+    # Sprint 3 — SSE streaming wrapper untuk /agent/chat_holistic.
+    # Yields events real-time: source-discovered → source-completed →
+    # synthesis-streaming. Frontend typewriter render. First byte ~2 detik
+    # vs 60-120s freeze tanpa streaming.
+    @app.post("/agent/chat_holistic_stream")
+    async def agent_chat_holistic_stream(req: ChatRequest, request: Request):
+        _enforce_rate(request)
+        _enforce_daily(request)
+        _bump_metric("agent_chat_holistic_stream")
+
+        if not req.question.strip():
+            raise HTTPException(status_code=400, detail="question tidak boleh kosong")
+
+        try:
+            from .multi_source_orchestrator import MultiSourceOrchestrator
+            from .cognitive_synthesizer import CognitiveSynthesizer
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"holistic_unavailable: {e}")
+
+        async def _event_generator():
+            """Yield SSE events for real-time UX."""
+            import time as _time
+            _t0 = _time.monotonic()
+
+            # Initial event: query received
+            yield f"data: {json.dumps({'type': 'start', 'query': req.question[:100]})}\n\n"
+
+            orchestrator = MultiSourceOrchestrator()
+            synthesizer = CognitiveSynthesizer(max_tokens=600, temperature=0.65)
+
+            # Phase 1: gather paralel (single async call, no per-source streaming yet)
+            yield f"data: {json.dumps({'type': 'orchestrator_start', 'message': 'Mengerahkan jurus seribu bayangan...'})}\n\n"
+
+            bundle = await orchestrator.gather_all(req.question)
+
+            # Emit per-source completion events
+            for src_name in ("web", "corpus", "dense", "persona_fanout", "tools"):
+                src_result = getattr(bundle, src_name, None)
+                if src_result:
+                    yield f"data: {json.dumps({'type': 'source_complete', 'source': src_name, 'success': src_result.success, 'latency_ms': src_result.latency_ms})}\n\n"
+
+            yield f"data: {json.dumps({'type': 'orchestrator_done', 'n_successful': len(bundle.successful_sources()), 'total_latency_ms': bundle.total_latency_ms})}\n\n"
+
+            # Phase 2: synthesize
+            yield f"data: {json.dumps({'type': 'synthesis_start', 'message': 'Cognitive synthesizer merging...'})}\n\n"
+
+            synthesis = await synthesizer.synthesize(bundle)
+
+            # Yield answer in chunks (simulate streaming since underlying LLM call is sync)
+            answer = synthesis.answer or ""
+            chunk_size = 80
+            for i in range(0, len(answer), chunk_size):
+                chunk = answer[i:i + chunk_size]
+                yield f"data: {json.dumps({'type': 'token', 'text': chunk})}\n\n"
+
+            elapsed_ms = int((_time.monotonic() - _t0) * 1000)
+
+            yield f"data: {json.dumps({'type': 'done', 'duration_ms': elapsed_ms, 'confidence': synthesis.confidence, 'n_sources': synthesis.n_sources, 'sources_used': synthesis.sources_used, 'method': synthesis.method})}\n\n"
+
+        from fastapi.responses import StreamingResponse as _SR
+        return _SR(
+            _event_generator(),
+            media_type="text/event-stream",
+            headers={"Cache-Control": "no-cache", "Connection": "keep-alive", "X-Accel-Buffering": "no"},
+        )
+
     # ── POST /agent/chat_holistic ──────────────────────────────────────────────
     # Sprint Α (Jurus Seribu Bayangan) — visi bos 2026-04-30: REPLACE pattern
     # "routing otomatis pilih 1 sumber" dengan multi-source paralel default.
