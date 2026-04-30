@@ -226,9 +226,24 @@ def to_citations(results: list[WikiResult]) -> list[dict]:
     ]
 
 
+# Alias untuk backward compatibility dengan multi_source_orchestrator
+def search_wikipedia(query: str, max_results: int = 3):
+    """Alias untuk wiki_lookup_fast dengan return format list[dict]."""
+    results = wiki_lookup_fast(query, max_articles=max_results)
+    return [
+        {
+            "title": r.title,
+            "url": r.url,
+            "snippet": r.extract[:500],
+        }
+        for r in results
+    ]
+
+
 __all__ = [
     "WikiResult",
     "wiki_lookup_fast",
     "format_for_llm_context",
     "to_citations",
+    "search_wikipedia",
 ]

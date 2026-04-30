@@ -37,7 +37,7 @@ DEFAULT_TIMEOUTS = {
     "web_search": 25.0,        # Sprint Α bug fix: 15→25 (DDG sometimes slow)
     "corpus_search": 5.0,
     "dense_index": 5.0,
-    "persona_fanout": 45.0,    # UX-fix 2026-04-30: 75→45 dengan model 1.5b lighter (Ollama CPU bottleneck)
+    "persona_fanout": 20.0,    # UX-fix 2026-04-30: 75→45 dengan model 1.5b lighter (Ollama CPU bottleneck)
     "tool_registry": 5.0,
 }
 
@@ -129,27 +129,153 @@ async def _safe_call(source_name: str, coro, timeout: float) -> SourceResult:
 # Wrap existing sync code jadi async via asyncio.to_thread.
 
 async def _src_web_search(query: str) -> dict:
-    """Wrap web_search tool (DuckDuckGo + Wikipedia fallback)."""
-    from .agent_tools import _tool_web_search
-    result = await asyncio.to_thread(_tool_web_search, {"query": query, "max_results": 5})
-    return {"output": result.get("output", "")[:2000], "raw": result}
+    """Multi-engine web search: SearxNG + Brave + Wikipedia — collect ALL, merge, dedup."""
+    from .searxng_search import searxng_search_async
+    from .brave_search import brave_search_async
+    from .wiki_lookup import search_wikipedia
 
+    tasks = {
+        "searxng": asyncio.create_task(searxng_search_async(query, max_results=5)),
+        "brave": asyncio.create_task(brave_search_async(query, max_results=5)),
+        "wikipedia": asyncio.create_task(_wiki_async(query)),
+    }
+    results = await asyncio.gather(*tasks.values(), return_exceptions=True)
+
+    all_hits = []
+    engines_used = []
+    for (name, task), result in zip(tasks.items(), results):
+        if isinstance(result, Exception):
+            log.warning(f"[web_search] {name} failed: {result}")
+            continue
+        if result:
+            engines_used.append(name)
+            if isinstance(result, list):
+                all_hits.extend(result)
+            else:
+                all_hits.append(result)
+
+    # Deduplicate by URL
+    seen_urls = set()
+    deduped = []
+    for h in all_hits:
+        url = getattr(h, 'url', '')
+        if url and url in seen_urls:
+            continue
+        if url:
+            seen_urls.add(url)
+        deduped.append(h)
+
+    # Fallback: Google AI Search if ALL engines failed/empty
+    if not deduped:
+        try:
+            from .google_ai_search import google_ai_search_async
+            g_hits = await google_ai_search_async(query, max_results=5)
+            if g_hits:
+                engines_used.append("google_ai")
+                for h in g_hits:
+                    url = getattr(h, 'url', '')
+                    if url and url not in seen_urls:
+                        seen_urls.add(url)
+                        deduped.append(h)
+        except Exception as exc:
+            log.warning("[web_search] google_ai fallback failed: %s", exc)
+
+    if not deduped:
+        return {"output": "", "engines": []}
+
+    lines = []
+    for h in deduped[:8]:
+        title = getattr(h, 'title', '')
+        url = getattr(h, 'url', '')
+        snippet = getattr(h, 'snippet', '')
+        lines.append(f"- {title} ({url})\n  {snippet}")
+    return {"output": "\n\n".join(lines), "engines": engines_used, "n_hits": len(deduped)}
+
+
+async def _wiki_async(query: str):
+    """Async wrapper for Wikipedia search."""
+    from .wiki_lookup import search_wikipedia
+    try:
+        return await asyncio.to_thread(search_wikipedia, query, max_results=3)
+    except Exception:
+        return []
+
+
+
+
+async def _src_google_ai_search(query: str) -> dict:
+    """Gemini 2.0 Flash via google_ai_search module.
+    
+    Uses simplified prompt-based search (google_search_tool unsupported on this API key).
+    Returns: structured hits compatible with web search output.
+    """
+    try:
+        from .google_ai_search import google_ai_search_async
+        hits = await google_ai_search_async(query, max_results=5)
+        if not hits:
+            return {"output": "", "note": "google_ai_no_results"}
+        lines = []
+        for h in hits[:5]:
+            title = getattr(h, 'title', '')
+            url = getattr(h, 'url', '')
+            snippet = getattr(h, 'snippet', '')
+            lines.append(f"- {title} ({url})\n  {snippet}")
+        return {"output": "\n\n".join(lines), "engine": "google_ai_gemini", "n_hits": len(hits)}
+    except Exception as e:
+        log.warning("[google_ai_search] error: %s", e)
+        return {"output": "", "note": f"error: {e}"}
 
 async def _src_corpus_search(query: str) -> dict:
     """BM25 corpus search.
 
     Sprint Α bug fix: _tool_search_corpus returns ToolResult dataclass,
     bukan dict. Need attribute access not .get().
+    Also returns raw_chunks for corpus passthrough (anti-hallucination).
     """
     try:
-        from .corpus_search import search as corpus_search
-        result = await asyncio.to_thread(corpus_search, query, top_k=3)
-        return {"results": result[:3] if result else []}
-    except Exception:
-        # Fallback: try search_corpus tool (returns ToolResult dataclass)
+        from rank_bm25 import BM25Okapi
+        from .query import _load_chunks, _load_tokens, default_index_dir
+        from .text import tokenize
+
+        index_dir = default_index_dir()
+        chunks = _load_chunks(index_dir)
+        tokens = _load_tokens(index_dir)
+        if not chunks or len(tokens) != len(chunks):
+            raise RuntimeError("Index corrupted")
+
+        q_tokens = tokenize(query)
+        bm25 = BM25Okapi(tokens)
+        scores = bm25.get_scores(q_tokens)
+        if not len(scores):
+            raise RuntimeError("No scores")
+
+        ranked = sorted(range(len(scores)), key=lambda i: -scores[i])[:5]
+        raw_chunks = []
+        for idx in ranked:
+            if scores[idx] <= 0.0:
+                break
+            c = chunks[idx]
+            raw_chunks.append({
+                "text": c.text,
+                "source_path": c.source_path,
+                "source_title": c.source_title,
+                "sanad_tier": c.sanad_tier,
+                "score": float(scores[idx]),
+            })
+
+        if raw_chunks:
+            raw_text = "\n\n---\n\n".join(
+                f"[source: {c['source_title']} | tier: {c['sanad_tier']}]\n{c['text']}"
+                for c in raw_chunks
+            )
+            return {"results": raw_chunks, "raw_text": raw_text, "n_hits": len(raw_chunks)}
+    except Exception as e:
+        log.debug("[corpus_search] direct BM25 failed: %s", e)
+
+    # Fallback: try search_corpus tool (returns ToolResult dataclass)
+    try:
         from .agent_tools import _tool_search_corpus
         tool_result = await asyncio.to_thread(_tool_search_corpus, {"query": query, "k": 3})
-        # ToolResult might be dataclass with .output attr, or dict from older code
         output_text = ""
         if hasattr(tool_result, "output"):
             output_text = str(tool_result.output or "")
@@ -158,6 +284,8 @@ async def _src_corpus_search(query: str) -> dict:
         else:
             output_text = str(tool_result)
         return {"output": output_text[:1500]}
+    except Exception as e:
+        return {"output": "", "note": f"corpus_error: {e}"}
 
 
 async def _src_dense_index(query: str) -> dict:
@@ -195,7 +323,7 @@ async def _src_persona_fanout(query: str, personas: tuple = PERSONAS) -> dict:
         )
         try:
             text, mode = await asyncio.to_thread(
-                ollama_generate, query, system=system, max_tokens=120,
+                ollama_generate, query, system=system, max_tokens=80,
                 temperature=0.7, model=PERSONA_FANOUT_MODEL,
             )
             return p, text or ""
@@ -257,6 +385,9 @@ class MultiSourceOrchestrator:
             tasks.append(("web", _safe_call("web_search",
                                             _src_web_search(query),
                                             self.timeouts["web_search"])))
+            tasks.append(("google_ai", _safe_call("google_ai",
+                                            _src_google_ai_search(query),
+                                            15.0)))
         if enable_corpus:
             tasks.append(("corpus", _safe_call("corpus_search",
                                                _src_corpus_search(query),

@@ -1106,6 +1106,7 @@ const modeHolisticBtn  = document.getElementById('mode-holistic') as HTMLButtonE
 // pakai mode aktif. Empty input + click mode = visual feedback (hint), no popup browser.
 type ChatMode = 'classic' | 'holistic' | 'burst' | 'twoeyed' | 'foresight' | 'resurrect';
 let activeMode: ChatMode = 'holistic'; // default per visi 1000 bayangan
+setActiveMode('holistic');
 
 function setActiveMode(mode: ChatMode) {
   activeMode = mode;
@@ -1127,6 +1128,26 @@ function setActiveMode(mode: ChatMode) {
       btn.setAttribute('aria-pressed', 'false');
     }
   }
+}
+
+// ── Auto-mode detection: classifier ringan berbasis keyword ────────────────
+// Sprint UX-fix 2026-04-30: deteksi intent dari query untuk auto-switch mode
+// User tetap bisa override dengan klik tombol mode (sticky toggle)
+function detectIntentMode(query: string): ChatMode | null {
+  const q = query.toLowerCase();
+  // Coding mode: keyword teknis/developer
+  if (/(\bcode\b|\bcoding\b|\bprogram\b|\bprogramming\b|\bbug\b|\bdebug\b|\bfunction\b|\bscript\b|\bapi\b|\bendpoint\b|\broute\b|\bfrontend\b|\bbackend\b|\bdatabase\b|\bquery\b|\bsql\b|\bpython\b|\bjavascript\b|\btypescript\b|\breact\b|\bnode\.?js\b|\bhtml\b|\bcss\b|\bdeploy\b|\bbuild\b|\berror\b|\bexception\b|\bstacktrace\b|\bfix\b.*\b(code|bug|error)\b|\bbuat\b.*\b(website|app|program|bot)\b|\bpython\b.*\b(script|program)\b)/.test(q)) {
+    return 'burst'; // Burst = divergen + kreatif, cocok untuk problem solving kode
+  }
+  // Planning mode: rencana/strategi/timeline
+  if (/(\bplan\b|\bplanning\b|\brencana\b|\bstrategi\b|\bstrategy\b|\broadmap\b|\btimeline\b|\bstep\b.*\bstep\b|\blangkah\b|\bphasing\b|\bmilestone\b|\bsprint\b|\bproject\b.*\bplan\b|\bhow\b.*\b(start|build|launch)\b|\bgimana\b.*\b(mulai|bangun|buat)\b.*\b(project|app| bisnis)\b)/.test(q)) {
+    return 'foresight'; // Foresight = prediksi + skenario, cocok untuk planning
+  }
+  // Deep-research mode: riset mendalam/literature
+  if (/(\bresearch\b|\breview\b|\bliterature\b|\bdeep\b.*\bdive\b|\banalisis\b.*\bmendalam\b|\bcomprehensive\b|\bekstensif\b|\bjurnal\b|\bpaper\b|\bstudy\b|\bsurvey\b|\bmeta.?(analysis|review)\b|\btinjauan\b|\bkajian\b|\b studi \b|\breferensi\b.*\b(banyak|lengkap)\b|\bsumber\b.*\b(terpercaya|primer)\b)/.test(q)) {
+    return 'twoeyed'; // Two-Eyed = scientific + maqashid dual perspective, cocok untuk riset etis
+  }
+  return null; // Tidak ada match kuat → gunakan activeMode yang user pilih
 }
 
 function getCurrentInput(): string | null {
@@ -1155,16 +1176,12 @@ function appendThinkingPlaceholder(label: string): HTMLDivElement {
 }
 
 // 🌟 Sprint Α: Holistic Mode — Jurus Seribu Bayangan (multi-source paralel + SSE streaming)
-modeHolisticBtn?.addEventListener('click', async () => {
-  const question = getInputOrPrompt(
-    '🌟 Jurus Seribu Bayangan (Holistic)',
-    'Mengerahkan SEMUA resource paralel: web search + knowledge base + semantic embedding + 5 persona research + tools simultan. Sanad cross-verify multi-source. Cognitive synthesizer (neutral) merge jadi 1 jawaban with attribution. Multi-perspective default.',
-  );
-  if (!question) return;
+modeHolisticBtn?.addEventListener('click', () => {
+  setActiveMode('holistic');
+});
 
-  appendMessage('user', question);
-  if (chatInput) { chatInput.value = ''; chatInput.dispatchEvent(new Event('input')); }
-
+// Extracted: doHolistic handles the actual multi-source inference
+async function doHolistic(question: string) {
   // Live progress card — show 8 parallel sources visualized real-time
   // Sprint UX-fix 2026-04-30: visi bos = SEMUA paralel sekaligus, bukan sequential
   const progressWrap = document.createElement('div');
@@ -1370,6 +1387,7 @@ modeHolisticBtn?.addEventListener('click', async () => {
       onToolError: (tool, error) => addProgressLine(`Tool ${tool} error: ${error}`, 'fail'),
       onDone: (meta) => {
         clearInterval(elapsedTimer);
+        sendBtn.disabled = false;
         addProgressLine(
           `Done: confidence=${meta.confidence}, ${meta.nSources} sources, method=${meta.method}, ${(meta.durationMs / 1000).toFixed(1)}s total`,
           'ok',
@@ -1377,14 +1395,17 @@ modeHolisticBtn?.addEventListener('click', async () => {
       },
       onError: (msg) => {
         clearInterval(elapsedTimer);
+        sendBtn.disabled = false;
         addProgressLine(`Error: ${msg}`, 'fail');
       },
     });
   } catch (e) {
     clearInterval(elapsedTimer);
+    sendBtn.disabled = false;
     addProgressLine(`Exception: ${(e as Error).message}`, 'fail');
   }
-});
+
+}
 
 modeBurstBtn?.addEventListener('click', async () => {
   const prompt = getInputOrPrompt(
@@ -1780,11 +1801,18 @@ async function handleSend() {
     // count ≤ FREE_CHAT_LIMIT: chat gratis, lanjut normal
   }
 
+
   chatInput.value = '';
   chatInput.style.height = 'auto';
   sendBtn.disabled = true;
 
   appendMessage('user', question);
+
+  // ── Auto-mode routing: holistic default ────────────────────────────────────
+  if (activeMode === 'holistic') {
+    await doHolistic(question);
+    return;
+  }
 
   // Thinking indicator — dengan hint khusus kalau minta gambar + REAL-TIME TIMER
   const q_lower = question.toLowerCase();

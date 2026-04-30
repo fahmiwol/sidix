@@ -187,34 +187,11 @@ def _enforce_rate(request: Request) -> None:
         raise HTTPException(status_code=429, detail=msg)
 
 
-def _store_session(session: AgentSession, meta: dict = None) -> None:
+def _store_session(session: AgentSession) -> None:
     if len(_sessions) >= _MAX_SESSIONS:
         oldest = next(iter(_sessions))
         del _sessions[oldest]
     _sessions[session.session_id] = session
-    # Persist to disk for OTAK+ self-critique
-    try:
-        sess_dir = Path("/opt/sidix/.data/sessions")
-        sess_dir.mkdir(parents=True, exist_ok=True)
-        payload = {
-            "session_id": session.session_id,
-            "question": session.question,
-            "final_answer": session.final_answer,
-            "persona": session.persona,
-            "citations": session.citations or [],
-            "confidence_score": session.confidence_score,
-            "created_at": session.created_at,
-            "error": session.error,
-            "answer_type": session.answer_type,
-        }
-        if meta:
-            payload.update(meta)
-        (sess_dir / f"session_{session.session_id}.json").write_text(
-            json.dumps(payload, indent=2, ensure_ascii=False, default=str),
-            encoding="utf-8"
-        )
-    except Exception:
-        pass
 
 
 def _build_steps_trace(steps: list) -> list[dict]:
@@ -4954,9 +4931,6 @@ def create_app() -> "FastAPI":
                             "_sanad_contributors": _sanad_result.contributing_branches,
                             "_sanad_total_duration_ms": _sanad_result.total_duration_ms,
                             "_sanad_render_duration_ms": _sanad_ms,
-                            "relevan_score": round(_sanad_result.relevan_score, 2),
-                            "sanad_tier": _sanad_result.sanad_tier,
-                            "iteration_count": _sanad_result.iteration_count,
                             "_citations": _sanad_result.citations[:10],
                         }
                         yield f"data: {_json.dumps(_sanad_meta)}\n\n"
@@ -4971,9 +4945,6 @@ def create_app() -> "FastAPI":
                             "conversation_id": effective_conversation_id,
                             "confidence": "tinggi",
                             "_sanad_active": True,
-                            "relevan_score": round(_sanad_result.relevan_score, 2),
-                            "sanad_tier": _sanad_result.sanad_tier,
-                            "iteration_count": _sanad_result.iteration_count,
                             "citations": _sanad_result.citations[:10],
                         }
                         yield f"data: {_json.dumps(_sanad_done)}\n\n"
