@@ -1,0 +1,1343 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>BOTTLE FLIP! 🍾</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bungee&family=Bungee+Shade&family=Nunito:wght@400;700;900&display=swap');
+:root{
+  --bg:#0d0d1a;--surface:#1a1a2e;--card:#16213e;
+  --accent:#e94560;--gold:#f5c518;--blue:#00d4ff;
+  --green:#00ff88;--purple:#9b59b6;--text:#f0f0f0;--muted:#8888aa;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;}
+body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;overflow:hidden;height:100dvh;width:100vw;display:flex;flex-direction:column;align-items:center;}
+.screen{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;transition:opacity .3s,transform .3s;}
+.screen.hidden{opacity:0;pointer-events:none;transform:scale(.96);}
+
+/* HOME */
+#home{background:radial-gradient(ellipse at 50% 0%,#1a0a2e 0%,#0d0d1a 70%);justify-content:center;gap:14px;}
+.logo{font-family:'Bungee Shade',cursive;font-size:clamp(38px,9vw,64px);color:#fff;text-shadow:0 0 30px var(--blue),0 0 60px var(--blue);letter-spacing:2px;animation:pulse-glow 2s ease-in-out infinite;text-align:center;}
+@keyframes pulse-glow{0%,100%{text-shadow:0 0 30px var(--blue),0 0 60px var(--blue);}50%{text-shadow:0 0 50px var(--accent),0 0 100px var(--accent);}}
+.tagline{color:var(--muted);font-size:13px;letter-spacing:3px;text-transform:uppercase;}
+.home-bottle-wrap{width:100px;height:160px;cursor:pointer;animation:float-anim 3s ease-in-out infinite;}
+@keyframes float-anim{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-12px) rotate(4deg)}}
+.stats-bar{display:flex;gap:20px;background:var(--card);padding:10px 20px;border-radius:20px;border:1px solid rgba(255,255,255,.08);}
+.stat{text-align:center;}.stat-val{font-family:'Bungee',cursive;font-size:18px;color:var(--gold);}
+.stat-lbl{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;}
+.home-btns{display:flex;flex-direction:column;gap:10px;align-items:center;width:100%;max-width:280px;}
+
+/* MODE SELECT */
+#modeSelect{background:radial-gradient(ellipse at 50% 0%,#1a0a2e 0%,#0d0d1a 70%);justify-content:center;gap:16px;padding:0 20px;}
+.mode-title{font-family:'Bungee',cursive;font-size:24px;text-align:center;}
+.mode-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;width:100%;max-width:360px;}
+.mode-card{background:var(--card);border-radius:20px;padding:18px 14px;display:flex;flex-direction:column;align-items:center;gap:8px;border:2px solid transparent;cursor:pointer;transition:border-color .2s,transform .1s,box-shadow .2s;}
+.mode-card:active{transform:scale(.95);}
+.mode-card.mode-arcade{border-color:rgba(233,69,96,.4);}
+.mode-card.mode-arcade:active{border-color:var(--accent);box-shadow:0 0 20px rgba(233,69,96,.3);}
+.mode-card.mode-series{border-color:rgba(0,212,255,.4);}
+.mode-card.mode-series:active{border-color:var(--blue);box-shadow:0 0 20px rgba(0,212,255,.3);}
+.mode-card.mode-battle{border-color:rgba(245,197,24,.4);grid-column:1/-1;}
+.mode-card.mode-battle:active{border-color:var(--gold);box-shadow:0 0 20px rgba(245,197,24,.3);}
+.mode-icon{font-size:36px;}.mode-name{font-family:'Bungee',cursive;font-size:16px;}
+.mode-desc{font-size:11px;color:var(--muted);text-align:center;line-height:1.4;}
+
+/* BUTTONS */
+.btn{background:linear-gradient(135deg,var(--accent),#ff6b35);color:#fff;border:none;padding:14px 36px;border-radius:50px;font-family:'Bungee',cursive;font-size:16px;letter-spacing:2px;cursor:pointer;transition:transform .1s,box-shadow .2s;box-shadow:0 4px 20px rgba(233,69,96,.5);}
+.btn:active{transform:scale(.95);}
+.btn.secondary{background:var(--card);border:2px solid var(--muted);box-shadow:none;font-size:13px;padding:11px 24px;color:var(--text);}
+.btn.blue{background:linear-gradient(135deg,#0099cc,var(--blue));box-shadow:0 4px 20px rgba(0,212,255,.4);}
+.btn.gold{background:linear-gradient(135deg,#cc8800,var(--gold));box-shadow:0 4px 20px rgba(245,197,24,.4);}
+.btn.sm{padding:10px 22px;font-size:13px;}
+
+/* ═══ GAME SCREEN ═══ */
+#game{background:var(--bg);padding:0;justify-content:flex-start;}
+.game-hud{width:100%;max-width:420px;display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--surface);border-bottom:1px solid rgba(255,255,255,.08);flex-shrink:0;z-index:10;}
+.hud-score{font-family:'Bungee',cursive;font-size:26px;color:var(--gold);}
+.hud-label{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;}
+.hud-combo{font-family:'Bungee',cursive;font-size:15px;color:var(--blue);}
+.hud-lives{display:flex;gap:3px;}.life{font-size:17px;transition:transform .2s;}.life.lost{opacity:.3;transform:scale(.7);}
+
+/* ARENA: full canvas approach — everything drawn on canvas */
+.arena{
+  flex:1;width:100%;max-width:420px;
+  position:relative;overflow:hidden;
+  cursor:pointer;min-height:0;
+  /* background set dynamically */
+}
+#bottleCanvas{position:absolute;inset:0;width:100%;height:100%;display:block;}
+
+/* Challenge intro banner */
+.challenge-intro{
+  position:absolute;inset:0;background:rgba(0,0,0,.82);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:10px;z-index:30;transition:opacity .4s;
+}
+.challenge-intro.hidden{opacity:0;pointer-events:none;}
+.ci-world{font-size:11px;text-transform:uppercase;letter-spacing:3px;color:var(--muted);}
+.ci-title{font-family:'Bungee',cursive;font-size:28px;color:var(--gold);text-align:center;}
+.ci-env{font-size:48px;}
+.ci-desc{font-size:14px;color:var(--text);text-align:center;max-width:260px;line-height:1.5;}
+.ci-hint{font-size:12px;color:var(--blue);text-align:center;max-width:260px;background:rgba(0,212,255,.1);border:1px solid rgba(0,212,255,.2);padding:8px 14px;border-radius:12px;}
+.ci-start-btn{margin-top:6px;}
+
+/* Power & UI overlaid on canvas */
+.game-ui-overlay{position:absolute;inset:0;pointer-events:none;z-index:5;}
+.hold-hint{position:absolute;left:0;right:0;text-align:center;font-family:'Bungee',cursive;font-size:13px;color:rgba(255,255,255,.45);letter-spacing:2px;animation:hint-pulse 1.5s ease-in-out infinite;}
+@keyframes hint-pulse{0%,100%{opacity:.3}50%{opacity:.85}}
+.power-area{position:absolute;left:12px;right:12px;}
+.power-label-txt{font-size:9px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:3px;}
+.power-wrap{height:10px;background:rgba(255,255,255,.08);border-radius:5px;overflow:hidden;border:1px solid rgba(255,255,255,.08);}
+.power-fill{height:100%;width:0%;border-radius:5px;background:linear-gradient(90deg,var(--green),var(--gold),var(--accent));transition:width .04s linear;position:relative;}
+.power-fill::after{content:'';position:absolute;right:0;top:0;bottom:0;width:6px;background:rgba(255,255,255,.6);border-radius:3px;animation:shimmer .5s ease-in-out infinite;}
+@keyframes shimmer{0%,100%{opacity:.5}50%{opacity:1}}
+.level-banner{position:absolute;top:8px;left:0;right:0;text-align:center;font-family:'Bungee',cursive;font-size:12px;color:var(--blue);letter-spacing:1px;}
+.env-chip{position:absolute;top:8px;right:8px;background:rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.15);padding:4px 10px;border-radius:12px;font-size:10px;color:var(--text);}
+
+/* Float text */
+.float-text{position:absolute;pointer-events:none;font-family:'Bungee',cursive;font-size:26px;animation:float-up 1s ease-out forwards;z-index:20;}
+@keyframes float-up{0%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-70px) scale(1.4)}}
+.multiplier-ring{position:absolute;pointer-events:none;width:70px;height:70px;border:3px solid var(--gold);border-radius:50%;animation:ring-expand .6s ease-out forwards;}
+@keyframes ring-expand{0%{opacity:1;transform:scale(0)}100%{opacity:0;transform:scale(3)}}
+
+/* Result sheet */
+.result-sheet{position:absolute;bottom:0;left:0;right:0;background:var(--surface);border-radius:22px 22px 0 0;padding:18px 20px 24px;transform:translateY(100%);transition:transform .35s cubic-bezier(.34,1.56,.64,1);z-index:25;border-top:2px solid rgba(255,255,255,.08);}
+.result-sheet.visible{transform:translateY(0);}
+.rs-title{font-family:'Bungee',cursive;font-size:22px;text-align:center;}
+.rs-score{font-family:'Bungee',cursive;font-size:46px;text-align:center;color:var(--gold);}
+.rs-detail{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:6px 0 14px;}
+.rs-chip{background:var(--card);padding:5px 12px;border-radius:16px;font-size:12px;}
+.rs-chip span{color:var(--gold);font-weight:900;}
+
+/* ═══ SERIES MAP ═══ */
+#seriesMap{background:var(--bg);overflow-y:auto;justify-content:flex-start;padding:0 0 80px;}
+.map-header{width:100%;max-width:420px;background:var(--surface);padding:14px;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(255,255,255,.08);position:sticky;top:0;z-index:5;}
+.map-header h2{font-family:'Bungee',cursive;font-size:20px;flex:1;}
+.world-section{width:100%;max-width:420px;padding:14px 14px 0;}
+.world-title{font-family:'Bungee',cursive;font-size:16px;margin-bottom:8px;display:flex;align-items:center;gap:8px;}
+.level-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:16px;}
+.level-node{aspect-ratio:1;border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;transition:transform .1s,box-shadow .2s;border:2px solid transparent;position:relative;overflow:hidden;}
+.level-node:active{transform:scale(.9);}
+.level-node.ln-locked{background:var(--card);opacity:.5;cursor:default;}
+.level-node.ln-done{background:linear-gradient(135deg,#1a4a2a,#0d2a16);border-color:var(--green);}
+.level-node.ln-active{background:linear-gradient(135deg,#1a2a4a,#0d1626);border-color:var(--blue);box-shadow:0 0 14px rgba(0,212,255,.35);}
+.level-node.ln-star3{border-color:var(--gold);}
+.ln-num{font-family:'Bungee',cursive;font-size:15px;}.ln-stars{font-size:9px;letter-spacing:-1px;}.ln-env{font-size:14px;position:absolute;top:3px;right:3px;}
+
+/* ═══ BATTLE ═══ */
+#battle{background:var(--bg);overflow-y:auto;justify-content:flex-start;padding:0 0 80px;}
+.battle-header{width:100%;max-width:420px;background:var(--surface);padding:14px;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(255,255,255,.08);position:sticky;top:0;z-index:5;}
+.battle-header h2{font-family:'Bungee',cursive;font-size:20px;flex:1;}
+.battle-section{width:100%;max-width:420px;padding:12px 14px;}
+.battle-section h3{font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--muted);margin-bottom:8px;}
+.game-input{background:var(--card);border:1px solid rgba(255,255,255,.1);color:var(--text);padding:11px 14px;border-radius:12px;font-family:'Nunito',sans-serif;font-size:14px;outline:none;width:100%;}
+.game-input:focus{border-color:var(--blue);}
+.battle-opt-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;}
+.battle-opt{background:var(--card);border-radius:12px;padding:9px 6px;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;border:2px solid transparent;transition:border-color .2s;}
+.battle-opt.selected{border-color:var(--gold);}
+.battle-opt-icon{font-size:20px;}.battle-opt-name{font-size:10px;font-weight:700;}
+.room-list{display:flex;flex-direction:column;gap:7px;}
+.room-row{background:var(--card);border-radius:14px;padding:11px 14px;display:flex;align-items:center;gap:10px;border:1px solid rgba(255,255,255,.05);}
+.room-info{flex:1;}.room-name{font-weight:700;font-size:13px;}.room-meta{font-size:11px;color:var(--muted);}
+
+/* BATTLE GAME */
+#battleGame{background:var(--bg);padding:0;justify-content:flex-start;}
+.battle-hud{width:100%;max-width:420px;background:var(--surface);border-bottom:1px solid rgba(255,255,255,.08);padding:8px 10px;display:flex;gap:7px;flex-shrink:0;}
+.player-hud{flex:1;background:var(--card);border-radius:10px;padding:7px 9px;border:1px solid transparent;transition:border-color .3s;}
+.player-hud.active-turn{border-color:var(--blue);}
+.ph-name{font-size:9px;color:var(--muted);font-weight:700;}.ph-score{font-family:'Bungee',cursive;font-size:19px;color:var(--gold);}.ph-flips{font-size:9px;color:var(--muted);}
+.battle-timer{text-align:center;min-width:46px;}.bt-secs{font-family:'Bungee',cursive;font-size:22px;color:var(--accent);}.bt-label{font-size:9px;color:var(--muted);text-transform:uppercase;}
+.turn-banner{position:absolute;top:9px;left:0;right:0;text-align:center;font-family:'Bungee',cursive;font-size:13px;color:var(--blue);z-index:5;pointer-events:none;animation:hint-pulse 1s ease-in-out infinite;}
+#battleCanvas{position:absolute;inset:0;width:100%;height:100%;display:block;}
+.battle-arena{flex:1;width:100%;max-width:420px;position:relative;overflow:hidden;cursor:pointer;min-height:0;}
+
+/* ═══ SHOP ═══ */
+#shop{background:var(--bg);overflow-y:auto;justify-content:flex-start;padding:0 0 80px;}
+.shop-header{width:100%;max-width:420px;background:var(--surface);padding:14px;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(255,255,255,.08);position:sticky;top:0;z-index:5;}
+.shop-header h2{font-family:'Bungee',cursive;font-size:20px;flex:1;}
+.coin-badge{background:var(--gold);color:#000;padding:5px 12px;border-radius:16px;font-family:'Bungee',cursive;font-size:14px;}
+.shop-tabs{display:flex;width:100%;max-width:420px;background:var(--surface);border-bottom:1px solid rgba(255,255,255,.08);}
+.shop-tab{flex:1;padding:10px;text-align:center;font-size:11px;font-weight:700;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;transition:color .2s,border-color .2s;}
+.shop-tab.active{color:var(--blue);border-color:var(--blue);}
+.shop-panel{width:100%;max-width:420px;padding:14px;display:none;}
+.shop-panel.active{display:block;}
+.sst{font-size:11px;text-transform:uppercase;letter-spacing:2px;color:var(--muted);margin-bottom:10px;}
+.bottle-preview-wrap{display:flex;justify-content:center;margin-bottom:16px;background:var(--card);border-radius:18px;padding:18px;border:1px solid rgba(255,255,255,.06);}
+#previewCanvas{width:72px;height:144px;}
+.water-control{display:flex;flex-direction:column;gap:6px;margin-bottom:16px;}
+.water-row{display:flex;align-items:center;gap:10px;}
+.water-slider{flex:1;-webkit-appearance:none;height:5px;border-radius:3px;background:linear-gradient(90deg,var(--blue) var(--val,40%),rgba(255,255,255,.1) var(--val,40%));outline:none;}
+.water-slider::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--blue);cursor:pointer;box-shadow:0 0 7px var(--blue);}
+.water-pct{font-family:'Bungee',cursive;font-size:14px;color:var(--blue);min-width:38px;text-align:right;}
+.bottle-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px;}
+.bottle-card{background:var(--card);border-radius:14px;padding:10px 6px;display:flex;flex-direction:column;align-items:center;gap:5px;border:2px solid transparent;cursor:pointer;transition:border-color .2s,transform .1s;position:relative;}
+.bottle-card:active{transform:scale(.95);}.bottle-card.selected{border-color:var(--blue);background:rgba(0,212,255,.08);}.bottle-card.locked{opacity:.6;}
+.bottle-card-name{font-size:10px;font-weight:700;text-align:center;}.bottle-card-price{font-size:10px;color:var(--gold);}.bottle-card-owned{font-size:10px;color:var(--green);}
+.lock-icon{position:absolute;top:5px;right:5px;font-size:11px;}
+.sticker-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;}
+.sticker-card{background:var(--card);border-radius:10px;padding:8px 5px;display:flex;flex-direction:column;align-items:center;gap:3px;border:2px solid transparent;cursor:pointer;transition:border-color .2s,transform .1s;font-size:22px;text-align:center;}
+.sticker-card:active{transform:scale(.88);}.sticker-card.selected{border-color:var(--accent);background:rgba(233,69,96,.08);}.sticker-card.locked{opacity:.5;}
+.sticker-price{font-size:8px;color:var(--gold);}.sticker-owned{font-size:8px;color:var(--green);}
+.color-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
+.color-swatch{width:32px;height:32px;border-radius:50%;cursor:pointer;border:3px solid transparent;transition:transform .1s,border-color .2s;}
+.color-swatch:active{transform:scale(.84);}.color-swatch.selected{border-color:#fff;transform:scale(1.15);}
+.quest-card{background:var(--card);border-radius:14px;padding:12px 14px;display:flex;align-items:center;gap:12px;border:1px solid rgba(255,255,255,.06);margin-bottom:8px;}
+.quest-icon{font-size:26px;min-width:30px;text-align:center;}.quest-info{flex:1;}.quest-name{font-weight:700;font-size:13px;}.quest-desc{font-size:11px;color:var(--muted);margin-top:2px;}
+.quest-progress{height:5px;background:rgba(255,255,255,.1);border-radius:3px;margin-top:6px;overflow:hidden;}
+.quest-progress-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--blue),var(--green));transition:width .5s;}
+.quest-reward{font-family:'Bungee',cursive;font-size:13px;color:var(--gold);}.quest-claim-btn{background:var(--green);color:#000;border:none;padding:5px 12px;border-radius:10px;font-family:'Bungee',cursive;font-size:11px;cursor:pointer;}
+
+/* LB */
+#leaderboard{background:var(--bg);overflow-y:auto;justify-content:flex-start;padding:0 0 80px;}
+.lb-header{width:100%;max-width:420px;background:var(--surface);padding:14px;border-bottom:1px solid rgba(255,255,255,.08);position:sticky;top:0;z-index:5;}
+.lb-header h2{font-family:'Bungee',cursive;font-size:20px;}
+.lb-list{width:100%;max-width:420px;padding:10px;display:flex;flex-direction:column;gap:7px;}
+.lb-row{background:var(--card);border-radius:13px;padding:10px 14px;display:flex;align-items:center;gap:10px;border:1px solid rgba(255,255,255,.05);}
+.lb-rank{font-family:'Bungee',cursive;font-size:17px;min-width:28px;}.lb-rank.gold{color:var(--gold);}.lb-rank.silver{color:#c0c0c0;}.lb-rank.bronze{color:#cd7f32;}
+.lb-name{flex:1;font-weight:700;font-size:13px;}.lb-score{font-family:'Bungee',cursive;font-size:17px;color:var(--gold);}.lb-you{background:rgba(0,212,255,.08);border-color:var(--blue);}
+
+/* NAV */
+.nav-bar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:420px;background:var(--surface);border-top:1px solid rgba(255,255,255,.08);display:flex;z-index:50;padding-bottom:env(safe-area-inset-bottom,0);}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;padding:9px 0;cursor:pointer;gap:2px;border:none;background:none;color:var(--muted);transition:color .2s;}
+.nav-btn.active{color:var(--blue);}.nav-btn span:first-child{font-size:20px;}.nav-btn span:last-child{font-size:9px;font-family:'Nunito',sans-serif;font-weight:700;}
+
+/* TOAST */
+.toast{position:fixed;top:18px;left:50%;transform:translateX(-50%);background:var(--card);border:1px solid rgba(255,255,255,.1);padding:9px 18px;border-radius:18px;font-size:13px;font-weight:700;z-index:100;transition:opacity .3s,transform .3s;white-space:nowrap;}
+.toast.hidden{opacity:0;transform:translateX(-50%) translateY(-8px);pointer-events:none;}
+
+/* CONFETTI */
+.confetti-piece{position:fixed;width:7px;height:7px;pointer-events:none;z-index:200;animation:confetti-fall linear forwards;}
+@keyframes confetti-fall{0%{opacity:1;transform:translateY(-20px) rotate(0deg)}100%{opacity:0;transform:translateY(100vh) rotate(720deg)}}
+</style>
+</head>
+<body>
+
+<!-- HOME -->
+<div class="screen" id="home">
+  <div class="logo">BOTTLE<br>FLIP!</div>
+  <div class="tagline">Flip · Land · Score</div>
+  <canvas id="homeCanvas" class="home-bottle-wrap" width="100" height="160"></canvas>
+  <div class="stats-bar">
+    <div class="stat"><div class="stat-val" id="hs-home">0</div><div class="stat-lbl">Best</div></div>
+    <div class="stat"><div class="stat-val" id="coins-home">0</div><div class="stat-lbl">Koin</div></div>
+    <div class="stat"><div class="stat-val" id="flips-home">0</div><div class="stat-lbl">Flips</div></div>
+  </div>
+  <div class="home-btns">
+    <button class="btn" onclick="showScreen('modeSelect')">▶ MAIN</button>
+    <button class="btn secondary" onclick="showScreen('shop')">🛒 Toko</button>
+  </div>
+</div>
+
+<!-- MODE SELECT -->
+<div class="screen hidden" id="modeSelect">
+  <div class="mode-title">PILIH MODE</div>
+  <div class="mode-grid">
+    <div class="mode-card mode-arcade" onclick="startArcade()">
+      <div class="mode-icon">🕹️</div><div class="mode-name">ARCADE</div>
+      <div class="mode-desc">Kumpul poin & koin. Selesaikan quest untuk bonus!</div>
+    </div>
+    <div class="mode-card mode-series" onclick="showScreen('seriesMap')">
+      <div class="mode-icon">🗺️</div><div class="mode-name">SERIES</div>
+      <div class="mode-desc">30 level. Tantangan fisika nyata di setiap stage!</div>
+    </div>
+    <div class="mode-card mode-battle" onclick="showScreen('battle')">
+      <div class="mode-icon">⚔️</div><div class="mode-name">BATTLE</div>
+      <div class="mode-desc">1v1 hingga 1v3 realtime! Bikin room, tantang kawan!</div>
+    </div>
+  </div>
+  <button class="btn secondary sm" style="margin-top:8px" onclick="showHome()">← Kembali</button>
+</div>
+
+<!-- GAME -->
+<div class="screen hidden" id="game">
+  <div class="game-hud">
+    <div><div class="hud-label">SKOR</div><div class="hud-score" id="scoreDisplay">0</div></div>
+    <div style="text-align:center"><div class="hud-label" id="hudMidLabel">COMBO</div><div class="hud-combo" id="comboDisplay">x1</div></div>
+    <div style="text-align:right"><div class="hud-label">NYAWA</div><div class="hud-lives" id="livesDisplay"></div></div>
+  </div>
+  <div class="arena" id="arena"
+    ontouchstart="holdStart(event)" ontouchend="holdEnd(event)"
+    onmousedown="holdStart(event)" onmouseup="holdEnd(event)">
+    <canvas id="bottleCanvas"></canvas>
+
+    <!-- Challenge intro overlay -->
+    <div class="challenge-intro hidden" id="challengeIntro">
+      <div class="ci-world" id="ciWorld"></div>
+      <div class="ci-env" id="ciEnvIcon"></div>
+      <div class="ci-title" id="ciTitle"></div>
+      <div class="ci-desc" id="ciDesc"></div>
+      <div class="ci-hint" id="ciHint"></div>
+      <button class="btn ci-start-btn" onclick="dismissIntro()">SIAP! ▶</button>
+    </div>
+
+    <!-- UI overlay (non-interactive) -->
+    <div class="game-ui-overlay">
+      <div class="level-banner" id="levelBanner"></div>
+      <div class="env-chip" id="envChip" style="display:none"></div>
+      <div class="hold-hint" id="holdHint" style="display:none">TAHAN &amp; LEPAS</div>
+      <div class="power-area" id="powerArea" style="display:none">
+        <div class="power-label-txt">POWER</div>
+        <div class="power-wrap"><div class="power-fill" id="powerFill"></div></div>
+      </div>
+    </div>
+  </div>
+  <div class="result-sheet" id="resultSheet">
+    <div class="rs-title" id="rsTitle">GAME OVER!</div>
+    <div class="rs-score" id="rsScore">0</div>
+    <div class="rs-detail" id="rsDetail"></div>
+    <button class="btn" style="width:100%;margin-bottom:8px" id="rsPlayAgainBtn" onclick="restartCurrentMode()">🔄 MAIN LAGI</button>
+    <button class="btn secondary" style="width:100%" onclick="showHome()">🏠 HOME</button>
+  </div>
+</div>
+
+<!-- SERIES MAP -->
+<div class="screen hidden" id="seriesMap">
+  <div class="map-header">
+    <button onclick="showHome()" style="background:none;border:none;color:var(--text);font-size:18px;cursor:pointer">←</button>
+    <h2>🗺️ SERIES</h2>
+    <div class="coin-badge" id="mapCoinBadge">0 🪙</div>
+  </div>
+  <div id="mapContent" style="width:100%;max-width:420px;overflow-y:auto;padding-bottom:80px;"></div>
+</div>
+
+<!-- BATTLE LOBBY -->
+<div class="screen hidden" id="battle">
+  <div class="battle-header">
+    <button onclick="showHome()" style="background:none;border:none;color:var(--text);font-size:18px;cursor:pointer">←</button>
+    <h2>⚔️ BATTLE</h2>
+  </div>
+  <div class="battle-section" style="width:100%;max-width:420px;">
+    <h3>NAMA KAMU</h3>
+    <input type="text" class="game-input" id="playerNameInput" placeholder="Masukkan nama..." maxlength="16">
+  </div>
+  <div class="battle-section" style="width:100%;max-width:420px;">
+    <h3>BUAT ROOM</h3>
+    <div style="display:flex;gap:8px;margin-bottom:8px">
+      <input type="text" class="game-input" id="roomNameInput" placeholder="Nama room...">
+      <select class="game-input" id="maxPlayersInput" style="max-width:80px;">
+        <option value="2">1v1</option><option value="3">1v2</option><option value="4">1v3</option>
+      </select>
+    </div>
+    <h3>SUASANA</h3>
+    <div class="battle-opt-grid" id="battleEnvGrid"></div>
+    <button class="btn blue" style="width:100%;margin-top:10px" onclick="createRoom()">🏠 BUAT ROOM</button>
+  </div>
+  <div class="battle-section" style="width:100%;max-width:420px;">
+    <h3>GABUNG ROOM <span style="float:right;cursor:pointer;font-size:11px;color:var(--blue)" onclick="refreshRooms()">↻ REFRESH</span></h3>
+    <div class="room-list" id="roomList"></div>
+  </div>
+</div>
+
+<!-- BATTLE GAME -->
+<div class="screen hidden" id="battleGame">
+  <div class="battle-hud" id="battleHud"></div>
+  <div class="battle-arena" id="battleArena"
+    ontouchstart="bHoldStart(event)" ontouchend="bHoldEnd(event)"
+    onmousedown="bHoldStart(event)" onmouseup="bHoldEnd(event)">
+    <canvas id="battleCanvas"></canvas>
+    <div class="game-ui-overlay">
+      <div class="turn-banner" id="turnBanner"></div>
+      <div class="hold-hint" id="battleHoldHint" style="display:none">TAHAN &amp; LEPAS</div>
+      <div class="power-area" id="battlePowerArea" style="display:none">
+        <div class="power-label-txt">POWER</div>
+        <div class="power-wrap"><div class="power-fill" id="battlePowerFill"></div></div>
+      </div>
+    </div>
+  </div>
+  <div class="result-sheet" id="battleResultSheet">
+    <div class="rs-title" id="brsTitle">SELESAI!</div>
+    <div id="brsContent" style="margin:10px 0"></div>
+    <button class="btn" style="width:100%;margin-bottom:8px" onclick="showScreen('battle')">🔄 MAIN LAGI</button>
+    <button class="btn secondary" style="width:100%" onclick="showHome()">🏠 HOME</button>
+  </div>
+</div>
+
+<!-- SHOP -->
+<div class="screen hidden" id="shop">
+  <div class="shop-header">
+    <button onclick="showHome()" style="background:none;border:none;color:var(--text);font-size:18px;cursor:pointer">←</button>
+    <h2>🛒 TOKO</h2>
+    <div class="coin-badge" id="coinBadge">0 🪙</div>
+  </div>
+  <div class="shop-tabs">
+    <div class="shop-tab active" onclick="switchShopTab(0)">🍾 Botol</div>
+    <div class="shop-tab" onclick="switchShopTab(1)">✨ Stiker</div>
+    <div class="shop-tab" onclick="switchShopTab(2)">📋 Quest</div>
+  </div>
+  <div class="shop-panel active" id="shopPanel0" style="overflow-y:auto;padding-bottom:80px;">
+    <div class="bottle-preview-wrap"><canvas id="previewCanvas" width="72" height="144"></canvas></div>
+    <div class="sst">💧 AIR DALAM BOTOL</div>
+    <div class="water-control">
+      <div class="water-row">
+        <input type="range" class="water-slider" id="waterSlider" min="10" max="90" value="40" oninput="updateWater(this.value)">
+        <div class="water-pct" id="waterPct">40%</div>
+      </div>
+      <div style="font-size:10px;color:var(--muted)">💡 ~40% optimal. Level angin: lebih banyak air = lebih stabil</div>
+    </div>
+    <div class="sst">🎨 WARNA BOTOL</div>
+    <div class="color-row" id="colorRow"></div>
+    <div class="sst">🍾 UPGRADE BOTOL</div>
+    <div class="bottle-grid" id="bottleGrid"></div>
+  </div>
+  <div class="shop-panel" id="shopPanel1" style="overflow-y:auto;padding-bottom:80px;">
+    <div class="sst">✨ STIKER (MAX 2 AKTIF)</div>
+    <div class="sticker-grid" id="stickerGrid"></div>
+  </div>
+  <div class="shop-panel" id="shopPanel2" style="overflow-y:auto;padding-bottom:80px;">
+    <div class="sst">📋 QUEST AKTIF</div>
+    <div id="questList"></div>
+  </div>
+</div>
+
+<!-- LEADERBOARD -->
+<div class="screen hidden" id="leaderboard">
+  <div class="lb-header"><h2>🏆 PAPAN SKOR</h2></div>
+  <div class="lb-list" id="lbList"></div>
+</div>
+
+<!-- NAV -->
+<div class="nav-bar">
+  <button class="nav-btn active" onclick="showHome()" id="nav-home"><span>🏠</span><span>Home</span></button>
+  <button class="nav-btn" onclick="showScreen('modeSelect')" id="nav-play"><span>▶️</span><span>Main</span></button>
+  <button class="nav-btn" onclick="showScreen('shop')" id="nav-shop"><span>🛒</span><span>Toko</span></button>
+  <button class="nav-btn" onclick="showScreen('leaderboard');renderLB()" id="nav-lb"><span>🏆</span><span>Skor</span></button>
+</div>
+<div class="toast hidden" id="toast"></div>
+
+<script>
+// ════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════
+const SAVE_KEY='bflip_v3';
+let state={
+  coins:0,highScore:0,totalFlips:0,
+  waterPct:40,bottleColor:'#00d4ff',
+  selectedBottle:0,selectedStickers:[],
+  ownedBottles:[0],ownedStickers:[],
+  scores:[],seriesProgress:{},questProgress:{},
+  playerName:'FlipMaster',
+};
+function save(){localStorage.setItem(SAVE_KEY,JSON.stringify(state));}
+function load(){const d=localStorage.getItem(SAVE_KEY);if(d)state={...state,...JSON.parse(d)};}
+load();
+
+// ════════════════════════════════════════
+// STATIC DATA
+// ════════════════════════════════════════
+const BOTTLES=[
+  {name:'Biasa', price:0,   emoji:'💧',shape:'normal',mass:1.0},
+  {name:'Ramping',price:200,emoji:'🫙',shape:'slim',  mass:0.75},
+  {name:'Lebar', price:300, emoji:'🍶',shape:'wide',  mass:1.25},
+  {name:'Mini',  price:400, emoji:'🧴',shape:'mini',  mass:0.65},
+  {name:'Tall',  price:600, emoji:'🍺',shape:'tall',  mass:0.85},
+  {name:'Galon', price:1000,emoji:'🪣',shape:'gallon',mass:1.9},
+];
+const STICKERS=[
+  {emoji:'⭐',name:'Star',price:50},{emoji:'🔥',name:'Fire',price:50},
+  {emoji:'💪',name:'Kuat',price:50},{emoji:'😎',name:'Cool',price:80},
+  {emoji:'🌊',name:'Wave',price:80},{emoji:'🎯',name:'Target',price:100},
+  {emoji:'👑',name:'Mahkota',price:150},{emoji:'💎',name:'Diamond',price:200},
+  {emoji:'🚀',name:'Roket',price:250},{emoji:'🦄',name:'Unicorn',price:300},
+];
+const COLORS=['#00d4ff','#ff4757','#2ed573','#ffa502','#a29bfe','#fd79a8','#00b894','#e17055','#ffffff','#636e72'];
+
+// ENVIRONMENTS with full properties
+const ENVS={
+  normal: {name:'Normal',     icon:'🏠',bg:['#0d1b2a','#1a2744','#2d1f14'],wind:0,   gravity:0.44,friction:1.0, tableColor:['#5C3D26','#3D2518'],edgeColor:'#C4956A',darkOverlay:0},
+  windy:  {name:'Berangin',   icon:'💨',bg:['#1a2233','#253050','#1a1a2a'],wind:0.12, gravity:0.44,friction:1.0, tableColor:['#5C3D26','#3D2518'],edgeColor:'#C4956A',darkOverlay:0,
+            desc:'Kipas angin besar meniup dari samping! Botol ringan dan kurang air mudah tersapu angin.',
+            hint:'💡 Gunakan botol berat (Galon/Lebar) atau isi air lebih banyak (~70%) untuk stabilitas.'},
+  icy:    {name:'Meja Licin', icon:'🧊',bg:['#0a1828','#102040','#142a44'],wind:0,    gravity:0.44,friction:0.12,tableColor:['#78c8e8','#4a9ab8'],edgeColor:'#b8eeff',darkOverlay:0,
+            desc:'Meja tertutup es! Botol akan terus sliding setelah mendarat. Sudut landing harus tepat banget.',
+            hint:'💡 Isi air lebih sedikit (~25%) dan gunakan botol Lebar agar pusat massa rendah.'},
+  sandy:  {name:'Pantai Pasir',icon:'🏖️',bg:['#2a1f0a','#3d2e12','#503c18'],wind:0.03,gravity:0.44,friction:2.2, tableColor:['#c4963a','#8b6820'],edgeColor:'#e0b850',darkOverlay:0,
+            desc:'Mendarat di pasir! Pasir meredam bounce tapi bikin botol miring lebih mudah.',
+            hint:'💡 Tambah air (~55%) agar pusat massa turun dan botol lebih stabil di pasir.'},
+  rainy:  {name:'Hujan Deras', icon:'🌧️',bg:['#080f1a','#10192a','#0d141f'],wind:0.06, gravity:0.44,friction:0.8, tableColor:['#3d3025','#251e18'],edgeColor:'#8a7060',darkOverlay:0.15,
+            desc:'Hujan deras mengaburkan pandangan dan membuat meja lebih licin dari biasanya.',
+            hint:'💡 Fokus pada timing power bar. Botol standar dengan air 40% masih oke.'},
+  dark:   {name:'Malam Gelap', icon:'🌑',bg:['#030306','#060609','#0a0a0f'],wind:0,    gravity:0.44,friction:1.0, tableColor:['#2a1a10','#180e08'],edgeColor:'#6a4030',darkOverlay:0.65,
+            desc:'Gelap total! Hampir tidak bisa melihat meja. Andalkan feeling dan timing.',
+            hint:'💡 Perhatikan shadow botol di bawah sebagai satu-satunya petunjuk jarak.'},
+  space:  {name:'Luar Angkasa',icon:'🚀',bg:['#000008','#04040f','#080818'],wind:0,    gravity:0.17,friction:1.0, tableColor:['#1a0a3a','#0d0520'],edgeColor:'#7040cc',darkOverlay:0,
+            desc:'Gravitasi sangat rendah! Botol melayang jauh lebih lama. Rotation count bisa tinggi!',
+            hint:'💡 Isi air lebih sedikit (~20%) agar botol spin lebih cepat dan bisa triple spin!'},
+  hot:    {name:'Gunung Api',  icon:'🌋',bg:['#2a0800','#3d1000','#1a0500'],wind:0.04, gravity:0.44,friction:1.15,tableColor:['#3a1a00','#220d00'],edgeColor:'#cc5000',darkOverlay:0,
+            desc:'Udara panas menggetarkan botol! Ada thermal updraft yang sesekali mendorong botol ke atas.',
+            hint:'💡 Botol berat (Galon) lebih tahan getaran. Siapkan power 60-80%.'},
+};
+
+// SERIES: 6 worlds x 5 levels = 30 levels
+const WORLDS=[
+  {name:'Dunia Awal',    icon:'🏠',color:'#00d4ff',
+   levels:[
+    {id:0, env:'normal',target:5, stars:[3,6,10],  desc:'Tutorial. Flip botol dan mendarat tegak!',hint:'Tahan layar untuk charge, lepas untuk flip!'},
+    {id:1, env:'normal',target:7, stars:[5,9,14],  desc:'Flip lebih banyak kali dengan combo!',hint:'Jangan gagal agar combo terus naik!'},
+    {id:2, env:'normal',target:8, stars:[6,11,17], desc:'Coba raih double spin!',hint:'Power tinggi = lebih banyak putaran = lebih banyak poin!'},
+    {id:3, env:'normal',target:10,stars:[8,14,22], desc:'Konsistensi adalah kunci.',hint:'Jaga combo, jangan terburu-buru!'},
+    {id:4, env:'normal',target:12,stars:[10,18,28],desc:'Boss stage dunia awal!',hint:'Kalau struggling, coba botol Lebar untuk area landing lebih besar.'},
+  ]},
+  {name:'Badai Angin',   icon:'💨',color:'#a29bfe',
+   levels:[
+    {id:5, env:'windy',target:5, stars:[3,5,8],   desc:'Kipas angin pertama! Angin lemah dari kiri.',hint:'Naikkan air ke 60% agar lebih stabil.'},
+    {id:6, env:'windy',target:6, stars:[4,7,10],  desc:'Angin semakin kencang!',hint:'Coba botol Galon — berat, tahan angin.'},
+    {id:7, env:'windy',target:7, stars:[5,8,12],  desc:'Angin datang dari dua arah bergantian!',hint:'Perhatikan partikel angin sebelum flip.'},
+    {id:8, env:'windy',target:8, stars:[5,9,14],  desc:'Tornado kecil di arena!',hint:'Power 70%+ agar flip cukup tinggi melewati hembusan.'},
+    {id:9, env:'windy',target:10,stars:[7,12,18], desc:'Badai puncak! Kipas industri berkecepatan penuh.',hint:'Botol Galon + air 75% = kombinasi terbaik!'},
+  ]},
+  {name:'Meja Es',       icon:'🧊',color:'#74b9ff',
+   levels:[
+    {id:10,env:'icy',  target:5, stars:[2,4,7],   desc:'Es tipis. Sedikit lebih licin dari biasanya.',hint:'Kurangi air ke 25% agar pusat massa rendah.'},
+    {id:11,env:'icy',  target:5, stars:[3,5,8],   desc:'Es makin tebal, makin licin!',hint:'Botol Lebar punya base lebih lebar — lebih mudah berdiri.'},
+    {id:12,env:'icy',  target:7, stars:[4,7,10],  desc:'Permukaan es sempurna. Landing harus tepat banget.',hint:'Jaga landing zone di tengah-tengah.'},
+    {id:13,env:'icy',  target:8, stars:[5,8,12],  desc:'Kombinasi licin + sedikit angin!',hint:'Botol Galon sangat membantu di sini.'},
+    {id:14,env:'icy',  target:10,stars:[6,10,15], desc:'Rink es profesional! Challenge terberat dunia 3.',hint:'Air 20% + botol Lebar = kombinasi terbaik di es.'},
+  ]},
+  {name:'Pantai Panas',  icon:'🏖️',color:'#fdcb6e',
+   levels:[
+    {id:15,env:'sandy', target:5, stars:[3,5,8],  desc:'Pasir halus pantai. Bounce meredam.',hint:'Tambah air ke 55% untuk stabilitas ekstra.'},
+    {id:16,env:'sandy', target:6, stars:[4,6,9],  desc:'Pasir lebih dalam dan lepas!',hint:'Hindari landing miring — pasir akan menahan.'},
+    {id:17,env:'rainy', target:7, stars:[4,7,10], desc:'Hujan tiba-tiba di pantai!',hint:'Meja jadi licin, jaga power di 50-65%.'},
+    {id:18,env:'sandy', target:8, stars:[5,9,13], desc:'Angin pantai + pasir — combo keras!',hint:'Botol standar dengan air 50% cukup bagus.'},
+    {id:19,env:'rainy', target:10,stars:[7,11,15],desc:'Badai pantai! Hujan lebat + angin kencang.',hint:'Botol berat sangat dianjurkan di stage ini!'},
+  ]},
+  {name:'Malam Kelam',   icon:'🌑',color:'#636e72',
+   levels:[
+    {id:20,env:'dark',  target:5, stars:[3,5,7],  desc:'Lampu mati. Samar-samar kelihatan.',hint:'Fokus pada bayangan botol di bawah!'},
+    {id:21,env:'dark',  target:6, stars:[4,6,9],  desc:'Gelap total! Hanya bayangan yang kelihatan.',hint:'Timing adalah segalanya. Jangan panic.'},
+    {id:22,env:'hot',   target:7, stars:[4,7,10], desc:'Panas membara! Distorsi udara mengacaukan.',hint:'Botol Galon tahan getaran thermal.'},
+    {id:23,env:'dark',  target:8, stars:[5,8,12], desc:'Dark + hot! Gelap dan panas sekaligus.',hint:'Percaya instingmu. Power 60% selalu aman.'},
+    {id:24,env:'hot',   target:10,stars:[6,10,14],desc:'Puncak malam — gunung api aktif!',hint:'Jaga konsistensi, jangan kejar triple spin.'},
+  ]},
+  {name:'Galaksi',       icon:'🚀',color:'#fd79a8',
+   levels:[
+    {id:25,env:'space', target:5, stars:[2,4,6],  desc:'Selamat datang di luar angkasa! Gravitasi rendah.',hint:'Air 20% + power 40% untuk flip sempurna.'},
+    {id:26,env:'space', target:6, stars:[3,5,8],  desc:'Stasiun luar angkasa. Lebih sedikit gravity.',hint:'Tunggu botol land dengan sabar — lama melayang!'},
+    {id:27,env:'space', target:7, stars:[3,6,9],  desc:'Asteroid belt! Harus flip di antara hambatan.',hint:'Triple spin sangat mungkin di sini!'},
+    {id:28,env:'space', target:8, stars:[4,7,10], desc:'Deep space — nyaris tanpa gravitasi!',hint:'Power sangat rendah (20%) tetap cukup tinggi.'},
+    {id:29,env:'space', target:10,stars:[5,8,12], desc:'FINAL BOSS! Kombinasi semua tantangan.',hint:'Pake botol terbaik yang kamu punya!'},
+  ]},
+];
+
+const QUESTS=[
+  {id:'q1',name:'Flip Pemula',  desc:'Berhasil flip 10 kali',  icon:'🎯',target:10, reward:100,stat:'totalFlips'},
+  {id:'q2',name:'Poin Pertama', desc:'Kumpul 50 poin 1 sesi',  icon:'⭐',target:50, reward:200,stat:'sessionScore'},
+  {id:'q3',name:'Combo King',   desc:'Capai combo x5',          icon:'🔥',target:5,  reward:150,stat:'maxCombo'},
+  {id:'q4',name:'Flip Legend',  desc:'Total 50 flip berhasil',  icon:'🏆',target:50, reward:300,stat:'totalFlips'},
+  {id:'q5',name:'Double Spin',  desc:'Landing setelah 2x putar',icon:'💫',target:1,  reward:100,stat:'doubleSpin'},
+  {id:'q6',name:'Penjelajah',   desc:'Main di 3 environment',   icon:'🗺️',target:3,  reward:250,stat:'envPlayed'},
+  {id:'q7',name:'Kolektor',     desc:'Beli 3 botol berbeda',    icon:'🍾',target:3,  reward:400,stat:'ownedBottles'},
+  {id:'q8',name:'Series Pro',   desc:'Selesaikan 10 level series',icon:'📋',target:10,reward:500,stat:'seriesCompleted'},
+];
+
+// ════════════════════════════════════════
+// BOTTLE RENDERER
+// ════════════════════════════════════════
+function getShape(s){
+  return ({
+    normal:{w:34,h:90, neckW:12,neckH:20,capH:8, capW:14},
+    slim:  {w:26,h:100,neckW:9, neckH:22,capH:8, capW:11},
+    wide:  {w:46,h:80, neckW:16,neckH:18,capH:7, capW:18},
+    mini:  {w:28,h:65, neckW:10,neckH:16,capH:6, capW:12},
+    tall:  {w:30,h:110,neckW:10,neckH:24,capH:9, capW:12},
+    gallon:{w:54,h:75, neckW:18,neckH:16,capH:7, capW:20},
+  })[s]||{w:34,h:90,neckW:12,neckH:20,capH:8,capW:14};
+}
+function rr(ctx,x,y,w,h,r){
+  ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r);ctx.lineTo(x+w,y+h-r);ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);ctx.lineTo(x+r,y+h);ctx.quadraticCurveTo(x,y+h,x,y+h-r);ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);ctx.closePath();
+}
+function dk(hex,a){let r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);return `rgb(${Math.max(0,r-a)},${Math.max(0,g-a)},${Math.max(0,b-a)})`;}
+function lt(hex,a){let r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);return `rgb(${Math.min(255,r+a)},${Math.min(255,g+a)},${Math.min(255,b+a)})`;}
+
+function drawBottle(ctx,cx,cy,angle,shapeName,color,waterPct,stickers,scale=1){
+  const sh=getShape(shapeName);
+  const{w,h,neckW,neckH,capH,capW}=sh;
+  const bodyH=h-neckH-capH;
+  ctx.save();ctx.translate(cx,cy);ctx.rotate(angle);ctx.scale(scale,scale);
+  const by=-h/2;
+  // body gradient
+  const grad=ctx.createLinearGradient(-w/2,0,w/2,0);
+  grad.addColorStop(0,dk(color,30));grad.addColorStop(.3,color);grad.addColorStop(.7,lt(color,20));grad.addColorStop(1,dk(color,20));
+  ctx.beginPath();rr(ctx,-w/2,by+capH+neckH,w,bodyH,4);
+  ctx.fillStyle='rgba(255,255,255,0.07)';ctx.fill();ctx.fillStyle=grad;ctx.fill();
+  ctx.strokeStyle=dk(color,40);ctx.lineWidth=1;ctx.stroke();
+  // water
+  const waterH=bodyH*(Math.max(0,Math.min(100,waterPct))/100);
+  const waterY=by+capH+neckH+(bodyH-waterH);
+  const wg=ctx.createLinearGradient(0,waterY,0,waterY+waterH);
+  wg.addColorStop(0,'rgba(100,200,255,0.45)');wg.addColorStop(1,'rgba(40,100,220,0.65)');
+  ctx.save();ctx.beginPath();rr(ctx,-w/2+2,by+capH+neckH,w-4,bodyH,3);ctx.clip();
+  ctx.fillStyle=wg;ctx.fillRect(-w/2+2,waterY,w-4,waterH);
+  ctx.fillStyle='rgba(255,255,255,0.2)';ctx.fillRect(-w/2+4,waterY+2,(w-8)/3,2);
+  ctx.restore();
+  // neck
+  const ng=ctx.createLinearGradient(-neckW/2,0,neckW/2,0);
+  ng.addColorStop(0,dk(color,20));ng.addColorStop(.5,lt(color,10));ng.addColorStop(1,dk(color,10));
+  ctx.beginPath();ctx.moveTo(-w/2+(w-neckW)/2,by+capH+neckH);ctx.lineTo(-neckW/2,by+capH);ctx.lineTo(neckW/2,by+capH);ctx.lineTo(w/2-(w-neckW)/2,by+capH+neckH);ctx.closePath();ctx.fillStyle=ng;ctx.fill();ctx.strokeStyle=dk(color,30);ctx.stroke();
+  // cap
+  ctx.beginPath();rr(ctx,-capW/2,by,capW,capH,3);ctx.fillStyle=dk(color,50);ctx.fill();ctx.strokeStyle=dk(color,70);ctx.stroke();
+  // highlight
+  ctx.beginPath();ctx.moveTo(-w/2+5,by+capH+neckH+6);ctx.lineTo(-w/2+5,by+capH+neckH+bodyH-6);ctx.strokeStyle='rgba(255,255,255,0.22)';ctx.lineWidth=2;ctx.stroke();
+  // stickers
+  if(stickers&&stickers.length){
+    ctx.font=`${Math.max(9,w*.36)}px serif`;ctx.textAlign='center';ctx.textBaseline='middle';
+    const sy=by+capH+neckH+bodyH*.5;
+    stickers.slice(0,2).forEach((s,i)=>{ctx.save();ctx.rotate(-angle*.25);ctx.fillText(s.emoji,i===0?-w/5:w/5,sy+(i===0?0:bodyH*.25));ctx.restore();});
+  }
+  ctx.restore();
+}
+
+// ════════════════════════════════════════
+// CANVAS DRAWING: table + background + env props
+// ════════════════════════════════════════
+function drawScene(ctx, W, H, tableTopY, envKey, envProps, windParticles, fanAngle){
+  const env=ENVS[envKey]||ENVS.normal;
+  // BG gradient
+  const bg=env.bg;
+  const skybg=ctx.createLinearGradient(0,0,0,tableTopY);
+  skybg.addColorStop(0,bg[0]);skybg.addColorStop(.6,bg[1]);
+  ctx.fillStyle=skybg;ctx.fillRect(0,0,W,tableTopY);
+
+  // Env props drawn on scene
+  if(envKey==='windy'||envKey==='hot'||envKey==='rainy'){
+    // Wind particles
+    ctx.save();
+    windParticles.forEach(p=>{
+      ctx.globalAlpha=p.alpha;
+      ctx.strokeStyle=envKey==='rainy'?'rgba(180,220,255,0.6)':'rgba(220,230,255,0.5)';
+      ctx.lineWidth=envKey==='rainy'?1:1.5;
+      ctx.beginPath();
+      if(envKey==='rainy'){ctx.moveTo(p.x,p.y);ctx.lineTo(p.x+p.len*0.2,p.y+p.len);}
+      else{ctx.moveTo(p.x,p.y);ctx.lineTo(p.x+p.len,p.y+p.len*0.1);}
+      ctx.stroke();
+    });
+    ctx.globalAlpha=1;ctx.restore();
+  }
+
+  if(envKey==='windy'||envKey==='hot'){
+    // Draw fan on right side
+    drawFan(ctx,W-30,tableTopY-60,fanAngle,envKey);
+  }
+
+  if(envKey==='space'){
+    // Stars
+    ctx.save();
+    for(let i=0;i<60;i++){
+      const sx=((i*137.5)%W);const sy=((i*89.3)%(tableTopY));
+      const sr=(i%3===0)?1.5:0.8;
+      ctx.fillStyle=`rgba(255,255,255,${0.3+((i*0.13)%0.5)})`;
+      ctx.beginPath();ctx.arc(sx,sy,sr,0,Math.PI*2);ctx.fill();
+    }
+    ctx.restore();
+  }
+
+  if(envKey==='hot'){
+    // Heat shimmer lines
+    ctx.save();ctx.globalAlpha=0.08;
+    for(let i=0;i<3;i++){
+      const sy=tableTopY-20-(i*30)+((Date.now()/200+i*20)%30);
+      ctx.strokeStyle='rgba(255,200,100,1)';ctx.lineWidth=8;
+      ctx.beginPath();ctx.moveTo(0,sy);ctx.bezierCurveTo(W/4,sy-5,W*3/4,sy+5,W,sy);ctx.stroke();
+    }
+    ctx.globalAlpha=1;ctx.restore();
+  }
+
+  // Dark overlay for dark/rainy
+  if(env.darkOverlay>0){
+    ctx.fillStyle=`rgba(0,0,0,${env.darkOverlay})`;ctx.fillRect(0,0,W,tableTopY);
+  }
+
+  // TABLE surface
+  const tableH=H-tableTopY;
+  const tg=ctx.createLinearGradient(0,tableTopY,0,H);
+  tg.addColorStop(0,env.tableColor[0]);tg.addColorStop(1,env.tableColor[1]);
+  ctx.fillStyle=tg;ctx.fillRect(0,tableTopY,W,tableH);
+
+  // Table edge (top strip)
+  const eg=ctx.createLinearGradient(0,tableTopY,0,tableTopY+8);
+  eg.addColorStop(0,lt2(env.edgeColor,40));eg.addColorStop(1,env.edgeColor);
+  ctx.fillStyle=eg;ctx.fillRect(0,tableTopY,W,7);
+
+  // Table grain lines
+  ctx.save();ctx.globalAlpha=0.12;ctx.strokeStyle='rgba(255,255,255,1)';ctx.lineWidth=1;
+  for(let gx=0;gx<W;gx+=14){ctx.beginPath();ctx.moveTo(gx,tableTopY+7);ctx.lineTo(gx,H);ctx.stroke();}
+  ctx.globalAlpha=1;ctx.restore();
+
+  // Table shadow under edge
+  const shg=ctx.createLinearGradient(0,tableTopY+7,0,tableTopY+28);
+  shg.addColorStop(0,'rgba(0,0,0,0.35)');shg.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.fillStyle=shg;ctx.fillRect(0,tableTopY+7,W,21);
+
+  // Ice sparkle
+  if(envKey==='icy'){
+    ctx.save();ctx.globalAlpha=0.3;
+    for(let i=0;i<8;i++){const sx=W*(i/8)+20;ctx.fillStyle='rgba(200,240,255,1)';ctx.fillRect(sx,tableTopY+3,3,1);}
+    ctx.globalAlpha=1;ctx.restore();
+  }
+
+  // Sandy texture
+  if(envKey==='sandy'){
+    ctx.save();ctx.globalAlpha=0.15;
+    for(let i=0;i<30;i++){const sx=(i*W/30+5);const sy=tableTopY+8+(i%4)*5;ctx.fillStyle='rgba(255,220,150,1)';ctx.beginPath();ctx.arc(sx,sy,1.5,0,Math.PI*2);ctx.fill();}
+    ctx.globalAlpha=1;ctx.restore();
+  }
+
+  // Landing zone indicator
+  const lzX=W/2;const lzY=tableTopY;
+  ctx.save();ctx.strokeStyle='rgba(0,212,255,0.35)';ctx.lineWidth=1;ctx.setLineDash([4,4]);
+  ctx.strokeRect(lzX-35,lzY-2,70,4);ctx.setLineDash([]);ctx.restore();
+}
+
+function lt2(color,a){
+  // Simple lighten for non-hex colors too
+  if(color.startsWith('#')) return lt(color,a);
+  return color;
+}
+
+function drawFan(ctx,x,y,angle,envKey){
+  ctx.save();ctx.translate(x,y);
+  // Hub
+  ctx.fillStyle=envKey==='hot'?'#cc4400':'#667788';
+  ctx.beginPath();ctx.arc(0,0,8,0,Math.PI*2);ctx.fill();
+  // Blades
+  for(let i=0;i<4;i++){
+    ctx.save();ctx.rotate(angle+i*Math.PI/2);
+    ctx.fillStyle=envKey==='hot'?'rgba(255,120,30,0.7)':'rgba(180,210,240,0.7)';
+    ctx.beginPath();ctx.ellipse(0,-15,5,14,0.3,0,Math.PI*2);ctx.fill();
+    ctx.restore();
+  }
+  // Center bolt
+  ctx.fillStyle='#aabbcc';ctx.beginPath();ctx.arc(0,0,3,0,Math.PI*2);ctx.fill();
+  ctx.restore();
+}
+
+// ════════════════════════════════════════
+// HOME CANVAS
+// ════════════════════════════════════════
+const homeCtx=document.getElementById('homeCanvas').getContext('2d');
+let homeAngle=0,homeDir=1;
+function animHome(){
+  homeCtx.clearRect(0,0,100,160);homeAngle+=0.007*homeDir;
+  if(homeAngle>0.14||homeAngle<-0.14)homeDir*=-1;
+  drawBottle(homeCtx,50,80,homeAngle,BOTTLES[state.selectedBottle].shape,state.bottleColor,state.waterPct,state.selectedStickers.map(i=>STICKERS[i]),0.9);
+  requestAnimationFrame(animHome);
+}
+animHome();
+
+// ════════════════════════════════════════
+// GAME ENGINE
+// ════════════════════════════════════════
+let G={};
+let currentMode='arcade';
+let currentLevelId=0;
+let currentEnvKey='normal';
+let holdInterval=null,isHolding=false;
+
+// Wind/env particles
+let windParticles=[];let fanAngle=0;let fanSpeed=0;let envAnimId=null;
+
+function initEnvParticles(envKey,W,H,tableTopY){
+  windParticles=[];
+  const env=ENVS[envKey]||ENVS.normal;
+  fanSpeed=envKey==='windy'?0.12:envKey==='hot'?0.06:0;
+  if(envKey==='windy'||envKey==='rainy'||envKey==='hot'){
+    const count=envKey==='rainy'?25:15;
+    for(let i=0;i<count;i++){
+      windParticles.push({x:Math.random()*W,y:Math.random()*(tableTopY-20),len:20+Math.random()*40,alpha:0.3+Math.random()*0.4,speed:envKey==='rainy'?(1+Math.random()*2):(0.8+Math.random()*1.5)});
+    }
+  }
+}
+
+function updateEnvParticles(envKey,W,tableTopY){
+  fanAngle+=fanSpeed;
+  if(envKey==='windy'||envKey==='hot'){
+    windParticles.forEach(p=>{p.x+=p.speed*2;if(p.x>W+50)p.x=-50;});
+  } else if(envKey==='rainy'){
+    windParticles.forEach(p=>{p.x+=0.5;p.y+=p.speed*3;if(p.y>tableTopY){p.y=0;p.x=Math.random()*W;}});
+  }
+}
+
+function startArcade(envKey){
+  currentMode='arcade';currentEnvKey=envKey||'normal';
+  _startGame(null);
+}
+
+function startSeriesLevel(levelId){
+  currentMode='series';currentLevelId=levelId;
+  let lvl=null;
+  for(const w of WORLDS) for(const l of w.levels) if(l.id===levelId){lvl=l;break;}
+  currentEnvKey=lvl?lvl.env:'normal';
+  _startGame(lvl);
+}
+
+function _startGame(levelDef){
+  document.getElementById('resultSheet').classList.remove('visible');
+  document.getElementById('challengeIntro').classList.add('hidden');
+  showScreen('game');
+
+  const arena=document.getElementById('arena');
+  const canvas=document.getElementById('bottleCanvas');
+  canvas.width=arena.clientWidth||360;
+  canvas.height=arena.clientHeight||500;
+  const W=canvas.width,H=canvas.height;
+
+  // ★ KEY FIX: tableTopY = 65% from top, bottle starts ON TOP of table
+  const TABLE_FRAC=0.68;
+  const tableTopY=Math.floor(H*TABLE_FRAC);
+
+  const env=ENVS[currentEnvKey]||ENVS.normal;
+
+  G={
+    canvas,ctx:canvas.getContext('2d'),
+    W,H,tableTopY,
+    score:0,combo:1,maxCombo:1,
+    lives:currentMode==='series'?5:3,
+    flips:0,phase:'idle',
+    power:0,powerDir:1,
+    // ★ Bottle starts ON TOP of table: y = tableTopY (feet of bottle on table surface)
+    bottle:{x:W/2, y:tableTopY, vx:0,vy:0,angle:0,angularV:0},
+    coinsEarned:0,animId:null,
+    env,envKey:currentEnvKey,
+    gravity:env.gravity||0.44,
+    levelDef:levelDef||null,
+  };
+
+  initEnvParticles(currentEnvKey,W,H,tableTopY);
+
+  // Level banner
+  const lb=document.getElementById('levelBanner');
+  const ec=document.getElementById('envChip');
+  if(currentMode==='series'&&levelDef){
+    lb.textContent=`LVL ${levelDef.id+1} · TARGET ${levelDef.target} FLIP`;lb.style.display='';
+    document.getElementById('hudMidLabel').textContent='SISA';
+  } else {
+    lb.style.display='none';document.getElementById('hudMidLabel').textContent='COMBO';
+  }
+  if(currentEnvKey!=='normal'){ec.textContent=env.icon+' '+env.name;ec.style.display='';}
+  else ec.style.display='none';
+
+  // Position power area and hold hint
+  const uiBottom=H-tableTopY+14;
+  document.getElementById('powerArea').style.bottom=uiBottom+'px';
+  document.getElementById('powerArea').style.display='';
+  document.getElementById('holdHint').style.bottom=(uiBottom+22)+'px';
+  document.getElementById('holdHint').style.display='';
+
+  updateHUD();renderLives();
+
+  // Show challenge intro for series
+  if(currentMode==='series'&&levelDef&&(ENVS[levelDef.env]?.desc)){
+    showChallengeIntro(levelDef);
+  }
+
+  if(G.animId) cancelAnimationFrame(G.animId);
+  gameLoop();
+}
+
+function showChallengeIntro(lvl){
+  const env=ENVS[lvl.env]||{};
+  let worldName='';
+  for(const w of WORLDS) if(w.levels.some(l=>l.id===lvl.id)){worldName=w.icon+' '+w.name;break;}
+  document.getElementById('ciWorld').textContent=worldName;
+  document.getElementById('ciEnvIcon').textContent=env.icon||'🎮';
+  document.getElementById('ciTitle').textContent=lvl.desc||('Level '+(lvl.id+1));
+  document.getElementById('ciDesc').textContent=env.desc||'Flip botol dan mendarat tegak!';
+  document.getElementById('ciHint').textContent=(lvl.hint||env.hint||'');
+  document.getElementById('challengeIntro').classList.remove('hidden');
+}
+function dismissIntro(){
+  document.getElementById('challengeIntro').classList.add('hidden');
+}
+
+function holdStart(e){
+  if(e)e.preventDefault();
+  if(document.getElementById('challengeIntro')&&!document.getElementById('challengeIntro').classList.contains('hidden')) return;
+  if(G.phase!=='idle')return;
+  isHolding=true;G.phase='hold';
+  document.getElementById('holdHint').style.display='none';
+  holdInterval=setInterval(()=>{
+    G.power=Math.min(100,G.power+G.powerDir*2.5);
+    if(G.power>=100)G.powerDir=-1;if(G.power<=0)G.powerDir=1;
+    document.getElementById('powerFill').style.width=G.power+'%';
+  },30);
+}
+function holdEnd(e){
+  if(e)e.preventDefault();
+  if(!isHolding||G.phase!=='hold')return;
+  isHolding=false;clearInterval(holdInterval);
+  launchBottle();
+}
+
+function launchBottle(){
+  if(G.phase!=='hold')return;
+  G.phase='flying';
+  const env=G.env;const bottle=BOTTLES[state.selectedBottle];
+  const waterFactor=1-Math.abs(state.waterPct-40)/100;
+  const power=G.power/100;
+  const massFactor=1/(bottle.mass||1);
+  const baseAV=0.08+power*0.12;
+  const avFinal=baseAV*massFactor*(0.7+waterFactor*0.5);
+
+  G.bottle.angle=0;
+  G.bottle.vy=-(7+power*11);
+  G.bottle.vx=(Math.random()-.5)*2+(env.wind||0)*(Math.random()>.5?3:-3);
+  G.bottle.angularV=avFinal;
+  document.getElementById('powerFill').style.width='0%';
+  G.power=0;G.powerDir=1;
+}
+
+function gameLoop(){
+  updateEnvParticles(G.envKey,G.W,G.tableTopY);
+  drawScene(G.ctx,G.W,G.H,G.tableTopY,G.envKey,G.env,windParticles,fanAngle);
+
+  if(G.phase==='flying'){
+    G.bottle.vy+=G.gravity;
+    G.bottle.vx+=(G.env.wind||0)*(Math.random()-.5)*0.5;
+    G.bottle.y+=G.bottle.vy;G.bottle.x+=G.bottle.vx;G.bottle.vx*=0.99;
+    if(G.bottle.x<30){G.bottle.x=30;G.bottle.vx*=-.6;}
+    if(G.bottle.x>G.W-30){G.bottle.x=G.W-30;G.bottle.vx*=-.6;}
+    if(G.bottle.y>=G.tableTopY&&G.bottle.vy>0) checkLanding();
+    G.bottle.angle+=G.bottle.angularV;
+  }
+
+  // Shadow (on table surface)
+  const shadowAlpha=G.phase==='flying'?Math.max(0,0.3-(G.tableTopY-G.bottle.y)*0.002):0.2;
+  G.ctx.beginPath();
+  G.ctx.ellipse(G.bottle.x,G.tableTopY+3,18*Math.abs(Math.cos(G.bottle.angle)),4,0,0,Math.PI*2);
+  G.ctx.fillStyle=`rgba(0,0,0,${shadowAlpha})`;G.ctx.fill();
+
+  // Draw bottle — y position IS the base of bottle (feet), so center = y - halfHeight
+  const sh=getShape(BOTTLES[state.selectedBottle].shape);
+  const bottleCenterY=G.bottle.y - sh.h/2; // center so base touches tableTopY
+  const stickers=state.selectedStickers.map(i=>STICKERS[i]);
+  drawBottle(G.ctx,G.bottle.x,bottleCenterY,G.bottle.angle,BOTTLES[state.selectedBottle].shape,state.bottleColor,state.waterPct,stickers);
+
+  // Landing zone glow
+  G.ctx.save();
+  G.ctx.strokeStyle='rgba(0,212,255,0.5)';G.ctx.lineWidth=1;G.ctx.setLineDash([4,4]);
+  G.ctx.strokeRect(G.W/2-35,G.tableTopY-3,70,4);G.ctx.setLineDash([]);G.ctx.restore();
+
+  G.animId=requestAnimationFrame(gameLoop);
+}
+
+function checkLanding(){
+  const env=G.env;
+  let a=((G.bottle.angle%(Math.PI*2))+Math.PI*2)%(Math.PI*2);
+  const bottle=BOTTLES[state.selectedBottle];
+  // Tolerance: more water (up to 40) & heavier = easier; icy = harder
+  const waterBonus=(state.waterPct/100)*0.06;
+  const massBonus=((bottle.mass-1)*0.04);
+  const envMult=G.envKey==='icy'?0.65:(G.envKey==='sandy'?0.9:1);
+  const tolerance=Math.max(0.1,(0.20+waterBonus+massBonus)*envMult);
+  const nearUp=a<tolerance||a>(Math.PI*2-tolerance);
+  const nearDown=Math.abs(a-Math.PI)<tolerance;
+  const rotations=Math.floor(Math.abs(G.bottle.angle)/(Math.PI*2));
+
+  G.bottle.y=G.tableTopY;G.bottle.vy=0;
+  G.bottle.vx*=(1-(env.friction||1)*0.1);
+
+  if(nearUp||nearDown){
+    G.phase='landing';
+    G.bottle.angle=nearDown?Math.PI:0;G.bottle.angularV=0;
+    G.flips++;state.totalFlips++;
+    const pts=(1+rotations)*G.combo;
+    G.score+=pts;G.coinsEarned+=Math.floor(pts/5)+1;
+    G.maxCombo=Math.max(G.maxCombo,G.combo);
+    G.combo=Math.min(10,G.combo+1);
+    updateHUD();
+    showFloatText(G.bottle.x,G.tableTopY-70,rotations>0?`+${pts} 🔥x${rotations+1}`:`+${pts}`,rotations>0?'#ffd700':'#00ff88');
+    if(rotations>0) spawnRing(G.bottle.x,G.tableTopY-35);
+    if(rotations>1) confetti();
+    // Quest events
+    questEvent('maxCombo',G.combo-1);
+    if(rotations>=1) questEvent('doubleSpin',1);
+    if(currentMode==='series'&&G.levelDef&&G.flips>=G.levelDef.target){
+      setTimeout(endSeriesLevel,700);return;
+    }
+    setTimeout(()=>{G.phase='idle';document.getElementById('holdHint').style.display='';},600);
+  } else {
+    G.phase='failed';G.combo=1;G.lives--;
+    updateHUD();renderLives();
+    G.bottle.vy=-2;G.bottle.angularV*=0.25;
+    showFloatText(G.bottle.x,G.tableTopY-50,'GAGAL 💀','#ff4757');
+    setTimeout(()=>{
+      if(G.lives<=0)endGame();
+      else{G.bottle.y=G.tableTopY;G.bottle.angle=0;G.bottle.angularV=0;G.phase='idle';document.getElementById('holdHint').style.display='';}
+    },800);
+  }
+}
+
+function updateHUD(){
+  document.getElementById('scoreDisplay').textContent=G.score;
+  if(currentMode==='series'&&G.levelDef)document.getElementById('comboDisplay').textContent=Math.max(0,G.levelDef.target-G.flips);
+  else document.getElementById('comboDisplay').textContent=`x${G.combo}`;
+}
+function renderLives(){
+  const el=document.getElementById('livesDisplay');el.innerHTML='';
+  const max=currentMode==='series'?5:3;
+  for(let i=0;i<max;i++){const l=document.createElement('span');l.className='life'+(i>=G.lives?' lost':'');l.textContent='❤️';el.appendChild(l);}
+}
+
+function endGame(){
+  cancelAnimationFrame(G.animId);
+  state.coins+=G.coinsEarned;if(G.score>state.highScore)state.highScore=G.score;
+  state.scores.push({score:G.score,date:Date.now()});
+  state.scores.sort((a,b)=>b.score-a.score);state.scores=state.scores.slice(0,20);
+  questEvent('sessionScore',G.score);trackEnvPlayed(currentEnvKey);save();updateHomeStats();
+  document.getElementById('rsTitle').textContent=G.score>100?'🏆 LUAR BIASA!':'GAME OVER!';
+  document.getElementById('rsScore').textContent=G.score;
+  document.getElementById('rsDetail').innerHTML=`<div class="rs-chip">Flip: <span>${G.flips}</span></div><div class="rs-chip">Combo: <span>${G.maxCombo}</span></div><div class="rs-chip">+<span>${G.coinsEarned}</span> 🪙</div>`;
+  document.getElementById('rsPlayAgainBtn').textContent='🔄 MAIN LAGI';
+  document.getElementById('resultSheet').classList.add('visible');
+}
+function endSeriesLevel(){
+  cancelAnimationFrame(G.animId);
+  const lvl=G.levelDef;
+  const stars=G.score>=lvl.stars[2]?3:G.score>=lvl.stars[1]?2:G.score>=lvl.stars[0]?1:0;
+  const prev=state.seriesProgress[lvl.id]||{stars:0};
+  state.seriesProgress[lvl.id]={stars:Math.max(prev.stars,stars),done:true};
+  const nxt=lvl.id+1;
+  if(!state.seriesProgress[nxt])state.seriesProgress[nxt]={stars:0,done:false,unlocked:true};
+  const coinR=50+stars*60;state.coins+=coinR+G.coinsEarned;
+  questEvent('seriesCompleted',1);save();updateHomeStats();
+  const starStr='⭐'.repeat(stars)+'☆'.repeat(3-stars);
+  document.getElementById('rsTitle').textContent='LEVEL SELESAI!';
+  document.getElementById('rsScore').textContent=G.score;
+  document.getElementById('rsDetail').innerHTML=`<div class="rs-chip"><span style="font-size:16px">${starStr}</span></div><div class="rs-chip">Flip: <span>${G.flips}</span></div><div class="rs-chip">+<span>${coinR+G.coinsEarned}</span> 🪙</div>`;
+  document.getElementById('rsPlayAgainBtn').textContent='🔄 ULANG LEVEL';
+  document.getElementById('resultSheet').classList.add('visible');
+  if(stars>=2) confetti();
+}
+function restartCurrentMode(){
+  document.getElementById('resultSheet').classList.remove('visible');
+  if(currentMode==='series')startSeriesLevel(currentLevelId);else startArcade(currentEnvKey);
+}
+function showFloatText(x,y,text,color){
+  const el=document.createElement('div');el.className='float-text';el.textContent=text;
+  el.style.cssText=`left:${x-50}px;top:${y}px;color:${color};width:100px;text-align:center;`;
+  document.getElementById('arena').appendChild(el);setTimeout(()=>el.remove(),1000);
+}
+function spawnRing(x,y){
+  const el=document.createElement('div');el.className='multiplier-ring';
+  el.style.cssText=`left:${x-35}px;top:${y-35}px;`;
+  document.getElementById('arena').appendChild(el);setTimeout(()=>el.remove(),700);
+}
+function confetti(){
+  const colors=['#f5c518','#ff4757','#00d4ff','#2ed573','#a29bfe'];
+  for(let i=0;i<22;i++){
+    const el=document.createElement('div');el.className='confetti-piece';
+    el.style.cssText=`left:${Math.random()*100}vw;top:0;background:${colors[Math.floor(Math.random()*colors.length)]};border-radius:${Math.random()>.5?'50%':'2px'};animation-duration:${0.8+Math.random()}s;animation-delay:${Math.random()*.3}s;`;
+    document.body.appendChild(el);setTimeout(()=>el.remove(),2000);
+  }
+}
+
+// ════════════════════════════════════════
+// SERIES MAP
+// ════════════════════════════════════════
+function renderSeriesMap(){
+  document.getElementById('mapCoinBadge').textContent=state.coins+' 🪙';
+  const cont=document.getElementById('mapContent');cont.innerHTML='';
+  if(!state.seriesProgress[0])state.seriesProgress[0]={stars:0,done:false,unlocked:true};
+  WORLDS.forEach(world=>{
+    const sec=document.createElement('div');sec.className='world-section';
+    sec.innerHTML=`<div class="world-title" style="color:${world.color}">${world.icon} ${world.name}</div>`;
+    const grid=document.createElement('div');grid.className='level-grid';
+    world.levels.forEach(lvl=>{
+      const prog=state.seriesProgress[lvl.id]||{};
+      const prevDone=lvl.id===0||(state.seriesProgress[lvl.id-1]&&state.seriesProgress[lvl.id-1].done);
+      const unlocked=prog.unlocked||prevDone;const done=prog.done;const stars=prog.stars||0;
+      const node=document.createElement('div');
+      node.className='level-node '+(done?(stars===3?'ln-star3':'ln-done'):(unlocked?'ln-active':'ln-locked'));
+      node.innerHTML=`<span class="ln-env">${ENVS[lvl.env]?ENVS[lvl.env].icon:''}</span><span class="ln-num">${lvl.id+1}</span><span class="ln-stars">${done?('⭐'.repeat(stars)+'☆'.repeat(3-stars)):''}</span>`;
+      if(unlocked) node.onclick=()=>startSeriesLevel(lvl.id);
+      grid.appendChild(node);
+    });
+    sec.appendChild(grid);cont.appendChild(sec);
+  });
+}
+
+// ════════════════════════════════════════
+// BATTLE
+// ════════════════════════════════════════
+let BR={selectedEnv:'normal'};
+let bHoldInterval=null,bIsHolding=false;
+let bTimer=null,bBotTimer=null;
+const FAKE_PL=['BotolKing','FlipGod','SpinMaster','WaterBro','TurboFlip'];
+const BATTLE_ENVS=['normal','windy','icy','sandy','rainy','hot','space'];
+
+function initBattleEnvGrid(){
+  const grid=document.getElementById('battleEnvGrid');grid.innerHTML='';
+  BATTLE_ENVS.forEach(ek=>{
+    const env=ENVS[ek];const card=document.createElement('div');
+    card.className='battle-opt'+(BR.selectedEnv===ek?' selected':'');
+    card.innerHTML=`<span class="battle-opt-icon">${env.icon}</span><span class="battle-opt-name">${env.name}</span>`;
+    card.onclick=()=>{BR.selectedEnv=ek;initBattleEnvGrid();};grid.appendChild(card);
+  });
+}
+function createRoom(){
+  const name=document.getElementById('roomNameInput').value.trim()||'Room Seru';
+  const maxP=parseInt(document.getElementById('maxPlayersInput').value)||2;
+  const env=BR.selectedEnv||'normal';
+  const pn=document.getElementById('playerNameInput').value.trim()||state.playerName;
+  state.playerName=pn;save();
+  const players=[{id:'me',name:pn,score:0,flips:0,isMe:true}];
+  for(let i=1;i<maxP;i++) players.push({id:'bot'+i,name:FAKE_PL[i-1],score:0,flips:0,isMe:false});
+  BR={...BR,players,env,roundTime:60,timeLeft:60,currentPlayerIdx:0,turnFlips:0,turnFlipsMax:5,done:false};
+  startBattleGame();
+}
+function refreshRooms(){
+  const list=document.getElementById('roomList');list.innerHTML='';
+  [{name:'Room Jago',players:2,max:2,env:'windy'},{name:'Santai Dulu',players:1,max:2,env:'normal'},{name:'Panas Abis',players:3,max:4,env:'hot'},{name:'Beku Nih',players:1,max:3,env:'icy'}].forEach(r=>{
+    const row=document.createElement('div');row.className='room-row';
+    row.innerHTML=`<div class="room-info"><div class="room-name">${r.name}</div><div class="room-meta">${ENVS[r.env].icon} ${ENVS[r.env].name} · ${r.players}/${r.max}</div></div><button class="btn sm blue" onclick="joinRoom('${r.name}','${r.env}',${r.max})">GABUNG</button>`;
+    list.appendChild(row);
+  });
+}
+function joinRoom(name,envKey,maxP){
+  const pn=document.getElementById('playerNameInput').value.trim()||state.playerName;
+  state.playerName=pn;save();
+  const players=[{id:'me',name:pn,score:0,flips:0,isMe:true}];
+  for(let i=1;i<maxP;i++) players.push({id:'bot'+i,name:FAKE_PL[i-1],score:0,flips:0,isMe:false});
+  BR={...BR,players,env:envKey,roundTime:60,timeLeft:60,currentPlayerIdx:0,turnFlips:0,turnFlipsMax:5,done:false};
+  startBattleGame();
+}
+function startBattleGame(){
+  document.getElementById('battleResultSheet').classList.remove('visible');
+  showScreen('battleGame');
+  const arena=document.getElementById('battleArena');
+  const canvas=document.getElementById('battleCanvas');
+  canvas.width=arena.clientWidth||360;canvas.height=arena.clientHeight||500;
+  const W=canvas.width,H=canvas.height;
+  const tableTopY=Math.floor(H*0.68);
+  const env=ENVS[BR.env]||ENVS.normal;
+  const gravity=BR.env==='space'?0.17:0.44;
+  BR={...BR,canvas,ctx:canvas.getContext('2d'),W,H,tableTopY,env,gravity,
+    bottle:{x:W/2,y:tableTopY,vx:0,vy:0,angle:0,angularV:0},
+    phase:'idle',power:0,powerDir:1,animId:null};
+  const bWind=[];
+  if(BR.env==='windy'||BR.env==='rainy'||BR.env==='hot'){
+    for(let i=0;i<15;i++) bWind.push({x:Math.random()*W,y:Math.random()*(tableTopY-20),len:20+Math.random()*40,alpha:0.4,speed:1+Math.random()});
+  }
+  BR.windP=bWind;BR.fanAngle=0;
+  // Position UI
+  const uiBottom=H-tableTopY+14;
+  document.getElementById('battlePowerArea').style.bottom=uiBottom+'px';document.getElementById('battlePowerArea').style.display='';
+  document.getElementById('battleHoldHint').style.bottom=(uiBottom+22)+'px';
+  renderBattleHUD();startBattleTimer();scheduleOpp();battleLoop();
+}
+function renderBattleHUD(){
+  const hud=document.getElementById('battleHud');hud.innerHTML='';
+  BR.players.forEach((p,i)=>{
+    const d=document.createElement('div');d.className='player-hud'+(i===BR.currentPlayerIdx?' active-turn':'');d.id='bhud_'+p.id;
+    d.innerHTML=`<div class="ph-name">${p.isMe?'👤':'🤖'} ${p.name}</div><div class="ph-score">${p.score}</div><div class="ph-flips">F:${p.flips}</div>`;
+    hud.appendChild(d);
+  });
+  const td=document.createElement('div');td.className='battle-timer';td.innerHTML=`<div class="bt-secs" id="btSecs">${BR.timeLeft}</div><div class="bt-label">DTK</div>`;hud.appendChild(td);
+  const cp=BR.players[BR.currentPlayerIdx];
+  document.getElementById('turnBanner').textContent=cp?(cp.isMe?'GILIRANMU! 👆':'Menunggu '+cp.name+'…'):'';
+  document.getElementById('battleHoldHint').style.display=cp&&cp.isMe?'':'none';
+}
+function startBattleTimer(){
+  clearInterval(bTimer);
+  bTimer=setInterval(()=>{if(BR.done)return;BR.timeLeft--;const el=document.getElementById('btSecs');if(el)el.textContent=BR.timeLeft;if(BR.timeLeft<=0)endBattle();},1000);
+}
+function scheduleOpp(){
+  clearInterval(bBotTimer);
+  bBotTimer=setInterval(()=>{
+    if(BR.done)return;const cp=BR.players[BR.currentPlayerIdx];if(!cp||cp.isMe)return;
+    if(Math.random()>.38){cp.score+=Math.floor(Math.random()*3)+1;cp.flips++;}
+    BR.turnFlips++;if(BR.turnFlips>=BR.turnFlipsMax)bNextTurn();else renderBattleHUD();
+  },1600);
+}
+function bNextTurn(){BR.turnFlips=0;BR.currentPlayerIdx=(BR.currentPlayerIdx+1)%BR.players.length;renderBattleHUD();}
+function bHoldStart(e){
+  if(e)e.preventDefault();
+  const cp=BR.players[BR.currentPlayerIdx];if(!cp||!cp.isMe)return;
+  if(BR.phase!=='idle'||BR.done)return;
+  bIsHolding=true;BR.phase='hold';
+  document.getElementById('battleHoldHint').style.display='none';
+  bHoldInterval=setInterval(()=>{BR.power=Math.min(100,BR.power+BR.powerDir*2.5);if(BR.power>=100)BR.powerDir=-1;if(BR.power<=0)BR.powerDir=1;document.getElementById('battlePowerFill').style.width=BR.power+'%';},30);
+}
+function bHoldEnd(e){
+  if(e)e.preventDefault();if(!bIsHolding||BR.phase!=='hold')return;
+  bIsHolding=false;clearInterval(bHoldInterval);bLaunch();
+}
+function bLaunch(){
+  if(BR.phase!=='hold')return;BR.phase='flying';
+  const env=BR.env;const power=BR.power/100;const waterFactor=1-Math.abs(state.waterPct-40)/100;
+  BR.bottle.angle=0;BR.bottle.vy=-(7+power*11);BR.bottle.vx=(Math.random()-.5)*2+(env.wind||0)*(Math.random()>.5?3:-3);
+  BR.bottle.angularV=(0.08+power*0.12)*(0.7+waterFactor*0.5);
+  document.getElementById('battlePowerFill').style.width='0%';BR.power=0;BR.powerDir=1;
+}
+function battleLoop(){
+  BR.fanAngle+=(BR.env.wind||0.04);
+  if(BR.windP) BR.windP.forEach(p=>{p.x+=p.speed*2;if(p.x>BR.W+50)p.x=-50;});
+  drawScene(BR.ctx,BR.W,BR.H,BR.tableTopY,BR.env?(Object.keys(ENVS).find(k=>ENVS[k]===BR.env)||'normal'):'normal',BR.env,BR.windP||[],BR.fanAngle);
+  if(BR.phase==='flying'){
+    BR.bottle.vy+=BR.gravity;BR.bottle.vx+=(BR.env.wind||0)*(Math.random()-.5)*0.5;
+    BR.bottle.y+=BR.bottle.vy;BR.bottle.x+=BR.bottle.vx;BR.bottle.vx*=.99;
+    if(BR.bottle.x<30){BR.bottle.x=30;BR.bottle.vx*=-.6;}
+    if(BR.bottle.x>BR.W-30){BR.bottle.x=BR.W-30;BR.bottle.vx*=-.6;}
+    if(BR.bottle.y>=BR.tableTopY&&BR.bottle.vy>0) bCheckLand();
+    BR.bottle.angle+=BR.bottle.angularV;
+  }
+  const sh=getShape(BOTTLES[state.selectedBottle].shape);
+  const bcY=BR.bottle.y-sh.h/2;
+  const stickers=state.selectedStickers.map(i=>STICKERS[i]);
+  drawBottle(BR.ctx,BR.bottle.x,bcY,BR.bottle.angle,BOTTLES[state.selectedBottle].shape,state.bottleColor,state.waterPct,stickers);
+  const sa=Math.max(0,0.25-(BR.tableTopY-BR.bottle.y)*0.002);
+  BR.ctx.beginPath();BR.ctx.ellipse(BR.bottle.x,BR.tableTopY+3,18*Math.abs(Math.cos(BR.bottle.angle)),4,0,0,Math.PI*2);BR.ctx.fillStyle=`rgba(0,0,0,${sa})`;BR.ctx.fill();
+  BR.animId=requestAnimationFrame(battleLoop);
+}
+function bCheckLand(){
+  let a=((BR.bottle.angle%(Math.PI*2))+Math.PI*2)%(Math.PI*2);
+  const tol=0.24+(state.waterPct/100)*0.08;
+  const nearUp=a<tol||a>(Math.PI*2-tol);const nearDown=Math.abs(a-Math.PI)<tol;
+  const rotations=Math.floor(Math.abs(BR.bottle.angle)/(Math.PI*2));
+  BR.bottle.y=BR.tableTopY;BR.bottle.vy=0;BR.bottle.vx=0;
+  const me=BR.players.find(p=>p.isMe);
+  if(nearUp||nearDown){
+    BR.phase='landing';BR.bottle.angle=nearDown?Math.PI:0;BR.bottle.angularV=0;
+    me.flips++;me.score+=(1+rotations)*2;BR.turnFlips++;renderBattleHUD();
+    if(BR.turnFlips>=BR.turnFlipsMax)setTimeout(()=>bNextTurn(),600);
+    else setTimeout(()=>{BR.phase='idle';document.getElementById('battleHoldHint').style.display='';},600);
+  } else {
+    BR.phase='failed';BR.bottle.vy=-2;BR.bottle.angularV*=.25;
+    setTimeout(()=>{BR.bottle.y=BR.tableTopY;BR.bottle.angle=0;BR.bottle.angularV=0;BR.phase='idle';document.getElementById('battleHoldHint').style.display='';},700);
+  }
+}
+function endBattle(){
+  BR.done=true;clearInterval(bTimer);clearInterval(bBotTimer);cancelAnimationFrame(BR.animId);
+  const sorted=[...BR.players].sort((a,b)=>b.score-a.score);
+  const rank=sorted.findIndex(p=>p.isMe)+1;
+  const coinB=rank===1?200:rank===2?100:50;state.coins+=coinB;save();updateHomeStats();
+  let html='<div style="display:flex;flex-direction:column;gap:6px;">';
+  sorted.forEach((p,i)=>{const m=i===0?'🥇':i===1?'🥈':i===2?'🥉':'';html+=`<div class="rs-chip" style="display:flex;justify-content:space-between;${p.isMe?'border:1px solid var(--blue)':''}">${m} ${p.name}${p.isMe?' (Kamu)':''}<span>${p.score}pt</span></div>`;});
+  html+=`</div><div style="text-align:center;margin-top:8px;font-size:12px;color:var(--muted)">+${coinB} 🪙 hadiah</div>`;
+  document.getElementById('brsTitle').textContent=rank===1?'🏆 KAMU MENANG!':'Pertandingan Selesai!';
+  document.getElementById('brsContent').innerHTML=html;
+  document.getElementById('battleResultSheet').classList.add('visible');
+  if(rank===1) confetti();
+}
+
+// ════════════════════════════════════════
+// QUEST
+// ════════════════════════════════════════
+function questEvent(stat,val){
+  if(stat==='totalFlips'){QUESTS.filter(q=>q.stat==='totalFlips').forEach(q=>{const p=state.questProgress[q.id]||{val:0};p.val=state.totalFlips;if(!p.done&&p.val>=q.target)toast(`Quest "${q.name}" siap diklaim! 🎉`);state.questProgress[q.id]=p;});}
+  else if(stat==='sessionScore'){const q=QUESTS.find(q=>q.stat==='sessionScore');if(q){const p=state.questProgress[q.id]||{val:0};if(!p.done&&val>=q.target)p.val=val;state.questProgress[q.id]=p;}}
+  else if(stat==='maxCombo'){const q=QUESTS.find(q=>q.stat==='maxCombo');if(q){const p=state.questProgress[q.id]||{val:0};if(!p.done)p.val=Math.max(p.val||0,val);state.questProgress[q.id]=p;}}
+  else if(stat==='doubleSpin'){const q=QUESTS.find(q=>q.stat==='doubleSpin');if(q){const p=state.questProgress[q.id]||{val:0};if(!p.done)p.val=(p.val||0)+1;state.questProgress[q.id]=p;}}
+  else if(stat==='seriesCompleted'){const q=QUESTS.find(q=>q.stat==='seriesCompleted');if(q){const p=state.questProgress[q.id]||{val:0};if(!p.done)p.val=(p.val||0)+1;state.questProgress[q.id]=p;}}
+}
+function trackEnvPlayed(envKey){
+  const q=QUESTS.find(q=>q.stat==='envPlayed');if(!q)return;
+  const p=state.questProgress[q.id]||{val:0,envs:[]};if(!p.envs)p.envs=[];
+  if(!p.envs.includes(envKey)){p.envs.push(envKey);p.val=p.envs.length;}
+  state.questProgress[q.id]=p;
+}
+function claimQuest(qid){
+  const q=QUESTS.find(q=>q.id===qid);if(!q)return;
+  const p=state.questProgress[q.id];if(!p||p.done)return;
+  const cur=q.stat==='totalFlips'?state.totalFlips:q.stat==='ownedBottles'?state.ownedBottles.length:(p.val||0);
+  if(cur>=q.target){p.done=true;state.coins+=q.reward;save();toast(`✅ +${q.reward} 🪙`);renderQuestList();document.getElementById('coinBadge').textContent=state.coins+' 🪙';}
+}
+function renderQuestList(){
+  const list=document.getElementById('questList');list.innerHTML='';
+  QUESTS.forEach(q=>{
+    const p=state.questProgress[q.id]||{val:0};
+    const cur=q.stat==='totalFlips'?state.totalFlips:q.stat==='ownedBottles'?state.ownedBottles.length:(p.val||0);
+    const pct=Math.min(100,(cur/q.target)*100);
+    const card=document.createElement('div');card.className='quest-card';
+    card.innerHTML=`<div class="quest-icon">${q.icon}</div><div class="quest-info"><div class="quest-name">${q.name}${p.done?' ✅':''}</div><div class="quest-desc">${q.desc}</div><div class="quest-progress"><div class="quest-progress-fill" style="width:${pct}%"></div></div><div style="font-size:9px;color:var(--muted);margin-top:2px">${Math.min(cur,q.target)}/${q.target}</div></div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px"><div class="quest-reward">${q.reward}🪙</div>${!p.done&&cur>=q.target?`<button class="quest-claim-btn" onclick="claimQuest('${q.id}')">KLAIM</button>`:''}</div>`;
+    list.appendChild(card);
+  });
+}
+
+// ════════════════════════════════════════
+// SHOP
+// ════════════════════════════════════════
+function switchShopTab(i){document.querySelectorAll('.shop-tab').forEach((t,j)=>t.classList.toggle('active',i===j));document.querySelectorAll('.shop-panel').forEach((p,j)=>p.classList.toggle('active',i===j));if(i===2)renderQuestList();}
+function renderShop(){
+  document.getElementById('coinBadge').textContent=state.coins+' 🪙';
+  renderBottleGrid();renderStickerGrid();renderColorRow();renderPreview();
+  document.getElementById('waterSlider').value=state.waterPct;document.getElementById('waterPct').textContent=state.waterPct+'%';updateWSS();
+}
+function renderBottleGrid(){
+  const grid=document.getElementById('bottleGrid');grid.innerHTML='';
+  BOTTLES.forEach((b,i)=>{
+    const own=state.ownedBottles.includes(i);const sel=state.selectedBottle===i;
+    const c=document.createElement('div');c.className='bottle-card'+(sel?' selected':'')+(!own?' locked':'');
+    c.innerHTML=`${!own?'<span class="lock-icon">🔒</span>':''}<span style="font-size:26px">${b.emoji}</span><span class="bottle-card-name">${b.name}</span><span style="font-size:9px;color:var(--muted)">Massa:${b.mass}</span>${own?'<span class="bottle-card-owned">✓</span>':`<span class="bottle-card-price">${b.price}🪙</span>`}`;
+    c.onclick=()=>buyBottle(i);grid.appendChild(c);
+  });
+}
+function buyBottle(i){
+  if(state.ownedBottles.includes(i)){state.selectedBottle=i;save();renderShop();toast('Dipilih! 🍾');}
+  else if(state.coins>=BOTTLES[i].price){state.coins-=BOTTLES[i].price;state.ownedBottles.push(i);state.selectedBottle=i;save();renderShop();questEvent('ownedBottles',state.ownedBottles.length);toast('Dibeli! 🎉');}
+  else toast('Koin kurang! 😢');
+}
+function renderStickerGrid(){
+  const grid=document.getElementById('stickerGrid');grid.innerHTML='';
+  STICKERS.forEach((s,i)=>{
+    const own=state.ownedStickers.includes(i);const sel=state.selectedStickers.includes(i);
+    const c=document.createElement('div');c.className='sticker-card'+(sel?' selected':'')+((!own)?' locked':'');
+    c.innerHTML=`<span>${s.emoji}</span>${own?`<span class="sticker-owned">${sel?'✓':'+'}</span>`:`<span class="sticker-price">${s.price}🪙</span>`}`;
+    c.onclick=()=>{if(own){const idx=state.selectedStickers.indexOf(i);if(idx>=0)state.selectedStickers.splice(idx,1);else if(state.selectedStickers.length<2)state.selectedStickers.push(i);else{toast('Max 2!');return;}save();renderShop();}else if(state.coins>=s.price){state.coins-=s.price;state.ownedStickers.push(i);state.selectedStickers.push(i);if(state.selectedStickers.length>2)state.selectedStickers.shift();save();renderShop();toast('✨');}else toast('Koin kurang! 😢');};
+    grid.appendChild(c);
+  });
+}
+function renderColorRow(){
+  const row=document.getElementById('colorRow');row.innerHTML='';
+  COLORS.forEach(c=>{const sw=document.createElement('div');sw.className='color-swatch'+(state.bottleColor===c?' selected':'');sw.style.background=c;sw.onclick=()=>{state.bottleColor=c;save();renderShop();};row.appendChild(sw);});
+}
+function renderPreview(){
+  const canvas=document.getElementById('previewCanvas');const ctx=canvas.getContext('2d');ctx.clearRect(0,0,72,144);
+  drawBottle(ctx,36,72,0,BOTTLES[state.selectedBottle].shape,state.bottleColor,state.waterPct,state.selectedStickers.map(i=>STICKERS[i]),0.82);
+}
+function updateWater(v){state.waterPct=parseInt(v);document.getElementById('waterPct').textContent=v+'%';updateWSS();save();renderPreview();}
+function updateWSS(){const s=document.getElementById('waterSlider');s.style.setProperty('--val',s.value+'%');}
+
+// ════════════════════════════════════════
+// LEADERBOARD
+// ════════════════════════════════════════
+const FNAMES=['FlipMaster','BotolJago','WaterKing','FlipGod','Spinner99','NekoPunch','WaveBotol','FlipCrazy','TopFlipper','ProFlip'];
+function renderLB(){
+  const fakes=FNAMES.map((n,i)=>({name:n,score:Math.floor(Math.random()*400+50*(10-i)),you:false}));
+  const all=[...fakes,{name:'⭐ '+state.playerName,score:state.highScore,you:true}].sort((a,b)=>b.score-a.score).slice(0,12);
+  const list=document.getElementById('lbList');list.innerHTML='';
+  all.forEach((e,i)=>{const row=document.createElement('div');row.className='lb-row'+(e.you?' lb-you':'');const rank=i===0?'<span class="lb-rank gold">🥇</span>':i===1?'<span class="lb-rank silver">🥈</span>':i===2?'<span class="lb-rank bronze">🥉</span>':`<span class="lb-rank">#${i+1}</span>`;row.innerHTML=`${rank}<span class="lb-name">${e.name}</span><span class="lb-score">${e.score}</span>`;list.appendChild(row);});
+}
+
+// ════════════════════════════════════════
+// NAV
+// ════════════════════════════════════════
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.add('hidden'));
+  document.getElementById(id).classList.remove('hidden');
+  const m={home:'nav-home',modeSelect:'nav-play',game:'nav-play',battle:'nav-play',battleGame:'nav-play',seriesMap:'nav-play',shop:'nav-shop',leaderboard:'nav-lb'};
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  const el=document.getElementById(m[id]||'nav-home');if(el)el.classList.add('active');
+  if(id==='shop')renderShop();if(id==='leaderboard')renderLB();if(id==='home')updateHomeStats();
+  if(id==='seriesMap')renderSeriesMap();if(id==='battle'){initBattleEnvGrid();refreshRooms();}
+}
+function showHome(){
+  if(G.animId)cancelAnimationFrame(G.animId);if(BR.animId)cancelAnimationFrame(BR.animId);
+  clearInterval(bTimer);clearInterval(bBotTimer);clearInterval(holdInterval);
+  document.getElementById('resultSheet').classList.remove('visible');showScreen('home');
+}
+function updateHomeStats(){document.getElementById('hs-home').textContent=state.highScore;document.getElementById('coins-home').textContent=state.coins;document.getElementById('flips-home').textContent=state.totalFlips;}
+
+let _toast;
+function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.remove('hidden');clearTimeout(_toast);_toast=setTimeout(()=>el.classList.add('hidden'),2200);}
+
+// ════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════
+state.seriesProgress[0]=state.seriesProgress[0]||{stars:0,done:false,unlocked:true};
+document.getElementById('playerNameInput').value=state.playerName||'FlipMaster';
+updateHomeStats();updateWSS();
+</script>
+</body>
+</html>

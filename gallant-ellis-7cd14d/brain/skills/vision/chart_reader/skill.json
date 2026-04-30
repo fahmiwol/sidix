@@ -1,0 +1,17 @@
+{
+  "id": "vision_chart_reader",
+  "name": "Chart & Diagram Reader",
+  "category": "vision",
+  "source_module": "apps.vision.chart_reader",
+  "callable": "read_chart",
+  "description": "Ekstrak data + insight dari chart/diagram (bar, line, pie, scatter). Untuk parsing infografik atau slide presentasi.",
+  "input_schema": {"image": "bytes|url"},
+  "output_schema": {"chart_type": "str", "data_points": "list", "insight": "str"},
+  "lesson_topic": "chart understanding dengan vision-language model",
+  "training_topics": [
+    "ChartQA benchmark",
+    "axis detection algorithm",
+    "OCR untuk axis labels",
+    "data extraction from visualization"
+  ]
+}

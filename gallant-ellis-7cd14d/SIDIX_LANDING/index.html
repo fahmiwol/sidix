@@ -1,0 +1,1331 @@
+<!doctype html>
+<html lang="en" id="html-root">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Analytics removed (vendor-free landing). -->
+
+  <!-- ═══ PRIMARY SEO ═══ -->
+  <title>SIDIX 2.0 — Autonomous AI Agent | Self-Hosted, Open Source, MIT License</title>
+  <meta name="description" content="SIDIX 2.0 is an autonomous AI Agent that thinks, learns, creates, and grows. Not a chatbot — a partner. Self-hosted, zero cloud dependency, 5 personas with distinct ways of being. MIT licensed." />
+  <meta name="keywords" content="autonomous AI agent, self-hosted AI, local AI agent, open source AI agent, ReAct agent, agent tools, multi-step reasoning, AI partner, RAG, BM25, SIDIX, MIT license, no cloud AI, AI agent Indonesia, AI tanpa API, AI lokal" />
+  <meta name="author" content="SIDIX Project" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://sidixlab.com/" />
+
+  <!-- ═══ HREFLANG (bilingual) ═══ -->
+  <link rel="alternate" hreflang="en" href="https://sidixlab.com/" />
+  <link rel="alternate" hreflang="id" href="https://sidixlab.com/" />
+  <link rel="alternate" hreflang="x-default" href="https://sidixlab.com/" />
+
+  <!-- ═══ OPEN GRAPH (social preview) ═══ -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://sidixlab.com/" />
+  <meta property="og:site_name" content="SIDIX" />
+  <meta property="og:title" content="SIDIX 2.0 — Autonomous AI Agent that Thinks, Learns & Creates" />
+  <meta property="og:description" content="Not a chatbot. An AI Agent with initiative, opinions, and creativity. Self-hosted, open source, MIT licensed. Run your own AI partner — anywhere." />
+  <meta property="og:image" content="https://sidixlab.com/og-image.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="SIDIX — Self-Hosted AI Agent" />
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:locale:alternate" content="id_ID" />
+
+  <!-- ═══ TWITTER / X CARD ═══ -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@sidixlab" />
+  <meta name="twitter:creator" content="@sidixlab" />
+  <meta name="twitter:title" content="SIDIX 2.0 — Autonomous AI Agent" />
+  <meta name="twitter:description" content="An AI Agent that thinks, learns, and creates. Self-hosted, open source, MIT licensed. Your own AI partner." />
+  <meta name="twitter:image" content="https://sidixlab.com/og-image.png" />
+
+  <!-- ═══ SCHEMA.ORG JSON-LD ═══ -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "SIDIX",
+    "alternateName": "SIDIX AI Agent",
+    "description": "Autonomous AI Agent that thinks, learns, and creates. 48 tools (web, code, image, workspace), multi-layer memory, self-learning, 5 distinct personas. Casual chat flows naturally; sensitive claims (fiqh, medical, data) tagged with epistemic labels. Self-hosted, zero cloud dependency, MIT licensed.",
+    "url": "https://sidixlab.com",
+    "applicationCategory": "DeveloperApplication",
+    "operatingSystem": "Linux, Windows, macOS",
+    "license": "https://opensource.org/licenses/MIT",
+    "codeRepository": "https://github.com/fahmiwol/sidix",
+    "inLanguage": ["en", "id", "ar"],
+    "author": {
+      "@type": "Organization",
+      "name": "SIDIX Project",
+      "url": "https://sidixlab.com"
+    },
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "sameAs": [
+      "https://github.com/fahmiwol/sidix",
+      "https://www.instagram.com/sidixlab",
+      "https://www.threads.com/@sidixlab"
+    ]
+  }
+  </script>
+
+  <!-- ═══ JSON-LD: Organization ═══ -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "SIDIX Project",
+    "url": "https://sidixlab.com",
+    "logo": "https://sidixlab.com/sidix-logo.svg",
+    "description": "SIDIX is a self-hosted, open-source autonomous AI agent — thinks, learns, and creates. Casual conversation by default, epistemic markers when accuracy matters.",
+    "foundingDate": "2026",
+    "sameAs": [
+      "https://github.com/fahmiwol/sidix",
+      "https://www.threads.com/@sidixlab"
+    ],
+    "contactPoint": {
+      "@type": "ContactPoint",
+      "email": "contact@sidixlab.com",
+      "contactType": "customer support",
+      "availableLanguage": ["English", "Indonesian"]
+    }
+  }
+  </script>
+
+  <!-- ═══ JSON-LD: FAQ Page (rich snippet untuk Google Search) ═══ -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "What is SIDIX?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "SIDIX is an autonomous AI agent — not a chatbot. It thinks ahead, uses 48+ tools (web search, code sandbox, image gen, workspace), remembers across sessions, and learns from every conversation. Casual chat flows naturally; sensitive claims (fiqh/medical/data) get epistemic labels and source chains. ReAct multi-step reasoning, 5 distinct personas, 100% local inference, no cloud dependency, MIT licensed."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Is SIDIX free to use?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes. SIDIX is completely free and open-source under MIT license. Try 5 messages without signup at app.sidixlab.com. Fork, deploy, contribute — no hidden cost."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How is SIDIX different from cloud-hosted assistants?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "SIDIX is an AGENT, not a chatbot — it has initiative, opinions, and creativity. Default agent mode bypasses rigid filters for casual chat (feels like Claude/Gemini/KIMI), then leans on epistemic labels and sanad chain when accuracy matters. Standing-alone (deployable without internet), open-source (MIT), 48+ tools, multi-layer memory + self-learning, 5 distinct ways-of-being personas."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Can I contribute to SIDIX?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Absolutely. SIDIX welcomes developers, researchers, and academics. Visit sidixlab.com, click 'Gabung Kontributor' or submit PRs to github.com/fahmiwol/sidix. Every contribution is cryptographically signed via sanad chain."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Does SIDIX support Indonesian language?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes — SIDIX is optimized for Bahasa Indonesia as primary language, with English and Arabic support."
+        }
+      }
+    ]
+  }
+  </script>
+
+  <!-- ═══ PERFORMANCE HINTS ═══ -->
+  <link rel="preconnect" href="https://cdn.tailwindcss.com" crossorigin />
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+  <link rel="dns-prefetch" href="https://cdn.tailwindcss.com" />
+  <link rel="dns-prefetch" href="https://cdn.jsdelivr.net" />
+
+  <!-- ═══ PWA MANIFEST ═══ -->
+  <link rel="manifest" href="/manifest.json" />
+
+  <link rel="icon" type="image/svg+xml" href="/sidix-logo.svg" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            gold: { 300: '#E8C97A', 400: '#D4A853', 500: '#B8924A', 600: '#9A7B3E' },
+            warm: { 600: '#3D2F1F', 700: '#2E2218', 800: '#221A10', 900: '#1A1510', 950: '#120F09' },
+            parchment: { 100: '#F0E8D8', 200: '#E8DCC8', 300: '#D8CDB8', 400: '#B8A88A', 500: '#8A7A62' },
+          },
+          fontFamily: { display: ['Georgia', 'Times New Roman', 'serif'] },
+        }
+      }
+    }
+  </script>
+  <style>
+    * { scroll-behavior: smooth; }
+    body { background-color: #1A1510; color: #E8DCC8; font-family: system-ui, -apple-system, sans-serif; }
+    .glow-gold { text-shadow: 0 0 40px rgba(212,168,83,0.45); }
+    .glow-sm { text-shadow: 0 0 20px rgba(212,168,83,0.3); }
+    .glass { background: rgba(45,34,24,0.55); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(212,168,83,0.12); }
+    .glass-nav { background: rgba(26,21,16,0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid rgba(212,168,83,0.1); }
+    .card { background: rgba(46,34,24,0.45); border: 1px solid rgba(212,168,83,0.1); border-radius: 1rem; transition: border-color 0.2s, background 0.2s; }
+    .card:hover { border-color: rgba(212,168,83,0.25); background: rgba(46,34,24,0.65); }
+    .btn-gold { background: linear-gradient(135deg, #D4A853 0%, #B8924A 100%); color: #120F09; font-weight: 700; border-radius: 0.75rem; padding: 0.65rem 1.5rem; transition: filter 0.2s, transform 0.1s; display: inline-flex; align-items: center; gap: 0.5rem; }
+    .btn-gold:hover { filter: brightness(1.1); transform: translateY(-1px); }
+    .btn-outline { background: transparent; border: 1px solid rgba(212,168,83,0.35); color: #D4A853; border-radius: 0.75rem; padding: 0.65rem 1.5rem; transition: border-color 0.2s, background 0.2s; display: inline-flex; align-items: center; gap: 0.5rem; }
+    .btn-outline:hover { border-color: rgba(212,168,83,0.65); background: rgba(212,168,83,0.06); }
+    .badge { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; border-radius: 999px; padding: 0.2rem 0.65rem; }
+    .badge-green { background: rgba(110,174,124,0.15); color: #6EAE7C; border: 1px solid rgba(110,174,124,0.25); }
+    .badge-gold { background: rgba(212,168,83,0.12); color: #D4A853; border: 1px solid rgba(212,168,83,0.2); }
+    .badge-gray { background: rgba(138,122,98,0.12); color: #8A7A62; border: 1px solid rgba(138,122,98,0.2); }
+    .triad-icon { width: 3rem; height: 3rem; border-radius: 0.875rem; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; }
+    .section-label { font-size: 0.65rem; font-weight: 800; letter-spacing: 0.15em; text-transform: uppercase; color: #D4A853; }
+    .code-block { background: rgba(18,15,9,0.8); border: 1px solid rgba(212,168,83,0.12); border-radius: 0.75rem; padding: 1.25rem 1.5rem; font-family: 'Courier New', monospace; font-size: 0.8rem; color: #D8CDB8; overflow-x: auto; }
+    .code-block .comment { color: #6A5C48; }
+    .code-block .cmd { color: #D4A853; }
+    .divider { border-top: 1px solid rgba(212,168,83,0.07); }
+    .ambient { position: absolute; border-radius: 50%; filter: blur(120px); pointer-events: none; opacity: 1; }
+    .social-link { display: flex; align-items: center; gap: 0.75rem; padding: 0.875rem 1.125rem; border-radius: 0.875rem; background: rgba(46,34,24,0.45); border: 1px solid rgba(212,168,83,0.1); transition: border-color 0.2s, background 0.2s; color: #E8DCC8; text-decoration: none; }
+    .social-link:hover { border-color: rgba(212,168,83,0.3); background: rgba(46,34,24,0.7); }
+    .roadmap-item { display: flex; align-items: flex-start; gap: 0.875rem; padding: 0.75rem 0; }
+    .roadmap-item + .roadmap-item { border-top: 1px solid rgba(212,168,83,0.06); }
+    .check { width: 1.1rem; height: 1.1rem; border-radius: 50%; background: rgba(110,174,124,0.2); border: 1px solid rgba(110,174,124,0.4); display: flex; align-items: center; justify-content: center; color: #6EAE7C; flex-shrink: 0; margin-top: 1px; font-size: 0.6rem; }
+    .progress { width: 1.1rem; height: 1.1rem; border-radius: 50%; background: rgba(212,168,83,0.15); border: 1px solid rgba(212,168,83,0.4); display: flex; align-items: center; justify-content: center; color: #D4A853; flex-shrink: 0; margin-top: 1px; font-size: 0.55rem; }
+    .todo { width: 1.1rem; height: 1.1rem; border-radius: 50%; background: transparent; border: 1px solid rgba(138,122,98,0.35); flex-shrink: 0; margin-top: 1px; }
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: #1A1510; }
+    ::-webkit-scrollbar-thumb { background: #3D2F1F; border-radius: 3px; }
+  </style>
+</head>
+<body class="min-h-screen overflow-x-hidden">
+
+  <!-- Ambient glows -->
+  <div class="ambient w-[600px] h-[600px] bg-amber-900/10 top-[-15%] left-[-10%]" style="position:fixed;z-index:0;"></div>
+  <div class="ambient w-[500px] h-[500px] bg-amber-950/10 top-[40%] right-[-10%]" style="position:fixed;z-index:0;"></div>
+
+  <!-- ═══════════════════ NAVBAR ═══════════════════ -->
+  <nav class="glass-nav fixed top-0 left-0 right-0 z-50 h-16 flex items-center justify-between px-6 md:px-10">
+    <a href="#" class="flex items-center gap-3 no-underline">
+      <div class="rounded-xl overflow-hidden flex-shrink-0" style="width:44px;height:44px;background:rgba(20,15,8,0.95);border:1px solid rgba(204,152,49,0.4)">
+        <img src="/sidix-logo.svg" alt="SIDIX" style="width:100%;height:100%;object-fit:contain;padding:6px" />
+      </div>
+      <span style="font-family:Georgia,serif;font-weight:700;font-size:1.1rem" class="glow-sm text-parchment-100">SIDIX</span>
+    </a>
+
+    <div class="hidden md:flex items-center gap-6 text-sm text-parchment-400">
+      <a href="#features" class="hover:text-parchment-100 transition-colors">Features</a>
+      <a href="#quickstart" class="hover:text-parchment-100 transition-colors">Quick Start</a>
+      <a href="#roadmap" class="hover:text-parchment-100 transition-colors">Roadmap</a>
+      <a href="#changelog" class="hover:text-parchment-100 transition-colors">Changelog</a>
+      <a href="#contribute" class="hover:text-parchment-100 transition-colors">Contribute</a>
+      <a href="https://github.com/fahmiwol/sidix" target="_blank" rel="noopener" class="hover:text-parchment-100 transition-colors">GitHub</a>
+    </div>
+
+    <div class="flex items-center gap-3">
+      <!-- Language toggle -->
+      <button id="lang-btn" onclick="toggleLang()"
+        class="text-xs font-bold px-3 py-1.5 rounded-lg transition-all"
+        style="border:1px solid rgba(212,168,83,0.35);color:#D4A853;background:transparent"
+        onmouseover="this.style.background='rgba(212,168,83,0.08)'"
+        onmouseout="this.style.background='transparent'"
+        title="Switch language / Ganti bahasa">
+        EN
+      </button>
+      <a href="https://app.sidixlab.com" class="btn-gold text-sm">
+        <span data-i18n="nav.try">Try SIDIX</span>
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </a>
+    </div>
+  </nav>
+
+  <div class="relative z-10" style="padding-top: 4rem;">
+
+    <!-- ═══════════════════ HERO ═══════════════════ -->
+    <section class="min-h-screen flex flex-col items-center justify-center text-center px-6 py-24 relative">
+      <div class="mb-6 flex items-center gap-2 flex-wrap justify-center">
+        <span class="badge badge-green" data-i18n="hero.badge.live">v2.1 · Live</span>
+        <span class="badge badge-gold">MIT License</span>
+        <span class="badge badge-gray" data-i18n="hero.badge.selfhosted">Self-Hosted</span>
+        <span class="badge badge-gray" data-i18n="hero.badge.free">Free Forever</span>
+      </div>
+
+      <div class="relative mb-8">
+        <div class="absolute inset-0 blur-3xl opacity-40 rounded-full" style="background:#CC9831;transform:scale(1.8)"></div>
+        <div class="relative z-10 rounded-3xl overflow-hidden" style="width:180px;height:180px;background:rgba(20,15,8,0.92);border:1px solid rgba(204,152,49,0.35)">
+          <img src="/sidix-logo.svg" alt="SIDIX" style="width:100%;height:100%;object-fit:contain;padding:16px" />
+        </div>
+      </div>
+
+      <h1 class="font-display text-5xl md:text-7xl font-bold glow-gold mb-4 tracking-tight" style="font-family:Georgia,serif">
+        SIDIX
+      </h1>
+      <p class="text-xl md:text-2xl text-parchment-300 font-light mb-3 max-w-2xl" data-i18n="hero.subtitle">
+        AI Agent yang Berpikir, Belajar &amp; Mencipta
+      </p>
+      <p class="text-base text-parchment-500 mb-10 max-w-xl leading-relaxed" data-i18n="hero.desc">
+        Gratis selamanya · Tanpa daftar · Tanpa kartu kredit · Jawab obrolan ringan dalam 2 detik · 5 persona dengan gaya bicara berbeda · Klaim sensitif (fiqh, medis, data) dilabeli sumbernya — bukan halusinasi tak bertanda.
+      </p>
+
+      <div class="flex flex-wrap items-center justify-center gap-4 mb-16">
+        <a href="https://app.sidixlab.com" class="btn-gold text-base px-6 py-3">
+          Try SIDIX
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </a>
+        <a href="https://github.com/fahmiwol/sidix" target="_blank" rel="noopener" class="btn-outline text-base px-6 py-3">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.44 9.8 8.2 11.38.6.11.82-.26.82-.58v-2.03c-3.34.72-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.09-.75.08-.73.08-.73 1.2.08 1.84 1.24 1.84 1.24 1.07 1.83 2.81 1.3 3.5 1 .11-.78.42-1.3.76-1.6-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.13-.3-.54-1.52.12-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 3-.4c1.02.005 2.04.14 3 .4 2.28-1.55 3.29-1.23 3.29-1.23.66 1.66.25 2.88.12 3.18.77.84 1.24 1.91 1.24 3.22 0 4.61-2.81 5.63-5.48 5.92.43.37.82 1.1.82 2.22v3.29c0 .32.22.7.83.58C20.57 21.8 24 17.3 24 12c0-6.63-5.37-12-12-12z"/></svg>
+          GitHub
+        </a>
+        <a href="#quickstart" class="btn-outline text-base px-6 py-3">
+          Quick Start (5 min)
+        </a>
+        <a href="#" target="_blank" rel="noopener"
+           class="btn-outline text-base px-6 py-3 flex items-center gap-2" data-i18n="hero.cta.telegram">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
+          </svg>
+          Contribute
+        </a>
+      </div>
+
+      <!-- Epistemic Triad -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-3xl w-full">
+        <div class="card p-5 text-left">
+          <div class="triad-icon mb-4" style="background:rgba(212,168,83,0.1);border:1px solid rgba(212,168,83,0.2)">
+            <span style="color:#D4A853">⚖</span>
+          </div>
+          <h3 class="font-bold text-parchment-100 mb-1">Jujur &amp; Bersumber</h3>
+          <p class="text-sm text-parchment-500 leading-relaxed">Obrolan santai mengalir natural. Tapi untuk klaim sensitif — fiqh, medis, data, berita — SIDIX tandai: <code style="font-size:0.7rem;background:rgba(212,168,83,0.1);padding:0.1rem 0.35rem;border-radius:4px;color:#D4A853">[FAKTA]</code> <code style="font-size:0.7rem;background:rgba(212,168,83,0.1);padding:0.1rem 0.35rem;border-radius:4px;color:#D4A853">[OPINI]</code> <code style="font-size:0.7rem;background:rgba(212,168,83,0.1);padding:0.1rem 0.35rem;border-radius:4px;color:#D4A853">[TIDAK TAHU]</code> + sanad sumber. Tidak ada halusinasi tak bertanda.</p>
+        </div>
+        <div class="card p-5 text-left">
+          <div class="triad-icon mb-4" style="background:rgba(110,174,124,0.1);border:1px solid rgba(110,174,124,0.2)">
+            <span style="color:#6EAE7C">🛠️</span>
+          </div>
+          <h3 class="font-bold text-parchment-100 mb-1">48 Tools Siap Pakai</h3>
+          <p class="text-sm text-parchment-500 leading-relaxed">Web search, code sandbox, kalkulator, workspace, PDF, image gen, dan 42 lainnya. SIDIX pilih tool yang tepat sendiri — seperti kamu pakai Google, tapi otomatis.</p>
+        </div>
+        <div class="card p-5 text-left">
+          <div class="triad-icon mb-4" style="background:rgba(107,148,196,0.1);border:1px solid rgba(107,148,196,0.2)">
+            <span style="color:#6B94C4">🌱</span>
+          </div>
+          <h3 class="font-bold text-parchment-100 mb-1">Tumbuh Bersamamu</h3>
+          <p class="text-sm text-parchment-500 leading-relaxed">Memori multi-layer + belajar mandiri — setiap percakapan bikin SIDIX makin tajam. LoRA retrain harian, korpus 2.287 dokumen dan terus tumbuh. Bukan snapshot. Agent hidup.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════ PERSONA SHOWCASE ═══════════════════ -->
+    <section id="personas" class="py-24 px-6 max-w-6xl mx-auto">
+      <div class="divider mb-16"></div>
+      <div class="text-center mb-12">
+        <p class="section-label mb-3" data-i18n="personas.label">5 Persona, 5 Suara Berbeda</p>
+        <h2 class="font-display text-3xl md:text-4xl font-bold text-parchment-100" style="font-family:Georgia,serif" data-i18n="personas.h2">Pilih Suara, Pilih Sudut Pandang</h2>
+        <p class="text-parchment-500 mt-3 max-w-2xl mx-auto" data-i18n="personas.desc">SIDIX nggak pakai 1 suara generik kayak chatbot lain. Tiap persona punya cara berpikir, gaya bicara, dan keahlian sendiri. Pilih yang cocok dengan kebutuhanmu — atau biarkan SIDIX pilih otomatis.</p>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div class="card p-5 text-left">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="text-2xl">🎨</span>
+            <h3 class="font-bold text-parchment-100">UTZ</h3>
+            <span class="badge badge-gray text-xs">Creative</span>
+          </div>
+          <p class="text-xs text-parchment-500 mb-3">Visual, kreatif, brainstorm. Pakai "aku".</p>
+          <div class="text-xs text-parchment-400 italic border-l-2 border-amber-700/40 pl-3">"Bantuin desain logo coffee shop yang feel warm + handcrafted"</div>
+        </div>
+        <div class="card p-5 text-left">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="text-2xl">⚙️</span>
+            <h3 class="font-bold text-parchment-100">ABOO</h3>
+            <span class="badge badge-gray text-xs">Engineer</span>
+          </div>
+          <p class="text-xs text-parchment-500 mb-3">Teknis, code review, debug. Pakai "gue".</p>
+          <div class="text-xs text-parchment-400 italic border-l-2 border-amber-700/40 pl-3">"Audit fungsi Python ini, ada race condition?"</div>
+        </div>
+        <div class="card p-5 text-left">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="text-2xl">📊</span>
+            <h3 class="font-bold text-parchment-100">OOMAR</h3>
+            <span class="badge badge-gray text-xs">Strategist</span>
+          </div>
+          <p class="text-xs text-parchment-500 mb-3">Bisnis, analisis, keputusan. Pakai "saya".</p>
+          <div class="text-xs text-parchment-400 italic border-l-2 border-amber-700/40 pl-3">"Bandingkan strategi pricing freemium vs flat untuk SaaS B2B"</div>
+        </div>
+        <div class="card p-5 text-left">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="text-2xl">📚</span>
+            <h3 class="font-bold text-parchment-100">ALEY</h3>
+            <span class="badge badge-gray text-xs">Researcher</span>
+          </div>
+          <p class="text-xs text-parchment-500 mb-3">Akademik, fiqh, riset mendalam. Sanad chain wajib.</p>
+          <div class="text-xs text-parchment-400 italic border-l-2 border-amber-700/40 pl-3">"Hukum puasa di hari Senin Kamis menurut 4 mazhab?"</div>
+        </div>
+        <div class="card p-5 text-left">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="text-2xl">💬</span>
+            <h3 class="font-bold text-parchment-100">AYMAN</h3>
+            <span class="badge badge-gray text-xs">General</span>
+          </div>
+          <p class="text-xs text-parchment-500 mb-3">Chat hangat, tanya apa aja. Pakai "halo".</p>
+          <div class="text-xs text-parchment-400 italic border-l-2 border-amber-700/40 pl-3">"Halo, lagi galau soal pilihan karir, bisa ngobrol bareng?"</div>
+        </div>
+        <div class="card p-5 text-left flex items-center justify-center" style="background:linear-gradient(135deg,rgba(204,152,49,0.08),rgba(212,168,83,0.04));border:1px dashed rgba(212,168,83,0.3)">
+          <div class="text-center">
+            <p class="text-sm text-parchment-300 font-bold mb-1">+ Auto-Routing</p>
+            <p class="text-xs text-parchment-500 leading-relaxed">SIDIX deteksi sinyal pertanyaan dan pilih persona terbaik otomatis. Atau tetap pakai pilihanmu — selalu manual override.</p>
+          </div>
+        </div>
+      </div>
+      <div class="text-center mt-8">
+        <a href="https://app.sidixlab.com" class="btn-gold text-base px-6 py-3 inline-flex items-center gap-2">
+          <span data-i18n="personas.cta">Coba 5 Persona Sekarang</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </a>
+      </div>
+    </section>
+
+    <!-- ═══════════════════ FEATURES ═══════════════════ -->
+    <section id="features" class="py-24 px-6 max-w-6xl mx-auto">
+      <div class="divider mb-16"></div>
+      <div class="text-center mb-12">
+        <p class="section-label mb-3" data-i18n="features.label">What's inside</p>
+        <h2 class="font-display text-3xl md:text-4xl font-bold text-parchment-100" style="font-family:Georgia,serif" data-i18n="features.h2">Built different, on purpose</h2>
+        <p class="text-parchment-500 mt-3 max-w-xl mx-auto" data-i18n="features.desc">An AI Agent that doesn't just answer — it thinks ahead, builds with you, and grows smarter every day.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div class="card p-6">
+          <div class="text-2xl mb-3">🧠</div>
+          <h3 class="font-bold text-parchment-100 mb-2">RAG + BM25 Retriever</h3>
+          <p class="text-sm text-parchment-500 leading-relaxed">Search your local corpus without embedding API calls. BM25 + dense retrieval, fully offline.</p>
+        </div>
+        <div class="card p-6">
+          <div class="text-2xl mb-3">🔄</div>
+          <h3 class="font-bold text-parchment-100 mb-2">ReAct Agent Loop</h3>
+          <p class="text-sm text-parchment-500 leading-relaxed">Reason → Act → Observe → repeat. Grounded answers through iterative tool use, not single-shot guessing.</p>
+        </div>
+        <div class="card p-6">
+          <div class="text-2xl mb-3">🌍</div>
+          <h3 class="font-bold text-parchment-100 mb-2">Multilingual Native</h3>
+          <p class="text-sm text-parchment-500 leading-relaxed">Bahasa Indonesia · Arabic · English — plus Javanese, Sundanese. Automatic language detection.</p>
+        </div>
+        <div class="card p-6">
+          <div class="text-2xl mb-3">🎯</div>
+          <h3 class="font-bold text-parchment-100 mb-2">User Intelligence</h3>
+          <p class="text-sm text-parchment-500 leading-relaxed">Auto-detects language, literacy level, intent, and cultural context. Answers calibrated to the reader, not a generic profile.</p>
+        </div>
+        <div class="card p-6">
+          <div class="text-2xl mb-3">📊</div>
+          <h3 class="font-bold text-parchment-100 mb-2">5 Personas</h3>
+          <p class="text-sm text-parchment-500 leading-relaxed">AYMAN (Creative) · ABOO (Planning) · OOMAR (Academic) · ALEY (Technical) · UTZ (Simple). One brain, five voices.</p>
+        </div>
+        <div class="card p-6">
+          <div class="text-2xl mb-3">🛡️</div>
+          <h3 class="font-bold text-parchment-100 mb-2">Safety Policy G1</h3>
+          <p class="text-sm text-parchment-500 leading-relaxed">Anti-injection, anti-toxic, anti-PII guard. Tool execution is whitelisted — OFF by default, explicit permission required.</p>
+        </div>
+        <div class="card p-6">
+          <div class="text-2xl mb-3">🔧</div>
+          <h3 class="font-bold text-parchment-100 mb-2">Offline Adaptation</h3>
+          <p class="text-sm text-parchment-500 leading-relaxed">Local-first runtime + offline adaptation pipeline. Dataset grows via Jariyah loops.</p>
+        </div>
+        <div class="card p-6">
+          <div class="text-2xl mb-3">🔒</div>
+          <h3 class="font-bold text-parchment-100 mb-2">Standing Alone</h3>
+          <p class="text-sm text-parchment-500 leading-relaxed">Default mode runs without any third-party hosted model API. Your data stays under your control.</p>
+        </div>
+        <div class="card p-6">
+          <div class="text-2xl mb-3">📚</div>
+          <h3 class="font-bold text-parchment-100 mb-2">50+ Research Notes</h3>
+          <p class="text-sm text-parchment-500 leading-relaxed">AI/ML, Coding, Web, Mobile, Game Dev, Linguistics, Visual AI — growing corpus, community-extensible.</p>
+        </div>
+        <div class="card p-6">
+          <div class="text-2xl mb-3">⌨️</div>
+          <h3 class="font-bold text-parchment-100 mb-2">Memahami Typo &amp; Bahasa Informal</h3>
+          <p class="text-sm text-parchment-500 leading-relaxed">4-layer Typo Resilient Framework — normalisasi input Indonesia, 200+ koreksi typo, 60+ singkatan. Tidak menghukum pengguna atas typo. / <em>Gracefully handles Indonesian slang and abbreviations.</em></p>
+        </div>
+        <div class="card p-6">
+          <div class="text-2xl mb-3">🔌</div>
+          <h3 class="font-bold text-parchment-100 mb-2">Plugin server (opsional)</h3>
+          <p class="text-sm text-parchment-500 leading-relaxed">SIDIX dapat menyediakan plugin server (13 tools) via Model Context Protocol untuk klien yang kompatibel (mis. Claude Desktop, Cursor, GPT Actions, Codex). Mode default tetap standing alone.</p>
+        </div>
+        <div class="card p-6">
+          <div class="text-2xl mb-3">🧠</div>
+          <h3 class="font-bold text-parchment-100 mb-2">7 Pilar Jiwa: Nafs, Aql, Qalb, Ruh, Hayat, Ilm, Hikmah</h3>
+          <p class="text-sm text-parchment-500 leading-relaxed">Sistem kesadaran diri 7-pilar — routing topik, self-learning, health monitoring, self-refinement, auto-retrain. SIDIX bukan snapshot, melainkan makhluk yang tumbuh. / <em>7-pillar self-awareness: SIDIX grows, learns, and heals itself.</em></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════ QUICK START ═══════════════════ -->
+    <section id="quickstart" class="py-24 px-6">
+      <div class="divider mb-16"></div>
+      <div class="max-w-3xl mx-auto">
+        <div class="text-center mb-12">
+          <p class="section-label mb-3" data-i18n="quickstart.label">Get running in 5 minutes</p>
+          <h2 class="font-display text-3xl md:text-4xl font-bold text-parchment-100" style="font-family:Georgia,serif">Quick Start</h2>
+          <p class="text-parchment-500 mt-3">Python 3.11+ · Node 18+ · 4GB RAM minimum</p>
+        </div>
+
+        <div class="space-y-4">
+          <div>
+            <p class="text-xs text-parchment-500 uppercase tracking-widest font-bold mb-2">1 · Clone &amp; Install</p>
+            <div class="code-block">
+              <span class="comment"># Clone the repo</span><br/>
+              <span class="cmd">git clone</span> https://github.com/fahmiwol/sidix.git<br/>
+              <span class="cmd">cd</span> sidix<br/>
+              <span class="cmd">pip install</span> -r apps/brain_qa/requirements.txt
+            </div>
+          </div>
+          <div>
+            <p class="text-xs text-parchment-500 uppercase tracking-widest font-bold mb-2">2 · Build Index</p>
+            <div class="code-block">
+              <span class="cmd">cd</span> apps/brain_qa<br/>
+              <span class="cmd">python</span> -m brain_qa index
+            </div>
+          </div>
+          <div>
+            <p class="text-xs text-parchment-500 uppercase tracking-widest font-bold mb-2">3 · Run</p>
+            <div class="code-block">
+              <span class="comment"># Terminal 1 — Backend API (port 8765)</span><br/>
+              <span class="cmd">python</span> -m brain_qa serve<br/><br/>
+              <span class="comment"># Terminal 2 — UI (port 3000)</span><br/>
+              <span class="cmd">cd</span> ../../SIDIX_USER_UI<br/>
+              <span class="cmd">npm install &amp;&amp; npm run dev</span>
+            </div>
+          </div>
+          <div>
+            <p class="text-xs text-parchment-500 uppercase tracking-widest font-bold mb-2">4 · Ask</p>
+            <div class="code-block">
+              <span class="comment"># CLI</span><br/>
+              <span class="cmd">python</span> -m brain_qa ask <span style="color:#B8A88A">"What is RAG?"</span><br/><br/>
+              <span class="comment"># Or open browser: http://localhost:3000</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-8 text-center">
+          <a href="https://github.com/fahmiwol/sidix/blob/main/docs/LAUNCH_V1.md" target="_blank" rel="noopener" class="btn-outline text-sm">
+            Full Documentation →
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════ ROADMAP ═══════════════════ -->
+    <section id="roadmap" class="py-24 px-6">
+      <div class="divider mb-16"></div>
+      <div class="max-w-3xl mx-auto">
+        <div class="text-center mb-12">
+          <p class="section-label mb-3">What's done, what's next</p>
+          <h2 class="font-display text-3xl md:text-4xl font-bold text-parchment-100" style="font-family:Georgia,serif">Roadmap</h2>
+          <p class="text-parchment-500 mt-3">
+            Live status ·
+            <a href="https://github.com/fahmiwol/sidix/issues" target="_blank" rel="noopener" class="text-gold-400 hover:text-gold-300">See all issues</a>
+          </p>
+        </div>
+
+        <div class="card p-6">
+          <p class="section-label mb-4">Completed ✓</p>
+          <div>
+            <div class="roadmap-item">
+              <div class="check">✓</div>
+              <div>
+                <p class="text-sm font-medium text-parchment-200">Sprint 6.5 — Ethical + Quality Hardening <span class="text-xs text-gold-400">DONE</span></p>
+                <p class="text-xs text-parchment-500">Maqashid mode gate (6 exit paths), Naskh conflict resolver, Raudah v0.2 DAG, CQF rubrik 10 kriteria, Intent classifier deterministik, MinHash dedup. 15/15 tes pass.</p>
+              </div>
+            </div>
+            <div class="roadmap-item">
+              <div class="check">✓</div>
+              <div>
+                <p class="text-sm font-medium text-parchment-200">Daily Continual Learning Engine</p>
+                <p class="text-xs text-parchment-500">SIDIX belajar 1 topik baru setiap hari otomatis (cron 03:00). 7-tahap siklus: scan → riset → quality gate → train → share → remember → log.</p>
+              </div>
+            </div>
+            <div class="roadmap-item">
+              <div class="check">✓</div>
+              <div>
+                <p class="text-sm font-medium text-parchment-200">Sanad + Hafidz per Knowledge Item</p>
+                <p class="text-xs text-parchment-500">Setiap pengetahuan baru otomatis mendapat CAS hash + Merkle root + isnad eksplisit. Verifiable siapa saja dengan sha256.</p>
+              </div>
+            </div>
+            <div class="roadmap-item">
+              <div class="check">✓</div>
+              <div>
+                <p class="text-sm font-medium text-parchment-200">Multi-Modal: Image Gen + Vision</p>
+                <p class="text-xs text-parchment-500">Image generation lokal tanpa API key eksternal. Auto-enhance via creative_framework (Nusantara context).</p>
+              </div>
+            </div>
+            <div class="roadmap-item">
+              <div class="check">✓</div>
+              <div>
+                <p class="text-sm font-medium text-parchment-200">5 Persona (AYMAN / ABOO / OOMAR / ALEY / UTZ)</p>
+                <p class="text-xs text-parchment-500">Setiap persona punya profil Maqashid mode, gaya komunikasi, dan kedalaman jawaban sendiri. Backward compatible.</p>
+              </div>
+            </div>
+            <div class="roadmap-item">
+              <div class="check">✓</div>
+              <div>
+                <p class="text-sm font-medium text-parchment-200">RAG + BM25 + Sanad Reranker</p>
+                <p class="text-xs text-parchment-500">Corpus search lokal tanpa dependensi API. Hasil diurutkan ulang berdasarkan tier sanad (primer > ulama > peer_review > aggregator).</p>
+              </div>
+            </div>
+            <div class="roadmap-item">
+              <div class="check">✓</div>
+              <div>
+                <p class="text-sm font-medium text-parchment-200">ReAct Agent Loop — 48 Tools</p>
+                <p class="text-xs text-parchment-500">Multi-step reasoning: Thought → Action → Observation. Web search, code sandbox, image gen, workspace, calculator, knowledge graph. Default agent_mode: proactive, no rigid filter.</p>
+              </div>
+            </div>
+            <div class="roadmap-item">
+              <div class="check">✓</div>
+              <div>
+                <p class="text-sm font-medium text-parchment-200">Contextual Epistemic Honesty</p>
+                <p class="text-xs text-parchment-500">Klaim sensitif (fiqh, medis, data, berita) ditandai label [FAKTA]/[OPINI]/[SPEKULASI]/[TIDAK TAHU] + sanad chain. Casual chat tetap natural — label muncul saat akurasi benar-benar penting.</p>
+              </div>
+            </div>
+            <div class="roadmap-item">
+              <div class="check">✓</div>
+              <div>
+                <p class="text-sm font-medium text-parchment-200">Offline adaptation v1 (local-first)</p>
+                <p class="text-xs text-parchment-500">713 Q&amp;A trilingual dataset. LoRA adapter di-serve via inference engine lokal.</p>
+              </div>
+            </div>
+            <div class="roadmap-item">
+              <div class="check">✓</div>
+              <div>
+                <p class="text-sm font-medium text-parchment-200">188+ Research Notes Corpus</p>
+                <p class="text-xs text-parchment-500">AI/ML, Coding, Web, Mobile, Game, Linguistics, Visual AI, Islamic Epistemology, Social Media.</p>
+              </div>
+            </div>
+            <div class="roadmap-item">
+              <div class="check">✓</div>
+              <div>
+                <p class="text-sm font-medium text-parchment-200">Social Radar MVP — Competitor Intelligence <span class="text-xs text-gold-400">Sprint 7</span></p>
+                <p class="text-xs text-parchment-500">Chrome Extension dengan DOM scraping real (Instagram/Threads/X/YouTube/Facebook) + backend analisis ER, sentimen, tier. MV3 service worker. 15/15 test PASSED.</p>
+              </div>
+            </div>
+            <div class="roadmap-item">
+              <div class="check">✓</div>
+              <div>
+                <p class="text-sm font-medium text-parchment-200">Plugin server (Optional) <span class="text-xs text-gold-400">Sprint 7b</span></p>
+                <p class="text-xs text-parchment-500">13 tools via Model Context Protocol: social scan, engagement analysis, account compare, messaging automation, optional extension bridge. Untuk klien yang kompatibel.</p>
+              </div>
+            </div>
+          </div>
+
+          <p class="section-label mt-8 mb-4">In Progress ▶</p>
+          <div>
+            <div class="roadmap-item">
+              <div class="progress">▶</div>
+              <div>
+                <p class="text-sm font-medium text-parchment-200">Self-Training Pipeline (LoRA v2)</p>
+                <p class="text-xs text-parchment-500">Auto-pair corpus → JSONL → offline retrain → deploy adapter baru. Growth loop aktif, training v2 menunggu dataset cukup.</p>
+              </div>
+              <span class="badge badge-gold ml-auto flex-shrink-0">Active</span>
+            </div>
+            <div class="roadmap-item">
+              <div class="progress">▶</div>
+              <div>
+                <p class="text-sm font-medium text-parchment-200">Social Radar Dashboard — Multi-Competitor Visualisasi</p>
+                <p class="text-xs text-parchment-500">Dashboard di app.sidixlab.com untuk visualisasi data radar beberapa akun sekaligus. TikTok scraping via OpHarvest.</p>
+              </div>
+              <span class="badge badge-gold ml-auto flex-shrink-0">Next</span>
+            </div>
+          </div>
+
+          <p class="section-label mt-8 mb-4">Sprint 8 — Selesai ✓ / Completed ✓</p>
+          <div>
+            <div class="roadmap-item">
+              <div class="check">✓</div>
+              <div>
+                <p class="text-sm font-medium text-parchment-200">Foundation Hardening — Sprint 8a <span class="text-xs text-gold-400">DONE</span></p>
+                <p class="text-xs text-parchment-500">Nafs 3-layer wire ke main agent; Jariyah v3 real-time capture (thumbs feedback); branch system (multi-client); PostgreSQL schema. / <em>Wired to main, deployed to VPS.</em></p>
+              </div>
+              <span class="badge badge-green ml-auto flex-shrink-0">Done</span>
+            </div>
+            <div class="roadmap-item">
+              <div class="check">✓</div>
+              <div>
+                <p class="text-sm font-medium text-parchment-200">Generative Core — Sprint 8b <span class="text-xs text-gold-400">DONE</span></p>
+                <p class="text-xs text-parchment-500">FLUX.1 image generation pipeline, Piper TTS, endpoint <code style="font-size:0.7rem;color:#D4A853">/generate/image</code> + <code style="font-size:0.7rem;color:#D4A853">/tts/synthesize</code> aktif. / <em>FLUX.1 pipeline &amp; Piper TTS live.</em></p>
+              </div>
+              <span class="badge badge-green ml-auto flex-shrink-0">Done</span>
+            </div>
+            <div class="roadmap-item">
+              <div class="check">✓</div>
+              <div>
+                <p class="text-sm font-medium text-parchment-200">Jariyah Collector &amp; DB Layer — Sprint 8c <span class="text-xs text-gold-400">DONE</span></p>
+                <p class="text-xs text-parchment-500">jariyah_collector.py + db/connection.py tersambung; feedback loop data jariyah aktif tersimpan ke database. / <em>Jariyah collector &amp; DB connection live.</em></p>
+              </div>
+              <span class="badge badge-green ml-auto flex-shrink-0">Done</span>
+            </div>
+            <div class="roadmap-item">
+              <div class="check">✓</div>
+              <div>
+                <p class="text-sm font-medium text-parchment-200">Branch Manager &amp; Token Quota — Sprint 8d <span class="text-xs text-gold-400">DONE</span></p>
+                <p class="text-xs text-parchment-500">branch_manager.py (multi-client isolation), token_quota.py fix (quota enforcement per branch). / <em>Branch manager &amp; token quota enforcement deployed.</em></p>
+              </div>
+              <span class="badge badge-green ml-auto flex-shrink-0">Done</span>
+            </div>
+          </div>
+
+          <p class="section-label mt-8 mb-4">Planned / Direncanakan</p>
+          <div>
+            <div class="roadmap-item">
+              <div class="todo"></div>
+              <div><p class="text-sm text-parchment-400">Sprint 9 — Agency OS UI: Sidebar UI Framework, Image Editor v1, Branch selector</p></div>
+            </div>
+            <div class="roadmap-item">
+              <div class="todo"></div>
+              <div><p class="text-sm text-parchment-400">Sprint 9b — Intelligence Layer: Raudah v2 multi-agent, Brand Guidelines Maker, Auto-retrain trigger</p></div>
+            </div>
+            <div class="roadmap-item">
+              <div class="todo"></div>
+              <div><p class="text-sm text-parchment-400">Distributed Hafidz sync (P2P corpus nodes, IPFS + BFT ledger)</p></div>
+            </div>
+            <div class="roadmap-item">
+              <div class="todo"></div>
+              <div><p class="text-sm text-parchment-400">Mobile app (PWA upgrade → native wrapper)</p></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-6 text-center">
+          <a href="https://github.com/fahmiwol/sidix/issues/new?labels=feature-request" target="_blank" rel="noopener" class="btn-outline text-sm">
+            Request a Feature →
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════ CHANGELOG ═══════════════════ -->
+    <section id="changelog" class="py-24 px-6">
+      <div class="divider mb-16"></div>
+      <div class="max-w-3xl mx-auto">
+        <div class="text-center mb-12">
+          <p class="section-label mb-3">Version history</p>
+          <h2 class="font-display text-3xl md:text-4xl font-bold text-parchment-100" style="font-family:Georgia,serif">Changelog</h2>
+          <p class="text-parchment-500 mt-3">
+            Setiap perubahan dicatat — transparan, bisa diverifikasi ·
+            <a href="https://github.com/fahmiwol/sidix/blob/main/CHANGELOG.md" target="_blank" rel="noopener" class="text-gold-400 hover:text-gold-300">Full changelog →</a>
+          </p>
+        </div>
+
+        <div class="space-y-4">
+
+          <!-- v2.0 — PIVOT FUNDAMENTAL -->
+          <div class="card p-6" style="border-color:rgba(212,168,83,0.35);background:rgba(46,34,24,0.65)">
+            <div class="flex items-start justify-between gap-4 mb-3">
+              <div>
+                <span class="inline-block text-xs font-bold px-2 py-0.5 rounded-full mb-2" style="background:rgba(212,168,83,0.2);color:#D4A853;border:1px solid rgba(212,168,83,0.4)">PIVOT</span>
+                <h3 class="font-bold text-parchment-100 text-base">v2.0 — SIDIX 2.0: AI Agent, Bukan Chatbot</h3>
+              </div>
+              <span class="text-xs text-parchment-500 flex-shrink-0 mt-1">2026-04-24</span>
+            </div>
+            <ul class="space-y-1.5 text-sm text-parchment-400">
+              <li>🔥 <strong class="text-parchment-300">Identitas Diubah Total</strong> — Dari "chatbot dengan aturan" ke "AI Agent otonom yang berpikir, belajar, dan menciptakan." User adalah partner kolaborasi, bukan bos.</li>
+              <li>🧠 <strong class="text-parchment-300">Ways of Being</strong> — 5 Persona bukan cuma "cara bicara", tapi mode operasional: cara berpikir + eksplorasi + bertindak + menciptakan. AYMAN (Empathic Integrator), ABOO (Systems Builder), OOMAR (Strategic Architect), ALEY (Polymath Researcher), UTZ (Creative Director — Burst+Refinement).</li>
+              <li>⚡ <strong class="text-parchment-300">Default = Agent Mode</strong> — Otonom, proactive, kreatif, tanpa filter berjibun. Strict mode = opt-in untuk factual queries yang butuh ketat.</li>
+              <li>🔗 <strong class="text-parchment-300">local_llm.py Wired</strong> — Qwen2.5-7B + LoRA jadi fallback chain: Ollama → local LoRA → corpus → "tidak tahu" (hanya strict mode).</li>
+              <li>🚀 <strong class="text-parchment-300">Endpoint /agent/generate</strong> — Pure general chat tanpa ReAct loop, direct generation dengan persona hint.</li>
+              <li>📚 <strong class="text-parchment-300">Deep Research</strong> — AI Landscape Q1 2026 (19KB, 5 mega-trends) + Creative Genius Frameworks (25KB, 34 sources: Gaga, Bowie, LIMO, 30+ hidden geniuses, cultural frameworks).</li>
+            </ul>
+          </div>
+
+          <!-- v0.8.4 Sprint 8d -->
+          <div class="card p-6">
+            <div class="flex items-start justify-between gap-4 mb-3">
+              <div>
+                <span class="inline-block text-xs font-bold px-2 py-0.5 rounded-full mb-2" style="background:rgba(110,174,124,0.15);color:#6EAE7C;border:1px solid rgba(110,174,124,0.3)">Latest</span>
+                <h3 class="font-bold text-parchment-100 text-base">v0.8.4 — Sprint 8a/8b/8c/8d: Foundation, Generative, Jariyah, Branch</h3>
+              </div>
+              <span class="text-xs text-parchment-500 flex-shrink-0 mt-1">2026-04-24</span>
+            </div>
+            <ul class="space-y-1.5 text-sm text-parchment-400">
+              <li>🏗️ <strong class="text-parchment-300">Sprint 8a — Foundation Hardening</strong> — Nafs 3-layer wire ke main agent; Jariyah v3 real-time capture (thumbs feedback); branch system multi-client; PostgreSQL schema. Sudah di-merge ke main dan deploy ke VPS. / <em>Merged to main, deployed to VPS.</em></li>
+              <li>🖼️ <strong class="text-parchment-300">Sprint 8b — Generative Core</strong> — FLUX.1 image generation pipeline lokal aktif; Piper TTS tersambung; endpoint <code style="font-size:0.7rem;color:#D4A853">/generate/image</code> + <code style="font-size:0.7rem;color:#D4A853">/tts/synthesize</code> live. / <em>FLUX.1 + Piper TTS endpoints live.</em></li>
+              <li>🗄️ <strong class="text-parchment-300">Sprint 8c — Jariyah Collector &amp; DB Layer</strong> — <code style="font-size:0.7rem;color:#D4A853">jariyah_collector.py</code> + <code style="font-size:0.7rem;color:#D4A853">db/connection.py</code> aktif; feedback loop jariyah tersimpan ke database. / <em>Jariyah collector &amp; DB connection deployed.</em></li>
+              <li>🌿 <strong class="text-parchment-300">Sprint 8d — Branch Manager &amp; Token Quota</strong> — <code style="font-size:0.7rem;color:#D4A853">branch_manager.py</code> (multi-client isolation); <code style="font-size:0.7rem;color:#D4A853">token_quota.py</code> fix (quota enforcement per branch). / <em>Branch isolation &amp; token quota enforcement.</em></li>
+            </ul>
+          </div>
+
+          <!-- v0.8.0 -->
+          <div class="card p-6">
+            <div class="flex items-start justify-between gap-4 mb-3">
+              <div>
+                <span class="inline-block text-xs font-bold px-2 py-0.5 rounded-full mb-2" style="background:rgba(212,168,83,0.1);color:#D4A853;border:1px solid rgba(212,168,83,0.25)">Stable</span>
+                <h3 class="font-bold text-parchment-100 text-base">v0.8.0 — Jiwa 7-Pilar + Plugin Ecosystem (Optional) + Typo Framework</h3>
+              </div>
+              <span class="text-xs text-parchment-500 flex-shrink-0 mt-1">2026-04-23</span>
+            </div>
+            <ul class="space-y-1.5 text-sm text-parchment-400">
+              <li>🧠 <strong class="text-parchment-300">Jiwa 7-Pilar (Live)</strong> — SIDIX kini punya "jiwa": Nafs (routing 7 topik + karakter persona), Aql (self-learning CQF≥7.0), Qalb (health monitor), Hayat (self-refine), Ruh, Ilm, Hikmah. / <em>SIDIX now has a soul — 7-pillar self-awareness system.</em></li>
+              <li>📦 <strong class="text-parchment-300">brain/jiwa/ standalone</strong> — 7 modul independen di <code style="font-size:0.7rem;color:#D4A853">brain/nafs|aql|qalb|ruh|hayat|ilm|hikmah/</code>, terpisah dari FastAPI layer.</li>
+              <li>⌨️ <strong class="text-parchment-300">Typo Resilient Framework</strong> (<code style="font-size:0.7rem;color:#D4A853">brain/typo/</code>) — Pahami bahasa informal Indonesia: 4-layer stack, 200+ koreksi typo, 60+ ekspansi singkatan. / <em>Understands Indonesian slang, abbreviations and typos gracefully.</em></li>
+              <li>🔌 <strong class="text-parchment-300">Plugin server (Optional)</strong> — 13 tools via Model Context Protocol untuk klien yang kompatibel. / <em>Optional plugin server for compatible clients.</em></li>
+              <li>📡 <strong class="text-parchment-300">9 Social Tools</strong>: scan IG/Threads/X/YouTube, analyze_social, compare_social_accounts, social_post_threads</li>
+              <li>💬 <strong class="text-parchment-300">Messaging bridge (Optional)</strong> (<code style="font-size:0.7rem;color:#D4A853">apps/sidix-wa-bridge</code>) — messaging automation via optional bridge (QR pairing)</li>
+              <li>🌍 <strong class="text-parchment-300">Host integration bridge (Optional)</strong> (<code style="font-size:0.7rem;color:#D4A853">host-integration/</code>) — 6 skill kreatif untuk ekosistem host (opsional). / <em>6 creative skills for host ecosystems (optional).</em></li>
+              <li>🧭 <strong class="text-parchment-300">Repo &amp; docs</strong> — Windows scripts under <code style="font-size:0.7rem;color:#D4A853">scripts/windows/</code>; CI pytest for <code style="font-size:0.7rem;color:#D4A853">apps/brain_qa</code>; mandatory agent SOP + QA handoff</li>
+            </ul>
+          </div>
+
+          <!-- v0.7.0 -->
+          <div class="card p-6">
+            <div class="flex items-start justify-between gap-4 mb-3">
+              <div>
+                <span class="inline-block text-xs font-bold px-2 py-0.5 rounded-full mb-2" style="background:rgba(212,168,83,0.1);color:#D4A853;border:1px solid rgba(212,168,83,0.25)">Stable</span>
+                <h3 class="font-bold text-parchment-100 text-base">v0.7.0 — Security Hardening + Social Radar MVP</h3>
+              </div>
+              <span class="text-xs text-parchment-500 flex-shrink-0 mt-1">2026-04-23</span>
+            </div>
+            <ul class="space-y-1.5 text-sm text-parchment-400">
+              <li>🔒 <strong class="text-parchment-300">Identity cleanup</strong> — semua identifier pribadi diganti dengan branding resmi <code style="font-size:0.7rem;color:#D4A853">contact@sidixlab.com</code></li>
+              <li>🔒 <strong class="text-parchment-300">SECURITY.md</strong> ditambahkan di root — vulnerability disclosure policy, arsitektur keamanan</li>
+              <li>🔒 <strong class="text-parchment-300">Endpoint hardening</strong> <code style="font-size:0.7rem;color:#D4A853">/social/radar/scan</code> — Pydantic validation, 10KB cap, HTTP 413 guard</li>
+              <li>📡 <strong class="text-parchment-300">Social Radar MVP</strong> — Chrome Extension UI + backend analisis ER/sentimen/tier (15/15 test PASSED)</li>
+              <li>📡 Keyword sentimen diperluas: 28 kata (termasuk slang UMKM Indonesia)</li>
+              <li>📡 Advice logic diperbaiki — cabang double signal (ER tinggi + sentimen negatif)</li>
+            </ul>
+          </div>
+
+          <!-- v0.6.x -->
+          <div class="card p-6">
+            <div class="flex items-start justify-between gap-4 mb-3">
+              <div>
+                <span class="inline-block text-xs font-bold px-2 py-0.5 rounded-full mb-2" style="background:rgba(212,168,83,0.1);color:#D4A853;border:1px solid rgba(212,168,83,0.25)">Stable</span>
+                <h3 class="font-bold text-parchment-100 text-base">v0.6.x — Ethical Hardening + 5 Persona + Raudah Protocol</h3>
+              </div>
+              <span class="text-xs text-parchment-500 flex-shrink-0 mt-1">2026-04-23</span>
+            </div>
+            <ul class="space-y-1.5 text-sm text-parchment-400">
+              <li>⚖️ <strong class="text-parchment-300">Maqashid Mode Gate</strong> — 6 exit paths di ReAct loop, tidak ada jalur yang terlewat</li>
+              <li>⚖️ <strong class="text-parchment-300">Naskh Handler</strong> — resolusi konflik knowledge berbasis sanad tier (primer > ulama > peer_review > aggregator)</li>
+              <li>⚖️ <strong class="text-parchment-300">Raudah v0.2</strong> — TaskGraph DAG paralel per peran (Peneliti, Analis, Penulis, Perekayasa, Verifikator)</li>
+              <li>⚖️ <strong class="text-parchment-300">CQF Rubrik v2</strong> — 10 kriteria, skor agregat, threshold ≥7.0 untuk quality gate</li>
+              <li>⚖️ <strong class="text-parchment-300">Intent Classifier</strong> — 7 intent, deterministik (regex), tanpa LLM</li>
+              <li>🧬 <strong class="text-parchment-300">5 Persona</strong>: AYMAN / ABOO / OOMAR / ALEY / UTZ — masing-masing punya Maqashid mode & gaya sendiri</li>
+              <li>🧬 <strong class="text-parchment-300">MinHash dedup</strong> — de-duplikasi corpus otomatis (num_perm=128, threshold=0.85)</li>
+              <li>✅ <strong class="text-parchment-300">Test</strong>: 15/15 PASSED · Benchmark: 64/70 pass, 6 harmful correctly blocked</li>
+            </ul>
+          </div>
+
+          <!-- v0.5.0 -->
+          <div class="card p-6">
+            <div class="flex items-start justify-between gap-4 mb-3">
+              <h3 class="font-bold text-parchment-100 text-base">v0.5.0 — Multi-Modal + Kemandirian</h3>
+              <span class="text-xs text-parchment-500 flex-shrink-0">2026-04-18</span>
+            </div>
+            <ul class="space-y-1.5 text-sm text-parchment-400">
+              <li>🖼️ Image generation lokal — tanpa API key eksternal, auto-enhance Nusantara context</li>
+              <li>👁️ Vision: analisis gambar via model vision lokal</li>
+              <li>🎙️ TTS: Indonesian text-to-speech (mp3 base64)</li>
+              <li>🎭 Skill modes: fullstack_dev / game_dev / problem_solver / decision_maker / data_scientist</li>
+              <li>🗳️ Decision Engine: multi-perspective consensus voting</li>
+            </ul>
+          </div>
+
+          <!-- v0.4.0 -->
+          <div class="card p-6">
+            <div class="flex items-start justify-between gap-4 mb-3">
+              <h3 class="font-bold text-parchment-100 text-base">v0.4.0 — Daily Continual Learning</h3>
+              <span class="text-xs text-parchment-500 flex-shrink-0">2026-04-18</span>
+            </div>
+            <ul class="space-y-1.5 text-sm text-parchment-400">
+              <li>📅 Growth Engine: cron jam 03:00 — 7-tahap siklus belajar mandiri</li>
+              <li>🔗 Sanad + Hafidz per note: CAS hash + Merkle root + isnad. Verifiable tanpa server pusat.</li>
+              <li>📊 Output per siklus: 1 note baru + ~10 training pair</li>
+            </ul>
+          </div>
+
+          <!-- v0.1–0.3 -->
+          <div class="card p-5">
+            <div class="flex items-start justify-between gap-4 mb-2">
+              <h3 class="font-bold text-parchment-300 text-sm">v0.1.0 – v0.3.0 — Foundation</h3>
+              <span class="text-xs text-parchment-500 flex-shrink-0">2026-04</span>
+            </div>
+            <p class="text-xs text-parchment-500">ReAct agent loop · 14 tools · BM25 corpus · Multi-LLM router (lokal-first) · Identity Shield · Hafidz MVP (CAS + Merkle + Erasure 4+2) · Autonomous Research Pipeline · Knowledge Gap Detection</p>
+          </div>
+
+        </div>
+
+        <div class="mt-6 text-center">
+          <a href="https://github.com/fahmiwol/sidix/blob/main/CHANGELOG.md" target="_blank" rel="noopener" class="btn-outline text-sm">
+            Lihat semua versi di GitHub →
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════ CONTRIBUTE ═══════════════════ -->
+    <section id="contribute" class="py-24 px-6">
+      <div class="divider mb-16"></div>
+      <div class="max-w-5xl mx-auto">
+        <div class="text-center mb-12">
+          <p class="section-label mb-3" data-i18n="contribute.label">Open source, built together</p>
+          <h2 class="font-display text-3xl md:text-4xl font-bold text-parchment-100" style="font-family:Georgia,serif" data-i18n="contribute.h2">Contribute to SIDIX</h2>
+          <p class="text-parchment-500 mt-3 max-w-xl mx-auto" data-i18n="contribute.desc">Whether you write code, research, or documentation — every contribution moves the mission forward.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mb-10">
+          <div class="card p-6">
+            <div class="text-2xl mb-3">📚</div>
+            <h3 class="font-bold text-parchment-100 mb-2">Research Notes</h3>
+            <p class="text-sm text-parchment-500 mb-4">Add topics to <code style="font-size:0.7rem;color:#D4A853">brain/public/research_notes/</code>. Any domain welcome.</p>
+            <a href="https://github.com/fahmiwol/sidix/blob/main/CONTRIBUTING.md#research-notes" target="_blank" rel="noopener" class="text-gold-400 text-xs hover:text-gold-300">Contribute a note →</a>
+          </div>
+          <div class="card p-6">
+            <div class="text-2xl mb-3">🧪</div>
+            <h3 class="font-bold text-parchment-100 mb-2">Test Cases</h3>
+            <p class="text-sm text-parchment-500 mb-4">Add tests to <code style="font-size:0.7rem;color:#D4A853">tests/</code> or <code style="font-size:0.7rem;color:#D4A853">apps/brain_qa/tests/</code>.</p>
+            <a href="https://github.com/fahmiwol/sidix/issues?q=label%3Atest" target="_blank" rel="noopener" class="text-gold-400 text-xs hover:text-gold-300">Open test issues →</a>
+          </div>
+          <div class="card p-6">
+            <div class="text-2xl mb-3">🌐</div>
+            <h3 class="font-bold text-parchment-100 mb-2">Translations</h3>
+            <p class="text-sm text-parchment-500 mb-4">Help expand corpus coverage in more languages. Indonesian, English, Arabic, and beyond.</p>
+            <a href="https://github.com/fahmiwol/sidix/issues?q=label%3Atranslation" target="_blank" rel="noopener" class="text-gold-400 text-xs hover:text-gold-300">See translation tasks →</a>
+          </div>
+          <div class="card p-6">
+            <div class="text-2xl mb-3">🔧</div>
+            <h3 class="font-bold text-parchment-100 mb-2">New Tools</h3>
+            <p class="text-sm text-parchment-500 mb-4">Add agent tools to <code style="font-size:0.7rem;color:#D4A853">agent_tools.py</code>. Whitelisted, sandboxed by default.</p>
+            <a href="https://github.com/fahmiwol/sidix/issues?q=label%3Atools" target="_blank" rel="noopener" class="text-gold-400 text-xs hover:text-gold-300">See tool requests →</a>
+          </div>
+          <div class="card p-6">
+            <div class="text-2xl mb-3">🎨</div>
+            <h3 class="font-bold text-parchment-100 mb-2">UI/UX</h3>
+            <p class="text-sm text-parchment-500 mb-4">Improve <code style="font-size:0.7rem;color:#D4A853">SIDIX_USER_UI/</code>. Vite + TypeScript + Tailwind.</p>
+            <a href="https://github.com/fahmiwol/sidix/issues?q=label%3Aui" target="_blank" rel="noopener" class="text-gold-400 text-xs hover:text-gold-300">See UI issues →</a>
+          </div>
+          <div class="card p-6">
+            <div class="text-2xl mb-3">📖</div>
+            <h3 class="font-bold text-parchment-100 mb-2">Documentation</h3>
+            <p class="text-sm text-parchment-500 mb-4">Improve or extend docs. Especially setup guides, architecture notes, and tutorials.</p>
+            <a href="https://github.com/fahmiwol/sidix/issues?q=label%3Adocs" target="_blank" rel="noopener" class="text-gold-400 text-xs hover:text-gold-300">See doc tasks →</a>
+          </div>
+          <!-- Contribution Card -->
+          <div class="card p-6">
+            <div class="text-2xl mb-3">✈️</div>
+            <h3 class="font-bold text-parchment-100 mb-2" data-i18n="contribute.telegram.title">Contribute</h3>
+            <p class="text-sm text-parchment-500 mb-4" data-i18n="contribute.telegram.desc">Send notes, examples, or corrections through our contribution channels. We use it to collect community input — not as a promise of instant model training.</p>
+            <a href="#" target="_blank" rel="noopener"
+               class="text-gold-400 text-xs hover:text-gold-300" data-i18n="contribute.telegram.link">Open contribution link →</a>
+          </div>
+        </div>
+
+        <div class="card p-6 flex flex-col md:flex-row items-center justify-between gap-6">
+          <div>
+            <h3 class="font-bold text-parchment-100 mb-1">Ready to contribute?</h3>
+            <p class="text-sm text-parchment-500">Read our contribution guide, check open issues, and open your first PR.</p>
+          </div>
+          <div class="flex gap-3 flex-shrink-0">
+            <a href="https://github.com/fahmiwol/sidix/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener" class="btn-outline text-sm">Read Guide</a>
+            <a href="https://github.com/fahmiwol/sidix/issues?q=label%3A%22good+first+issue%22" target="_blank" rel="noopener" class="btn-gold text-sm">Good First Issues</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════ STATUS & FEEDBACK ═══════════════════ -->
+    <section id="status" class="py-24 px-6">
+      <div class="divider mb-16"></div>
+      <div class="max-w-4xl mx-auto">
+        <div class="text-center mb-12">
+          <p class="section-label mb-3">Stay in the loop</p>
+          <h2 class="font-display text-3xl md:text-4xl font-bold text-parchment-100" style="font-family:Georgia,serif">Project Status</h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
+          <a href="https://github.com/fahmiwol/sidix/issues?q=label%3Abug" target="_blank" rel="noopener" class="card p-5 text-center hover:no-underline block">
+            <div class="text-2xl mb-2">🐛</div>
+            <p class="font-bold text-parchment-100 text-sm">Bug Reports</p>
+            <p class="text-xs text-parchment-500 mt-1">Report issues & track fixes</p>
+          </a>
+          <a href="https://github.com/fahmiwol/sidix/issues/new?labels=feature-request&template=feature_request.md" target="_blank" rel="noopener" class="card p-5 text-center hover:no-underline block">
+            <div class="text-2xl mb-2">💡</div>
+            <p class="font-bold text-parchment-100 text-sm">Feature Requests</p>
+            <p class="text-xs text-parchment-500 mt-1">Suggest new capabilities</p>
+          </a>
+          <a href="https://github.com/fahmiwol/sidix/discussions" target="_blank" rel="noopener" class="card p-5 text-center hover:no-underline block">
+            <div class="text-2xl mb-2">💬</div>
+            <p class="font-bold text-parchment-100 text-sm">Discussions</p>
+            <p class="text-xs text-parchment-500 mt-1">Ideas, Q&amp;A, community</p>
+          </a>
+          <a href="https://github.com/fahmiwol/sidix/projects" target="_blank" rel="noopener" class="card p-5 text-center hover:no-underline block">
+            <div class="text-2xl mb-2">📋</div>
+            <p class="font-bold text-parchment-100 text-sm">Backlog</p>
+            <p class="text-xs text-parchment-500 mt-1">Full project board</p>
+          </a>
+        </div>
+
+        <!-- Contact / Feedback form -->
+        <div class="card p-8">
+          <h3 class="font-bold text-parchment-100 mb-1">Send a Message</h3>
+          <p class="text-sm text-parchment-500 mb-6">Feedback, questions, partnership ideas — we read every message.</p>
+          <form action="#" method="POST" class="space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <input type="text" name="name" placeholder="Your name"
+                class="w-full bg-warm-800 border border-warm-600 text-parchment-200 rounded-xl px-4 py-3 text-sm
+                       focus:outline-none focus:ring-1 focus:ring-gold-500/40 placeholder:text-parchment-500" />
+              <input type="email" name="email" placeholder="your@email.com"
+                class="w-full bg-warm-800 border border-warm-600 text-parchment-200 rounded-xl px-4 py-3 text-sm
+                       focus:outline-none focus:ring-1 focus:ring-gold-500/40 placeholder:text-parchment-500" />
+            </div>
+            <select name="type" class="w-full bg-warm-800 border border-warm-600 text-parchment-400 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-gold-500/40">
+              <option value="">Type of message…</option>
+              <option value="feedback">General Feedback</option>
+              <option value="bug">Bug Report</option>
+              <option value="feature">Feature Request</option>
+              <option value="partnership">Partnership / Collaboration</option>
+              <option value="other">Other</option>
+            </select>
+            <textarea name="message" rows="4" placeholder="Your message…"
+              class="w-full bg-warm-800 border border-warm-600 text-parchment-200 rounded-xl px-4 py-3 text-sm
+                     focus:outline-none focus:ring-1 focus:ring-gold-500/40 placeholder:text-parchment-500 resize-none"></textarea>
+            <button type="submit" class="btn-gold text-sm px-6 py-2.5">Send Message</button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════ COMMUNITY & NEWSLETTER ═══════════════════ -->
+    <section id="community" class="py-24 px-6">
+      <div class="divider mb-16"></div>
+      <div class="max-w-4xl mx-auto">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+
+          <!-- Social -->
+          <div>
+            <p class="section-label mb-3" data-i18n="community.label">Community</p>
+            <h2 class="font-display text-3xl font-bold text-parchment-100 mb-2" style="font-family:Georgia,serif" data-i18n="community.h2">Follow Along</h2>
+            <p class="text-parchment-500 text-sm mb-8" data-i18n="community.desc">Updates, demos, and behind-the-scenes on the build.</p>
+
+            <div class="space-y-3">
+              <a href="https://github.com/fahmiwol/sidix" target="_blank" rel="noopener" class="social-link">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" class="text-parchment-300 flex-shrink-0"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.44 9.8 8.2 11.38.6.11.82-.26.82-.58v-2.03c-3.34.72-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.09-.75.08-.73.08-.73 1.2.08 1.84 1.24 1.84 1.24 1.07 1.83 2.81 1.3 3.5 1 .11-.78.42-1.3.76-1.6-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.13-.3-.54-1.52.12-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 3-.4c1.02.005 2.04.14 3 .4 2.28-1.55 3.29-1.23 3.29-1.23.66 1.66.25 2.88.12 3.18.77.84 1.24 1.91 1.24 3.22 0 4.61-2.81 5.63-5.48 5.92.43.37.82 1.1.82 2.22v3.29c0 .32.22.7.83.58C20.57 21.8 24 17.3 24 12c0-6.63-5.37-12-12-12z"/></svg>
+                <div>
+                  <p class="text-sm font-semibold text-parchment-100">GitHub</p>
+                  <p class="text-xs text-parchment-500">sidixlab/sidix · Star &amp; Watch</p>
+                </div>
+              </a>
+              <a href="https://www.instagram.com/sidixlab" target="_blank" rel="noopener" class="social-link">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="text-parchment-300 flex-shrink-0"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4.5"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+                <div>
+                  <p class="text-sm font-semibold text-parchment-100">Instagram</p>
+                  <p class="text-xs text-parchment-500">@sidixlab</p>
+                </div>
+              </a>
+              <a href="https://www.threads.com/@sidixlab" target="_blank" rel="noopener" class="social-link">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" class="text-parchment-300 flex-shrink-0"><path d="M12.186 24h-.007c-3.581-.024-6.334-1.205-8.184-3.509C2.35 18.44 1.5 15.586 1.5 12.068c0-3.604.865-6.5 2.575-8.6 1.774-2.178 4.46-3.348 7.975-3.468C14.85-.108 18.036 1.2 19.977 3.5c1.793 2.117 2.723 5.12 2.532 8.553l.002.007c-.066 1.146-.36 2.23-.874 3.22l.004.004a10.35 10.35 0 0 1-1.878 2.717c-1.636 1.71-3.662 2.594-5.85 2.594-.08 0-.158-.002-.236-.004-.74-.02-1.447-.186-2.094-.476a5.127 5.127 0 0 1-1.617-1.12 4.18 4.18 0 0 1-1.017-1.74c-.19-.67-.197-1.394-.02-2.12.27-1.102 1.007-1.967 2.063-2.44.81-.363 1.733-.428 2.605-.198l.009.003c.618.17 1.103.55 1.342 1.034.168.337.2.71.087 1.054-.117.363-.382.654-.73.79a1.47 1.47 0 0 1-.95.044c-.3-.087-.534-.285-.63-.54-.085-.228-.053-.48.087-.677l.007-.01a.19.19 0 0 1 .017-.02c.19-.244.208-.57.043-.81a.877.877 0 0 0-.8-.372c-.618.036-1.117.518-1.205 1.228-.063.509.09 1.04.432 1.5.39.516.953.844 1.585.925.627.08 1.27-.1 1.762-.494.57-.455.9-1.128.91-1.86a2.42 2.42 0 0 0-.607-1.644c-.52-.553-1.264-.845-2.088-.82-.98.028-1.882.484-2.487 1.244-.567.71-.83 1.643-.73 2.574.1.912.551 1.724 1.27 2.286.73.57 1.653.844 2.666.792 1.476-.075 2.792-.79 3.71-2.012.848-1.13 1.3-2.625 1.274-4.204-.035-2.154-.73-3.977-2.013-5.271-1.294-1.304-3.16-2.008-5.21-1.98-2.178.03-3.964.847-5.158 2.365-1.155 1.469-1.712 3.562-1.564 5.866.19 2.972 1.114 5.31 2.748 6.946 1.618 1.622 3.88 2.483 6.55 2.494h.004c1.72 0 3.22-.398 4.456-1.182a7.97 7.97 0 0 0 2.803-3.13c.405-.82.635-1.687.684-2.578.17-3.016-.627-5.6-2.27-7.488-1.646-1.889-4.113-2.963-6.93-3.004-2.655-.038-5.006.873-6.62 2.56-1.577 1.648-2.393 3.972-2.393 6.72 0 3.167.783 5.703 2.327 7.536C6.5 22.953 8.857 24 11.897 24.025l.15.001c.008 0 .017 0 .025-.001l.114-.025z"/></svg>
+                <div>
+                  <p class="text-sm font-semibold text-parchment-100">Threads</p>
+                  <p class="text-xs text-parchment-500">@sidixlab</p>
+                </div>
+              </a>
+              <a href="https://github.com/fahmiwol/sidix/discussions" target="_blank" rel="noopener" class="social-link">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="text-parchment-300 flex-shrink-0"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                <div>
+                  <p class="text-sm font-semibold text-parchment-100">GitHub Discussions</p>
+                  <p class="text-xs text-parchment-500">Q&amp;A · Ideas · Community</p>
+                </div>
+              </a>
+              <!-- Community -->
+              <a href="#" target="_blank" rel="noopener" class="social-link">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" class="text-parchment-300 flex-shrink-0">
+                  <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
+                </svg>
+                <div>
+                  <p class="text-sm font-semibold text-parchment-100" data-i18n="community.telegram.title">Contribute</p>
+                  <p class="text-xs text-parchment-500" data-i18n="community.telegram.sub">Chat · Ask · Share notes</p>
+                </div>
+              </a>
+            </div>
+          </div>
+
+          <!-- Newsletter -->
+          <div>
+            <p class="section-label mb-3">Newsletter</p>
+            <h2 class="font-display text-3xl font-bold text-parchment-100 mb-2" style="font-family:Georgia,serif">Stay Updated</h2>
+            <p class="text-parchment-500 text-sm mb-8">Release notes, new features, and research updates. No spam. Unsubscribe anytime.</p>
+
+            <form action="#" method="post" class="space-y-3">
+              <input type="email" name="email_address" placeholder="your@email.com" required
+                class="w-full bg-warm-800 border border-warm-600 text-parchment-200 rounded-xl px-4 py-3 text-sm
+                       focus:outline-none focus:ring-1 focus:ring-gold-500/40 placeholder:text-parchment-500" />
+              <button type="submit" class="btn-gold text-sm px-6 py-3 w-full justify-center">
+                Subscribe to Updates
+              </button>
+            </form>
+
+            <p class="text-xs text-parchment-500 mt-4">
+              Or subscribe via
+              <a href="/rss.xml" class="text-gold-400 hover:text-gold-300">RSS feed</a>
+              for changelog updates.
+            </p>
+
+            <!-- Donate -->
+            <div class="mt-8 pt-8" style="border-top:1px solid rgba(212,168,83,0.08)">
+              <p class="section-label mb-3" data-i18n="donate.label">Support the Project</p>
+              <h3 class="font-bold text-parchment-100 mb-2" data-i18n="donate.title">Help Keep SIDIX Free</h3>
+              <p class="text-sm text-parchment-500 mb-5" data-i18n="donate.desc">SIDIX adalah proyek open source. Dukungan kamu membantu menanggung biaya server dan pengembangan.</p>
+
+              <!-- Donate buttons -->
+              <div class="flex gap-3 flex-wrap">
+                <a href="https://github.com/fahmiwol/sidix" target="_blank" rel="noopener"
+                   class="btn-outline text-sm px-4 py-2">
+                  ⭐ Star on GitHub
+                </a>
+                <a href="#" target="_blank" rel="noopener"
+                   class="btn-outline text-sm px-4 py-2">
+                  ☕ Donate
+                </a>
+                <a href="#" target="_blank" rel="noopener"
+                   class="btn-outline text-sm px-4 py-2">
+                  🎁 Support
+                </a>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════ FOOTER ═══════════════════ -->
+    <footer class="py-12 px-6">
+      <div class="divider mb-10"></div>
+      <div class="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
+        <div class="flex items-center gap-3">
+          <div class="rounded-lg flex-shrink-0 overflow-hidden" style="width:36px;height:36px;background:rgba(20,15,8,0.95);border:1px solid rgba(204,152,49,0.4)">
+            <img src="/sidix-logo.svg" alt="SIDIX" style="width:100%;height:100%;object-fit:contain;padding:5px" />
+          </div>
+          <div>
+            <p class="text-sm font-bold text-parchment-200" style="font-family:Georgia,serif">SIDIX</p>
+            <p class="text-[10px] text-parchment-500">MIT License · Self-Hosted</p>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-parchment-500">
+          <a href="https://github.com/fahmiwol/sidix" target="_blank" rel="noopener" class="hover:text-gold-400 transition-colors">GitHub</a>
+          <a href="https://github.com/fahmiwol/sidix/blob/main/docs/EPISTEMIC_FRAMEWORK.md" target="_blank" rel="noopener" class="hover:text-gold-400 transition-colors">Framework</a>
+          <a href="https://github.com/fahmiwol/sidix/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener" class="hover:text-gold-400 transition-colors">Contribute</a>
+          <a href="https://github.com/fahmiwol/sidix/blob/main/docs/PRIVACY.md" target="_blank" rel="noopener" class="hover:text-gold-400 transition-colors">Privacy</a>
+          <a href="https://github.com/fahmiwol/sidix/blob/main/docs/TERMS.md" target="_blank" rel="noopener" class="hover:text-gold-400 transition-colors">Terms</a>
+          <a href="mailto:contact@sidixlab.com" class="hover:text-gold-400 transition-colors">Contact</a>
+          <a href="https://github.com/fahmiwol/sidix/blob/main/LICENSE" target="_blank" rel="noopener" class="hover:text-gold-400 transition-colors">License</a>
+          <a href="https://www.instagram.com/sidixlab" target="_blank" rel="noopener" class="hover:text-gold-400 transition-colors">Instagram</a>
+          <a href="https://www.threads.com/@sidixlab" target="_blank" rel="noopener" class="hover:text-gold-400 transition-colors">Threads</a>
+        </div>
+
+        <p class="text-[10px] text-parchment-500 text-center md:text-right">
+          Open source · sidq · sanad · tabayyun
+        </p>
+      </div>
+    </footer>
+
+  </div><!-- /z-10 -->
+
+  <!-- ═══════════════════ FLOATING SHARE WIDGET ═══════════════════ -->
+  <div id="share-widget" style="position:fixed;bottom:24px;right:24px;z-index:100;display:flex;flex-direction:column;align-items:flex-end;gap:8px">
+    <!-- Share buttons (hidden by default) -->
+    <div id="share-menu" style="display:none;flex-direction:column;gap:6px;align-items:flex-end">
+      <!-- Twitter/X -->
+      <a href="#" onclick="shareX();return false;" title="Share on X / Twitter"
+         class="share-btn" style="background:#000;border:1px solid #333;color:#fff">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.261 5.635zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        <span>X / Twitter</span>
+      </a>
+      <!-- LinkedIn -->
+      <a href="#" onclick="shareLinkedIn();return false;" title="Share on LinkedIn"
+         class="share-btn" style="background:#0077b5;border:1px solid #005e8e;color:#fff">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+        <span>LinkedIn</span>
+      </a>
+      <!-- WhatsApp -->
+      <a href="#" onclick="shareWhatsApp();return false;" title="Share on WhatsApp"
+         class="share-btn" style="background:#25d366;border:1px solid #1da851;color:#fff">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/></svg>
+        <span>WhatsApp</span>
+      </a>
+      <!-- Share -->
+      <a href="#" onclick="shareTelegram();return false;" title="Share"
+         class="share-btn" style="background:#2AABEE;border:1px solid #1d90cc;color:#fff">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+        <span>Share</span>
+      </a>
+      <!-- Copy Link -->
+      <button onclick="copyLink()" title="Copy link"
+              class="share-btn" id="copy-btn" style="background:rgba(46,34,24,0.95);border:1px solid rgba(212,168,83,0.35);color:#D4A853">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        <span id="copy-label">Copy Link</span>
+      </button>
+    </div>
+
+    <!-- Toggle share button -->
+    <button onclick="toggleShare()" id="share-fab"
+      title="Share SIDIX"
+      style="width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#D4A853,#B8924A);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(212,168,83,0.35);transition:transform 0.2s"
+      onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+      <svg id="share-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#120F09" stroke-width="2.5"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+    </button>
+  </div>
+
+  <style>
+    .share-btn { display:flex; align-items:center; gap:8px; padding:8px 14px; border-radius:10px; font-size:0.78rem; font-weight:600; cursor:pointer; text-decoration:none; white-space:nowrap; transition:opacity 0.15s; }
+    .share-btn:hover { opacity:0.88; }
+    #share-menu { animation: shareIn 0.18s ease-out; }
+    @keyframes shareIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+  </style>
+
+  <!-- ═══════════════════ BILINGUAL + SHARE JS ═══════════════════ -->
+  <script>
+  // ── Translations ──────────────────────────────────────────────
+  const LANG_DATA = {
+    en: {
+      'nav.try': 'Try SIDIX',
+      'hero.badge.live': 'v2.1 · Live',
+      'hero.badge.selfhosted': 'Self-Hosted',
+      'hero.badge.free': 'Free Forever',
+      'hero.subtitle': 'AI Agent that Thinks, Learns & Creates',
+      'hero.desc': 'Free forever · No signup · No credit card · 2-second replies for casual chat · 5 distinct personas · Sensitive claims (fiqh, medical, data) cited with sources — no unlabeled hallucination.',
+      'hero.cta.telegram': 'Contribute',
+      'personas.label': '5 Personas, 5 Distinct Voices',
+      'personas.h2': 'Pick a Voice, Pick a Lens',
+      'personas.desc': "SIDIX doesn't ship one generic chatbot voice. Each persona has its own way of thinking, speaking, and specialty. Pick the right one for the job — or let SIDIX auto-route.",
+      'personas.cta': 'Try 5 Personas Now',
+      'features.label': "What's inside",
+      'features.h2': 'Built different, on purpose',
+      'features.desc': 'Every design decision traces back to one goal: an AI agent you can actually trust because you can verify it.',
+      'quickstart.label': 'Get running in 5 minutes',
+      'roadmap.label': "What's done, what's next",
+      'contribute.label': 'Open source, built together',
+      'contribute.h2': 'Contribute to SIDIX',
+      'contribute.desc': 'Whether you write code, research, or documentation — every contribution moves the mission forward.',
+      'contribute.telegram.title': 'Contribute',
+      'contribute.telegram.desc': 'Send notes, examples, or corrections through our contribution channels. We use it to collect community input — not as a promise of instant model training.',
+      'contribute.telegram.link': 'Open contribution link →',
+      'community.label': 'Community',
+      'community.h2': 'Follow Along',
+      'community.desc': 'Updates, demos, and behind-the-scenes on the build.',
+      'community.telegram.title': 'Contribute',
+      'community.telegram.sub': 'Chat · Ask · Share notes',
+      'newsletter.label': 'Newsletter',
+      'newsletter.h2': 'Stay Updated',
+      'newsletter.desc': 'Release notes, new features, and research updates. No spam. Unsubscribe anytime.',
+      'donate.label': 'Support the Project',
+      'donate.title': 'Help Keep SIDIX Free',
+      'donate.desc': "SIDIX is MIT-licensed and solo-built. If it's useful to you, a sponsorship helps cover server costs and development time.",
+      'donate.id_label': '🇮🇩 Indonesia',
+      'donate.note': 'All donations go directly to VPS server costs, GPU training time, and keeping SIDIX free for everyone. 🙏',
+    },
+    id: {
+      'nav.try': 'Coba SIDIX',
+      'hero.badge.live': 'v2.1 · Aktif',
+      'hero.badge.selfhosted': 'Lokal',
+      'hero.badge.free': 'Gratis Selamanya',
+      'hero.subtitle': 'AI Agent yang Berpikir, Belajar & Mencipta',
+      'hero.desc': 'Gratis selamanya · Tanpa daftar · Tanpa kartu kredit · Jawab obrolan ringan dalam 2 detik · 5 persona dengan gaya bicara berbeda · Klaim sensitif (fiqh, medis, data) dilabeli sumbernya — bukan halusinasi tak bertanda.',
+      'hero.cta.telegram': 'Kontribusi',
+      'personas.label': '5 Persona, 5 Suara Berbeda',
+      'personas.h2': 'Pilih Suara, Pilih Sudut Pandang',
+      'personas.desc': 'SIDIX nggak pakai 1 suara generik kayak chatbot lain. Tiap persona punya cara berpikir, gaya bicara, dan keahlian sendiri. Pilih yang cocok dengan kebutuhanmu — atau biarkan SIDIX pilih otomatis.',
+      'personas.cta': 'Coba 5 Persona Sekarang',
+      'features.label': 'Ada apa di dalamnya',
+      'features.h2': 'Dibangun berbeda, sengaja',
+      'features.desc': 'Setiap keputusan desain bermuara pada satu tujuan: AI agent yang benar-benar bisa dipercaya karena bisa diverifikasi.',
+      'quickstart.label': 'Jalan dalam 5 menit',
+      'roadmap.label': 'Sudah selesai, selanjutnya apa',
+      'contribute.label': 'Open source, dibangun bersama',
+      'contribute.h2': 'Kontribusi ke SIDIX',
+      'contribute.desc': 'Tulis kode, riset, atau dokumentasi — setiap kontribusi mendorong misi ke depan.',
+      'contribute.telegram.title': 'Kontribusi',
+      'contribute.telegram.desc': 'Kirim catatan, contoh, atau koreksi lewat kanal kontribusi. Ini jalur kontribusi komunitas — bukan janji “model langsung terlatih saat itu juga”.',
+      'contribute.telegram.link': 'Buka tautan kontribusi →',
+      'community.label': 'Komunitas',
+      'community.h2': 'Ikuti Perkembangan',
+      'community.desc': 'Update, demo, dan behind-the-scenes proses pembangunannya.',
+      'community.telegram.title': 'Kontribusi',
+      'community.telegram.sub': 'Chat · Tanya · Kirim catatan',
+      'newsletter.label': 'Newsletter',
+      'newsletter.h2': 'Tetap Update',
+      'newsletter.desc': 'Catatan rilis, fitur baru, dan update riset. Tanpa spam. Berhenti kapan saja.',
+      'donate.label': 'Dukung Proyek Ini',
+      'donate.title': 'Bantu SIDIX Tetap Gratis',
+      'donate.desc': 'SIDIX berlisensi MIT dan dibangun solo. Kalau berguna buatmu, donasi membantu menutup biaya server dan waktu pengembangan.',
+      'donate.id_label': '🇮🇩 Indonesia',
+      'donate.note': 'Semua donasi langsung dipakai untuk biaya VPS, GPU training, dan menjaga SIDIX tetap gratis untuk semua orang. 🙏',
+    }
+  };
+
+  let currentLang = localStorage.getItem('sidix-lang') || 'en';
+
+  function applyLang(lang) {
+    currentLang = lang;
+    localStorage.setItem('sidix-lang', lang);
+    document.getElementById('html-root').lang = lang;
+    document.getElementById('lang-btn').textContent = lang === 'en' ? 'ID' : 'EN';
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const key = el.getAttribute('data-i18n');
+      if (LANG_DATA[lang][key]) el.innerHTML = LANG_DATA[lang][key];
+    });
+  }
+
+  function toggleLang() {
+    applyLang(currentLang === 'en' ? 'id' : 'en');
+  }
+
+  // Apply saved lang on load
+  document.addEventListener('DOMContentLoaded', () => applyLang(currentLang));
+
+  // ── Share Functions ───────────────────────────────────────────
+  const SHARE_URL = 'https://sidixlab.com';
+  const SHARE_TEXT_EN = 'SIDIX — Self-Hosted AI Agent with Epistemic Integrity. Honest, Cited, Verifiable. MIT licensed, no cloud dependency.';
+  const SHARE_TEXT_ID = 'SIDIX — AI Agent lokal yang jujur, terkutip, dan terverifikasi. MIT license, tanpa cloud, tanpa vendor lock-in.';
+
+  function getShareText() {
+    return currentLang === 'id' ? SHARE_TEXT_ID : SHARE_TEXT_EN;
+  }
+
+  function shareX() {
+    window.open(`https://twitter.com/intent/tweet?url=${encodeURIComponent(SHARE_URL)}&text=${encodeURIComponent(getShareText())}`, '_blank');
+  }
+
+  function shareLinkedIn() {
+    window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(SHARE_URL)}`, '_blank');
+  }
+
+  function shareWhatsApp() {
+    window.open(`https://wa.me/?text=${encodeURIComponent(getShareText() + ' ' + SHARE_URL)}`, '_blank');
+  }
+
+  function shareTelegram() {
+    // Vendor-free landing: remove external share endpoints.
+    window.open(`#`, '_blank');
+  }
+
+  function copyLink() {
+    navigator.clipboard.writeText(SHARE_URL).then(() => {
+      const lbl = document.getElementById('copy-label');
+      lbl.textContent = '✓ Copied!';
+      setTimeout(() => { lbl.textContent = 'Copy Link'; }, 2000);
+    });
+  }
+
+  function toggleShare() {
+    const menu = document.getElementById('share-menu');
+    const isOpen = menu.style.display === 'flex';
+    menu.style.display = isOpen ? 'none' : 'flex';
+    document.getElementById('share-icon').setAttribute('stroke', isOpen ? '#120F09' : '#120F09');
+  }
+  </script>
+</body>
+</html>

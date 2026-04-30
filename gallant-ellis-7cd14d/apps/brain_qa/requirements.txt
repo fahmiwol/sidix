@@ -1,0 +1,19 @@
+rank-bm25==0.2.2
+datasketch>=1.6.0
+pytest>=8.0.0
+httpx==0.27.0
+requests>=2.31.0
+beautifulsoup4==4.12.3
+reedsolo==1.7.0
+
+# serve — brain_qa HTTP API untuk SIDIX UI
+fastapi>=0.111.0
+uvicorn[standard]>=0.29.0
+python-multipart>=0.0.9
+
+# Local inference (Qwen + LoRA) — pip install when using SIDIX generate with adapter
+# torch>=2.2.0
+# transformers>=4.40.0
+# peft>=0.11.0
+# accelerate>=0.28.0
+# bitsandbytes>=0.43.0

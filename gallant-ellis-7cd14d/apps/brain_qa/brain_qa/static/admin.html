@@ -1,0 +1,1207 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SIDIX Admin Panel</title>
+  <meta name="robots" content="noindex,nofollow" />
+  <style>
+    :root {
+      --bg: #0a0908;
+      --bg-card: #16130f;
+      --bg-input: #1f1c17;
+      --bg-sidebar: #110e0b;
+      --border: #3a342c;
+      --text: #f5e6c4;
+      --text-dim: #b8a888;
+      --gold: #d4a853;
+      --gold-dim: #8a6e35;
+      --green: #6eae7c;
+      --red: #d97a5a;
+      --blue: #6b94c4;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+      background: var(--bg); color: var(--text);
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 240px 1fr;
+    }
+    @media (max-width: 768px) {
+      body { grid-template-columns: 1fr; }
+      aside { display: none; }
+      aside.open { display: block; position: fixed; inset: 0; z-index: 100; }
+    }
+
+    /* ── Sidebar ── */
+    aside {
+      background: var(--bg-sidebar);
+      border-right: 1px solid var(--border);
+      padding: 20px 0;
+      position: sticky; top: 0; height: 100vh; overflow-y: auto;
+    }
+    .brand {
+      padding: 0 20px 20px; border-bottom: 1px solid var(--border); margin-bottom: 16px;
+    }
+    .brand h1 {
+      margin: 0; font-size: 18px; color: var(--gold); letter-spacing: 0.5px;
+    }
+    .brand p { margin: 4px 0 0; font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1.5px; }
+    nav { padding: 0 12px; }
+    .nav-section { font-size: 10px; color: var(--gold-dim); text-transform: uppercase; letter-spacing: 1.5px; padding: 12px 12px 6px; }
+    .nav-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 12px; border-radius: 8px; cursor: pointer;
+      color: var(--text-dim); font-size: 14px;
+      text-decoration: none; transition: all 0.15s;
+      user-select: none;
+    }
+    .nav-item:hover { background: rgba(212, 168, 83, 0.05); color: var(--text); }
+    .nav-item.active { background: rgba(212, 168, 83, 0.1); color: var(--gold); border-left: 2px solid var(--gold); padding-left: 10px; }
+    .nav-item .icon { font-size: 16px; width: 20px; text-align: center; }
+    .nav-item.disabled { opacity: 0.4; cursor: not-allowed; }
+    .nav-item.disabled .badge { background: var(--border); color: var(--text-dim); font-size: 9px; padding: 1px 6px; border-radius: 8px; margin-left: auto; }
+
+    /* ── Main ── */
+    main { padding: 24px 32px; max-width: 1100px; }
+    .page-header { margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+    .page-header h2 { margin: 0; font-size: 22px; color: var(--gold); }
+    .page-header p { margin: 4px 0 0; color: var(--text-dim); font-size: 13px; }
+
+    /* ── Card ── */
+    .card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 12px; padding: 20px; margin-bottom: 20px;
+    }
+    .card h3 { margin: 0 0 12px; font-size: 14px; color: var(--gold); text-transform: uppercase; letter-spacing: 1px; }
+
+    /* ── Form ── */
+    label { display: block; font-size: 11px; color: var(--text-dim); margin: 10px 0 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+    input, select, textarea {
+      width: 100%; padding: 10px 12px;
+      background: var(--bg-input); border: 1px solid var(--border);
+      border-radius: 8px; color: var(--text); font-size: 14px;
+      font-family: inherit;
+    }
+    input:focus, select:focus, textarea:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 2px rgba(212, 168, 83, 0.15); }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    @media (max-width: 600px) { .row { grid-template-columns: 1fr; } }
+    button {
+      padding: 10px 16px; background: var(--gold); color: #0a0908;
+      border: 0; border-radius: 8px; font-weight: 600; cursor: pointer;
+      font-size: 13px; transition: all 0.15s;
+    }
+    button:hover { opacity: 0.9; transform: translateY(-1px); }
+    button.danger { background: var(--red); color: #fff; }
+    button.ghost { background: transparent; color: var(--text); border: 1px solid var(--border); }
+    button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+    /* ── Table ── */
+    table { width: 100%; border-collapse: collapse; margin-top: 4px; }
+    th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--border); font-size: 13px; }
+    th { color: var(--text-dim); font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
+    tr:hover { background: rgba(212, 168, 83, 0.03); }
+
+    /* ── Badge ── */
+    .badge { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 11px; font-weight: 500; }
+    .badge-owner { background: rgba(212, 168, 83, 0.2); color: var(--gold); }
+    .badge-dev { background: rgba(110, 174, 124, 0.2); color: var(--green); }
+    .badge-sponsor { background: rgba(217, 122, 90, 0.2); color: var(--red); }
+    .badge-researcher { background: rgba(107, 148, 196, 0.2); color: var(--blue); }
+    .badge-contributor { background: rgba(184, 134, 197, 0.2); color: #b886c5; }
+    .badge-beta_tester { background: rgba(122, 197, 184, 0.2); color: #7ac5b8; }
+    .badge-vip { background: rgba(255, 215, 0, 0.2); color: #ffd700; }
+    .badge-other { background: rgba(184, 168, 136, 0.2); color: var(--text-dim); }
+
+    /* ── Alert ── */
+    .alert { padding: 10px 14px; border-radius: 8px; margin: 10px 0; font-size: 13px; }
+    .alert-ok { background: rgba(110, 174, 124, 0.1); border: 1px solid rgba(110, 174, 124, 0.3); color: var(--green); }
+    .alert-err { background: rgba(217, 122, 90, 0.1); border: 1px solid rgba(217, 122, 90, 0.3); color: var(--red); }
+
+    /* ── Stats ── */
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
+    .stat-box { background: var(--bg-input); padding: 14px; border-radius: 10px; }
+    .stat-num { font-size: 26px; color: var(--gold); font-weight: 600; line-height: 1; }
+    .stat-label { font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px; }
+
+    code { background: var(--bg-input); padding: 2px 6px; border-radius: 4px; font-size: 12px; color: var(--gold); }
+
+    /* ── Tab content ── */
+    .tab-pane { display: none; }
+    .tab-pane.active { display: block; }
+
+    /* Empty state */
+    .empty { text-align: center; color: var(--text-dim); padding: 32px; font-size: 13px; }
+
+    /* ── Login Overlay ── */
+    .login-overlay {
+      position: fixed; inset: 0; z-index: 1000;
+      background: linear-gradient(135deg, #0a0908 0%, #16130f 100%);
+      display: flex; align-items: center; justify-content: center;
+      padding: 20px;
+    }
+    .login-overlay.hidden { display: none; }
+    .login-card {
+      width: 100%; max-width: 420px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 36px 32px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.6), 0 0 0 1px rgba(212,168,83,0.05);
+    }
+    .login-logo { text-align: center; margin-bottom: 24px; }
+    .login-logo .icon { font-size: 48px; }
+    .login-logo h1 {
+      margin: 12px 0 4px; font-size: 22px;
+      color: var(--gold); letter-spacing: 0.5px;
+    }
+    .login-logo p {
+      margin: 0; font-size: 11px; color: var(--text-dim);
+      text-transform: uppercase; letter-spacing: 2px;
+    }
+    .login-card form { display: flex; flex-direction: column; gap: 4px; }
+    .login-card label { margin-top: 14px; }
+    .login-card button[type="submit"] {
+      margin-top: 22px; padding: 12px 16px; font-size: 14px;
+      width: 100%;
+    }
+    .login-help {
+      margin-top: 18px; padding: 12px 14px;
+      background: var(--bg-input); border-radius: 8px;
+      font-size: 11px; color: var(--text-dim);
+      line-height: 1.5;
+    }
+    .login-help strong { color: var(--text); }
+    .login-help code { font-size: 11px; }
+
+    /* Logout button di sidebar */
+    .logout-btn {
+      margin: 16px 12px 12px; padding: 9px 12px;
+      background: transparent; border: 1px solid var(--border);
+      color: var(--text-dim); font-size: 12px; cursor: pointer;
+      border-radius: 8px; width: calc(100% - 24px);
+      transition: all 0.15s;
+      display: flex; align-items: center; gap: 8px; justify-content: center;
+    }
+    .logout-btn:hover { border-color: var(--red); color: var(--red); transform: none; }
+    .session-info {
+      padding: 10px 16px; margin: 0 12px;
+      font-size: 11px; color: var(--text-dim);
+      border-top: 1px solid var(--border); margin-top: 12px; padding-top: 12px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ════════════════════ LOGIN OVERLAY ════════════════════ -->
+  <div id="login-overlay" class="login-overlay">
+    <div class="login-card">
+      <div class="login-logo">
+        <div class="icon">🛡️</div>
+        <h1>SIDIX Admin</h1>
+        <p>Control Panel</p>
+      </div>
+
+      <form id="login-form" onsubmit="event.preventDefault(); doLogin();">
+        <label for="login-username">Nama (untuk session)</label>
+        <input id="login-username" type="text" placeholder="admin" autocomplete="username" />
+
+        <label for="login-token">Admin Token</label>
+        <input id="login-token" type="password" placeholder="paste BRAIN_QA_ADMIN_TOKEN..." autocomplete="current-password" required />
+
+        <button type="submit">🔓 Masuk</button>
+      </form>
+
+      <div id="login-error" style="margin-top: 14px;"></div>
+
+      <div class="login-help">
+        <strong>📍 Token didapat dari:</strong><br>
+        Env var <code>BRAIN_QA_ADMIN_TOKEN</code> di <code>/opt/sidix/.env</code> (VPS).<br>
+        Cek via SSH: <code>grep BRAIN_QA_ADMIN_TOKEN /opt/sidix/.env</code>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════ SIDEBAR ════════════════════ -->
+  <aside id="sidebar">
+    <div class="brand">
+      <h1>🛡️ SIDIX Admin</h1>
+      <p>Control Panel</p>
+    </div>
+
+    <nav>
+      <div class="nav-section">Management</div>
+      <a class="nav-item active" data-tab="whitelist"><span class="icon">🎟️</span><span>Whitelist</span></a>
+      <a class="nav-item" data-tab="feedback"><span class="icon">💬</span><span>Feedback</span></a>
+      <a class="nav-item" data-tab="users"><span class="icon">👥</span><span>Users</span></a>
+      <a class="nav-item disabled"><span class="icon">🧰</span><span>Tool Permissions</span><span class="badge">soon</span></a>
+
+      <div class="nav-section">Cognitive</div>
+      <a class="nav-item" data-tab="patterns"><span class="icon">🧠</span><span>Patterns</span></a>
+      <a class="nav-item" data-tab="aspirations"><span class="icon">🎯</span><span>Aspirations</span></a>
+      <a class="nav-item" data-tab="skills"><span class="icon">🛠️</span><span>Skills</span></a>
+
+      <div class="nav-section">Monitoring</div>
+      <a class="nav-item" data-tab="health"><span class="icon">💚</span><span>System Health</span></a>
+      <a class="nav-item" data-tab="activity"><span class="icon">📜</span><span>Activity Log</span></a>
+      <a class="nav-item disabled"><span class="icon">📊</span><span>Metrics</span><span class="badge">soon</span></a>
+
+      <div class="nav-section">System</div>
+      <a class="nav-item" href="/docs" target="_blank"><span class="icon">📘</span><span>API Docs</span></a>
+    </nav>
+
+    <div class="session-info">
+      Signed in as <strong id="session-name" style="color: var(--gold)">—</strong>
+    </div>
+    <button class="logout-btn" onclick="doLogout()">
+      <span>🚪</span><span>Logout</span>
+    </button>
+  </aside>
+
+  <!-- ════════════════════ MAIN ════════════════════ -->
+  <main>
+
+    <!-- ── TAB: Whitelist ── -->
+    <div class="tab-pane active" id="tab-whitelist">
+      <div class="page-header">
+        <h2>🎟️ Whitelist Manager</h2>
+        <p>Bypass rate limit + daily quota untuk owner, dev, sponsor, researcher, contributor, beta tester, VIP.</p>
+      </div>
+
+      <!-- Stats -->
+      <div class="card">
+        <h3>📊 Statistik</h3>
+        <div class="stats-grid" id="wl-stats">
+          <div class="stat-box"><div class="stat-num">—</div><div class="stat-label">Total Email</div></div>
+          <div class="stat-box"><div class="stat-num">—</div><div class="stat-label">Total User ID</div></div>
+          <div class="stat-box"><div class="stat-num">—</div><div class="stat-label">Env-locked</div></div>
+        </div>
+        <p id="wl-env-info" style="font-size: 12px; color: var(--text-dim); margin-top: 10px;"></p>
+      </div>
+
+      <!-- Add form -->
+      <div class="card">
+        <h3>➕ Tambah ke Whitelist</h3>
+        <div class="row">
+          <div>
+            <label>Email</label>
+            <input id="add-email" type="email" placeholder="user@example.com" />
+          </div>
+          <div>
+            <label>User ID (Supabase, opsional)</label>
+            <input id="add-user-id" type="text" placeholder="user_xxxxxxxxxxxx" />
+          </div>
+        </div>
+        <div class="row">
+          <div>
+            <label>Kategori</label>
+            <select id="add-category">
+              <option value="owner">👑 Owner</option>
+              <option value="dev">🛠️ Dev</option>
+              <option value="sponsor">💰 Sponsor</option>
+              <option value="researcher">🔬 Researcher</option>
+              <option value="contributor">🤝 Contributor</option>
+              <option value="beta_tester">🧪 Beta Tester</option>
+              <option value="vip">⭐ VIP</option>
+              <option value="other" selected>📋 Other</option>
+            </select>
+          </div>
+          <div>
+            <label>Catatan (opsional)</label>
+            <input id="add-note" type="text" placeholder="contoh: PhD AI MIT, sponsor Tier 3" maxlength="240" />
+          </div>
+        </div>
+        <button onclick="addEntry()" style="margin-top: 16px;">+ Tambahkan</button>
+        <div id="add-status"></div>
+      </div>
+
+      <!-- List emails -->
+      <div class="card">
+        <h3>📧 Whitelist by Email</h3>
+        <table>
+          <thead><tr><th>Email</th><th>Kategori</th><th>Catatan</th><th>Tanggal</th><th></th></tr></thead>
+          <tbody id="emails-tbody"><tr><td colspan="5" class="empty">Belum ada data. Masukkan token & klik refresh.</td></tr></tbody>
+        </table>
+      </div>
+
+      <!-- List user IDs -->
+      <div class="card">
+        <h3>🆔 Whitelist by User ID</h3>
+        <table>
+          <thead><tr><th>User ID</th><th>Kategori</th><th>Catatan</th><th>Tanggal</th><th></th></tr></thead>
+          <tbody id="uids-tbody"><tr><td colspan="5" class="empty">Belum ada data.</td></tr></tbody>
+        </table>
+      </div>
+
+      <button onclick="loadList()" class="ghost">🔄 Refresh</button>
+    </div>
+
+    <!-- ── TAB: Feedback ── -->
+    <div class="tab-pane" id="tab-feedback">
+      <div class="page-header">
+        <h2>💬 User Feedback</h2>
+        <p>Bug report, kritik & saran dari user. Kelola status: new → in_progress → resolved.</p>
+      </div>
+
+      <div class="card">
+        <h3>📊 Statistik</h3>
+        <div class="stats-grid" id="fb-stats">
+          <div class="stat-box"><div class="stat-num">—</div><div class="stat-label">Total</div></div>
+          <div class="stat-box"><div class="stat-num">—</div><div class="stat-label">New</div></div>
+          <div class="stat-box"><div class="stat-num">—</div><div class="stat-label">In Progress</div></div>
+          <div class="stat-box"><div class="stat-num">—</div><div class="stat-label">Resolved</div></div>
+        </div>
+        <div style="margin-top: 14px;">
+          <button onclick="loadFeedback()">🔄 Refresh</button>
+          <select id="fb-filter" onchange="loadFeedback()" style="display: inline-block; width: auto; margin-left: 8px;">
+            <option value="">All status</option>
+            <option value="new">New</option>
+            <option value="in_progress">In Progress</option>
+            <option value="resolved">Resolved</option>
+            <option value="dismissed">Dismissed</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>📋 Daftar Feedback</h3>
+        <div id="fb-list">
+          <div class="empty">Belum dimuat. Klik Refresh.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── TAB: System Health ── -->
+    <div class="tab-pane" id="tab-health">
+      <div class="page-header">
+        <h2>💚 System Health</h2>
+        <p>Status real-time SIDIX backend, model, corpus, dan tools.</p>
+      </div>
+      <div class="card">
+        <h3>Health Endpoint</h3>
+        <button onclick="loadHealth()">🔄 Refresh Health</button>
+        <pre id="health-output" style="margin-top: 14px; background: var(--bg-input); padding: 14px; border-radius: 8px; font-size: 12px; overflow-x: auto; color: var(--text-dim); max-height: 480px;">Klik "Refresh Health" untuk load.</pre>
+      </div>
+    </div>
+
+    <!-- ── TAB: Users (own auth database) ── -->
+    <div class="tab-pane" id="tab-users">
+      <div class="page-header">
+        <h2>👥 User Database</h2>
+        <p>Daftar user yang sign-in via Google ke SIDIX (own auth, no Supabase).</p>
+      </div>
+
+      <div class="card">
+        <h3>📊 Statistik User</h3>
+        <div class="stats-grid" id="users-stats">
+          <div class="stat-box"><div class="stat-num">—</div><div class="stat-label">Total User</div></div>
+          <div class="stat-box"><div class="stat-num">—</div><div class="stat-label">Aktif Hari Ini</div></div>
+          <div class="stat-box"><div class="stat-num">—</div><div class="stat-label">Free Tier</div></div>
+          <div class="stat-box"><div class="stat-num">—</div><div class="stat-label">Whitelist</div></div>
+        </div>
+        <div style="margin-top: 14px;">
+          <button onclick="loadUsers()">🔄 Refresh</button>
+          <input id="users-search" type="text" placeholder="Cari email/nama..." oninput="renderUsers()" style="display: inline-block; width: 240px; margin-left: 8px;" />
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>📋 Daftar User</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Foto</th>
+              <th>Nama</th>
+              <th>Email</th>
+              <th>Tier</th>
+              <th>Login</th>
+              <th>Last Login</th>
+              <th>Activity</th>
+            </tr>
+          </thead>
+          <tbody id="users-tbody">
+            <tr><td colspan="7" class="empty">Belum dimuat. Klik Refresh.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── TAB: Patterns (induktif generalisasi) ── -->
+    <div class="tab-pane" id="tab-patterns">
+      <div class="page-header">
+        <h2>🧠 Pattern Library</h2>
+        <p>Induktif generalisasi dari conversation. Setiap chat berpotensi menambah pattern baru. Ini "memory" SIDIX yang tumbuh — saat query domain match, pattern di-inject sebagai context ke ReAct.</p>
+      </div>
+
+      <div class="card">
+        <h3>📊 Statistik</h3>
+        <div class="stats-grid" id="patterns-stats">
+          <div class="stat-box"><div class="stat-num">—</div><div class="stat-label">Total</div></div>
+          <div class="stat-box"><div class="stat-num">—</div><div class="stat-label">Avg Confidence</div></div>
+          <div class="stat-box"><div class="stat-num">—</div><div class="stat-label">High Conf (≥0.75)</div></div>
+          <div class="stat-box"><div class="stat-num">—</div><div class="stat-label">Low Conf (&lt;0.4)</div></div>
+        </div>
+        <p id="patterns-domains" style="font-size: 11px; color: var(--text-dim); margin-top: 10px;"></p>
+        <div style="margin-top: 14px;">
+          <button onclick="loadPatterns()">🔄 Refresh</button>
+          <input id="patterns-test-text" type="text" placeholder='Test pattern extraction (e.g. "kalo X jadi Y, artinya Z juga jadi Y")' style="width: 60%; margin-left: 8px;" />
+          <button onclick="testPatternExtract()">⚗️ Test Extract</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>📋 Patterns Library</h3>
+        <div id="patterns-list"><div class="empty">Klik Refresh.</div></div>
+      </div>
+    </div>
+
+    <!-- ── TAB: Aspirations (capability gap detection) ── -->
+    <div class="tab-pane" id="tab-aspirations">
+      <div class="page-header">
+        <h2>🎯 Aspiration Library</h2>
+        <p>Capability gap dari user message ("GPT bisa, saya juga bisa"). Auto-decompose jadi spec implementasi: target, competitors, decomposition, resources, novel angle. Roadmap untuk SIDIX bikin tools baru.</p>
+      </div>
+
+      <div class="card">
+        <h3>📊 Statistik</h3>
+        <div class="stats-grid" id="aspirations-stats">
+          <div class="stat-box"><div class="stat-num">—</div><div class="stat-label">Total</div></div>
+          <div class="stat-box"><div class="stat-num">—</div><div class="stat-label">Draft</div></div>
+          <div class="stat-box"><div class="stat-num">—</div><div class="stat-label">In Progress</div></div>
+          <div class="stat-box"><div class="stat-num">—</div><div class="stat-label">Shipped</div></div>
+        </div>
+        <div style="margin-top: 14px;">
+          <button onclick="loadAspirations()">🔄 Refresh</button>
+          <input id="aspirations-test-text" type="text" placeholder='Test aspiration capture (e.g. "harusnya saya bisa bikin X")' style="width: 60%; margin-left: 8px;" />
+          <button onclick="testAspiration()">⚗️ Test Capture</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>📋 Aspirations Backlog</h3>
+        <div id="aspirations-list"><div class="empty">Klik Refresh.</div></div>
+      </div>
+    </div>
+
+    <!-- ── TAB: Skills (tool synthesis) ── -->
+    <div class="tab-pane" id="tab-skills">
+      <div class="page-header">
+        <h2>🛠️ Skills Library</h2>
+        <p>Tools yang SIDIX bikin sendiri (autonomous tool synthesis). Saat task baru muncul, SIDIX generate Python code → AST validate → sandbox test → save sebagai permanent skill. Compound capability seiring waktu.</p>
+      </div>
+
+      <div class="card">
+        <h3>📊 Statistik</h3>
+        <div class="stats-grid" id="skills-stats">
+          <div class="stat-box"><div class="stat-num">—</div><div class="stat-label">Total</div></div>
+          <div class="stat-box"><div class="stat-num">—</div><div class="stat-label">Tested ✓</div></div>
+          <div class="stat-box"><div class="stat-num">—</div><div class="stat-label">Deployed</div></div>
+          <div class="stat-box"><div class="stat-num">—</div><div class="stat-label">Pass Rate</div></div>
+        </div>
+        <div style="margin-top: 14px;">
+          <button onclick="loadSkills()">🔄 Refresh</button>
+          <input id="skills-task-text" type="text" placeholder='Synthesize new skill (e.g. "convert HTML table to CSV")' style="width: 60%; margin-left: 8px;" />
+          <button onclick="testSynthesize()">🤖 Synthesize</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>📋 Skills Registry</h3>
+        <div id="skills-list"><div class="empty">Klik Refresh.</div></div>
+      </div>
+    </div>
+
+    <!-- ── TAB: Activity Log ── -->
+    <div class="tab-pane" id="tab-activity">
+      <div class="page-header">
+        <h2>📜 Activity Log</h2>
+        <p>Setiap pertanyaan user di SIDIX (untuk learning corpus + quality monitoring).</p>
+      </div>
+
+      <div class="card">
+        <h3>🔍 Filter</h3>
+        <div class="row">
+          <div>
+            <label>User ID (opsional)</label>
+            <input id="activity-user-id" type="text" placeholder="u_xxxxxxxxxxxx (kosong = semua)" />
+          </div>
+          <div>
+            <label>Limit (max 1000)</label>
+            <input id="activity-limit" type="number" value="200" min="10" max="1000" />
+          </div>
+        </div>
+        <button onclick="loadActivity()" style="margin-top: 16px;">🔄 Load Activity Log</button>
+      </div>
+
+      <div class="card">
+        <h3>📋 Aktivitas Terbaru</h3>
+        <p id="activity-info" style="font-size: 12px; color: var(--text-dim); margin-bottom: 12px;">Belum dimuat.</p>
+        <div id="activity-list">
+          <div class="empty">Belum dimuat. Klik Load Activity Log.</div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    const API_BASE = '';
+
+    // ── Tab routing ──
+    function switchTab(name) {
+      document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+      const pane = document.getElementById(`tab-${name}`);
+      if (pane) pane.classList.add('active');
+      const link = document.querySelector(`.nav-item[data-tab="${name}"]`);
+      if (link) link.classList.add('active');
+      try { history.replaceState(null, '', `#${name}`); } catch {}
+    }
+    document.querySelectorAll('.nav-item[data-tab]').forEach(item => {
+      item.addEventListener('click', () => {
+        const t = item.dataset.tab;
+        switchTab(t);
+        // Auto-load data per tab
+        if (t === 'whitelist') loadList();
+        else if (t === 'feedback') loadFeedback();
+        else if (t === 'health') loadHealth();
+        else if (t === 'users') loadUsers();
+        else if (t === 'activity') loadActivity();
+        else if (t === 'patterns') loadPatterns();
+        else if (t === 'aspirations') loadAspirations();
+        else if (t === 'skills') loadSkills();
+      });
+    });
+
+    // ── Auth state ──
+    function getToken() {
+      return sessionStorage.getItem('sidix_admin_token') || '';
+    }
+
+    function showLogin() {
+      document.getElementById('login-overlay').classList.remove('hidden');
+      document.getElementById('login-error').innerHTML = '';
+      // Pre-fill username dari session kalau pernah login
+      const savedName = sessionStorage.getItem('sidix_admin_name') || 'admin';
+      document.getElementById('login-username').value = savedName;
+      setTimeout(() => document.getElementById('login-token').focus(), 100);
+    }
+
+    function hideLogin() {
+      document.getElementById('login-overlay').classList.add('hidden');
+      // Set session name
+      const name = sessionStorage.getItem('sidix_admin_name') || 'admin';
+      document.getElementById('session-name').textContent = name;
+      // Init tab dari hash atau default whitelist
+      const initTab = (location.hash || '#whitelist').slice(1);
+      switchTab(initTab);
+    }
+
+    async function doLogin() {
+      const name = (document.getElementById('login-username').value || 'admin').trim();
+      const token = (document.getElementById('login-token').value || '').trim();
+      const errEl = document.getElementById('login-error');
+
+      if (!token) {
+        errEl.innerHTML = `<div class="alert alert-err">Token wajib diisi.</div>`;
+        return;
+      }
+
+      // Verify token via /admin/whitelist GET
+      try {
+        const res = await fetch(`${API_BASE}/admin/whitelist`, {
+          headers: { 'x-admin-token': token },
+        });
+        if (res.status === 403) {
+          errEl.innerHTML = `<div class="alert alert-err">❌ Token salah. Cek env <code>BRAIN_QA_ADMIN_TOKEN</code> di VPS.</div>`;
+          return;
+        }
+        if (!res.ok) {
+          errEl.innerHTML = `<div class="alert alert-err">⚠️ Backend error ${res.status}.</div>`;
+          return;
+        }
+        // Success — save token + name, hide overlay, load data
+        sessionStorage.setItem('sidix_admin_token', token);
+        sessionStorage.setItem('sidix_admin_name', name);
+        document.getElementById('login-token').value = '';
+        hideLogin();
+        loadList();
+      } catch (e) {
+        errEl.innerHTML = `<div class="alert alert-err">Network error: ${e.message}</div>`;
+      }
+    }
+
+    function doLogout() {
+      if (!confirm('Yakin logout? Token akan dihapus dari session.')) return;
+      sessionStorage.removeItem('sidix_admin_token');
+      sessionStorage.removeItem('sidix_admin_name');
+      showLogin();
+    }
+
+    function showStatus(elId, msg, ok = true) {
+      const el = document.getElementById(elId);
+      el.innerHTML = `<div class="alert ${ok ? 'alert-ok' : 'alert-err'}">${msg}</div>`;
+      setTimeout(() => { el.innerHTML = ''; }, 5000);
+    }
+
+    // ── Whitelist ──
+    async function loadList() {
+      const tok = getToken();
+      if (!tok) { showLogin(); return; }
+      try {
+        const res = await fetch(`${API_BASE}/admin/whitelist`, { headers: { 'x-admin-token': tok } });
+        if (res.status === 403) {
+          // Token expired / invalid — kembali ke login
+          sessionStorage.removeItem('sidix_admin_token');
+          showLogin();
+          return;
+        }
+        if (!res.ok) { showStatus('add-status', `⚠️ Error ${res.status}`, false); return; }
+        const data = await res.json();
+        renderTables(data);
+      } catch (e) {
+        showStatus('add-status', `Network: ${e.message}`, false);
+      }
+    }
+
+    function renderTables(data) {
+      const stats = data.stats || {};
+      document.getElementById('wl-stats').innerHTML = `
+        <div class="stat-box"><div class="stat-num">${stats.total_emails ?? 0}</div><div class="stat-label">Total Email</div></div>
+        <div class="stat-box"><div class="stat-num">${stats.total_user_ids ?? 0}</div><div class="stat-label">Total User ID</div></div>
+        <div class="stat-box"><div class="stat-num">${(data.env_emails || []).length}</div><div class="stat-label">Env-locked</div></div>
+      `;
+      document.getElementById('wl-env-info').innerHTML = data.env_emails?.length
+        ? `Env-locked emails (immutable): <code>${data.env_emails.join(', ')}</code>`
+        : 'Tidak ada env-locked email.';
+
+      const emailsBody = document.getElementById('emails-tbody');
+      if ((data.emails || []).length === 0) {
+        emailsBody.innerHTML = `<tr><td colspan="5" class="empty">Belum ada email di whitelist.</td></tr>`;
+      } else {
+        emailsBody.innerHTML = data.emails.map(e => `
+          <tr>
+            <td><code>${e.email}</code></td>
+            <td><span class="badge badge-${e.category || 'other'}">${e.category || 'other'}</span></td>
+            <td>${e.note || '<span style="color:var(--text-dim)">—</span>'}</td>
+            <td style="color: var(--text-dim); font-size: 11px;">${(e.added_at || '').slice(0, 10)}</td>
+            <td><button class="danger" onclick="removeEntry('email', '${e.email}')">Hapus</button></td>
+          </tr>
+        `).join('');
+      }
+
+      const uidsBody = document.getElementById('uids-tbody');
+      if ((data.user_ids || []).length === 0) {
+        uidsBody.innerHTML = `<tr><td colspan="5" class="empty">Belum ada user ID di whitelist.</td></tr>`;
+      } else {
+        uidsBody.innerHTML = data.user_ids.map(u => `
+          <tr>
+            <td><code>${u.id}</code></td>
+            <td><span class="badge badge-${u.category || 'other'}">${u.category || 'other'}</span></td>
+            <td>${u.note || '<span style="color:var(--text-dim)">—</span>'}</td>
+            <td style="color: var(--text-dim); font-size: 11px;">${(u.added_at || '').slice(0, 10)}</td>
+            <td><button class="danger" onclick="removeEntry('user_id', '${u.id}')">Hapus</button></td>
+          </tr>
+        `).join('');
+      }
+    }
+
+    async function addEntry() {
+      const tok = getToken();
+      if (!tok) { showLogin(); return; }
+      const email = document.getElementById('add-email').value.trim();
+      const userId = document.getElementById('add-user-id').value.trim();
+      const category = document.getElementById('add-category').value;
+      const note = document.getElementById('add-note').value.trim();
+      if (!email && !userId) {
+        showStatus('add-status', '⚠️ Email atau User ID wajib.', false); return;
+      }
+      try {
+        const res = await fetch(`${API_BASE}/admin/whitelist`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'x-admin-token': tok },
+          body: JSON.stringify({ email: email || null, user_id: userId || null, category, note }),
+        });
+        if (!res.ok) { showStatus('add-status', `⚠️ ${await res.text()}`, false); return; }
+        showStatus('add-status', '✓ Berhasil ditambahkan.');
+        document.getElementById('add-email').value = '';
+        document.getElementById('add-user-id').value = '';
+        document.getElementById('add-note').value = '';
+        loadList();
+      } catch (e) {
+        showStatus('add-status', `Network: ${e.message}`, false);
+      }
+    }
+
+    async function removeEntry(type, value) {
+      if (!confirm(`Hapus ${type} "${value}" dari whitelist?`)) return;
+      const tok = getToken();
+      try {
+        const body = type === 'email' ? { email: value } : { user_id: value };
+        const res = await fetch(`${API_BASE}/admin/whitelist`, {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json', 'x-admin-token': tok },
+          body: JSON.stringify(body),
+        });
+        if (!res.ok) { alert(`Error: ${await res.text()}`); return; }
+        loadList();
+      } catch (e) { alert(`Network: ${e.message}`); }
+    }
+
+    // ── Feedback (admin) ──
+    async function loadFeedback() {
+      const tok = getToken();
+      if (!tok) { showLogin(); return; }
+      const filter = document.getElementById('fb-filter').value;
+      const url = filter ? `${API_BASE}/admin/feedback?status=${encodeURIComponent(filter)}` : `${API_BASE}/admin/feedback`;
+      try {
+        const res = await fetch(url, { headers: { 'x-admin-token': tok } });
+        if (res.status === 403) { sessionStorage.removeItem('sidix_admin_token'); showLogin(); return; }
+        if (!res.ok) { document.getElementById('fb-list').innerHTML = `<div class="empty">Error ${res.status}</div>`; return; }
+        const data = await res.json();
+        renderFeedback(data);
+      } catch (e) {
+        document.getElementById('fb-list').innerHTML = `<div class="empty">Network error: ${e.message}</div>`;
+      }
+    }
+
+    function renderFeedback(data) {
+      const stats = data.stats || { total: 0, by_status: {} };
+      document.getElementById('fb-stats').innerHTML = `
+        <div class="stat-box"><div class="stat-num">${stats.total ?? 0}</div><div class="stat-label">Total</div></div>
+        <div class="stat-box"><div class="stat-num" style="color: var(--blue)">${stats.by_status?.new ?? 0}</div><div class="stat-label">New</div></div>
+        <div class="stat-box"><div class="stat-num" style="color: var(--gold)">${stats.by_status?.in_progress ?? 0}</div><div class="stat-label">In Progress</div></div>
+        <div class="stat-box"><div class="stat-num" style="color: var(--green)">${stats.by_status?.resolved ?? 0}</div><div class="stat-label">Resolved</div></div>
+      `;
+
+      const list = document.getElementById('fb-list');
+      const items = data.items || [];
+      if (items.length === 0) {
+        list.innerHTML = `<div class="empty">Belum ada feedback dengan filter ini.</div>`;
+        return;
+      }
+      list.innerHTML = items.map(it => {
+        const dt = (it.created_at || '').slice(0, 16).replace('T', ' ');
+        const userInfo = it.user_email ? `<code>${it.user_email}</code>` : (it.user_id ? `<code>${it.user_id.slice(0, 12)}…</code>` : '<span style="color:var(--text-dim)">anon</span>');
+        const screenshot = it.screenshot
+          ? `<a href="${API_BASE}/feedback/image/${it.screenshot}" target="_blank"><img src="${API_BASE}/feedback/image/${it.screenshot}" alt="screenshot" style="max-width: 200px; max-height: 120px; border-radius: 6px; border: 1px solid var(--border); margin-top: 8px; cursor: pointer;" /></a>`
+          : '';
+        const statusColor = { new: 'var(--blue)', in_progress: 'var(--gold)', resolved: 'var(--green)', dismissed: 'var(--text-dim)' }[it.status || 'new'];
+        return `
+          <div style="border: 1px solid var(--border); border-radius: 10px; padding: 14px; margin-bottom: 10px; background: var(--bg-input);">
+            <div style="display: flex; justify-content: space-between; align-items: start; gap: 12px; margin-bottom: 6px;">
+              <strong style="color: var(--text);">${escapeHtml(it.title)}</strong>
+              <span class="badge" style="background: ${statusColor}33; color: ${statusColor}">${it.status || 'new'}</span>
+            </div>
+            <div style="font-size: 11px; color: var(--text-dim); margin-bottom: 8px;">
+              ${dt} · ${userInfo} ${it.session_id ? `· session <code>${it.session_id.slice(0, 8)}</code>` : ''}
+            </div>
+            <p style="font-size: 13px; color: var(--text-dim); white-space: pre-wrap; margin: 8px 0;">${escapeHtml(it.body)}</p>
+            ${screenshot}
+            <div style="margin-top: 10px; display: flex; gap: 6px; flex-wrap: wrap;">
+              <button onclick="updateFbStatus('${it.id}', 'in_progress')" style="font-size: 11px; padding: 4px 10px;">→ In Progress</button>
+              <button onclick="updateFbStatus('${it.id}', 'resolved')" style="font-size: 11px; padding: 4px 10px;">✓ Resolved</button>
+              <button onclick="updateFbStatus('${it.id}', 'dismissed')" class="ghost" style="font-size: 11px; padding: 4px 10px;">Dismiss</button>
+              <button onclick="deleteFb('${it.id}')" class="danger" style="font-size: 11px; padding: 4px 10px; margin-left: auto;">Hapus</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function escapeHtml(s) {
+      return (s || '').replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+    }
+
+    async function updateFbStatus(id, status) {
+      const tok = getToken();
+      try {
+        const res = await fetch(`${API_BASE}/admin/feedback/${id}/status?status=${status}`, {
+          method: 'POST', headers: { 'x-admin-token': tok },
+        });
+        if (!res.ok) { alert(`Error: ${await res.text()}`); return; }
+        loadFeedback();
+      } catch (e) { alert(`Network: ${e.message}`); }
+    }
+
+    async function deleteFb(id) {
+      if (!confirm('Hapus feedback ini? Tidak bisa undo.')) return;
+      const tok = getToken();
+      try {
+        const res = await fetch(`${API_BASE}/admin/feedback/${id}`, {
+          method: 'DELETE', headers: { 'x-admin-token': tok },
+        });
+        if (!res.ok) { alert(`Error: ${await res.text()}`); return; }
+        loadFeedback();
+      } catch (e) { alert(`Network: ${e.message}`); }
+    }
+
+    // ── Health ──
+    async function loadHealth() {
+      const out = document.getElementById('health-output');
+      out.textContent = 'Loading...';
+      try {
+        const res = await fetch(`${API_BASE}/health`);
+        const d = await res.json();
+        out.textContent = JSON.stringify(d, null, 2);
+      } catch (e) {
+        out.textContent = `Error: ${e.message}`;
+      }
+    }
+
+    // ── Users (own auth database) ──
+    let _allUsers = [];
+    async function loadUsers() {
+      const tok = getToken();
+      if (!tok) { showLogin(); return; }
+      try {
+        const res = await fetch(`${API_BASE}/admin/users`, { headers: { 'x-admin-token': tok } });
+        if (res.status === 403) {
+          sessionStorage.removeItem('sidix_admin_token');
+          showLogin();
+          return;
+        }
+        if (!res.ok) {
+          document.getElementById('users-tbody').innerHTML = `<tr><td colspan="7" class="empty">Error ${res.status}</td></tr>`;
+          return;
+        }
+        const data = await res.json();
+        _allUsers = data.users || [];
+        const stats = data.stats || {};
+        document.getElementById('users-stats').innerHTML = `
+          <div class="stat-box"><div class="stat-num">${stats.total_users ?? 0}</div><div class="stat-label">Total User</div></div>
+          <div class="stat-box"><div class="stat-num">${stats.active_today ?? 0}</div><div class="stat-label">Aktif Hari Ini</div></div>
+          <div class="stat-box"><div class="stat-num">${(stats.by_tier || {}).free ?? 0}</div><div class="stat-label">Free Tier</div></div>
+          <div class="stat-box"><div class="stat-num">${(stats.by_tier || {}).whitelist ?? 0}</div><div class="stat-label">Whitelist</div></div>
+        `;
+        renderUsers();
+      } catch (e) {
+        document.getElementById('users-tbody').innerHTML = `<tr><td colspan="7" class="empty">Network: ${e.message}</td></tr>`;
+      }
+    }
+
+    function renderUsers() {
+      const q = (document.getElementById('users-search').value || '').toLowerCase().trim();
+      const filtered = q
+        ? _allUsers.filter(u =>
+            (u.email || '').toLowerCase().includes(q) ||
+            (u.name || '').toLowerCase().includes(q) ||
+            (u.id || '').toLowerCase().includes(q)
+          )
+        : _allUsers;
+
+      const tbody = document.getElementById('users-tbody');
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" class="empty">${q ? 'Tidak ada user yang match.' : 'Belum ada user yang sign-in.'}</td></tr>`;
+        return;
+      }
+      tbody.innerHTML = filtered.map(u => {
+        const last = (u.last_login_at || '').slice(0, 16).replace('T', ' ');
+        const created = (u.created_at || '').slice(0, 10);
+        const tierBadge = `<span class="badge badge-${u.tier || 'other'}">${u.tier || 'free'}</span>`;
+        const pic = u.picture
+          ? `<img src="${u.picture}" alt="" style="width:32px;height:32px;border-radius:50%;object-fit:cover;" referrerpolicy="no-referrer" />`
+          : `<div style="width:32px;height:32px;border-radius:50%;background:var(--bg-input);display:flex;align-items:center;justify-content:center;color:var(--gold);font-size:14px;">${(u.name || u.email || '?')[0].toUpperCase()}</div>`;
+        return `
+          <tr>
+            <td>${pic}</td>
+            <td><strong>${u.name || '<span style="color:var(--text-dim)">—</span>'}</strong><br/><span style="font-size:10px;color:var(--text-dim)">created ${created}</span></td>
+            <td><code>${u.email}</code><br/><span style="font-size:10px;color:var(--text-dim)">${u.id}</span></td>
+            <td>${tierBadge}</td>
+            <td style="text-align:center"><strong>${u.login_count || 0}</strong>×</td>
+            <td style="color:var(--text-dim);font-size:11px;">${last}</td>
+            <td><button class="ghost" onclick="viewUserActivity('${u.id}')">📜 Lihat</button></td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function viewUserActivity(userId) {
+      switchTab('activity');
+      document.getElementById('activity-user-id').value = userId;
+      loadActivity();
+    }
+
+    // ── Activity Log ──
+    async function loadActivity() {
+      const tok = getToken();
+      if (!tok) { showLogin(); return; }
+      const userId = (document.getElementById('activity-user-id').value || '').trim();
+      const limit = parseInt(document.getElementById('activity-limit').value || '200', 10);
+      const q = new URLSearchParams();
+      if (userId) q.set('user_id', userId);
+      q.set('limit', String(limit));
+      const list = document.getElementById('activity-list');
+      list.innerHTML = '<div class="empty">Loading...</div>';
+      try {
+        const res = await fetch(`${API_BASE}/admin/activity?${q.toString()}`, {
+          headers: { 'x-admin-token': tok },
+        });
+        if (res.status === 403) {
+          sessionStorage.removeItem('sidix_admin_token');
+          showLogin();
+          return;
+        }
+        if (!res.ok) {
+          list.innerHTML = `<div class="empty">Error ${res.status}</div>`;
+          return;
+        }
+        const data = await res.json();
+        const entries = data.entries || [];
+        document.getElementById('activity-info').textContent =
+          `${entries.length} entries · ${userId ? 'filter: ' + userId : 'all users'} · limit ${limit}`;
+        if (entries.length === 0) {
+          list.innerHTML = '<div class="empty">Belum ada aktivitas (atau user belum sign-in saat chat).</div>';
+          return;
+        }
+        list.innerHTML = entries.map(e => {
+          const ts = (e.ts || '').slice(0, 19).replace('T', ' ');
+          const action = e.action || '?';
+          const isErr = !!(e.error || '').trim();
+          return `
+            <div style="padding:10px 12px;border:1px solid var(--border);border-radius:8px;margin-bottom:8px;background:var(--bg-input)">
+              <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:11px;color:var(--text-dim);margin-bottom:6px;">
+                <span style="color:var(--gold);font-weight:600;">${action}</span>
+                <span>·</span>
+                <span>${ts} UTC</span>
+                <span>·</span>
+                <code style="font-size:10px;">${e.user_id || '-'}</code>
+                <span style="margin-left:auto;color:${isErr ? 'var(--red)' : 'var(--green)'}">${isErr ? '⚠️ error' : '✓ ok'}</span>
+                ${e.latency_ms ? `<span>· ${e.latency_ms}ms</span>` : ''}
+                ${e.persona ? `<span>· persona: <code>${e.persona}</code></span>` : ''}
+                ${e.mode ? `<span>· mode: <code>${e.mode}</code></span>` : ''}
+              </div>
+              ${e.question ? `<div style="font-size:13px;color:var(--text);margin-bottom:4px;"><strong>Q:</strong> ${escapeHtml(e.question)}</div>` : ''}
+              ${e.answer_preview ? `<div style="font-size:12px;color:var(--text-dim);"><strong>A:</strong> ${escapeHtml(e.answer_preview)}…</div>` : ''}
+              ${e.error ? `<div style="font-size:12px;color:var(--red);margin-top:4px;"><strong>Error:</strong> ${escapeHtml(e.error)}</div>` : ''}
+            </div>
+          `;
+        }).join('');
+      } catch (e) {
+        list.innerHTML = `<div class="empty">Network: ${e.message}</div>`;
+      }
+    }
+
+    function escapeHtml(s) {
+      return String(s || '').replace(/[&<>"']/g, c => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+      }[c]));
+    }
+
+    // ════════════════════════════════════════════════════════════════════════
+    // COGNITIVE TABS — Patterns + Aspirations + Skills (vol 5b)
+    // ════════════════════════════════════════════════════════════════════════
+
+    async function loadPatterns() {
+      const tok = getToken();
+      if (!tok) { showLogin(); return; }
+      try {
+        const res = await fetch(`${API_BASE}/admin/patterns/stats`, { headers: { 'x-admin-token': tok } });
+        if (res.status === 403) { sessionStorage.removeItem('sidix_admin_token'); showLogin(); return; }
+        const data = await res.json();
+        const s = data.stats || {};
+        document.getElementById('patterns-stats').innerHTML = `
+          <div class="stat-box"><div class="stat-num">${s.total ?? 0}</div><div class="stat-label">Total</div></div>
+          <div class="stat-box"><div class="stat-num">${s.avg_confidence ?? 0}</div><div class="stat-label">Avg Conf</div></div>
+          <div class="stat-box"><div class="stat-num">${s.high_conf ?? 0}</div><div class="stat-label">High Conf (≥0.75)</div></div>
+          <div class="stat-box"><div class="stat-num">${s.low_conf ?? 0}</div><div class="stat-label">Low Conf (&lt;0.4)</div></div>
+        `;
+        const domains = Object.entries(s.by_domain || {}).map(([k,v]) => `<code>${k}</code>:${v}`).join(' · ');
+        document.getElementById('patterns-domains').innerHTML = domains ? `Domains: ${domains}` : '';
+        const recent = data.recent || [];
+        const list = document.getElementById('patterns-list');
+        if (recent.length === 0) {
+          list.innerHTML = '<div class="empty">Belum ada pattern. Pattern akan auto-extracted dari conversation atau bisa di-test via "Test Extract".</div>';
+        } else {
+          list.innerHTML = recent.map(p => `
+            <div style="padding:10px 12px;border:1px solid var(--border);border-radius:8px;margin-bottom:8px;background:var(--bg-input)">
+              <div style="display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text-dim);margin-bottom:6px;">
+                <code style="font-size:10px;">${p.id || '?'}</code>
+                <span style="color:var(--gold);">conf ${(p.confidence ?? 0).toFixed(2)}</span>
+                <span>·</span>
+                <span>corroborated ${p.corroborations || 0}× · falsified ${p.falsifications || 0}×</span>
+              </div>
+              <div style="font-size:13px;color:var(--text);margin-bottom:6px;"><strong>Principle:</strong> ${escapeHtml(p.extracted_principle || '')}</div>
+              <div style="font-size:11px;color:var(--text-dim);margin-bottom:4px;"><strong>Source:</strong> ${escapeHtml((p.source_example || '').slice(0, 200))}</div>
+              <div style="font-size:10px;color:var(--text-dim);">domain: <code>${(p.applicable_domain || []).join(', ')}</code> · keywords: <code>${(p.keywords || []).join(', ')}</code></div>
+            </div>
+          `).join('');
+        }
+      } catch (e) {
+        document.getElementById('patterns-list').innerHTML = `<div class="empty">Network: ${e.message}</div>`;
+      }
+    }
+
+    async function testPatternExtract() {
+      const tok = getToken();
+      const text = document.getElementById('patterns-test-text').value.trim();
+      if (!text) return alert('Isi text dulu');
+      try {
+        const res = await fetch(`${API_BASE}/agent/patterns/extract`, {
+          method: 'POST',
+          headers: { 'x-admin-token': tok, 'content-type': 'application/json' },
+          body: JSON.stringify({ text }),
+        });
+        const data = await res.json();
+        if (data.ok) {
+          showStatus('add-status', '✓ Pattern extracted: ' + (data.pattern.extracted_principle || '').slice(0, 80), true);
+          loadPatterns();
+        } else {
+          alert('Gagal: ' + (data.reason || 'unknown'));
+        }
+      } catch (e) {
+        alert('Network: ' + e.message);
+      }
+    }
+
+    async function loadAspirations() {
+      const tok = getToken();
+      if (!tok) { showLogin(); return; }
+      try {
+        const res = await fetch(`${API_BASE}/admin/aspirations/stats`, { headers: { 'x-admin-token': tok } });
+        if (res.status === 403) { sessionStorage.removeItem('sidix_admin_token'); showLogin(); return; }
+        const data = await res.json();
+        const s = data.stats || {};
+        const bs = s.by_status || {};
+        document.getElementById('aspirations-stats').innerHTML = `
+          <div class="stat-box"><div class="stat-num">${s.total ?? 0}</div><div class="stat-label">Total</div></div>
+          <div class="stat-box"><div class="stat-num">${bs.draft ?? 0}</div><div class="stat-label">Draft</div></div>
+          <div class="stat-box"><div class="stat-num">${bs.in_progress ?? 0}</div><div class="stat-label">In Progress</div></div>
+          <div class="stat-box"><div class="stat-num">${bs.shipped ?? 0}</div><div class="stat-label">Shipped</div></div>
+        `;
+        const recent = data.recent || [];
+        const list = document.getElementById('aspirations-list');
+        if (recent.length === 0) {
+          list.innerHTML = '<div class="empty">Belum ada aspiration. Akan auto-captured saat user message match trigger ("harusnya bisa", "GPT bisa", "bikin ah").</div>';
+        } else {
+          list.innerHTML = recent.reverse().map(a => `
+            <div style="padding:12px;border:1px solid var(--border);border-radius:8px;margin-bottom:10px;background:var(--bg-input)">
+              <div style="display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text-dim);margin-bottom:8px;flex-wrap:wrap;">
+                <strong style="color:var(--gold);font-size:13px;">${escapeHtml(a.capability_target || 'Untitled')}</strong>
+                <span class="badge badge-${a.estimated_effort || 'medium'}">${a.estimated_effort || 'medium'}</span>
+                <span class="badge badge-${a.status || 'draft'}">${a.status || 'draft'}</span>
+                <code style="font-size:9px;margin-left:auto;">${a.id || '?'}</code>
+              </div>
+              <div style="font-size:11px;color:var(--text-dim);margin-bottom:6px;font-style:italic;">"${escapeHtml((a.user_message || '').slice(0, 160))}"</div>
+              ${a.novel_angle ? `<div style="font-size:12px;color:var(--text);margin-bottom:6px;"><strong>Novel angle:</strong> ${escapeHtml(a.novel_angle)}</div>` : ''}
+              ${(a.competitors_mentioned || []).length ? `<div style="font-size:10px;color:var(--text-dim);">vs ${(a.competitors_mentioned || []).map(c => `<code>${escapeHtml(c)}</code>`).join(', ')}</div>` : ''}
+              ${(a.decomposition || []).length ? `<details style="margin-top:6px;font-size:11px;"><summary style="cursor:pointer;color:var(--gold);">Decomposition (${(a.decomposition || []).length} steps)</summary><ol style="margin:6px 0 0 18px;color:var(--text-dim);">${(a.decomposition || []).map(s => `<li>${escapeHtml(s)}</li>`).join('')}</ol></details>` : ''}
+            </div>
+          `).join('');
+        }
+      } catch (e) {
+        document.getElementById('aspirations-list').innerHTML = `<div class="empty">Network: ${e.message}</div>`;
+      }
+    }
+
+    async function testAspiration() {
+      const tok = getToken();
+      const text = document.getElementById('aspirations-test-text').value.trim();
+      if (!text) return alert('Isi text dulu');
+      try {
+        const res = await fetch(`${API_BASE}/agent/aspirations/analyze`, {
+          method: 'POST',
+          headers: { 'x-admin-token': tok, 'content-type': 'application/json' },
+          body: JSON.stringify({ text }),
+        });
+        const data = await res.json();
+        if (data.ok) {
+          alert('✓ Aspiration captured!\n\nTarget: ' + (data.aspiration.capability_target || '?') + '\nEffort: ' + (data.aspiration.estimated_effort || '?'));
+          loadAspirations();
+        } else {
+          alert('Gagal: ' + (data.reason || 'unknown'));
+        }
+      } catch (e) {
+        alert('Network: ' + e.message);
+      }
+    }
+
+    async function loadSkills() {
+      const tok = getToken();
+      if (!tok) { showLogin(); return; }
+      try {
+        const res = await fetch(`${API_BASE}/admin/skills/stats`, { headers: { 'x-admin-token': tok } });
+        if (res.status === 403) { sessionStorage.removeItem('sidix_admin_token'); showLogin(); return; }
+        const data = await res.json();
+        const s = data.stats || {};
+        const bs = s.by_status || {};
+        document.getElementById('skills-stats').innerHTML = `
+          <div class="stat-box"><div class="stat-num">${s.total ?? 0}</div><div class="stat-label">Total</div></div>
+          <div class="stat-box"><div class="stat-num">${bs.tested ?? 0}</div><div class="stat-label">Tested ✓</div></div>
+          <div class="stat-box"><div class="stat-num">${bs.deployed ?? 0}</div><div class="stat-label">Deployed</div></div>
+          <div class="stat-box"><div class="stat-num">${((s.tested_pass_rate ?? 0) * 100).toFixed(0)}%</div><div class="stat-label">Pass Rate</div></div>
+        `;
+        const skills = data.skills || [];
+        const list = document.getElementById('skills-list');
+        if (skills.length === 0) {
+          list.innerHTML = '<div class="empty">Belum ada skill. Trigger via "Synthesize" — SIDIX akan generate Python code, validate AST, test sandbox.</div>';
+        } else {
+          list.innerHTML = skills.reverse().map(sk => `
+            <div style="padding:12px;border:1px solid var(--border);border-radius:8px;margin-bottom:10px;background:var(--bg-input)">
+              <div style="display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text-dim);margin-bottom:6px;flex-wrap:wrap;">
+                <code style="color:var(--gold);font-size:13px;">${escapeHtml(sk.name || '?')}</code>
+                <span class="badge badge-${sk.status || 'draft'}">${sk.status || 'draft'}</span>
+                ${sk.test_runs ? `<span>tests: ${sk.test_passes}/${sk.test_runs}</span>` : ''}
+                <code style="font-size:9px;margin-left:auto;">${sk.id || '?'}</code>
+              </div>
+              <div style="font-size:12px;color:var(--text);margin-bottom:6px;">${escapeHtml(sk.description || '')}</div>
+              ${sk.last_error ? `<div style="font-size:11px;color:var(--red);"><strong>Last error:</strong> ${escapeHtml(sk.last_error)}</div>` : ''}
+              ${sk.code ? `<details style="margin-top:6px;"><summary style="cursor:pointer;font-size:11px;color:var(--gold);">View code (${sk.code.split('\\n').length} lines)</summary><pre style="margin:6px 0 0;padding:8px;background:rgba(0,0,0,0.4);border-radius:4px;font-size:10px;overflow-x:auto;color:var(--text-dim);max-height:300px;">${escapeHtml(sk.code)}</pre></details>` : ''}
+            </div>
+          `).join('');
+        }
+      } catch (e) {
+        document.getElementById('skills-list').innerHTML = `<div class="empty">Network: ${e.message}</div>`;
+      }
+    }
+
+    async function testSynthesize() {
+      const tok = getToken();
+      const task = document.getElementById('skills-task-text').value.trim();
+      if (!task) return alert('Isi task description dulu');
+      const list = document.getElementById('skills-list');
+      list.innerHTML = '<div class="empty">⏳ Synthesizing... LLM gen spec → code → validate → sandbox test (~30-60s)</div>';
+      try {
+        const res = await fetch(`${API_BASE}/agent/skills/synthesize`, {
+          method: 'POST',
+          headers: { 'x-admin-token': tok, 'content-type': 'application/json' },
+          body: JSON.stringify({ task_description: task, auto_test: true }),
+        });
+        const data = await res.json();
+        if (data.ok) {
+          alert('✓ Skill synthesized!\n\nName: ' + (data.skill.name || '?') + '\nStatus: ' + (data.skill.status || '?') + '\nTest pass: ' + (data.skill.test_passes || 0) + '/' + (data.skill.test_runs || 0));
+          loadSkills();
+        } else {
+          alert('Gagal: ' + (data.reason || 'unknown'));
+          loadSkills();
+        }
+      } catch (e) {
+        alert('Network: ' + e.message);
+      }
+    }
+
+    // ── Auto load — cek token, kalau ada langsung dashboard, kalau tidak: login ──
+    window.addEventListener('DOMContentLoaded', () => {
+      const saved = sessionStorage.getItem('sidix_admin_token');
+      if (saved) {
+        // Verify token is still valid
+        fetch(`${API_BASE}/admin/whitelist`, { headers: { 'x-admin-token': saved } })
+          .then(res => {
+            if (res.ok) {
+              hideLogin();
+              loadList();
+            } else {
+              sessionStorage.removeItem('sidix_admin_token');
+              showLogin();
+            }
+          })
+          .catch(() => showLogin());
+      } else {
+        showLogin();
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+{
+  "id": "image_gen_style_transfer",
+  "name": "Neural Style Transfer",
+  "category": "image_gen",
+  "source_module": "apps.image_gen.style_transfer",
+  "callable": "transfer_style",
+  "description": "Aplikasikan style dari gambar A ke konten gambar B. Untuk eksperimen visual + generate variant gambar bergaya tertentu (impresionis, anime, watercolor).",
+  "input_schema": {"content_image": "bytes|url", "style_image": "bytes|url", "strength": "float (0..1)"},
+  "output_schema": {"image": "bytes (PNG)"},
+  "lesson_topic": "neural style transfer (VGG features, Gatys et al.)",
+  "training_topics": [
+    "Gatys neural style transfer paper",
+    "VGG feature extraction",
+    "content vs style loss",
+    "AdaIN adaptive instance normalization"
+  ]
+}

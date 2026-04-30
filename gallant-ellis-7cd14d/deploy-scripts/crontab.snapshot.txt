@@ -1,0 +1,50 @@
+3 21 * * *  /www/server/cron/a50afd8f7d0e95dc2fd7bbbcfdcccd82 >> /www/server/cron/a50afd8f7d0e95dc2fd7bbbcfdcccd82.log 2>&1
+
+# Daily post jam 08:00 WIB (01:00 UTC)
+
+# Harvest keywords 4x/hari (setiap 6 jam)
+
+# Cek mentions 3x/hari (setiap 8 jam)
+
+# SIDIX Threads automation v2 (2026-04-19)
+# 3 series posts per hari (hook/detail/cta) di waktu peak engagement Indonesia
+0 8  * * * /opt/sidix/scripts/threads_daily.sh series-hook
+0 13 * * * /opt/sidix/scripts/threads_daily.sh series-detail
+0 19 * * * /opt/sidix/scripts/threads_daily.sh series-cta
+
+# Consume growth_queue (dari daily_growth pipeline) — siang & malam
+30 11 * * * /opt/sidix/scripts/threads_daily.sh consume-queue
+30 17 * * * /opt/sidix/scripts/threads_daily.sh consume-queue
+30 21 * * * /opt/sidix/scripts/threads_daily.sh consume-queue
+
+# Harvest mentions + replies (setiap 4 jam)
+0 */4 * * * /opt/sidix/scripts/threads_daily.sh mentions
+30 */6 * * * /opt/sidix/scripts/threads_daily.sh harvest
+
+# Daily growth lesson (existing, jangan di-touch)
+0 3 * * * curl -s -X POST http://localhost:8765/sidix/grow?top_n_gaps=3 > /var/log/sidix_grow.log 2>&1
+
+# SIDIX LearnAgent — daily fetch all sources 04:00 UTC
+0 4 * * * curl -s -X POST -H "Authorization: Bearer [BRAIN_QA_ADMIN_TOKEN-REDACTED]" -H "Content-Type: application/json" -d '{"domain":"all"}' http://localhost:8765/learn/run >> /var/log/sidix_learn.log 2>&1
+30 4 * * * curl -s -X POST -H "Authorization: Bearer [BRAIN_QA_ADMIN_TOKEN-REDACTED]" http://localhost:8765/learn/process_queue >> /var/log/sidix_learn.log 2>&1
+
+# SIDIX Prompt Optimizer — weekly Senin 05:30 UTC
+30 5 * * MON curl -s -X POST -H "X-Admin-Token: [BRAIN_QA_ADMIN_TOKEN-REDACTED]" http://localhost:8765/creative/prompt_optimize/all >> /var/log/sidix_optimizer.log 2>&1
+
+# SIDIX Dummy Agents -- Jariyah bootstrap 2x sehari
+0 2 * * * cd /opt/sidix && python3 -u scripts/dummy_agents.py --rounds 3 --url http://localhost:8765 --delay-min 2 --delay-max 5 >> /var/log/sidix_jariyah.log 2>&1
+0 14 * * * cd /opt/sidix && python3 -u scripts/dummy_agents.py --rounds 3 --url http://localhost:8765 --delay-min 2 --delay-max 5 >> /var/log/sidix_jariyah.log 2>&1
+# SIDIX RunPod warmup — keep GPU warm peak hours (06-23 WIB)
+# SIDIX synthetic question batch — agent dummy training signal (4x/hari)
+0 4,9,14,19 * * * curl -s -X POST http://localhost:8765/agent/synthetic/batch -H 'x-admin-token: [BRAIN_QA_ADMIN_TOKEN-REDACTED]' -H 'content-type: application/json' -d '{"n":5,"mode":"corpus"}' >> /var/log/sidix/synthetic.log 2>&1
+*/15 * * * * /opt/sidix/scripts/sidix_always_on.sh >> /opt/sidix/.data/cron_always_on.log 2>&1
+7,37 * * * * /opt/sidix/scripts/sidix_radar.sh >> /opt/sidix/.data/cron_radar.log 2>&1
+0 * * * * /opt/sidix/scripts/sidix_classroom.sh >> /opt/sidix/.data/cron_classroom.log 2>&1
+4,19,34,49 * * * * /opt/sidix/scripts/sidix_worker.sh >> /opt/sidix/.data/cron_worker.log 2>&1
+9,24,39,54 * * * * /opt/sidix/scripts/sidix_aku_ingestor.sh >> /opt/sidix/.data/cron_aku_ingestor.log 2>&1
+0 2 * * * /usr/local/bin/ixonomic-pg-backup.sh
+*/5 * * * * /usr/local/bin/ixonomic-uptime-check.sh
+0 0 * * 0 SIDIX_PATH=/opt/sidix /opt/sidix/scripts/sidix_visioner_weekly.sh >> /opt/sidix/.data/visioner_weekly.log 2>&1
+0 23 * * * curl -s "http://localhost:8765/agent/odoa?persist=true" >> /opt/sidix/.data/odoa_cron.log 2>&1
+* 6-22 * * * source /opt/sidix/.env && /opt/sidix/deploy-scripts/warmup_runpod.sh >> /var/log/sidix/runpod_warmup.log 2>&1
+30 2 * * * /opt/sidix/scripts/sidix_reflect_day.sh >> /opt/sidix/.data/cron_reflect_day.log 2>&1

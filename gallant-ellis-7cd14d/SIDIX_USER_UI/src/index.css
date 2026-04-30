@@ -1,0 +1,240 @@
+/**
+ * SIDIX — Design System
+ * Aesthetic: Warm Academic Dark
+ * Fonts: Cormorant Garamond (display/headings) + DM Sans (body/UI)
+ * Palette: Deep warm charcoal bg · Amber/gold accent · Muted parchment fg
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap');
+@import "tailwindcss";
+
+/* ── Design tokens ─────────────────────────────────────────────────────────── */
+@theme {
+  /* Typography */
+  --font-sans:    "DM Sans",          ui-sans-serif,  system-ui, sans-serif;
+  --font-display: "Cormorant Garamond", Georgia,       serif;
+  --font-mono:    "JetBrains Mono",   ui-monospace,   monospace;
+
+  /* Warm dark background scale */
+  --color-warm-950: #100D0A;   /* darkest — body bg */
+  --color-warm-900: #16120E;   /* sidebar */
+  --color-warm-800: #1E1810;   /* cards */
+  --color-warm-700: #2A2016;   /* hover states */
+  --color-warm-600: #3A2E20;   /* borders */
+
+  /* Amber / gold accent */
+  --color-gold-300: #F5D78A;
+  --color-gold-400: #D4A017;
+  --color-gold-500: #B8860B;
+  --color-gold-600: #8B6500;
+
+  /* Parchment text scale */
+  --color-parchment-100: #F5EFE0;
+  --color-parchment-200: #E8DEC8;
+  --color-parchment-300: #C9BAA0;
+  --color-parchment-400: #A09078;
+  --color-parchment-500: #7A6B58;
+
+  /* Status colors */
+  --color-status-ready:    #6EAE7C;
+  --color-status-indexing: #6B9FD4;
+  --color-status-queued:   #C9A44A;
+  --color-status-failed:   #C46B6B;
+}
+
+/* ── Base ───────────────────────────────────────────────────────────────────── */
+@layer base {
+  *, *::before, *::after { box-sizing: border-box; }
+
+  html { color-scheme: dark; }
+
+  body {
+    @apply bg-warm-950 text-parchment-200 font-sans antialiased;
+    background-image:
+      radial-gradient(ellipse 60% 40% at 15% 25%, rgba(212,160,23,0.06) 0%, transparent 60%),
+      radial-gradient(ellipse 40% 60% at 85% 75%, rgba(139,101,0,0.05) 0%, transparent 60%);
+    background-attachment: fixed;
+  }
+
+  /* Selection */
+  ::selection {
+    background-color: rgba(212, 160, 23, 0.25);
+    color: var(--color-parchment-100);
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar       { width: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(212, 160, 23, 0.15);
+    border-radius: 9999px;
+  }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(212, 160, 23, 0.3); }
+}
+
+/* ── Glass / surface utilities ──────────────────────────────────────────────── */
+.glass {
+  background-color: rgba(30, 24, 16, 0.7);
+  backdrop-filter: blur(20px) saturate(1.2);
+  border: 1px solid rgba(212, 160, 23, 0.12);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255,255,255,0.03);
+}
+
+.glass-sidebar {
+  background-color: rgba(22, 18, 14, 0.92);
+  backdrop-filter: blur(24px);
+  border-right: 1px solid rgba(212, 160, 23, 0.08);
+}
+
+.glass-header {
+  background-color: rgba(16, 13, 10, 0.85);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(212, 160, 23, 0.08);
+}
+
+/* ── Cards ──────────────────────────────────────────────────────────────────── */
+.academic-card {
+  background-color: rgba(30, 24, 16, 0.6);
+  border: 1px solid rgba(212, 160, 23, 0.1);
+  border-radius: 0.875rem;
+  padding: 1.25rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.academic-card:hover {
+  border-color: rgba(212, 160, 23, 0.28);
+  box-shadow: 0 0 16px rgba(212, 160, 23, 0.07);
+}
+
+/* ── Accent button ──────────────────────────────────────────────────────────── */
+.btn-gold {
+  background: linear-gradient(135deg, #D4A017 0%, #B8860B 100%);
+  color: #100D0A;
+  font-weight: 600;
+  font-family: var(--font-sans);
+  border-radius: 0.625rem;
+  transition: opacity 0.15s ease, transform 0.1s ease;
+  box-shadow: 0 0 14px rgba(212,160,23,0.25);
+}
+.btn-gold:hover   { opacity: 0.88; }
+.btn-gold:active  { transform: scale(0.97); }
+
+/* ── Glow text ───────────────────────────────────────────────────────────────── */
+.glow-gold {
+  text-shadow: 0 0 18px rgba(212, 160, 23, 0.55);
+  color: var(--color-gold-300);
+}
+
+/* ── Nav active ──────────────────────────────────────────────────────────────── */
+.nav-item-active {
+  background-color: rgba(212, 160, 23, 0.12);
+  color: var(--color-gold-300) !important;
+  border-radius: 0.625rem;
+}
+
+/* ── Message bubbles ─────────────────────────────────────────────────────────── */
+.msg-user {
+  background: linear-gradient(135deg, rgba(212,160,23,0.22) 0%, rgba(139,101,0,0.18) 100%);
+  border: 1px solid rgba(212,160,23,0.22);
+  border-radius: 1rem 1rem 0.25rem 1rem;
+}
+
+.msg-ai {
+  background-color: rgba(26, 20, 12, 0.85);
+  border: 1px solid rgba(212, 160, 23, 0.1);
+  border-radius: 1rem 1rem 1rem 0.25rem;
+}
+
+/* ── Citation chip ───────────────────────────────────────────────────────────── */
+.citation-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.3rem 0.6rem;
+  background: rgba(212,160,23,0.06);
+  border: 1px solid rgba(212,160,23,0.18);
+  border-radius: 0.4rem;
+  font-size: 0.625rem;
+  font-family: var(--font-mono);
+  color: var(--color-gold-400);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.citation-chip:hover { background: rgba(212,160,23,0.13); }
+
+/* ── Status badge ────────────────────────────────────────────────────────────── */
+.status-ready    { color: var(--color-status-ready);    background: rgba(110,174,124,0.12); border-color: rgba(110,174,124,0.25); }
+.status-indexing { color: var(--color-status-indexing); background: rgba(107,159,212,0.12); border-color: rgba(107,159,212,0.25); }
+.status-queued   { color: var(--color-status-queued);   background: rgba(201,164,74,0.12);  border-color: rgba(201,164,74,0.25); }
+.status-failed   { color: var(--color-status-failed);   background: rgba(196,107,107,0.12); border-color: rgba(196,107,107,0.25); }
+
+.status-badge {
+  display: inline-block;
+  padding: 0.15rem 0.55rem;
+  border-radius: 9999px;
+  border: 1px solid;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* ── Thinking dots ───────────────────────────────────────────────────────────── */
+.thinking-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--color-gold-400);
+  animation: thinking-bounce 1.2s ease-in-out infinite;
+}
+.thinking-dot:nth-child(2) { animation-delay: 0.2s; }
+.thinking-dot:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes thinking-bounce {
+  0%, 80%, 100% { transform: translateY(0);    opacity: 0.4; }
+  40%           { transform: translateY(-6px); opacity: 1;   }
+}
+
+/* ── Warm ambient glow ───────────────────────────────────────────────────────── */
+.ambient-glow {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(90px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── Drop zone ───────────────────────────────────────────────────────────────── */
+.drop-zone {
+  border: 2px dashed rgba(212,160,23,0.18);
+  border-radius: 1rem;
+  transition: border-color 0.2s, background 0.2s;
+}
+.drop-zone:hover, .drop-zone.drag-over {
+  border-color: rgba(212,160,23,0.5);
+  background: rgba(212,160,23,0.04);
+}
+
+/* ── Textarea auto-grow (no resize handle) ──────────────────────────────────── */
+#chat-input { resize: none; overflow-y: hidden; }
+
+/* ── Fade-in animation ───────────────────────────────────────────────────────── */
+@keyframes fade-slide-up {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-fsu {
+  animation: fade-slide-up 0.28s ease both;
+}
+
+/* ── Progress bar ────────────────────────────────────────────────────────────── */
+.storage-bar {
+  height: 4px;
+  border-radius: 9999px;
+  background: rgba(212,160,23,0.15);
+  overflow: hidden;
+}
+.storage-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-gold-500), var(--color-gold-300));
+  border-radius: 9999px;
+  transition: width 0.5s ease;
+}
