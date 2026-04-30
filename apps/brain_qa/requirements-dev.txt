@@ -6,4 +6,4 @@ pytest>=8.0.0
 kagglehub>=0.3.0
 
 # Opsional — CLI `kaggle kernels pull ...` (butuh ~/.kaggle/kaggle.json)
-kaggle>=1.6.0
+kaggle>=2.1.0
