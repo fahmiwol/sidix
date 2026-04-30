@@ -16082,6 +16082,14 @@ Sprint Tumbuh REAL state was 20% (broken auth), bukan 40%. Sekarang 50% (auth fi
 
 
 
+### 2026-04-30 (bagian 18 — FIX: Playwright lite_browser libatk/libasound deps)
+
+- **FIX:** `libasound.so.2: cannot open shared object file` — Chromium headless shell gagal load karena system libs belum terinstall di VPS.
+  - Command: `apt-get install -y libasound2 libasound2-dev libgbm1 libgtk-3-0 libxss1 libnss3 libx11-xcb1 && playwright install-deps chromium`
+  - Installed: xvfb, xfonts, libatk-bridge, libgbm, libgtk-3, libxss1, fonts-unifont, dll (full dep set)
+- **TEST:** `fetch_url('https://id.wikipedia.org/wiki/Presiden_Indonesia')` → `success=True, text=8000 chars` ✅
+- **NOTE:** Semua 7 validasi dari `docs/CLAUDE_HANDOFF_AUTO_HARVEST.md` SELESAI setelah fix ini.
+
 ### 2026-04-30 (bagian 17 — IMPL: Sprint Auto-Harvest Cron Pipeline)
 
 - **IMPL:** `apps/brain_qa/brain_qa/auto_harvest.py` — AutoHarvest class:
