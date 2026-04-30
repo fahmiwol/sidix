@@ -15515,3 +15515,26 @@ Stay in SIDIX_USER_UI (vanilla TS+Vite). Add visual elements dari Kimi mockup gr
 JANGAN tambah mock data (Halo Ayudia/Credits/Pro Plan/Campaigns).
 JANGAN tagline lokasi.
 
+
+## [RE-ALIGN] 2026-04-30 — Routing Otomatis -> Jurus Seribu Bayangan as Default
+
+### Bos catch
+UI lama help modal "ROUTING OTOMATIS" = pilih 1 sumber. Visi bos = MULTI-SOURCE PARALEL (jurus seribu bayangan + sanad).
+
+### Decision
+Sprint Α (alpha) — replace routing otomatis dengan multi-source paralel sebagai DEFAULT Basic mode. Wire persona_research_fanout + sanad_verifier + cognitive_synthesizer ke /agent/chat.
+
+### Engineering decisions (saya ambil otoritas)
+1. Basic = default, no persona forced
+2. Synthesizer = neutral Qwen2.5 base (no persona bias)
+3. Sequence: Sprint 0 stability -> Sprint Α multi-source -> Sprint C streaming -> Sprint B UX explainer
+
+### Files
+- brain/public/research_notes/304_persona_mode_realignment_jurus_seribu_bayangan_20260430.md
+- docs/FOUNDER_JOURNAL.md "lanjutan 7" entry
+
+### Lesson permanen
+1. Default UX harus sesuai Northstar, bukan kompromi simplicity
+2. Engineering decisions saya ambil, bos sign off visi
+3. Catat dulu setiap diskusi besar sebelum jawab (anti-menguap protocol)
+

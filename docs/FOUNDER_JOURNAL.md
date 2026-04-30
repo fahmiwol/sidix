@@ -1386,3 +1386,70 @@ Saya terlalu fokus replicate mockup pixel-perfect (header credits/bell/avatar, h
 ### Naming for next session
 "Sprint UI Polish (Visual Upgrade Vite)" — bukan migration ke Next.js. Stay in vanilla TS, polish visual incrementally.
 
+
+---
+
+## 2026-04-30 (lanjutan 7) — RE-ALIGN: Routing Otomatis -> Jurus Seribu Bayangan
+
+### Bos catch yang critical (verbatim)
+> "itu masih gitu? kalo secara ide konsep saya kan nggak gitu yah? ga routing otmatis, tapi mengerahkan segala resource berbarengan intinya. jurus seribu bayangan dll, sanad (atau sengaja kamu ubah karena ide saya bikin ngaco)"
+
+> "basic jadi default"
+
+> "pertanyaan yg kamu tanyakan ke saya, kamu yg bisa jawab sebagai engineering. saya cuma tau maunya sidix genius, creative, tumbuh ---> cognitive & semantic ---> iteratif ---> inovasi ---> pencipta"
+
+### Diagnosa miss-alignment
+UI lama help modal punya tagline "ROUTING OTOMATIS" — SIDIX pilih SATU sumber terbaik (web search OR corpus OR reasoning). Itu degradasi konservatif dari visi bos:
+
+**Visi bos sebenarnya**: MULTI-SOURCE PARALEL, jurus seribu bayangan, sanad multi-source verifikasi. SEMUA resource berbarengan.
+
+Kemungkinan saya (atau Claude sebelumnya) tulis "routing otomatis" karena lebih simple secara teknis (1 sumber per query = cepat). Tapi melanggar Northstar.
+
+### Mental model bos (3 mode SIDIX)
+
+| Mode | Karakter | Otak |
+|---|---|---|
+| **Basic / Natural (DEFAULT)** | SIDIX murni, no persona forced | LoRA + corpus, internal jurus seribu bayangan |
+| **Single Persona** (5 optional) | UTZ/ABOO/OOMAR/ALEY/AYMAN | Per-persona lens spesifik |
+| **Pro / Multi-Perspective** | Gabungan eksplisit | TIDAK otak sendiri, sintesis dari 5 persona |
+
+### Visi bos chain (dari verbatim)
+`genius/creative/tumbuh → cognitive & semantic → iteratif → inovasi → pencipta`
+
+Translation engineering:
+- Genius = jurus seribu bayangan + sanad multi-source
+- Creative = 5 persona perspectives + Sigma-3D methodology
+- Tumbuh = corpus growth + LoRA retraining
+- Cognitive & semantic = semantic_cache + dense_index (post PyTorch fix LIVE)
+- Iteratif = Sigma sprints compound
+- Inovasi = novel methods compound (note 291)
+- Pencipta = adaptive output (text/script/image/video)
+
+### Engineering questions yang saya jawab sendiri (bos kasih otoritas)
+
+**Q1 Basic default?** YES, eksplisit selected by default. Persona = optional advanced.
+
+**Q2 Synthesizer LLM?** Neutral Qwen2.5 base (no persona system prompt) supaya tidak bias ke perspektif satu persona.
+
+**Q3 Sprint sequence?**
+1. Sprint 0 — Brain Stability + Monitoring (1 session, urgent foundation)
+2. Sprint Α — Multi-Source Paralel Default (3 session, CORE visi bos)
+3. Sprint C — Streaming SSE (2 session, pasangan Sprint Α biar ga freeze 60s)
+4. Sprint B — UX Persona Explainer (1 session, last priority)
+
+Total ~7 session, realistic 1-2 minggu post limit reset.
+
+### Status
+- Diskusi 3 sprint candidate + state code audit + mental model petak SUDAH DICATAT di research note 304
+- Re-align decision: Basic mode default = jurus seribu bayangan internal (bukan routing pilih-satu)
+- Sprint Α = REPLACE routing otomatis dengan multi-source paralel + sanad + cognitive synthesis
+- "ROUTING OTOMATIS" tagline di help modal -> "JURUS SERIBU BAYANGAN" (Sprint Α task)
+
+### Lesson untuk saya (catat permanen)
+
+1. **Default user experience HARUS sesuai visi Northstar**, bukan kompromi ke implementation simplicity. UI lama "routing otomatis" = simple secara code, tapi degradasi dari "kerahkan semua resource paralel".
+
+2. **Bos partner level diskusi visi, bukan engineering detail**. Saya tanya "synthesizer LLM tersendiri atau persona?" — bos balikin: "kamu yang jawab sebagai engineering, saya cuma tau maunya genius/creative/tumbuh". Future: saya ambil otoritas teknis, bos sign off pada visi end-state.
+
+3. **Catat dulu sebelum jawab**. Bos eksplisit: "catat dulu laporan kamu di atas, di journal dan dimanapun, biar ga meguap diksusi kita". Pattern: setiap diskusi besar -> research note + FOUNDER_JOURNAL entry sebelum lanjut. Anti-menguap protocol.
+
