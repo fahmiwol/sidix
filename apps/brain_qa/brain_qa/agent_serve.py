@@ -1210,6 +1210,7 @@ def create_app() -> "FastAPI":
                 conversation_id=req.conversation_id,
             )
         except Exception as omnyx_err:
+            omnyx_err_str = str(omnyx_err)
             log.warning("[chat_holistic] OMNYX fail: %s", omnyx_err)
 
         # Legacy fallback: parallel multi-source (corpus + web + persona)
@@ -1244,7 +1245,7 @@ def create_app() -> "FastAPI":
             )
         except Exception as fallback_err:
             log.error("[chat_holistic] Fallback also failed: %s", fallback_err)
-            raise HTTPException(status_code=500, detail=f"OMNYX error: {omnyx_err}; fallback: {fallback_err}")
+            raise HTTPException(status_code=500, detail=f"OMNYX error: {omnyx_err_str}; fallback: {fallback_err}")
 
     # ── POST /agent/generate ──────────────────────────────────────────────────
     # Jiwa Sprint: pure general chat tanpa ReAct loop / tool / corpus overhead.
