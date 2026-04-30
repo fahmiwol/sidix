@@ -15538,3 +15538,36 @@ Sprint Α (alpha) — replace routing otomatis dengan multi-source paralel sebag
 2. Engineering decisions saya ambil, bos sign off visi
 3. Catat dulu setiap diskusi besar sebelum jawab (anti-menguap protocol)
 
+
+## [DEPLOY] 2026-04-30 — Sprint Α Holistic Endpoint LIVE + Working
+
+### Test result endpoint /agent/chat_holistic
+Query: "apa itu transformer dalam ai?"
+Total latency: 132s (orch 45s parallel + synth 86s)
+- n_sources: 2 successful out of 5 attempted
+- method: llm_synthesis_ollama
+- Quality answer: PASSED (Vaswani 2017, NLP, RNN/LSTM context, accurate)
+
+### Stability verified
+Despite 3 source errors (web timeout, corpus AttributeError, persona timeout),
+brain DID NOT crash. asyncio.gather return_exceptions=True works as designed.
+Jawaban tetap keluar via 2 successful sources + LLM synthesis.
+
+### Bug ditemukan (TODO fix iterasi berikutnya)
+1. web: timeout_15s -> raise to 25s atau cache
+2. corpus: AttributeError 'ToolResult' object has no attribute 'get'
+   -> _tool_search_corpus returns ToolResult dataclass, bukan dict
+3. persona_fanout: timeout_45s -> 5 persona Ollama paralel exceed 45s
+   -> raise timeout to 60s atau reduce concurrency
+
+### Files
+apps/brain_qa/brain_qa/multi_source_orchestrator.py (NEW)
+apps/brain_qa/brain_qa/cognitive_synthesizer.py (NEW)
+apps/brain_qa/brain_qa/agent_serve.py (+50 LOC endpoint)
+
+### Next iteration
+1. Fix 3 bugs above
+2. Frontend wire holistic sebagai default mode
+3. Streaming SSE per-source events (live display "web_search ✓ ALEY thinking...")
+4. Update help modal text "ROUTING OTOMATIS" -> "JURUS SERIBU BAYANGAN"
+
