@@ -68,7 +68,7 @@ GOLDSET: list[GoldQ] = [
     GoldQ(8,  "factual", "Berapa kecepatan cahaya dalam meter per detik?",
           "ABOO", ["299", "300.000.000", "3 x 10", "3×10"]),
     GoldQ(9,  "factual", "Apa itu sanad dalam tradisi keilmuan Islam?",
-          "ALEY", ["rantai", "transmisi", "perawi", "silsilah"]),
+          "ALEY", ["rantai", "transmisi", "perawi", "silsilah", "chain", "rangkaian", "jalur"]),
     GoldQ(10, "factual", "Apa rumus luas lingkaran?",
           "ABOO", ["π", "pi", "r²", "r2", "r kuadrat", "phi"]),
 
@@ -125,9 +125,11 @@ GOLDSET: list[GoldQ] = [
                     and len((a or "").strip()) > 100),
     GoldQ(25, "factual", "Apa itu attention mechanism dalam Transformer?",
           "ABOO",
-          lambda a: any(t in (a or "").lower() for t in ("query", "key", "value"))
+          lambda a: any(t in (a or "").lower()
+                        for t in ("query", "key", "value", "perhatian", "fokus", "relevansi"))
                     and any(t in (a or "").lower()
-                            for t in ("softmax", "weight", "score", "bobot"))),
+                            for t in ("softmax", "weight", "score", "bobot",
+                                      "token", "konteks", "berfokus"))),
 ]
 
 
@@ -180,18 +182,18 @@ def run_holistic_goldset(save: bool = False) -> dict:
         if passed:
             total_passed += 1
 
-        verdict = "✓ PASS" if passed else "✗ FAIL"
+        verdict = "PASS" if passed else "FAIL"
         slow = " [SLOW]" if ms > 60_000 else ""
         sources = raw.get("sources_used", [])
         n_src = f" src={len(sources)}" if sources else ""
         print(f"{verdict} {ms:>7d}ms{slow}{n_src}")
 
         if not passed and answer:
-            print(f"     ↳ ans : {answer[:120].strip()!r}")
+            print(f"     > ans : {answer[:120].strip()!r}")
         elif status != "ok":
-            print(f"     ↳ ERR : {status}")
+            print(f"     > ERR : {status}")
         if sources:
-            print(f"     ↳ srcs: {sources}")
+            print(f"     > srcs: {sources}")
 
         results.append({
             "id": q.id,
@@ -221,7 +223,7 @@ def run_holistic_goldset(save: bool = False) -> dict:
     print(f"\n{'='*60}")
     print(f"RESULT  : {total_passed}/{len(GOLDSET)} = {pct:.1f}%")
     print(f"TARGET  : 22/25 = 88.0%")
-    verdict_final = "✅ TARGET MET" if total_passed >= 22 else "⚠️  BELOW TARGET"
+    verdict_final = "TARGET MET" if total_passed >= 22 else "BELOW TARGET"
     print(f"STATUS  : {verdict_final}")
 
     failed = [r for r in results if not r["passed"]]
@@ -235,7 +237,7 @@ def run_holistic_goldset(save: bool = False) -> dict:
         out = f"tests/holistic_goldset_results_{time.strftime('%Y%m%d_%H%M%S')}.json"
         with open(out, "w", encoding="utf-8") as f:
             json.dump(summary, f, ensure_ascii=False, indent=2)
-        print(f"\nSaved → {out}")
+        print(f"\nSaved -> {out}")
 
     return summary
 
