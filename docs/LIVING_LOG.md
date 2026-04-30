@@ -15133,3 +15133,42 @@ Goldset 20 pertanyaan selesai di VPS (ctrl.sidixlab.com/agent/chat):
 ### Artifacts
 - tests/anti_halu_baseline_results_post_sigma2.json
 - brain/public/research_notes/298_sigma2_latency_entity_fix_20260430.md
+
+## [TEST] 2026-04-30 — Live Production Cold-Query Probe (Post Sigma-2)
+
+### Temuan
+Probe dari VPS ke ctrl.sidixlab.com/agent/chat — 3 cold queries (non-goldset):
+
+| Query | Latency | Status | Issue |
+|---|---|---|---|
+| "Apa perbedaan REST API dan GraphQL?" | 240103ms | **TIMEOUT** | _is_long_reasoning → 1000 tokens → RunPod 240s |
+| "Kalau mau bikin brand identitas untuk startup fintech..." | 61391ms | PASS | Slow, answer generik |
+| "Jelaskan apa itu supervised learning dengan contoh sederhana" | 3501ms | PASS | Corpus-first routing BEKERJA |
+
+Plus 5 cached probes:
+- greeting 48ms → "Saya adalah Kamu SIDIX" ← cache artifact
+- factual ML 14ms → "[⚠️ SANAD MISSING] Machine learning adalah..." ← footer leak UX
+- creative 12ms → echo pertanyaan ← quality issue
+- brand_persona/identity → correct ✅
+
+### Root Causes Identified
+1. **P0**: "perbedaan/compare" → 1000 tokens cap MISSING → 240s timeout
+2. **P0**: No streaming → perceived latency = full generation time
+3. **P1**: SANAD_MISSING footer visible for factual/casual → confusing UX
+4. **P1**: Cache artifacts from cold start survive into warm cache
+5. **P2**: Creative/strategy answers generic, no SIDIX methodology
+
+### Research Note
+brain/public/research_notes/299_production_review_sigma2_20260430.md
+
+## [NOTE] 2026-04-30 — Sigma-3 Planning Locked
+
+Prioritized Sprint Plan (from note 299):
+- **Sigma-3A** (P0): Comparison query token cap (500 instead of 1000 for simple comparison)
+- **Sigma-3B** (P1): SANAD_MISSING UX fix (tier display: critical/subtle/hidden)
+- **Sigma-3C** (P0): Streaming response (SSE brain_qa → frontend typewriter)
+- **Sigma-3D** (P2): Creative quality — inject SIDIX creative methodology into system prompt
+- **Sigma-3E** (P3): Goldset expansion to 25Q (add comparison/strategy/complex creative)
+
+Sprint progression target: 19/20 → 23/25 (maintains 92%+ with harder goldset)
+

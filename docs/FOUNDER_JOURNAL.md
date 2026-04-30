@@ -891,3 +891,77 @@ Bos cukup bilang "gas Σ-1A" + share handoff path. Zero-loss compound integrity.
 - Next: re-run Σ-1G goldset di VPS untuk verify improvement 8/20 → 14-16/20+
 
 **Status**: Σ-1A DONE | Σ-1C pending | Σ-1D pending
+
+---
+
+## Sesi 2026-04-30 — Sigma Anti-Halu Sprint SELESAI + Production Review
+
+**Session ID**: claude/gallant-ellis-7cd14d (continuation)
+**Bos mandate**: "gas semua" → lalu "review dari live production, riset root cause, catat semua, laporan ke saya"
+
+### Pencapaian Hari Ini (Sigma-1 + Sigma-2 Complete)
+
+**Goldset progression yang dicapai dalam 1 sesi**:
+```
+8/20 = 40%  (baseline pre-sprint)
+    ↓ Sigma-1 (cache bypass + brand canon + sanad gate + persona pre-inject)
+15/20 = 75% (+35pp)
+    ↓ Sigma-2 (adaptive tokens + corpus-first + fact extractor + timeout)
+19/20 = 95% (+55pp total)
+```
+
+**Critical hallucinations yang FIXED**:
+- Q17 "5 persona SIDIX" → sekarang jawab UTZ/ABOO/OOMAR/ALEY/AYMAN (benar)
+- Q18 "IHOS" → sekarang jawab "Islamic Holistic Ontological System" (benar)
+- Q3 "CEO OpenAI" → sekarang extract "Sam Altman" dari web_search (pertama kali PASS)
+
+### Apa yang Bos Minta Didalami
+
+Bos bilang: *"kalo udah beres. review! Riset! kenapa masih sering salah? kenapa masih lama? apakah metodenya? apakah frameworknya? apa hardware?"*
+
+**Jawaban dari production testing langsung**:
+
+1. **Kenapa masih lama?** → RunPod generate ~4 token/detik. Persamaan: `latency = tokens/4 detik`. Comparison queries ("perbedaan") masih trigger 1000 tokens → 250 detik. **Belum ada streaming** = user tunggu full generation sebelum lihat apapun.
+
+2. **Kenapa masih salah?** → Goldset 95% itu di test suite. Real production berbeda: comparison queries TIMEOUT (240s), creative answers generik, SANAD_MISSING footer muncul di UX (confusing bukan helpful).
+
+3. **Apakah metodenya salah?** → Metode (adaptive tokens + corpus-first + sanad gate) SUDAH BENAR untuk correctness. Yang kurang: **UX layer** belum didesain (sanad footer terlalu kasar), **streaming** belum ada, **creative methodology** belum ada.
+
+4. **Apakah hardware?** → Bukan. RunPod GPU capable. Masalah adalah **request design** (terlalu banyak token diminta) bukan hardware.
+
+### State SIDIX vs Northstar
+
+Northstar: **GENIUS · KREATIF · INOVATIF** — "Autonomous AI Agent — Thinks, Learns & Creates"
+
+| Pilar | State Hari Ini | Gap |
+|---|---|---|
+| THINKS (correctness) | ✅ 95% goldset, 0 critical halu | Streaming needed |
+| LEARNS (growth loop) | ⚠️ Corpus ada, LoRA ada, tapi daily_learn belum aktif | Need to activate |
+| CREATES (creativity) | ❌ Creative answers generic, no SIDIX signature | Sigma-3D target |
+
+**Honest assessment**: SIDIX sekarang adalah "Accurate Retrieval Engine" yang sangat baik dalam menghindari hallusinasi. Tapi untuk mencapai Northstar "Genius Creative Agent", perlu layer kreativitas yang belum dibangun.
+
+### Rencana Konkrit Besok (Sigma-3)
+
+Urutan prioritas yang bos bisa approve untuk sesi berikutnya:
+
+**P0 — Fix what breaks UX**:
+1. Cap comparison queries ke 500 tokens (fix 240s timeout → ~120s)
+2. Implement streaming SSE dari brain_qa ke frontend (perceived latency fix)
+
+**P1 — Fix what confuses user**:
+3. SANAD_MISSING footer: hide untuk casual/factual, show subtle untuk current_event miss only
+
+**P2 — Upgrade towards Northstar**:
+4. Inject SIDIX creative methodology ke system prompt untuk UTZ persona (creative queries)
+5. Tambah goldset ke 25Q (comparison + strategy queries untuk pressure test)
+
+### Quote Bos yang Harus Diingat
+
+> "review! Riset! kenapa masih sering salah? kenapa masih lama?... cari tau! Ceknya di live produksi, di app. langsung. analisa lagi, cari terobosan, biar cepet, relevan dan ga hallucinated."
+
+> "catat semua jangan lupa!... besok kita kerja ga bingung mulai dari mana, ga muter-muter. udah tau apa yang harus dilakukan."
+
+**Lesson yang perlu diingat**: Production review > test suite. Bos sudah benar menginstruksikan cek langsung ke live app, bukan hanya goldset numbers. Goldset 95% bisa menipu — comparison query 240s timeout adalah real-world dealbreaker yang tidak ter-cover goldset.
+
+**Status**: Sigma-2 DONE | Sigma-3 READY | Streaming = next breakthrough
