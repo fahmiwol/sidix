@@ -15440,3 +15440,51 @@ Action: monitor + auto-recovery. Pattern berulang -> redeploy endpoint baru.
 - docs/FOUNDER_JOURNAL.md updated dengan recall + naming conflict + RunPod log + plan
 - LIVING_LOG entry ini
 
+
+## [DEPLOY] 2026-04-30 — SIDIX_NEXT_UI LIVE di app.sidixlab.com
+
+### Sequence executed
+1. Sync VPS git pull (commit b006ca5 NavItem type fix)
+2. `npm install` di /opt/sidix/SIDIX_NEXT_UI — 111 packages, 11s
+3. `npm run build` Next.js 15.5.15 — Compiled successfully 1.4s. 13.6 kB / 116 kB First Load JS
+4. PM2 start `sidix-next-ui` (id 26) di port 4001 via `npx next start -p 4001`
+5. Backup nginx config: `app.sidixlab.com.conf.backup_20260430_143819`
+6. Switch nginx `proxy_pass 4000 -> 4001` (sed inplace)
+7. Reload nginx via SIGHUP master pid (BT panel quirk: `nginx -s reload` gagal "invalid PID", workaround `kill -HUP <master_pid>`)
+8. Smoke test: `https://app.sidixlab.com` -> HTTP 200, 293ms, content `<title>SIDIX — Creative AI Agent</title>`, layout 3-column, brand `#151A2E` rendered
+9. `pm2 save` -> dump.pm2
+
+### State akhir
+- `app.sidixlab.com` -> Next.js (port 4001) LIVE
+- `sidix-ui` lama (vanilla TS+Vite serve dist) tetap online di port 4000 sebagai backup. Kalau Next.js bermasalah, sed nginx balikkan ke 4000 = revert dalam 30 detik.
+- `sidix-next-ui` PID 1768169, mem 61MB
+
+### Fitur LIVE per scaffold
+- Layout 3-column: LeftSidebar 250px / ChatDashboard / RightPanel 320px (lg only)
+- LeftSidebar: 7 nav items (Chat/Agent/Tools-NEW/Projects/Knowledge/Integrations/History)
+- ChatDashboard: real wire ke ctrl.sidixlab.com/agent/chat, persona selector 5 SIDIX, loading timer transparan, error graceful
+- RightPanel: 6 Built-in Tools cards (placeholder) + Status panel
+- Brand: Space Grotesk + #7C5CFF/#00D2FF/#FF6EC7/#0B0F2A locked
+
+### Yang BELUM live (defer)
+- ParticleBackground (Three.js polish)
+- Auth Supabase + real user greeting + quota
+- Streaming SSE wrapper untuk /agent/chat
+- Mobile sidebar collapse
+- Mascot Option B (SDXL state variants)
+- 4 quick prompt cards di empty state (existing di scaffold)
+
+### Revert procedure (kalau dibutuhkan)
+```bash
+ssh sidix-vps
+sed -i 's|proxy_pass http://127.0.0.1:4001;|proxy_pass http://127.0.0.1:4000;|' /www/server/panel/vhost/nginx/app.sidixlab.com.conf
+kill -HUP $(ps aux | grep 'nginx: master' | grep -v grep | awk '{print $2}' | head -1)
+# Atau restore backup full:
+# cp /www/server/panel/vhost/nginx/app.sidixlab.com.conf.backup_20260430_143819 /www/server/panel/vhost/nginx/app.sidixlab.com.conf
+```
+
+### Action item bos
+1. Buka `https://app.sidixlab.com` di browser (clear cache: Ctrl+Shift+R) — lihat UI baru
+2. Test chat: ketik pesan, pilih persona, submit. Lihat loading state + jawaban real
+3. Catat impressions: yang oke, yang miss vs gambar bos kasih, yang perlu polish
+
