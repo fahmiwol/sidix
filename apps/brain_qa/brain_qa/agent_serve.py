@@ -1171,6 +1171,132 @@ def create_app() -> "FastAPI":
             planner_savings=getattr(session, "planner_savings", 0.0),
         )
 
+    # ── GET /agent/sidix_state ─────────────────────────────────────────────────
+    # Sprint Monitoring — single endpoint summarize SIDIX state untuk dashboard,
+    # daily_synthesis cron, dan agent self-bootstrap (Phase 1). Public read-only.
+    @app.get("/agent/sidix_state")
+    def agent_sidix_state(request: Request):
+        """Return SIDIX project state untuk monitoring + dashboard.
+
+        Aggregate dari:
+        - corpus count (manifest)
+        - last learn/run + process_queue cron status
+        - latest LoRA training dataset date
+        - multi-source orchestrator config
+        - persona count + brand canon count
+        - tools available
+        """
+        import os
+        from pathlib import Path
+
+        repo_root = Path("/opt/sidix") if Path("/opt/sidix").exists() else Path(__file__).resolve().parents[3]
+
+        def _safe_count(path: str) -> int:
+            try:
+                p = repo_root / path
+                if p.exists():
+                    return len(list(p.glob("*.md"))) if p.is_dir() else 0
+            except Exception:
+                return 0
+            return 0
+
+        def _file_mtime(path: str) -> Optional[str]:
+            try:
+                p = repo_root / path
+                if p.exists():
+                    import datetime as _dt
+                    return _dt.datetime.fromtimestamp(p.stat().st_mtime).isoformat()
+            except Exception:
+                return None
+            return None
+
+        # Latest LoRA training dataset
+        lora_datasets = []
+        try:
+            lora_dir = repo_root / "apps" / "output"
+            if lora_dir.exists():
+                lora_datasets = sorted(
+                    [str(p.name) for p in lora_dir.glob("lora_training_dataset_*.jsonl")],
+                    reverse=True,
+                )[:3]
+        except Exception:
+            pass
+
+        # Brand canon + persona stats
+        brand_canon_count = 0
+        persona_count = 0
+        try:
+            from .sanad_verifier import BRAND_CANON
+            brand_canon_count = len(BRAND_CANON)
+        except Exception:
+            pass
+        try:
+            from .cot_system_prompts import PERSONA_DESCRIPTIONS
+            persona_count = len(PERSONA_DESCRIPTIONS)
+        except Exception:
+            pass
+
+        # Multi-source orchestrator config
+        msd_config = {}
+        try:
+            from .multi_source_orchestrator import DEFAULT_TIMEOUTS, PERSONAS
+            msd_config = {
+                "timeouts": DEFAULT_TIMEOUTS,
+                "persona_fanout_count": len(PERSONAS),
+            }
+        except Exception:
+            pass
+
+        # Output type detector
+        output_types = []
+        try:
+            from .output_type_detector import OutputType
+            output_types = [t.value for t in OutputType]
+        except Exception:
+            pass
+
+        return {
+            "service": "sidix-brain",
+            "version": "0.1.0",
+            "timestamp": __import__("datetime").datetime.now().isoformat(),
+            "corpus": {
+                "research_notes": _safe_count("brain/public/research_notes"),
+                "research_notes_latest_mtime": _file_mtime("brain/public/research_notes"),
+            },
+            "anti_menguap_protocol": {
+                "backlog_md": _file_mtime("docs/SIDIX_BACKLOG.md"),
+                "visi_matrix_md": _file_mtime("docs/VISI_TRANSLATION_MATRIX.md"),
+                "founder_idea_log_md": _file_mtime("docs/FOUNDER_IDEA_LOG.md"),
+                "frameworks_md": _file_mtime("docs/SIDIX_FRAMEWORKS.md"),
+                "self_bootstrap_md": _file_mtime("docs/SIDIX_SELF_BOOTSTRAP_ROADMAP.md"),
+            },
+            "tumbuh_pipeline": {
+                "lora_datasets_recent": lora_datasets,
+                "lora_dataset_count": len(lora_datasets),
+                "daily_synthesis_latest": _file_mtime(f"docs/DAILY_SYNTHESIS_{__import__('datetime').date.today().isoformat()}.md"),
+            },
+            "multi_source_orchestrator": msd_config,
+            "cognitive": {
+                "brand_canon_count": brand_canon_count,
+                "persona_count": persona_count,
+                "personas": ["UTZ", "ABOO", "OOMAR", "ALEY", "AYMAN"],
+            },
+            "adaptive_output": {
+                "output_types_supported": output_types,
+                "tools_wired_phase3": ["image_gen", "tts", "video_storyboard", "3d_prompt", "structured"],
+            },
+            "northstar_visi_coverage_estimate": {
+                "genius": 1.00,
+                "creative": 0.90,
+                "tumbuh": 0.50,  # auth fixed, full cycle 24-48h validation pending
+                "cognitive_semantic": 0.80,
+                "iteratif": 1.00,
+                "inovasi": 1.00,
+                "pencipta": 0.75,  # 5 modality dispatch LIVE, Phase 4 actual pipeline pending
+                "overall": 0.85,
+            },
+        }
+
     # ── POST /agent/chat_holistic_stream ─────────────────────────────────────
     # Sprint 3 — SSE streaming wrapper untuk /agent/chat_holistic.
     # Yields events real-time: source-discovered → source-completed →
