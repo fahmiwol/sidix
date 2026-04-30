@@ -54,7 +54,7 @@ def _fetch_google_trends_id(n: int = 10) -> list[str]:
     """Fetch trending topics from Google Trends RSS for Indonesia."""
     url = "https://trends.google.com/trends/trendingsearches/daily/rss?geo=ID"
     try:
-        req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+        req = urllib.request.Request(url, headers={"User-Agent": _WIKI_UA})
         with urllib.request.urlopen(req, timeout=10) as resp:
             import xml.etree.ElementTree as ET
             tree = ET.parse(resp)
@@ -75,6 +75,16 @@ def _fetch_google_trends_id(n: int = 10) -> list[str]:
 
 # ── Wikipedia content fetch ────────────────────────────────────────────────────
 
+_WIKI_UA = "SIDIXKnowledgeHarvest/1.0 (https://sidixlab.com; contact@sidixlab.com) Python-urllib"
+
+
+def _wiki_get(url: str, timeout: int = 10) -> bytes:
+    """GET request to Wikipedia with proper User-Agent."""
+    req = urllib.request.Request(url, headers={"User-Agent": _WIKI_UA})
+    with urllib.request.urlopen(req, timeout=timeout) as resp:
+        return resp.read()
+
+
 def _wikipedia_search(query: str, limit: int = 3, lang: str = "id") -> list[dict]:
     """Search Wikipedia and return list of {title, extract, url}."""
     base = f"https://{lang}.wikipedia.org/w/api.php"
@@ -88,8 +98,7 @@ def _wikipedia_search(query: str, limit: int = 3, lang: str = "id") -> list[dict
         "format": "json",
     })
     try:
-        with urllib.request.urlopen(f"{base}?{search_params}", timeout=10) as resp:
-            data = json.loads(resp.read())
+        data = json.loads(_wiki_get(f"{base}?{search_params}"))
         titles = [r["title"] for r in data.get("query", {}).get("search", [])]
     except Exception as e:
         log.warning("[harvest] Wikipedia search error: %s", e)
@@ -112,8 +121,7 @@ def _wikipedia_search(query: str, limit: int = 3, lang: str = "id") -> list[dict
             "redirects": 1,
         })
         try:
-            with urllib.request.urlopen(f"{base}?{content_params}", timeout=10) as resp:
-                cdata = json.loads(resp.read())
+            cdata = json.loads(_wiki_get(f"{base}?{content_params}"))
             pages = cdata.get("query", {}).get("pages", {})
             for page in pages.values():
                 if "missing" in page:
