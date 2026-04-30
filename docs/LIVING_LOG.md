@@ -15571,3 +15571,29 @@ apps/brain_qa/brain_qa/agent_serve.py (+50 LOC endpoint)
 3. Streaming SSE per-source events (live display "web_search ✓ ALEY thinking...")
 4. Update help modal text "ROUTING OTOMATIS" -> "JURUS SERIBU BAYANGAN"
 
+
+## [SPRINT-BATCH] 2026-04-30 evening — 6 Sprint LIVE Compound
+
+### Sprints completed sequentially
+1. **Sprint 1 E2E Re-Test** — Sprint Α post bug fix verification: 4/5 sources, 123s latency, attribution working
+2. **Sprint 2 Frontend Wire askHolistic** — api.ts function + help modal "JURUS SERIBU BAYANGAN" section
+3. **Sprint 3 Streaming SSE** — `/agent/chat_holistic_stream` endpoint + frontend askHolisticStream() consumer, first byte ~70ms
+4. **Sprint Frontend Integration** — tombol `mode-holistic` di app + live progress UI (web ✓ corpus ✓ 5 persona thinking → typewriter token stream)
+5. **Sprint Persona Deliverable Format Extended** — 4 persona (AYMAN/ABOO/OOMAR/ALEY) ditambah methodology spesifik (research note 309 adoption)
+6. **Sprint 5 Adaptive Output Phase 1** — output_type_detector module + 7 OutputType enum + 7/7 unit test pass + wired ke endpoint
+
+### Visi coverage shift
+- Genius: 100% (jurus seribu bayangan + streaming + UX integrated)
+- Creative: 75% → 90% (5 persona × deliverable format)
+- Pencipta: 30% → 45% (output detector LIVE Phase 1)
+- Overall: 73% → 79%
+
+### Commits
+3bb90b0 sprint 1+2+3 + agency-agents adoption note 309
+9f97eaf sprint frontend + adaptive output + persona deliverable
+
+### Anti-menguap protocol verified
+Bos cek "sprint dicatat kan?" — saya update BACKLOG (lengkap COMPLETED entries) +
+LIVING_LOG (this entry) + commit. Pattern: catat dulu sebelum lanjut sprint
+berikutnya. Tidak menguap.
+

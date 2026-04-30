@@ -60,6 +60,73 @@ Last updated: 2026-04-30 evening (Meta-Process Reform)
 - **Evidence**: commit e168865 + first synthesis at `docs/DAILY_SYNTHESIS_2026-04-30.md`
 - **Status**: LIVE. Tomorrow morning agent baca synthesis file = grounded tanpa re-read 309 notes.
 
+### Sprint 1 — E2E Re-Test Sprint Α (Post Bug Fix Verification)
+- **Visi mapping**: Genius validation
+- **Date**: 2026-04-30 evening
+- **Deliverable**: Probe `/agent/chat_holistic` post bug fixes
+- **Acceptance**: ✅ n_sources 2/5 → **4/5** (corpus + persona_fanout + dense + tools all SUCCESS), latency 132s → **123s** (-7%), explicit attribution "Menurut corpus lokal..."
+- **Evidence**: probe log task `bfr25767r.output` + research note 309
+- **Status**: LIVE PASSED. Only `web: timeout_25s` remaining (DDG genuine slow, not bug).
+
+### Sprint 2 — Frontend Wire askHolistic + Help Modal Update
+- **Visi mapping**: Genius (UX expose multi-source capability)
+- **Date**: 2026-04-30 evening
+- **Deliverable**:
+  - `SIDIX_USER_UI/src/api.ts`: `askHolistic()` function + `ChatHolisticResponse` TS type
+  - `SIDIX_USER_UI/index.html`: help modal section "🌟 JURUS SERIBU BAYANGAN (Default)"
+- **Acceptance**: ✅ Frontend ready dipanggil, build success 50KB index gzipped 11KB, deploy LIVE
+- **Evidence**: commit 3bb90b0
+- **Status**: LIVE — but full chat UI integration (mode-holistic button) di Sprint Frontend Integration berikutnya.
+
+### Sprint 3 — Streaming SSE Wrapper
+- **Visi mapping**: Cognitive (perceived latency) + Iteratif
+- **Date**: 2026-04-30 evening
+- **Deliverable**:
+  - Backend: `/agent/chat_holistic_stream` endpoint baru di `agent_serve.py`
+  - SSE event types: start → orchestrator_start → source_complete (per source) → orchestrator_done → synthesis_start → token chunks → done
+  - Frontend: `askHolisticStream()` di api.ts dengan callbacks per event
+- **Acceptance**: ✅ Smoke test first byte ~70ms (vs 60-120s freeze), events streaming real-time
+- **Evidence**: commit 3bb90b0 + smoke test logs
+- **Status**: LIVE.
+
+### Sprint Frontend Integration — Mode Holistic Button + Live Progress UI
+- **Visi mapping**: Genius UX (jurus seribu bayangan visible to user)
+- **Date**: 2026-04-30 evening
+- **Deliverable**:
+  - `index.html`: tombol baru `mode-holistic` (gradient gold) di sebelah Burst/Two-Eyed/Foresight/Resurrect
+  - `main.ts`: handler `modeHolisticBtn` yang invoke `askHolisticStream` dengan live progress UI per event
+  - Real-time elapsed timer 0.1s precision (font-variant-numeric tabular)
+- **Acceptance**: ✅ Build sukses, deploy LIVE, app HTTP 200 47ms
+- **Evidence**: commit 9f97eaf
+- **Status**: LIVE. User klik tombol Holistic → see real-time progress (web ✓ corpus ✓ 5 persona thinking → synthesis token streaming).
+
+### Sprint Persona Deliverable Format Extended (Adopt research note 309 selective)
+- **Visi mapping**: Creative (5 persona × structured deliverable)
+- **Date**: 2026-04-30 evening
+- **Deliverable**: 4 persona descriptions di `cot_system_prompts.py` ditambah methodology spesifik:
+  - **AYMAN**: empathic mirror + analogi sederhana + reframe + actionable next + jangan avoid
+  - **ABOO**: kode langsung + Big-O complexity + edge cases checklist + fail-fast + no fluff
+  - **OOMAR**: framework named (SWOT/Porter/Lean Canvas/JTBD/OKR) + tradeoff explicit + KPI + 7-30-90 days
+  - **ALEY**: sanad min 3 sumber + counterargument + epistemic confidence tag + cross-domain + admit unknown
+  - **UTZ**: existing Sigma-3D (METAFORA/KEJUTAN/NILAI/NO-ECHO/MIN 3 ALT) — sudah LIVE
+- **Acceptance**: ✅ syntax verified, deploy LIVE
+- **Evidence**: commit 9f97eaf + research note 309
+- **Status**: LIVE. Tiap persona output sekarang punya operational constraint spesifik. Visi Creative coverage 75% → 90%.
+
+### Sprint 5 — Adaptive Output (Pencipta Foundation)
+- **Visi mapping**: Pencipta (visi gap terbesar) + foundation Adobe-of-Indonesia
+- **Date**: 2026-04-30 evening
+- **Deliverable**:
+  - NEW `apps/brain_qa/brain_qa/output_type_detector.py` (236 LOC)
+  - 7 OutputType enum: TEXT / CODE / IMAGE_PROMPT / VIDEO_STORYBOARD / AUDIO_TTS / 3D_PROMPT / STRUCTURED
+  - Heuristic regex Phase 1 (no LLM cost)
+  - `adaptive_output_hint_for_synthesizer()` instructions per modality
+  - Wired ke `/agent/chat_holistic` response: tambah field `output_type` + `output_confidence` + `output_reason` + `suggested_tools`
+- **Acceptance**: ✅ Unit test 7/7 PASS (text/image/code/video/audio/3d/structured), deploy LIVE
+- **Evidence**: commit 9f97eaf + unit test output
+- **Status**: LIVE Phase 1. Phase 2 future: ML classifier + actual tool invocation (image_gen, TTS, 3D mesh).
+- **Visi coverage shift**: Pencipta 30% → 45%.
+
 ### Sprint Α follow-up — Bug Fixes (Code-Level)
 - **Visi mapping**: Genius (multi-source stability)
 - **Date**: 2026-04-30 evening
