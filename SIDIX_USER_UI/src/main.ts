@@ -17,10 +17,10 @@ import {
 } from 'lucide';
 
 import {
-  checkHealth, askStream, askHolisticStream, BRAIN_QA_BASE, listCorpus, uploadDocument, deleteDocument,
+  checkHealth, askStream, askHolistic, askHolisticStream, BRAIN_QA_BASE, listCorpus, uploadDocument, deleteDocument,
   triggerReindex, getReindexStatus, agentGenerate, submitFeedback, forgetAgentSession,
   agentBurst, agentTwoEyed, agentForesight, agentResurrect,
-  BrainQAError, BRAIN_QA_BASE,
+  BrainQAError,
   type Persona, type CorpusDocument, type Citation, type HealthResponse,
   type AskInferenceOpts, type QuotaInfo,
 } from './api';
@@ -1345,64 +1345,93 @@ async function doHolistic(question: string) {
   };
 
   try {
-    await askHolisticStream(question, persona, {
-      onStart: (_q, outputType) => {
-        addProgressLine(`Query received${outputType ? ` (output: ${outputType})` : ''}`);
-      },
-      onOrchestratorStart: () => {
-        addProgressLine('Mengerahkan 8 sumber paralel sekaligus...');
-      },
-      onSourceComplete: (source, success, latencyMs) => {
-        // Update chip visual real-time (jurus 1000 bayangan = paralel state visible)
-        updateChip(source, success, latencyMs);
-        // Log audit (low-prominence, di bawah grid)
-        const labels: Record<string, string> = {
-          web: '🌐 web_search (DDG + Wikipedia)',
-          corpus: '📚 corpus BM25',
-          dense: '🧬 dense embedding',
-          persona_fanout: '👥 5 persona Ollama',
-          tools: '🛠 tool registry',
-        };
-        const label = labels[source] || source;
-        addProgressLine(`${label} ${success ? '✓' : '✗'} (${(latencyMs / 1000).toFixed(1)}s)`, success ? 'ok' : 'fail');
-      },
-      onOrchestratorDone: (n, totalMs) => {
-        if (metaEl) {
-          metaEl.classList.remove('hidden');
-          metaEl.textContent = `🌟 ${n} sumber sukses paralel · total ${(totalMs / 1000).toFixed(1)}s · cognitive synthesizer merging...`;
-        }
-        addProgressLine(`Orchestrator done: ${n}/5 sources (${(totalMs / 1000).toFixed(1)}s)`, 'ok');
-      },
-      onSynthesisStart: () => addProgressLine('Cognitive synthesizer merging...'),
-      onToken: (text) => {
-        fullAnswer += text;
-        answerEl.textContent = fullAnswer;
-        if (chatMessages) chatMessages.scrollTop = chatMessages.scrollHeight;
-      },
-      onToolInvoke: (tool, message) => addProgressLine(`🛠 ${tool}: ${message}`),
-      onAttachment: (att) => {
-        addProgressLine(`📎 Attachment received: ${att.type}`, 'ok');
-        renderAttachment(att);
-      },
-      onToolError: (tool, error) => addProgressLine(`Tool ${tool} error: ${error}`, 'fail'),
-      onDone: (meta) => {
-        clearInterval(elapsedTimer);
-        sendBtn.disabled = false;
-        addProgressLine(
-          `Done: confidence=${meta.confidence}, ${meta.nSources} sources, method=${meta.method}, ${(meta.durationMs / 1000).toFixed(1)}s total`,
-          'ok',
-        );
-      },
-      onError: (msg) => {
-        clearInterval(elapsedTimer);
-        sendBtn.disabled = false;
-        addProgressLine(`Error: ${msg}`, 'fail');
-      },
-    });
+    addProgressLine('Mengerahkan 8 sumber paralel sekaligus...');
+
+    // Try streaming first; fall back to non-streaming (chat_holistic_stream not yet on server)
+    let usedStream = false;
+    try {
+      await askHolisticStream(question, persona, {
+        onStart: (_q, outputType) => {
+          addProgressLine(`Query received${outputType ? ` (output: ${outputType})` : ''}`);
+        },
+        onOrchestratorStart: () => {
+          addProgressLine('Orchestrator starting...');
+        },
+        onSourceComplete: (source, success, latencyMs) => {
+          updateChip(source, success, latencyMs);
+          const labels: Record<string, string> = {
+            web: '🌐 web_search (DDG)',
+            corpus: '📚 corpus BM25',
+            dense: '🧬 dense embedding',
+            persona_fanout: '👥 5 persona Ollama',
+            tools: '🛠 tool registry',
+          };
+          addProgressLine(`${labels[source] || source} ${success ? '✓' : '✗'} (${(latencyMs / 1000).toFixed(1)}s)`, success ? 'ok' : 'fail');
+        },
+        onOrchestratorDone: (n, totalMs) => {
+          if (metaEl) {
+            metaEl.classList.remove('hidden');
+            metaEl.textContent = `🌟 ${n} sumber sukses paralel · total ${(totalMs / 1000).toFixed(1)}s · cognitive synthesizer merging...`;
+          }
+          addProgressLine(`Orchestrator done: ${n}/5 sources (${(totalMs / 1000).toFixed(1)}s)`, 'ok');
+        },
+        onSynthesisStart: () => addProgressLine('Cognitive synthesizer merging...'),
+        onToken: (text) => {
+          fullAnswer += text;
+          answerEl.textContent = fullAnswer;
+          if (chatMessages) chatMessages.scrollTop = chatMessages.scrollHeight;
+        },
+        onToolInvoke: (tool, message) => addProgressLine(`🛠 ${tool}: ${message}`),
+        onAttachment: (att) => { addProgressLine(`📎 ${att.type}`, 'ok'); renderAttachment(att); },
+        onToolError: (tool, error) => addProgressLine(`Tool ${tool} error: ${error}`, 'fail'),
+        onDone: (meta) => {
+          clearInterval(elapsedTimer);
+          sendBtn.disabled = false;
+          addProgressLine(`Done: confidence=${meta.confidence}, ${meta.nSources} sources, ${(meta.durationMs / 1000).toFixed(1)}s`, 'ok');
+          usedStream = true;
+        },
+        onError: (msg) => {
+          // If streaming fails (404 / not implemented), fall through to non-streaming
+          addProgressLine(`Stream tidak tersedia, beralih ke mode sinkron...`);
+        },
+      });
+    } catch { /* streaming not available */ }
+
+    // Non-streaming fallback (primary path until chat_holistic_stream is live)
+    if (!usedStream && !fullAnswer) {
+      addProgressLine('Synthesizing via /agent/chat_holistic...');
+      const result = await askHolistic(question, persona);
+
+      // Simulate chip completion from sources_used
+      const srcMap: Record<string, string> = {
+        web_search: 'web', corpus: 'corpus', dense_index: 'dense',
+        persona_fanout_5: 'persona_fanout', tools_hint: 'tools',
+      };
+      const avgMs = Math.floor((result.duration_ms || 2000) / Math.max((result.sources_used || []).length, 1));
+      for (const src of (result.sources_used || [])) {
+        updateChip(srcMap[src] || src, true, avgMs);
+      }
+
+      if (metaEl) {
+        metaEl.classList.remove('hidden');
+        metaEl.textContent = `🌟 ${(result.sources_used || []).length} sumber · ${((result.duration_ms || 0) / 1000).toFixed(1)}s · ${result.method || 'holistic'}`;
+      }
+
+      fullAnswer = result.answer || '';
+      answerEl.textContent = fullAnswer;
+      if (chatMessages) chatMessages.scrollTop = chatMessages.scrollHeight;
+
+      clearInterval(elapsedTimer);
+      sendBtn.disabled = false;
+      addProgressLine(
+        `Done: confidence=${result.confidence || '?'}, ${(result.duration_ms || 0) / 1000}s total`,
+        'ok',
+      );
+    }
   } catch (e) {
     clearInterval(elapsedTimer);
     sendBtn.disabled = false;
-    addProgressLine(`Exception: ${(e as Error).message}`, 'fail');
+    addProgressLine(`Error: ${(e as Error).message}`, 'fail');
   }
 
 }
