@@ -207,6 +207,65 @@ BRAND_CANON: dict[str, dict] = {
         ),
         "tier": "fact",
     },
+    # Sigma-4: Foundational AI concepts yang sering ditanya — instant canonical = 3ms
+    "attention_mechanism": {
+        "matchers": ["attention mechanism", "self-attention", "self attention",
+                     "attention dalam transformer", "apa itu attention"],
+        "facts": ["query", "key", "value", "softmax"],
+        "min_facts_match": 2,
+        "canonical_answer": (
+            "**Attention Mechanism** (Vaswani et al., 'Attention is All You Need', 2017) — "
+            "mekanisme di Transformer yang menghitung relevance antar token via Query (Q), "
+            "Key (K), dan Value (V) matrices. Formula: `Attention(Q,K,V) = softmax(QK^T/√d_k)·V`. "
+            "Setiap token 'attend' ke token lain dengan bobot dinamis. Self-attention = Q,K,V "
+            "dari sequence yang sama. Multi-head attention = paralel attention dengan beda "
+            "projeksi → tangkap pola berbeda secara simultan."
+        ),
+        "tier": "fact",
+    },
+    "transformer": {
+        "matchers": ["apa itu transformer", "transformer architecture",
+                     "transformer dalam ai", "transformer model", "arsitektur transformer"],
+        "facts": ["attention", "encoder", "decoder", "vaswani"],
+        "min_facts_match": 2,
+        "canonical_answer": (
+            "**Transformer** (Vaswani et al., 2017) — arsitektur neural network yang sepenuhnya "
+            "berbasis attention mechanism (TIDAK pakai RNN/LSTM). Komponen utama: encoder stack "
+            "+ decoder stack (atau decoder-only seperti GPT). Per-layer: multi-head self-attention "
+            "→ feed-forward network → residual + layernorm. Pioneering work yang fondasinya "
+            "dipakai semua LLM modern (GPT, BERT, Qwen, LLaMA, Claude). Paper: "
+            "'Attention is All You Need' arxiv:1706.03762."
+        ),
+        "tier": "fact",
+    },
+    "rag": {
+        "matchers": ["apa itu rag", "rag adalah", "retrieval augmented", "retrieval-augmented",
+                     "rag dalam ai"],
+        "facts": ["retrieval", "context", "knowledge"],
+        "min_facts_match": 1,
+        "canonical_answer": (
+            "**RAG = Retrieval-Augmented Generation** (Lewis et al., Meta AI, 2020) — paradigma "
+            "AI yang gabung retrieval (search corpus eksternal) + generation (LLM). Flow: "
+            "query → retrieve relevant docs (BM25/dense vector) → inject sebagai context → "
+            "LLM generate jawaban grounded di retrieved context. Fix masalah halusinasi LLM "
+            "dengan ground answers di sumber yang bisa dilacak. SIDIX implement RAG via "
+            "BM25 corpus search + web_search tools."
+        ),
+        "tier": "fact",
+    },
+    "mighan": {
+        "matchers": ["apa itu mighan", "mighan lab", "mighan adalah", "siapa mighan"],
+        "facts": ["lab", "tiranyx", "ai"],
+        "min_facts_match": 1,
+        "canonical_answer": (
+            "**Mighan Lab** — research arm di bawah Tiranyx (PT Tiranyx Digitalis Nusantara). "
+            "Fokus: AI agent (SIDIX), 3D generation (Mighan-3D), creator platform (Ixonomic). "
+            "Built by Fahmi Ghani sebagai counterpart kreatif untuk Tiranyx digital agency. "
+            "Signature: AI yang self-hosted, open source, dan grounded di tradisi keilmuan "
+            "(sanad chain, IHOS framework)."
+        ),
+        "tier": "fact",
+    },
 }
 
 
