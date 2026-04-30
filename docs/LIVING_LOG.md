@@ -15846,3 +15846,24 @@ Sprint Tumbuh REAL state was 20% (broken auth), bukan 40%. Sekarang 50% (auth fi
 - VPS path: `/opt/sidix`
 - Branch VPS: `claude/gallant-ellis-7cd14d` @ `fee82e6`
 - `.data/sessions/`, `.data/critique/`, `.data/daily_state/`
+
+
+### 2026-04-30 (bagian 4 — UI/UX: Jurus Seribu Bayangan jadi default)
+
+- **DECISION:** `activeMode` default diganti dari `'classic'` ke `'holistic'` (Jurus Seribu Bayangan). User mengetik langsung → paralel multi-source inference tanpa perlu klik mode dulu.
+- **IMPL:** `SIDIX_USER_UI/src/main.ts` — ekstrak fungsi `setActiveMode(mode)` dengan highlight gold ring pada tombol aktif. Fungsi `doHolistic(question)` dipisah dari event listener agar bisa dipanggil dari `handleSend()`.
+- **IMPL:** `handleSend()` sekarang routing berdasarkan `activeMode`: holistic → `doHolistic()`, burst → burst handler (placeholder), classic → `askStream()` fallback.
+- **IMPL:** Tombol Holistic otomatis ter-highlight (`.mode-active`) saat load. Semua tombol mode (`modeHolisticBtn`, `modeBurstBtn`, dll.) sekarang sticky toggle — klik sekali = pilih mode, klik lagi = tetap aktif (bukan prompt popup).
+- **IMPL:** `SIDIX_USER_UI/src/index.css` — tambah class `.mode-active` dengan border gold + box-shadow + background tint.
+- **FIX:** Hindari encoding corruption emoji: transfer file dilakukan via `git push` lalu `git pull` di VPS (bukan PowerShell copy-paste yang merusak UTF-8 emoji).
+- **TEST:** Build VPS sukses — `vite build` 1.95s, 0 error. PM2 restart `sidix-ui` ok.
+- **TEST:** Verifikasi di VPS: `grep` menemukan `activeMode: ChatMode = 'holistic'` di baris 1108.
+- **DEPLOY:** Branch `claude/gallant-ellis-7cd14d` di-push dari lokal Windows. VPS pull + build + restart otomatis.
+
+**Next (belum dikerjakan):**
+1. Auto-mode detection (coding / planning / deep-research) — classifier sederhana di frontend atau backend.
+2. Persona "Mirror" default — analisis perilaku user, auto-route ke persona terdekat.
+
+**Refer:**
+- `gallant-ellis-7cd14d/SIDIX_USER_UI/src/main.ts` (baris 1108–1150)
+- `gallant-ellis-7cd14d/SIDIX_USER_UI/src/index.css`
