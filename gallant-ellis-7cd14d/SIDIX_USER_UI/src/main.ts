@@ -1156,16 +1156,12 @@ function appendThinkingPlaceholder(label: string): HTMLDivElement {
 }
 
 // 🌟 Sprint Α: Holistic Mode — Jurus Seribu Bayangan (multi-source paralel + SSE streaming)
-modeHolisticBtn?.addEventListener('click', async () => {
-  const question = getInputOrPrompt(
-    '🌟 Jurus Seribu Bayangan (Holistic)',
-    'Mengerahkan SEMUA resource paralel: web search + knowledge base + semantic embedding + 5 persona research + tools simultan. Sanad cross-verify multi-source. Cognitive synthesizer (neutral) merge jadi 1 jawaban with attribution. Multi-perspective default.',
-  );
-  if (!question) return;
+modeHolisticBtn?.addEventListener('click', () => {
+  setActiveMode('holistic');
+});
 
-  appendMessage('user', question);
-  if (chatInput) { chatInput.value = ''; chatInput.dispatchEvent(new Event('input')); }
-
+// Extracted: doHolistic handles the actual multi-source inference
+async function doHolistic(question: string) {
   // Live progress card — show 8 parallel sources visualized real-time
   // Sprint UX-fix 2026-04-30: visi bos = SEMUA paralel sekaligus, bukan sequential
   const progressWrap = document.createElement('div');
@@ -1388,7 +1384,8 @@ modeHolisticBtn?.addEventListener('click', async () => {
     sendBtn.disabled = false;
     addProgressLine(`Exception: ${(e as Error).message}`, 'fail');
   }
-});
+
+}
 
 modeBurstBtn?.addEventListener('click', async () => {
   const prompt = getInputOrPrompt(
@@ -1784,18 +1781,18 @@ async function handleSend() {
     // count ≤ FREE_CHAT_LIMIT: chat gratis, lanjut normal
   }
 
-  // ── Auto-mode routing: holistic default ───────────────────────────────────
-  if (activeMode === 'holistic') {
-    sendBtn.disabled = true;
-    modeHolisticBtn?.click();
-    return;
-  }
 
   chatInput.value = '';
   chatInput.style.height = 'auto';
   sendBtn.disabled = true;
 
   appendMessage('user', question);
+
+  // ── Auto-mode routing: holistic default ────────────────────────────────────
+  if (activeMode === 'holistic') {
+    await doHolistic(question);
+    return;
+  }
 
   // Thinking indicator — dengan hint khusus kalau minta gambar + REAL-TIME TIMER
   const q_lower = question.toLowerCase();
