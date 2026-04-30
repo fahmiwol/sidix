@@ -20,7 +20,7 @@ import httpx
 
 log = logging.getLogger("sidix.mojeek")
 
-_TIMEOUT = 10.0
+_TIMEOUT = 5.0   # short — VPS IP often blocked by DDG/Mojeek, fail fast to Wikipedia
 _CACHE_TTL = 300.0
 _result_cache: dict = {}
 
@@ -155,6 +155,10 @@ async def mojeek_search_async(query: str, max_results: int = 5) -> list[MojeekHi
     if use_fallback:
         hits = await _ddg_search_async(query, max_results=max_results)
 
+    # Third fallback: Wikipedia (always reachable from VPS — DDG/Mojeek often blocked)
+    if not hits:
+        hits = await _wikipedia_search_async(query, max_results=max_results)
+
     log.info("[mojeek/web] '%s' -> %d hits (engine=%s)",
              query[:60], len(hits), hits[0].engine if hits else "none")
 
@@ -164,6 +168,57 @@ async def mojeek_search_async(query: str, max_results: int = 5) -> list[MojeekHi
         oldest = min(_result_cache.items(), key=lambda kv: kv[1][0])
         _result_cache.pop(oldest[0], None)
     return sliced
+
+
+async def _wikipedia_search_async(query: str, max_results: int = 5) -> list[MojeekHit]:
+    """Wikipedia API fallback — used when Mojeek + DDG both fail from VPS IP."""
+    import asyncio, json, urllib.parse, urllib.request
+
+    def _sync_search() -> list[MojeekHit]:
+        # Search for article titles
+        params = urllib.parse.urlencode({
+            "action": "query",
+            "list": "search",
+            "srsearch": query,
+            "srlimit": max_results,
+            "format": "json",
+        })
+        url = f"https://id.wikipedia.org/w/api.php?{params}"
+        try:
+            with urllib.request.urlopen(url, timeout=10) as resp:
+                data = json.loads(resp.read())
+        except Exception as e:
+            log.warning("[wikipedia] search error: %s", e)
+            return []
+
+        titles = [r["title"] for r in data.get("query", {}).get("search", [])]
+        if not titles:
+            # Try English Wikipedia
+            url_en = f"https://en.wikipedia.org/w/api.php?{params}"
+            try:
+                with urllib.request.urlopen(url_en, timeout=10) as resp:
+                    data = json.loads(resp.read())
+                titles = [r["title"] for r in data.get("query", {}).get("search", [])]
+            except Exception:
+                return []
+
+        hits = []
+        for title in titles[:max_results]:
+            hits.append(MojeekHit(
+                title=title,
+                url=f"https://id.wikipedia.org/wiki/{urllib.parse.quote(title.replace(' ', '_'))}",
+                snippet=f"Wikipedia: {title}",
+                engine="wikipedia",
+            ))
+        return hits
+
+    try:
+        hits = await asyncio.to_thread(_sync_search)
+        log.info("[wikipedia] '%s' -> %d hits", query[:60], len(hits))
+        return hits
+    except Exception as e:
+        log.warning("[wikipedia] async error: %s", e)
+        return []
 
 
 def to_citations(hits: list[MojeekHit]) -> list[dict]:
