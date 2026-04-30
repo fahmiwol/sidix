@@ -545,3 +545,12 @@ async def omnyx_process(
         "knowledge_stored": session.knowledge_stored,
         "persona": session.persona,
     }
+
+
+# ── Backward-compatible wrapper (used by agent_serve.py /agent/chat_holistic) ──
+
+class OMNYXDirector:
+    """Wrapper class with .run() method for compat with VPS endpoint."""
+
+    async def run(self, query: str, persona: str = "UTZ") -> dict:
+        return await omnyx_process(query, persona)

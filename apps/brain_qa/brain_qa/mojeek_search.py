@@ -1,7 +1,7 @@
 """
 mojeek_search.py — Mojeek Search scraper for SIDIX
 
-Mojeek = independent search engine (UK-based) with permisive scraping.
+Mojeek = independent search engine (UK-based) with permissive scraping.
 No rate limits detected from VPS IP. Returns 200 with HTML results.
 
 Why Mojeek:
@@ -15,8 +15,8 @@ License: MIT
 """
 from __future__ import annotations
 
-import asyncio
 import logging
+import time
 from dataclasses import dataclass
 from urllib.parse import quote_plus
 
@@ -44,7 +44,6 @@ async def mojeek_search_async(query: str, max_results: int = 5) -> list[MojeekHi
         return []
 
     # Cache check
-    import time
     cached = _result_cache.get(query)
     if cached:
         ts, hits = cached
@@ -66,29 +65,45 @@ async def mojeek_search_async(query: str, max_results: int = 5) -> list[MojeekHi
 
             from selectolax.parser import HTMLParser
             tree = HTMLParser(r.text)
-            results = tree.css(".results-standard li")
-            hits = []
-            for res in results[:max_results]:
-                title_a = res.css_first("a")
-                title_text = ""
-                if title_a:
-                    title_text = title_a.text() or ""
-                    # If text is just URL, try to get href as fallback
-                    if title_text.startswith("http"):
-                        title_text = title_a.attributes.get("href", "")[:80]
-                
-                snippet_p = res.css_first("p")
-                snippet_text = snippet_p.text() if snippet_p else ""
-                
-                # Skip if both title and snippet are empty/URL-only
-                if not title_text or title_text.startswith("http"):
-                    continue
 
-                hits.append(MojeekHit(
-                    title=title_text[:200],
-                    url=title_a.attributes.get("href", "") if title_a else "",
-                    snippet=snippet_text[:400],
-                ))
+            # ── Try multiple selectors (Mojeek changes layout occasionally) ──
+            selectors = [
+                ("li.result", "a.title", "p.s"),           # newer layout
+                (".results-standard li", "a", "p"),        # original layout
+                ("[data-result]", "a[data-url]", ".snippet"), # possible future
+            ]
+
+            hits = []
+            for container_sel, title_sel, snippet_sel in selectors:
+                results = tree.css(container_sel)
+                log.debug("[mojeek] selector %s → %d results", container_sel, len(results))
+                if not results:
+                    continue
+                for res in results[:max_results]:
+                    title_el = res.css_first(title_sel)
+                    if not title_el:
+                        # fallback: any <a> inside result
+                        title_el = res.css_first("a")
+                    title_text = (title_el.text() or "").strip()
+                    href = title_el.attributes.get("href", "") if title_el else ""
+
+                    snippet_el = res.css_first(snippet_sel)
+                    if not snippet_el:
+                        # fallback: any <p> or .desc
+                        snippet_el = res.css_first("p, .desc, .snippet")
+                    snippet_text = (snippet_el.text() or "").strip() if snippet_el else ""
+
+                    # Skip empty or URL-only titles
+                    if not title_text or title_text.startswith(("http", "www.")):
+                        continue
+
+                    hits.append(MojeekHit(
+                        title=title_text[:200],
+                        url=href,
+                        snippet=snippet_text[:400],
+                    ))
+                if hits:
+                    break  # found working selector
 
             log.info("[mojeek] '%s' → %d hits", query[:60], len(hits))
             sliced = hits[:max_results]
@@ -114,3 +129,18 @@ def to_citations(hits: list[MojeekHit]) -> list[dict]:
         }
         for h in hits
     ]
+
+
+# Debug helper — can be called from CLI
+if __name__ == "__main__":
+    import asyncio
+    logging.basicConfig(level=logging.DEBUG)
+    q = " ".join(__import__("sys").argv[1:]) or "presiden indonesia 2024"
+    hits = asyncio.run(mojeek_search_async(q, max_results=3))
+    print(f"Query: {q}")
+    print(f"Hits: {len(hits)}")
+    for h in hits:
+        print(f"  Title: {h.title}")
+        print(f"  URL: {h.url}")
+        print(f"  Snippet: {h.snippet[:100]}...")
+        print()

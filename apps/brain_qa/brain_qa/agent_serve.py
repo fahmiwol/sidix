@@ -1171,6 +1171,81 @@ def create_app() -> "FastAPI":
             planner_savings=getattr(session, "planner_savings", 0.0),
         )
 
+    # ── POST /agent/chat_holistic ─────────────────────────────────────────────
+    # Sprint Mojeek (2026-04-30): Holistic mode dengan OMNYX Direction.
+    # Primary path: OMNYX tool-calling (corpus → web → persona → synthesis).
+    # Legacy fallback: parallel multi-source fanout.
+    @app.post("/agent/chat_holistic", response_model=ChatResponse)
+    async def agent_chat_holistic(req: ChatRequest, request: Request):
+        _enforce_rate(request)
+        _bump_metric("agent_chat_holistic")
+        if not req.question.strip():
+            raise HTTPException(status_code=400, detail="question tidak boleh kosong")
+
+        t0 = time.time()
+        effective_persona = (req.persona or "UTZ").strip().upper()
+        if effective_persona not in _ALLOWED_PERSONAS:
+            effective_persona = "UTZ"
+
+        # OMNYX Direction — primary path
+        try:
+            from .omnyx_direction import OMNYXDirector
+            director = OMNYXDirector()
+            result = await director.run(req.question, persona=effective_persona)
+            duration_ms = int((time.time() - t0) * 1000)
+
+            return ChatResponse(
+                session_id=f"holistic_{uuid.uuid4().hex[:8]}",
+                answer=result.get("answer", ""),
+                persona=effective_persona,
+                steps=result.get("n_turns", 1),
+                citations=[{"source": s} for s in result.get("sources_used", [])],
+                duration_ms=duration_ms,
+                finished=True,
+                error="",
+                confidence=result.get("confidence", "sedang"),
+                confidence_score=0.7 if result.get("confidence") == "tinggi" else 0.5,
+                answer_type="fakta",
+                user_id=req.user_id,
+                conversation_id=req.conversation_id,
+            )
+        except Exception as omnyx_err:
+            log.warning("[chat_holistic] OMNYX fail: %s", omnyx_err)
+
+        # Legacy fallback: parallel multi-source (corpus + web + persona)
+        try:
+            from .multi_source_orchestrator import MultiSourceOrchestrator
+            orchestrator = MultiSourceOrchestrator()
+            bundle = await orchestrator.gather_all(
+                req.question,
+                enable_web=True,
+                enable_corpus=True,
+                enable_persona_fanout=True,
+            )
+            from .cognitive_synthesizer import CognitiveSynthesizer
+            synth = CognitiveSynthesizer()
+            result = await synth.synthesize(bundle)
+            duration_ms = int((time.time() - t0) * 1000)
+
+            return ChatResponse(
+                session_id=f"holistic_legacy_{uuid.uuid4().hex[:8]}",
+                answer=result.answer,
+                persona=effective_persona,
+                steps=1,
+                citations=result.citations,
+                duration_ms=duration_ms,
+                finished=True,
+                error="",
+                confidence=result.confidence,
+                confidence_score=result.confidence_score,
+                answer_type=result.answer_type,
+                user_id=req.user_id,
+                conversation_id=req.conversation_id,
+            )
+        except Exception as fallback_err:
+            log.error("[chat_holistic] Fallback also failed: %s", fallback_err)
+            raise HTTPException(status_code=500, detail=f"OMNYX error: {omnyx_err}; fallback: {fallback_err}")
+
     # ── POST /agent/generate ──────────────────────────────────────────────────
     # Jiwa Sprint: pure general chat tanpa ReAct loop / tool / corpus overhead.
     # Direct generation dari Ollama/local_llm dengan persona hint.
