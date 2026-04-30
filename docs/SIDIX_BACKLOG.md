@@ -82,7 +82,25 @@ Last updated: 2026-04-30 evening (Meta-Process Reform)
 
 ## 📋 QUEUED (Ready Execute Next Session)
 
-### Sprint Frontend Wire — `/agent/chat_holistic` jadi Default Mode
+### Sprint Cowork Skills + Daily Synthesis Cron ⭐ NEXT (DECIDED)
+- **Visi mapping**: Cognitive (synthesis daily) + Iteratif (compound) + partial Self-Bootstrap
+- **Decision authority**: saya ambil untuk bos (bos eksplisit *"kamu yang bisa bantu tentuin buat saya"* 2026-04-30 evening)
+- **Cost**: $0 extra (Claude Code subscription existing + SIDIX brain Ollama gratis CPU)
+- **Effort**: 1 session (2-3 jam)
+- **Tasks**:
+  1. `.claude/skills/sidix-state.md` — auto-load BACKLOG digest
+  2. `.claude/skills/sidix-task-card.md` — generate Task Card from request
+  3. `.claude/skills/sidix-research.md` — invoke /agent/chat_holistic
+  4. `.claude/skills/sidix-update-log.md` — append FOUNDER_IDEA_LOG verbatim
+  5. `scripts/daily_synthesis.sh` — cron job synthesize hari ini → 1 paragraf state
+  6. Cron entry: `0 22 * * * /opt/sidix/scripts/daily_synthesis.sh`
+- **Acceptance**:
+  1. 4 skills exist + tested
+  2. Cron output muncul di `docs/DAILY_SYNTHESIS_<date>.md` tiap hari
+  3. Bos test workflow: ketik /sidix-state → langsung paham state tanpa baca 305 notes
+- **Detail**: research note 308 (Task Card lengkap)
+
+### Sprint Α follow-up — Bug Fixes
 - **Visi mapping**: UX expose Genius capability ke user
 - **Acceptance**:
   - SIDIX_USER_UI lama wire ke `/agent/chat_holistic` saat mode "Normal"/"Deep Thinking"
