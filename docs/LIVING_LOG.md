@@ -16034,3 +16034,63 @@ Sprint Tumbuh REAL state was 20% (broken auth), bukan 40%. Sekarang 50% (auth fi
 - `apps/brain_qa/brain_qa/multi_source_orchestrator.py`
 - `apps/brain_qa/brain_qa/omnyx_direction.py`
 
+
+
+### 2026-04-30 (bagian 13 — FIX: Mojeek scraper + chat_holistic endpoint missing)
+
+- **ROOT CAUSE 1:** `agent_serve.py` di VPS sudah di-edit langsung di VPS (punya endpoint `/agent/chat_holistic`), tapi kode di repo belum di-push. Waktu `git pull`, file di-overwrite → endpoint hilang.
+- **ROOT CAUSE 2:** Mojeek scraper return 0 hits karena selector `.results-standard li` tidak cocok dengan HTML asli Mojeek.
+- **FIX 1:** `agent_serve.py` — tambah endpoint `POST /agent/chat_holistic` dengan:
+  - Primary path: `OMNYXDirector.run()` → `omnyx_process()`
+  - Legacy fallback: `MultiSourceOrchestrator.gather_all()` + `CognitiveSynthesizer`
+  - Return `ChatResponse` model (kompatibel dengan frontend)
+- **FIX 2:** `omnyx_direction.py` — tambah class `OMNYXDirector` dengan method `.run()` untuk backward compatibility dengan endpoint.
+- **FIX 3:** `mojeek_search.py` — multiple CSS selectors fallback:
+  - `"li.result", "a.title", "p.s"` (newer layout)
+  - `".results-standard li", "a", "p"` (original layout)
+  - `"[data-result]", "a[data-url]", ".snippet"` (future-proof)
+  - CLI debug mode: `python -m brain_qa.mojeek_search "query"`
+- **FIX 4:** `google_ai_search.py` + `external_llm_pool.py` — ganti semua `gemini-2.0-flash` → `gemini-1.5-flash`.
+- **COMMIT:** `2f74823` pushed ke `work/gallant-ellis-7cd14d`.
+
+**Refer:**
+- `apps/brain_qa/brain_qa/agent_serve.py` (line ~1173: `/agent/chat_holistic`)
+- `apps/brain_qa/brain_qa/omnyx_direction.py` (`OMNYXDirector` wrapper)
+- `apps/brain_qa/brain_qa/mojeek_search.py` (multi-selector scraper)
+
+
+
+### 2026-04-30 (bagian 14 — FIX: chat_holistic Internal Server Error + Mojeek 403 fallback)
+
+- **HANDOFF:** Claude Code Sonnet 4.6 mengambil alih deployment via Paramiko (SSH key-based) karena koneksi dari environment Kimi ke VPS timeout.
+- **BUG 1 — Internal Server Error:** `UnboundLocalError` di `agent_serve.py` line ~1213. Python menghapus variabel `omnyx_err` setelah `except` block berakhir, tapi direferensikan lagi di `raise` statement.
+  - **Fix:** Capture ke `omnyx_err_str = str(omnyx_err)` di dalam except block pertama.
+- **BUG 2 — Mojeek 0 hits:** Bukan soal CSS selector. VPS IP diblokir Mojeek dengan **403 "automated queries"**.
+  - **Fix:** Rewrite `mojeek_search.py` — DuckDuckGo HTML scraper sebagai **fallback otomatis** waktu Mojeek return non-200 atau 0 hits. DDG return 3+ hits dari VPS IP. Interface `MojeekHit` tetap sama, caller tidak perlu diubah.
+- **BUG 3 — Missing modules:** `cognitive_synthesizer.py` dan `knowledge_accumulator.py` ada di VPS pycache tapi tidak di repo.
+  - **Fix:** Tambahkan ke repo. `cognitive_synthesizer.py` — tambah compat fields (`citations`, `confidence_score`, `answer_type`) + `_strip_yaml_frontmatter()` helper.
+- **VERIFIED E2E:**
+  - Mojeek → 403 → DDG fallback → **3 hits** ✅
+  - `/agent/chat_holistic` → `confidence: tinggi`, `duration_ms: 1485` ✅
+  - Commit `21fea1f` pushed ke `work/gallant-ellis-7cd14d`, VPS synced ✅
+
+**Refer:**
+- `apps/brain_qa/brain_qa/agent_serve.py` (line ~1213: `omnyx_err_str` fix)
+- `apps/brain_qa/brain_qa/mojeek_search.py` (DDG fallback)
+- `apps/brain_qa/brain_qa/cognitive_synthesizer.py` (compat fields)
+- `apps/brain_qa/brain_qa/knowledge_accumulator.py`
+
+
+
+### 2026-04-30 (bagian 15 — HANDOFF: Validasi Live + Sprint Auto-Harvest)
+
+- **DEPLOY STATUS:** Commit `21fea1f` deployed di VPS, backend `sidix-brain` jalan, endpoint `/agent/chat_holistic` verified (confidence: tinggi, 1485ms).
+- **NEXT SPRINT:** Auto-Harvest Cron — flywheel corpus growth.
+- **HANDOFF TO:** Claude Code (via Paramiko SSH ke VPS `72.62.125.6`).
+
+**Refer:**
+- `docs/LIVING_LOG.md` (semua bagian 1-14)
+- `apps/brain_qa/brain_qa/mojeek_search.py` (DDG fallback)
+- `apps/brain_qa/brain_qa/lite_browser.py` (Playwright + trafilatura)
+- `apps/brain_qa/brain_qa/knowledge_accumulator.py`
+
