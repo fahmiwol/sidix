@@ -16082,6 +16082,30 @@ Sprint Tumbuh REAL state was 20% (broken auth), bukan 40%. Sekarang 50% (auth fi
 
 
 
+### 2026-04-30 (bagian 17 — IMPL: Sprint Auto-Harvest Cron Pipeline)
+
+- **IMPL:** `apps/brain_qa/brain_qa/auto_harvest.py` — AutoHarvest class:
+  - `_fetch_google_trends_id()` — Google Trends RSS ID (fallback ke static 10 topics jika gagal)
+  - `_wikipedia_search()` — Wikipedia API `id.wikipedia.org` (DDG blocked dari VPS)
+  - `_generate_note()` — Markdown note dengan YAML frontmatter (title, date, source, tags, note_id)
+  - `_trigger_reindex()` — POST `/corpus/reindex` dengan `X-Admin-Token` dari env
+  - `AutoHarvest.run()` — full pipeline: topics → search → notes → reindex, 5-6s per run
+- **IMPL:** `apps/brain_qa/scripts/harvest_cron.py` — CLI entry point (`--dry-run`, `--topics`, `--max-topics`)
+- **IMPL:** `apps/brain_qa/crontab.example` — cron schedule `0 */6 * * *`
+- **FIX:** Path resolution via `paths.workspace_root()` → `/opt/sidix/brain/public/omnyx_knowledge/` (sebelumnya salah ke `apps/brain_qa/brain/`)
+- **FIX:** Wikipedia User-Agent — default Python UA diblock, pakai RFC bot UA string
+- **FIX:** Reindex auth — tambah `X-Admin-Token` header dari `BRAIN_QA_ADMIN_TOKEN` env var
+- **TEST:** Dry run OK — 3 topics, 2 articles each. Live run OK — 6 notes saved in 5.8s, `reindexed: true` ✅
+- **TEST:** Sample note `harvest_4eec6368.md` (Prabowo Subianto) — YAML frontmatter correct, Wikipedia content valid ✅
+- **DEPLOY:** Crontab installed di VPS: `0 */6 * * * set -a; . /opt/sidix/.env; set +a; cd /opt/sidix/apps/brain_qa && python3 scripts/harvest_cron.py >> /var/log/sidix_harvest.log 2>&1`
+
+**Acceptance criteria (from CLAUDE_HANDOFF_AUTO_HARVEST.md):**
+- ✅ Cron job jalan setiap 6 jam tanpa error
+- ✅ Setiap run menghasilkan ≥3 notes baru (6 notes per run)
+- ✅ Notes punya YAML frontmatter (title, date, source, tags)
+- ✅ BM25 reindex berhasil setelah harvest (`reindexed: true`)
+- ⏳ Knowledge Accumulator → persona corpus (deferred, out of Sprint Auto-Harvest scope)
+
 ### 2026-04-30 (bagian 16 — FIX: SourceResult missing source + DDG blocked + Wikipedia fallback)
 
 - **ERROR:** `SourceResult.__init__() missing 1 required positional argument: 'source'` — `omnyx_direction.py:488` memanggil `SourceResult(success=True, ...)` tanpa arg wajib `source`.
