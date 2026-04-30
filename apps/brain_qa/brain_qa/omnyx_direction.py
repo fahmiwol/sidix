@@ -485,7 +485,7 @@ class OmnyxDirector:
             for r in turn.tool_results:
                 if not r.success or not r.output:
                     continue
-                src = SourceResult(success=True, data=r.output, latency_ms=r.latency_ms)
+                src = SourceResult(source=r.tool_name, success=True, data=r.output, latency_ms=r.latency_ms)
                 if r.tool_name == "corpus_search":
                     bundle.corpus = src; sources_used.append("corpus")
                 elif r.tool_name == "dense_search":
