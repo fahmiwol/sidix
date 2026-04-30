@@ -15745,3 +15745,61 @@ Sprint Tumbuh REAL state was 20% (broken auth), bukan 40%. Sekarang 50% (auth fi
 3. Wire critique results → `corpus_to_training.py` → Kaggle dataset
 
 **Refer**: research note 248 (SIDIX = digital organism), 279 (Cara SIDIX Action), 280 (Static-Generative), 304 (3 Mode Mental Model), 308 (Sprint decision), 310 (Model Independence Path).
+
+
+### 2026-04-30 night — IMPL: Cleanup Duplikat + Dokumen Lock Visi + Research Note 311
+
+**Tag**: IMPL + DELETE + DOC + DECISION
+**Trigger**: Founder directive — "Catat semua, ubah semua data, rapihkan, buat SOT"
+
+**Actions:**
+
+**1. Dokumen Lock Visi Baru:**
+- `docs/SIDIX_VISI_LOCK.md` — SSoT immutable untuk semua agent. Mengunci:
+  - Identitas SIDIX (Penemu Inovatif Kreatif Digital)
+  - Visi Chain: Genius→Creative→Tumbuh→Cognitive→Semantic→Iteratif→Inovasi→Pencipta
+  - 2 Pilar: I/O Multimodal + Self-Growth Organisme Digital
+  - 12 Organ Digital
+  - 5 Persona Locked
+  - 15 Decision Lock
+  - Session Start Protocol wajib
+  - 12 Anti-Pattern jebakan
+
+**2. Research Note 311:**
+- `brain/public/research_notes/311_sidix_io_and_growth_synthesis.md` — Synthesis komprehensif:
+  - Pilar 1: I/O architecture detail (Input→OTAK→Jurs 1000→Sanad→Output multimodal)
+  - Pilar 2: Self-Growth 4 Layer + Outer Loop
+  - Formula Relevan Score 9.5++
+  - 10 Anti-Pattern & jebakan salah arah
+
+**3. Audit & Cleanup Duplikat:**
+- `docs/DUPLICATE_AUDIT_2026-04-30.md` — audit lengkap duplikat
+- **Deleted:** `epic-cray-3e451f/`, `serene-murdock-dbcb1f/` (embedded worktrees duplikat)
+- **Deleted:** `Dockerfile.inference` (subset `Dockerfile.brain_qa`)
+- **Deleted:** `Framework_bahasa_plugin_update/sidix-docs/` (duplikat canonical `docs/sociometer/`)
+- **Archived:** 8 handoff pre-2026-04-25 → `docs/archive/handoffs/`
+- **Skipped:** `pedantic-banach-c8232d/` (locked by another process, defer manual cleanup)
+
+**4. Kode Expansion (sanad_orchestrator.py v2):**
+- 5+1 branch paralel (LLM, Wiki, Corpus, Dense, Tools, Persona Fanout)
+- Persona-weighted query refinement (lensa sejak awal)
+- Relevan Score 9.5++ dengan loop balik
+- `daily_self_critique.py` — OTAK+ scaffold (rule-based self-critique)
+
+**5. Diagram:**
+- `docs/SIDIX_ARCHITECTURE_DIAGRAM.md` — Mermaid + ASCII Layer 1+2
+- `SIDIX_BOARD/architecture.html` — interactive HTML
+
+**Impact:**
+- Repo lebih rapi, duplikat berkurang
+- Agent baru punya SOT definitive (`SIDIX_VISI_LOCK.md`)
+- SIDIX punya mekanisme self-critique ( foundational untuk tumbuh sendiri)
+- Tidak ada lagi "salah arah" karena visi di-lock secara eksplisit
+
+**Refer:**
+- docs/SIDIX_VISI_LOCK.md
+- brain/public/research_notes/311_sidix_io_and_growth_synthesis.md
+- docs/DUPLICATE_AUDIT_2026-04-30.md
+- docs/SIDIX_ARCHITECTURE_DIAGRAM.md
+- apps/brain_qa/brain_qa/sanad_orchestrator.py (v2)
+- apps/brain_qa/brain_qa/daily_self_critique.py
