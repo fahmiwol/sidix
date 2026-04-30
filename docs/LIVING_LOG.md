@@ -15488,3 +15488,30 @@ kill -HUP $(ps aux | grep 'nginx: master' | grep -v grep | awk '{print $2}' | he
 2. Test chat: ketik pesan, pilih persona, submit. Lihat loading state + jawaban real
 3. Catat impressions: yang oke, yang miss vs gambar bos kasih, yang perlu polish
 
+
+## [REVERT] 2026-04-30 — UI Next.js -> UI Lama (Vite vanilla TS)
+
+### Trigger
+Bos catch 3 hal:
+1. "Dari Bogor 🌿" tagline = pivot tidak terotorisasi (Northstar: SIDIX global)
+2. Hilang fitur 4 Supermodel modes (Burst/Two-Eyed/Foresight/Resurrect) yang ada di UI lama
+3. Latency masih lambat (105s)
+
+### Action
+sed nginx app.sidixlab.com proxy_pass 4001 -> 4000. SIGHUP reload. Verify HTTP 200, title "SIDIX — Free AI Agent" (UI lama). Confirm features visible: btn-tutorial, mode-burst, persona-selector.
+
+### sidix-next-ui PM2 id 26 -> standby sandbox di port 4001
+
+### Lesson
+Saya port VISUAL mockup persis (top bar credits, hero mascot, campaign cards) tapi LUPA port FITUR fungsional (4 Supermodel modes, chat options, tutorial). Pattern yang benar: incremental visual upgrade UI lama, BUKAN replace stack.
+
+### Strategy going forward
+Stay in SIDIX_USER_UI (vanilla TS+Vite). Add visual elements dari Kimi mockup gradually:
+- Colored quick action cards
+- Built-in Tools side panel (real wire ke fitur SIDIX)
+- Mascot SVG empty state (no "dari Bogor")
+- Better loading indicator
+
+JANGAN tambah mock data (Halo Ayudia/Credits/Pro Plan/Campaigns).
+JANGAN tagline lokasi.
+

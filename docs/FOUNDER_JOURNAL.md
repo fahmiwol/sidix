@@ -1320,3 +1320,69 @@ Solusi: dari sekarang saya pakai nama **"Sprint Anti-Halu Q1"**, **"Sprint Laten
 
 Init Next.js minimal scaffolding + port ChatDashboard sebagai proof of concept. Sisanya post limit reset.
 
+
+---
+
+## 2026-04-30 (lanjutan 6) — REVERT UI: Lesson "Replikasi Mockup ≠ Port Fitur"
+
+### Bos directive (verbatim)
+> "Creative AI Agent dari Bogor 🌿 · Siap bantu wujudkan ide kerenmu jadi nyata! ini ilangin aja! sesuai northstar SIDIX sekarnag, kita nggak pivot. dari bogor nggak usah, ada ini kan bukan buat indonesia doang. ini buat seluruh dunia pake, cuma memang market utamanya indonesia."
+
+> "bukannya kita ada mode normal? Riset mendala? brainstorm (planning)? itu jugaa ada mode gabungan semua pemikiran mereka, personanya."
+
+> "lama bangte jawabnya, ini jadinya.. kalo menurut kamu perubahan UI ini jadi bikin kita makin jauh dari nortstart balik aja ke versi sebelumnya, cuma fitur-fiturnya aja yang kita ikutin."
+
+### Decision: REVERT app.sidixlab.com -> port 4000 (SIDIX_USER_UI lama)
+Otoritas dari bos: "kalo MENURUT KAMU... balik aja ke versi sebelumnya". Saya pakai otoritas ini karena assessment honest:
+
+**Reasons UI baru jauh dari Northstar**:
+1. **Klaim "dari Bogor 🌿"** — pivot tidak terotorisasi. Bos eksplisit reject dua kali (sebelumnya saya hapus, lalu re-add karena salah baca brand kit). Final: HAPUS PERMANEN. SIDIX = global product, market utama Indonesia tapi tidak claim lokasi.
+
+2. **Fitur fungsional yang HILANG di UI baru** (yang ada di UI lama):
+   - **4 Supermodel modes**: Burst / Two-Eyed / Foresight / Resurrect — INI MODE UTAMA SIDIX 2.0 differentiator
+   - **3 chat options**: Korpus saja / Fallback web / Mode ringkas
+   - **Mode gabungan persona** (`persona_research_fanout` di backend, exposed di UI lama via Burst mode)
+   - Tutorial + Feedback modal
+   - 4 quick prompt cards (Partner/Coding/Creative/Chill)
+   - Mobile bottom nav (5 items)
+
+3. **Mock data yang melanggar Northstar**:
+   - "Halo Ayudia" + "Pro Plan" + "1,250 Credits" — fake personalization, melanggar "no mock data" lock
+   - "Bell badge 3" — fake notification
+   - Campaign cards "Healthy Drink" — fake projects
+
+4. **Latency tetap masalah** — port Next.js tidak menyelesaikan slow chat (105s untuk current event "kota hujan di indonesia"). Streaming SSE belum ada.
+
+### Lesson: Saya port VISUAL persis, lupa port FITUR
+
+Saya terlalu fokus replicate mockup pixel-perfect (header credits/bell/avatar, hero mascot, campaign cards). Sebenarnya yang penting **fitur fungsional**, bukan visual.
+
+**Pattern yang benar untuk iterative upgrade**:
+1. UI lama = baseline fungsional (4 Supermodel modes, persona, tutorial, feedback) — KEEP
+2. Adopt VISUAL element dari Kimi mockup INCREMENTALLY:
+   - Colored quick actions (yellow/cyan/green/purple) — tambah ke UI lama
+   - Built-in Tools side panel (kanan) — tambah ke UI lama (tapi link ke fitur SIDIX real, bukan dummy)
+   - Mascot SVG di hero (tanpa "dari Bogor")
+3. Setiap perubahan: KEEP existing features, ADD visual layer.
+
+**Anti-pattern yang saya buat**: replace whole stack (vanilla TS+Vite -> Next.js) → kehilangan fitur saat port. Better: tetap di stack lama (Vite TS), upgrade visual gradually.
+
+### State akhir hari ini
+- `app.sidixlab.com` -> port 4000 (UI lama vanilla TS+Vite, fitur lengkap) ✅
+- `sidix-next-ui` PM2 id 26 port 4001 -> standby sandbox (untuk iterate visual tanpa break LIVE)
+- UI lama tetap LIVE seperti kemarin, tidak hilang fitur
+
+### Plan iterative upgrade (post limit reset)
+1. **JANGAN port stack baru**. Stay di SIDIX_USER_UI vanilla TS+Vite.
+2. **Add visual layer ke UI lama**:
+   - Colored quick prompt cards (replace academic-card style)
+   - Built-in Tools sidebar kanan (link ke fitur real, bukan dummy)
+   - Mascot SVG di empty state (no "dari Bogor")
+   - Better loading indicator (3 dots animasi seperti Kimi)
+3. **JANGAN tambah mock data**. Tagline:
+   - HAPUS "dari Bogor 🌿"
+   - TAGLINE BARU sesuai Northstar: "Free, Self-hosted, Open Source AI Agent" atau "Autonomous AI Agent — Thinks, Learns & Creates"
+
+### Naming for next session
+"Sprint UI Polish (Visual Upgrade Vite)" — bukan migration ke Next.js. Stay in vanilla TS, polish visual incrementally.
+
