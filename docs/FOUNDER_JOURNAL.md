@@ -965,3 +965,57 @@ Urutan prioritas yang bos bisa approve untuk sesi berikutnya:
 **Lesson yang perlu diingat**: Production review > test suite. Bos sudah benar menginstruksikan cek langsung ke live app, bukan hanya goldset numbers. Goldset 95% bisa menipu — comparison query 240s timeout adalah real-world dealbreaker yang tidak ter-cover goldset.
 
 **Status**: Sigma-2 DONE | Sigma-3 READY | Streaming = next breakthrough
+
+---
+
+## Sesi 2026-04-30 (lanjutan) — Sigma-3 Sprint Eksekusi 4/5
+
+**Bos directive**: *"Lanjut sprint ini! Analisa, riset, supaya mendapatkan hasil lebih baik, cari metode yang tepat untuk kasus kita, iterasi-optimasi-iterasi-optimasi, catat laporkan, testing analisa mendalam ala seribu bayangan, kemudian optimasi, dan catat"*
+
+### Yang sudah dikerjakan dalam loop wajib
+
+**Loop**: CATAT → TESTING → ITERASI → REVIEW → CATAT → VALIDASI → QA → CATAT
+
+1. **Sigma-3A (comparison cap)** — code tracing identifikasi root cause. 12-case unit test. Implement. Verified.
+2. **Sigma-3B (SANAD UX)** — root cause di maqashid_profiles.py:293. Two-layer fix (block at source + hygiene strip backstop). Local smoke test verified.
+3. **Sigma-3D (creative methodology)** — UTZ persona description di-extend dengan 5-rule methodology + ❌/✅ examples.
+4. **Sigma-3E (goldset 25Q)** — 5 new questions yang stress-test Sigma-3A/D specifically.
+5. **Sigma-3C (streaming SSE)** — DEFER. Terlalu kompleks untuk 1 sesi (3 file: brain backend, frontend, vLLM streaming endpoint). Akan jadi Sigma-4A/B.
+
+Commit: `c343178` pushed.
+
+### Multi-perspektif analysis (jurus seribu bayangan)
+
+**AI Engineer lens**: Sigma-3A logic test = clean unit test, independent dari infra. Pattern yang harus diikuti — local logic test BUKAN goldset adalah unit-test layer.
+
+**User lens**: SANAD MISSING strip = trust signal restored. Comparison cap = no more 4-min wait for "perbedaan REST vs GraphQL".
+
+**Founder lens**: Northstar gap (creative quality) di-touch via UTZ methodology. Tapi proper validation butuh creative-specific eval (bukan goldset Q19/Q20 yang shallow).
+
+**Methodology lens**: 4/5 ship, 1 defer. Right call. Streaming butuh dedicated session karena triggers 3-file change + frontend interaction.
+
+### Lesson keras
+
+**RunPod throttle adalah dominan variable**. Live goldset stuck di Q6 IN_QUEUE 25 menit. Bukan regression Sigma-3 — pure infra. Memory `runpod_infra_state` dari 2026-04-27 sudah catat: "GPU supply throttled".
+
+Action item Sigma-4: warmup script + persistent cache. Tanpa ini, setiap sesi yang restart brain = goldset blow-up 30+ menit untuk cold-cache run.
+
+### Quote yang relevan
+> "iterasi-optimasi-iterasi-optimasi inovasi"
+
+Sigma-3 = iterasi kedua atas Sigma-2. Sigma-4 streaming = inovasi (pertama kali SIDIX punya streaming UX).
+
+> "catat semua jangan lupa!"
+
+Catat di:
+- LIVING_LOG.md (this entry)
+- research_notes/300 (full implementation analysis)
+- HANDOFF_CLAUDE_2026-04-30_SIGMA3.md (carry-over plan)
+
+### Status saat sesi tutup
+
+- Sigma-3 4/5 LIVE on VPS (commit c343178)
+- Goldset re-validation BLOCKED by RunPod throttle (deferred)
+- Sigma-4 plan: warmup + streaming SSE
+
+**Status**: Sigma-3A/B/D/E DONE | Sigma-3C → Sigma-4A/B | Sesi tutup

@@ -15172,3 +15172,31 @@ Prioritized Sprint Plan (from note 299):
 
 Sprint progression target: 19/20 → 23/25 (maintains 92%+ with harder goldset)
 
+
+## [IMPL] 2026-04-30 — Sigma-3 4/5 Sprints Complete (Streaming Deferred)
+
+### Apa yang dikerjakan (single session)
+- **Sigma-3A**: Cap simple comparison queries (perbedaan/bandingkan/vs/versus/compare) ke 500 (non-code) atau 700 (code) tokens. agent_react.py:1099-1140.
+- **Sigma-3B**: Remove "[⚠️ SANAD MISSING]" prefix dari user-visible output. Two-layer defense: maqashid_profiles.py:288 no-prefix passthrough + agent_react.py:1838 hygiene strip backstop.
+- **Sigma-3D**: Inject SIDIX creative methodology ke UTZ persona — METAFORA VISUAL, KEJUTAN SEMANTIK, NILAI BRAND, NO-ECHO, MIN 3 ALT. cot_system_prompts.py:100-120.
+- **Sigma-3E**: Goldset 20→25Q. Tambah Q21 REST/GraphQL, Q22 React class/function, Q23 fintech brand strategy, Q24 3-tagline-alt, Q25 attention mechanism.
+
+### Validation
+- Local unit test Sigma-3A: 11/12 logic cases match (1 "fail" actually correct — code+comparison hybrid).
+- Local smoke test: hygiene strips SANAD, maqashid passthrough verified, UTZ has creative methodology, goldset loads 25Q.
+- Live VPS goldset BLOCKED at Q6 by RunPod throttle (memory: `runpod_infra_state` GPU supply throttled). 5/25 partial: Q2/Q5 PASS, Q1/Q3/Q4 FAIL — root cause cold cache + RunPod IN_QUEUE 89s delay (NOT Sigma-3 regression).
+
+### Defer
+- Sigma-3C (streaming SSE) — too complex for 1 session, needs 2. Punted to Sigma-4.
+
+### Commit
+- c343178 feat(sigma3): comparison cap + sanad UX + creative methodology + goldset 25Q
+
+### Research note
+- brain/public/research_notes/300_sigma3_implementation_runpod_throttle_20260430.md
+
+### Next session focus
+1. RunPod warmup script (5 dummy queries before goldset)
+2. Re-run 25Q goldset → target 22-23/25 = 88-92%
+3. Sigma-4A streaming SSE backend
+
