@@ -5,6 +5,9 @@ httpx==0.27.0
 requests>=2.31.0
 beautifulsoup4==4.12.3
 reedsolo==1.7.0
+selectolax>=0.3.21
+trafilatura>=2.0.0
+playwright>=1.50.0
 
 # serve — brain_qa HTTP API untuk SIDIX UI
 fastapi>=0.111.0

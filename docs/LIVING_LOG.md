@@ -15904,3 +15904,133 @@ Sprint Tumbuh REAL state was 20% (broken auth), bukan 40%. Sekarang 50% (auth fi
 **Refer:**
 - `docs/AGENTS_MANDATORY_SOP.md` (terminologi SIDIX-native)
 - `docs/NORTH_STAR.md` (arah produk)
+
+
+### 2026-04-30 (bagian 7 — FIX: cognitive synthesizer hallucination + corpus passthrough anti-hallucination)
+
+- **ERROR:** Holistic mode menghasilkan jawaban SALAH untuk "Siapa wakil presiden Indonesia sekarang?" — model Qwen2.5 7B + LoRA output "Sri Mulyani Indrawati" bahkan corpus sudah berisi data Gibran yang benar.
+- **ROOT CAUSE:** Model terlalu lemah untuk instruction following. Corpus ada tapi model mengabaikan context dan hallucinate dari training data.
+- **FIX 1 (corpus passthrough):** Tambahkan `_try_corpus_passthrough()` di `cognitive_synthesizer.py` — bypass LLM synthesis sepenuhnya jika corpus memiliki `sanad_tier: primer` dan query match heuristik factual (siapa/kapan/di mana).
+- **FIX 2 (raw corpus):** Patch `_src_corpus_search()` di `multi_source_orchestrator.py` untuk menggunakan direct BM25 (`rank_bm25.BM25Okapi`) alih-alih `_tool_search_corpus` yang mengembalikan formatted INAN output. Hasil: `raw_text` berisi markdown asli dari corpus.
+- **FIX 3 (YAML stripper):** `_strip_yaml_frontmatter()` membersihkan metadata YAML dari corpus sebelum ditampilkan.
+- **FIX 4 (validation layer):** `_validate_answer_against_corpus()` tetap dipertahankan sebagai safety net jika LLM synthesis tetap digunakan.
+- **TEST:** Query "Siapa wakil presiden Indonesia sekarang?" → jawaban: "Gibran Rakabuming Raka, dilantik 20 Oktober 2024 bersama Prabowo" — BENAR, 12 detik (bypass LLM).
+- **TEST:** Query "Berapa populasi Indonesia 2025?" → jawaban: "Belum punya info cukup" (tidak ada corpus primer, web search gagal, tidak hallucinate) — BENAR.
+
+**Refer:**
+- `apps/brain_qa/brain_qa/cognitive_synthesizer.py` (`_try_corpus_passthrough`, `_validate_answer_against_corpus`, `_strip_yaml_frontmatter`)
+- `apps/brain_qa/brain_qa/multi_source_orchestrator.py` (`_src_corpus_search` direct BM25)
+
+
+### 2026-04-30 (bagian 8 — FIX: web search multi-engine + Google AI fallback)
+
+- **ERROR:** Web search backend semua gagal — SearxNG empty, Brave brotli decoder failed, Google AI 404 model not found.
+- **FIX 1 (multi-engine):** `_src_web_search()` sekarang menggunakan SearxNG + Brave + Wikipedia, collect ALL, merge, dedup by URL. Timeout 25 detik.
+- **FIX 2 (Google AI fallback):** Tambah `google_ai_search.py` — menggunakan `google-generativeai` dengan model `gemini-2.0-flash` dan prompt-based search (bukan `google_search_tool` yang unsupported).
+- **FIX 3 (web search fallback):** Jika SearxNG + Brave + Wikipedia semua gagal/empty, fallback ke Google AI Search.
+- **FIX 4 (wiki_lookup):** Tambah alias `search_wikipedia()` untuk backward compatibility dengan `multi_source_orchestrator.py`.
+- **FIX 5 (persona fanout):** Kurangi timeout 45→20 detik, max_tokens 120→80. Hapus duplicate `google_ai` task di orchestrator.
+- **DEPLOY:** Commit `6a8c2cd` di branch `claude/gallant-ellis-7cd14d`, push ke GitHub.
+
+**Refer:**
+- `apps/brain_qa/brain_qa/multi_source_orchestrator.py` (`_src_web_search`, `_src_google_ai_search`)
+- `apps/brain_qa/brain_qa/google_ai_search.py` (new file)
+- `apps/brain_qa/brain_qa/wiki_lookup.py` (`search_wikipedia` alias)
+
+
+### 2026-04-30 (bagian 9 — FEAT: OMNYX Direction + Knowledge Accumulator + Persona Brain)
+
+- **DECISION:** Bos menolak nama "Gemini Director" — harus pakai nama autentik SIDIX. Dipilih: **OMNYX** = Orchestrator Multi-source Nusantara Yield eXecutor.
+- **IMPL:** `omnyx_direction.py` — tool-calling director autentik dengan:
+  - `IntentClassifier` — rule-based heuristics (siapa/kapan/di mana/berapa/coding/creative)
+  - `ToolPlanner` — decide tool calls per turn (max 3 turns)
+  - `ToolExecutor` — execute corpus_search, dense_search, web_search, calculator, persona_brain, knowledge_store
+  - `ContextAccumulator` — tool context circulation antar turn
+  - `SynthesisRouter` — route ke CognitiveSynthesizer atau corpus passthrough
+- **IMPL:** `knowledge_accumulator.py` — auto-save verified answers ke corpus:
+  - Output: `brain/public/omnyx_knowledge/YYYY-MM-DD/<hash>.md`
+  - Persona-specific: `brain/public/persona_corpus/<persona>/<hash>.md`
+  - Auto-tagging: domain detection (politik, teknologi, ekonomi, sains, agama, sejarah)
+  - Auto-deduplication: skip jika pertanyaan serupa sudah ada
+  - Auto-reindex: trigger `python -m brain_qa index` setelah store
+- **IMPL:** Persona Brain Corpus — 5 folder: `utz/`, `aboo/`, `aley/`, `ayman/`, `oomar/`
+  - Setiap persona punya README.md dan folder khusus
+  - Knowledge dari interaksi persona disimpan ke folder masing-masing
+  - Prioritas BM25: folder persona aktif di-query pertama
+- **PATCH:** `_src_corpus_search()` — skip praxis/lesson logs (self-referential)
+  - Filter: `if "praxis" in src or "lesson" in src: continue`
+- **PATCH:** `agent_serve.py` — `/agent/chat_holistic` sekarang pakai OMNYX Direction sebagai primary flow, fallback ke legacy MultiSourceOrchestrator.
+- **TEST:** Query "Siapa wakil presiden Indonesia?" → OMNYX detect intent=factual_who → corpus_search → primer tier found → passthrough → **Gibran Rakabuming Raka** (benar, 937ms)
+- **TEST:** `knowledge_stored: true` — jawaban tersimpan di `omnyx_knowledge/2026-04-30/omnyx_3e9fdfe0b94b.md`
+- **DEPLOY:** Commit `152a69e` pushed ke `claude/gallant-ellis-7cd14d`
+
+**Refer:**
+- `apps/brain_qa/brain_qa/omnyx_direction.py`
+- `apps/brain_qa/brain_qa/knowledge_accumulator.py`
+- `brain/public/persona_corpus/`
+- `brain/public/omnyx_knowledge/`
+
+
+### 2026-04-30 (bagian 10 — RESEARCH: Google AI Tool Combination Pattern)
+
+- **RESEARCH:** Bos share https://ai.google.dev/gemini-api/docs/tool-combination?hl=id
+- **Key insight:** Google AI menggunakan **Tool Context Circulation** — hasil toolCall + toolResponse di-circulate kembali ke model setiap turn, memungkinkan sequential reasoning (tool A → tool B → synthesize).
+- **Adoption ke OMNYX:** Pattern ini sudah diadopsi di `omnyx_direction.py` melalui:
+  - `TurnContext` — menyimpan tool_calls + tool_results per turn
+  - `_plan_next_turn()` — model bisa decide tool calls tambahan berdasarkan hasil turn sebelumnya
+  - Session-level accumulation — semua turn context tersedia untuk synthesis final
+- **Difference:** Google AI pakai `thoughtSignature` (encrypted context). OMNYX pakai explicit `ToolResult` objects yang lebih transparan dan debuggable.
+- **Next:** Implementasi function calling native (Qwen 14B/32B) untuk fully own-stack tool circulation.
+
+**Refer:**
+- `docs/LIVING_LOG.md` (bagian 9)
+- Google AI docs: Tool Combination
+
+
+### 2026-04-30 (bagian 11 — FIX: Web Search Backend Diagnosis & Partial Fix)
+
+- **DIAGNOSIS SearxNG:** Semua public instances gagal:
+  - `searx.be`: 403 Forbidden (IP block)
+  - `search.sapti.me`, `baresearch.org`, `searx.tiekoetter.com`: 429 Too Many Requests
+  - `search.privacyguides.net`: SSL self-signed certificate
+  - `search.modalogi.com`: HTML 200 tapi SPA (results load via JS, tidak bisa scrape)
+  - `search.bus-hit.me`, `search.projectsegfault.com`: DNS error (down)
+- **DIAGNOSIS Brave:** 429 Too Many Requests — IP VPS sudah di-rate limit oleh Brave. Brotli decoder error juga terjadi.
+- **FIX 1 (Brave):** Disable brotli compression via `Accept-Encoding: gzip, deflate`. Tambah `_429_backoff_seconds = 300.0` (5 menit backoff).
+- **FIX 2 (SearxNG):** Update instances list, tambah parameter `language=id&engines=google,bing,duckduckgo`, tambah HTML scrape fallback jika JSON 403.
+- **FIX 3 (Google AI):** Ganti model `gemini-2.0-flash` → `gemini-1.5-flash` (2.0 tidak tersedia untuk user baru).
+- **HASIL:** Web search masih unreliable dari VPS IP. SearxNG public instances sudah banyak yang block scraping. Brave 429.
+- **REKOMENDASI SOLUSI:**
+  1. **Self-host SearxNG** via Docker di VPS (paling reliable, tapi butuh ~500MB RAM)
+  2. **Google Custom Search API** (butuh API key, $5/1000 queries)
+  3. **Bing Search API** (butuh API key, free tier 1000 queries/bulan)
+  4. **Accept constraint** — fokus corpus growth via auto-harvest dan user interactions
+- **DEPLOY:** Commit `91220da` pushed ke `claude/gallant-ellis-7cd14d`
+
+**Refer:**
+- `apps/brain_qa/brain_qa/searxng_search.py`
+- `apps/brain_qa/brain_qa/brave_search.py`
+- `apps/brain_qa/brain_qa/google_ai_search.py`
+
+
+### 2026-04-30 (bagian 12 — IMPL: Mojeek Search + Lite Browser Integration)
+
+- **DISCOVERY:** `mojeek.com` adalah search engine independen (UK-based) yang **tidak memblokir IP VPS**. Test dari VPS: 200 OK, 10 results, HTML clean.
+- **CHROMIUM:** Playwright headless shell berhasil diinstall di VPS (112MB download, ~300MB RAM usage).
+- **IMPL 1:** `apps/brain_qa/brain_qa/mojeek_search.py` — Mojeek scraper dengan selectolax. Cache 5 menit. Return `MojeekHit` dataclass.
+- **IMPL 2:** `apps/brain_qa/brain_qa/lite_browser.py` — SIDIX Lite Browser Service. Playwright Chromium headless + trafilatura untuk clean text extraction. Polite rate limit 1 req/sec. Support batch fetch (max_concurrent=2).
+- **IMPL 3:** `multi_source_orchestrator.py` — `_src_web_search()` sekarang pipeline:
+  1. Mojeek search → snippets + URLs
+  2. Lite Browser deep fetch top-2 URLs → clean page text
+  3. Wikipedia enrichment fallback
+- **IMPL 4:** `omnyx_direction.py` — `_exec_web_search()` menggunakan pipeline baru, menghapus fallback Google AI (redundant, karena Mojeek sudah reliable).
+- **DEPS:** `requirements.txt` — tambah `selectolax>=0.3.21`, `trafilatura>=2.0.0`, `playwright>=1.50.0`.
+- **COMMIT:** `2b3a29b` pushed ke `work/gallant-ellis-7cd14d`.
+- **NEXT:** Deploy ke VPS via `git pull`, install selectolax, restart PM2. Test end-to-end dengan query realtime.
+
+**Refer:**
+- `apps/brain_qa/brain_qa/mojeek_search.py`
+- `apps/brain_qa/brain_qa/lite_browser.py`
+- `apps/brain_qa/brain_qa/multi_source_orchestrator.py`
+- `apps/brain_qa/brain_qa/omnyx_direction.py`
+
