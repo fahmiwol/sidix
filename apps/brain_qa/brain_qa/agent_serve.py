@@ -1471,6 +1471,9 @@ def create_app() -> "FastAPI":
     # "routing otomatis pilih 1 sumber" dengan multi-source paralel default.
     # Mengerahkan SEMUA resource SIDIX simultan: web + corpus + dense_index +
     # persona_fanout 5 + tool_registry → sanad verify → cognitive_synthesizer.
+    #
+    # Sprint Β (OMNYX Direction) — 2026-04-30: Tool-calling director autentik
+    # dengan knowledge accumulation dan persona brain.
     @app.post("/agent/chat_holistic")
     async def agent_chat_holistic(req: ChatRequest, request: Request):
         _enforce_rate(request)
@@ -1480,15 +1483,55 @@ def create_app() -> "FastAPI":
         if not req.question.strip():
             raise HTTPException(status_code=400, detail="question tidak boleh kosong")
 
+        import time as _time
+        _t0 = _time.monotonic()
+        debug_flag = bool(request.query_params.get("debug"))
+
+        # ── Try OMNYX Direction first (Sprint Β) ──────────────────────────────
+        try:
+            from .omnyx_direction import omnyx_process
+            log.info("[chat_holistic] Using OMNYX Direction for: %r", req.question[:60])
+            omnyx_result = await omnyx_process(
+                req.question,
+                persona=req.persona or "UTZ",
+                debug=debug_flag,
+            )
+            elapsed_ms = int((_time.monotonic() - _t0) * 1000)
+
+            # Build response compatible with existing format
+            return {
+                "answer": omnyx_result["answer"],
+                "duration_ms": elapsed_ms,
+                "confidence": omnyx_result["confidence"],
+                "n_sources": len(omnyx_result["sources_used"]),
+                "sources_used": omnyx_result["sources_used"],
+                "method": f"omnyx_{omnyx_result['method']}",
+                "synthesis_latency_ms": omnyx_result["duration_ms"],
+                "orchestrator_latency_ms": omnyx_result["duration_ms"],
+                "orchestrator_errors": [],
+                "debug_bundle": omnyx_result if debug_flag else None,
+                "output_type": "text",
+                "output_confidence": 0.95,
+                "output_reason": "omnyx_direction",
+                "suggested_tools": [],
+                "attachments": [],
+                "persona_compliance": None,
+                "omnyx_meta": {
+                    "n_turns": omnyx_result.get("n_turns", 0),
+                    "knowledge_stored": omnyx_result.get("knowledge_stored", False),
+                    "persona": omnyx_result.get("persona", "UTZ"),
+                },
+            }
+        except Exception as omnyx_err:
+            log.warning("[chat_holistic] OMNYX failed: %s, falling back to legacy", omnyx_err)
+
+        # ── Fallback: Legacy MultiSourceOrchestrator (Sprint Α) ───────────────
         try:
             from .multi_source_orchestrator import MultiSourceOrchestrator
             from .cognitive_synthesizer import CognitiveSynthesizer
             from .output_type_detector import detect_output_type, OutputType
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"holistic_unavailable: {e}")
-
-        import time as _time
-        _t0 = _time.monotonic()
 
         # Sprint 5: Adaptive Output detection (Pencipta visi)
         output_detection = detect_output_type(req.question)
@@ -1501,7 +1544,6 @@ def create_app() -> "FastAPI":
         bundle = await orchestrator.gather_all(req.question)
 
         # Phase 2: synthesize
-        debug_flag = bool(request.query_params.get("debug"))
         synthesis = await synthesizer.synthesize(bundle, debug=debug_flag)
 
         # Sprint 5 Phase 3: Adaptive Output - multi-modal tool invocation (Pencipta)

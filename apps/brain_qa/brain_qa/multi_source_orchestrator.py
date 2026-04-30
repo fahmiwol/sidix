@@ -249,12 +249,19 @@ async def _src_corpus_search(query: str) -> dict:
         if not len(scores):
             raise RuntimeError("No scores")
 
-        ranked = sorted(range(len(scores)), key=lambda i: -scores[i])[:5]
+        ranked = sorted(range(len(scores)), key=lambda i: -scores[i])[:10]
         raw_chunks = []
         for idx in ranked:
             if scores[idx] <= 0.0:
                 break
             c = chunks[idx]
+            src = (getattr(c, "source_path", "") or "").lower()
+            text_lower = (c.text or "").lower()
+            # Skip praxis lesson logs + agent_workspace traces (self-referential)
+            if "praxis" in src or "lesson" in src or "agent_workspace" in src:
+                continue
+            if "pelajaran praxis" in text_lower[:100] or "rangkaian eksekusi" in text_lower[:200]:
+                continue
             raw_chunks.append({
                 "text": c.text,
                 "source_path": c.source_path,
