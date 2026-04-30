@@ -1998,6 +1998,21 @@ MEDIUM potensi:
 ### Implementasi
 
 [IMPL] curriculum_engine.py (350 baris)
+
+### 2026-04-30 (Assistant — Branch cleanup)
+
+- DOC: research_notes/308_sprint_decision_2026-04-30.md — catatan ringkas tentang tindakan pemindahan pekerjaan yang tidak sengaja ke branch terpisah.
+- IMPL: Buat branch lokal `work/gallant-ellis-7cd14d` dan commit file yang sebelumnya untracked: commit `a0ffd74` (message: "chore: move accidental work from main into branch work/gallant-ellis-7cd14d").
+- NOTE: `gallant-ellis-7cd14d/` terdeteksi sebagai embedded git repository (mode 160000). Ini berperilaku seperti gitlink/submodule — cloning outer repo tidak akan otomatis menyertakan isi sub-repo. Rekomendasi: konversi ke tracked files atau jadikan submodule jika memang dimaksudkan.
+- DECISION: Saya mengamankan pekerjaan ke branch lokal untuk menghindari kehilangan atau kebingungan; tidak melakukan push ke remote tanpa instruksi eksplisit.
+
+Action items next:
+
+- OPTION A (recommended): Convert embedded repo into tracked files on branch `work/gallant-ellis-7cd14d` (removes gitlink, adds real files). Safe for CI and cloning.
+- OPTION B: Register as proper submodule with upstream URL (if upstream repo must remain separate).
+- OPTION C: Push `work/gallant-ellis-7cd14d` to remote and open PR targeting `claude/gallant-ellis-7cd14d` or `main` per workflow.
+
+If you want, I can proceed with OPTION A now and push the branch, or perform OPTION C (push + PR). Please confirm preferred action or allow me to choose (I recommend OPTION A).
   - 12 domain: coding_python/js, fullstack, frontend_design, backend_devops,
     game_dev, data_science, image_ai, video_ai, audio_ai, research_methodology,
     general_knowledge, islamic_epistemology
@@ -15677,3 +15692,56 @@ Sprint Tumbuh REAL state was 20% (broken auth), bukan 40%. Sekarang 50% (auth fi
 **Trigger**: Bos catch — saya report holistic LIVE OK via internal curl, browser test belum OK.
 **Action**: Memory file `feedback_e2e_seamless_live_truth.md` + FOUNDER_JOURNAL append + MEMORY.md index update.
 **SOP commit**: setiap deploy claim WAJIB user-side verify (browser/Chrome MCP), bukan internal curl. Lihat memory file untuk detail anti-pattern.
+
+
+### 2026-04-30 night — DECISION: SIDIX Self-Bootstrap Flywheel (Founder Diagram v2)
+
+**Tag**: DECISION + IMPL + NOTE
+**Trigger**: Founder hand-draw architecture diagram — SIDIX tidak cuma Q&A, tapi **organisme yang tumbuh sendiri di background**.
+
+**Decode Diagram (4 layer):**
+
+**Layer 1 — Input Processing (EXISTING, expanded):**
+- INPUT → OTAK ↔ Persona ↔ Jurs 1000 Bayangan → SANAD ORKESTRA
+- **HAFIDZ** double-arrow dengan Sanad: setiap sintesis di-ledger immutable sebelum output
+- Relevan Score 9.5++ gate
+
+**Layer 2 — Output Evaluation (MISSING — need scaffold):**
+- OUTPUT → **OTAK+** (evaluation / critique / reflection)
+- SIDIX critique output sendiri, bukan langsung selesai
+
+**Layer 3 — Innovation Pipeline (MISSING — need scaffold):**
+- **Inovasi** → metode/script/versi/teknologi baru
+- **Iterasi** → refine dan uji
+- **"Pencipta"** → artifact konkret:
+  - Metode baru, Script baru, Versi baru, Teknologi baru
+  - Artifact, Design, **Temuan** (discoveries)
+
+**Layer 4 — Recursive Growth Loop (MISSING — need scaffold):**
+- Pencipta → balik ke layer atas (artifact masuk corpus/knowledge)
+- Outer loop: **Self learn → Self improve → Self innovate**
+- SIDIX tumbuh **background**, compound tiap hari
+
+**What exists in repo now:**
+- `learn_agent.py` — fetch→dedup→queue→index (autonomous learning)
+- `daily_growth.py` — 7-phase SCAN→RISET→APPROVE→TRAIN→SHARE→REMEMBER→LOG
+- `initiative.py` — domain mastery + auto-research
+- `hafidz_ledger.py` — immutable provenance ledger
+- `praxis.py` — meta-learning per session
+- `brain_synthesizer.py` — knowledge graph + concept lexicon
+
+**What is MISSING for this flywheel:**
+1. **Self-Critique Layer** (OTAK+) — evaluate own output quality, detect halu, measure coverage
+2. **Innovation Generator** — propose new methods/scripts/versions from critique
+3. **Artifact Creator** — auto-generate concrete deliverables (not just text)
+4. **Feedback Injector** — auto-ingest created artifacts back into corpus/LoRA training
+5. **Background Daemon** — run growth loop unattended, bos wakes up to "today SIDIX learned X"
+
+**Decision:** This is **Phase 3-4 Self-Bootstrap** target. Phase 0 ✅, Phase 1-2 in progress. Do NOT build all at once. Scaffold layer by layer.
+
+**Immediate scaffold priority:**
+1. Self-Critique module (simple rule-based first)
+2. Cron `daily_self_critique.py` — evaluate yesterday's outputs → generate improvement notes
+3. Wire critique results → `corpus_to_training.py` → Kaggle dataset
+
+**Refer**: research note 248 (SIDIX = digital organism), 279 (Cara SIDIX Action), 280 (Static-Generative), 304 (3 Mode Mental Model), 308 (Sprint decision), 310 (Model Independence Path).

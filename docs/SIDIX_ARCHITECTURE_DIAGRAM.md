@@ -127,7 +127,62 @@ relevan_score = (
 
 ---
 
-## 🎨 ASCII Fallback (untuk terminal/view tanpa Mermaid)
+## 🌱 LAYER 2: Self-Bootstrap Flywheel (Founder Diagram v2 — 2026-04-30)
+
+Output bukan akhir. SIDIX **mengevaluasi, menginovasi, dan mencipta** — compound tiap hari.
+
+```
+        ┌─────────────────────────────────────┐
+        │  ✨ OUTPUT — Tangan & Kaki          │
+        │  (teks/gambar/audio/file/url)       │
+        └──────────────┬──────────────────────┘
+                       ▼
+        ┌─────────────────────────────────────┐
+        │  🧠 OTAK+ — Evaluasi & Kritik       │
+        │  Self-critique / coverage check     │
+        │  / halu detection / persona drift   │
+        └──────────────┬──────────────────────┘
+                       ▼
+        ┌─────────────────────────────────────┐
+        │  💡 INOVASI — Metode Baru           │
+        │  script baru / versi baru /         │
+        │  teknologi baru / temuan            │
+        └──────────────┬──────────────────────┘
+                       ▼
+        ┌─────────────────────────────────────┐
+        │  🔁 ITERASI — Refine & Uji          │
+        │  test / validate / benchmark        │
+        └──────────────┬──────────────────────┘
+                       ▼
+        ┌─────────────────────────────────────┐
+        │  🎨 "PENCIPTA" — Artifact           │
+        │  - Metode baru                      │
+        │  - Script baru                      │
+        │  - Versi baru                       │
+        │  - Teknologi baru                   │
+        │  - Design / Artifact / Temuan       │
+        └──────────────┬──────────────────────┘
+                       │
+                       ▼
+        ┌─────────────────────────────────────┐
+        │  📚 HAFIDZ — Ledger Immutable       │
+        │  Provenance + Sanad + timestamp     │
+        └──────────────┬──────────────────────┘
+                       │
+                       ▼ (inject back)
+        ┌─────────────────────────────────────┐
+        │  🧠 Corpus / Training Pairs         │
+        │  Masuk ke knowledge base            │
+        └─────────────────────────────────────┘
+                       │
+                       └──────→ [Layer 1 Input]
+```
+
+**Outer Loop:** Self learn → Self improve → Self innovate → **compound forever**
+
+---
+
+## 🎨 ASCII Fallback Layer 1+2 (Complete)
 
 ```
         ┌─────────────────────────────────────┐
@@ -167,7 +222,22 @@ relevan_score = (
                        ▼
         ┌─────────────────────────────────────┐
         │  ✨ OUTPUT — Tangan & Kaki          │
-        │  (teks/gambar/audio/file/url)       │
+        └──────────────┬──────────────────────┘
+                       ▼
+        ┌─────────────────────────────────────┐
+        │  🧠 OTAK+ — Self-Critique           │
+        └──────────────┬──────────────────────┘
+                       ▼
+        ┌─────────────────────────────────────┐
+        │  💡 INOVASI → 🔁 ITERASI            │
+        └──────────────┬──────────────────────┘
+                       ▼
+        ┌─────────────────────────────────────┐
+        │  🎨 PENCIPTA — Artifact Baru        │
+        └──────────────┬──────────────────────┘
+                       ▼
+        ┌─────────────────────────────────────┐
+        │  📚 HAFIDZ → Corpus → Loop ↑        │
         └─────────────────────────────────────┘
 ```
 
