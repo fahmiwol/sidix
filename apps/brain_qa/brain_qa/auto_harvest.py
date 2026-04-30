@@ -20,6 +20,7 @@ import asyncio
 import hashlib
 import json
 import logging
+import os
 import time
 import urllib.parse
 import urllib.request
@@ -29,9 +30,17 @@ from typing import Optional
 
 log = logging.getLogger("sidix.auto_harvest")
 
-# ── Paths ──────────────────────────────────────────────────────────────────────
-KNOWLEDGE_ROOT = Path("brain/public/omnyx_knowledge")
-HARVEST_LOG_FILE = Path("brain/public/omnyx_knowledge/.harvest_log.jsonl")
+# ── Paths (resolved at import time using paths.py workspace_root) ─────────────
+def _resolve_knowledge_root() -> Path:
+    try:
+        from .paths import workspace_root
+        return workspace_root() / "brain" / "public" / "omnyx_knowledge"
+    except Exception:
+        # Fallback: resolve from this file's location (brain_qa/ → apps/brain_qa → apps → workspace)
+        return Path(__file__).resolve().parents[3] / "brain" / "public" / "omnyx_knowledge"
+
+KNOWLEDGE_ROOT = _resolve_knowledge_root()
+HARVEST_LOG_FILE = KNOWLEDGE_ROOT / ".harvest_log.jsonl"
 
 # ── Static fallback topics (when Google Trends unavailable) ───────────────────
 FALLBACK_TOPICS_ID = [
@@ -223,12 +232,19 @@ def _extract_tags(topic: str, title: str) -> list[str]:
 # ── BM25 reindex trigger ───────────────────────────────────────────────────────
 
 def _trigger_reindex(backend_url: str = "http://localhost:8765") -> bool:
-    """Trigger BM25 reindex via backend API."""
+    """Trigger BM25 reindex via backend API (requires X-Admin-Token from env)."""
+    admin_token = os.environ.get("BRAIN_QA_ADMIN_TOKEN", "")
+    if not admin_token:
+        log.warning("[harvest] BRAIN_QA_ADMIN_TOKEN not set — cannot trigger reindex")
+        return False
     try:
         req = urllib.request.Request(
             f"{backend_url}/corpus/reindex",
             method="POST",
-            headers={"Content-Type": "application/json"},
+            headers={
+                "Content-Type": "application/json",
+                "X-Admin-Token": admin_token,
+            },
         )
         with urllib.request.urlopen(req, timeout=15) as resp:
             result = json.loads(resp.read())
