@@ -1352,7 +1352,8 @@ def create_app() -> "FastAPI":
             yield f"data: {json.dumps({'type': 'start', 'query': req.question[:100], 'output_type': output_detection.output_type.value, 'output_confidence': output_detection.confidence})}\n\n"
 
             orchestrator = MultiSourceOrchestrator()
-            synthesizer = CognitiveSynthesizer(max_tokens=600, temperature=0.65)
+            # UX-fix 2026-04-30: max_tokens 600→350 (CPU synthesis 54s→~30s untuk simple query)
+            synthesizer = CognitiveSynthesizer(max_tokens=350, temperature=0.65)
 
             # Phase 1: gather paralel (single async call, no per-source streaming yet)
             yield f"data: {json.dumps({'type': 'orchestrator_start', 'message': 'Mengerahkan jurus seribu bayangan...'})}\n\n"
@@ -1493,7 +1494,8 @@ def create_app() -> "FastAPI":
         output_detection = detect_output_type(req.question)
 
         orchestrator = MultiSourceOrchestrator()
-        synthesizer = CognitiveSynthesizer(max_tokens=600, temperature=0.65)
+        # UX-fix 2026-04-30: max_tokens 600→350 (CPU synthesis speed)
+        synthesizer = CognitiveSynthesizer(max_tokens=350, temperature=0.65)
 
         # Phase 1: gather paralel
         bundle = await orchestrator.gather_all(req.question)
