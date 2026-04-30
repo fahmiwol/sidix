@@ -1,0 +1,14 @@
+{
+  "id": "mighan/sidix-dora-persona-train-v1",
+  "title": "SIDIX DoRA Persona Train v1",
+  "code_file": "sprint13_dora_persona_kaggle.ipynb",
+  "language": "python",
+  "kernel_type": "notebook",
+  "is_private": "true",
+  "enable_gpu": "true",
+  "enable_internet": "true",
+  "dataset_sources": ["mighan/sidix-persona-qa-v1"],
+  "competition_sources": [],
+  "kernel_sources": [],
+  "model_sources": []
+}

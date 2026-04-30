@@ -1,0 +1,184 @@
+openapi: "3.1.0"
+info:
+  title: SIDIX Socio Bot API
+  description: |
+    SIDIX — Free, Open Source AI Agent with Social Intelligence.
+
+    Use this API as a GPT Action (ChatGPT), Codex plugin, or direct REST integration.
+    Full MCP version available for Claude Desktop & Cursor: https://github.com/fahmiwol/sidix
+  version: "1.1.0"
+  contact:
+    name: Tiranyx × Mighan Lab
+    url: https://sidixlab.com
+    email: contact@sidixlab.com
+  license:
+    name: MIT
+    url: https://github.com/fahmiwol/sidix/blob/main/LICENSE
+
+servers:
+  - url: https://ctrl.sidixlab.com
+    description: Production SIDIX backend (VPS)
+  - url: http://localhost:8765
+    description: Local development
+
+paths:
+  /health:
+    get:
+      operationId: sidix_health
+      summary: Check SIDIX backend health
+      description: Returns status, corpus size, model mode, and available tools.
+      responses:
+        "200":
+          description: Health status
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+                  corpus_doc_count:
+                    type: integer
+                  tools_available:
+                    type: integer
+                  model_mode:
+                    type: string
+                  model_ready:
+                    type: boolean
+
+  /agent/chat:
+    post:
+      operationId: sidix_query
+      summary: Ask SIDIX a question
+      description: |
+        Query SIDIX with a question. SIDIX will use its 3-layer knowledge system
+        (parametric model + knowledge graph + static corpus) to generate an answer.
+        Supports 5 personas: AYMAN, ABOO, OOMAR, ALEY, UTZ.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [question]
+              properties:
+                question:
+                  type: string
+                  description: Pertanyaan ke SIDIX
+                  example: Jelaskan konsep Maqashid Syariah dalam konteks modern
+                persona:
+                  type: string
+                  description: Persona SIDIX (AYMAN/ABOO/OOMAR/ALEY/UTZ)
+                  default: UTZ
+                  enum: [AYMAN, ABOO, OOMAR, ALEY, UTZ, MIGHAN, TOARD, FACH, HAYFAR, INAN]
+                corpus_only:
+                  type: boolean
+                  default: false
+      responses:
+        "200":
+          description: SIDIX answer with citations and confidence
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  answer:
+                    type: string
+                  confidence:
+                    type: string
+                  citations:
+                    type: array
+                    items:
+                      type: object
+                  persona:
+                    type: string
+
+  /social/radar/scan:
+    post:
+      operationId: social_radar_scan
+      summary: Scan social media profile
+      description: |
+        Analyze a social media profile URL.
+        Returns engagement rate, sentiment score, tier classification, and strategic advice.
+        Supports: Instagram, Threads, X/Twitter, YouTube, Facebook.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [url]
+              properties:
+                url:
+                  type: string
+                  description: Public social media profile URL
+                  example: https://www.instagram.com/nationalgeographic/
+                metadata:
+                  type: object
+                  description: Optional pre-scraped metadata (followers, following, post_count, etc.)
+                  properties:
+                    platform:
+                      type: string
+                      enum: [instagram, threads, twitter, youtube, facebook]
+                    followers:
+                      type: integer
+                    following:
+                      type: integer
+                    post_count:
+                      type: integer
+                    likes:
+                      type: integer
+                    comments:
+                      type: integer
+                    bio:
+                      type: string
+      responses:
+        "200":
+          description: Social radar analysis result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  metrics:
+                    type: object
+                    properties:
+                      engagement_rate:
+                        type: number
+                        description: Engagement rate percentage
+                      sentiment:
+                        type: number
+                        description: Sentiment score -1 to 1
+                      tier:
+                        type: string
+                        enum: [micro, emerging, leader]
+                  advice:
+                    type: string
+                    description: Strategic recommendation
+
+  /corpus/reindex:
+    post:
+      operationId: corpus_reindex
+      summary: Trigger corpus re-indexing
+      description: Trigger BM25 re-index after adding new documents to the corpus.
+      responses:
+        "200":
+          description: Reindex triggered
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+
+components:
+  schemas:
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+        detail:
+          type: string

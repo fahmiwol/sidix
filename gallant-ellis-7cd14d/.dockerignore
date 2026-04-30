@@ -1,0 +1,44 @@
+# ── Never ship to container ──────────────────────────────────
+brain/private/
+.env
+.env.*
+!.env.sample
+
+# ── Model weights (mount as volume atau download saat runtime) ──
+apps/brain_qa/models/
+*.safetensors
+*.gguf
+
+# ── Runtime data (dibuat ulang di container) ─────────────────
+apps/brain_qa/.data/
+apps/brain_qa/agent_workspace/
+apps/brain_qa/qa_output.txt
+
+# ── Python artifacts ─────────────────────────────────────────
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+
+# ── Node artifacts ────────────────────────────────────────────
+node_modules/
+SIDIX_USER_UI/node_modules/
+SIDIX_USER_UI/.vite/
+# SIDIX_USER_UI/dist/ → perlu di-build dulu, lalu copy
+
+# ── Dev tooling ───────────────────────────────────────────────
+.git/
+.gitignore
+.cursor/
+.vscode/
+.github/
+notebooks/
+*.log
+logs/
+.backups/
+sidix*.zip
+sidix*.tar.gz

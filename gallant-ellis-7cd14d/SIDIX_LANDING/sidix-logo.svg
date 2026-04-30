@@ -1,0 +1,28 @@
+<svg width="256" height="256" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="SIDIX">
+  <defs>
+    <linearGradient id="sidix-gold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#E8C878"/>
+      <stop offset="45%" stop-color="#D4AF37"/>
+      <stop offset="100%" stop-color="#9A7324"/>
+    </linearGradient>
+    <linearGradient id="sidix-panel" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1C1814"/>
+      <stop offset="100%" stop-color="#0E0C0A"/>
+    </linearGradient>
+    <filter id="sidix-soft-glow" x="-15%" y="-15%" width="130%" height="130%">
+      <feGaussianBlur stdDeviation="3" result="b"/>
+      <feMerge>
+        <feMergeNode in="b"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <rect x="10" y="10" width="236" height="236" rx="42" ry="42" fill="url(#sidix-panel)" stroke="#2E2820" stroke-width="1.25" filter="url(#sidix-soft-glow)"/>
+  <rect x="18" y="18" width="220" height="220" rx="34" ry="34" fill="none" stroke="#261F18" stroke-width="1" opacity="0.85"/>
+  <g transform="translate(38.5 39) scale(0.995)" fill="url(#sidix-gold)">
+    <path fill-rule="evenodd" clip-rule="evenodd" d="M79.4053 130.532L132.489 78.7257L141.952 88.1568L88.868 139.963L79.4053 130.532Z"/>
+    <path fill-rule="evenodd" clip-rule="evenodd" d="M38.6667 89.9289L91.7508 38.1226L101.214 47.5536L48.1295 99.3599L38.6667 89.9289Z"/>
+    <path fill-rule="evenodd" clip-rule="evenodd" d="M93.7027 96.5654L129.994 60.815L157.481 88.4601L86.8607 157.86L69.334 140.391L60.3235 149.432L89.2896 178.302L179.716 89.0294L129.901 39.3801L93.7027 75.0633V96.5654Z"/>
+    <path fill-rule="evenodd" clip-rule="evenodd" d="M109.769 39.7497L120.387 29.5699L90.7189 0L0 89.567L50.2339 139.386L86.013 104.14V82.6425L51.0566 117.046L22.6444 88.727L91.5599 21.024L109.769 39.7497Z"/>
+  </g>
+</svg>

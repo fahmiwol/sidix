@@ -1,0 +1,141 @@
+# SIDIX coding checklist — system-design
+
+- **roadmap.sh slug**: `system-design`
+- **source**: `https://roadmap.sh/api/v1-official-roadmap/system-design`
+- **generated_at_utc**: `2026-04-17`
+
+## Checklist (topic/subtopic labels)
+
+- [ ] Introduction
+- [ ] What is System Design?
+- [ ] How to approach System Design?
+- [ ] Performance vs Scalability
+- [ ] Latency vs Throughput
+- [ ] Availability vs Consistency
+- [ ] CAP Theorem
+- [ ] Consistency Patterns
+- [ ] Weak Consistency
+- [ ] Eventual Consistency
+- [ ] Strong Consistency
+- [ ] Availability Patterns
+- [ ] Fail-Over
+- [ ] Replication
+- [ ] Availability in Numbers
+- [ ] Background Jobs
+- [ ] Event-Driven
+- [ ] Schedule Driven
+- [ ] Returning Results
+- [ ] Domain Name System
+- [ ] Content Delivery Networks
+- [ ] Push CDNs
+- [ ] Pull CDNs
+- [ ] Load Balancers
+- [ ] LB vs Reverse Proxy
+- [ ] Load Balancing Algorithms
+- [ ] Layer 7 Load Balancing
+- [ ] Layer 4 Load Balancing
+- [ ] Horizontal Scaling
+- [ ] Application Layer
+- [ ] Microservices
+- [ ] Service Discovery
+- [ ] Databases
+- [ ] SQL vs NoSQL
+- [ ] Sharding
+- [ ] Federation
+- [ ] Denormalization
+- [ ] SQL Tuning
+- [ ] Key-Value Store
+- [ ] Document Store
+- [ ] Wide Column Store
+- [ ] Graph Databases
+- [ ] Caching
+- [ ] Refresh Ahead
+- [ ] Write-behind
+- [ ] Write-through
+- [ ] Cache Aside
+- [ ] Client Caching
+- [ ] CDN Caching
+- [ ] Web Server Caching
+- [ ] Database Caching
+- [ ] Application Caching
+- [ ] Asynchronism
+- [ ] Back Pressure
+- [ ] Task Queues
+- [ ] Message Queues
+- [ ] Idempotent Operations
+- [ ] Communication
+- [ ] HTTP
+- [ ] TCP
+- [ ] UDP
+- [ ] RPC
+- [ ] REST
+- [ ] gRPC
+- [ ] GraphQL
+- [ ] Performance Antipatterns
+- [ ] Busy Database
+- [ ] Busy Frontend
+- [ ] Chatty I/O
+- [ ] Extraneous Fetching
+- [ ] Improper Instantiation
+- [ ] Monolithic Persistence
+- [ ] No Caching
+- [ ] Noisy Neighbor
+- [ ] Retry Storm
+- [ ] Synchronous I/O
+- [ ] Monitoring
+- [ ] Health Monitoring
+- [ ] Availability Monitoring
+- [ ] Performance Monitoring
+- [ ] Security Monitoring
+- [ ] Usage Monitoring
+- [ ] Instrumentation
+- [ ] Visualization & Alerts
+- [ ] Cloud Design Patterns
+- [ ] Messaging
+- [ ] Sequential Convoy
+- [ ] Scheduling Agent Supervisor
+- [ ] Queue-Based Load Leveling
+- [ ] Publisher/Subscriber
+- [ ] Priority Queue
+- [ ] Pipes and Filters
+- [ ] Competing Consumers
+- [ ] Choreography
+- [ ] Claim Check
+- [ ] Async Request Reply
+- [ ] Data Management
+- [ ] Valet Key
+- [ ] Static Content Hosting
+- [ ] Materialized View
+- [ ] Index Table
+- [ ] Event Sourcing
+- [ ] CQRS
+- [ ] Cache-Aside
+- [ ] Design & Implementation
+- [ ] Strangler Fig
+- [ ] Sidecar
+- [ ] Pipes & Filters
+- [ ] Leader Election
+- [ ] Gateway Routing
+- [ ] Gateway Offloading
+- [ ] Gateway Aggregation
+- [ ] External Config Store
+- [ ] Compute Resource Consolidation
+- [ ] Backends for Frontend
+- [ ] Anti-Corruption Layer
+- [ ] Ambassador
+- [ ] Reliability Patterns
+- [ ] Availability
+- [ ] Deployment Stamps
+- [ ] Geodes
+- [ ] Health Endpoint Monitoring
+- [ ] Throttling
+- [ ] High Availability
+- [ ] Bulkhead
+- [ ] Circuit Breaker
+- [ ] Resiliency
+- [ ] Compensating Transaction
+- [ ] Retry
+- [ ] Scheduler Agent Supervisor
+- [ ] Security
+- [ ] Federated Identity
+- [ ] Gatekeeper

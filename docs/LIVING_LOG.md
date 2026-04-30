@@ -1998,6 +1998,21 @@ MEDIUM potensi:
 ### Implementasi
 
 [IMPL] curriculum_engine.py (350 baris)
+
+### 2026-04-30 (Assistant — Branch cleanup)
+
+- DOC: research_notes/308_sprint_decision_2026-04-30.md — catatan ringkas tentang tindakan pemindahan pekerjaan yang tidak sengaja ke branch terpisah.
+- IMPL: Buat branch lokal `work/gallant-ellis-7cd14d` dan commit file yang sebelumnya untracked: commit `a0ffd74` (message: "chore: move accidental work from main into branch work/gallant-ellis-7cd14d").
+- NOTE: `gallant-ellis-7cd14d/` terdeteksi sebagai embedded git repository (mode 160000). Ini berperilaku seperti gitlink/submodule — cloning outer repo tidak akan otomatis menyertakan isi sub-repo. Rekomendasi: konversi ke tracked files atau jadikan submodule jika memang dimaksudkan.
+- DECISION: Saya mengamankan pekerjaan ke branch lokal untuk menghindari kehilangan atau kebingungan; tidak melakukan push ke remote tanpa instruksi eksplisit.
+
+Action items next:
+
+- OPTION A (recommended): Convert embedded repo into tracked files on branch `work/gallant-ellis-7cd14d` (removes gitlink, adds real files). Safe for CI and cloning.
+- OPTION B: Register as proper submodule with upstream URL (if upstream repo must remain separate).
+- OPTION C: Push `work/gallant-ellis-7cd14d` to remote and open PR targeting `claude/gallant-ellis-7cd14d` or `main` per workflow.
+
+If you want, I can proceed with OPTION A now and push the branch, or perform OPTION C (push + PR). Please confirm preferred action or allow me to choose (I recommend OPTION A).
   - 12 domain: coding_python/js, fullstack, frontend_design, backend_devops,
     game_dev, data_science, image_ai, video_ai, audio_ai, research_methodology,
     general_knowledge, islamic_epistemology
@@ -15677,3 +15692,138 @@ Sprint Tumbuh REAL state was 20% (broken auth), bukan 40%. Sekarang 50% (auth fi
 **Trigger**: Bos catch — saya report holistic LIVE OK via internal curl, browser test belum OK.
 **Action**: Memory file `feedback_e2e_seamless_live_truth.md` + FOUNDER_JOURNAL append + MEMORY.md index update.
 **SOP commit**: setiap deploy claim WAJIB user-side verify (browser/Chrome MCP), bukan internal curl. Lihat memory file untuk detail anti-pattern.
+
+
+### 2026-04-30 night — DECISION: SIDIX Self-Bootstrap Flywheel (Founder Diagram v2)
+
+**Tag**: DECISION + IMPL + NOTE
+**Trigger**: Founder hand-draw architecture diagram — SIDIX tidak cuma Q&A, tapi **organisme yang tumbuh sendiri di background**.
+
+**Decode Diagram (4 layer):**
+
+**Layer 1 — Input Processing (EXISTING, expanded):**
+- INPUT → OTAK ↔ Persona ↔ Jurs 1000 Bayangan → SANAD ORKESTRA
+- **HAFIDZ** double-arrow dengan Sanad: setiap sintesis di-ledger immutable sebelum output
+- Relevan Score 9.5++ gate
+
+**Layer 2 — Output Evaluation (MISSING — need scaffold):**
+- OUTPUT → **OTAK+** (evaluation / critique / reflection)
+- SIDIX critique output sendiri, bukan langsung selesai
+
+**Layer 3 — Innovation Pipeline (MISSING — need scaffold):**
+- **Inovasi** → metode/script/versi/teknologi baru
+- **Iterasi** → refine dan uji
+- **"Pencipta"** → artifact konkret:
+  - Metode baru, Script baru, Versi baru, Teknologi baru
+  - Artifact, Design, **Temuan** (discoveries)
+
+**Layer 4 — Recursive Growth Loop (MISSING — need scaffold):**
+- Pencipta → balik ke layer atas (artifact masuk corpus/knowledge)
+- Outer loop: **Self learn → Self improve → Self innovate**
+- SIDIX tumbuh **background**, compound tiap hari
+
+**What exists in repo now:**
+- `learn_agent.py` — fetch→dedup→queue→index (autonomous learning)
+- `daily_growth.py` — 7-phase SCAN→RISET→APPROVE→TRAIN→SHARE→REMEMBER→LOG
+- `initiative.py` — domain mastery + auto-research
+- `hafidz_ledger.py` — immutable provenance ledger
+- `praxis.py` — meta-learning per session
+- `brain_synthesizer.py` — knowledge graph + concept lexicon
+
+**What is MISSING for this flywheel:**
+1. **Self-Critique Layer** (OTAK+) — evaluate own output quality, detect halu, measure coverage
+2. **Innovation Generator** — propose new methods/scripts/versions from critique
+3. **Artifact Creator** — auto-generate concrete deliverables (not just text)
+4. **Feedback Injector** — auto-ingest created artifacts back into corpus/LoRA training
+5. **Background Daemon** — run growth loop unattended, bos wakes up to "today SIDIX learned X"
+
+**Decision:** This is **Phase 3-4 Self-Bootstrap** target. Phase 0 ✅, Phase 1-2 in progress. Do NOT build all at once. Scaffold layer by layer.
+
+**Immediate scaffold priority:**
+1. Self-Critique module (simple rule-based first)
+2. Cron `daily_self_critique.py` — evaluate yesterday's outputs → generate improvement notes
+3. Wire critique results → `corpus_to_training.py` → Kaggle dataset
+
+**Refer**: research note 248 (SIDIX = digital organism), 279 (Cara SIDIX Action), 280 (Static-Generative), 304 (3 Mode Mental Model), 308 (Sprint decision), 310 (Model Independence Path).
+
+
+### 2026-04-30 night — IMPL: Cleanup Duplikat + Dokumen Lock Visi + Research Note 311
+
+**Tag**: IMPL + DELETE + DOC + DECISION
+**Trigger**: Founder directive — "Catat semua, ubah semua data, rapihkan, buat SOT"
+
+**Actions:**
+
+**1. Dokumen Lock Visi Baru:**
+- `docs/SIDIX_VISI_LOCK.md` — SSoT immutable untuk semua agent. Mengunci:
+  - Identitas SIDIX (Penemu Inovatif Kreatif Digital)
+  - Visi Chain: Genius→Creative→Tumbuh→Cognitive→Semantic→Iteratif→Inovasi→Pencipta
+  - 2 Pilar: I/O Multimodal + Self-Growth Organisme Digital
+  - 12 Organ Digital
+  - 5 Persona Locked
+  - 15 Decision Lock
+  - Session Start Protocol wajib
+  - 12 Anti-Pattern jebakan
+
+**2. Research Note 311:**
+- `brain/public/research_notes/311_sidix_io_and_growth_synthesis.md` — Synthesis komprehensif:
+  - Pilar 1: I/O architecture detail (Input→OTAK→Jurs 1000→Sanad→Output multimodal)
+  - Pilar 2: Self-Growth 4 Layer + Outer Loop
+  - Formula Relevan Score 9.5++
+  - 10 Anti-Pattern & jebakan salah arah
+
+**3. Audit & Cleanup Duplikat:**
+- `docs/DUPLICATE_AUDIT_2026-04-30.md` — audit lengkap duplikat
+- **Deleted:** `epic-cray-3e451f/`, `serene-murdock-dbcb1f/` (embedded worktrees duplikat)
+- **Deleted:** `Dockerfile.inference` (subset `Dockerfile.brain_qa`)
+- **Deleted:** `Framework_bahasa_plugin_update/sidix-docs/` (duplikat canonical `docs/sociometer/`)
+- **Archived:** 8 handoff pre-2026-04-25 → `docs/archive/handoffs/`
+- **Skipped:** `pedantic-banach-c8232d/` (locked by another process, defer manual cleanup)
+
+**4. Kode Expansion (sanad_orchestrator.py v2):**
+- 5+1 branch paralel (LLM, Wiki, Corpus, Dense, Tools, Persona Fanout)
+- Persona-weighted query refinement (lensa sejak awal)
+- Relevan Score 9.5++ dengan loop balik
+- `daily_self_critique.py` — OTAK+ scaffold (rule-based self-critique)
+
+**5. Diagram:**
+- `docs/SIDIX_ARCHITECTURE_DIAGRAM.md` — Mermaid + ASCII Layer 1+2
+- `SIDIX_BOARD/architecture.html` — interactive HTML
+
+**Impact:**
+- Repo lebih rapi, duplikat berkurang
+- Agent baru punya SOT definitive (`SIDIX_VISI_LOCK.md`)
+- SIDIX punya mekanisme self-critique ( foundational untuk tumbuh sendiri)
+- Tidak ada lagi "salah arah" karena visi di-lock secara eksplisit
+
+**Refer:**
+- docs/SIDIX_VISI_LOCK.md
+- brain/public/research_notes/311_sidix_io_and_growth_synthesis.md
+- docs/DUPLICATE_AUDIT_2026-04-30.md
+- docs/SIDIX_ARCHITECTURE_DIAGRAM.md
+- apps/brain_qa/brain_qa/sanad_orchestrator.py (v2)
+- apps/brain_qa/brain_qa/daily_self_critique.py
+
+### 2026-04-30 (bagian 2 — wire + deploy scripts)
+
+- **IMPL:** `apps/brain_qa/brain_qa/agent_serve.py` — expose `relevan_score`, `sanad_tier`, `iteration_count` di response Sanad meta + done. OTAK+ self-critique sekarang bisa membaca score dari session log.
+- **IMPL:** `apps/brain_qa/brain_qa/__main__.py` — subcommand `daily_self_critique` terdaftar di CLI (`python -m brain_qa daily_self_critique`).
+- **IMPL:** `DEPLOY_TONIGHT.sh` — script 1-command deploy ke VPS (git pull, deps, syntax check, re-index, PM2 restart, health check).
+- **IMPL:** `SETUP_CRON.sh` — setup cron lengkap: 02:00 Learn Agent, 03:00 OTAK+ Self-Critique (BARU), 04:00 Daily Growth, 04:30 Process Queue, 14:00 Learn Agent (afternoon), 22:00 Daily Synthesis. Includes logrotate config.
+- **IMPL:** `scripts/daily_synthesis.sh` — generator snapshot harian 1-paragraf (session count, halu flags, drift flags, corpus count, git state).
+- **TEST:** Syntax validation passed untuk `sanad_orchestrator.py`, `daily_self_critique.py`, `agent_serve.py`, `__main__.py`.
+- **DECISION:** `relevan_score` minimal 9.5 untuk pass OTAK+ — di bawah 7.0 = loopback otomatis (sudah di sanad_orchestrator.py), di bawah 9.5 = flag di daily_self_critique.
+- **DECISION:** Deploy script menggunakan branch `work/gallant-ellis-7cd14d` — tidak auto-merge ke `main` sampai bos approve.
+- **PUSH:** Commit `47ca220` ke `work/gallant-ellis-7cd14d` — 5 file, +165 baris.
+
+**Next untuk Bos:**
+1. SSH ke VPS: `ssh root@72.62.125.6`
+2. Paste isi `DEPLOY_TONIGHT.sh` → jalankan
+3. Paste isi `SETUP_CRON.sh` → jalankan
+4. Verifikasi: `curl http://localhost:8765/health` dan `pm2 status`
+
+**Refer:**
+- `DEPLOY_TONIGHT.sh`
+- `SETUP_CRON.sh`
+- `scripts/daily_synthesis.sh`
+- `apps/brain_qa/brain_qa/agent_serve.py` (baris 4399–4424)

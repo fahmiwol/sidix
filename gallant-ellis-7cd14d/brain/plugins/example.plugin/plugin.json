@@ -1,0 +1,18 @@
+{
+  "id": "example.plugin",
+  "name": "Example Plugin",
+  "version": "0.1.0",
+  "description": "Contoh plugin untuk Mighan-brain-1 (manifest-only).",
+  "author": "community",
+  "license": "MIT",
+  "capabilities": {
+    "tools": [],
+    "connectors": [],
+    "datasets": [],
+    "ui_panels": []
+  },
+  "entrypoints": {
+    "python": null
+  }
+}
+

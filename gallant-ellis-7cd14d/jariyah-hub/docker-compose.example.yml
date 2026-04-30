@@ -1,0 +1,52 @@
+# Jariyah Hub — contoh orkestrasi Ollama + Open WebUI (OSS).
+#
+# Cara pakai:
+#   1. cp .env.example .env
+#   2. Isi WEBUI_SECRET_KEY (wajib — jangan kosong / jangan contoh lemah)
+#   3. cp docker-compose.example.yml docker-compose.yml
+#   4. docker compose up -d
+#
+# Ini BUKAN inti produk Mighan (brain_qa / SIDIX); jalur komunitas & edukasi.
+# Produksi: TLS di depan, firewall, batas signup/admin — lihat dokumentasi Open WebUI.
+#
+# Task 36 (Ad-Dukhan / G5) — Pin image model version:
+#   Set di .env untuk menghindari regresi akibat update tag `:latest`.
+#   Contoh .env:
+#     OLLAMA_DOCKER_TAG=0.3.12
+#     WEBUI_DOCKER_TAG=v0.3.35
+#   Untuk prod WAJIB pin ke versi spesifik (ganti `:latest`/`:main` di sini).
+
+services:
+  ollama:
+    # PROD: pin ke versi spesifik, mis. ollama/ollama:0.3.12
+    image: ollama/ollama:${OLLAMA_DOCKER_TAG:-0.3.12}
+    container_name: jariyah-ollama
+    restart: unless-stopped
+    volumes:
+      - ollama_data:/root/.ollama
+    tty: true
+    # Opsi: ekspos API Ollama ke host (pull model dari luar container)
+    # ports:
+    #   - "127.0.0.1:11434:11434"
+
+  open-webui:
+    # PROD: pin ke versi spesifik, mis. ghcr.io/open-webui/open-webui:v0.3.35
+    image: ghcr.io/open-webui/open-webui:${WEBUI_DOCKER_TAG:-v0.3.35}
+    container_name: jariyah-open-webui
+    restart: unless-stopped
+    depends_on:
+      - ollama
+    ports:
+      - "${OPEN_WEBUI_PORT:-3000}:8080"
+    environment:
+      OLLAMA_BASE_URL: http://ollama:11434
+      # Wajib di .env — compose akan gagal start jika kosong (aman)
+      WEBUI_SECRET_KEY: ${WEBUI_SECRET_KEY:?Set WEBUI_SECRET_KEY in .env — use openssl rand -hex 32}
+    volumes:
+      - open_webui_data:/app/backend/data
+    extra_hosts:
+      - host.docker.internal:host-gateway
+
+volumes:
+  ollama_data: {}
+  open_webui_data: {}

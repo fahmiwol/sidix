@@ -1,0 +1,17 @@
+{
+  "id": "image_gen_inpainting",
+  "name": "Image Inpainting",
+  "category": "image_gen",
+  "source_module": "apps.image_gen.inpainting",
+  "callable": "inpaint_image",
+  "description": "Isi area kosong/mask di gambar dengan konten yang konsisten dengan sekitarnya. Untuk hapus objek atau perbaiki gambar rusak.",
+  "input_schema": {"image": "bytes|url", "mask": "bytes (binary mask)", "prompt": "str (deskripsi target)"},
+  "output_schema": {"image": "bytes (PNG)"},
+  "lesson_topic": "image inpainting dengan diffusion model",
+  "training_topics": [
+    "stable diffusion inpainting pipeline",
+    "mask encoding strategy",
+    "ControlNet untuk inpainting",
+    "outpainting vs inpainting"
+  ]
+}

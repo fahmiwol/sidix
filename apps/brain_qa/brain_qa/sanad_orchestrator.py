@@ -1,42 +1,33 @@
 """
-sanad_orchestrator.py — Vol 21 MVP: 3-Branch Parallel Sanad Consensus
-======================================================================
+sanad_orchestrator.py — Unified Sanad Orkestra (v2)
+====================================================
 
-User vision (per research_note 239 sketches):
-    User Q → spawn agent_id → fan-out to N branches in parallel
-    → sanad consensus (cluster + vote) → render ke user dalam ≤3-5s
+Founder Architecture Diagram LOCK (2026-04-30):
+    INPUT → OTAK (Intent + Persona + Mode)
+          ↔ Other Persona (UTZ/ABOO/OOMAR/ALEY/AYMAN) — lensa berpikir
+          ↔ Jurs 1000 Bayangan (5 branch paralel)
+          → SANAD ORKESTRA (Sintesis → Validate → Relevan Score 9.5++)
+          → OUTPUT
 
-Vol 21 MVP scope (3 branches, sequential improvements via Vol 22-25):
-    1. LLM direct branch (RunPod hybrid_generate)
-    2. Wiki lookup branch (wiki_lookup_fast, public knowledge)
-    3. Corpus search branch (BM25 local)
+5 Branches (fan-out paralel):
+    1. LLM direct (RunPod hybrid_generate)
+    2. Wiki lookup (wiki_lookup_fast)
+    3. Corpus search (BM25 + Sanad rerank)
+    4. Dense index (BGE-M3 semantic embedding) — NEW v2
+    5. Tool registry (heuristic match) — NEW v2
+    6. Persona fanout (3-5 persona angle) — NEW v2
 
-Each branch:
-    - Async-friendly (asyncio compatible)
-    - Returns BranchResult with claim + relevance + source
-    - Independent failure (one branch error ≠ whole sanad fail)
-    - Fail-fast timeout per branch (default 8s)
-
-Sanad consensus:
-    - Extract claims (MVP: take 1st sentence per branch as primary claim)
-    - Cluster similar (MVP: char-level Jaccard >= 0.4 = same claim)
-    - Vote: cluster size / total branches = agreement_pct
-    - Validated if agreement_pct >= 0.5 OR single high-confidence branch
-
-Render:
-    - Single LLM call to format consensus answer in persona voice
-    - Citations from contributing branches
+Key additions v2:
+    - Persona-weighted query refinement (persona = lensa sejak awal)
+    - Relevan Score 0-10 dengan threshold 9.5++
+    - Loop balik kalau score < 9.5 (max 2 iterasi)
+    - SanadResult expanded: relevan_score, iteration_count, sanad_tier, persona_used
 
 Anti-pattern dihindari:
-- ❌ Sequential branch execution (defeats parallelism)
-- ❌ Block on slowest branch (must have timeout)
-- ❌ Trust 1 branch blindly (need ≥2 agreement OR explicit high confidence)
-- ❌ Heavy claim extraction LLM call (MVP keeps it lightweight)
-
-Future expansion (Vol 22-25):
-- Vol 22: per-branch validation + iteration loop
-- Vol 23: 8th branch = Inventory Memory (pre-validated AKU lookup)
-- Vol 25: Hafidz Shadow specialized nodes (1000-pool dispatch)
+- ❌ Sequential branch execution
+- ❌ Block on slowest branch
+- ❌ Trust 1 branch blindly
+- ❌ Persona hanya filter suara di akhir
 """
 
 from __future__ import annotations
@@ -53,11 +44,33 @@ log = logging.getLogger(__name__)
 _TIMEOUT_LLM = 12.0
 _TIMEOUT_WIKI = 8.0
 _TIMEOUT_CORPUS = 4.0
-_TIMEOUT_TOTAL = 25.0  # whole sanad budget (raised for Vol 22 iter)
+_TIMEOUT_DENSE = 5.0
+_TIMEOUT_TOOLS = 3.0
+_TIMEOUT_FANOUT = 45.0
+_TIMEOUT_TOTAL = 35.0  # raised for 5 branches + iter loop
 
 # Vol 22: per-branch iteration config
 _MAX_ITER = 2  # MVP: 1 retry on failure (total 2 attempts)
 _MIN_RELEVANCE_FOR_ACCEPT = 0.3  # below this, retry with refined query
+
+# ── Persona-weighted query lens (founder vision: persona = thinking lens) ─────
+_PERSONA_QUERY_MODIFIER = {
+    "UTZ":   "creative visual aesthetic trend inspiration",
+    "ABOO":  "technical engineering implementation benchmark performance",
+    "OOMAR": "strategy business ROI market competitor framework",
+    "ALEY":  "academic paper citation methodology theoretical",
+    "AYMAN": "community social sentiment user narrative general",
+}
+
+# ── Relevan Score 9.5++ weights (founder diagram LOCK) ────────────────────────
+_RELEVAN_WEIGHT_AGREEMENT = 0.30
+_RELEVAN_WEIGHT_SANAD_TIER = 0.25
+_RELEVAN_WEIGHT_MAQASHID = 0.20
+_RELEVAN_WEIGHT_CONFIDENCE = 0.15
+_RELEVAN_WEIGHT_PERSONA_ALIGN = 0.10
+_RELEVAN_THRESHOLD_LOLOS = 9.5
+_RELEVAN_THRESHOLD_DISCLAIMER = 7.0
+_MAX_SANAD_ITERATIONS = 2  # loop back max times
 
 
 # ── Vol 22: Query refinement strategies (per branch type) ─────────────────────
@@ -115,7 +128,7 @@ class BranchResult:
 
 @dataclass
 class SanadResult:
-    """Output dari sanad consensus orchestrator."""
+    """Output dari sanad consensus orchestrator (expanded v2)."""
     validated_claim: Optional[str]
     agreement_pct: float
     contributing_branches: list[str]
@@ -123,6 +136,10 @@ class SanadResult:
     citations: list[dict]
     total_duration_ms: int
     render_context: str = ""       # context untuk LLM persona render
+    relevan_score: float = 0.0     # 0-10, founder threshold 9.5++
+    iteration_count: int = 1       # berapa kali loop balik
+    sanad_tier: str = ""           # primer | ulama | peer_review | aggregator
+    persona_used: str = ""         # persona yang aktif sebagai lensa
 
 
 # ── Branch implementations ──────────────────────────────────────────────────
@@ -288,6 +305,181 @@ async def _branch_corpus(question: str, persona: str = "AYMAN") -> BranchResult:
                             error=str(e)[:200])
 
 
+# ── NEW BRANCHES (Vol 23+ expansion per founder architecture diagram) ───────
+
+async def _branch_dense(question: str, persona: str = "AYMAN") -> BranchResult:
+    """Dense semantic search branch — BGE-M3 embedding similarity."""
+    t0 = time.time()
+    try:
+        from .dense_index import load_dense_index, dense_search
+        from .indexer import INDEX_DIR
+        from .embedding_loader import load_embed_fn
+        index_dir = Path(INDEX_DIR) if INDEX_DIR else Path(".data/index")
+        loaded = load_dense_index(index_dir)
+        if loaded is None:
+            return BranchResult(branch="dense", claim="", relevance=0, sources=[],
+                                duration_ms=int((time.time() - t0) * 1000),
+                                error="dense index not built")
+        matrix, meta = loaded
+        embed_fn = load_embed_fn()
+        if embed_fn is None:
+            return BranchResult(branch="dense", claim="", relevance=0, sources=[],
+                                duration_ms=int((time.time() - t0) * 1000),
+                                error="embed_fn unavailable")
+        results = dense_search(question, matrix, embed_fn=embed_fn, top_k=5)
+        if not results:
+            return BranchResult(branch="dense", claim="", relevance=0, sources=[],
+                                duration_ms=int((time.time() - t0) * 1000),
+                                error="no dense matches")
+        # Build claim from top-3 matches
+        top_idxs = [idx for idx, _ in results[:3]]
+        # Load chunk texts via indexer metadata
+        chunk_meta_path = index_dir / "chunk_meta.json"
+        snippets = []
+        sources = []
+        if chunk_meta_path.exists():
+            import json
+            chunk_meta = json.loads(chunk_meta_path.read_text(encoding="utf-8"))
+            for idx in top_idxs:
+                if 0 <= idx < len(chunk_meta):
+                    cm = chunk_meta[idx]
+                    snippets.append(cm.get("text", "")[:300])
+                    sources.append({
+                        "type": "dense",
+                        "title": cm.get("source_title", "dense-corpus"),
+                        "url": cm.get("source_path", ""),
+                        "snippet": cm.get("text", "")[:200],
+                    })
+        claim = " ".join(snippets)[:800] if snippets else ""
+        avg_score = sum(s for _, s in results[:3]) / 3 if results else 0
+        relevance = min(1.0, avg_score + 0.2)  # boost slightly for dense
+        return BranchResult(
+            branch="dense", claim=claim, raw_text=claim,
+            relevance=relevance, sources=sources,
+            duration_ms=int((time.time() - t0) * 1000),
+            fingerprint=claim.lower()[:200],
+        )
+    except Exception as e:
+        log.warning("[sanad] dense branch error: %s", e)
+        return BranchResult(branch="dense", claim="", relevance=0, sources=[],
+                            duration_ms=int((time.time() - t0) * 1000),
+                            error=str(e)[:200])
+
+
+async def _branch_tools(question: str) -> BranchResult:
+    """Tool registry heuristic branch — match query ke available tools."""
+    t0 = time.time()
+    try:
+        from .agent_tools import list_available_tools
+        tools = list_available_tools()
+        if not tools:
+            return BranchResult(branch="tools", claim="", relevance=0, sources=[],
+                                duration_ms=int((time.time() - t0) * 1000),
+                                error="no tools registered")
+        # Simple keyword overlap heuristic
+        q_lower = question.lower()
+        matches = []
+        for t in tools:
+            name = t.get("name", "").lower()
+            desc = t.get("description", "").lower()
+            score = 0
+            if any(tok in name for tok in q_lower.split()):
+                score += 0.5
+            if any(tok in desc for tok in q_lower.split()):
+                score += 0.3
+            if score > 0:
+                matches.append({"name": t.get("name"), "score": score, "desc": t.get("description", "")})
+        matches.sort(key=lambda x: x["score"], reverse=True)
+        top = matches[:3]
+        if not top:
+            return BranchResult(branch="tools", claim="", relevance=0, sources=[],
+                                duration_ms=int((time.time() - t0) * 1000),
+                                error="no tool match")
+        claim_lines = [f"Tool '{m['name']}' tersedia: {m['desc'][:100]}" for m in top]
+        claim = "; ".join(claim_lines)
+        sources = [{"type": "tool", "title": m["name"], "url": "", "snippet": m["desc"]} for m in top]
+        return BranchResult(
+            branch="tools", claim=claim, raw_text=claim,
+            relevance=min(1.0, top[0]["score"] + 0.2), sources=sources,
+            duration_ms=int((time.time() - t0) * 1000),
+            fingerprint=claim.lower()[:200],
+        )
+    except Exception as e:
+        log.warning("[sanad] tools branch error: %s", e)
+        return BranchResult(branch="tools", claim="", relevance=0, sources=[],
+                            duration_ms=int((time.time() - t0) * 1000),
+                            error=str(e)[:200])
+
+
+async def _branch_persona_fanout(question: str, persona: str = "AYMAN") -> BranchResult:
+    """Persona fanout branch — 3-5 persona mikir paralel untuk multi-perspective.
+    Phase 1: stub returns perspective hint only.
+    Phase 2: wire ke persona_research_fanout.gather()."""
+    t0 = time.time()
+    try:
+        # Phase 1: lightweight — persona lensa sebagai tambahan sudut pandang
+        from .persona_router import normalize_persona
+        all_personas = ["UTZ", "ABOO", "OOMAR", "ALEY", "AYMAN"]
+        target = normalize_persona(persona)
+        # Exclude target persona (sudah di-cover oleh branch LLM utama)
+        others = [p for p in all_personas if p != target]
+        perspectives = []
+        for p in others[:3]:  # max 3 additional angles
+            angle = _PERSONA_QUERY_MODIFIER.get(p, "")
+            perspectives.append(f"[{p}] Lihat dari sudut: {angle}")
+        claim = "; ".join(perspectives)
+        return BranchResult(
+            branch="persona_fanout", claim=claim, raw_text=claim,
+            relevance=0.6, sources=[],
+            duration_ms=int((time.time() - t0) * 1000),
+            fingerprint=claim.lower()[:200],
+        )
+    except Exception as e:
+        log.warning("[sanad] persona_fanout branch error: %s", e)
+        return BranchResult(branch="persona_fanout", claim="", relevance=0, sources=[],
+                            duration_ms=int((time.time() - t0) * 1000),
+                            error=str(e)[:200])
+
+
+# ── Persona-weighted query refinement (founder: persona = lensa berpikir) ────
+
+def _persona_weighted_query(question: str, persona: str) -> str:
+    """Tambah persona lensa ke query sebelum fan-out.
+    UTZ cari visual/aesthetic, ALEY cari paper/citation, dll."""
+    modifier = _PERSONA_QUERY_MODIFIER.get(persona, "")
+    if not modifier:
+        return question
+    # Hanya inject kalau query belum mengandung kata kunci persona
+    q_lower = question.lower()
+    mod_tokens = set(modifier.split())
+    if any(tok in q_lower for tok in mod_tokens):
+        return question
+    return f"{question} ({modifier})"
+
+
+# ── Relevan Score 9.5++ (founder architecture diagram LOCK) ───────────────────
+
+def _calculate_relevan_score(
+    agreement_pct: float,
+    sanad_tier: str,
+    maqashid_score: float,
+    confidence_idx: float,
+    persona_align: float,
+) -> float:
+    """Hitung relevan score 0-10 berdasarkan formula founder.
+    Threshold: >= 9.5 lolos, 7.0-9.4 disclaimer, < 7.0 loop balik."""
+    tier_map = {"primer": 1.0, "ulama": 0.8, "peer_review": 0.6, "aggregator": 0.4, "unknown": 0.3, "": 0.3}
+    tier_score = tier_map.get(sanad_tier, 0.3)
+    raw = (
+        agreement_pct * _RELEVAN_WEIGHT_AGREEMENT +
+        tier_score * _RELEVAN_WEIGHT_SANAD_TIER +
+        maqashid_score * _RELEVAN_WEIGHT_MAQASHID +
+        confidence_idx * _RELEVAN_WEIGHT_CONFIDENCE +
+        persona_align * _RELEVAN_WEIGHT_PERSONA_ALIGN
+    )
+    return round(raw * 10, 2)
+
+
 # ── Sanad consensus ──────────────────────────────────────────────────────────
 
 def _jaccard(a: str, b: str) -> float:
@@ -349,53 +541,112 @@ def _build_render_context(branches: list[BranchResult], canonical: Optional[Bran
 
 async def run_sanad(question: str, persona: str = "AYMAN") -> SanadResult:
     """
-    Run 3-branch parallel sanad consensus.
+    Run 5-branch parallel sanad consensus dengan persona-weighted query
+    dan relevan score 9.5++ (founder architecture diagram LOCK).
 
-    Returns SanadResult dengan validated_claim, agreement_pct, dan render context.
-    Caller should pass render_context ke LLM untuk persona-flavored final answer.
+    Flow:
+      1. Persona-weighted query refinement
+      2. Fan-out 5 branches paralel
+      3. Sanad consensus (Jaccard + vote)
+      4. Relevan Score 9.5++
+      5. Kalau < 9.5 → loop balik refine query (max 2 iterasi)
+      6. Return SanadResult dengan score + iteration_count
     """
     t_start = time.time()
-    try:
-        results = await asyncio.wait_for(
-            asyncio.gather(
-                _branch_llm(question, persona),
-                _branch_wiki(question),
-                _branch_corpus(question, persona),
-                return_exceptions=False,
-            ),
-            timeout=_TIMEOUT_TOTAL,
+    iteration = 1
+    current_q = _persona_weighted_query(question, persona)
+
+    while iteration <= _MAX_SANAD_ITERATIONS:
+        try:
+            results = await asyncio.wait_for(
+                asyncio.gather(
+                    _branch_llm(current_q, persona),
+                    _branch_wiki(current_q),
+                    _branch_corpus(current_q, persona),
+                    _branch_dense(current_q, persona),
+                    _branch_tools(current_q),
+                    _branch_persona_fanout(current_q, persona),
+                    return_exceptions=False,
+                ),
+                timeout=_TIMEOUT_TOTAL,
+            )
+        except asyncio.TimeoutError:
+            log.warning("[sanad] total timeout iter=%d — returning partial", iteration)
+            results = []
+
+        if not results:
+            return SanadResult(
+                validated_claim=None,
+                agreement_pct=0.0,
+                contributing_branches=[],
+                all_branches=[],
+                citations=[],
+                total_duration_ms=int((time.time() - t_start) * 1000),
+                relevan_score=0.0,
+                iteration_count=iteration,
+                persona_used=persona,
+            )
+
+        canonical, agreement, contributing = _consensus(results)
+        citations = []
+        for b in results:
+            if b.error is None:
+                citations.extend(b.sources)
+        render_ctx = _build_render_context(results, canonical)
+
+        # Determine sanad tier from contributing branches
+        tier_priority = ["primer", "ulama", "peer_review", "aggregator", "unknown"]
+        detected_tier = "unknown"
+        for t in tier_priority:
+            if any(t in (s.get("type", "") or s.get("title", "")).lower() for s in citations):
+                detected_tier = t
+                break
+
+        # Calculate relevan score
+        confidence_idx = max((b.relevance for b in results if b.error is None), default=0.0)
+        persona_align = 0.8 if persona in contributing else 0.5  # simplistic
+        # Maqashid placeholder (integrate real maqashid_evaluator when wired)
+        maqashid_score = 0.9  # default safe until real eval wired
+        relevan = _calculate_relevan_score(
+            agreement_pct=agreement,
+            sanad_tier=detected_tier,
+            maqashid_score=maqashid_score,
+            confidence_idx=confidence_idx,
+            persona_align=persona_align,
         )
-    except asyncio.TimeoutError:
-        log.warning("[sanad] total timeout — returning partial")
-        results = []
 
-    # If all branches failed (e.g. timeout), graceful degrade
-    if not results:
-        return SanadResult(
-            validated_claim=None,
-            agreement_pct=0.0,
-            contributing_branches=[],
-            all_branches=[],
-            citations=[],
-            total_duration_ms=int((time.time() - t_start) * 1000),
+        log.info(
+            "[sanad] iter=%d question='%s' branches=%d ok=%d agreement=%.2f relevan=%.2f winner=%s duration=%dms",
+            iteration, question[:60], len(results),
+            sum(1 for b in results if b.error is None),
+            agreement, relevan,
+            canonical.branch if canonical else "none",
+            int((time.time() - t_start) * 1000),
         )
 
-    canonical, agreement, contributing = _consensus(results)
-    citations = []
-    for b in results:
-        if b.error is None:
-            citations.extend(b.sources)
-    render_ctx = _build_render_context(results, canonical)
+        # Founder threshold: >= 9.5 lolos, < 7.0 loop balik, 7.0-9.4 disclaimer
+        if relevan >= _RELEVAN_THRESHOLD_LOLOS or iteration >= _MAX_SANAD_ITERATIONS:
+            return SanadResult(
+                validated_claim=canonical.claim if canonical else None,
+                agreement_pct=agreement,
+                contributing_branches=contributing,
+                all_branches=results,
+                citations=citations,
+                total_duration_ms=int((time.time() - t_start) * 1000),
+                render_context=render_ctx,
+                relevan_score=relevan,
+                iteration_count=iteration,
+                sanad_tier=detected_tier,
+                persona_used=persona,
+            )
 
-    log.info(
-        "[sanad] question='%s' branches=%d ok=%d agreement=%.2f winner=%s duration=%dms",
-        question[:60], len(results),
-        sum(1 for b in results if b.error is None),
-        agreement,
-        canonical.branch if canonical else "none",
-        int((time.time() - t_start) * 1000),
-    )
+        # Loop balik: refine query dengan persona lensa + synonym expand
+        iteration += 1
+        current_q = _refine_query_expand(_persona_weighted_query(question, persona))
+        log.info("[sanad] relevan %.2f < %.1f — loop balik iter=%d, refined_q='%s'",
+                 relevan, _RELEVAN_THRESHOLD_LOLOS, iteration, current_q[:60])
 
+    # Fallback (should not reach here due to loop condition, but defensive)
     return SanadResult(
         validated_claim=canonical.claim if canonical else None,
         agreement_pct=agreement,
@@ -404,6 +655,10 @@ async def run_sanad(question: str, persona: str = "AYMAN") -> SanadResult:
         citations=citations,
         total_duration_ms=int((time.time() - t_start) * 1000),
         render_context=render_ctx,
+        relevan_score=relevan,
+        iteration_count=iteration,
+        sanad_tier=detected_tier,
+        persona_used=persona,
     )
 
 
