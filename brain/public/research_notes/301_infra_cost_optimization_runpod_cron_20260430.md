@@ -119,6 +119,51 @@ Kontrak: aku ambil keputusan + jelaskan reasoning + reversible (cron di-COMMENT 
 3. Run goldset re-test — expected complete dalam ~20 menit (bukan stuck di Q6 kemarin).
 4. Verify cron yang paused tidak break anything — check logs di `/var/log/sidix/*.log`.
 
+## Update Setelah Initial Test (Diskovery Penting)
+
+Setelah commit + restart brain untuk validate goldset, ditemukan issue baru:
+
+**Problem**: Probe 1 (cold) → 105s ✅ (FlashBoot working, worker spawned)
+Probe 2 (60s gap) → TIMEOUT 200s ❌
+
+Root cause: **Idle timeout = 60s terlalu aggressive untuk sequential workload**.
+- Probe 1 selesai → worker idle
+- 60s idle → worker scale-down (sesuai config)
+- Probe 2 datang → cold start LAGI walaupun FlashBoot
+
+Untuk sequential workload (goldset 25Q, atau user typing pertanyaan berturut-turut),
+60s idle timeout = setiap query first-byte = cold start.
+
+**Recommendation Sigma-4-1B**: founder revisit RunPod config:
+- Idle timeout: 60s → **300s (5 min)** — worker stay warm between consecutive queries
+- Atau **Active workers = 1** kalau willing ~$7/day premium untuk responsive UX
+
+Trade-off:
+- 60s idle = hemat saat tidak ada traffic, tapi sequential queries always cold
+- 300s idle = balance — keep worker warm during active session, scale down setelah idle 5 min
+- Active=1 = always warm, paling responsif tapi paling mahal
+
+Untuk testing/sprint mode: 300s idle paling cocok (biaya naik sedikit, UX jauh lebih baik).
+Untuk production publik: keep 60s sampai ada traffic real yang justify Active=1.
+
+**Tambahan finding**: Ollama fallback tidak running di VPS (qwen2.5:7b belum installed/serving).
+Brain coba fallback Ollama → timeout 120s. Ini broken fallback path.
+
+**Recommendation**: install Ollama + qwen2.5:7b di VPS sebagai true fallback ketika
+RunPod cold/throttled. Cost: $0 (CPU inference, slow ~2 token/sec tapi at least responsive).
+
+## Status Sigma-3 Validation
+
+Code Sigma-3 deployed (c343178) tapi validation goldset BLOCKED tonight oleh:
+1. Idle timeout 60s + cold-start cycle
+2. Queue backlog dari run sebelumnya (akan drain natural via Max=1 serial processing)
+3. Ollama fallback tidak available
+
+Code-level confidence: HIGH (local unit tests + smoke tests semua PASS).
+End-to-end validation: DEFERRED ke sesi besok setelah:
+- Founder revisit RunPod Idle timeout (60s → 300s)
+- Queue drain natural overnight
+
 ## Sigma-4 Real Plan (Updated)
 
 Sigma-4A streaming SSE — DEFER ke sesi berikutnya. Reason: dengan FlashBoot 2s + token gen ~150s untuk 600 tokens, perceived first-byte latency masih bisa diterima tanpa streaming. Streaming jadi nice-to-have bukan must-have.

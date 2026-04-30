@@ -15245,3 +15245,32 @@ Backup crontab: `/opt/sidix/.data/crontab_backup_20260430_132013.txt`
 ### Sigma-4A Streaming
 DEFER. Setelah FlashBoot ON, cold-start 2s = perceived latency acceptable tanpa streaming. Streaming jadi nice-to-have bukan must-have. Re-prioritize.
 
+
+## [DISCOVERY] 2026-04-30 — Idle Timeout 60s = Sequential Query Anti-Pattern
+
+### Konteks
+Setelah RunPod tuning + cron diet, attempt re-run 25Q goldset untuk validate Sigma-3 changes.
+
+### Finding
+Probe 1 (cold) → 105s PASS ✅ (FlashBoot working)
+Probe 2 (60s gap setelah probe 1) → TIMEOUT 200s ❌
+
+### Root cause
+**Idle timeout = 60s** terlalu aggressive untuk sequential workload:
+- Probe selesai → worker idle 60s → scale down
+- Probe berikutnya → cold start lagi (walau FlashBoot)
+- Goldset 25 sequential queries = setiap query first-byte = cold-start
+
+### Recommendation
+Founder set Idle timeout: **60s → 300s** (5 min) di RunPod console.
+Trade-off: cost naik sedikit untuk warm worker selama session aktif, tapi
+sequential queries jadi responsive (probe 2nd seharusnya <30s vs 200s).
+
+### Plus finding: Ollama fallback BROKEN
+Brain coba fallback Ollama qwen2.5:7b → timeout 120s. Ollama tidak running.
+Recommendation Sigma-4: install Ollama + qwen2.5:7b di VPS sebagai true fallback.
+
+### Status Sigma-3 validation
+- Code-level: HIGH confidence (local tests PASS)
+- E2E: DEFERRED besok (queue drain + idle timeout fix)
+
