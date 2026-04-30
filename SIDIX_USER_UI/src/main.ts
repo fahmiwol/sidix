@@ -17,7 +17,7 @@ import {
 } from 'lucide';
 
 import {
-  checkHealth, askStream, listCorpus, uploadDocument, deleteDocument,
+  checkHealth, askStream, askHolisticStream, listCorpus, uploadDocument, deleteDocument,
   triggerReindex, getReindexStatus, agentGenerate, submitFeedback, forgetAgentSession,
   agentBurst, agentTwoEyed, agentForesight, agentResurrect,
   BrainQAError, BRAIN_QA_BASE,
@@ -1101,6 +1101,7 @@ const modeBurstBtn     = document.getElementById('mode-burst') as HTMLButtonElem
 const modeTwoEyedBtn   = document.getElementById('mode-twoeyed') as HTMLButtonElement | null;
 const modeForesightBtn = document.getElementById('mode-foresight') as HTMLButtonElement | null;
 const modeResurrectBtn = document.getElementById('mode-resurrect') as HTMLButtonElement | null;
+const modeHolisticBtn  = document.getElementById('mode-holistic') as HTMLButtonElement | null;
 
 function getInputOrPrompt(modeName: string, hint: string): string | null {
   const v = chatInput?.value.trim() ?? '';
@@ -1130,6 +1131,101 @@ function appendThinkingPlaceholder(label: string): HTMLDivElement {
   if (chatMessages) chatMessages.scrollTop = chatMessages.scrollHeight;
   return wrap;
 }
+
+// 🌟 Sprint Α: Holistic Mode — Jurus Seribu Bayangan (multi-source paralel + SSE streaming)
+modeHolisticBtn?.addEventListener('click', async () => {
+  const question = getInputOrPrompt(
+    '🌟 Jurus Seribu Bayangan (Holistic)',
+    'Mengerahkan SEMUA resource paralel: web search + knowledge base + semantic embedding + 5 persona research + tools simultan. Sanad cross-verify multi-source. Cognitive synthesizer (neutral) merge jadi 1 jawaban with attribution. Multi-perspective default.',
+  );
+  if (!question) return;
+
+  appendMessage('user', question);
+  if (chatInput) { chatInput.value = ''; chatInput.dispatchEvent(new Event('input')); }
+
+  // Live progress card — show events real-time as they stream
+  const progressWrap = document.createElement('div');
+  progressWrap.className = 'flex justify-start animate-fsu';
+  const progressBubble = document.createElement('div');
+  progressBubble.className = 'msg-ai max-w-[85%] px-5 py-4 text-parchment-200 text-sm';
+  progressBubble.innerHTML = `
+    <div class="flex items-center gap-2 mb-3">
+      <span>🌟</span>
+      <span class="font-semibold text-gold-400">Jurus Seribu Bayangan</span>
+      <span id="holistic-elapsed" class="text-[10px] text-parchment-500 ml-auto" style="font-variant-numeric: tabular-nums;">0.0s</span>
+    </div>
+    <div id="holistic-progress" class="space-y-1 mb-3 text-xs text-parchment-400"></div>
+    <div id="holistic-answer" class="text-sm leading-relaxed whitespace-pre-wrap mt-2"></div>
+  `;
+  progressWrap.appendChild(progressBubble);
+  chatMessages?.appendChild(progressWrap);
+  if (chatMessages) chatMessages.scrollTop = chatMessages.scrollHeight;
+
+  const progressEl = progressBubble.querySelector('#holistic-progress') as HTMLDivElement;
+  const answerEl = progressBubble.querySelector('#holistic-answer') as HTMLDivElement;
+  const elapsedEl = progressBubble.querySelector('#holistic-elapsed') as HTMLSpanElement;
+
+  const startTime = Date.now();
+  const elapsedTimer = setInterval(() => {
+    const t = (Date.now() - startTime) / 1000;
+    if (elapsedEl) elapsedEl.textContent = `${t.toFixed(1)}s`;
+  }, 100);
+
+  const addProgressLine = (text: string, status: 'running' | 'ok' | 'fail' = 'running') => {
+    const line = document.createElement('div');
+    const icon = status === 'ok' ? '✓' : status === 'fail' ? '✗' : '◯';
+    const color = status === 'ok' ? 'text-emerald-400' : status === 'fail' ? 'text-red-400' : 'text-parchment-500';
+    line.className = `flex items-center gap-2 ${color}`;
+    line.innerHTML = `<span class="font-mono text-[10px]">${icon}</span><span>${text}</span>`;
+    progressEl.appendChild(line);
+    if (chatMessages) chatMessages.scrollTop = chatMessages.scrollHeight;
+    return line;
+  };
+
+  const persona = (personaSel?.value ?? 'AYMAN') as Persona;
+  let fullAnswer = '';
+
+  try {
+    await askHolisticStream(question, persona, {
+      onStart: () => addProgressLine('Query received'),
+      onOrchestratorStart: () => addProgressLine('Mengerahkan resource paralel...'),
+      onSourceComplete: (source, success, latencyMs) => {
+        const labels: Record<string, string> = {
+          web: 'web_search (DuckDuckGo + Wikipedia)',
+          corpus: 'corpus search (BM25)',
+          dense: 'semantic embedding (dense_index)',
+          persona_fanout: '5 persona research (UTZ/ABOO/OOMAR/ALEY/AYMAN)',
+          tools: 'tool registry',
+        };
+        const label = labels[source] || source;
+        addProgressLine(`${label} (${(latencyMs / 1000).toFixed(1)}s)`, success ? 'ok' : 'fail');
+      },
+      onOrchestratorDone: (n, totalMs) => {
+        addProgressLine(`Orchestrator done: ${n} sources successful (${(totalMs / 1000).toFixed(1)}s)`, 'ok');
+      },
+      onSynthesisStart: () => addProgressLine('Cognitive synthesizer merging...'),
+      onToken: (text) => {
+        fullAnswer += text;
+        answerEl.textContent = fullAnswer;
+        if (chatMessages) chatMessages.scrollTop = chatMessages.scrollHeight;
+      },
+      onDone: (meta) => {
+        clearInterval(elapsedTimer);
+        addProgressLine(
+          `Done: confidence=${meta.confidence}, ${meta.nSources} sources, method=${meta.method}, ${(meta.durationMs / 1000).toFixed(1)}s total`,
+          'ok',
+        );
+      },
+      onError: (msg) => {
+        clearInterval(elapsedTimer);
+        addProgressLine(`Error: ${msg}`, 'fail');
+      },
+    });
+  } catch (e) {
+    clearInterval(elapsedTimer);
+    addProgressLine(`Exception: ${(e as Error).message}`, 'fail');
+  }
+});
 
 modeBurstBtn?.addEventListener('click', async () => {
   const prompt = getInputOrPrompt(

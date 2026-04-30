@@ -1255,11 +1255,15 @@ def create_app() -> "FastAPI":
         try:
             from .multi_source_orchestrator import MultiSourceOrchestrator
             from .cognitive_synthesizer import CognitiveSynthesizer
+            from .output_type_detector import detect_output_type, OutputType
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"holistic_unavailable: {e}")
 
         import time as _time
         _t0 = _time.monotonic()
+
+        # Sprint 5: Adaptive Output detection (Pencipta visi)
+        output_detection = detect_output_type(req.question)
 
         orchestrator = MultiSourceOrchestrator()
         synthesizer = CognitiveSynthesizer(max_tokens=600, temperature=0.65)
@@ -1284,6 +1288,11 @@ def create_app() -> "FastAPI":
             "orchestrator_latency_ms": bundle.total_latency_ms,
             "orchestrator_errors": bundle.errors,
             "debug_bundle": synthesis.debug_bundle if debug_flag else None,
+            # Sprint 5: Adaptive Output hint untuk frontend
+            "output_type": output_detection.output_type.value,
+            "output_confidence": output_detection.confidence,
+            "output_reason": output_detection.reason,
+            "suggested_tools": output_detection.suggested_tools,
         }
 
     # ── POST /agent/generate ──────────────────────────────────────────────────
