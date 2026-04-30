@@ -34,10 +34,10 @@ log = logging.getLogger("sidix.multi_source")
 
 # Per-source timeout (detik) — kalau exceed, source skipped, lainnya proceed
 DEFAULT_TIMEOUTS = {
-    "web_search": 15.0,
+    "web_search": 25.0,        # Sprint Α bug fix: 15→25 (DDG sometimes slow)
     "corpus_search": 5.0,
     "dense_index": 5.0,
-    "persona_fanout": 45.0,
+    "persona_fanout": 75.0,    # Sprint Α bug fix: 45→75 (5 persona Ollama paralel exceed 45s)
     "tool_registry": 5.0,
 }
 
@@ -130,16 +130,28 @@ async def _src_web_search(query: str) -> dict:
 
 
 async def _src_corpus_search(query: str) -> dict:
-    """BM25 corpus search."""
+    """BM25 corpus search.
+
+    Sprint Α bug fix: _tool_search_corpus returns ToolResult dataclass,
+    bukan dict. Need attribute access not .get().
+    """
     try:
         from .corpus_search import search as corpus_search
         result = await asyncio.to_thread(corpus_search, query, top_k=3)
         return {"results": result[:3] if result else []}
-    except Exception as e:
-        # Fallback: try search_corpus tool
+    except Exception:
+        # Fallback: try search_corpus tool (returns ToolResult dataclass)
         from .agent_tools import _tool_search_corpus
-        result = await asyncio.to_thread(_tool_search_corpus, {"query": query, "k": 3})
-        return {"output": result.get("output", "")[:1500]}
+        tool_result = await asyncio.to_thread(_tool_search_corpus, {"query": query, "k": 3})
+        # ToolResult might be dataclass with .output attr, or dict from older code
+        output_text = ""
+        if hasattr(tool_result, "output"):
+            output_text = str(tool_result.output or "")
+        elif isinstance(tool_result, dict):
+            output_text = str(tool_result.get("output", ""))
+        else:
+            output_text = str(tool_result)
+        return {"output": output_text[:1500]}
 
 
 async def _src_dense_index(query: str) -> dict:

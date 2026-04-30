@@ -49,6 +49,27 @@ Last updated: 2026-04-30 evening (Meta-Process Reform)
 - **Evidence**: research note 301
 - **Commits**: e02b4f1
 
+### Sprint Cowork Skills + Daily Synthesis Cron
+- **Visi mapping**: Cognitive (synthesis daily) + Iteratif + partial Self-Bootstrap Phase 1
+- **Date**: 2026-04-30 evening
+- **Deliverable**:
+  - 4 Claude Code skills (`.claude/skills/`): sidix-state, sidix-task-card, sidix-research, sidix-update-log
+  - `scripts/daily_synthesis.sh` — cron job synthesize hari ini → `docs/DAILY_SYNTHESIS_<date>.md`
+  - VPS cron entry: `0 22 * * * /opt/sidix/scripts/daily_synthesis.sh`
+- **Acceptance**: ✅ 4 skills exist, ✅ cron entry installed, ✅ first manual run generated synthesis file (latency 240s, 26 commits captured)
+- **Evidence**: commit e168865 + first synthesis at `docs/DAILY_SYNTHESIS_2026-04-30.md`
+- **Status**: LIVE. Tomorrow morning agent baca synthesis file = grounded tanpa re-read 309 notes.
+
+### Sprint Α follow-up — Bug Fixes (Code-Level)
+- **Visi mapping**: Genius (multi-source stability)
+- **Date**: 2026-04-30 evening
+- **Deliverable**: 3 bugs fixed di `multi_source_orchestrator.py`
+  - web timeout 15s → 25s
+  - persona_fanout timeout 45s → 75s
+  - corpus AttributeError → ToolResult attribute access
+- **Acceptance**: code-level fixed (syntax verified). E2E re-test defer.
+- **Status**: code FIXED. E2E validation queued.
+
 ### Sprint Α — Jurus Seribu Bayangan (Multi-Source Orchestrator)
 - **Visi mapping**: Genius (full coverage) + Creative (5 persona) + Cognitive
 - **Date**: 2026-04-30 evening
@@ -65,13 +86,13 @@ Last updated: 2026-04-30 evening (Meta-Process Reform)
 
 ## 🔄 IN PROGRESS (Belum Fully Done — Pending Iteration)
 
-### Sprint Α follow-up — Bug Fixes
-- **3 known bugs** (catat di LIVING_LOG `[DEPLOY] Sprint Α LIVE`):
-  1. `web: timeout_15s` → raise to 25s atau cache web results
-  2. `corpus: AttributeError 'ToolResult' object has no attribute 'get'` → bug code, ToolResult dataclass bukan dict
-  3. `persona_fanout: timeout_45s` → 5 persona Ollama exceed 45s, raise to 60s atau reduce concurrency
-- **Acceptance**: rerun probe → 5/5 sources successful, latency turun ke ~60-80s
-- **Effort**: 1 session
+### Sprint Α follow-up — Bug Fixes ✅ FIXED 2026-04-30 evening
+- **3 bugs FIXED** (commit pending push):
+  1. ✅ web timeout 15s → **25s** (multi_source_orchestrator.py DEFAULT_TIMEOUTS)
+  2. ✅ corpus AttributeError → ToolResult attribute access (`hasattr(tool_result, "output")` check)
+  3. ✅ persona_fanout timeout 45s → **75s** (5 persona Ollama paralel acceptable)
+- **Acceptance pending**: rerun probe via `/agent/chat_holistic` → expected 5/5 sources successful
+- **Status**: code-level FIXED, e2e validation defer ke sesi berikutnya (token tight)
 
 ### Sprint Goldset Re-Run Post-Sprint-Α
 - **Acceptance**: 25Q goldset via /agent/chat_holistic → expected 22-23/25 = 88-92%
@@ -82,7 +103,14 @@ Last updated: 2026-04-30 evening (Meta-Process Reform)
 
 ## 📋 QUEUED (Ready Execute Next Session)
 
-### Sprint Cowork Skills + Daily Synthesis Cron ⭐ NEXT (DECIDED)
+### Sprint Cowork Skills + Daily Synthesis Cron ✅ DONE 2026-04-30 evening
+**Status moved to COMPLETED** — see updated COMPLETED section above for evidence.
+
+---
+
+### (REMOVED — Now COMPLETED)
+
+#### Original entry preserved for audit:
 - **Visi mapping**: Cognitive (synthesis daily) + Iteratif (compound) + partial Self-Bootstrap
 - **Decision authority**: saya ambil untuk bos (bos eksplisit *"kamu yang bisa bantu tentuin buat saya"* 2026-04-30 evening)
 - **Cost**: $0 extra (Claude Code subscription existing + SIDIX brain Ollama gratis CPU)
