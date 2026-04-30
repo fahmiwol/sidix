@@ -4,12 +4,16 @@
 
 | Urutan | File | Fungsi |
 |--------|------|--------|
+| 0 | **`docs/AGENT_ONBOARDING.md`** | **WAJIB PERTAMA** — Session Start Protocol anti-menguap. Baca sebelum eksekusi apapun. |
 | 1 | [`docs/00_START_HERE.md`](docs/00_START_HERE.md) | Pintu masuk manusia + agen; status & rencana eksekusi. |
 | 2 | **`AGENTS.md` (file ini)** | Preferensi belajar, fakta workspace, Projek Badar, **wajib** `LIVING_LOG` untuk pekerjaan berarti. |
 | 3 | [`docs/LIVING_LOG.md`](docs/LIVING_LOG.md) | Riwayat keputusan/uji/impl terbaru (append-only; baca bagian bawah). |
 | 4 | [`docs/AGENTS_MANDATORY_SOP.md`](docs/AGENTS_MANDATORY_SOP.md) | **Wajib:** terminologi SIDIX-native, lima persona, workflow pasca-task, bilingual changelog/landing, guardrail privasi. |
 | 5 | [`CLAUDE.md`](CLAUDE.md) | SSOT tambahan untuk Claude: **MASTER_ROADMAP**, DEVELOPMENT_RULES, North Star, keamanan, UI lock. |
 | 6 | [`docs/NORTH_STAR.md`](docs/NORTH_STAR.md) · [`docs/MASTER_ROADMAP_2026-2027.md`](docs/MASTER_ROADMAP_2026-2027.md) · [`docs/SIDIX_CAPABILITY_MAP.md`](docs/SIDIX_CAPABILITY_MAP.md) | Arah produk, sprint canonical, kemampuan teknis. |
+| 7 | [`docs/SIDIX_BACKLOG.md`](docs/SIDIX_BACKLOG.md) · [`docs/FOUNDER_JOURNAL.md`](docs/FOUNDER_JOURNAL.md) · [`docs/FOUNDER_IDEA_LOG.md`](docs/FOUNDER_IDEA_LOG.md) | Sprint state SSoT + decision lock founder + verbatim ide bos. |
+
+> ⚠️ **WORKTREE WARNING:** Repo ini punya worktree aktif (`gallant-ellis-7cd14d/`, `epic-cray-3e451f/`, `pedantic-banach-c8232d/`, `serene-murdock-dbcb1f/`). Kode dan dokumen terbaru sering berada di worktree sebelum di-merge ke `main`. **Selalu cek `git worktree list` atau folder worktree sebelum eksekusi.** Jangan baca hanya root `main` — itu bisa stale.
 
 Transcript Cursor untuk kutipan user: folder `agent-transcripts` di profil Cursor (lihat root [`CLAUDE.md`](CLAUDE.md) / README proyek). **Jangan** commit secret; ikuti bagian keamanan di `CLAUDE.md` bila relevan.
 
