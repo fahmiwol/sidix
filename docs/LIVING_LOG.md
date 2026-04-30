@@ -15625,3 +15625,25 @@ gambar real, bukan cuma teks. Phase 3 next: video + audio + 3D wire.
 ### Commit
 15ec597 feat(sprint-pencipta-phase2): image_gen tool wired + frontend attachment render
 
+
+## [SPRINT-TUMBUH-FIX] 2026-04-30 evening — Pipeline Auth Restored
+
+### Critical finding
+Audit cron logs ditemukan Sprint Tumbuh pipeline BROKEN sejak 5 hari:
+- learn/run: `{"detail":"admin token diperlukan"}` — token rotated tapi cron belum sync
+- synthetic/batch: `{"detail":"Akses ditolak"}` — same token issue
+- LoRA training dataset terakhir 2026-04-25 — pipeline TIDAK update
+
+### Diagnosa
+1. Token mismatch: .env BRAIN_QA_ADMIN_TOKEN rotated to `d7fabad...`, cron pakai old `d76f59a4...`
+2. Header mismatch: endpoint validate `x-admin-token`, cron pakai `Authorization: Bearer`
+
+### Fix (VPS only, no code change)
+1. `sed` replace token di crontab: 4 entries (learn/run, learn/process_queue, synthetic/batch, prompt_optimize)
+2. `sed` replace header `Authorization: Bearer` -> `x-admin-token` untuk learn endpoints
+3. Verified: `curl /learn/process_queue` -> `{"ok":true,"processed":0}` (auth WORKS)
+
+### Visi shift
+Sprint Tumbuh REAL state was 20% (broken auth), bukan 40%. Sekarang 50% (auth fixed, queue auto-populate dari cron 04:00 UTC besok). Full pipeline cycle complete = next 24-48 jam validation.
+
+### No commit (operational fix VPS-side)
