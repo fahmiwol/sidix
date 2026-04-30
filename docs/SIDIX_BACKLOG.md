@@ -316,3 +316,18 @@ Setiap agent (Claude/GPT/Gemini/SIDIX) yang kerja di proyek ini WAJIB ikuti prot
 - `docs/TASK_CARD_TEMPLATE.md` (execution format)
 - `CLAUDE.md` (top-level rules + session protocol)
 - `brain/public/research_notes/306_meta_process_reform_anti_menguap_20260430.md` (diagnose)
+
+### Sprint Pencipta Phase 3 — Multi-Modal Attachments (TTS + Video + 3D + Structured)
+- **Visi mapping**: Pencipta (5 modality LIVE) — foundation Adobe-of-Indonesia
+- **Date**: 2026-04-30 evening
+- **Deliverable**: agent_serve.py + main.ts handle 5 output_type
+  - image_prompt → _tool_text_to_image (FLUX.1) — Phase 2 LIVE
+  - audio_tts → _tool_text_to_speech (Coqui-TTS) — Phase 3 LIVE
+  - video_storyboard → text-only multi-scene format (Phase 4 wire ke Film-Gen)
+  - 3d_prompt → text-only mesh/material spec (Phase 4 wire ke Mighan-3D)
+  - structured → markdown table/list rendered
+- **Frontend renderAttachment**: <audio> player, 🎬 video panel, 🎲 3D spec, 📊 structured prose
+- **Acceptance**: ✅ syntax verified, deploy LIVE, 5 modality dispatch in chat_holistic + stream
+- **Evidence**: commit daa3d37
+- **Status**: LIVE Phase 3. Phase 4 next: actual Film-Gen + Mighan-3D pipeline wire.
+- **Visi shift**: Pencipta 60% → **75%**.
