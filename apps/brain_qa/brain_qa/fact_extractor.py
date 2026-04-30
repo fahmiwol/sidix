@@ -62,13 +62,21 @@ _QUERY_PATTERNS = [
             r"([A-Z][a-z]+(?:\s+[A-Z][a-z]+){0,2})\b",
         ),
     ),
-    # Sprint 35: CEO / Founder
+    # Sprint 35: CEO / Founder — Sigma-2C: tambah reverse pattern (Name IS/as CEO)
     (
         re.compile(r"siapa(?:kah)?\s+(?:ceo|founder|pendiri)\s+", re.I),
         "CEO / Founder",
         re.compile(
-            r"\b(?:CEO|Founder|Pendiri|Co.?Founder)\b[\s\w]{0,30}?\b"
-            r"([A-Z][a-z]+(?:\s+[A-Z][a-z]+){0,2})\b",
+            # Pattern 1: "CEO ... Name" (role then name)
+            r"(?:"
+            r"\b(?:CEO|Founder|Pendiri|Co.?Founder|Chief Executive)\b[\s\w,]{0,40}?"
+            r"([A-Z][a-zA-Z]+(?:\s+[A-Z][a-zA-Z]+){0,2})"
+            r"|"
+            # Pattern 2: "Name is/as/became CEO" or "Name, CEO" (name then role)
+            r"([A-Z][a-zA-Z]+(?:\s+[A-Z][a-zA-Z]+){0,2})"
+            r"(?:\s*,\s*|\s+(?:is|as|became|menjadi|adalah|selaku|sebagai)\s+)"
+            r"(?:CEO|chief executive|Founder|Pendiri)"
+            r")",
         ),
     ),
     # Sprint 35: Walikota / Bupati
@@ -98,13 +106,55 @@ _QUERY_PATTERNS = [
             r"([A-Z][a-z]+(?:\s+[A-Z][a-z]+){0,2})\b",
         ),
     ),
-    # Sprint 35: Juara / Pemenang (sport, competition)
+    # Sprint 35: Juara / Pemenang (sport, competition) — Sigma-2C: subject-first patterns
     (
-        re.compile(r"siapa(?:kah)?\s+(?:juara|pemenang|champion|winner)\s+", re.I),
+        re.compile(r"(?:siapa|siapakah)\s+(?:juara|pemenang|champion|winner)\s+|juara\s+(?:piala|world\s*cup|fifa|olimpiade|asian\s*games)", re.I),
         "Juara/Pemenang",
         re.compile(
-            r"\b(?:Juara|Pemenang|Champion|Winner|Memenangkan|Meraih)\b[\s\w]{0,30}?\b"
-            r"([A-Z][a-z]+(?:\s+[A-Z][a-z]+){0,2})\b",
+            # Pattern 1: "Country/Team won/champion/juara" — subject before verb
+            r"(?:"
+            r"([A-Z][a-zA-Z]+(?:\s+[A-Z][a-zA-Z]+)?)"
+            r"\s+(?:memenangkan|meraih|menang|menjadi\s+juara|won|wins|champion|crowned|beat|defeated)"
+            r"|"
+            # Pattern 2: role-first "Juara/Champion/Winner ... Country/Team"
+            r"\b(?:Juara|Pemenang|Champion|Winner|Memenangkan|Meraih)\b[\s\w]{0,40}?\b"
+            r"([A-Z][a-zA-Z]+(?:\s+[A-Z][a-zA-Z]+)?)"
+            r")",
+        ),
+    ),
+    # Sigma-4: Tahun sekarang / current year — return as fact
+    (
+        re.compile(r"tahun\s+(?:sekarang|saat\s+ini|berapa)|berapa\s+tahun|what\s+year|year\s+is\s+it", re.I),
+        "Tahun Sekarang",
+        # Pattern: 4-digit year between 2020-2099 (modern context)
+        re.compile(r"\b(20[2-9][0-9])\b"),
+    ),
+    # Sigma-4: Ibukota Indonesia (special case — transitional Jakarta/IKN/Nusantara 2024-2028)
+    (
+        re.compile(r"ibu\s*kota\s+(?:indonesia|ri|negara)|capital\s+(?:of\s+)?indonesia", re.I),
+        "Ibukota Indonesia",
+        re.compile(
+            r"(?:"
+            r"\b(?:Ibu\s*kota|Ibukota|capital)\b[\s\w,]{0,40}?\b"
+            r"(Jakarta|Nusantara|IKN(?:\s+Nusantara)?)"
+            r"|"
+            r"\b(Jakarta|Nusantara|IKN)\b\s+(?:adalah\s+)?(?:ibu\s*kota|ibukota|capital)"
+            r")", re.I,
+        ),
+    ),
+    # Sigma-4: Kepanjangan / abbreviation expansion (HTTP -> Hypertext Transfer Protocol)
+    (
+        re.compile(r"(?:apa\s+)?(?:kepanjangan|singkatan|stands\s+for)\s+(?:dari\s+)?[A-Z]{2,8}", re.I),
+        "Kepanjangan",
+        re.compile(
+            r"(?:"
+            # Pattern 1: "HTTP stands for X" / "HTTP = X" / "HTTP adalah X"
+            r"\b[A-Z]{2,8}\b\s+(?:stands?\s+for|=|adalah|merupakan|kepanjangan(?:nya)?(?:\s+adalah)?)\s+"
+            r"([A-Z][a-zA-Z]+(?:\s+[A-Z][a-zA-Z]+){1,5})"
+            r"|"
+            # Pattern 2: "Hypertext Transfer Protocol (HTTP)" — expansion before abbr
+            r"([A-Z][a-zA-Z]+(?:\s+[A-Z][a-zA-Z]+){1,5})\s*\(\s*[A-Z]{2,8}\s*\)"
+            r")",
         ),
     ),
 ]
@@ -144,23 +194,50 @@ _STOP_TOKENS = {
 }
 
 
-def _clean_name(raw: str) -> Optional[str]:
+def _clean_name(raw: str, role_label: Optional[str] = None) -> Optional[str]:
     """Strip stop tokens from extracted name. Return None kalau jadi kosong.
 
     Sprint 35: cap max 2 words (most Indonesian person names are 1-2 words).
+    Sigma-4: role-aware cleaning. For Ibukota/Tahun/Kepanjangan, expected answer
+    overlaps dengan stop tokens (Jakarta, year digits, generic words).
     """
     if not raw:
         return None
     tokens = raw.strip().split()
+
+    # Sigma-4: Tahun = pure 4-digit year, no token filter needed
+    if role_label == "Tahun Sekarang":
+        cleaned = raw.strip()
+        if cleaned.isdigit() and len(cleaned) == 4:
+            return cleaned
+        return None
+
+    # Sigma-4: Ibukota = preserved city names (Jakarta/Nusantara/IKN bypass stop filter)
+    if role_label == "Ibukota Indonesia":
+        cleaned = " ".join(tokens[:3])  # cap 3 words for "IKN Nusantara"
+        if len(cleaned) >= 3:
+            return cleaned
+        return None
+
+    # Sigma-4: Kepanjangan = phrase 2-6 words, allow through (e.g., "Hypertext Transfer Protocol")
+    if role_label == "Kepanjangan":
+        # Filter only obvious noise (articles), keep capitalized expansion words
+        noise = {"the", "and", "or", "of", "for"}
+        keep = [t for t in tokens if t.lower() not in noise]
+        if 2 <= len(keep) <= 6:
+            cleaned = " ".join(keep)
+            if len(cleaned) >= 5:
+                return cleaned
+        return None
+
+    # Default (person name) — filter stop tokens
     keep = [t for t in tokens if t.lower() not in _STOP_TOKENS]
     if not keep:
         return None
-    # Sprint 35: cap to first 2 valid tokens (anti-pollution from greedy regex)
     if len(keep) > 2:
         keep = keep[:2]
     cleaned = " ".join(keep)
-    # Minimum length 4 char untuk valid person name
-    if len(cleaned) < 4:
+    if len(cleaned) < 3:
         return None
     return cleaned
 
@@ -209,9 +286,13 @@ def extract_fact_from_web(question: str, web_output: str) -> Optional[dict]:
             sources.append(url_match.group())
             continue
         # Run name extraction on text lines
+        # Sigma-2C: support multi-group alternation patterns (group 1 OR group 2)
         for m in name_re.finditer(line):
-            raw_name = m.group(1).strip()
-            cleaned = _clean_name(raw_name)
+            raw_name = next((g for g in m.groups() if g), None)
+            if not raw_name:
+                continue
+            raw_name = raw_name.strip()
+            cleaned = _clean_name(raw_name, role_label=role_label)
             if not cleaned:
                 continue
             candidates[cleaned] = candidates.get(cleaned, 0) + 1

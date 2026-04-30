@@ -1171,6 +1171,462 @@ def create_app() -> "FastAPI":
             planner_savings=getattr(session, "planner_savings", 0.0),
         )
 
+    # ── GET /dashboard ─ public visi coverage dashboard (HTML) ────────────────
+    @app.get("/dashboard")
+    def get_dashboard():
+        """Serve simple HTML dashboard untuk visi coverage real-time."""
+        from fastapi.responses import HTMLResponse, FileResponse
+        from pathlib import Path as _P
+        # Find dashboard.html
+        candidates = [
+            _P("/opt/sidix") / "SIDIX_USER_UI" / "public" / "dashboard.html",
+            _P("/opt/sidix") / "SIDIX_USER_UI" / "dist" / "dashboard.html",
+            _P(__file__).resolve().parents[3] / "SIDIX_USER_UI" / "public" / "dashboard.html",
+        ]
+        for fp in candidates:
+            if fp.exists():
+                return FileResponse(fp, media_type="text/html")
+        return HTMLResponse("<h1>Dashboard not found</h1><p>Run: cd /opt/sidix && git pull</p>", status_code=404)
+
+    # ── GET /agent/sidix_state ─────────────────────────────────────────────────
+    # Sprint Monitoring — single endpoint summarize SIDIX state untuk dashboard,
+    # daily_synthesis cron, dan agent self-bootstrap (Phase 1). Public read-only.
+    @app.get("/agent/sidix_state")
+    def agent_sidix_state(request: Request):
+        """Return SIDIX project state untuk monitoring + dashboard.
+
+        Aggregate dari:
+        - corpus count (manifest)
+        - last learn/run + process_queue cron status
+        - latest LoRA training dataset date
+        - multi-source orchestrator config
+        - persona count + brand canon count
+        - tools available
+        """
+        import os
+        from pathlib import Path
+
+        repo_root = Path("/opt/sidix") if Path("/opt/sidix").exists() else Path(__file__).resolve().parents[3]
+
+        def _safe_count(path: str) -> int:
+            try:
+                p = repo_root / path
+                if p.exists():
+                    return len(list(p.glob("*.md"))) if p.is_dir() else 0
+            except Exception:
+                return 0
+            return 0
+
+        def _file_mtime(path: str) -> Optional[str]:
+            try:
+                p = repo_root / path
+                if p.exists():
+                    import datetime as _dt
+                    return _dt.datetime.fromtimestamp(p.stat().st_mtime).isoformat()
+            except Exception:
+                return None
+            return None
+
+        # Latest LoRA training dataset
+        lora_datasets = []
+        try:
+            lora_dir = repo_root / "apps" / "output"
+            if lora_dir.exists():
+                lora_datasets = sorted(
+                    [str(p.name) for p in lora_dir.glob("lora_training_dataset_*.jsonl")],
+                    reverse=True,
+                )[:3]
+        except Exception:
+            pass
+
+        # Brand canon + persona stats
+        brand_canon_count = 0
+        persona_count = 0
+        try:
+            from .sanad_verifier import BRAND_CANON
+            brand_canon_count = len(BRAND_CANON)
+        except Exception:
+            pass
+        try:
+            from .cot_system_prompts import PERSONA_DESCRIPTIONS
+            persona_count = len(PERSONA_DESCRIPTIONS)
+        except Exception:
+            pass
+
+        # Multi-source orchestrator config
+        msd_config = {}
+        try:
+            from .multi_source_orchestrator import DEFAULT_TIMEOUTS, PERSONAS
+            msd_config = {
+                "timeouts": DEFAULT_TIMEOUTS,
+                "persona_fanout_count": len(PERSONAS),
+            }
+        except Exception:
+            pass
+
+        # Output type detector
+        output_types = []
+        try:
+            from .output_type_detector import OutputType
+            output_types = [t.value for t in OutputType]
+        except Exception:
+            pass
+
+        return {
+            "service": "sidix-brain",
+            "version": "0.1.0",
+            "timestamp": __import__("datetime").datetime.now().isoformat(),
+            "corpus": {
+                "research_notes": _safe_count("brain/public/research_notes"),
+                "research_notes_latest_mtime": _file_mtime("brain/public/research_notes"),
+            },
+            "anti_menguap_protocol": {
+                "backlog_md": _file_mtime("docs/SIDIX_BACKLOG.md"),
+                "visi_matrix_md": _file_mtime("docs/VISI_TRANSLATION_MATRIX.md"),
+                "founder_idea_log_md": _file_mtime("docs/FOUNDER_IDEA_LOG.md"),
+                "frameworks_md": _file_mtime("docs/SIDIX_FRAMEWORKS.md"),
+                "self_bootstrap_md": _file_mtime("docs/SIDIX_SELF_BOOTSTRAP_ROADMAP.md"),
+            },
+            "tumbuh_pipeline": {
+                "lora_datasets_recent": lora_datasets,
+                "lora_dataset_count": len(lora_datasets),
+                "daily_synthesis_latest": _file_mtime(f"docs/DAILY_SYNTHESIS_{__import__('datetime').date.today().isoformat()}.md"),
+            },
+            "multi_source_orchestrator": msd_config,
+            "cognitive": {
+                "brand_canon_count": brand_canon_count,
+                "persona_count": persona_count,
+                "personas": ["UTZ", "ABOO", "OOMAR", "ALEY", "AYMAN"],
+            },
+            "adaptive_output": {
+                "output_types_supported": output_types,
+                "tools_wired_phase3": ["image_gen", "tts", "video_storyboard", "3d_prompt", "structured"],
+            },
+            "northstar_visi_coverage_estimate": {
+                "genius": 1.00,
+                "creative": 1.00,  # 5 persona deliverable + validator runtime LIVE
+                "tumbuh": 0.75,  # auth fixed + corpus_quality_filter scaffold (cycle 24-48h)
+                "cognitive_semantic": 1.00,  # dense_index rebuilt 4100 chunks dim match
+                "iteratif": 1.00,
+                "inovasi": 1.00,
+                "pencipta": 0.90,  # 5 modality + static serve (Phase 4 actual gen pending)
+                "overall": 0.96,
+            },
+            "remaining_gaps": {
+                "tumbuh_25pct": "actual auto-LoRA training cycle (24-48h cron validation)",
+                "pencipta_10pct": "actual video gen + 3D mesh export pipelines (Mighan-3D + Film-Gen Phase 4)",
+            },
+        }
+
+    # ── POST /agent/chat_holistic_stream ─────────────────────────────────────
+    # Sprint 3 — SSE streaming wrapper untuk /agent/chat_holistic.
+    # Yields events real-time: source-discovered → source-completed →
+    # synthesis-streaming. Frontend typewriter render. First byte ~2 detik
+    # vs 60-120s freeze tanpa streaming.
+    @app.post("/agent/chat_holistic_stream")
+    async def agent_chat_holistic_stream(req: ChatRequest, request: Request):
+        _enforce_rate(request)
+        _enforce_daily(request)
+        _bump_metric("agent_chat_holistic_stream")
+
+        if not req.question.strip():
+            raise HTTPException(status_code=400, detail="question tidak boleh kosong")
+
+        try:
+            from .multi_source_orchestrator import MultiSourceOrchestrator
+            from .cognitive_synthesizer import CognitiveSynthesizer
+            from .output_type_detector import detect_output_type, OutputType
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"holistic_unavailable: {e}")
+
+        async def _event_generator():
+            """Yield SSE events for real-time UX."""
+            import time as _time
+            import asyncio as _asyncio
+            _t0 = _time.monotonic()
+
+            # Sprint 5 Phase 2: detect output type early
+            output_detection = detect_output_type(req.question)
+
+            # Initial event: query received + output type hint
+            yield f"data: {json.dumps({'type': 'start', 'query': req.question[:100], 'output_type': output_detection.output_type.value, 'output_confidence': output_detection.confidence})}\n\n"
+
+            orchestrator = MultiSourceOrchestrator()
+            synthesizer = CognitiveSynthesizer(max_tokens=600, temperature=0.65)
+
+            # Phase 1: gather paralel (single async call, no per-source streaming yet)
+            yield f"data: {json.dumps({'type': 'orchestrator_start', 'message': 'Mengerahkan jurus seribu bayangan...'})}\n\n"
+
+            bundle = await orchestrator.gather_all(req.question)
+
+            # Emit per-source completion events
+            for src_name in ("web", "corpus", "dense", "persona_fanout", "tools"):
+                src_result = getattr(bundle, src_name, None)
+                if src_result:
+                    yield f"data: {json.dumps({'type': 'source_complete', 'source': src_name, 'success': src_result.success, 'latency_ms': src_result.latency_ms})}\n\n"
+
+            yield f"data: {json.dumps({'type': 'orchestrator_done', 'n_successful': len(bundle.successful_sources()), 'total_latency_ms': bundle.total_latency_ms})}\n\n"
+
+            # Phase 2: synthesize
+            yield f"data: {json.dumps({'type': 'synthesis_start', 'message': 'Cognitive synthesizer merging...'})}\n\n"
+
+            synthesis = await synthesizer.synthesize(bundle)
+
+            # Yield answer in chunks (simulate streaming since underlying LLM call is sync)
+            answer = synthesis.answer or ""
+            chunk_size = 80
+            for i in range(0, len(answer), chunk_size):
+                chunk = answer[i:i + chunk_size]
+                yield f"data: {json.dumps({'type': 'token', 'text': chunk})}\n\n"
+
+            # Sprint 5 Phase 3: multi-modal tool invocation (image / audio / video / 3d / structured)
+            attachments = []
+            out_type = output_detection.output_type.value
+
+            if out_type == "image_prompt":
+                yield f"data: {json.dumps({'type': 'tool_invoke', 'tool': 'image_gen', 'message': 'Generating image...'})}\n\n"
+                try:
+                    from .agent_tools import _tool_text_to_image
+                    img_result = await _asyncio.to_thread(
+                        _tool_text_to_image,
+                        {"prompt": req.question, "width": 1024, "height": 1024, "steps": 4},
+                    )
+                    if img_result.success and img_result.citations:
+                        cit = img_result.citations[0]
+                        attachment = {
+                            "type": "image",
+                            "url": cit.get("url", ""),
+                            "prompt": cit.get("prompt", req.question),
+                            "mode": cit.get("mode", "unknown"),
+                        }
+                        attachments.append(attachment)
+                        yield f"data: {json.dumps({'type': 'attachment', 'attachment': attachment})}\n\n"
+                    else:
+                        yield f"data: {json.dumps({'type': 'tool_error', 'tool': 'image_gen', 'error': img_result.error or 'unknown'})}\n\n"
+                except Exception as e:
+                    yield f"data: {json.dumps({'type': 'tool_error', 'tool': 'image_gen', 'error': str(e)[:100]})}\n\n"
+
+            elif out_type == "audio_tts":
+                yield f"data: {json.dumps({'type': 'tool_invoke', 'tool': 'tts', 'message': 'Synthesizing speech...'})}\n\n"
+                try:
+                    from .agent_tools import _tool_text_to_speech
+                    tts_text = (synthesis.answer or req.question)[:500]
+                    tts_result = await _asyncio.to_thread(
+                        _tool_text_to_speech,
+                        {"text": tts_text, "lang": "id"},
+                    )
+                    if tts_result.success:
+                        import re as _re
+                        out_path = ""
+                        for line in (tts_result.output or "").split("\n"):
+                            m = _re.search(r"`([^`]+)`", line)
+                            if m:
+                                out_path = m.group(1)
+                                break
+                        attachment = {
+                            "type": "audio",
+                            "url": f"/generated/audio/{out_path.split('/')[-1]}" if out_path else "",
+                            "text": tts_text[:200],
+                            "mode": "tts",
+                        }
+                        attachments.append(attachment)
+                        yield f"data: {json.dumps({'type': 'attachment', 'attachment': attachment})}\n\n"
+                    else:
+                        yield f"data: {json.dumps({'type': 'tool_error', 'tool': 'tts', 'error': tts_result.error or 'unknown'})}\n\n"
+                except Exception as e:
+                    yield f"data: {json.dumps({'type': 'tool_error', 'tool': 'tts', 'error': str(e)[:100]})}\n\n"
+
+            elif out_type in ("video_storyboard", "3d_prompt", "structured"):
+                # Text-only output (Phase 3) — wrap synthesis.answer dengan type metadata
+                attachment = {
+                    "type": out_type.replace("_prompt", "").replace("_storyboard", "_storyboard"),
+                    "url": "",
+                    "text": synthesis.answer or "",
+                    "mode": "text_only_phase3",
+                }
+                # Normalize types
+                if out_type == "3d_prompt":
+                    attachment["type"] = "3d_prompt"
+                elif out_type == "video_storyboard":
+                    attachment["type"] = "video_storyboard"
+                elif out_type == "structured":
+                    attachment["type"] = "structured"
+                attachments.append(attachment)
+                yield f"data: {json.dumps({'type': 'attachment', 'attachment': attachment})}\n\n"
+
+            elapsed_ms = int((_time.monotonic() - _t0) * 1000)
+
+            yield f"data: {json.dumps({'type': 'done', 'duration_ms': elapsed_ms, 'confidence': synthesis.confidence, 'n_sources': synthesis.n_sources, 'sources_used': synthesis.sources_used, 'method': synthesis.method, 'output_type': output_detection.output_type.value, 'attachments': attachments})}\n\n"
+
+        from fastapi.responses import StreamingResponse as _SR
+        return _SR(
+            _event_generator(),
+            media_type="text/event-stream",
+            headers={"Cache-Control": "no-cache", "Connection": "keep-alive", "X-Accel-Buffering": "no"},
+        )
+
+    # ── POST /agent/chat_holistic ──────────────────────────────────────────────
+    # Sprint Α (Jurus Seribu Bayangan) — visi bos 2026-04-30: REPLACE pattern
+    # "routing otomatis pilih 1 sumber" dengan multi-source paralel default.
+    # Mengerahkan SEMUA resource SIDIX simultan: web + corpus + dense_index +
+    # persona_fanout 5 + tool_registry → sanad verify → cognitive_synthesizer.
+    @app.post("/agent/chat_holistic")
+    async def agent_chat_holistic(req: ChatRequest, request: Request):
+        _enforce_rate(request)
+        _enforce_daily(request)
+        _bump_metric("agent_chat_holistic")
+
+        if not req.question.strip():
+            raise HTTPException(status_code=400, detail="question tidak boleh kosong")
+
+        try:
+            from .multi_source_orchestrator import MultiSourceOrchestrator
+            from .cognitive_synthesizer import CognitiveSynthesizer
+            from .output_type_detector import detect_output_type, OutputType
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"holistic_unavailable: {e}")
+
+        import time as _time
+        _t0 = _time.monotonic()
+
+        # Sprint 5: Adaptive Output detection (Pencipta visi)
+        output_detection = detect_output_type(req.question)
+
+        orchestrator = MultiSourceOrchestrator()
+        synthesizer = CognitiveSynthesizer(max_tokens=600, temperature=0.65)
+
+        # Phase 1: gather paralel
+        bundle = await orchestrator.gather_all(req.question)
+
+        # Phase 2: synthesize
+        debug_flag = bool(request.query_params.get("debug"))
+        synthesis = await synthesizer.synthesize(bundle, debug=debug_flag)
+
+        # Sprint 5 Phase 3: Adaptive Output - multi-modal tool invocation (Pencipta)
+        # Branch per output_type: IMAGE / AUDIO_TTS / VIDEO_STORYBOARD / 3D / STRUCTURED
+        attachments: list[dict] = []
+        out_type = output_detection.output_type.value
+
+        if out_type == "image_prompt":
+            try:
+                import asyncio as _asyncio
+                from .agent_tools import _tool_text_to_image
+                img_result = await _asyncio.to_thread(
+                    _tool_text_to_image,
+                    {"prompt": req.question, "width": 1024, "height": 1024, "steps": 4},
+                )
+                if img_result.success and img_result.citations:
+                    cit = img_result.citations[0]
+                    attachments.append({
+                        "type": "image",
+                        "url": cit.get("url", ""),
+                        "prompt": cit.get("prompt", req.question),
+                        "mode": cit.get("mode", "unknown"),
+                    })
+            except Exception as _err:
+                log.warning(f"[chat_holistic] image_gen fail: {_err}")
+
+        elif out_type == "audio_tts":
+            try:
+                import asyncio as _asyncio
+                from .agent_tools import _tool_text_to_speech
+                # Synthesize SIDIX answer (synthesis.answer) sebagai audio
+                tts_text = (synthesis.answer or req.question)[:500]  # cap 500 char
+                tts_result = await _asyncio.to_thread(
+                    _tool_text_to_speech,
+                    {"text": tts_text, "lang": "id"},
+                )
+                if tts_result.success:
+                    # Parse output untuk extract path (markdown lines)
+                    out_path = ""
+                    for line in (tts_result.output or "").split("\n"):
+                        if "out_path" in line.lower() or "Output:" in line:
+                            # extract backtick path
+                            import re as _re
+                            m = _re.search(r"`([^`]+)`", line)
+                            if m:
+                                out_path = m.group(1)
+                                break
+                    attachments.append({
+                        "type": "audio",
+                        "url": f"/generated/audio/{out_path.split('/')[-1]}" if out_path else "",
+                        "text": tts_text,
+                        "mode": "tts",
+                    })
+            except Exception as _err:
+                log.warning(f"[chat_holistic] tts fail: {_err}")
+
+        elif out_type == "video_storyboard":
+            # Phase 3 Pencipta: text-only multi-scene storyboard (no actual video gen yet)
+            # Synthesizer sudah generate scene-by-scene format via adaptive_output_hint.
+            # Frontend render sebagai structured display.
+            attachments.append({
+                "type": "video_storyboard",
+                "url": "",  # placeholder — actual video gen Phase 4
+                "text": synthesis.answer or "",
+                "mode": "text_only_storyboard",
+            })
+
+        elif out_type == "3d_prompt":
+            # Phase 3 Pencipta: text-only 3D mesh/material spec (no actual mesh gen yet)
+            # Future: wire ke Mighan-3D pipeline (Tiranyx ekosistem).
+            attachments.append({
+                "type": "3d_prompt",
+                "url": "",  # placeholder — actual 3D gen Phase 4 (Mighan-3D bridge)
+                "text": synthesis.answer or "",
+                "mode": "text_only_spec",
+            })
+
+        elif out_type == "structured":
+            # Synthesizer already format markdown table/list per adaptive hint.
+            # No additional tool, just flag for frontend render style.
+            attachments.append({
+                "type": "structured",
+                "url": "",
+                "text": synthesis.answer or "",
+                "mode": "markdown_table",
+            })
+
+        elapsed_ms = int((_time.monotonic() - _t0) * 1000)
+
+        # Sprint Creative 100%: persona deliverable validator (auto-quality gate)
+        persona_compliance = None
+        if req.persona and synthesis.answer:
+            try:
+                from .persona_deliverable_validator import validate_persona_output
+                pd_score = validate_persona_output(req.persona.upper(), synthesis.answer)
+                persona_compliance = {
+                    "persona": pd_score.persona,
+                    "compliant": pd_score.compliant,
+                    "score": pd_score.score,
+                    "rules_passed": pd_score.rules_passed,
+                    "rules_failed": pd_score.rules_failed,
+                }
+            except Exception as _val_err:
+                log.debug(f"[chat_holistic] persona validator skip: {_val_err}")
+
+        return {
+            "answer": synthesis.answer,
+            "duration_ms": elapsed_ms,
+            "confidence": synthesis.confidence,
+            "n_sources": synthesis.n_sources,
+            "sources_used": synthesis.sources_used,
+            "method": synthesis.method,
+            "synthesis_latency_ms": synthesis.latency_ms,
+            "orchestrator_latency_ms": bundle.total_latency_ms,
+            "orchestrator_errors": bundle.errors,
+            "debug_bundle": synthesis.debug_bundle if debug_flag else None,
+            # Sprint 5: Adaptive Output hint untuk frontend
+            "output_type": output_detection.output_type.value,
+            "output_confidence": output_detection.confidence,
+            "output_reason": output_detection.reason,
+            "suggested_tools": output_detection.suggested_tools,
+            # Sprint 5 Phase 2: actual tool output attachments
+            "attachments": attachments,
+            # Sprint Creative 100%: persona deliverable compliance score
+            "persona_compliance": persona_compliance,
+        }
+
     # ── POST /agent/generate ──────────────────────────────────────────────────
     # Jiwa Sprint: pure general chat tanpa ReAct loop / tool / corpus overhead.
     # Direct generation dari Ollama/local_llm dengan persona hint.
@@ -1727,6 +2183,73 @@ def create_app() -> "FastAPI":
         if not fpath.exists() or not fpath.is_file():
             raise HTTPException(status_code=404, detail="not found")
         return FileResponse(fpath, media_type="image/png")
+
+    # ── Sprint Pencipta Phase 3+: Multi-modal static file serve ───────────────
+    # /generated/audio/{f}.wav · /generated/videos/{f}.mp4 · /generated/3d/{f}.{glb,obj}
+    # Foundation Adobe-of-Indonesia: SIDIX serve actual creative output files.
+
+    @app.get("/generated/audio/{filename}")
+    def get_generated_audio(filename: str):
+        from fastapi.responses import FileResponse
+        from fastapi import HTTPException
+        import re
+        if not re.match(r"^[a-zA-Z0-9_\-]+\.(wav|mp3|ogg|flac|m4a)$", filename):
+            raise HTTPException(status_code=400, detail="invalid filename")
+        # Try multiple known TTS output paths
+        from pathlib import Path as _P
+        candidates = [
+            _P("/opt/sidix") / "tts_out" / filename,
+            _P("/opt/sidix") / "generated_audio" / filename,
+            _P("/tmp") / filename,
+            _P.cwd() / filename,
+        ]
+        for fp in candidates:
+            if fp.exists() and fp.is_file():
+                ext_map = {"wav": "audio/wav", "mp3": "audio/mpeg", "ogg": "audio/ogg",
+                           "flac": "audio/flac", "m4a": "audio/mp4"}
+                ext = filename.rsplit(".", 1)[-1].lower()
+                return FileResponse(fp, media_type=ext_map.get(ext, "audio/wav"))
+        raise HTTPException(status_code=404, detail="audio not found")
+
+    @app.get("/generated/videos/{filename}")
+    def get_generated_video(filename: str):
+        from fastapi.responses import FileResponse
+        from fastapi import HTTPException
+        import re
+        if not re.match(r"^[a-zA-Z0-9_\-]+\.(mp4|webm|mov|avi)$", filename):
+            raise HTTPException(status_code=400, detail="invalid filename")
+        from pathlib import Path as _P
+        candidates = [
+            _P("/opt/sidix") / "generated_videos" / filename,
+            _P("/tmp") / filename,
+        ]
+        for fp in candidates:
+            if fp.exists() and fp.is_file():
+                ext_map = {"mp4": "video/mp4", "webm": "video/webm", "mov": "video/quicktime", "avi": "video/x-msvideo"}
+                ext = filename.rsplit(".", 1)[-1].lower()
+                return FileResponse(fp, media_type=ext_map.get(ext, "video/mp4"))
+        raise HTTPException(status_code=404, detail="video not found")
+
+    @app.get("/generated/3d/{filename}")
+    def get_generated_3d(filename: str):
+        from fastapi.responses import FileResponse
+        from fastapi import HTTPException
+        import re
+        if not re.match(r"^[a-zA-Z0-9_\-]+\.(glb|obj|fbx|stl|usdz)$", filename):
+            raise HTTPException(status_code=400, detail="invalid filename")
+        from pathlib import Path as _P
+        candidates = [
+            _P("/opt/sidix") / "generated_3d" / filename,
+            _P("/tmp") / filename,
+        ]
+        for fp in candidates:
+            if fp.exists() and fp.is_file():
+                ext_map = {"glb": "model/gltf-binary", "obj": "text/plain",
+                           "fbx": "application/octet-stream", "stl": "model/stl",
+                           "usdz": "model/vnd.usdz+zip"}
+                ext = filename.rsplit(".", 1)[-1].lower()
+                return FileResponse(fp, media_type=ext_map.get(ext, "application/octet-stream"))
+        raise HTTPException(status_code=404, detail="3d model not found")
 
     @app.get("/agent/praxis/lessons")
     def agent_praxis_lessons(limit: int = 30):

@@ -4,6 +4,54 @@ Proyek: **SIDIX / Mighan Model**
 
 ---
 
+## 🔴 SESSION START PROTOCOL — WAJIB EKSEKUSI SETIAP SESI BARU (LOCK 2026-04-30)
+
+**Bos pain (verbatim, 2026-04-30 evening)**: *"kenapa kita mengulang-ngulang terus? kenaps aya harus selalu menjelaskna... saya hanya seorang pemimpi yang paham dasar, dan cuma punya visi dan intuisi... framework yang saya jelaskan setiap hari selalu ilang dan menguap... kalo nggak disuruh baca, nggak akan ngerti, main eksekusi secara sporadis, tanpa tau lagi bikin apa"*.
+
+**Bos message ke semua agent (Claude/GPT/Gemini/SIDIX self-bootstrap)**: *"kamu pastikan dengan agent manapun saya bekerja, mereka tau sedang membangun apa, sedang ngerjain apa, bukan asal tulis asal eksekusi tanpa tau buat apa"*.
+
+Root cause: Agent tidak punya memory persistent across sessions. Tanpa protocol read state dulu, agent re-invent yang sudah dibahas → bos frustasi.
+
+**🚨 PRIMARY ENTRY POINT untuk SEMUA agent**: [`docs/AGENT_ONBOARDING.md`](docs/AGENT_ONBOARDING.md) — wajib baca pertama, bukan Claude-specific.
+
+**SEBELUM jawab pertanyaan/eksekusi apapun di sesi baru, BACA URUT**:
+
+1. **[`docs/AGENT_ONBOARDING.md`](docs/AGENT_ONBOARDING.md)** — universal agent protocol
+2. **[`docs/SIDIX_BACKLOG.md`](docs/SIDIX_BACKLOG.md)** — state sprint (COMPLETED/IN PROGRESS/QUEUED/IDEAS)
+3. **[`docs/VISI_TRANSLATION_MATRIX.md`](docs/VISI_TRANSLATION_MATRIX.md)** — visi bos × deliverable, coverage %
+4. **[`docs/FOUNDER_IDEA_LOG.md`](docs/FOUNDER_IDEA_LOG.md)** — ide visi/intuisi bos verbatim (5 entries minimum)
+5. **[`docs/SIDIX_FRAMEWORKS.md`](docs/SIDIX_FRAMEWORKS.md)** — semua framework bos (jurus seribu bayangan, sanad, 5 persona, dll)
+6. **[`docs/SIDIX_SELF_BOOTSTRAP_ROADMAP.md`](docs/SIDIX_SELF_BOOTSTRAP_ROADMAP.md)** — visi tertinggi: SIDIX replace agent eksternal
+7. **[`docs/TASK_CARD_TEMPLATE.md`](docs/TASK_CARD_TEMPLATE.md)** — format wajib sebelum eksekusi
+8. **`docs/FOUNDER_JOURNAL.md` last 200 lines** — keputusan recent
+9. **`tail -100 docs/LIVING_LOG.md`** — ops recent
+
+**Sebelum eksekusi APAPUN (edit code, panggil tool, write file)**: tulis **TASK CARD** dulu (format `docs/TASK_CARD_TEMPLATE.md`). Tanpa Task Card = "asal eksekusi tanpa tau buat apa" = melanggar protocol.
+
+**Lalu output ke bos di awal jawaban**:
+> "Sudah baca state. Backlog: [X completed, Y in-progress, Z queued]. Visi gap utama: [...]. WIP yang belum kelar: [...]. Pertanyaan bos sekarang: [paraphrase]. Mapping: [backlog item / new idea]. Saya akan: [action]."
+
+**Setiap sesi tutup, WAJIB**:
+- Update `SIDIX_BACKLOG.md` dengan status sprint
+- Update `VISI_TRANSLATION_MATRIX.md` kalau ada coverage shift
+- Append `FOUNDER_IDEA_LOG.md` kalau bos kasih ide baru visi/intuisi
+- Append `FOUNDER_JOURNAL.md` keputusan signifikan
+- Commit + push
+
+**Anti-pattern WAJIB DIHINDARI**:
+- ❌ Jawab tanpa baca BACKLOG → repeat diskusi yang sudah ada
+- ❌ Tanya bos detail teknis (saya yang ambil otoritas, bos veto kalau salah)
+- ❌ Skip update BACKLOG di akhir sesi → state hilang sesi berikut
+- ❌ Generate research note tanpa update VISI_TRANSLATION_MATRIX
+- ❌ Bilang "DONE" padahal acceptance criteria belum verify
+- ❌ Pakai naming inkonsisten dengan vocabulary yang sudah lock
+
+**Engineering authority**: bos eksplisit delegate. Saya decide teknis (synthesizer architecture, sequence sprint, definition of done detail). Bos sign off pada VISI end-state, bukan teknis. Bos veto kalau hasil ngaco.
+
+Detail diagnose + 7 root causes + 5 reform commitment di [research note 306](brain/public/research_notes/306_meta_process_reform_anti_menguap_20260430.md).
+
+---
+
 ## 🔒 DEFINITION + DIRECTION LOCK 2026-04-26 (BACA PERTAMA — IMMUTABLE)
 
 User directive eksplisit: *"gaaaaaaasssssssssssss!!!! catat!! jangan berubah-ubah lagi arah sidix"* + *"tulis dengan besar supaya nggak berubah lagi. cataaaattt!!! aligment semuanya"*

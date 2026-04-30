@@ -110,19 +110,38 @@ def ollama_model_ready(model: str = OLLAMA_MODEL) -> bool:
 def ollama_best_available_model() -> str:
     """
     Pilih model terbaik yang tersedia.
-    Priority: OLLAMA_MODEL → qwen2.5 → llama3 → phi3 → yang pertama ada.
+    Priority: exact OLLAMA_MODEL match → qwen2.5 → llama3 → phi3 → yang pertama ada.
+
+    Sigma-4 fix: respect EXACT version match dulu (qwen2.5:1.5b ≠ qwen2.5:7b).
+    Sebelumnya: split base name "qwen2.5" → match yang pertama ada di list,
+    bisa pilih 7b padahal env minta 1.5b → CPU inference 3x lebih lambat.
     """
     models = ollama_list_models()
     if not models:
         return OLLAMA_MODEL
 
-    # Cek model yang di-set di env
-    model_base = OLLAMA_MODEL.split(":")[0].lower()
+    # Step 1: EXACT match dengan OLLAMA_MODEL (case-insensitive)
+    target = OLLAMA_MODEL.lower()
     for m in models:
-        if model_base in m.lower():
+        if m.lower() == target:
             return m
 
-    # Priority fallback
+    # Step 2: prefix match (handles "latest" tag variations)
+    target_prefix = target.split(":")[0]
+    target_version = target.split(":")[1] if ":" in target else None
+    if target_version:
+        # Match "qwen2.5:1.5b" → only models with version containing "1.5b"
+        for m in models:
+            m_lower = m.lower()
+            if target_prefix in m_lower and target_version in m_lower:
+                return m
+
+    # Step 3: base name match (last resort, may pick wrong size)
+    for m in models:
+        if target_prefix in m.lower():
+            return m
+
+    # Step 4: Priority fallback
     for preferred in ("qwen2.5", "qwen2", "llama3", "llama3.2", "phi3", "phi"):
         for m in models:
             if preferred in m.lower():
