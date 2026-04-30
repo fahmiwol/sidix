@@ -15803,3 +15803,27 @@ Sprint Tumbuh REAL state was 20% (broken auth), bukan 40%. Sekarang 50% (auth fi
 - docs/SIDIX_ARCHITECTURE_DIAGRAM.md
 - apps/brain_qa/brain_qa/sanad_orchestrator.py (v2)
 - apps/brain_qa/brain_qa/daily_self_critique.py
+
+### 2026-04-30 (bagian 2 — wire + deploy scripts)
+
+- **IMPL:** `apps/brain_qa/brain_qa/agent_serve.py` — expose `relevan_score`, `sanad_tier`, `iteration_count` di response Sanad meta + done. OTAK+ self-critique sekarang bisa membaca score dari session log.
+- **IMPL:** `apps/brain_qa/brain_qa/__main__.py` — subcommand `daily_self_critique` terdaftar di CLI (`python -m brain_qa daily_self_critique`).
+- **IMPL:** `DEPLOY_TONIGHT.sh` — script 1-command deploy ke VPS (git pull, deps, syntax check, re-index, PM2 restart, health check).
+- **IMPL:** `SETUP_CRON.sh` — setup cron lengkap: 02:00 Learn Agent, 03:00 OTAK+ Self-Critique (BARU), 04:00 Daily Growth, 04:30 Process Queue, 14:00 Learn Agent (afternoon), 22:00 Daily Synthesis. Includes logrotate config.
+- **IMPL:** `scripts/daily_synthesis.sh` — generator snapshot harian 1-paragraf (session count, halu flags, drift flags, corpus count, git state).
+- **TEST:** Syntax validation passed untuk `sanad_orchestrator.py`, `daily_self_critique.py`, `agent_serve.py`, `__main__.py`.
+- **DECISION:** `relevan_score` minimal 9.5 untuk pass OTAK+ — di bawah 7.0 = loopback otomatis (sudah di sanad_orchestrator.py), di bawah 9.5 = flag di daily_self_critique.
+- **DECISION:** Deploy script menggunakan branch `work/gallant-ellis-7cd14d` — tidak auto-merge ke `main` sampai bos approve.
+- **PUSH:** Commit `47ca220` ke `work/gallant-ellis-7cd14d` — 5 file, +165 baris.
+
+**Next untuk Bos:**
+1. SSH ke VPS: `ssh root@72.62.125.6`
+2. Paste isi `DEPLOY_TONIGHT.sh` → jalankan
+3. Paste isi `SETUP_CRON.sh` → jalankan
+4. Verifikasi: `curl http://localhost:8765/health` dan `pm2 status`
+
+**Refer:**
+- `DEPLOY_TONIGHT.sh`
+- `SETUP_CRON.sh`
+- `scripts/daily_synthesis.sh`
+- `apps/brain_qa/brain_qa/agent_serve.py` (baris 4399–4424)
