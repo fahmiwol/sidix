@@ -24,7 +24,13 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/cn";
 
-const navItems = [
+type NavItem = {
+  icon: typeof MessageCircle;
+  label: string;
+  badge?: string;
+};
+
+const navItems: NavItem[] = [
   { icon: MessageCircle, label: "Chat" },
   { icon: User, label: "Agent" },
   { icon: Wrench, label: "Tools", badge: "NEW" },
@@ -32,7 +38,7 @@ const navItems = [
   { icon: BookOpen, label: "Knowledge" },
   { icon: Plug, label: "Integrations" },
   { icon: Clock, label: "History" },
-] as const;
+];
 
 export default function LeftSidebar() {
   const [active, setActive] = useState<string>("Chat");
