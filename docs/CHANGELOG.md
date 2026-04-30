@@ -549,3 +549,25 @@ Repo sudah punya struktur folder, PRD, ERD, arsitektur, dan beberapa file seed d
 
 ### Catatan
 - Beberapa sumber bisa 403 (mis. Intel/Midum). Jika dibutuhkan, pakai ringkasan manual + link (tanpa copy-paste panjang).
+
+---
+
+## [Sprint UX-Fix — 2026-04-30] Holistic Default Mode + Handoff System
+
+### Holistic = Default Send Mode (Jurus Seribu Bayangan)
+**ID:** `SIDIX_USER_UI/src/main.ts` — default `activeMode = 'holistic'`. User mengetik langsung → 8 sumber paralel (web + corpus + dense + tools + 5 persona) tanpa perlu klik mode dulu.  
+**EN:** Default send mode changed to Holistic. User types → parallel multi-source inference automatically.
+
+### Sticky Mode Toggle + Gold Highlight
+**ID:** Tombol mode (Burst/TwoEyes/Foresight/Resurrect/Holistic) sekarang sticky toggle — klik = pilih mode aktif, bukan langsung inference. Mode aktif di-highlight border gold (`mode-active` CSS class).  
+**EN:** Mode buttons are now sticky toggles with gold ring highlight for active mode.
+
+### Extracted doHolistic() Function
+**ID:** Refactor event listener `modeHolisticBtn` → fungsi standalone `doHolistic(question: string)`. `handleSend()` routing langsung `await doHolistic(question)` tanpa indirection `modeHolisticBtn?.click()`.  
+**EN:** Extracted `doHolistic()` from inline event listener. Direct routing from `handleSend()`.
+
+### Handoff Memo System
+**ID:** `brain/public/praxis/handoff_CLAUDE.md` — catatan resume antar-sesi untuk kontinuitas. Berisi: status, WIP, blockers, decision log, next actions.  
+**EN:** New handoff memo system for session continuity across Claude sessions.
+
+---

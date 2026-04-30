@@ -17,7 +17,7 @@ import {
 } from 'lucide';
 
 import {
-  checkHealth, askStream, listCorpus, uploadDocument, deleteDocument,
+  checkHealth, askStream, askHolisticStream, BRAIN_QA_BASE, listCorpus, uploadDocument, deleteDocument,
   triggerReindex, getReindexStatus, agentGenerate, submitFeedback, forgetAgentSession,
   agentBurst, agentTwoEyed, agentForesight, agentResurrect,
   BrainQAError, BRAIN_QA_BASE,
@@ -1023,13 +1023,11 @@ let backendOnline = false;
 /** Snapshot terakhir GET /health — untuk tab Model tanpa fetch ganda */
 let lastHealth: HealthResponse | null = null;
 
-function formatStatusLine(h: HealthResponse): string {
-  const docs = h.corpus_doc_count ?? 0;
-  const mode = h.model_mode ?? '—';
-  const ready =
-    h.model_ready === true ? 'LoRA' : h.model_ready === false ? 'mock' : '';
-  const bit = ready ? ` · ${mode}/${ready}` : ` · ${mode}`;
-  return `Online · ${docs} dok${bit}`;
+function formatStatusLine(_h: HealthResponse): string {
+  // UX-fix 2026-04-30: hide jargon teknis (corpus_doc_count, model_mode, LoRA).
+  // User awam tidak butuh tahu detail backend. Status sederhana = sinyal "alive".
+  // Detail teknis tetap accessible via /dashboard atau gear menu (advanced).
+  return 'Hidup · siap mencipta';
 }
 
 async function pingBackend() {
@@ -1101,14 +1099,60 @@ const modeBurstBtn     = document.getElementById('mode-burst') as HTMLButtonElem
 const modeTwoEyedBtn   = document.getElementById('mode-twoeyed') as HTMLButtonElement | null;
 const modeForesightBtn = document.getElementById('mode-foresight') as HTMLButtonElement | null;
 const modeResurrectBtn = document.getElementById('mode-resurrect') as HTMLButtonElement | null;
+const modeHolisticBtn  = document.getElementById('mode-holistic') as HTMLButtonElement | null;
 
-function getInputOrPrompt(modeName: string, hint: string): string | null {
+// UX-fix 2026-04-30: Mode buttons jadi sticky toggle state (bukan window.prompt popup).
+// Visi 1000 Bayangan default = Holistic ON. User toggle mode = ganti state, send berikut
+// pakai mode aktif. Empty input + click mode = visual feedback (hint), no popup browser.
+type ChatMode = 'classic' | 'holistic' | 'burst' | 'twoeyed' | 'foresight' | 'resurrect';
+let activeMode: ChatMode = 'holistic'; // default per visi 1000 bayangan
+setActiveMode('holistic');
+
+function setActiveMode(mode: ChatMode) {
+  activeMode = mode;
+  // Visual highlight: gold ring untuk mode aktif
+  const allModeBtns: Array<[HTMLButtonElement | null, ChatMode]> = [
+    [modeBurstBtn, 'burst'],
+    [modeTwoEyedBtn, 'twoeyed'],
+    [modeForesightBtn, 'foresight'],
+    [modeResurrectBtn, 'resurrect'],
+    [modeHolisticBtn, 'holistic'],
+  ];
+  for (const [btn, m] of allModeBtns) {
+    if (!btn) continue;
+    if (m === mode) {
+      btn.classList.add('mode-active');
+      btn.setAttribute('aria-pressed', 'true');
+    } else {
+      btn.classList.remove('mode-active');
+      btn.setAttribute('aria-pressed', 'false');
+    }
+  }
+}
+
+// ── Auto-mode detection: classifier ringan berbasis keyword ────────────────
+// Sprint UX-fix 2026-04-30: deteksi intent dari query untuk auto-switch mode
+// User tetap bisa override dengan klik tombol mode (sticky toggle)
+function detectIntentMode(query: string): ChatMode | null {
+  const q = query.toLowerCase();
+  // Coding mode: keyword teknis/developer
+  if (/(\bcode\b|\bcoding\b|\bprogram\b|\bprogramming\b|\bbug\b|\bdebug\b|\bfunction\b|\bscript\b|\bapi\b|\bendpoint\b|\broute\b|\bfrontend\b|\bbackend\b|\bdatabase\b|\bquery\b|\bsql\b|\bpython\b|\bjavascript\b|\btypescript\b|\breact\b|\bnode\.?js\b|\bhtml\b|\bcss\b|\bdeploy\b|\bbuild\b|\berror\b|\bexception\b|\bstacktrace\b|\bfix\b.*\b(code|bug|error)\b|\bbuat\b.*\b(website|app|program|bot)\b|\bpython\b.*\b(script|program)\b)/.test(q)) {
+    return 'burst'; // Burst = divergen + kreatif, cocok untuk problem solving kode
+  }
+  // Planning mode: rencana/strategi/timeline
+  if (/(\bplan\b|\bplanning\b|\brencana\b|\bstrategi\b|\bstrategy\b|\broadmap\b|\btimeline\b|\bstep\b.*\bstep\b|\blangkah\b|\bphasing\b|\bmilestone\b|\bsprint\b|\bproject\b.*\bplan\b|\bhow\b.*\b(start|build|launch)\b|\bgimana\b.*\b(mulai|bangun|buat)\b.*\b(project|app| bisnis)\b)/.test(q)) {
+    return 'foresight'; // Foresight = prediksi + skenario, cocok untuk planning
+  }
+  // Deep-research mode: riset mendalam/literature
+  if (/(\bresearch\b|\breview\b|\bliterature\b|\bdeep\b.*\bdive\b|\banalisis\b.*\bmendalam\b|\bcomprehensive\b|\bekstensif\b|\bjurnal\b|\bpaper\b|\bstudy\b|\bsurvey\b|\bmeta.?(analysis|review)\b|\btinjauan\b|\bkajian\b|\b studi \b|\breferensi\b.*\b(banyak|lengkap)\b|\bsumber\b.*\b(terpercaya|primer)\b)/.test(q)) {
+    return 'twoeyed'; // Two-Eyed = scientific + maqashid dual perspective, cocok untuk riset etis
+  }
+  return null; // Tidak ada match kuat → gunakan activeMode yang user pilih
+}
+
+function getCurrentInput(): string | null {
   const v = chatInput?.value.trim() ?? '';
-  if (v) return v;
-  // Empty input → prompt user
-  const prompted = window.prompt(`${modeName}\n\n${hint}\n\nKetik prompt:`);
-  if (prompted && prompted.trim()) return prompted.trim();
-  return null;
+  return v || null;
 }
 
 function appendThinkingPlaceholder(label: string): HTMLDivElement {
@@ -1129,6 +1173,238 @@ function appendThinkingPlaceholder(label: string): HTMLDivElement {
   chatMessages?.appendChild(wrap);
   if (chatMessages) chatMessages.scrollTop = chatMessages.scrollHeight;
   return wrap;
+}
+
+// 🌟 Sprint Α: Holistic Mode — Jurus Seribu Bayangan (multi-source paralel + SSE streaming)
+modeHolisticBtn?.addEventListener('click', () => {
+  setActiveMode('holistic');
+});
+
+// Extracted: doHolistic handles the actual multi-source inference
+async function doHolistic(question: string) {
+  // Live progress card — show 8 parallel sources visualized real-time
+  // Sprint UX-fix 2026-04-30: visi bos = SEMUA paralel sekaligus, bukan sequential
+  const progressWrap = document.createElement('div');
+  progressWrap.className = 'flex justify-start animate-fsu';
+  const progressBubble = document.createElement('div');
+  progressBubble.className = 'msg-ai max-w-[85%] px-5 py-4 text-parchment-200 text-sm';
+  progressBubble.innerHTML = `
+    <div class="flex items-center gap-2 mb-3">
+      <span>🌟</span>
+      <span class="font-semibold text-gold-400">Jurus Seribu Bayangan</span>
+      <span class="text-[10px] text-parchment-500">— 8 sumber paralel sekaligus</span>
+      <span id="holistic-elapsed" class="text-[10px] text-parchment-500 ml-auto" style="font-variant-numeric: tabular-nums;">0.0s</span>
+    </div>
+    <!-- 8-chip parallel state grid: web | corpus | dense | tools | UTZ | ABOO | OOMAR | ALEY | AYMAN -->
+    <div id="holistic-grid" class="grid grid-cols-3 gap-1.5 mb-3 text-[11px]" style="font-variant-numeric: tabular-nums;">
+      <div class="chip-source flex items-center gap-1.5 px-2 py-1 rounded border border-parchment-700/40 bg-warm-800/40" data-src="web">
+        <span class="chip-icon text-parchment-500">⏳</span>
+        <span class="text-parchment-300">🌐 web</span>
+        <span class="chip-time ml-auto text-[9px] text-parchment-500">…</span>
+      </div>
+      <div class="chip-source flex items-center gap-1.5 px-2 py-1 rounded border border-parchment-700/40 bg-warm-800/40" data-src="corpus">
+        <span class="chip-icon text-parchment-500">⏳</span>
+        <span class="text-parchment-300">📚 corpus</span>
+        <span class="chip-time ml-auto text-[9px] text-parchment-500">…</span>
+      </div>
+      <div class="chip-source flex items-center gap-1.5 px-2 py-1 rounded border border-parchment-700/40 bg-warm-800/40" data-src="dense">
+        <span class="chip-icon text-parchment-500">⏳</span>
+        <span class="text-parchment-300">🧬 dense</span>
+        <span class="chip-time ml-auto text-[9px] text-parchment-500">…</span>
+      </div>
+      <div class="chip-source flex items-center gap-1.5 px-2 py-1 rounded border border-parchment-700/40 bg-warm-800/40" data-src="tools">
+        <span class="chip-icon text-parchment-500">⏳</span>
+        <span class="text-parchment-300">🛠 tools</span>
+        <span class="chip-time ml-auto text-[9px] text-parchment-500">…</span>
+      </div>
+      <div class="chip-source flex items-center gap-1.5 px-2 py-1 rounded border border-parchment-700/40 bg-warm-800/40 col-span-2" data-src="persona_fanout">
+        <span class="chip-icon text-parchment-500">⏳</span>
+        <span class="text-parchment-300">👥 5 persona (UTZ·ABOO·OOMAR·ALEY·AYMAN)</span>
+        <span class="chip-time ml-auto text-[9px] text-parchment-500">…</span>
+      </div>
+    </div>
+    <div id="holistic-meta" class="text-[10px] text-parchment-500 mb-2 hidden"></div>
+    <div id="holistic-progress" class="space-y-0.5 mb-2 text-[10px] text-parchment-500 max-h-20 overflow-y-auto opacity-70"></div>
+    <div id="holistic-answer" class="text-sm leading-relaxed whitespace-pre-wrap mt-2"></div>
+  `;
+  progressWrap.appendChild(progressBubble);
+  chatMessages?.appendChild(progressWrap);
+  if (chatMessages) chatMessages.scrollTop = chatMessages.scrollHeight;
+
+  const progressEl = progressBubble.querySelector('#holistic-progress') as HTMLDivElement;
+  const answerEl = progressBubble.querySelector('#holistic-answer') as HTMLDivElement;
+  const elapsedEl = progressBubble.querySelector('#holistic-elapsed') as HTMLSpanElement;
+  const gridEl = progressBubble.querySelector('#holistic-grid') as HTMLDivElement;
+  const metaEl = progressBubble.querySelector('#holistic-meta') as HTMLDivElement;
+
+  // Helper: update chip status real-time saat source_complete event arrive
+  const updateChip = (source: string, success: boolean, latencyMs: number) => {
+    const chip = gridEl?.querySelector(`[data-src="${source}"]`);
+    if (!chip) return;
+    const icon = chip.querySelector('.chip-icon') as HTMLSpanElement;
+    const time = chip.querySelector('.chip-time') as HTMLSpanElement;
+    if (success) {
+      icon.textContent = '✓';
+      icon.className = 'chip-icon text-emerald-400';
+      chip.classList.remove('border-parchment-700/40', 'bg-warm-800/40');
+      chip.classList.add('border-emerald-500/40', 'bg-emerald-900/20');
+    } else {
+      icon.textContent = '✗';
+      icon.className = 'chip-icon text-red-400';
+      chip.classList.remove('border-parchment-700/40', 'bg-warm-800/40');
+      chip.classList.add('border-red-500/40', 'bg-red-900/20');
+    }
+    time.textContent = `${(latencyMs / 1000).toFixed(1)}s`;
+    time.className = 'chip-time ml-auto text-[9px] ' + (success ? 'text-emerald-400/70' : 'text-red-400/70');
+  };
+
+  const startTime = Date.now();
+  const elapsedTimer = setInterval(() => {
+    const t = (Date.now() - startTime) / 1000;
+    if (elapsedEl) elapsedEl.textContent = `${t.toFixed(1)}s`;
+  }, 100);
+
+  const addProgressLine = (text: string, status: 'running' | 'ok' | 'fail' = 'running') => {
+    const line = document.createElement('div');
+    const icon = status === 'ok' ? '✓' : status === 'fail' ? '✗' : '◯';
+    const color = status === 'ok' ? 'text-emerald-400' : status === 'fail' ? 'text-red-400' : 'text-parchment-500';
+    line.className = `flex items-center gap-2 ${color}`;
+    line.innerHTML = `<span class="font-mono text-[10px]">${icon}</span><span>${text}</span>`;
+    progressEl.appendChild(line);
+    if (chatMessages) chatMessages.scrollTop = chatMessages.scrollHeight;
+    return line;
+  };
+
+  const persona = (personaSel?.value ?? 'AYMAN') as Persona;
+  let fullAnswer = '';
+
+  // Sprint 5 Phase 2: attachments container
+  const attachmentsEl = document.createElement('div');
+  attachmentsEl.className = 'mt-3 space-y-2';
+  progressBubble.appendChild(attachmentsEl);
+
+  const renderAttachment = (att: { type: string; url: string; prompt?: string; mode?: string; text?: string }) => {
+    const wrap = document.createElement('div');
+    wrap.className = 'rounded-lg overflow-hidden border border-gold-500/30 bg-warm-700/30';
+    const fullUrl = att.url ? (att.url.startsWith('http') ? att.url : `${BRAIN_QA_BASE}${att.url}`) : '';
+
+    if (att.type === 'image') {
+      wrap.innerHTML = `
+        <img src="${fullUrl}" alt="${att.prompt || ''}"
+             class="w-full max-w-md rounded-lg"
+             onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"/>
+        <div class="hidden p-3 text-xs text-red-300">⚠️ Image load failed: ${fullUrl}</div>
+        <div class="px-3 py-2 text-[10px] text-parchment-400 bg-warm-800/50">
+          🎨 ${att.mode === 'mock' ? 'Mock placeholder (FLUX.1 belum installed)' : 'Generated via FLUX.1'}
+          ${att.prompt ? ` · prompt: "${att.prompt.slice(0, 60)}..."` : ''}
+        </div>
+      `;
+    } else if (att.type === 'audio') {
+      wrap.innerHTML = `
+        <div class="p-3">
+          ${fullUrl ? `<audio controls class="w-full"><source src="${fullUrl}" type="audio/wav"/>Audio tidak tersedia di browser ini.</audio>` :
+            `<div class="text-xs text-amber-300">🔊 TTS generated tapi URL tidak ditemukan</div>`}
+          <div class="mt-2 text-[10px] text-parchment-400">
+            🔊 Text-to-Speech (Coqui-TTS / pyttsx3)
+            ${att.text ? ` · "${att.text.slice(0, 80)}..."` : ''}
+          </div>
+        </div>
+      `;
+    } else if (att.type === 'video_storyboard') {
+      wrap.innerHTML = `
+        <div class="p-4">
+          <div class="text-xs text-gold-400 mb-2 font-semibold">🎬 Video Storyboard</div>
+          <div class="text-sm text-parchment-200 whitespace-pre-wrap">${(att.text || '').slice(0, 800)}</div>
+          <div class="mt-3 text-[10px] text-parchment-500 italic">
+            Phase 3: text-only storyboard. Phase 4 (next): wire ke Film-Gen pipeline (Tiranyx ekosistem).
+          </div>
+        </div>
+      `;
+    } else if (att.type === '3d_prompt') {
+      wrap.innerHTML = `
+        <div class="p-4">
+          <div class="text-xs text-gold-400 mb-2 font-semibold">🎲 3D Prompt Spec</div>
+          <pre class="text-xs text-parchment-200 whitespace-pre-wrap font-mono">${(att.text || '').slice(0, 800)}</pre>
+          <div class="mt-3 text-[10px] text-parchment-500 italic">
+            Phase 3: text-only mesh/material spec. Phase 4 (next): wire ke Mighan-3D pipeline.
+          </div>
+        </div>
+      `;
+    } else if (att.type === 'structured') {
+      wrap.innerHTML = `
+        <div class="p-4">
+          <div class="text-xs text-gold-400 mb-2 font-semibold">📊 Structured Data</div>
+          <div class="text-sm text-parchment-200 prose prose-invert prose-sm max-w-none">${(att.text || '').slice(0, 1500)}</div>
+        </div>
+      `;
+    } else {
+      wrap.innerHTML = `<div class="p-3 text-xs">📎 ${att.type} → ${att.url || '(no url)'}</div>`;
+    }
+    attachmentsEl.appendChild(wrap);
+    if (chatMessages) chatMessages.scrollTop = chatMessages.scrollHeight;
+  };
+
+  try {
+    await askHolisticStream(question, persona, {
+      onStart: (_q, outputType) => {
+        addProgressLine(`Query received${outputType ? ` (output: ${outputType})` : ''}`);
+      },
+      onOrchestratorStart: () => {
+        addProgressLine('Mengerahkan 8 sumber paralel sekaligus...');
+      },
+      onSourceComplete: (source, success, latencyMs) => {
+        // Update chip visual real-time (jurus 1000 bayangan = paralel state visible)
+        updateChip(source, success, latencyMs);
+        // Log audit (low-prominence, di bawah grid)
+        const labels: Record<string, string> = {
+          web: '🌐 web_search (DDG + Wikipedia)',
+          corpus: '📚 corpus BM25',
+          dense: '🧬 dense embedding',
+          persona_fanout: '👥 5 persona Ollama',
+          tools: '🛠 tool registry',
+        };
+        const label = labels[source] || source;
+        addProgressLine(`${label} ${success ? '✓' : '✗'} (${(latencyMs / 1000).toFixed(1)}s)`, success ? 'ok' : 'fail');
+      },
+      onOrchestratorDone: (n, totalMs) => {
+        if (metaEl) {
+          metaEl.classList.remove('hidden');
+          metaEl.textContent = `🌟 ${n} sumber sukses paralel · total ${(totalMs / 1000).toFixed(1)}s · cognitive synthesizer merging...`;
+        }
+        addProgressLine(`Orchestrator done: ${n}/5 sources (${(totalMs / 1000).toFixed(1)}s)`, 'ok');
+      },
+      onSynthesisStart: () => addProgressLine('Cognitive synthesizer merging...'),
+      onToken: (text) => {
+        fullAnswer += text;
+        answerEl.textContent = fullAnswer;
+        if (chatMessages) chatMessages.scrollTop = chatMessages.scrollHeight;
+      },
+      onToolInvoke: (tool, message) => addProgressLine(`🛠 ${tool}: ${message}`),
+      onAttachment: (att) => {
+        addProgressLine(`📎 Attachment received: ${att.type}`, 'ok');
+        renderAttachment(att);
+      },
+      onToolError: (tool, error) => addProgressLine(`Tool ${tool} error: ${error}`, 'fail'),
+      onDone: (meta) => {
+        clearInterval(elapsedTimer);
+        sendBtn.disabled = false;
+        addProgressLine(
+          `Done: confidence=${meta.confidence}, ${meta.nSources} sources, method=${meta.method}, ${(meta.durationMs / 1000).toFixed(1)}s total`,
+          'ok',
+        );
+      },
+      onError: (msg) => {
+        clearInterval(elapsedTimer);
+        sendBtn.disabled = false;
+        addProgressLine(`Error: ${msg}`, 'fail');
+      },
+    });
+  } catch (e) {
+    clearInterval(elapsedTimer);
+    sendBtn.disabled = false;
+    addProgressLine(`Exception: ${(e as Error).message}`, 'fail');
+  }
+
 }
 
 modeBurstBtn?.addEventListener('click', async () => {
@@ -1525,11 +1801,18 @@ async function handleSend() {
     // count ≤ FREE_CHAT_LIMIT: chat gratis, lanjut normal
   }
 
+
   chatInput.value = '';
   chatInput.style.height = 'auto';
   sendBtn.disabled = true;
 
   appendMessage('user', question);
+
+  // ── Auto-mode routing: holistic default ────────────────────────────────────
+  if (activeMode === 'holistic') {
+    await doHolistic(question);
+    return;
+  }
 
   // Thinking indicator — dengan hint khusus kalau minta gambar + REAL-TIME TIMER
   const q_lower = question.toLowerCase();
@@ -1559,11 +1842,12 @@ async function handleSend() {
     if (!timerEl || !labelEl) return;
     const elapsed = (Date.now() - thinkStart) / 1000;
     timerEl.textContent = `${elapsed.toFixed(1)}s`;
-    // Escalate hint biar user tahu kenapa lama
-    if (elapsed > 60 && !isImageIntent) labelEl.textContent = 'Mikir lebih dalam... (mungkin perlu web search)';
-    else if (elapsed > 30 && !isImageIntent) labelEl.textContent = 'Riset multi-langkah, sabar ya...';
-    else if (elapsed > 15 && !isImageIntent) labelEl.textContent = 'Menyusun jawaban...';
-    else if (elapsed > 5 && !isImageIntent) labelEl.textContent = 'Mencari konteks relevan...';
+    // Sprint UX-fix: jangan tampilkan label sequential "berfase-fase" yang misleading.
+    // Mode klasik = single-source ReAct; tampilkan label NETRAL + arahkan ke Holistic
+    // kalau user mau multi-source paralel (jurus 1000 bayangan).
+    if (isImageIntent) return;
+    if (elapsed > 30) labelEl.textContent = 'Berpikir lama — coba klik 🌟 Holistic untuk multi-source paralel';
+    else labelEl.textContent = 'Berpikir... (mode klasik · single-source)';
   }, 100);
   const stopThinkingTimer = () => clearInterval(thinkingTimerInterval);
 

@@ -15867,3 +15867,40 @@ Sprint Tumbuh REAL state was 20% (broken auth), bukan 40%. Sekarang 50% (auth fi
 **Refer:**
 - `gallant-ellis-7cd14d/SIDIX_USER_UI/src/main.ts` (baris 1108–1150)
 - `gallant-ellis-7cd14d/SIDIX_USER_UI/src/index.css`
+
+
+### 2026-04-30 (bagian 5 — FIX: deploy routing Holistic tidak masuk + refactor doHolistic)
+
+- **ERROR:** Bos screenshot menunjukkan jawaban masih classic mode (tidak ada progress card 8-chip Holistic), dan jawaban Wapres SALAH (Ma'ruf Amin, padahal Gibran). Root cause: deploy pertama tidak benar-benar mengupdate routing `handleSend()` di VPS.
+- **ROOT CAUSE ANALYSIS:**
+  1. VPS checkout branch `claude/gallant-ellis-7cd14d` @ commit `fee82e6` (14 commits ahead of origin)
+  2. Saya push ke `work/gallant-ellis-7cd14d`, bukan ke `claude/gallant-ellis-7cd14d`
+  3. `git pull` di VPS mengatakan "Already up to date" karena branch `claude/gallant-ellis-7cd14d` tidak punya commit baru dari origin
+  4. Hasil: `activeMode = 'holistic'` ada di kode, tapi `handleSend()` tidak punya routing ke Holistic — langsung jatuh ke classic path
+- **FIX:** Refactor frontend agar routing bersih:
+  1. Extract seluruh isi event listener `modeHolisticBtn` ke fungsi standalone `async function doHolistic(question: string)`
+  2. Event listener `modeHolisticBtn` sekarang cuma `setActiveMode('holistic')` (sticky toggle, tanpa popup)
+  3. `handleSend()` sekarang langsung `await doHolistic(question)` — tidak lagi melalui `modeHolisticBtn?.click()` indirection
+  4. `chatInput.value = ''`, `sendBtn.disabled = true`, dan `appendMessage('user', question)` dipindahkan ke SEBELUM routing, sehingga semua mode (Holistic maupun classic) konsisten UI-nya
+- **DEPLOY:** Pakai `git checkout origin/work/gallant-ellis-7cd14d -- SIDIX_USER_UI/src/main.ts index.css` di VPS — hanya file frontend yang di-update tanpa mengganggu branch/backend lokal. Build sukses 1.40s, PM2 restart ok.
+- **TEST:** Verifikasi di VPS: `grep` menemukan `await doHolistic(question)` di `handleSend()`.
+
+**Refer:**
+- `gallant-ellis-7cd14d/SIDIX_USER_UI/src/main.ts` (baris 1164: `doHolistic`, baris 1792: routing)
+- Deploy command: `git checkout origin/work/gallant-ellis-7cd14d -- SIDIX_USER_UI/src/main.ts SIDIX_USER_UI/src/index.css`
+
+
+### 2026-04-30 (bagian 6 — PERAN & VISI: SIDIX sebagai AI Agent Adik)
+
+- **DECISION (definisi ulang peran):** Bos menyatakan SIDIX adalah **AI Agent Adik** — gabungan kreativitas Kimi dan pemikiran inovatif + coding Claude.
+- **Tugas utama agen (Claude):** re-routing, re-alignment, optimasi, wiring yang tepat. Perbaiki & tambahkan kalau perlu. Hapus kalau perlu.
+- **Constraint keras:** Tidak ambigu, tidak bias, tidak hallucinated.
+- **Implikasi arsitektur:**
+  - `sidixlab.com` = landing page (publik, branding)
+  - `app.sidixlab.com` = chatboard utama (UX/frontend, default Holistic)
+  - `ctrl.sidixlab.com` = backend/admin/status (API, health, OTAK+, monitoring)
+- **Note:** Metafora "Adik" = AI assistant yang loyal, kreatif, inovatif — bukan literally adik kandung. Public-facing tetap netral tanpa nama vendor/asisten.
+
+**Refer:**
+- `docs/AGENTS_MANDATORY_SOP.md` (terminologi SIDIX-native)
+- `docs/NORTH_STAR.md` (arah produk)
