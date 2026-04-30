@@ -15597,3 +15597,31 @@ Bos cek "sprint dicatat kan?" — saya update BACKLOG (lengkap COMPLETED entries
 LIVING_LOG (this entry) + commit. Pattern: catat dulu sebelum lanjut sprint
 berikutnya. Tidak menguap.
 
+
+## [SPRINT-PENCIPTA-PHASE2] 2026-04-30 evening — Image Gen Tool Wired LIVE
+
+### Backend
+- `/agent/chat_holistic`: detect output_type=IMAGE_PROMPT → invoke `_tool_text_to_image`
+  async → return attachments[] field (type/url/prompt/mode)
+- `/agent/chat_holistic_stream`: SSE events extended dengan tool_invoke +
+  attachment + tool_error. Image generated mid-stream, frontend render real-time.
+
+### Frontend
+- api.ts: SidixAttachment interface + onToolInvoke + onAttachment + onToolError callbacks
+- main.ts: mode-holistic handler render <img> tag inline dengan:
+  - max-w-md responsive
+  - error fallback message
+  - mode badge (Mock vs FLUX.1)
+  - Prompt preview footer
+
+### Test
+SSE confirmed: `output_type: "image_prompt"` detected confidence 0.85.
+Full pipeline timing 60-180s expected (orchestrator + synthesis + image_gen).
+
+### Visi shift
+Pencipta 45% → 60%. Foundation Adobe-of-Indonesia: SIDIX bisa CIPTAKAN
+gambar real, bukan cuma teks. Phase 3 next: video + audio + 3D wire.
+
+### Commit
+15ec597 feat(sprint-pencipta-phase2): image_gen tool wired + frontend attachment render
+
