@@ -16371,3 +16371,42 @@ SIDIX sekarang = sophisticated chatbot dengan RAG. SIDIX harusnya = organisme di
 - `apps/brain_qa/tests/test_sanad_orchestra.py`
 - `apps/brain_qa/tests/test_hafidz_injector.py`
 
+
+
+
+### 2026-05-01 (bagian 22 — IMPL: Sprint C — Pattern Extractor Integration)
+
+**Dari:** Kimi Code CLI
+**Hasil:** Pattern Extractor wired ke OMNYX + Hafidz pipeline
+
+#### Apa yang Dilakukan
+- **Audit:** `pattern_extractor.py` sudah ada (418 baris, lengkap) — tidak perlu rewrite
+  - `looks_like_inductive_claim()` — regex trigger detection
+  - `extract_pattern_from_text()` — LLM-based principle extraction
+  - `save_pattern()` / `search_patterns()` / `corroborate_pattern()` / `falsify_pattern()`
+  - `maybe_extract_from_conversation()` — hook untuk auto-extract
+  - `stats()` — dashboard stats
+
+#### Integration (Sprint C)
+- **Hafidz Injector:** `retrieve_context()` sekarang juga panggil `search_patterns()`
+  - Patterns di-inject ke prompt via `build_hafidz_prompt()` (section "POLA / PRINSIP RELEVAN")
+- **OMNYX Direction:** `process()` sekarang panggil `maybe_extract_from_conversation()` post-query
+  - Auto-extract pattern dari setiap conversation
+- **Agent Serve:** 3 endpoint baru:
+  - `GET /agent/patterns/stats` — statistik patterns
+  - `GET /agent/patterns/search?q=...` — search patterns
+  - `POST /agent/patterns/extract` — manual pattern extraction
+
+#### Tests
+- `tests/test_pattern_integration.py` — 10 tests, ALL PASSED
+- **Total tests: 44/44 PASSED** (Sanad 16 + Hafidz 18 + Pattern 10)
+
+#### Commit
+- `5994d29` — `feat: Sprint C — Pattern Extractor Integration`
+
+**Refer:**
+- `apps/brain_qa/brain_qa/pattern_extractor.py`
+- `apps/brain_qa/brain_qa/hafidz_injector.py` (retrieve_context, build_hafidz_prompt)
+- `apps/brain_qa/brain_qa/omnyx_direction.py` (pattern extraction hook)
+- `apps/brain_qa/brain_qa/agent_serve.py` (pattern endpoints)
+- `apps/brain_qa/tests/test_pattern_integration.py`
