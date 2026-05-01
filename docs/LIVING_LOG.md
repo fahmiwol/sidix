@@ -16292,3 +16292,82 @@ SIDIX sekarang = sophisticated chatbot dengan RAG. SIDIX harusnya = organisme di
 - DOC: `docs/SIDIX_POSITION_ANALYSIS_2026-05-01.md` — deep architecture audit, 5 gap analysis, 4-fase roadmap baru.
 - DOC: `docs/SPRINT_A_B_SANAD_HAFIDZ_2026-05-01.md` — sprint plan detail untuk Sanad Orchestra + Hafidz Injection.
 
+
+
+### 2026-05-01 (bagian 21 — IMPL: Sprint A+B — Sanad Orchestra + Hafidz Injection)
+
+**Dari:** Kimi Code CLI
+**Hasil:** Sanad Orchestra + Hafidz Injection implemented, integrated, tested, committed, pushed
+
+#### Sanad Orchestra (Sprint A)
+- **File baru:** `apps/brain_qa/brain_qa/sanad_orchestra.py` — consensus validation engine
+  - Claim extraction: LLM-based (ollama_generate) + regex fallback
+  - Claim verification: corpus_search + web_search (mojeek) + tool_outputs
+  - Consensus calculation: weighted by extraction confidence, per-claim verdict
+  - Relative thresholds: simple=0.92, analytical=0.85, creative=0.75, tool=0.95
+  - Verdict: golden | pass | retry | fail
+  - Retry synthesis dengan failure context untuk verdict "retry"
+  - Stats tracking per instance
+- **Endpoint baru:** `GET /agent/sanad/stats`, `POST /agent/validate`
+- **Unit tests:** `tests/test_sanad_orchestra.py` — 16 tests, ALL PASSED
+
+#### Hafidz Injector (Sprint B)
+- **File baru:** `apps/brain_qa/brain_qa/hafidz_injector.py` — memory retrieval + storage
+  - Two-Drawer: Golden Store (sanad >= threshold) + Lesson Store (sanad < threshold)
+  - Pre-query: BM25 search Golden Store untuk similar past queries + persona filter
+  - Lesson warnings: retrieve failure patterns (what NOT to do)
+  - Prompt injection: build_hafidz_prompt() injects few-shot examples ke synthesis
+  - Post-query: auto-store ke Golden atau Lesson berdasarkan Sanad score
+  - Storage: `brain/public/hafidz/golden/` + `brain/public/hafidz/lesson/`
+- **Endpoint baru:** `GET /agent/hafidz/stats`
+- **Unit tests:** `tests/test_hafidz_injector.py` — 18 tests, ALL PASSED
+
+#### Integration ke OMNYX Direction
+- **Update:** `omnyx_direction.py`
+  - Pre-query: Hafidz context retrieval + injection
+  - Post-synthesis: Sanad Orchestra validation
+  - Post-validation: Hafidz storage (golden/lesson)
+  - Retry loop: bila Sanad verdict="retry", synthesis ulang dengan failure context
+  - OmnyxSession extended: sanad_score, sanad_verdict, hafidz_injected, hafidz_stored
+- **Update:** `agent_serve.py`
+  - ChatResponse extended: sanad_score, sanad_verdict, hafidz_injected, hafidz_stored
+  - 3 endpoint baru: /agent/sanad/stats, /agent/hafidz/stats, /agent/validate
+- **Update:** `cognitive_synthesizer.py`
+  - `_try_corpus_passthrough()` helper untuk primer-tier direct answer
+
+#### Test Results
+- Unit tests: **34/34 PASSED** (16 Sanad + 18 Hafidz)
+- E2E test: Query → Hafidz retrieve → OMNYX → Tools → Synthesis → Sanad validate → Hafidz store → Output
+  - Hafidz injected: True ✅
+  - Hafidz stored: True ✅
+  - Sanad score dihitung ✅
+  - Sanad verdict ditentukan ✅
+
+#### Commit & Push
+- Commit: `5af3439` — `feat: Sprint A+B — Sanad Orchestra + Hafidz Injection`
+- Branch: `work/gallant-ellis-7cd14d` → pushed to GitHub
+
+#### Deploy Status
+- **SSH ke VPS timeout** — tidak bisa deploy otomatis dari Windows (network/kunci issue)
+- **Instruksi deploy manual:**
+  ```bash
+  ssh root@72.62.125.6
+  cd /var/www/sidix
+  git pull origin work/gallant-ellis-7cd14d
+  pm2 restart sidix-brain
+  ```
+
+#### Temuan Selama Implementasi
+1. `generate_text` tidak ada di `local_llm.py` — yang ada adalah `generate_sidix` (sync, local transformers) dan `ollama_generate` (sync, Ollama HTTP). Untuk Sanad claim extraction dan Hafidz synthesis retry, gunakan `ollama_generate` via `asyncio.to_thread`.
+2. `_try_corpus_passthrough` tidak ada di `cognitive_synthesizer.py` — perlu ditambahkan sebagai helper.
+3. LLM claim extraction JSON parsing fragile — perlu robust parsing + fallback ke regex.
+4. Hafidz retrieval masih kosong pada cold start (belum ada history) — ini expected, akan terisi setelah interaksi berjalan.
+
+**Refer:**
+- `apps/brain_qa/brain_qa/sanad_orchestra.py`
+- `apps/brain_qa/brain_qa/hafidz_injector.py`
+- `apps/brain_qa/brain_qa/omnyx_direction.py` (process, _synthesize, _retry_synthesis)
+- `apps/brain_qa/brain_qa/agent_serve.py` (chat_holistic, sanad_stats, hafidz_stats, validate)
+- `apps/brain_qa/tests/test_sanad_orchestra.py`
+- `apps/brain_qa/tests/test_hafidz_injector.py`
+
