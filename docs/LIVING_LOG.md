@@ -17096,5 +17096,6 @@ curl -X POST http://localhost:8765/agent/maqashid/tune -d '{"sample_size":30}'
 - **FIX:** Ganti 3 tombol placeholder (Star on GitHub / Donate / Support) menjadi 1 PayPal button rendered + 1 Ko-fi card link dengan icon
 - **TEST:** HTML validasi — struktur tag sesuai, script PayPal render setelah DOM ready
 - **DEPLOY:** Commit `20a04e4` di-push ke `work/gallant-ellis-7cd14d` → GitHub ✅
-- **TODO:** Deploy landing page ke VPS (path `/opt/sidix/SIDIX_LANDING/` atau web root nginx) — butuh SSH manual
+- **DEPLOY:** Landing page ke VPS via SSH (key `galantara_deploy_ed25519`) — git pull + copy ke `/www/wwwroot/sidixlab.com/` ✅
+- **TEST:** Verifikasi live `sidixlab.com` — PayPal SDK + Hosted Button (`K37VVLFGJC5TY`) + Ko-fi link (`ko-fi.com/sidix`) muncul di HTML ✅
 
