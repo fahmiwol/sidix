@@ -1,8 +1,8 @@
-# SIDIX — Status Teknis Lengkap (Update 2026-04-23)
+# SIDIX — Status Teknis Lengkap (Update 2026-05-01)
 
 > Dokumen ini merangkum audit penuh terhadap **server produksi**, **codebase**, dan **live app**.
 > Tujuan: referensi bagi semua agen (dan manusia) yang bekerja di repo ini.
-> Update terakhir: 2026-04-23 — ditambah **kontinuitas dokumentasi QA** + **SOP wajib agen**.
+> Update terakhir: 2026-05-01 — deep architecture audit + roadmap remapping + sprint A+B planning.
 
 ---
 
@@ -22,7 +22,7 @@
 
 | Item | Value |
 |------|-------|
-| **Versi** | v0.8.0 (Sprint 7b Final) |
+| **Versi** | v2.1 (Sprint 6.5 + Mojeek + Speed Demon + See & Hear) |
 | **Domain Frontend** | [sidixlab.com](https://sidixlab.com) (landing page) |
 | **Domain App** | [app.sidixlab.com](https://app.sidixlab.com) (AI agent UI) |
 | **Domain API** | ctrl.sidixlab.com |
@@ -31,9 +31,9 @@
 | **SIDIX Brain** | `pm2 id:12`, port 8765 |
 | **SIDIX UI** | `pm2 id:9`, `serve dist -p 4000` |
 | **Model** | `sidix-lora:latest` (Qwen2.5-7B Q4_K_M) + `qwen2.5:1.5b` (fallback) |
-| **Corpus** | 1182 docs indexed, 377 markdown files |
-| **Tests** | 15/15 PASSED (Sprint 6.5: 8 + Sprint 7: 3 + existing: 4); CI + lokal `brain_qa` pytest **18 passed** |
-| **Benchmark** | 64/70 pass, 6 harmful correctly blocked |
+| **Corpus** | 3237+ docs indexed, BM25 + sanad-tier rerank |
+| **Tests** | 18+ PASSED (Sprint 6.5: 8 + Sprint 7: 3 + existing: 4 + auto-harvest: 6) |
+| **Benchmark** | 70/70 pass Maqashid v2 (Sprint 6.5) |
 | **Health** | `/health` → `ok: true`, `model_ready: true`, `tools_available: 35` |
 
 ---
@@ -54,25 +54,36 @@
 
 ---
 
-## 🏗️ Sprint 7 — Social Radar MVP (IN PROGRESS)
+## ✅ Sprint Selesai (DONE)
 
-| Komponen | File | Status |
-|----------|------|--------|
-| Chrome Extension UI | `browser/social-radar-extension/popup.html` | ✅ Scaffold done |
-| Extension Logic | `browser/social-radar-extension/popup.js` | ⚠️ Simulasi (belum real scrape) |
-| Backend Analisis | `brain_qa/social_radar.py` | ✅ Fix: cap comments, advice diperluas |
-| API Endpoint | `agent_serve.py` `/social/radar/scan` | ✅ Fix: Pydantic model + 413 guard |
-| Unit Tests | `tests/test_sprint7_logic.py` | ✅ 3/3 PASSED |
-| OpHarvest real scrape | `browser/social-radar-extension/content.js` | ⏳ TODO Sprint 7 lanjutan |
-| Radar dashboard UI | `app.sidixlab.com` | ⏳ TODO Sprint 8 |
-| TikTok support | — | ⏳ TODO Sprint 8 |
+| Sprint | Deliverable | Status |
+|--------|-------------|--------|
+| Sprint 1 | Backend foundation (FastAPI, ReAct, RAG) | ✅ DONE |
+| Sprint 3 | Image generation beta (ComfyUI) | ✅ DONE |
+| Sprint 5.5 | Maqashid v2 + Persona rename (MIGHAN→UTZ, TOARD→ABOO, FACH→OOMAR, HAYFAR→ALEY, INAN→AYMAN) | ✅ DONE |
+| Sprint 6.5 | Maqashid wiring + CQF Rubrik v2 + Benchmark 70/70 | ✅ DONE |
+| Sprint Mojeek | Web search fix (Mojeek + DDG fallback) + OMNYX Direction + Lite Browser | ✅ DONE |
+| Sprint Speed Demon | Intent-based complexity routing (87s → 3-5s untuk simple factual) | ✅ DONE |
+| Sprint See & Hear | Multimodal input infra (`/upload/image`, `/upload/audio`, frontend attach-btn) | ✅ DONE |
+
+## 🏗️ Sprint Aktif / Next
+
+| Sprint | Fokus | Status |
+|--------|-------|--------|
+| Sprint 7 — Social Radar MVP | Chrome extension + backend analysis | ⏸️ PAUSED (OpHarvest real scrape, TikTok) |
+| Sprint 4 | Creative agents (Agency Kit, Konten Engine) | ⏸️ IN PROGRESS |
+| Sprint A+B | Sanad Orchestra + Hafidz Injection | 🔥 NEXT PRIORITY |
+| Sprint C | Pattern Extractor Integration | ⏳ PLANNED |
+| Sprint D | Aspiration Detector + Tool Synthesizer | ⏳ PLANNED |
+| Sprint E | Pencipta Mode (Creative Engine) | ⏳ PLANNED |
+| Sprint F | Self-Test Loop (Cold Start Maturity) | ⏳ PLANNED |
 
 ---
 
 ## 🖥️ UI App — Fitur Live
 
 ### Header Bar
-- ✅ Status indikator: "Online · 1182 dok · sidix_local/LoRA"
+- ✅ Status indikator: "Online · 3237 dok · sidix_local/LoRA"
 - ✅ Tentang SIDIX: Modal — prinsip Sidq, Sanad, Tabayyun, Open Source (MIT)
 - ✅ Sign In: Google OAuth, Email Magic Link, Skip (trial 1 chat)
 - ✅ Persona Selector: AYMAN (default), ABOO, OOMAR, ALEY, UTZ
@@ -80,6 +91,7 @@
 ### Chat Interface
 - ✅ Quick Prompts: 4 kategori — Partner, Coding, Creative, Chill
 - ✅ Chat Input + attach + send
+- ✅ **Image attachment** (Sprint See & Hear) — file picker → upload → 📎 filename display
 - ✅ Kontrol: Korpus saja / Fallback web / Mode ringkas
 - ✅ Streaming real-time dari backend
 - ✅ Sanad/Citation per jawaban
@@ -90,6 +102,29 @@
 
 ---
 
+## 🔬 Architecture Gap Analysis (2026-05-01)
+
+> Hasil deep audit: `docs/SIDIX_POSITION_ANALYSIS_2026-05-01.md`
+
+### 5 Gap Fundamental
+| # | Gap | Evidence | Impact |
+|---|-----|----------|--------|
+| 1 | **Sanad = spec, bukan kode** | Note 239 spec lengkap, tapi `omnyx_direction.py` tidak ada validation pipeline | Output tidak tervalidasi sebelum ke user |
+| 2 | **Hafidz = storage, bukan memory** | `knowledge_accumulator.py` menyimpan tapi tidak di-inject saat inference | SIDIX tidak "ingat" interaksi sebelumnya |
+| 3 | **Pattern Extractor = isolated** | `pattern_extractor.py` ada tapi tidak di-wire ke OMNYX | Pattern tidak di-inject ke future queries |
+| 4 | **Tool Synthesizer = tidak ada** | Note 224 spec aspiration detection + tool creation | SIDIX tidak bisa bikin tool baru dari aspirasi user |
+| 5 | **Persona = prompt-level** | `PERSONA_DESCRIPTIONS` text prompt, bukan DoRA adapter | 3× LLM call per query, bukan 1 inference dengan adapter |
+
+### Roadmap Baru (4 Fase)
+| Fase | Sprint | Fokus | Goal |
+|------|--------|-------|------|
+| 1 | A-C | Sanad + Hafidz + Pattern | Organisme Hidup |
+| 2 | D-F | Aspiration + Pencipta + Self-Test | Creative Agent |
+| 3 | G-I | DoRA + Persona Growth + Council | Persona Mandiri |
+| 4 | J+ | Wisdom + Foresight + Self-Modifying | Vision |
+
+---
+
 ## 🧠 Brain Backend — API Endpoints
 
 ### Core Chat & Agent
@@ -97,9 +132,12 @@
 |--------|------|--------|
 | GET | `/health` | Status engine, model, corpus, tools |
 | POST | `/agent/chat` | Chat utama (ReAct loop) |
+| POST | `/agent/chat_holistic` | **Primary path** — OMNYX Direction (complexity-aware routing) |
 | POST | `/agent/generate` | Generasi konten |
 | POST | `/ask` | RAG ask (non-streaming) |
 | POST | `/ask/stream` | RAG ask (streaming) |
+| POST | `/upload/image` | Upload image (multipart, 5MB limit, Sprint See & Hear) |
+| POST | `/upload/audio` | Upload audio (multipart, 10MB limit, Sprint See & Hear) |
 | GET | `/agent/tools` | Daftar tools |
 | POST | `/agent/feedback` | Feedback per jawaban |
 | GET | `/agent/metrics` | Metrik runtime |
@@ -140,15 +178,18 @@
 
 ---
 
-## ⚠️ TODO Aktif (Sprint 7 lanjutan)
+## ⚠️ TODO Aktif (Remapped Post-Audit)
 
-| # | Task | Priority |
-|---|------|----------|
-| 1 | OpHarvest content script (real DOM scrape Instagram) | 🔴 Tinggi |
-| 2 | Visualisasi radar di `app.sidixlab.com` | 🟡 Sedang |
-| 3 | Sentiment expansion (slang Indonesia) | 🟡 Sedang |
-| 4 | TikTok support di extension | 🟢 Sprint 8 |
-| 5 | Radar dashboard agregat (multi-competitor) | 🟢 Sprint 8 |
+| # | Task | Sprint | Priority |
+|---|------|--------|----------|
+| 1 | **Sanad Orchestra** — implementasi consensus validation pipeline | A | 🔴 🔥 HIGHEST |
+| 2 | **Hafidz Injection** — inject few-shot context dari Golden/Lesson Store ke inference | B | 🔴 🔥 HIGHEST |
+| 3 | Pattern Extractor Integration — wire ke OMNYX pipeline | C | 🟡 HIGH |
+| 4 | Aspiration Detector + Tool Synthesizer | D | 🟡 HIGH |
+| 5 | OpHarvest content script (real DOM scrape Instagram) | 7 | 🟢 PAUSED |
+| 6 | Visualisasi radar di `app.sidixlab.com` | 7 | 🟢 PAUSED |
+| 7 | Sentiment expansion (slang Indonesia) | 7 | 🟢 PAUSED |
+| 8 | TikTok support di extension | 7 | 🟢 PAUSED |
 
 ---
 
@@ -188,5 +229,9 @@ browser/social-radar-extension/
 
 ---
 
-_Update: 2026-04-23 — sesi QA audit + hardening Sprint 7._
-_Sprint 6.5: DONE. Sprint 7 MVP: scaffolded + endpoint hardened. Plugin persona synced. Next: OpHarvest real scrape._
+_Update: 2026-05-01 — deep architecture audit complete. 40+ riset notes + 12 dokumen fundamental + codebase audit. Gap analysis: 5 fundamental gaps identified. Roadmap remapped ke 4 fase. Sprint A+B (Sanad Orchestra + Hafidz Injection) = NEXT PRIORITY — foundation untuk self-evolving._
+_Sprint 6.5: DONE. Sprint 7: PAUSED. Sprint A+B: READY TO START._
+
+**Dokumen Penting Baru:**
+- `docs/SIDIX_POSITION_ANALYSIS_2026-05-01.md` — analisa posisi + gap + roadmap baru
+- `docs/SPRINT_A_B_SANAD_HAFIDZ_2026-05-01.md` — sprint plan detail Sanad + Hafidz

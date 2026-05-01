@@ -16229,3 +16229,66 @@ Browser user → https://app.sidixlab.com   (frontend, port 4000)
 - `SIDIX_USER_UI/src/main.ts` (attach-btn handler, pendingImagePath)
 - `SIDIX_USER_UI/src/api.ts` (uploadImage, askHolistic opts)
 
+
+
+### 2026-05-01 (bagian 20 — DECISION: Deep Architecture Audit + Remapped Roadmap)
+
+**Dari:** Kimi Code CLI
+**Hasil:** Deep audit posisi SIDIX vs visi bos + roadmap baru 4 fase + sprint plan A+B
+
+#### Dokumen yang Dibaca (Riset Komprehensif)
+- 12 dokumen fundamental (SIDIX_DEFINITION, DIRECTION_LOCK, MASTER_ROADMAP, NORTH_STAR, dll)
+- 40+ riset note (200-311) — fokus: 239 (Sanad Consensus), 224 (Cognitive Modules), 248 (Canonical Pivot), 277 (SIDIX Identity), 278 (Paradigm Shift), 235 (Architecture Legacy), 207 (Small Self-Modify), 203 (Self-Healing), 186 (Autonomous Learning), 249 (Architecture Closure), 241 (Memory Systems), 234 (Hafidz System), 243 (Peripheral Personas), 247 (Creative Output), 200 (Philosophy Paper), 201 (V2 Architecture)
+- Arsitektur HTML v2.1 (jalur evolusi, multi-source, Sanad Orchestra, Hafidz, Pencipta Mode, Self-Test Loop)
+- Codebase audit: `omnyx_direction.py`, `agent_serve.py`, `cognitive_synthesizer.py`, `knowledge_accumulator.py`, `cot_system_prompts.py`, `pattern_extractor.py`, `auto_harvest.py`, dll
+
+#### Positif: Apa yang SUDAH Jalan (Foundation Solid)
+- ReAct loop + tool registry (14 tools) ✅
+- RAG BM25 + sanad-tier rerank (3237 corpus) ✅
+- Web search + code sandbox + auto-harvest ✅
+- 5 persona fanout (prompt-level) ✅
+- Maqashid v2 deployed + benchmark green ✅
+- OMNYX Direction (complexity-aware routing) ✅
+- Multimodal input infra (upload image/audio) ✅
+- Knowledge Accumulator (auto-save) ✅
+
+#### Negatif: 5 Gap Fundamental
+1. **Sanad = spec, bukan kode** — Note 239 punya spec lengkap tapi tidak ada implementasi. Output langsung ke user tanpa validation.
+2. **Hafidz = storage, bukan memory** — Knowledge Accumulator menyimpan tapi tidak di-inject kembali saat inference. SIDIX tidak "ingat".
+3. **Pattern Extractor = modul terpisah, belum terintegrasi** — Note 224 definisikan `pattern_extractor.py` tapi tidak di-wire ke OMNYX pipeline.
+4. **Tool Synthesizer = tidak ada** — Aspiration detection + autonomous tool creation = vision tapi belum ada kode.
+5. **Persona = prompt-level, bukan DoRA** — Fanout 3× LLM call, bukan load adapter. Visi bos: setiap persona punya otak sendiri dan tumbuh.
+
+#### Key Insight dari Riset Note 277
+> "SIDIX adalah AI AGENT, BUKAN chatbot. 8 kapabilitas distinctive."
+> "SIDIX harusnya bisa tumbuh sendiri, bukan AI agent, tapi sebagai organisme digital."
+
+SIDIX sekarang = sophisticated chatbot dengan RAG. SIDIX harusnya = organisme digital yang tumbuh.
+
+#### Roadmap Baru (4 Fase)
+- **Fase 1** (Sprint A-C): Sanad Orchestra + Hafidz Injection + Pattern Integration → Organisme Hidup
+- **Fase 2** (Sprint D-F): Aspiration Detector + Pencipta Mode + Self-Test Loop → Creative Agent
+- **Fase 3** (Sprint G-I): DoRA Persona + Persona Growth + Persona Council → Persona Mandiri
+- **Fase 4** (Sprint J+): Wisdom Layer + Proactive Foresight + Self-Modifying Code → Vision
+
+#### Sprint Berikutnya: A+B (Sanad Orchestra + Hafidz Injection)
+- **Kenapa:** Foundation untuk SEMUA sprint berikutnya. Tanpa Sanad → output tidak tervalidasi. Tanpa Hafidz → SIDIX tidak punya memory.
+- **Deliverable:** `sanad_orchestra.py` + `hafidz_injector.py` + integration ke OMNYX
+- **Expected Impact:** Output quality naik (validated, scored). SIDIX mulai "ingat" dan "belajar".
+
+#### Dokumen Baru Dibuat
+- `docs/SIDIX_POSITION_ANALYSIS_2026-05-01.md` — analisa posisi + gap + roadmap baru
+- `docs/SPRINT_A_B_SANAD_HAFIDZ_2026-05-01.md` — sprint plan detail untuk Sanad + Hafidz
+
+**Refer:**
+- `brain/public/research_notes/239_sanad_consensus_scoring_logic.md` (spec Sanad Orchestra)
+- `brain/public/research_notes/224_how_sidix_solves_learns_creates.md` (spec Pattern Extractor, Aspiration Detector, Tool Synthesizer)
+- `brain/public/research_notes/277_sidix_bukan_chatbot_kapabilitas_distinctive.md` (visi organisme digital)
+- `brain/public/research_notes/248_sidix_v2_canonical_pivot.md` (Pencipta Mode, DoRA, Wisdom Layer)
+
+#### Update Dokumen Outdated
+- UPDATE: `docs/SIDIX_CAPABILITY_MAP.md` — persona names MIGHAN/TOARD/FACH/HAYFAR/INAN → UTZ/ABOO/OOMAR/ALEY/AYMAN, tool count refresh, Sanad status note.
+- UPDATE: `docs/STATUS_TODAY.md` — versi v2.1, corpus 3237+, sprint status synced (DONE + PAUSED + NEXT), architecture gap analysis section, API endpoints updated (chat_holistic, upload image/audio).
+- DOC: `docs/SIDIX_POSITION_ANALYSIS_2026-05-01.md` — deep architecture audit, 5 gap analysis, 4-fase roadmap baru.
+- DOC: `docs/SPRINT_A_B_SANAD_HAFIDZ_2026-05-01.md` — sprint plan detail untuk Sanad Orchestra + Hafidz Injection.
+
