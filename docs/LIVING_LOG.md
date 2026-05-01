@@ -16638,3 +16638,25 @@ $ curl -X POST http://localhost:8765/agent/chat_holistic -d '{"question":"halo"}
 
 **Refer**: commit `3012f9b` on branch `work/gallant-ellis-7cd14d`
 
+
+
+## 2026-05-01 — UI FIX: Header Hide + Greeting Chip Grid Hide
+
+**Tag**: FIX + UX
+**Trigger**: POV user test — header buttons "Tentang SIDIX/Tutorial/Feedback" masih terlihat meskipun seharusnya hidden. Plus chip grid (web/corpus/dense/tools/persona) muncul untuk greeting fast-path padahal tidak ada tool calls.
+
+**Root cause**:
+1. **Header buttons masih visible**: `contrib-pill` CSS inline punya `display: flex` yang override Tailwind `hidden` class (sama specificity, class vs class, yang dideklarasikan terakhir menang).
+2. **Chip grid untuk greeting**: `doHolistic()` selalu render 5 chip default. Greeting fast-path tidak memanggil tool apapun, jadi chips tetap ⏳ dan tidak ter-update.
+
+**Fixes**:
+- `index.html`: Tambah rule `.contrib-pill.hidden { display: none !important; }` untuk override `display: flex`
+- `main.ts`: Setelah response, cek `if (_sources.length === 1 && _sources[0] === 'greeting' && gridEl) { gridEl.classList.add('hidden'); }`
+
+**Verify LIVE (browser POV)**:
+- Header bersih: hanya "Sign In" + persona dropdown + status dot ✅
+- "halo" → instant response, no chip grid, meta "1 sumber · 0.0s · holistic" ✅
+- Browser hash: `index-eMVQkksE.js` ↔ VPS dist MATCH ✅
+
+**Refer**: commit `51ffc20` on branch `work/gallant-ellis-7cd14d`
+
