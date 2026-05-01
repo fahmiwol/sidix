@@ -1,4 +1,4 @@
-﻿"""
+"""
 mojeek_search.py — Web Search with Mojeek + DuckDuckGo fallback
 
 Primary: Mojeek (independent UK search, no API key needed).
@@ -174,6 +174,14 @@ async def _wikipedia_search_async(query: str, max_results: int = 5) -> list[Moje
     """Wikipedia API fallback — used when Mojeek + DDG both fail from VPS IP."""
     import asyncio, json, urllib.parse, urllib.request
 
+    # Wikipedia blocks Python default UA — use RFC bot UA
+    _wiki_ua = "SIDIXKnowledgeSearch/1.0 (https://sidixlab.com; contact@sidixlab.com) Python-urllib"
+
+    def _wiki_get(url: str) -> bytes:
+        req = urllib.request.Request(url, headers={"User-Agent": _wiki_ua})
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            return resp.read()
+
     def _sync_search() -> list[MojeekHit]:
         # Search for article titles
         params = urllib.parse.urlencode({
@@ -183,10 +191,8 @@ async def _wikipedia_search_async(query: str, max_results: int = 5) -> list[Moje
             "srlimit": max_results,
             "format": "json",
         })
-        url = f"https://id.wikipedia.org/w/api.php?{params}"
         try:
-            with urllib.request.urlopen(url, timeout=10) as resp:
-                data = json.loads(resp.read())
+            data = json.loads(_wiki_get(f"https://id.wikipedia.org/w/api.php?{params}"))
         except Exception as e:
             log.warning("[wikipedia] search error: %s", e)
             return []
@@ -194,10 +200,8 @@ async def _wikipedia_search_async(query: str, max_results: int = 5) -> list[Moje
         titles = [r["title"] for r in data.get("query", {}).get("search", [])]
         if not titles:
             # Try English Wikipedia
-            url_en = f"https://en.wikipedia.org/w/api.php?{params}"
             try:
-                with urllib.request.urlopen(url_en, timeout=10) as resp:
-                    data = json.loads(resp.read())
+                data = json.loads(_wiki_get(f"https://en.wikipedia.org/w/api.php?{params}"))
                 titles = [r["title"] for r in data.get("query", {}).get("search", [])]
             except Exception:
                 return []
