@@ -220,7 +220,14 @@ class IntentClassifier:
     @classmethod
     def classify(cls, query: str) -> tuple[str, list[str]]:
         """Return (intent_type, recommended_tools)."""
-        q_lower = query.lower().strip()
+        # Sprint J: if query has injected conversation context, classify only
+        # the actual question (after [PERTANYAAN SAAT INI]) to avoid false
+        # keyword matches from prior assistant responses in the context block.
+        if "[PERTANYAAN SAAT INI]" in query:
+            actual_q = query.split("[PERTANYAAN SAAT INI]")[-1].strip()
+        else:
+            actual_q = query
+        q_lower = actual_q.lower().strip()
 
         # Fast-path: standalone greeting (no tool calls needed)
         if cls._GREETING_RE.match(q_lower):
