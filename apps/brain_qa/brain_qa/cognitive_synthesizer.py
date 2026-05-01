@@ -307,4 +307,27 @@ def _strip_yaml_frontmatter(text: str) -> str:
     return _re.sub(r"^---\n.*?\n---\n?", "", text, flags=_re.DOTALL).strip()
 
 
-__all__ = ["CognitiveSynthesizer", "SynthesisResult", "_strip_yaml_frontmatter"]
+def _try_corpus_passthrough(bundle: SourceBundle) -> Optional[str]:
+    """Try to return corpus result directly if it's high-quality (primer tier).
+    
+    Returns the corpus text if primer-tier, None otherwise.
+    """
+    if not bundle.corpus or not bundle.corpus.success or not bundle.corpus.data:
+        return None
+    
+    data = bundle.corpus.data
+    raw_text = ""
+    if isinstance(data, dict):
+        raw_text = data.get("raw_text", data.get("output", ""))
+    else:
+        raw_text = str(data)
+    
+    # Check for primer tier marker
+    if "sanad_tier: primer" in raw_text.lower():
+        clean = _strip_yaml_frontmatter(raw_text)
+        return clean.strip() + "\n\n(Sumber: corpus SIDIX, sanad tier: primer)"
+    
+    return None
+
+
+__all__ = ["CognitiveSynthesizer", "SynthesisResult", "_strip_yaml_frontmatter", "_try_corpus_passthrough"]

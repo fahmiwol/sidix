@@ -85,6 +85,11 @@ class OmnyxSession:
     # Sprint Speed Demon: complexity tracking
     complexity: str = "analytical"
     synth_model: str = "qwen2.5:7b"
+    # Sprint A+B: Sanad + Hafidz
+    sanad_score: float = 0.0
+    sanad_verdict: str = ""
+    hafidz_injected: bool = False
+    hafidz_stored: bool = False
 
 
 # ── Tool Registry ────────────────────────────────────────────────────────
@@ -349,6 +354,8 @@ class OmnyxDirector:
 
         Sprint Speed Demon (2026-05-01): complexity-aware routing.
         Simple factual queries skip persona_fanout → latency 87s → ~5s.
+        
+        Sprint A+B (2026-05-01): Sanad validation + Hafidz memory injection.
         """
         import uuid
         t0 = time.monotonic()
@@ -369,6 +376,19 @@ class OmnyxDirector:
             "[omnyx] Session %s started: %r | complexity=%s persona=%d model=%s",
             session.session_id, query[:60], complexity, n_persona, synth_model,
         )
+
+        # Sprint B: Pre-query Hafidz memory retrieval
+        hafidz_context = None
+        try:
+            from .hafidz_injector import HafidzInjector, build_hafidz_prompt
+            hafidz = HafidzInjector()
+            hafidz_context = await hafidz.retrieve_context(query, persona, max_examples=2)
+            if hafidz_context.golden_examples or hafidz_context.lesson_warnings:
+                session.hafidz_injected = True
+                log.info("[omnyx] Hafidz context injected: %d examples, %d warnings",
+                         len(hafidz_context.golden_examples), len(hafidz_context.lesson_warnings))
+        except Exception as e:
+            log.warning("[omnyx] Hafidz retrieval failed: %s", e)
 
         # Turn 1: Intent classification + initial tool calls
         turn1 = TurnContext(turn=1)
@@ -414,17 +434,95 @@ class OmnyxDirector:
                 session.turns.append(turn2)
 
         # Synthesis: merge all tool results into final answer
+        # Sprint B: inject Hafidz context into synthesis
         session.final_answer, session.confidence, session.sources_used = \
-            await self._synthesize(session, query, persona, complexity, synth_model)
+            await self._synthesize(session, query, persona, complexity, synth_model, hafidz_context)
+
+        # Sprint A: Sanad validation post-synthesis
+        try:
+            from .sanad_orchestra import SanadOrchestra, get_threshold
+            sanad = SanadOrchestra()
+            
+            # Build sources dict from session turns
+            sources = {}
+            tool_outputs = []
+            tools_used = []
+            for turn in session.turns:
+                for r in turn.tool_results:
+                    if r.success and r.output:
+                        sources[r.tool_name] = r.output
+                        tool_outputs.append(r.output)
+                        tools_used.append(r.tool_name)
+            
+            sanad_result = await sanad.validate(
+                answer=session.final_answer,
+                query=query,
+                sources=sources,
+                persona=persona,
+                tools_used=tools_used,
+                tool_outputs=tool_outputs,
+                complexity=complexity,
+            )
+            
+            session.sanad_score = sanad_result.consensus_score
+            session.sanad_verdict = sanad_result.verdict
+            
+            log.info("[omnyx] Sanad validation: score=%.2f verdict=%s",
+                     sanad_result.consensus_score, sanad_result.verdict)
+            
+            # Sprint B: Store to Hafidz based on Sanad score
+            try:
+                from .hafidz_injector import HafidzInjector
+                hafidz_store = HafidzInjector()
+                threshold = get_threshold(complexity, tools_used)
+                store_result = await hafidz_store.store_result(
+                    query=query,
+                    answer=session.final_answer,
+                    persona=persona,
+                    sanad_score=sanad_result.consensus_score,
+                    threshold=threshold,
+                    sources_used=session.sources_used,
+                    tools_used=tools_used,
+                    failure_context=sanad_result.failure_context or "",
+                )
+                session.hafidz_stored = store_result.get("stored", False)
+                log.info("[omnyx] Hafidz stored: %s → %s", 
+                         store_result.get("store", "unknown"), store_result.get("note_id", ""))
+            except Exception as e:
+                log.warning("[omnyx] Hafidz store failed: %s", e)
+            
+            # If retry verdict, attempt one more synthesis with failure context
+            if sanad_result.verdict == "retry" and sanad_result.failure_context:
+                log.info("[omnyx] Sanad retry triggered with failure context")
+                session.final_answer = await self._retry_synthesis(
+                    session, query, persona, complexity, synth_model, 
+                    sanad_result.failure_context, hafidz_context
+                )
+                # Re-validate after retry
+                sanad_result2 = await sanad.validate(
+                    answer=session.final_answer,
+                    query=query,
+                    sources=sources,
+                    persona=persona,
+                    tools_used=tools_used,
+                    tool_outputs=tool_outputs,
+                    complexity=complexity,
+                )
+                session.sanad_score = sanad_result2.consensus_score
+                session.sanad_verdict = sanad_result2.verdict
+                
+        except Exception as e:
+            log.warning("[omnyx] Sanad validation failed: %s", e)
 
         session.total_latency_ms = int((time.monotonic() - t0) * 1000)
 
-        # Auto-store verified knowledge
+        # Auto-store verified knowledge (legacy path)
         await self._auto_store(session)
 
         log.info(
-            "[omnyx] Session %s complete: turns=%d, confidence=%s, latency=%dms",
+            "[omnyx] Session %s complete: turns=%d, confidence=%s, sanad=%.2f/%s, latency=%dms",
             session.session_id, len(session.turns), session.confidence,
+            session.sanad_score, session.sanad_verdict,
             session.total_latency_ms,
         )
         return session
@@ -523,11 +621,15 @@ class OmnyxDirector:
     async def _synthesize(
         self, session: OmnyxSession, query: str, persona: str,
         complexity: str = "analytical", synth_model: str = "qwen2.5:7b",
+        hafidz_context=None,
     ) -> tuple[str, str, list[str]]:
         """Synthesize final answer from all tool results.
 
         Sprint Speed Demon: for simple factual queries, use lighter model
         or skip synthesis entirely if corpus passthrough already happened.
+        
+        Sprint B: inject Hafidz context (golden examples + lesson warnings)
+        into synthesis prompt for improved quality.
         """
         from .cognitive_synthesizer import CognitiveSynthesizer
         from .multi_source_orchestrator import SourceBundle, SourceResult
@@ -563,14 +665,101 @@ class OmnyxDirector:
                 if web_text:
                     return web_text[:1200], "sedang", list(set(sources_used))
 
+        # Sprint B: Build Hafidz injection if available
+        hafidz_prompt = ""
+        if hafidz_context:
+            try:
+                from .hafidz_injector import build_hafidz_prompt
+                hafidz_prompt = build_hafidz_prompt(hafidz_context)
+            except Exception as e:
+                log.debug("[omnyx] Hafidz prompt build failed: %s", e)
+
         # Use cognitive synthesizer (with model hint if supported)
         synth = CognitiveSynthesizer()
         try:
-            result = await synth.synthesize(bundle, model=synth_model)
+            # If hafidz_prompt exists, we need to inject it into the synthesis
+            if hafidz_prompt:
+                result = await self._synthesize_with_hafidz(
+                    synth, bundle, query, hafidz_prompt, synth_model
+                )
+            else:
+                result = await synth.synthesize(bundle, model=synth_model)
         except TypeError:
             # Fallback: older synthesizer without model param
             result = await synth.synthesize(bundle)
         return result.answer, result.confidence, list(set(sources_used))
+    
+    async def _synthesize_with_hafidz(
+        self, synth, bundle, query: str, hafidz_prompt: str, synth_model: str
+    ):
+        """Synthesize with Hafidz context injected into prompt."""
+        import asyncio
+        from .cognitive_synthesizer import _build_synthesis_prompt
+        from .ollama_llm import ollama_generate
+        
+        system, user, sources_used = _build_synthesis_prompt(query, bundle)
+        
+        # Inject Hafidz context before the question
+        injected_user = f"{hafidz_prompt}\n\n{user}"
+        
+        try:
+            response, _mode = await asyncio.to_thread(
+                ollama_generate,
+                f"{system}\n\n{injected_user}",
+                system="",
+                model=synth_model,
+                max_tokens=600,
+                temperature=0.6,
+            )
+            from .cognitive_synthesizer import SynthesisResult
+            return SynthesisResult(
+                answer=response,
+                confidence="sedang",
+                sources_used=sources_used,
+                n_sources=len(sources_used),
+                latency_ms=0,
+                method="llm_synthesis_hafidz",
+            )
+        except Exception as e:
+            log.warning("[omnyx] Hafidz synthesis failed, fallback to standard: %s", e)
+            return await synth.synthesize(bundle, model=synth_model)
+    
+    async def _retry_synthesis(
+        self, session: OmnyxSession, query: str, persona: str,
+        complexity: str, synth_model: str, failure_context: str,
+        hafidz_context=None,
+    ) -> str:
+        """Retry synthesis with failure context from Sanad."""
+        import asyncio
+        from .ollama_llm import ollama_generate
+        
+        retry_prompt = f"""Jawaban sebelumnya gagal validasi Sanad.
+
+Masalah yang ditemukan:
+{failure_context}
+
+Pertanyaan user: {query}
+
+Silakan jawab ulang dengan memperbaiki masalah di atas. Pastikan setiap klaim faktual:
+1. Didukung oleh sumber yang valid
+2. Tidak mengandung halusinasi
+3. Akurat dan dapat diverifikasi
+
+Jawaban baru:"""
+        
+        try:
+            response, _mode = await asyncio.to_thread(
+                ollama_generate,
+                retry_prompt,
+                system="",
+                model=synth_model,
+                max_tokens=600,
+                temperature=0.5,
+            )
+            return response
+        except Exception as e:
+            log.warning("[omnyx] Retry synthesis failed: %s", e)
+            return session.final_answer  # return original if retry fails
 
     async def _auto_store(self, session: OmnyxSession) -> None:
         """Auto-store verified knowledge to corpus."""
@@ -619,6 +808,11 @@ async def omnyx_process(
         # Sprint Speed Demon: expose complexity for observability
         "complexity": session.complexity,
         "synth_model": session.synth_model,
+        # Sprint A+B: expose Sanad + Hafidz metrics
+        "sanad_score": session.sanad_score,
+        "sanad_verdict": session.sanad_verdict,
+        "hafidz_injected": session.hafidz_injected,
+        "hafidz_stored": session.hafidz_stored,
     }
 
 

@@ -368,6 +368,11 @@ class ChatResponse(BaseModel):
     steps_trace: list[dict] = []    # [{step, thought, action, args_summary, observation_preview, is_final}]
     planner_used: bool = False      # True jika parallel_planner aktif pada sesi ini
     planner_savings: float = 0.0    # estimated savings dari parallel execution (0.0–1.0)
+    # ── Sprint A+B: Sanad Orchestra + Hafidz Injection ─────────────────────────
+    sanad_score: float = 0.0        # consensus score [0.0–1.0]
+    sanad_verdict: str = ""         # golden | pass | retry | fail
+    hafidz_injected: bool = False   # True jika few-shot context di-inject
+    hafidz_stored: bool = False     # True jika result disimpan ke Hafidz
 
 
 class GenerateRequest(BaseModel):
@@ -974,6 +979,58 @@ def create_app() -> "FastAPI":
             "senses": probe_all()
         }
 
+    # ── Sprint A+B: Sanad Orchestra + Hafidz Injection endpoints ───────────────
+    @app.get("/agent/sanad/stats")
+    async def sanad_stats(request: Request):
+        """Sanad Orchestra validation statistics."""
+        _enforce_rate(request)
+        try:
+            from .sanad_orchestra import SanadOrchestra
+            orchestra = SanadOrchestra()
+            return {"ok": True, "stats": orchestra.get_stats()}
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    @app.get("/agent/hafidz/stats")
+    async def hafidz_stats(request: Request):
+        """Hafidz Memory Store statistics."""
+        _enforce_rate(request)
+        try:
+            from .hafidz_injector import HafidzInjector
+            injector = HafidzInjector()
+            return {"ok": True, "stats": injector.get_stats()}
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    @app.post("/agent/validate")
+    async def agent_validate(request: Request):
+        """Manual validation endpoint — validate any answer with Sanad Orchestra."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+            answer = body.get("answer", "")
+            query = body.get("query", "")
+            complexity = body.get("complexity", "analytical")
+            
+            from .sanad_orchestra import validate_answer
+            result = await validate_answer(
+                answer=answer,
+                query=query,
+                sources={},
+                persona=body.get("persona", "UTZ"),
+                complexity=complexity,
+            )
+            
+            return {
+                "ok": True,
+                "consensus_score": result.consensus_score,
+                "verdict": result.verdict,
+                "n_claims": len(result.claims),
+                "metadata": result.metadata,
+            }
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
     # Sprint 14g: CouncilRequest moved to module top-level (line ~456) for
     # Pydantic 2.13 schema gen compat — broke /openapi.json before fix.
     @app.post("/agent/council")
@@ -1319,6 +1376,11 @@ def create_app() -> "FastAPI":
                 answer_type="fakta",
                 user_id=req.user_id,
                 conversation_id=req.conversation_id,
+                # Sprint A+B: expose Sanad + Hafidz metrics
+                sanad_score=result.get("sanad_score", 0.0),
+                sanad_verdict=result.get("sanad_verdict", ""),
+                hafidz_injected=result.get("hafidz_injected", False),
+                hafidz_stored=result.get("hafidz_stored", False),
             )
         except Exception as omnyx_err:
             omnyx_err_str = str(omnyx_err)
