@@ -1413,6 +1413,123 @@ def create_app() -> "FastAPI":
         except Exception as e:
             return {"ok": False, "error": str(e)}
 
+    # ── Sprint I: DoRA Persona Adapter ────────────────────────────────────
+    @app.get("/agent/persona/config/{persona}")
+    async def get_persona_config_endpoint(persona: str, request: Request):
+        """Get generation config for a persona."""
+        _enforce_rate(request)
+        try:
+            from .persona_adapter import get_persona_config
+            cfg = get_persona_config(persona)
+            return {
+                "ok": True,
+                "persona": cfg.persona,
+                "system_prompt": cfg.system_prompt,
+                "temperature": cfg.temperature,
+                "top_p": cfg.top_p,
+                "max_tokens": cfg.max_tokens,
+                "description": cfg.description,
+            }
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    @app.post("/agent/persona/config/{persona}")
+    async def set_persona_config_endpoint(persona: str, request: Request):
+        """Save generation config for a persona."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+        except Exception:
+            return {"ok": False, "error": "body JSON tidak valid"}
+
+        from .persona_adapter import PersonaConfig, save_persona_config
+        cfg = PersonaConfig(
+            persona=persona.upper(),
+            system_prompt=body.get("system_prompt", ""),
+            temperature=body.get("temperature", 0.7),
+            top_p=body.get("top_p", 0.9),
+            max_tokens=body.get("max_tokens", 600),
+            description=body.get("description", ""),
+        )
+        save_persona_config(cfg)
+        return {"ok": True, "persona": persona.upper()}
+
+    @app.post("/agent/persona/reset/{persona}")
+    async def reset_persona_config_endpoint(persona: str, request: Request):
+        """Reset persona config to default."""
+        _enforce_rate(request)
+        try:
+            from .persona_adapter import reset_persona_config
+            reset_persona_config(persona)
+            return {"ok": True, "persona": persona.upper(), "reset": True}
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    @app.post("/agent/persona/generate")
+    async def persona_generate(request: Request):
+        """Generate text with persona-specific config."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+        except Exception:
+            return {"ok": False, "error": "body JSON tidak valid"}
+
+        prompt = body.get("prompt", "")
+        persona = body.get("persona", "AYMAN")
+        if not prompt:
+            return {"ok": False, "error": "prompt wajib diisi"}
+
+        try:
+            from .persona_adapter import generate_with_persona
+            result = generate_with_persona(prompt, persona=persona)
+            return {"ok": True, "text": result, "persona": persona.upper()}
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    @app.post("/agent/persona/harvest/{persona}")
+    async def persona_harvest(persona: str, request: Request):
+        """Harvest persona-specific golden examples from Hafidz."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+        except Exception:
+            body = {}
+        limit = body.get("limit", 50)
+
+        try:
+            from .persona_adapter import harvest_persona_data
+            examples = harvest_persona_data(persona, limit=limit)
+            return {"ok": True, "count": len(examples), "examples": examples}
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    @app.post("/agent/persona/build_training/{persona}")
+    async def persona_build_training(persona: str, request: Request):
+        """Build training data JSONL for future DoRA."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+        except Exception:
+            body = {}
+        limit = body.get("limit", 100)
+
+        try:
+            from .persona_adapter import build_training_data
+            path = build_training_data(persona, limit=limit)
+            return {"ok": True, "path": str(path), "persona": persona.upper()}
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    @app.get("/agent/persona/stats")
+    async def persona_stats(request: Request):
+        """Aggregate persona adapter statistics."""
+        _enforce_rate(request)
+        try:
+            from .persona_adapter import get_adapter_stats
+            return {"ok": True, "stats": get_adapter_stats()}
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
     # Sprint 14g: CouncilRequest moved to module top-level (line ~456) for
     # Pydantic 2.13 schema gen compat — broke /openapi.json before fix.
     @app.post("/agent/council")

@@ -16785,3 +16785,47 @@ curl -X POST http://localhost:8765/agent/maqashid/tune -d '{"sample_size":30}'
 
 **Refer**: commit `cdde25d` on branch `work/gallant-ellis-7cd14d`
 
+
+
+## 2026-04-30 — SPRINT I: DoRA Persona Adapter Foundation — IMPLEMENTED & TESTED
+
+**Tag**: IMPL + TEST
+**Trigger**: Lanjutan sprint setelah Sprint H selesai; fondasi DoRA (Decomposed Low-Rank Adaptation) per persona.
+
+**Implementation**:
+- New module: `apps/brain_qa/brain_qa/persona_adapter.py` (312 baris)
+  - `PersonaConfig` dataclass — system_prompt, temperature, top_p, max_tokens per persona
+  - 5 default configs LOCKED: UTZ (creative, T=0.85), ABOO (engineer, T=0.4), OOMAR (strategist, T=0.6), ALEY (researcher, T=0.5), AYMAN (general, T=0.65)
+  - `get_persona_config()` / `save_persona_config()` / `reset_persona_config()` — persistence ke JSON
+  - `generate_with_persona(prompt, persona)` — generation wrapper dengan persona-specific prompt injection + temperature/top_p
+  - `harvest_persona_data(persona, limit)` — extract golden examples dari Hafidz store (Q&A extraction via regex)
+  - `build_training_data(persona, limit)` — build chat-completion JSONL untuk future LoRA/DoRA training
+  - `get_adapter_stats()` — aggregate stats (configs persisted, training records count)
+- Storage: `brain/public/persona_adapter/configs/<persona>.json`, `training_data/<persona>_dora_training.jsonl`
+- Endpoints (8 baru di `agent_serve.py`):
+  - `GET /agent/persona/config/{persona}` — get config
+  - `POST /agent/persona/config/{persona}` — save config
+  - `POST /agent/persona/reset/{persona}` — reset to default
+  - `POST /agent/persona/generate` — generate with persona config
+  - `POST /agent/persona/harvest/{persona}` — harvest golden examples
+  - `POST /agent/persona/build_training/{persona}` — build training JSONL
+  - `GET /agent/persona/stats` — aggregate stats
+- Tests: `tests/test_sprint_i_persona_adapter.py` — **15/15 PASSED**
+  - Config loading (default + override + unknown fallback)
+  - Config persistence (save/reset)
+  - Generation wrapper (mocked LLM + system injection + temperature variance)
+  - Data harvesting (empty + mock Hafidz extraction)
+  - Training data builder (empty + format validation)
+  - Stats aggregation
+
+**Bug fixed during dev**:
+- `re` module not imported at top level → `NameError: name 're' is not defined` saat `harvest_persona_data()` dieksekusi (inline `__import__('re')` + `re.S` flag failed karena `re` tidak di-scope). Fix: add `import re` at top + replace inline `__import__('re')` dengan `re.search`.
+- Persona case-mismatch in harvester: `f"persona: {persona}" in text.lower()` failed karena `persona` uppercase vs `text.lower()` lowercase. Fix: `persona.lower()` in check string.
+
+**Note**: Sprint I = **fondasi prompt-based**, bukan DoRA training aktual. Future work:
+  1. Kumpulkan training data via `/agent/persona/harvest` + `/agent/persona/build_training`
+  2. Train LoRA adapter per persona menggunakan data tersebut
+  3. Swap `generate_with_persona()` dari prompt-based ke adapter-loading (detect `adapter_model.safetensors` per persona)
+
+**Refer**: branch `work/gallant-ellis-7cd14d`
+

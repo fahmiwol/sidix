@@ -182,18 +182,24 @@
 
 ---
 
-## ⚠️ TODO Aktif (Remapped Post-Audit)
+## ⚠️ TODO Aktif
 
-| # | Task | Sprint | Priority |
-|---|------|--------|----------|
-| 1 | **Sanad Orchestra** — implementasi consensus validation pipeline | A | 🔴 🔥 HIGHEST |
-| 2 | **Hafidz Injection** — inject few-shot context dari Golden/Lesson Store ke inference | B | 🔴 🔥 HIGHEST |
-| 3 | Pattern Extractor Integration — wire ke OMNYX pipeline | C | 🟡 HIGH |
-| 4 | Aspiration Detector + Tool Synthesizer | D | 🟡 HIGH |
-| 5 | OpHarvest content script (real DOM scrape Instagram) | 7 | 🟢 PAUSED |
-| 6 | Visualisasi radar di `app.sidixlab.com` | 7 | 🟢 PAUSED |
-| 7 | Sentiment expansion (slang Indonesia) | 7 | 🟢 PAUSED |
-| 8 | TikTok support di extension | 7 | 🟢 PAUSED |
+| # | Task | Sprint | Status |
+|---|------|--------|--------|
+| 1 | **Sanad Orchestra** — consensus validation pipeline | A | ✅ DONE (16 tests) |
+| 2 | **Hafidz Injection** — few-shot context dari Golden/Lesson Store | B | ✅ DONE (18 tests) |
+| 3 | Pattern Extractor Integration — wire ke OMNYX | C | ✅ DONE (10 tests) |
+| 4 | Aspiration Detector + Tool Synthesizer | D | ✅ DONE (14 tests) |
+| 5 | **Pencipta Mode** — creative engine, 7 output types | E | ✅ DONE (14 tests) |
+| 6 | **Self-Test Loop** — generate Q → pipeline → Hafidz store | F | ✅ DONE (7 tests) |
+| 7 | **Maqashid Auto-Tune** — adjust 5-axis weights dari failure data | G | ✅ DONE (7 tests) |
+| 8 | **Creative Output Polish** — iteration loop evaluate→score→iterate | H | ✅ DONE (5 tests) |
+| 9 | **DoRA Persona Adapter** — persona-specific config + data harvest | I | ✅ DONE (15 tests) |
+| 10 | **Multi-Agent Spawning** — Bio-Cognitive Fase V "berkembang biak" | K | ⏳ QUEUED |
+| 11 | OpHarvest content script (real DOM scrape Instagram) | 7 | 🟢 PAUSED |
+| 12 | Visualisasi radar di `app.sidixlab.com` | 7 | 🟢 PAUSED |
+| 13 | Sentiment expansion (slang Indonesia) | 7 | 🟢 PAUSED |
+| 14 | TikTok support di extension | 7 | 🟢 PAUSED |
 
 ---
 
@@ -216,7 +222,17 @@
 ```
 apps/brain_qa/brain_qa/
 ├── agent_react.py        ← ReAct loop + 6-path Maqashid gate
-├── agent_serve.py        ← FastAPI endpoints + RadarScanRequest (baru)
+├── agent_serve.py        ← FastAPI endpoints (Sprint A–I)
+├── omnyx_direction.py    ← OMNYX Director: intent → pipeline → response
+├── sanad_orchestrator.py ← Multi-source validation (Sprint A)
+├── hafidz_injector.py    ← Two-Drawer memory (Sprint B)
+├── pattern_extractor.py  ← Pattern recognition (Sprint C)
+├── aspiration_tool.py    ← Aspiration detection + synthesis (Sprint D)
+├── pencipta_mode.py      ← Creative engine (Sprint E)
+├── self_test_loop.py     ← Self-test generation (Sprint F)
+├── maqashid_auto_tune.py ← 5-axis weight tuning (Sprint G)
+├── creative_polish.py    ← Output iteration loop (Sprint H)
+├── persona_adapter.py    ← Persona config + data harvest (Sprint I) ← NEW
 ├── social_radar.py       ← Analisis ER/sentimen/tier — hardened Sprint 7
 ├── naskh_handler.py      ← Konflik knowledge resolver (Naskh tier)
 ├── maqashid_profiles.py  ← Mode-based ethical filter (5 persona)
@@ -224,7 +240,7 @@ apps/brain_qa/brain_qa/
 ├── brain/raudah/
 │   └── taskgraph.py      ← Wave DAG paralel
 ├── tests/
-│   ├── test_sprint6.py   ← 8 test Sprint 6.5
+│   ├── test_sprint_*.py  ← Sprint A–I tests
 │   └── test_sprint7_logic.py ← 3 test Social Radar
 browser/social-radar-extension/
 ├── popup.html            ← Extension UI (bertema SIDIX)
@@ -233,8 +249,7 @@ browser/social-radar-extension/
 
 ---
 
-_Update: 2026-05-01 — deep architecture audit complete. 40+ riset notes + 12 dokumen fundamental + codebase audit. Gap analysis: 5 fundamental gaps identified. Roadmap remapped ke 4 fase. Sprint A+B (Sanad Orchestra + Hafidz Injection) = NEXT PRIORITY — foundation untuk self-evolving._
-_Sprint 6.5: DONE. Sprint 7: PAUSED. Sprint A+B: READY TO START._
+_Update: 2026-04-30 — Sprint I (DoRA Persona Adapter Foundation) implemented & tested. 15/15 tests PASSED. Sprint A–I complete (101 tests total). Next: Sprint K (Multi-Agent Spawning / Bio-Cognitive Fase V)._
 
 **Dokumen Penting Baru:**
 - `docs/SIDIX_POSITION_ANALYSIS_2026-05-01.md` — analisa posisi + gap + roadmap baru
