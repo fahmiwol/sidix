@@ -323,6 +323,9 @@ class ChatRequest(BaseModel):
         le=24,
         description="Override langkah ReAct maks; None = otomatis (6, atau 12 bila intent implement/app/game).",
     )
+    # Sprint See & Hear (2026-05-01): multimodal input paths
+    image_path: str = ""       # Path ke uploaded image (setelah /upload/image)
+    audio_path: str = ""       # Path ke uploaded audio (setelah /upload/audio)
 
 
 class ChatResponse(BaseModel):
@@ -1063,6 +1066,86 @@ def create_app() -> "FastAPI":
             "finished": session.finished,
         }
 
+    # ── POST /upload/image ────────────────────────────────────────────────────
+    # Sprint See & Hear (2026-05-01): file upload for multimodal chat input.
+    @app.post("/upload/image")
+    async def upload_image(request: Request):
+        """Upload image file → save to workspace → return path for multimodal."""
+        _enforce_rate(request)
+        try:
+            from multipart import parse_form_data
+            from starlette.requests import Request as StarletteRequest
+            # Parse multipart form
+            form = await request.form()
+            file = form.get("file")
+            if not file:
+                raise HTTPException(status_code=400, detail="file wajib di-upload")
+            # Validate: image only
+            content_type = file.content_type or ""
+            if not content_type.startswith("image/"):
+                raise HTTPException(status_code=400, detail="hanya file image yang diterima")
+            # Save to workspace
+            workspace = get_agent_workspace_root()
+            upload_dir = Path(workspace) / "uploads"
+            upload_dir.mkdir(parents=True, exist_ok=True)
+            ext = content_type.split("/")[-1].replace("jpeg", "jpg")
+            filename = f"img_{uuid.uuid4().hex[:8]}.{ext}"
+            filepath = upload_dir / filename
+            content = await file.read()
+            if len(content) > 5 * 1024 * 1024:  # 5MB limit
+                raise HTTPException(status_code=413, detail="file melebihi 5MB")
+            filepath.write_bytes(content)
+            log.info("[upload] image saved: %s (%d bytes)", filename, len(content))
+            return {
+                "ok": True,
+                "filename": filename,
+                "path": str(filepath),
+                "url": f"/workspace/uploads/{filename}",
+                "size": len(content),
+            }
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[upload] image error: %s", e)
+            raise HTTPException(status_code=500, detail=f"upload error: {e}")
+
+    # ── POST /upload/audio ────────────────────────────────────────────────────
+    @app.post("/upload/audio")
+    async def upload_audio(request: Request):
+        """Upload audio file → save to workspace → return path for STT."""
+        _enforce_rate(request)
+        try:
+            form = await request.form()
+            file = form.get("file")
+            if not file:
+                raise HTTPException(status_code=400, detail="file wajib di-upload")
+            content_type = file.content_type or ""
+            if not content_type.startswith("audio/"):
+                raise HTTPException(status_code=400, detail="hanya file audio yang diterima")
+            workspace = get_agent_workspace_root()
+            upload_dir = Path(workspace) / "uploads"
+            upload_dir.mkdir(parents=True, exist_ok=True)
+            ext = content_type.split("/")[-1].replace("mpeg", "mp3")
+            filename = f"audio_{uuid.uuid4().hex[:8]}.{ext}"
+            filepath = upload_dir / filename
+            content = await file.read()
+            if len(content) > 10 * 1024 * 1024:  # 10MB limit
+                raise HTTPException(status_code=413, detail="file melebihi 10MB")
+            filepath.write_bytes(content)
+            log.info("[upload] audio saved: %s (%d bytes)", filename, len(content))
+            return {
+                "ok": True,
+                "filename": filename,
+                "path": str(filepath),
+                "url": f"/workspace/uploads/{filename}",
+                "size": len(content),
+            }
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[upload] audio error: %s", e)
+            raise HTTPException(status_code=500, detail=f"upload error: {e}")
+
     # ── POST /agent/chat ──────────────────────────────────────────────────────
     @app.post("/agent/chat", response_model=ChatResponse)
     def agent_chat(req: ChatRequest, request: Request):
@@ -1188,9 +1271,37 @@ def create_app() -> "FastAPI":
             effective_persona = "UTZ"
 
         # OMNYX Direction — primary path
+        # Sprint See & Hear: if image/audio present, use multimodal input
         try:
             from .omnyx_direction import OMNYXDirector
             director = OMNYXDirector()
+
+            # If multimodal input present, use multimodal path
+            if req.image_path or req.audio_path:
+                from .multimodal_input import process_multimodal
+                mm_result = process_multimodal(
+                    text=req.question,
+                    image_path=req.image_path,
+                    audio_path=req.audio_path,
+                    persona=effective_persona,
+                )
+                duration_ms = int((time.time() - t0) * 1000)
+                return ChatResponse(
+                    session_id=f"holistic_mm_{uuid.uuid4().hex[:8]}",
+                    answer=mm_result.get("answer", ""),
+                    persona=effective_persona,
+                    steps=1,
+                    citations=[],
+                    duration_ms=duration_ms,
+                    finished=True,
+                    error="",
+                    confidence="sedang",
+                    confidence_score=0.5,
+                    answer_type="fakta",
+                    user_id=req.user_id,
+                    conversation_id=req.conversation_id,
+                )
+
             result = await director.run(req.question, persona=effective_persona)
             duration_ms = int((time.time() - t0) * 1000)
 

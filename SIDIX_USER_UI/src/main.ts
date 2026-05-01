@@ -1091,6 +1091,31 @@ chatInput?.addEventListener('keydown', (e) => {
 });
 sendBtn?.addEventListener('click', handleSend);
 
+// Sprint See & Hear (2026-05-01): Image upload for multimodal chat.
+const attachBtn = document.getElementById('attach-btn') as HTMLButtonElement | null;
+let pendingImagePath: string | null = null;
+
+attachBtn?.addEventListener('click', () => {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'image/*';
+  input.onchange = async () => {
+    const file = input.files?.[0];
+    if (!file) return;
+    try {
+      const { uploadImage } = await import('./api');
+      const result = await uploadImage(file);
+      pendingImagePath = result.path;
+      // Visual feedback: show image name in input placeholder
+      chatInput.placeholder = `📎 ${file.name} — ketik pertanyaan…`;
+      chatInput.classList.add('border-gold-500/40');
+    } catch (e) {
+      alert('Gagal upload gambar: ' + (e as Error).message);
+    }
+  };
+  input.click();
+});
+
 // ════════════════════════════════════════════════════════════════════════
 // SIDIX 2.0 SUPERMODEL — 3 Mode Buttons (Burst / Two-Eyes / Foresight)
 // ════════════════════════════════════════════════════════════════════════
@@ -1400,7 +1425,9 @@ async function doHolistic(question: string) {
     // Non-streaming fallback (primary path until chat_holistic_stream is live)
     if (!usedStream && !fullAnswer) {
       addProgressLine('Synthesizing via /agent/chat_holistic...');
-      const result = await askHolistic(question, persona);
+      const result = await askHolistic(question, persona, undefined, {
+        image_path: pendingImagePath || undefined,
+      });
 
       // Simulate chip completion from sources_used
       const srcMap: Record<string, string> = {
@@ -1806,7 +1833,7 @@ function extractEpistemicTag(text: string): { tag: 'FACT' | 'OPINION' | 'UNKNOWN
 
 async function handleSend() {
   const question = chatInput.value.trim();
-  if (!question) return;
+  if (!question && !pendingImagePath) return;
 
   // ── Onboarding intercept: jawaban interview ────────────────────────────────
   if (isLoggedIn() && !isOnboarded() && onboardingStep > 0) {
@@ -1834,6 +1861,10 @@ async function handleSend() {
   chatInput.value = '';
   chatInput.style.height = 'auto';
   sendBtn.disabled = true;
+  // Sprint See & Hear: reset pending image after send
+  pendingImagePath = null;
+  chatInput.placeholder = 'Tanya SIDIX…';
+  chatInput.classList.remove('border-gold-500/40');
 
   appendMessage('user', question);
 

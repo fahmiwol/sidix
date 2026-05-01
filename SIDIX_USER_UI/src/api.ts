@@ -164,6 +164,7 @@ export async function askHolistic(
   question: string,
   persona?: Persona,
   signal?: AbortSignal,
+  opts?: { image_path?: string; audio_path?: string },
 ): Promise<ChatHolisticResponse> {
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
@@ -171,6 +172,8 @@ export async function askHolistic(
   };
   const body: Record<string, unknown> = { question };
   if (persona) body.persona = persona;
+  if (opts?.image_path) body.image_path = opts.image_path;
+  if (opts?.audio_path) body.audio_path = opts.audio_path;
 
   const res = await fetch(`${BRAIN_QA_BASE}/agent/chat_holistic`, {
     method: 'POST',
@@ -180,6 +183,22 @@ export async function askHolistic(
   });
   if (!res.ok) {
     throw new Error(`/agent/chat_holistic ${res.status} ${res.statusText}`);
+  }
+  return res.json();
+}
+
+/**
+ * Sprint See & Hear: Upload image to backend → return path for multimodal.
+ */
+export async function uploadImage(file: File): Promise<{ ok: boolean; path: string; url: string }> {
+  const form = new FormData();
+  form.append('file', file);
+  const res = await fetch(`${BRAIN_QA_BASE}/upload/image`, {
+    method: 'POST',
+    body: form,
+  });
+  if (!res.ok) {
+    throw new Error(`upload/image ${res.status} ${res.statusText}`);
   }
   return res.json();
 }
