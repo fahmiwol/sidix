@@ -1211,6 +1211,70 @@ def create_app() -> "FastAPI":
         except Exception as e:
             return {"ok": False, "error": str(e)}
 
+    # ════════════════════════════════════════════════════════════════════════
+    # SPRINT F — Self-Test Loop (Cold Start Maturity)
+    # ════════════════════════════════════════════════════════════════════════
+
+    @app.post("/agent/selftest/run")
+    async def selftest_run(request: Request):
+        """Run self-test batch: generate questions → OMNYX pipeline → score → Hafidz store."""
+        _enforce_rate(request)
+        _bump_metric("agent_selftest_run")
+        try:
+            body = await request.json()
+        except Exception:
+            body = {}
+        n = max(1, min(int(body.get("n", 3)), 10))  # clamp 1-10
+        domains = body.get("domains")
+        persona = (body.get("persona") or "AYMAN").strip().upper()
+        if persona not in _ALLOWED_PERSONAS:
+            persona = "AYMAN"
+
+        try:
+            from .self_test_loop import run_batch_self_test
+            results = await run_batch_self_test(n=n, domains=domains, persona=persona)
+            return {
+                "ok": True,
+                "n": len(results),
+                "results": [
+                    {
+                        "test_id": r.test_id,
+                        "question": r.question,
+                        "sanad_score": r.sanad_score,
+                        "sanad_verdict": r.sanad_verdict,
+                        "composite_score": r.composite_score,
+                        "stored_to": r.stored_to,
+                        "duration_ms": r.duration_ms,
+                        "complexity": r.complexity,
+                    }
+                    for r in results
+                ],
+            }
+        except Exception as e:
+            log.warning("[selftest] Run failed: %s", e)
+            return {"ok": False, "error": str(e)}
+
+    @app.get("/agent/selftest/stats")
+    async def selftest_stats(request: Request):
+        """Self-Test Loop aggregate statistics."""
+        _enforce_rate(request)
+        try:
+            from .self_test_loop import get_self_test_stats
+            return {"ok": True, "stats": get_self_test_stats()}
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    @app.get("/agent/selftest/history")
+    async def selftest_history(request: Request):
+        """Recent self-test results."""
+        _enforce_rate(request)
+        try:
+            from .self_test_loop import get_self_test_history
+            limit = max(1, min(int(request.query_params.get("limit", "20")), 100))
+            return {"ok": True, "history": get_self_test_history(limit=limit)}
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
     # Sprint 14g: CouncilRequest moved to module top-level (line ~456) for
     # Pydantic 2.13 schema gen compat — broke /openapi.json before fix.
     @app.post("/agent/council")
