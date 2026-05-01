@@ -554,7 +554,6 @@ class OmnyxDirector:
                 if trigger.all_met():
                     log.info("[omnyx] Pencipta Mode triggered! (score=%.2f)", trigger.score())
                     # Run Pencipta in background (non-blocking)
-                    import asyncio
                     asyncio.create_task(_run_pencipta_async(trigger.score()))
                 else:
                     log.debug("[omnyx] Pencipta triggers: %.2f — not yet", trigger.score())
@@ -788,7 +787,6 @@ class OmnyxDirector:
         self, synth, bundle, query: str, hafidz_prompt: str, synth_model: str
     ):
         """Synthesize with Hafidz context injected into prompt."""
-        import asyncio
         from .cognitive_synthesizer import _build_synthesis_prompt
         from .ollama_llm import ollama_generate
         
@@ -825,7 +823,6 @@ class OmnyxDirector:
         hafidz_context=None,
     ) -> str:
         """Retry synthesis with failure context from Sanad."""
-        import asyncio
         from .ollama_llm import ollama_generate
         
         retry_prompt = f"""Jawaban sebelumnya gagal validasi Sanad.
@@ -882,7 +879,6 @@ async def _run_pencipta_async(trigger_score: float) -> None:
     """Run Pencipta Mode asynchronously (non-blocking)."""
     try:
         from .pencipta_mode import run_pencipta
-        import asyncio
         # Run in thread to avoid blocking
         output = await asyncio.to_thread(run_pencipta, force=True)
         if output:
