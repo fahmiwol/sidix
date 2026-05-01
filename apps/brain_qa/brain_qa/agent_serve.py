@@ -1275,6 +1275,65 @@ def create_app() -> "FastAPI":
         except Exception as e:
             return {"ok": False, "error": str(e)}
 
+    # ════════════════════════════════════════════════════════════════════════
+    # SPRINT G — Maqashid Auto-Tune
+    # ════════════════════════════════════════════════════════════════════════
+
+    @app.post("/agent/maqashid/tune")
+    async def maqashid_tune(request: Request):
+        """Run Maqashid Auto-Tune dari self-test data."""
+        _enforce_rate(request)
+        _bump_metric("agent_maqashid_tune")
+        try:
+            body = await request.json()
+        except Exception:
+            body = {}
+        sample_size = max(10, min(int(body.get("sample_size", 50)), 200))
+
+        try:
+            from .maqashid_auto_tune import run_auto_tune
+            profile = run_auto_tune(sample_size=sample_size)
+            return {
+                "ok": True,
+                "weights": profile.weights,
+                "tuned_at": profile.tuned_at,
+                "sample_size": profile.sample_size,
+                "fail_rates": profile.fail_rates,
+            }
+        except Exception as e:
+            log.warning("[maqashid_tune] Failed: %s", e)
+            return {"ok": False, "error": str(e)}
+
+    @app.get("/agent/maqashid/tuned")
+    async def maqashid_tuned(request: Request):
+        """Get current tuned Maqashid profile."""
+        _enforce_rate(request)
+        try:
+            from .maqashid_auto_tune import load_tuned_profile, DEFAULT_WEIGHTS
+            weights = load_tuned_profile()
+            return {
+                "ok": True,
+                "active": weights is not None,
+                "weights": weights or DEFAULT_WEIGHTS,
+            }
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    @app.post("/agent/maqashid/reset")
+    async def maqashid_reset(request: Request):
+        """Reset Maqashid profile ke default."""
+        _enforce_rate(request)
+        try:
+            from .maqashid_auto_tune import reset_to_default
+            profile = reset_to_default()
+            return {
+                "ok": True,
+                "weights": profile.weights,
+                "message": "Profile reset to default",
+            }
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
     # Sprint 14g: CouncilRequest moved to module top-level (line ~456) for
     # Pydantic 2.13 schema gen compat — broke /openapi.json before fix.
     @app.post("/agent/council")

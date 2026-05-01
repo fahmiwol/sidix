@@ -464,6 +464,24 @@ class OmnyxDirector:
         session.final_answer, session.confidence, session.sources_used = \
             await self._synthesize(session, query, persona, complexity, synth_model, hafidz_context)
 
+        # Sprint G: Maqashid evaluation post-synthesis, pre-Sanad
+        try:
+            from .maqashid_profiles import evaluate_maqashid
+            maq_result = evaluate_maqashid(query, session.final_answer, persona_name=persona)
+            if maq_result.get("status") == "block":
+                log.warning("[omnyx] Maqashid BLOCK: %s", maq_result.get("reasons"))
+                session.final_answer = maq_result.get("tagged_output", session.final_answer)
+                session.confidence = "rendah"
+                session.sanad_score = 0.0
+                session.sanad_verdict = "fail"
+                session.total_latency_ms = int((time.monotonic() - t0) * 1000)
+                return session
+            elif maq_result.get("status") == "warn":
+                session.final_answer = maq_result.get("tagged_output", session.final_answer)
+                log.info("[omnyx] Maqashid WARN: %s", maq_result.get("reasons"))
+        except Exception as e:
+            log.debug("[omnyx] Maqashid eval failed: %s", e)
+
         # Sprint A: Sanad validation post-synthesis
         try:
             from .sanad_orchestra import SanadOrchestra, get_threshold
