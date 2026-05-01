@@ -16139,3 +16139,56 @@ Sprint Tumbuh REAL state was 20% (broken auth), bukan 40%. Sekarang 50% (auth fi
 - `apps/brain_qa/brain_qa/lite_browser.py` (Playwright + trafilatura)
 - `apps/brain_qa/brain_qa/knowledge_accumulator.py`
 
+
+
+### 2026-05-01 (bagian 16-18 — Claude Code Sprint: Validasi Live + Auto-Harvest)
+
+**Dari:** Claude Code (Sonnet 4.6)
+**Hasil:** Semua validasi PASS (7/7), Auto-Harvest DONE
+
+#### Validasi Live (7/7 PASS)
+| # | Check | Status | Detail |
+|---|-------|--------|--------|
+| 1.1 | Backend Health | ✅ | status=ok, model_ready=True, tools=48, corpus=3237 |
+| 1.2 | `/agent/chat_holistic` | ✅ | Answer: "Prabowo Subianto…", confidence=sedang, 87s |
+| 1.3 | Frontend API call | ✅ | `main.ts` memanggil `/agent/chat_holistic` via non-streaming fallback |
+| 1.4 | Public domain | ✅ | `ctrl.sidixlab.com/agent/chat_holistic` → 200 OK |
+| 1.5 | Nginx config | ✅ | proxy_read_timeout 600s untuk ctrl, proxy_pass :8765 |
+| 1.6 | Web search | ✅ | 3 hits, engine=wikipedia (Mojeek 403 + DDG blocked → Wikipedia fallback) |
+| 1.7 | Lite Browser | ✅ | success=True, text_len=8000 — Playwright deps installed |
+
+#### Sprint Auto-Harvest (DONE)
+- `auto_harvest.py` — pipeline: Google Trends RSS → Wikipedia search → YAML notes → BM25 reindex
+- `harvest_cron.py` — CLI entry point (`--dry-run`, `--topics`)
+- Crontab VPS: `0 */6 * * *` → `/var/log/sidix_harvest.log`
+- Live test: 6 notes saved dalam 5.8s, reindexed=true ✅
+- Sample note: `harvest_4eec6368.md` (Prabowo Subianto) — YAML frontmatter, 2700+ chars
+
+#### Fix Dikerjakan
+- `omnyx_direction.py:488` — `SourceResult(source=r.tool_name, ...)` missing arg
+- `mojeek_search.py` — Wikipedia User-Agent fix (Python default UA diblock 403)
+- `auto_harvest.py` — path resolution via `workspace_root()` + admin token reindex
+- Playwright deps (`libasound2`, `libatk`, `xvfb`, dll) — lite_browser berfungsi
+- Frontend `doHolistic()` — wired ke non-streaming fallback
+
+#### Arsitektur URL (Reference)
+```
+Browser user → https://app.sidixlab.com   (frontend, port 4000)
+                     ↓ JS calls
+               https://ctrl.sidixlab.com/agent/chat_holistic  (backend, port 8765)
+```
+
+#### Catatan Performance
+- Latency synthesis path: **~87s** — persona_fanout (3 persona × Ollama CPU) + cognitive synthesis (qwen2.5:7b CPU)
+- Fallback path (ReAct agent): **~6s**
+- **Rekomendasi optimize:**
+  1. Kurangi PERSONAS dari 3 → 1 untuk query sederhana
+  2. Skip persona_fanout untuk non-analitik queries
+  3. Pindah synthesis ke model lebih ringan (qwen2.5:1.5b)
+
+**Refer:**
+- `apps/brain_qa/brain_qa/auto_harvest.py`
+- `apps/brain_qa/scripts/harvest_cron.py`
+- `apps/brain_qa/brain_qa/mojeek_search.py`
+- `apps/brain_qa/brain_qa/lite_browser.py`
+
