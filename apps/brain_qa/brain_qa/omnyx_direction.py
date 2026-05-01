@@ -491,6 +491,17 @@ class OmnyxDirector:
             except Exception as e:
                 log.warning("[omnyx] Hafidz store failed: %s", e)
             
+            # Sprint C: Pattern extraction from conversation
+            try:
+                from .pattern_extractor import maybe_extract_from_conversation
+                maybe_extract_from_conversation(
+                    user_message=query,
+                    assistant_response=session.final_answer,
+                    session_id=session.session_id,
+                )
+            except Exception as e:
+                log.debug("[omnyx] Pattern extraction failed: %s", e)
+            
             # If retry verdict, attempt one more synthesis with failure context
             if sanad_result.verdict == "retry" and sanad_result.failure_context:
                 log.info("[omnyx] Sanad retry triggered with failure context")

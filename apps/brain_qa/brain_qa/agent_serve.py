@@ -1031,6 +1031,49 @@ def create_app() -> "FastAPI":
         except Exception as e:
             return {"ok": False, "error": str(e)}
 
+    # ── Sprint C: Pattern Extractor endpoints ─────────────────────────────────
+    @app.get("/agent/patterns/stats")
+    async def patterns_stats(request: Request):
+        """Pattern Extractor statistics."""
+        _enforce_rate(request)
+        try:
+            from .pattern_extractor import stats
+            return {"ok": True, "stats": stats()}
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    @app.get("/agent/patterns/search")
+    async def patterns_search(request: Request):
+        """Search patterns by query."""
+        _enforce_rate(request)
+        try:
+            from .pattern_extractor import search_patterns
+            query = request.query_params.get("q", "")
+            top_k = int(request.query_params.get("top_k", "5"))
+            results = search_patterns(query, top_k=top_k)
+            return {"ok": True, "query": query, "patterns": results}
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    @app.post("/agent/patterns/extract")
+    async def patterns_extract(request: Request):
+        """Manual pattern extraction from text."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+            from .pattern_extractor import extract_pattern_from_text, save_pattern
+            pattern = extract_pattern_from_text(
+                body.get("text", ""),
+                source_example=body.get("source_example", ""),
+                derived_from=body.get("derived_from", "manual"),
+            )
+            if pattern:
+                save_pattern(pattern)
+                return {"ok": True, "pattern": pattern.__dict__}
+            return {"ok": False, "error": "No pattern extracted"}
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
     # Sprint 14g: CouncilRequest moved to module top-level (line ~456) for
     # Pydantic 2.13 schema gen compat — broke /openapi.json before fix.
     @app.post("/agent/council")

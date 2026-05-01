@@ -88,7 +88,7 @@ class HafidzContext:
     """Context to inject into prompt."""
     golden_examples: list[HafidzExample] = field(default_factory=list)
     lesson_warnings: list[HafidzLesson] = field(default_factory=list)
-    patterns: list[dict] = field(default_factory=list)
+    patterns: list[dict] = field(default_factory=list)  # Sprint C: extracted patterns
 
 
 # ── Storage Helpers ──────────────────────────────────────────────────────
@@ -448,6 +448,17 @@ def build_hafidz_prompt(context: HafidzContext) -> str:
             lines.append(f"Masalah: {lesson.failure_context[:300]}")
         lines.append("\n---\n")
     
+    # Sprint C: Extracted patterns (inductive generalizations)
+    if context.patterns:
+        lines.append("## POLA / PRINSIP RELEVAN (dari pengalaman sebelumnya)")
+        for i, pat in enumerate(context.patterns, 1):
+            principle = pat.get("extracted_principle", "")
+            domain = ", ".join(pat.get("applicable_domain", []))
+            conf = pat.get("confidence", 0.5)
+            lines.append(f"\n**Pola {i}** ({domain}, confidence: {conf:.2f}):")
+            lines.append(f"{principle[:300]}")
+        lines.append("\n---\n")
+    
     return "\n".join(lines)
 
 
@@ -465,17 +476,28 @@ class HafidzInjector:
         persona: str,
         max_examples: int = 3,
         max_warnings: int = 2,
+        max_patterns: int = 3,  # Sprint C
     ) -> HafidzContext:
         """Retrieve context for injection into prompt."""
         golden = await retrieve_golden_examples(query, persona, max_examples)
         warnings = await retrieve_lesson_warnings(query, persona, max_warnings)
+        
+        # Sprint C: Retrieve relevant patterns
+        patterns = []
+        try:
+            from .pattern_extractor import search_patterns
+            patterns = search_patterns(query, top_k=max_patterns, min_confidence=0.4)
+            if patterns:
+                log.info("[hafidz] Retrieved %d patterns for %r", len(patterns), query[:60])
+        except Exception as e:
+            log.debug("[hafidz] Pattern retrieval failed: %s", e)
         
         self.stats["retrievals"] += 1
         
         return HafidzContext(
             golden_examples=golden,
             lesson_warnings=warnings,
-            patterns=[],
+            patterns=patterns,
         )
     
     async def store_result(
