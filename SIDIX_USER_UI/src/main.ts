@@ -1448,6 +1448,11 @@ async function doHolistic(question: string) {
         metaEl.textContent = `🌟 ${_sources.length} sumber · ${((result.duration_ms || 0) / 1000).toFixed(1)}s · ${result.method || 'holistic'}`;
       }
 
+      // UX-fix 2026-05-01: greeting fast-path — hide chip grid (no tool calls = no chips)
+      if (_sources.length === 1 && _sources[0] === 'greeting' && gridEl) {
+        gridEl.classList.add('hidden');
+      }
+
       fullAnswer = result.answer || '';
       answerEl.textContent = fullAnswer;
       if (chatMessages) chatMessages.scrollTop = chatMessages.scrollHeight;

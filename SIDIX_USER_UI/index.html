@@ -85,6 +85,8 @@
         white-space: nowrap;
       }
       .contrib-pill:hover { background: rgba(122,107,88,0.18); color: #c9985a; border-color: rgba(204,152,49,0.4); }
+      /* UX-fix 2026-05-01: override contrib-pill display:flex when hidden class applied */
+      .contrib-pill.hidden { display: none !important; }
 
       /* ── Smooth scroll chat ───────────── */
       #chat-messages { scroll-behavior: smooth; }
