@@ -1074,6 +1074,71 @@ def create_app() -> "FastAPI":
         except Exception as e:
             return {"ok": False, "error": str(e)}
 
+    # ── Sprint D: Aspiration Detector + Tool Synthesizer endpoints ────────────
+    @app.post("/agent/aspiration/detect")
+    async def aspiration_detect(request: Request):
+        """Detect aspiration from user text."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+            text = body.get("text", "")
+            from .aspiration_detector import detect_aspiration_keywords, analyze_aspiration
+            is_asp, matched = detect_aspiration_keywords(text)
+            if is_asp:
+                aspiration = analyze_aspiration(text, derived_from="api")
+                if aspiration:
+                    return {"ok": True, "is_aspiration": True, "matched": matched, "aspiration": aspiration.__dict__}
+            return {"ok": True, "is_aspiration": False, "matched": matched}
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    @app.post("/agent/tools/synthesize")
+    async def tools_synthesize(request: Request):
+        """Synthesize a new tool from task description."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+            task = body.get("task", "")
+            if not task:
+                return {"ok": False, "error": "task required"}
+            from .tool_synthesizer import synthesize_skill
+            spec = synthesize_skill(task, derived_from="api", auto_test=True)
+            if spec:
+                return {
+                    "ok": True,
+                    "skill_id": spec.id,
+                    "name": spec.name,
+                    "status": spec.status,
+                    "code": spec.code[:500] if spec.code else "",
+                    "test_passes": spec.test_passes,
+                    "test_runs": spec.test_runs,
+                }
+            return {"ok": False, "error": "synthesis failed"}
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    @app.get("/agent/skills/stats")
+    async def skills_stats(request: Request):
+        """Statistics for synthesized skills."""
+        _enforce_rate(request)
+        try:
+            from .tool_synthesizer import stats
+            return {"ok": True, "stats": stats()}
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    @app.get("/agent/skills/list")
+    async def skills_list(request: Request):
+        """List synthesized skills."""
+        _enforce_rate(request)
+        try:
+            from .tool_synthesizer import list_skills
+            status = request.query_params.get("status", "")
+            skills = list_skills(status=status)
+            return {"ok": True, "skills": skills}
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
     # Sprint 14g: CouncilRequest moved to module top-level (line ~456) for
     # Pydantic 2.13 schema gen compat — broke /openapi.json before fix.
     @app.post("/agent/council")

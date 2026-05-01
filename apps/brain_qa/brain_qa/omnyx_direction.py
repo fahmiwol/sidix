@@ -502,6 +502,25 @@ class OmnyxDirector:
             except Exception as e:
                 log.debug("[omnyx] Pattern extraction failed: %s", e)
             
+            # Sprint D: Aspiration detection from conversation
+            try:
+                from .aspiration_detector import detect_aspiration_keywords, analyze_aspiration
+                is_asp, matched = detect_aspiration_keywords(query)
+                if is_asp:
+                    log.info("[omnyx] Aspiration detected: %r", matched)
+                    aspiration = analyze_aspiration(query, derived_from=session.session_id)
+                    if aspiration:
+                        from .aspiration_detector import _aspirations_index
+                        # Save aspiration to index
+                        import json as _json
+                        idx_path = _aspirations_index()
+                        idx_path.parent.mkdir(parents=True, exist_ok=True)
+                        with idx_path.open("a", encoding="utf-8") as f:
+                            f.write(_json.dumps(aspiration.__dict__, ensure_ascii=False) + "\n")
+                        log.info("[omnyx] Aspiration saved: %s → %s", aspiration.id, aspiration.capability_target)
+            except Exception as e:
+                log.debug("[omnyx] Aspiration detection failed: %s", e)
+            
             # If retry verdict, attempt one more synthesis with failure context
             if sanad_result.verdict == "retry" and sanad_result.failure_context:
                 log.info("[omnyx] Sanad retry triggered with failure context")
