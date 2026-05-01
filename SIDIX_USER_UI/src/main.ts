@@ -1463,90 +1463,93 @@ async function doHolistic(question: string) {
 
 }
 
+// UX-fix 2026-05-01: Mode buttons jadi TOGGLE state.
+// Click empty input → set activeMode + visual highlight (NO popup).
+// Click + textarea ada teks → set mode + auto-submit.
+// handleSend dispatch by activeMode.
+
+modeHolisticBtn?.addEventListener('click', () => {
+  setActiveMode('holistic');
+  const v = getCurrentInput();
+  if (v) handleSend(); // auto-submit kalau ada teks
+});
+
 modeBurstBtn?.addEventListener('click', async () => {
-  const prompt = getInputOrPrompt(
-    '🌌 Burst Mode',
-    'Generate 6 ide divergen lalu Pareto-pilih 2 terbaik, synthesize jadi 1 jawaban kreatif. Cocok untuk brainstorm, design choices, strategic positioning.',
-  );
-  if (!prompt) return;
+  setActiveMode('burst');
+  const prompt = getCurrentInput();
+  if (!prompt) return; // kosong → tunggu user ketik
   appendMessage('user', prompt);
   if (chatInput) { chatInput.value = ''; chatInput.dispatchEvent(new Event('input')); }
-  const thinking = appendThinkingPlaceholder('🌌 Burst — exploring 3 angles...');
+  const thinking = appendThinkingPlaceholder('💡 Brainstorm — eksplor 3 sudut...');
   try {
     const r = await agentBurst(prompt, { n: 3, topK: 2 });
     thinking.remove();
     const winnersList = r.winners.map(w =>
       `**${w.angle}** (score ${w.score.total.toFixed(2)})`
     ).join(' · ');
-    const out = `${r.final}\n\n_— Burst pipeline: ${r.n_ok}/${r.n_candidates} candidates, top angles: ${winnersList}_`;
+    const out = `${r.final}\n\n_— Brainstorm: ${r.n_ok}/${r.n_candidates} kandidat, sudut top: ${winnersList}_`;
     appendMessage('ai', out);
   } catch (e) {
     thinking.remove();
-    appendMessage('ai', `⚠️ Burst gagal: ${(e as Error).message}`);
+    appendMessage('ai', `⚠️ Brainstorm gagal: ${(e as Error).message}`);
   }
 });
 
 modeTwoEyedBtn?.addEventListener('click', async () => {
-  const prompt = getInputOrPrompt(
-    '👁 Two-Eyed Seeing',
-    'Analisis dual perspective: scientific (data, mekanisme, falsifiability) + maqashid (etis, hikmah, dampak komunal) → sintesis. Cocok untuk pertanyaan etis/strategis.',
-  );
+  setActiveMode('twoeyed');
+  const prompt = getCurrentInput();
   if (!prompt) return;
   appendMessage('user', prompt);
   if (chatInput) { chatInput.value = ''; chatInput.dispatchEvent(new Event('input')); }
-  const thinking = appendThinkingPlaceholder('👁 Two-Eyed — running dual analysis...');
+  const thinking = appendThinkingPlaceholder('⚖️ Pertimbangan — analisis dual perspective...');
   try {
     const r = await agentTwoEyed(prompt);
     thinking.remove();
     const out = [
-      `### 🔬 Mata Scientific\n${r.scientific_eye.text || '(gagal)'}`,
-      `### 🌿 Mata Maqashid\n${r.maqashid_eye.text || '(gagal)'}`,
+      `### 🔬 Sudut Data\n${r.scientific_eye.text || '(gagal)'}`,
+      `### 🌿 Sudut Nilai\n${r.maqashid_eye.text || '(gagal)'}`,
       `### 🤝 Sintesis\n${r.synthesis.text || '(gagal)'}`,
     ].join('\n\n');
     appendMessage('ai', out);
   } catch (e) {
     thinking.remove();
-    appendMessage('ai', `⚠️ Two-Eyed gagal: ${(e as Error).message}`);
+    appendMessage('ai', `⚠️ Pertimbangan gagal: ${(e as Error).message}`);
   }
 });
 
 modeForesightBtn?.addEventListener('click', async () => {
-  const topic = getInputOrPrompt(
-    '🔮 Foresight',
-    'Prediksi terstruktur: scan web+corpus → leading/lagging signals → 3 skenario (base/bull/bear) → narasi visioner. Cocok untuk strategi, market trend, technology forecast.',
-  );
+  setActiveMode('foresight');
+  const topic = getCurrentInput();
   if (!topic) return;
   appendMessage('user', topic);
   if (chatInput) { chatInput.value = ''; chatInput.dispatchEvent(new Event('input')); }
-  const thinking = appendThinkingPlaceholder('🔮 Foresight — scanning signals + projecting scenarios...');
+  const thinking = appendThinkingPlaceholder('🔮 Prediksi — scan signals + 3 skenario...');
   try {
     const r = await agentForesight(topic, { horizon: '1y' });
     thinking.remove();
-    const parts = [`### 🔮 Foresight: ${r.topic} (horizon ${r.horizon})\n\n${r.final}`];
+    const parts = [`### 🔮 Prediksi: ${r.topic} (horizon ${r.horizon})\n\n${r.final}`];
     if (r.scenarios) parts.push(`---\n\n### Skenario\n${r.scenarios}`);
     appendMessage('ai', parts.join('\n\n'));
   } catch (e) {
     thinking.remove();
-    appendMessage('ai', `⚠️ Foresight gagal: ${(e as Error).message}`);
+    appendMessage('ai', `⚠️ Prediksi gagal: ${(e as Error).message}`);
   }
 });
 
 modeResurrectBtn?.addEventListener('click', async () => {
-  const topic = getInputOrPrompt(
-    '🌿 Hidden Knowledge Resurrection',
-    'Surface ide/tokoh/metode yang DULU brilliant tapi sekarang overlooked → 2-3 hidden gem → bridge ke problem kamu. Cocok untuk research, fresh angle, mental model.',
-  );
+  setActiveMode('resurrect');
+  const topic = getCurrentInput();
   if (!topic) return;
   appendMessage('user', topic);
   if (chatInput) { chatInput.value = ''; chatInput.dispatchEvent(new Event('input')); }
-  const thinking = appendThinkingPlaceholder('🌿 Resurrect — digging overlooked gems...');
+  const thinking = appendThinkingPlaceholder('📚 Riset Arsip — gali ide terlupa...');
   try {
     const r = await agentResurrect(topic, { nGems: 3 });
     thinking.remove();
     appendMessage('ai', r.final);
   } catch (e) {
     thinking.remove();
-    appendMessage('ai', `⚠️ Resurrect gagal: ${(e as Error).message}`);
+    appendMessage('ai', `⚠️ Riset Arsip gagal: ${(e as Error).message}`);
   }
 });
 

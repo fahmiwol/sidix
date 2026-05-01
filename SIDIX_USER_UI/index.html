@@ -226,17 +226,17 @@
             <!-- Separator (desktop) -->
             <div class="hidden md:block w-px h-5 bg-warm-600/50"></div>
 
-            <!-- About SIDIX → sidixlab.com -->
-            <button id="btn-about-sidix" class="contrib-pill hidden md:flex" title="Baca tentang SIDIX">
+            <!-- UX-fix 2026-05-01: Header buttons hidden default. Power user akses via gear menu kanan.
+                 Tujuan: kurangi cognitive load awal user. About/Tutorial/Feedback masih functional via #btn-about-sidix click handler. -->
+            <button id="btn-about-sidix" class="contrib-pill hidden" title="Baca tentang SIDIX">
               <i data-lucide="info" class="w-3 h-3"></i>
               <span id="label-about">Tentang SIDIX</span>
             </button>
-            <!-- Tutorial / Bantuan: penjelasan persona, mode supermodel, checkbox -->
-            <button id="btn-tutorial" class="contrib-pill hidden md:flex" title="Tutorial: persona, mode Burst/Two-Eyed/Foresight/Resurrect, opsi chat">
+            <button id="btn-tutorial" class="contrib-pill hidden" title="Tutorial mode + persona">
               <i data-lucide="graduation-cap" class="w-3 h-3"></i>
               <span>Tutorial</span>
             </button>
-            <button id="btn-feedback" class="contrib-pill hidden md:flex" title="Lapor bug, kritik & saran">
+            <button id="btn-feedback" class="contrib-pill hidden" title="Kirim feedback">
               <i data-lucide="message-square-warning" class="w-3 h-3"></i>
               <span>Feedback</span>
             </button>
@@ -260,18 +260,19 @@
 
           <!-- RIGHT: Persona + extras (desktop) -->
           <div class="flex items-center gap-2 flex-shrink-0">
-            <label for="persona-selector" class="hidden md:block text-[10px] text-parchment-500 uppercase tracking-widest font-semibold">Persona</label>
+            <label for="persona-selector" class="hidden md:block text-[10px] text-parchment-500 uppercase tracking-widest font-semibold">Suara</label>
             <div class="relative">
               <select id="persona-selector"
                 class="bg-warm-800 border border-warm-600 text-parchment-200 rounded-lg px-2 py-1 md:px-3 md:py-1.5
-                       text-[11px] font-semibold uppercase tracking-wider appearance-none pr-6
+                       text-[11px] font-semibold tracking-wider appearance-none pr-6
                        focus:outline-none focus:ring-1 focus:ring-gold-500/50
-                       hover:border-gold-400/40 transition-colors cursor-pointer max-w-[100px] md:max-w-none">
-                <option value="AYMAN">AYMAN</option>
-                <option value="ABOO">ABOO</option>
-                <option value="OOMAR">OOMAR</option>
-                <option value="ALEY">ALEY</option>
-                <option value="UTZ">UTZ</option>
+                       hover:border-gold-400/40 transition-colors cursor-pointer max-w-[120px] md:max-w-none"
+                title="Pilih gaya jawaban SIDIX">
+                <option value="AYMAN">💬 Ramah</option>
+                <option value="UTZ">🎨 Kreatif</option>
+                <option value="ABOO">🔧 Teknis</option>
+                <option value="OOMAR">🎯 Strategis</option>
+                <option value="ALEY">📚 Akademik</option>
               </select>
               <i data-lucide="chevron-down" class="absolute right-1.5 top-1/2 -translate-y-1/2 w-3 h-3 text-parchment-400 pointer-events-none"></i>
             </div>
@@ -380,62 +381,78 @@
               </div>
             </div>
 
-            <!-- Supermodel mode buttons (SIDIX 2.0 differentiator) -->
+            <!-- Mode buttons — TOGGLE state (UX-fix 2026-05-01: visi 1000 bayangan default Holistic active).
+                 Click = set activeMode + visual highlight gold. Tidak ada window.prompt popup. -->
             <div class="flex flex-wrap justify-center gap-2 mt-2.5">
-              <button id="mode-burst"
-                class="text-[11px] px-3 py-1 rounded-full border border-warm-600/40
-                       bg-warm-700/30 text-parchment-300 hover:bg-warm-600/50
-                       hover:border-gold-500/40 hover:text-gold-400 transition-all
+              <button id="mode-holistic" aria-pressed="true"
+                class="mode-btn mode-active text-[11px] px-3 py-1 rounded-full border border-gold-500/60
+                       bg-gold-500/15 text-gold-300 transition-all
                        cursor-pointer select-none flex items-center gap-1"
-                title="Burst Mode — generate 6 ide divergen, Pareto-pilih 2 terbaik, synthesize jadi 1 jawaban kreatif">
-                <span>🌌</span><span>Burst</span>
+                title="Multi-Sumber Konsensus — kerahkan 5 sumber paralel sekaligus (web + corpus + dense + persona + tools), sintesis dengan attribution. Default mode SIDIX.">
+                <span>🌟</span><span>Multi-Sumber</span>
               </button>
-              <button id="mode-twoeyed"
-                class="text-[11px] px-3 py-1 rounded-full border border-warm-600/40
+              <button id="mode-burst" aria-pressed="false"
+                class="mode-btn text-[11px] px-3 py-1 rounded-full border border-warm-600/40
                        bg-warm-700/30 text-parchment-300 hover:bg-warm-600/50
                        hover:border-gold-500/40 hover:text-gold-400 transition-all
                        cursor-pointer select-none flex items-center gap-1"
-                title="Two-Eyed Seeing — analisis dual perspective: scientific + maqashid + sintesis">
-                <span>👁</span><span>Two Eyes</span>
+                title="Brainstorm — generate 6 ide divergen, Pareto-pilih 2 terbaik, sintesis kreatif">
+                <span>💡</span><span>Brainstorm</span>
               </button>
-              <button id="mode-foresight"
-                class="text-[11px] px-3 py-1 rounded-full border border-warm-600/40
+              <button id="mode-twoeyed" aria-pressed="false"
+                class="mode-btn text-[11px] px-3 py-1 rounded-full border border-warm-600/40
                        bg-warm-700/30 text-parchment-300 hover:bg-warm-600/50
                        hover:border-gold-500/40 hover:text-gold-400 transition-all
                        cursor-pointer select-none flex items-center gap-1"
-                title="Foresight — prediksi terstruktur: scan web+corpus → 3 skenario (base/bull/bear) → narasi visioner">
-                <span>🔮</span><span>Foresight</span>
+                title="Pertimbangan — analisis dual perspective: data scientific + nilai etis → sintesis">
+                <span>⚖️</span><span>Pertimbangan</span>
               </button>
-              <button id="mode-resurrect"
-                class="text-[11px] px-3 py-1 rounded-full border border-warm-600/40
+              <button id="mode-foresight" aria-pressed="false"
+                class="mode-btn text-[11px] px-3 py-1 rounded-full border border-warm-600/40
                        bg-warm-700/30 text-parchment-300 hover:bg-warm-600/50
                        hover:border-gold-500/40 hover:text-gold-400 transition-all
                        cursor-pointer select-none flex items-center gap-1"
-                title="Resurrect — surface ide/tokoh/metode yang dulu brilliant tapi sekarang dilupakan tren (Noether method)">
-                <span>🌿</span><span>Resurrect</span>
+                title="Prediksi — 3 skenario (base/bull/bear) berdasar scan web+corpus, narasi visioner">
+                <span>🔮</span><span>Prediksi</span>
+              </button>
+              <button id="mode-resurrect" aria-pressed="false"
+                class="mode-btn text-[11px] px-3 py-1 rounded-full border border-warm-600/40
+                       bg-warm-700/30 text-parchment-300 hover:bg-warm-600/50
+                       hover:border-gold-500/40 hover:text-gold-400 transition-all
+                       cursor-pointer select-none flex items-center gap-1"
+                title="Riset Arsip — surface ide/tokoh/metode yang dulu brilliant tapi terlupa">
+                <span>📚</span><span>Riset Arsip</span>
               </button>
             </div>
 
-            <!-- Options row (hidden on mobile for space) — dengan tooltip help -->
-            <div class="hidden md:flex flex-wrap justify-center gap-x-5 gap-y-1 mt-2 text-[11px] text-parchment-400 select-none">
-              <label class="inline-flex items-center gap-1.5 cursor-pointer hover:text-parchment-200"
-                     title="Hanya cari di knowledge base SIDIX (corpus). Web search dimatikan. Cocok untuk topik yang sudah ada di dokumen lokal.">
-                <input type="checkbox" id="opt-corpus-only" class="rounded border-warm-500" />
-                <span>Korpus saja</span>
-              </label>
-              <label class="inline-flex items-center gap-1.5 cursor-pointer hover:text-parchment-200"
-                     title="SIDIX boleh fetch data live dari web (DuckDuckGo, Wikipedia) untuk pertanyaan factual / current events. Default: ON.">
-                <input type="checkbox" id="opt-allow-web" checked class="rounded border-warm-500" />
-                <span>Fallback web</span>
-              </label>
-              <label class="inline-flex items-center gap-1.5 cursor-pointer hover:text-parchment-200"
-                     title="Response lebih pendek (200 token max). Cocok kalau butuh jawaban cepat. Default: OFF (response normal 600-1200 tokens).">
-                <input type="checkbox" id="opt-simple" class="rounded border-warm-500" />
-                <span>Mode ringkas</span>
-              </label>
+            <!-- Pengaturan lanjut (hidden default — power user pengaturan) -->
+            <div class="hidden md:flex flex-wrap justify-center gap-x-5 gap-y-1 mt-2 text-[11px] text-parchment-500 select-none">
+              <details class="inline-block">
+                <summary class="cursor-pointer hover:text-gold-400 list-none flex items-center gap-1.5">
+                  <i data-lucide="settings-2" class="w-3 h-3"></i>
+                  <span>Pengaturan lanjut</span>
+                </summary>
+                <div class="absolute mt-2 p-3 rounded-lg border border-warm-600/40 bg-warm-800/95 shadow-xl flex flex-col gap-2 z-10">
+                  <label class="inline-flex items-center gap-1.5 cursor-pointer hover:text-parchment-200"
+                         title="Hanya cari di knowledge base SIDIX (corpus). Web OFF.">
+                    <input type="checkbox" id="opt-corpus-only" class="rounded border-warm-500" />
+                    <span>Pengetahuan SIDIX saja (no web)</span>
+                  </label>
+                  <label class="inline-flex items-center gap-1.5 cursor-pointer hover:text-parchment-200"
+                         title="Fetch data live dari web. Default: ON.">
+                    <input type="checkbox" id="opt-allow-web" checked class="rounded border-warm-500" />
+                    <span>Cari web (live)</span>
+                  </label>
+                  <label class="inline-flex items-center gap-1.5 cursor-pointer hover:text-parchment-200"
+                         title="Response 200 token max. Default: OFF.">
+                    <input type="checkbox" id="opt-simple" class="rounded border-warm-500" />
+                    <span>Jawaban singkat</span>
+                  </label>
+                </div>
+              </details>
               <button type="button" id="btn-help-modes"
                       class="inline-flex items-center gap-1.5 hover:text-gold-400 cursor-pointer"
-                      title="Penjelasan persona, mode Supermodel, dan opsi chat">
+                      title="Penjelasan mode + persona">
                 <i data-lucide="circle-help" class="w-3 h-3"></i>
                 <span>Bantuan</span>
               </button>
