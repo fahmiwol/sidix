@@ -32,7 +32,7 @@
 | **SIDIX UI** | `pm2 id:9`, `serve dist -p 4000` |
 | **Model** | `sidix-lora:latest` (Qwen2.5-7B Q4_K_M) + `qwen2.5:1.5b` (fallback) |
 | **Corpus** | 3237+ docs indexed, BM25 + sanad-tier rerank |
-| **Tests** | 18+ PASSED (Sprint 6.5: 8 + Sprint 7: 3 + existing: 4 + auto-harvest: 6) |
+| **Tests** | 79+ PASSED (Sprint A–F: 72 + Sprint 6.5: 8 + existing) |
 | **Benchmark** | 70/70 pass Maqashid v2 (Sprint 6.5) |
 | **Health** | `/health` → `ok: true`, `model_ready: true`, `tools_available: 35` |
 
@@ -72,14 +72,15 @@
 |--------|-------|--------|
 | Sprint 7 — Social Radar MVP | Chrome extension + backend analysis | ⏸️ PAUSED (OpHarvest real scrape, TikTok) |
 | Sprint 4 | Creative agents (Agency Kit, Konten Engine) | ⏸️ IN PROGRESS |
-| **Sprint A+B** | **Sanad Orchestra + Hafidz Injection** | **✅ DONE (2026-05-01)** |
+| **Sprint A** | **Sanad Orchestra** | **✅ DONE (2026-05-01)** |
+| **Sprint B** | **Hafidz Injection** | **✅ DONE (2026-05-01)** |
 | **Sprint C** | **Pattern Extractor Integration** | **✅ DONE (2026-05-01)** |
 | **Sprint D** | **Aspiration Detector + Tool Synthesizer** | **✅ DONE (2026-05-01)** |
 | **Sprint E** | **Pencipta Mode (Creative Engine)** | **✅ DONE (2026-05-01)** |
-| Sprint F | Self-Test Loop (Cold Start Maturity) | 🔥 NEXT PRIORITY |
-| Sprint D | Aspiration Detector + Tool Synthesizer | ⏳ PLANNED |
-| Sprint E | Pencipta Mode (Creative Engine) | ⏳ PLANNED |
-| Sprint F | Self-Test Loop (Cold Start Maturity) | ⏳ PLANNED |
+| **Sprint F** | **Self-Test Loop (Cold Start Maturity)** | **✅ DONE (2026-05-01)** |
+| Sprint G | Maqashid Auto-Tune | 🔥 NEXT PRIORITY |
+| Sprint H | Creative Output Polish | ⏳ PLANNED |
+| Sprint I | DoRA Persona Adapter | ⏳ PLANNED |
 
 ---
 
