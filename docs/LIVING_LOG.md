@@ -17074,3 +17074,18 @@ curl -X POST http://localhost:8765/agent/maqashid/tune -d '{"sample_size":30}'
 - **NOTE:** `app.sidixlab.com/agent/*` → 404 EXPECTED (frontend). API hanya di `ctrl.sidixlab.com/agent/*`.
 - **DECISION:** Sprint J (Conversation Memory) = next priority. Referensi di `C:\Users\ASUS\Downloads\emory\`.
 
+### 2026-05-01 (Claude — Sprint J: Conversation Memory IMPL + DEPLOY)
+
+- **IMPL:** `apps/brain_qa/brain_qa/conversation_memory.py` — lightweight in-memory ConversationMemory class + `build_messages_with_history()` (LRU eviction, TTL 1h, max 20 turns) ✅
+- **IMPL:** `agent_serve.py` `chat_holistic` wired to `memory_store` — load history before OMNYX, inject via `_inject_conversation_context()`, save user+assistant after response ✅
+- **IMPL:** `SIDIX_USER_UI/src/api.ts` — `askHolistic()` accepts `conversationId` in opts, sends as `conversation_id` field; `ChatHolisticResponse` has `conversation_id?` field ✅
+- **IMPL:** `SIDIX_USER_UI/src/main.ts` — pass `getCurrentConversationId()` to `askHolistic()`, persist returned `conversation_id` via `setCurrentConversationId()` ✅
+- **IMPL:** `SIDIX_USER_UI/src/lib/session.ts` — NEW: `getOrCreateSessionId()` + `newSession()` helpers ✅
+- **TEST:** `conversation_memory.py` smoke test: append 2 turns → `build_messages_with_history` → 6 messages (system+2history+current), isolation OK, clear OK ✅
+- **FIX:** `omnyx_direction.py` `IntentClassifier.classify()` — when context injected via `[PERTANYAAN SAAT INI]` sentinel, classify only extracts actual question not full context block (prevents false greeting detection from Indonesian keywords in prior assistant text) ✅
+- **DEPLOY:** `git push → git pull → pm2 restart sidix-brain → npm build → pm2 restart sidix-ui` ✅
+- **TEST E2E VPS:** Turn 1 `siapa presiden indonesia?` → conv_id=`176279a5-*`, answer ✅; Turn 3 `mereka menjabat berapa tahun?` with context → Prabowo Subianto answer (context-aware) ✅
+- **TEST:** `conversation_memory` module on VPS: `conv_mem OK, len=2` ✅
+- **NOTE:** Deploy command CANONICAL: `cd /opt/sidix && git pull origin work/gallant-ellis-7cd14d && pm2 restart sidix-brain --update-env`
+- **NOTE:** Commits `8df85f8` (Sprint J impl) + `4d299e4` (OMNYX classifier fix)
+
