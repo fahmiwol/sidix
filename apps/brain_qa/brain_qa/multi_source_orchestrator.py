@@ -240,7 +240,13 @@ async def _src_persona_fanout(query: str, personas: tuple = PERSONAS) -> dict:
         return {"results": {}, "note": "ollama_unavailable"}
 
     async def _one_persona(p: str) -> tuple[str, str]:
-        desc = PERSONA_DESCRIPTIONS.get(p.upper(), "")
+        # Sprint I wire: prefer persona_adapter config over hardcoded descriptions
+        try:
+            from .persona_adapter import get_persona_config
+            cfg = get_persona_config(p)
+            desc = cfg.system_prompt or PERSONA_DESCRIPTIONS.get(p.upper(), "")
+        except Exception:
+            desc = PERSONA_DESCRIPTIONS.get(p.upper(), "")
         system = (
             f"{desc}\n\n"
             f"Berikan SUDUT PANDANG SINGKAT (max 80 kata) dari perspektif {p} "

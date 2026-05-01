@@ -530,7 +530,9 @@ def run_pencipta(
     try:
         from .sanad_orchestra import validate_answer
         import asyncio
-        sanad_result = asyncio.run(validate_answer(
+        # Use get_event_loop().run_until_complete to avoid nested asyncio.run issues
+        loop = asyncio.get_event_loop()
+        sanad_result = loop.run_until_complete(validate_answer(
             answer=output.content,
             query=f"Create {output.output_type} for {output.domain}",
             sources={},
@@ -549,7 +551,8 @@ def run_pencipta(
     try:
         import asyncio
         from .hafidz_injector import store_to_hafidz
-        asyncio.run(store_to_hafidz(
+        loop = asyncio.get_event_loop()
+        loop.run_until_complete(store_to_hafidz(
             query=f"Pencipta: {output.title}",
             answer=output.content,
             persona="UTZ",

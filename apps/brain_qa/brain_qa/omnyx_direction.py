@@ -91,6 +91,8 @@ class OmnyxSession:
     sanad_verdict: str = ""
     hafidz_injected: bool = False
     hafidz_stored: bool = False
+    # Sprint F fix: tools_used for self-test
+    tools_used: list[str] = field(default_factory=list)
 
 
 # ── Tool Registry ────────────────────────────────────────────────────────
@@ -517,6 +519,7 @@ class OmnyxDirector:
             
             session.sanad_score = sanad_result.consensus_score
             session.sanad_verdict = sanad_result.verdict
+            session.tools_used = tools_used
             
             log.info("[omnyx] Sanad validation: score=%.2f verdict=%s",
                      sanad_result.consensus_score, sanad_result.verdict)
@@ -944,6 +947,8 @@ async def omnyx_process(
         "sanad_verdict": session.sanad_verdict,
         "hafidz_injected": session.hafidz_injected,
         "hafidz_stored": session.hafidz_stored,
+        # Sprint F fix: expose tools_used for self-test loop
+        "tools_used": session.tools_used,
     }
 
 

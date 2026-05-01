@@ -232,7 +232,7 @@ apps/brain_qa/brain_qa/
 ├── sanad_orchestrator.py ← Multi-source validation (Sprint A)
 ├── hafidz_injector.py    ← Two-Drawer memory (Sprint B)
 ├── pattern_extractor.py  ← Pattern recognition (Sprint C)
-├── aspiration_tool.py    ← Aspiration detection + synthesis (Sprint D)
+├── aspiration_detector.py ← Aspiration detection + synthesis (Sprint D)
 ├── pencipta_mode.py      ← Creative engine (Sprint E)
 ├── self_test_loop.py     ← Self-test generation (Sprint F)
 ├── maqashid_auto_tune.py ← 5-axis weight tuning (Sprint G)

@@ -6,6 +6,12 @@ Arsitektur:
   Sprint I = fondasi: persona-specific prompt engineering + data harvesting
   untuk future training.
 
+Status (Audit 2026-05-02):
+  - PROMPT-ONLY adapter: system prompt + generation config per persona.
+  - DoRA weight training: PENDING — menunggu dataset persona-specific cukup.
+  - OMNYX wiring: PARTIAL — `_exec_persona_brain` menggunakan config ini
+    untuk system prompt override (bukan hardcoded descriptions).
+
 Komponen:
   1. PersonaConfig — system prompt, temperature, top_p, max_tokens per persona
   2. PersonaAdapter — load config, apply ke generation call
