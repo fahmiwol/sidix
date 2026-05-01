@@ -145,6 +145,11 @@
   }
   </script>
 
+  <!-- ═══ PAYPAL DONATE SDK ═══ -->
+  <script
+    src="https://www.paypal.com/sdk/js?client-id=BAAnKRc2XQT1bCmAJlbZ7f3gmB6jRIc7Jpwwo-Rg7ZvH3DJ7DYvtSrM8tFjLM8t0W-VB4M1IPwjQttzb8A&components=hosted-buttons&disable-funding=venmo&currency=USD">
+  </script>
+
   <!-- ═══ PERFORMANCE HINTS ═══ -->
   <link rel="preconnect" href="https://cdn.tailwindcss.com" crossorigin />
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
@@ -1078,21 +1083,25 @@
               <h3 class="font-bold text-parchment-100 mb-2" data-i18n="donate.title">Help Keep SIDIX Free</h3>
               <p class="text-sm text-parchment-500 mb-5" data-i18n="donate.desc">SIDIX adalah proyek open source. Dukungan kamu membantu menanggung biaya server dan pengembangan.</p>
 
-              <!-- Donate buttons -->
-              <div class="flex gap-3 flex-wrap">
-                <a href="https://github.com/fahmiwol/sidix" target="_blank" rel="noopener"
-                   class="btn-outline text-sm px-4 py-2">
-                  ⭐ Star on GitHub
-                </a>
-                <a href="#" target="_blank" rel="noopener"
-                   class="btn-outline text-sm px-4 py-2">
-                  ☕ Donate
-                </a>
-                <a href="#" target="_blank" rel="noopener"
-                   class="btn-outline text-sm px-4 py-2">
-                  🎁 Support
-                </a>
-              </div>
+              <!-- PayPal Hosted Button -->
+              <div id="paypal-container-K37VVLFGJC5TY" class="mb-4"></div>
+              <script>
+                paypal.HostedButtons({
+                  hostedButtonId: "K37VVLFGJC5TY",
+                }).render("#paypal-container-K37VVLFGJC5TY");
+              </script>
+
+              <!-- Ko-fi -->
+              <a href="https://ko-fi.com/sidix" target="_blank" rel="noopener"
+                 class="social-link mb-3" style="justify-content:center;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" class="text-parchment-300 flex-shrink-0">
+                  <path d="M23.881 8.472c-.51-.815-1.35-1.233-2.45-1.233H18.6V4.8c0-1.2-.9-2.1-2.1-2.1H2.1C.9 2.7 0 3.6 0 4.8v10.8c0 1.2.9 2.1 2.1 2.1h14.7c.75 0 1.35-.45 1.65-1.05.6.3 1.35.15 1.8-.45.3-.45.3-1.05.15-1.5.6-.3.9-.9.75-1.5-.15-.6-.75-.9-1.35-.9h.15c1.05 0 1.8-.6 2.1-1.5.15-.45.15-.9 0-1.35.45-.3.75-.75.9-1.35.15-.45 0-.9-.15-1.2zM6.3 12.9c0 .3-.15.45-.45.45H3.6c-.3 0-.45-.15-.45-.45V6.6c0-.3.15-.45.45-.45h2.25c.3 0 .45.15.45.45v6.3zm6.15.15c-.45.3-.9.3-1.35.15-.3-.15-.45-.45-.6-.75-.15-.3-.15-.6-.15-.9V6.6c0-.3.15-.45.45-.45h2.25c.3 0 .45.15.45.45v3.3l1.5-1.95c.15-.15.3-.3.6-.3h2.55c.3 0 .45.15.45.45 0 .15-.15.3-.15.45l-2.25 2.7 2.55 3.45c.15.15.15.3.15.45 0 .3-.15.45-.45.45h-2.55c-.3 0-.45-.15-.6-.3l-1.65-2.25-.45.6v1.35c0 .3-.15.45-.45.45h-2.25c-.15 0-.3-.15-.3-.3z"/>
+                </svg>
+                <span class="text-sm font-semibold text-parchment-100">Buy me a coffee on Ko-fi</span>
+              </a>
+
+              <!-- Donate note -->
+              <p class="text-xs text-parchment-500 mt-3" data-i18n="donate.note">Semua donasi langsung dipakai untuk biaya VPS, GPU training, dan menjaga SIDIX tetap gratis untuk semua orang. 🙏</p>
             </div>
           </div>
 
