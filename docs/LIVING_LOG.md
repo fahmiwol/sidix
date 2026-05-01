@@ -16707,3 +16707,51 @@ $ curl -X POST http://localhost:8765/agent/chat_holistic -d '{"question":"halo"}
 
 **Refer**: `docs/SPRINT_A_E_SUMMARY_AND_NEXT_2026-05-01.md` Part 5 (Roadmap Fase 2-4)
 
+
+
+## 2026-05-01 — SPRINT F: Self-Test Loop — DEPLOYED & VERIFIED
+
+**Tag**: IMPL + FIX + TEST
+**Trigger**: Bos minta gas B+C+D. Sprint F = close loop Fase 1 (Organisme Hidup).
+
+**Implementation**:
+- New module: `apps/brain_qa/brain_qa/self_test_loop.py` (356 baris)
+  - `generate_test_questions(n, domains)` — LLM generate + fallback templates
+  - `run_single_self_test(question, persona)` — OMNYX pipeline → composite score → Hafidz store
+  - `run_batch_self_test(n, domains, persona)` — batch loop dengan 0.5s delay antar test
+  - Composite scoring: Sanad 70% + source diversity 20% + speed 10%
+  - Storage: `brain/public/selftest/results.jsonl` (append-only)
+- Endpoints: `/agent/selftest/run`, `/agent/selftest/stats`, `/agent/selftest/history`
+- Tests: `tests/test_self_test_loop.py` — 7/7 PASSED
+
+**Bug fixes during deploy**:
+1. `generate_test_questions` return lebih dari n → fix strip numeric prefixes + `[:n]`
+2. `UnboundLocalError: local variable 'asyncio'` di `omnyx_direction.py` → remove 4 local `import asyncio` di dalam function bodies (module-level import sudah ada line 32)
+
+**LIVE verify (VPS)**:
+```bash
+curl -X POST http://localhost:8765/agent/selftest/run -d '{"n":1,"persona":"AYMAN"}'
+→ {
+  "ok": true,
+  "n": 1,
+  "results": [{
+    "test_id": "st_29f9880f",
+    "question": "Siapa presiden Indonesia ke-4 dan apa program utamanya?",
+    "sanad_score": 0.5,
+    "sanad_verdict": "fail",
+    "composite_score": 0.583,
+    "stored_to": "lesson",
+    "duration_ms": 2847,
+    "complexity": "simple"
+  }]
+}
+```
+
+**Stats endpoint**:
+```bash
+curl http://localhost:8765/agent/selftest/stats
+→ {"ok":true,"stats":{"total_tests":7,"golden":0,"lesson":5,"avg_composite":0.31,...}}
+```
+
+**Refer**: commit `2aef146` + `f39efb7` + `4055dfc` on branch `work/gallant-ellis-7cd14d`
+
