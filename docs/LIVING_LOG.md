@@ -16882,3 +16882,43 @@ curl -X POST http://localhost:8765/agent/maqashid/tune -d '{"sample_size":30}'
 
 **Refer**: branch `work/gallant-ellis-7cd14d`
 
+
+
+## 2026-04-30 — Riset Multi-Agent Best Practices 2025–2026 — SELESAI
+
+**Tag**: RESEARCH + DECISION
+**Trigger**: User minta riset best practices dan terobosan baru sebelum implementasi Sprint K.
+
+**Riset Scope**:
+- Web search: 6 queries, 40+ hasil dianalisis
+- Frameworks: LangGraph, CrewAI, OpenAI Agents SDK, AutoGen/AG2, Google ADK, Pydantic AI
+- Research papers: NLAC (ICML 2025), MAAC/CoLLM-CC (Arxiv 2026), DPSDP (ICML 2025)
+- Best practices: Fast.io Swarm Guide 2026, OpenAI SDK Docs, Governance Guardrails
+
+**Temuan Utama**:
+
+1. **3 Pattern Arsitektur**: Hierarchical (Boss/Worker), Sequential (Chain), Joint (Mesh).
+2. **OpenAI Swarm digantikan oleh OpenAI Agents SDK (March 2025)** — production-ready, cleanest handoff model.
+3. **Mixture of Agents (AutoGen)** — layered execution seperti feed-forward neural network. Messages dari layer N dikumpulkan dan jadi input layer N+1.
+4. **NLAC** — critic output natural language (bukan scalar) untuk richer credit assignment. SIDIX sudah punya ini via Sanad Orchestra + agent_critic.py.
+5. **MAAC/CoLLM-CC** — centralized critic (lihat semua agent outputs) outperform decentralized di long-horizon sparse-reward tasks.
+6. **DPSDP** — iterative refinement via preference learning, +5% accuracy MATH 500. SIDIX sudah punya via Pencipta + Creative Polish.
+7. **Governance Guardrails** — trust-gated handoffs (5-dimension trust scoring), Merkle audit chains, delegation validation. SIDIX punya Hafidz ledger (Merkle) + ChakraBudget.
+8. **Shared Workspaces** — frameworks fokus pada conversation history tapi ignore artifacts. Production swarm butuh persistent shared storage.
+
+**Keputusan Arsitektur Sprint K**:
+- **Pattern**: Hierarchical + Layered Hybrid (bukan flat parallel)
+  - Supervisor (OOMAR) decompose → Layer 0 Research (ALEY) → Layer 1 Generation (UTZ) → Layer 2 Validation (ALEY + Sanad) → Layer 3 Synthesis (AYMAN)
+  - Tiap layer output dikumpulkan → jadi input layer berikutnya (Mixture of Agents)
+- **Handoff**: Shared Context + Hafidz (bukan message passing). Stateless antara layers, explicit context transfer.
+- **Actor-Critic**: Centralized critic (Supervisor/Validation melihat semua outputs) → structured natural language critique → threshold ≥0.85 → retry max 2x
+- **Safety**: Max 10 agents, depth 1 (no recursive), timeout 120s/layer, ChakraBudget, audit log JSONL
+- **Reuse max**: council.py (parallel spawn) + parallel_planner.py (dependency scheduling) + parallel_executor.py (bundle execution) + agent_critic.py (critic loop) + shadow_pool.py (ChakraBudget) + hafidz_injector.py (shared memory)
+
+**Dokumen baru**:
+- `docs/SPRINT_K_RESEARCH_SYNTHESIS_2026.md` — 19KB, comprehensive synthesis dari 10+ sumber
+
+**Implementation plan**: 3 hari (Hari 1: Foundation, Hari 2: Core Engine, Hari 3: API + Safety + Tests)
+
+**Refer**: branch `work/gallant-ellis-7cd14d`, commit `495a90d`
+
