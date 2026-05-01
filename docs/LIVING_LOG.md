@@ -17089,3 +17089,12 @@ curl -X POST http://localhost:8765/agent/maqashid/tune -d '{"sample_size":30}'
 - **NOTE:** Deploy command CANONICAL: `cd /opt/sidix && git pull origin work/gallant-ellis-7cd14d && pm2 restart sidix-brain --update-env`
 - **NOTE:** Commits `8df85f8` (Sprint J impl) + `4d299e4` (OMNYX classifier fix)
 
+### 2026-05-02 (Kimi — Landing Page Donate Button)
+
+- **IMPL:** `SIDIX_LANDING/index.html` — tambah PayPal SDK + Hosted Button (`K37VVLFGJC5TY`) + Ko-fi link (`https://ko-fi.com/sidix`) di section "Support the Project" (sebelumnya tombol placeholder)
+- **UPDATE:** PayPal script di `<head>` dengan `client-id` + `hosted-buttons` component + `disable-funding=venmo`
+- **FIX:** Ganti 3 tombol placeholder (Star on GitHub / Donate / Support) menjadi 1 PayPal button rendered + 1 Ko-fi card link dengan icon
+- **TEST:** HTML validasi — struktur tag sesuai, script PayPal render setelah DOM ready
+- **DEPLOY:** Commit `20a04e4` di-push ke `work/gallant-ellis-7cd14d` → GitHub ✅
+- **TODO:** Deploy landing page ke VPS (path `/opt/sidix/SIDIX_LANDING/` atau web root nginx) — butuh SSH manual
+
