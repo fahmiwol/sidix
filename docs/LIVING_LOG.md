@@ -16565,3 +16565,29 @@ ca43f7f doc: Update STATUS_TODAY — Sprint A+B DONE
 
 **Refer:**
 - `docs/SPRINT_A_E_SUMMARY_AND_NEXT_2026-05-01.md`
+
+## 2026-05-01 — DEPLOY UI Simplification + Kimi Path Fix
+
+**Tag**: IMPL + DOC + ERROR_FIX
+**Trigger**: Founder catch — Kimi pakai path `/var/www/sidix` (tidak ada di VPS) → LIVE tidak update 5 hari. Plus saya tinggalkan UI simplification setengah jalan di sesi sebelumnya.
+
+**Action chain (full deploy verified)**:
+1. ✅ VPS pull `aa4606b` (Kimi Sprint A-E) — 17 commits fast-forward
+2. ✅ UI changes commit `848d004` di branch `work/gallant-ellis-7cd14d`
+3. ✅ Push origin remote
+4. ✅ VPS git pull `848d004`
+5. ✅ npm install + npm run build → `index-DucNp-pR.js + index-CE_N1O_Q.css`
+6. ✅ pm2 restart sidix-brain + sidix-ui
+7. ✅ USER-SIDE verify: browser hash MATCH VPS dist
+8. ✅ Smoke test holistic: 71s, 3 sources sukses, output kontekstual
+
+**UI changes**:
+- Mode buttons toggle state (no window.prompt) + Holistic visible gold default
+- Hide header buttons (Tentang/Tutorial/Feedback) + checkbox toolbar collapse to gear
+- Persona rename: AYMAN→💬Ramah, UTZ→🎨Kreatif, ABOO→🔧Teknis, OOMAR→🎯Strategis, ALEY→📚Akademik
+- Mode rename: Burst→💡Brainstorm, TwoEyes→⚖️Pertimbangan, Foresight→🔮Prediksi, Resurrect→📚Riset Arsip
+- CSS .mode-active gold ring visual feedback
+
+**Halusinasi "Haloo" company test result**: RESOLVED. Pre-deploy: 0 sumber gagal tapi LLM tetap output (race condition). Post-deploy: 3 sources sukses, output grounded "Halo Halo Bandung + efek halo".
+
+**Refer**: `docs/AGENT_DEPLOY_GUIDANCE.md` (deploy SOP untuk Kimi/agent lain)
