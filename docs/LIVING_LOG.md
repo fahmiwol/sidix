@@ -16755,3 +16755,33 @@ curl http://localhost:8765/agent/selftest/stats
 
 **Refer**: commit `2aef146` + `f39efb7` + `4055dfc` on branch `work/gallant-ellis-7cd14d`
 
+
+
+## 2026-05-01 — SPRINT G: Maqashid Auto-Tune — DEPLOYED & VERIFIED
+
+**Tag**: IMPL + TEST
+**Trigger**: Bos minta gas lanjut sprint setelah handoff.
+
+**Implementation**:
+- New module: `apps/brain_qa/brain_qa/maqashid_auto_tune.py` (248 baris)
+  - `run_auto_tune(sample_size)` — read self-test results → analyze failures → compute tuned weights
+  - `compute_tuned_weights(fail_rates)` — fail rate >0.3 → increase weight, <0.1 → decrease weight, clamp 0.3–2.0
+  - `load_tuned_profile()` / `reset_to_default()` / `get_tune_stats()`
+  - Storage: `brain/public/maqashid/tuned_profile.json` + `tune_history.jsonl`
+- Wired Maqashid evaluation ke `omnyx_direction.py` (post-synthesis, pre-Sanad)
+  - BLOCK → return blocked response immediately
+  - WARN → tag output with disclaimer
+- Endpoints: `/agent/maqashid/tune`, `/agent/maqashid/tuned`, `/agent/maqashid/reset`
+- Tests: `tests/test_maqashid_auto_tune.py` — 7/7 PASSED
+
+**LIVE verify (VPS)**:
+```bash
+curl http://localhost:8765/agent/maqashid/tuned
+→ {"ok":true,"active":false,"weights":{"life":1.0,"intellect":1.0,"faith":0.8,"lineage":0.6,"wealth":0.7}}
+
+curl -X POST http://localhost:8765/agent/maqashid/tune -d '{"sample_size":30}'
+→ {"ok":true,"weights":{"life":0.9,"intellect":0.9,"faith":0.72,...},"sample_size":6}
+```
+
+**Refer**: commit `cdde25d` on branch `work/gallant-ellis-7cd14d`
+
