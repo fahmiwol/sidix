@@ -16922,3 +16922,66 @@ curl -X POST http://localhost:8765/agent/maqashid/tune -d '{"sample_size":30}'
 
 **Refer**: branch `work/gallant-ellis-7cd14d`, commit `495a90d`
 
+
+
+## 2026-04-30 — SPRINT K: Multi-Agent Spawning — IMPLEMENTED & TESTED
+
+**Tag**: IMPL + TEST + RESEARCH
+**Trigger**: User minta review, catat, riset best practices, dan lanjut ke Sprint K.
+
+**Riset Best Practices (sebelum implementasi)**:
+- Analyzed 6 major frameworks: LangGraph, CrewAI, OpenAI Agents SDK, AutoGen/AG2, Google ADK, Pydantic AI
+- 3 orchestration patterns: Hierarchical, Sequential, Joint
+- 4 key research innovations: Mixture of Agents (layered execution), NLAC (natural language critic), MAAC/CoLLM-CC (centralized critic), DPSDP (iterative refinement)
+- Best practices: explicit handoffs, shared workspaces, human-on-the-loop, cost monitoring
+
+**Keputusan Arsitektur**:
+- Pattern: Hierarchical + Layered Hybrid (adaptasi Mixture of Agents)
+- Layer 0 Research → Layer 1 Generation → Layer 2 Validation → Layer 3 Synthesis
+- Handoff: Shared Context + Hafidz (explicit, stateless antara layers)
+- Actor-Critic: Centralized critic (Supervisor/Validation) → structured NL critique → threshold ≥0.85
+- Safety: max 10 agents, depth 1, timeout 120s, ChakraBudget, audit log
+
+**Implementation**:
+- New package: `apps/brain_qa/brain_qa/spawning/` (4 modules, __init__.py)
+  - `shared_context.py` — thread-safe shared workspace, persist/load, Hafidz integration
+  - `sub_agent_factory.py` — 5 agent types (research/generation/validation/memory/orchestration), spawn, run
+  - `lifecycle_manager.py` — spawn_layer, execute_layer (ThreadPool), aggregate_final, ChakraBudget
+  - `supervisor.py` — task decomposition, 5 strategies (auto/layered/research_first/parallel/debate), full run
+- Endpoints (3 baru di `agent_serve.py`):
+  - `POST /agent/spawn` — full multi-agent execution
+  - `GET /agent/spawn/strategies` — list available strategies
+  - `GET /agent/spawn/stats` — aggregate stats
+- Tests: `tests/test_sprint_k_spawning.py` — **49/49 PASSED**
+  - SharedContext: create, write/read, layer_output, snapshot, status, persist/load, list, cleanup, thread-safety
+  - SubAgentFactory: registry, spawn, run (mocked), failure, batch
+  - LifecycleManager: init, spawn_layer, budget exhaustion, execute_layer, aggregate_final, kill_all
+  - SpawnSupervisor: complexity assessment, all strategies, plan variants, trim, full run (mocked), restricted check
+  - Integration: E2E research_first, parallel, debate (all mocked)
+
+**Fixes selama dev**:
+- `persist()` missing `mkdir(parents=True)` → FileNotFoundError
+- monkeypatch target mismatch (inline imports) → patch ke `brain_qa.persona_adapter.generate_with_persona`
+- `spawn_layer` budget check tidak raise untuk tasks > budget → fix: check total tasks sebelum loop
+- `kill_all` hanya kill "running", ignore "idle" → fix: include "idle"
+- `_assess_complexity` keyword loop pakai `break` → fix: cumulative scoring
+- `_execute_agent` catch exception internally → fix: let propagate ke `factory.run()`
+
+**Dokumen baru**:
+- `docs/SPRINT_K_RESEARCH_SYNTHESIS_2026.md` — comprehensive research synthesis (19KB)
+- `docs/AUDIT_SPRINT_A_I_2026_04_30.md` — Sprint A–I audit
+
+**Total tests Sprint A–K: 150 PASSED**
+- Sprint A: 16
+- Sprint B: 18
+- Sprint C: 10
+- Sprint D: 14
+- Sprint E: 14
+- Sprint F: 7
+- Sprint G: 7
+- Sprint H: 5
+- Sprint I: 15
+- Sprint K: 49
+
+**Refer**: branch `work/gallant-ellis-7cd14d`, commit `bc15c74`
+

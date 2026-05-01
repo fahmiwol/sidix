@@ -1530,6 +1530,82 @@ def create_app() -> "FastAPI":
         except Exception as e:
             return {"ok": False, "error": str(e)}
 
+    # ── Sprint K: Multi-Agent Spawning ────────────────────────────────────
+    @app.post("/agent/spawn")
+    async def agent_spawn(request: Request):
+        """Spawn multi-agent session untuk task kompleks.
+
+        Body: {"goal": "...", "strategy": "auto", "max_agents": 5,
+               "timeout": 120, "allow_restricted": false}
+        """
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+        except Exception:
+            body = {}
+
+        goal = body.get("goal", "")
+        if not goal:
+            return {"ok": False, "error": "goal wajib diisi"}
+
+        strategy = body.get("strategy", "auto")
+        max_agents = body.get("max_agents", 5)
+        timeout = body.get("timeout", 120)
+        allow_restricted = body.get("allow_restricted", False)
+
+        try:
+            from .spawning.supervisor import SpawnSupervisor
+            supervisor = SpawnSupervisor(default_timeout=timeout)
+            result = supervisor.run(
+                goal=goal,
+                strategy=strategy,
+                max_agents=max_agents,
+                timeout=timeout,
+                allow_restricted=allow_restricted,
+            )
+            return {
+                "ok": True,
+                "task_id": result.task_id,
+                "status": result.status,
+                "synthesized_answer": result.synthesized_answer,
+                "layers": [
+                    {
+                        "layer": lr.layer,
+                        "agents": len(lr.agents),
+                        "all_passed": lr.all_passed,
+                        "duration_ms": lr.duration_ms,
+                    }
+                    for lr in result.layers
+                ],
+                "total_duration_ms": result.total_duration_ms,
+            }
+        except PermissionError as e:
+            return {"ok": False, "error": str(e), "requires_restricted": True}
+        except Exception as e:
+            log.warning("[spawn] Failed: %s", e)
+            return {"ok": False, "error": str(e)}
+
+    @app.get("/agent/spawn/strategies")
+    async def spawn_strategies(request: Request):
+        """List available spawn strategies."""
+        _enforce_rate(request)
+        try:
+            from .spawning.supervisor import SpawnSupervisor
+            return {"ok": True, "strategies": SpawnSupervisor.get_available_strategies()}
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    @app.get("/agent/spawn/stats")
+    async def spawn_stats(request: Request):
+        """Aggregate spawn statistics."""
+        _enforce_rate(request)
+        try:
+            from .spawning.shared_context import SharedContext
+            sessions = SharedContext.list_sessions()
+            return {"ok": True, "total_sessions": len(sessions), "sessions": sessions}
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
     # Sprint 14g: CouncilRequest moved to module top-level (line ~456) for
     # Pydantic 2.13 schema gen compat — broke /openapi.json before fix.
     @app.post("/agent/council")

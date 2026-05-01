@@ -195,7 +195,12 @@
 | 7 | **Maqashid Auto-Tune** — adjust 5-axis weights dari failure data | G | ✅ DONE (7 tests) |
 | 8 | **Creative Output Polish** — iteration loop evaluate→score→iterate | H | ✅ DONE (5 tests) |
 | 9 | **DoRA Persona Adapter** — persona-specific config + data harvest | I | ✅ DONE (15 tests) |
-| 10 | **Multi-Agent Spawning** — Bio-Cognitive Fase V "berkembang biak" | K | ⏳ QUEUED |
+| 10 | **Multi-Agent Spawning** — Bio-Cognitive Fase V "berkembang biak" | K | ✅ DONE (49 tests) |
+| 11 | **Audit & Research Synthesis** — best practices 2025–2026 | — | ✅ DONE |
+| 12 | OpHarvest content script (real DOM scrape Instagram) | 7 | 🟢 PAUSED |
+| 13 | Visualisasi radar di `app.sidixlab.com` | 7 | 🟢 PAUSED |
+| 14 | Sentiment expansion (slang Indonesia) | 7 | 🟢 PAUSED |
+| 15 | TikTok support di extension | 7 | 🟢 PAUSED |
 | 11 | OpHarvest content script (real DOM scrape Instagram) | 7 | 🟢 PAUSED |
 | 12 | Visualisasi radar di `app.sidixlab.com` | 7 | 🟢 PAUSED |
 | 13 | Sentiment expansion (slang Indonesia) | 7 | 🟢 PAUSED |
