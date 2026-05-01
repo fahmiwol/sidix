@@ -16591,3 +16591,50 @@ ca43f7f doc: Update STATUS_TODAY — Sprint A+B DONE
 **Halusinasi "Haloo" company test result**: RESOLVED. Pre-deploy: 0 sumber gagal tapi LLM tetap output (race condition). Post-deploy: 3 sources sukses, output grounded "Halo Halo Bandung + efek halo".
 
 **Refer**: `docs/AGENT_DEPLOY_GUIDANCE.md` (deploy SOP untuk Kimi/agent lain)
+
+
+## 2026-05-01 — PERF: Greeting Fast-Path + Display Bug "0 Sumber" Fix
+
+**Tag**: FIX + PERF + IMPL
+**Trigger**: Founder complaint — "halo" jawab 71 detik + display "0 sumber" padahal backend return 3 sources. UX tidak enak.
+
+**Root cause analysis**:
+1. **Performa 71s**: `omnyx_direction.py` `IntentClassifier` tidak punya greeting pattern. Query "halo" → intent "general" → complexity "analytical" → model 7B + persona_fanout + corpus + web + dense + sanad validation. 5-6 LLM calls paralel/sekuensial di CPU = 71s.
+2. **Display "0 sumber"**: Frontend `main.ts` membaca `result.sources_used` (line 1437-1438, 1444). Tapi `ChatResponse` backend TIDAK punya field `sources_used` — hanya punya `citations`. Jadi `result.sources_used` selalu `undefined` → `[].length = 0` → meta text "0 sumber".
+
+**Fixes applied**:
+
+### 1. Backend — Greeting Fast-Path (`apps/brain_qa/brain_qa/omnyx_direction.py`)
+- Add `import re` (was missing! caused NameError during test collection)
+- Add `_GREETING_RE` regex ke `IntentClassifier` — match standalone greetings: halo/hai/hi/hello/assalamu/salam/pagi/siang/sore/malam/terima kasih
+- Add `greeting` intent → tools = [] → complexity "simple", n_persona=0, model 1.5B
+- Add early return in `OmnyxDirector.process()`: if intent == "greeting" → `_greeting_response()` → return immediately, skip ALL tool calls + sanad + hafidz
+- Add `_greeting_response()` method — persona-aware greeting + time-of-day aware (pagi/siang/sore/malam/salam)
+
+**Result**: `halo` dari 71,237ms → **5ms** (14,200x faster). Session ID prefix: `holistic_` (OMNYX path) bukan `holistic_legacy_`.
+
+### 2. Frontend — Display Bug Fix (`SIDIX_USER_UI/src/main.ts` + `src/api.ts`)
+- `api.ts`: Add `citations` field ke `ChatHolisticResponse` interface
+- `main.ts` line 1432-1444: Replace `result.sources_used` with `result.citations` mapping:
+  ```ts
+  const _citations = (result.citations || []) as Array<{source?: string}>;
+  const _sources = _citations.map(c => c.source || '').filter(Boolean);
+  ```
+- Add `greeting: 'greeting'` ke `srcMap` untuk chip display
+
+**Verify LIVE (VPS)**:
+```bash
+$ curl -X POST http://localhost:8765/agent/chat_holistic -d '{"question":"halo"}'
+{
+  "session_id": "holistic_b95a1d05",
+  "answer": "Halo! Senang bertemu dengan Anda. Ada yang bisa saya bantu hari ini?",
+  "citations": [{"source": "greeting"}],
+  "duration_ms": 5,
+  ...
+}
+```
+
+**Browser hash verify**: `index-DDohzxTU.js` + `index-CE_N1O_Q.css` — browser ↔ VPS dist MATCH.
+
+**Refer**: commit `3012f9b` on branch `work/gallant-ellis-7cd14d`
+
