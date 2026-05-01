@@ -521,6 +521,20 @@ class OmnyxDirector:
             except Exception as e:
                 log.debug("[omnyx] Aspiration detection failed: %s", e)
             
+            # Sprint E: Pencipta Mode trigger check
+            try:
+                from .pencipta_mode import check_all_triggers, run_pencipta
+                trigger = check_all_triggers()
+                if trigger.all_met():
+                    log.info("[omnyx] Pencipta Mode triggered! (score=%.2f)", trigger.score())
+                    # Run Pencipta in background (non-blocking)
+                    import asyncio
+                    asyncio.create_task(_run_pencipta_async(trigger.score()))
+                else:
+                    log.debug("[omnyx] Pencipta triggers: %.2f — not yet", trigger.score())
+            except Exception as e:
+                log.debug("[omnyx] Pencipta check failed: %s", e)
+            
             # If retry verdict, attempt one more synthesis with failure context
             if sanad_result.verdict == "retry" and sanad_result.failure_context:
                 log.info("[omnyx] Sanad retry triggered with failure context")
@@ -809,6 +823,21 @@ Jawaban baru:"""
                 log.info("[omnyx] Knowledge stored: %s", store_result.success)
             except Exception as e:
                 log.warning("[omnyx] Knowledge store failed: %s", e)
+
+
+# ── Pencipta Mode helper ─────────────────────────────────────────────────
+
+async def _run_pencipta_async(trigger_score: float) -> None:
+    """Run Pencipta Mode asynchronously (non-blocking)."""
+    try:
+        from .pencipta_mode import run_pencipta
+        import asyncio
+        # Run in thread to avoid blocking
+        output = await asyncio.to_thread(run_pencipta, force=True)
+        if output:
+            log.info("[pencipta] Async complete: %s (%s)", output.id, output.title)
+    except Exception as e:
+        log.debug("[pencipta] Async run failed: %s", e)
 
 
 # ── Public API ───────────────────────────────────────────────────────────

@@ -1139,6 +1139,78 @@ def create_app() -> "FastAPI":
         except Exception as e:
             return {"ok": False, "error": str(e)}
 
+    # ── Sprint E: Pencipta Mode endpoints ─────────────────────────────────────
+    @app.get("/agent/pencipta/status")
+    async def pencipta_status(request: Request):
+        """Pencipta Mode trigger status."""
+        _enforce_rate(request)
+        try:
+            from .pencipta_mode import check_all_triggers
+            trigger = check_all_triggers()
+            return {
+                "ok": True,
+                "triggered": trigger.all_met(),
+                "score": trigger.score(),
+                "self_learn": trigger.self_learn,
+                "self_improve": trigger.self_improve,
+                "self_motivate": trigger.self_motivate,
+            }
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    @app.post("/agent/pencipta/trigger")
+    async def pencipta_trigger(request: Request):
+        """Manually trigger Pencipta Mode."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+            from .pencipta_mode import run_pencipta
+            import asyncio
+            output = await asyncio.to_thread(
+                run_pencipta,
+                force=True,
+                output_type=body.get("output_type", ""),
+                domain=body.get("domain", ""),
+            )
+            if output:
+                return {
+                    "ok": True,
+                    "output": {
+                        "id": output.id,
+                        "type": output.output_type,
+                        "title": output.title,
+                        "domain": output.domain,
+                        "content": output.content[:500],
+                        "sanad_score": output.sanad_score,
+                        "status": output.status,
+                    }
+                }
+            return {"ok": False, "error": "Generation failed or triggers not met"}
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    @app.get("/agent/pencipta/outputs")
+    async def pencipta_outputs(request: Request):
+        """List Pencipta Mode outputs."""
+        _enforce_rate(request)
+        try:
+            from .pencipta_mode import list_outputs
+            limit = int(request.query_params.get("limit", "50"))
+            outputs = list_outputs(limit=limit)
+            return {"ok": True, "outputs": outputs}
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    @app.get("/agent/pencipta/stats")
+    async def pencipta_stats(request: Request):
+        """Pencipta Mode statistics."""
+        _enforce_rate(request)
+        try:
+            from .pencipta_mode import stats
+            return {"ok": True, "stats": stats()}
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
     # Sprint 14g: CouncilRequest moved to module top-level (line ~456) for
     # Pydantic 2.13 schema gen compat — broke /openapi.json before fix.
     @app.post("/agent/council")
