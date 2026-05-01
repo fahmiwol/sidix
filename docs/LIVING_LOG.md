@@ -16192,3 +16192,40 @@ Browser user → https://app.sidixlab.com   (frontend, port 4000)
 - `apps/brain_qa/brain_qa/mojeek_search.py`
 - `apps/brain_qa/brain_qa/lite_browser.py`
 
+
+
+### 2026-05-01 (bagian 19 — IMPL: Sprint 1 Speed Demon + Sprint 2 See & Hear)
+
+**Dari:** Kimi Code CLI
+**Hasil:** 2 sprint selesai, holistic integration
+
+#### Sprint 1: Speed Demon — Intent-based Complexity Routing
+- **Problem:** Latency 87s karena persona_fanout 3× Ollama 1.5B CPU + synthesis 7B CPU untuk SEMUA query.
+- **Solution:** `IntentClassifier.classify_complexity()` — map intent → (complexity, n_persona, synth_model).
+  - `simple_factual` (siapa/apa/kapan/berapa): **0 persona**, model **qwen2.5:1.5b**
+  - `creative` (buat gambar/cerita): **1 persona**, model **qwen2.5:7b**
+  - `analytical` (bandingkan/analisis): **3 persona**, model **qwen2.5:7b**
+- **OmnyxDirector:** complexity-aware turns — skip persona_brain untuk simple queries.
+- **Synthesis:** corpus passthrough → web direct → synthesis fallback (hierarchical).
+- **Response:** expose `complexity` + `synth_model` untuk observability.
+
+#### Sprint 2: See & Hear — Multimodal Input Infrastructure
+- **Problem:** User tidak bisa upload gambar/audio di chat. `/agent/multimodal` hanya terima path string.
+- **Solution:**
+  - **Backend:** `/upload/image` + `/upload/audio` endpoints (multipart, save ke workspace/uploads/)
+  - **ChatRequest:** +`image_path` +`audio_path` fields
+  - **chat_holistic:** if image/audio present → `process_multimodal()` → ReAct
+  - **Frontend:** `attach-btn` click → file picker → `uploadImage()` → backend → `pendingImagePath`
+  - **Visual feedback:** placeholder shows 📎 filename, border highlight gold
+- **Mock vision:** `_extract_image_caption` return `[Image at {path}]` — placeholder untuk VLM real (GPU).
+
+#### Commit
+- `ec68923` — `feat: Sprint 2 See & Hear — multimodal input infrastructure`
+- `97a97fd` — `feat: Sprint 1 Speed Demon — intent-based complexity routing`
+
+**Refer:**
+- `apps/brain_qa/brain_qa/omnyx_direction.py` (IntentClassifier.COMPLEXITY_MAP, OmnyxDirector complexity-aware)
+- `apps/brain_qa/brain_qa/agent_serve.py` (/upload/image, /upload/audio, chat_holistic multimodal)
+- `SIDIX_USER_UI/src/main.ts` (attach-btn handler, pendingImagePath)
+- `SIDIX_USER_UI/src/api.ts` (uploadImage, askHolistic opts)
+
