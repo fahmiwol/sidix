@@ -151,6 +151,9 @@ export interface ChatHolisticResponse {
   orchestrator_latency_ms: number;
   orchestrator_errors: string[];
   debug_bundle?: unknown;
+  // Sprint J: conversation memory
+  conversation_id?: string;
+  session_id?: string;
 }
 
 /**
@@ -165,7 +168,7 @@ export async function askHolistic(
   question: string,
   persona?: Persona,
   signal?: AbortSignal,
-  opts?: { image_path?: string; audio_path?: string },
+  opts?: { image_path?: string; audio_path?: string; conversationId?: string },
 ): Promise<ChatHolisticResponse> {
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
@@ -175,6 +178,8 @@ export async function askHolistic(
   if (persona) body.persona = persona;
   if (opts?.image_path) body.image_path = opts.image_path;
   if (opts?.audio_path) body.audio_path = opts.audio_path;
+  // Sprint J: pass conversation_id so backend loads history
+  if (opts?.conversationId) body.conversation_id = opts.conversationId;
 
   const res = await fetch(`${BRAIN_QA_BASE}/agent/chat_holistic`, {
     method: 'POST',

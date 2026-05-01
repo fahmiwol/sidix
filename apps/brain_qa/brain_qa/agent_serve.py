@@ -1902,6 +1902,26 @@ def create_app() -> "FastAPI":
         if effective_persona not in _ALLOWED_PERSONAS:
             effective_persona = "UTZ"
 
+        # Sprint J: conversation memory — load history before calling OMNYX
+        effective_user_id = (req.user_id or "").strip() or request.headers.get("x-user-id", "anon").strip()
+        effective_conversation_id = (req.conversation_id or "").strip() or request.headers.get("x-conversation-id", "").strip()
+        if not effective_conversation_id:
+            effective_conversation_id = memory_store.create_conversation(
+                user_id=effective_user_id,
+                title=req.question[:60],
+                persona=effective_persona,
+            )
+        conversation_context: list[dict] = []
+        try:
+            conversation_context = memory_store.get_recent_context(effective_conversation_id)
+        except Exception:
+            pass
+        # Inject context into question so OMNYX has prior turns
+        working_question = req.question
+        if conversation_context:
+            from .agent_react import _inject_conversation_context
+            working_question = _inject_conversation_context(req.question, conversation_context)
+
         # OMNYX Direction — primary path
         # Sprint See & Hear: if image/audio present, use multimodal input
         try:
@@ -1930,12 +1950,23 @@ def create_app() -> "FastAPI":
                     confidence="sedang",
                     confidence_score=0.5,
                     answer_type="fakta",
-                    user_id=req.user_id,
-                    conversation_id=req.conversation_id,
+                    user_id=effective_user_id,
+                    conversation_id=effective_conversation_id,
                 )
 
-            result = await director.run(req.question, persona=effective_persona)
+            result = await director.run(working_question, persona=effective_persona)
             duration_ms = int((time.time() - t0) * 1000)
+
+            # Sprint J: persist user message + assistant answer to memory
+            try:
+                memory_store.add_message(effective_conversation_id, "user", req.question, persona=effective_persona)
+                memory_store.add_message(
+                    effective_conversation_id, "assistant",
+                    result.get("answer", ""), persona=effective_persona,
+                    confidence_score=0.7 if result.get("confidence") == "tinggi" else 0.5,
+                )
+            except Exception as mem_err:
+                log.debug("[chat_holistic] memory save skipped: %s", mem_err)
 
             return ChatResponse(
                 session_id=f"holistic_{uuid.uuid4().hex[:8]}",
@@ -1949,8 +1980,8 @@ def create_app() -> "FastAPI":
                 confidence=result.get("confidence", "sedang"),
                 confidence_score=0.7 if result.get("confidence") == "tinggi" else 0.5,
                 answer_type="fakta",
-                user_id=req.user_id,
-                conversation_id=req.conversation_id,
+                user_id=effective_user_id,
+                conversation_id=effective_conversation_id,
                 # Sprint A+B: expose Sanad + Hafidz metrics
                 sanad_score=result.get("sanad_score", 0.0),
                 sanad_verdict=result.get("sanad_verdict", ""),
@@ -1966,7 +1997,7 @@ def create_app() -> "FastAPI":
             from .multi_source_orchestrator import MultiSourceOrchestrator
             orchestrator = MultiSourceOrchestrator()
             bundle = await orchestrator.gather_all(
-                req.question,
+                working_question,
                 enable_web=True,
                 enable_corpus=True,
                 enable_persona_fanout=True,
@@ -1975,6 +2006,13 @@ def create_app() -> "FastAPI":
             synth = CognitiveSynthesizer()
             result = await synth.synthesize(bundle)
             duration_ms = int((time.time() - t0) * 1000)
+
+            # Sprint J: persist to memory
+            try:
+                memory_store.add_message(effective_conversation_id, "user", req.question, persona=effective_persona)
+                memory_store.add_message(effective_conversation_id, "assistant", result.answer, persona=effective_persona)
+            except Exception:
+                pass
 
             return ChatResponse(
                 session_id=f"holistic_legacy_{uuid.uuid4().hex[:8]}",
@@ -1988,8 +2026,8 @@ def create_app() -> "FastAPI":
                 confidence=result.confidence,
                 confidence_score=result.confidence_score,
                 answer_type=result.answer_type,
-                user_id=req.user_id,
-                conversation_id=req.conversation_id,
+                user_id=effective_user_id,
+                conversation_id=effective_conversation_id,
             )
         except Exception as fallback_err:
             log.error("[chat_holistic] Fallback also failed: %s", fallback_err)

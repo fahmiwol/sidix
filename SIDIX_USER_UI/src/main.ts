@@ -1427,7 +1427,14 @@ async function doHolistic(question: string) {
       addProgressLine('Synthesizing via /agent/chat_holistic...');
       const result = await askHolistic(question, persona, undefined, {
         image_path: pendingImagePath || undefined,
+        // Sprint J: pass conversation_id so backend injects prior turns into LLM context
+        conversationId: getCurrentConversationId() || undefined,
       });
+
+      // Sprint J: persist conversation_id from response for next request
+      if (result.conversation_id) {
+        setCurrentConversationId(result.conversation_id);
+      }
 
       // Map citations → sources for chip display
       // Fix 2026-05-01: backend returns `citations` (not `sources_used`)
