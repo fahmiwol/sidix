@@ -17099,3 +17099,14 @@ curl -X POST http://localhost:8765/agent/maqashid/tune -d '{"sample_size":30}'
 - **DEPLOY:** Landing page ke VPS via SSH (key `galantara_deploy_ed25519`) — git pull + copy ke `/www/wwwroot/sidixlab.com/` ✅
 - **TEST:** Verifikasi live `sidixlab.com` — PayPal SDK + Hosted Button (`K37VVLFGJC5TY`) + Ko-fi link (`ko-fi.com/sidix`) muncul di HTML ✅
 
+### 2026-05-02 (Kimi — Cleanup 7 Audit Issues + Deploy)
+
+- **DELETE:** `sanad_orchestrator.py` orphan (665 baris) — duplikat, tidak dipakai OMNYX default. Import di `agent_serve.py` dan `inventory_memory.py` sudah dalam try/except, aman. ✅
+- **FIX:** `tools_used` mismatch — tambah field `tools_used` ke `OmnyxSession` + expose di return `omnyx_process()`. Self-test loop kini dapat membaca tools diversity. ✅
+- **FIX:** `asyncio.run()` fragile di `pencipta_mode.py:533,552` — ganti ke `asyncio.get_event_loop().run_until_complete()`. ✅
+- **FIX:** Wire `persona_adapter.py` ke OMNYX synthesis — `_src_persona_fanout` sekarang prefer `get_persona_config()` system prompt daripada hardcoded `PERSONA_DESCRIPTIONS`. ✅
+- **FIX:** Filename mismatch — `docs/STATUS_TODAY.md` `aspiration_tool.py` → `aspiration_detector.py`. ✅
+- **DOC:** `persona_adapter.py` header — tambah status "prompt-only, DoRA training pending, OMNYX wiring partial". ✅
+- **TEST:** Compileall PASS, pytest 35 passed / 1 skipped (pre-existing pytest-asyncio missing). ✅
+- **DEPLOY:** VPS `git pull` + `pm2 restart sidix-brain` — health ok, model_ready=true, corpus=3237. ✅
+
