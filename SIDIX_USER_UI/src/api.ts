@@ -145,6 +145,7 @@ export interface ChatHolisticResponse {
   confidence: string;
   n_sources: number;
   sources_used: string[];
+  citations: Array<{source: string; title?: string; url?: string}>;
   method: string;
   synthesis_latency_ms: number;
   orchestrator_latency_ms: number;

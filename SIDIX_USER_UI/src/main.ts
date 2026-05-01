@@ -1429,19 +1429,23 @@ async function doHolistic(question: string) {
         image_path: pendingImagePath || undefined,
       });
 
-      // Simulate chip completion from sources_used
+      // Map citations → sources for chip display
+      // Fix 2026-05-01: backend returns `citations` (not `sources_used`)
+      const _citations = (result.citations || []) as Array<{source?: string}>;
+      const _sources = _citations.map(c => c.source || '').filter(Boolean);
       const srcMap: Record<string, string> = {
         web_search: 'web', corpus: 'corpus', dense_index: 'dense',
         persona_fanout_5: 'persona_fanout', tools_hint: 'tools',
+        greeting: 'greeting',
       };
-      const avgMs = Math.floor((result.duration_ms || 2000) / Math.max((result.sources_used || []).length, 1));
-      for (const src of (result.sources_used || [])) {
+      const avgMs = Math.floor((result.duration_ms || 2000) / Math.max(_sources.length, 1));
+      for (const src of _sources) {
         updateChip(srcMap[src] || src, true, avgMs);
       }
 
       if (metaEl) {
         metaEl.classList.remove('hidden');
-        metaEl.textContent = `🌟 ${(result.sources_used || []).length} sumber · ${((result.duration_ms || 0) / 1000).toFixed(1)}s · ${result.method || 'holistic'}`;
+        metaEl.textContent = `🌟 ${_sources.length} sumber · ${((result.duration_ms || 0) / 1000).toFixed(1)}s · ${result.method || 'holistic'}`;
       }
 
       fullAnswer = result.answer || '';

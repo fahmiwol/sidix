@@ -32,6 +32,7 @@ from __future__ import annotations
 import asyncio
 import json
 import logging
+import re
 import time
 from dataclasses import dataclass, field
 from typing import Any, Optional
@@ -162,8 +163,18 @@ class IntentClassifier:
     - Light LLM fallback (Qwen 1.5B via Ollama, ~500ms)
     """
 
+    # Greeting fast-path regex (standalone greetings only)
+    _GREETING_RE = re.compile(
+        r'^(halo|hai|hi|hello|assalamu.?alaikum|salam|'
+        r'pagi|siang|sore|malam|'
+        r'selamat\s+(pagi|siang|sore|malam)|'
+        r'terima\s*kasih|makasih|thanks|thank\s*you)\s*[!?.]*\s*$',
+        re.I,
+    )
+
     # Heuristic patterns for quick classification
     PATTERNS = {
+        "greeting": ["halo", "hai", "hi", "hello", "assalamu", "salam", "pagi", "siang", "sore", "malam", "terima kasih", "makasih"],
         "factual_who": ["siapa", "who is", "siapakah"],
         "factual_when": ["kapan", "when", "tanggal berapa"],
         "factual_where": ["dimana", "di mana", "where is"],
@@ -192,6 +203,7 @@ class IntentClassifier:
     # Sprint Speed Demon (2026-05-01): complexity-based routing
     # Maps intent → (complexity, n_persona, synthesis_model)
     COMPLEXITY_MAP = {
+        "greeting":           ("simple", 0, "qwen2.5:1.5b"),
         "factual_who":        ("simple", 0, "qwen2.5:1.5b"),
         "factual_when":       ("simple", 0, "qwen2.5:1.5b"),
         "factual_where":      ("simple", 0, "qwen2.5:1.5b"),
@@ -208,7 +220,12 @@ class IntentClassifier:
     @classmethod
     def classify(cls, query: str) -> tuple[str, list[str]]:
         """Return (intent_type, recommended_tools)."""
-        q_lower = query.lower()
+        q_lower = query.lower().strip()
+
+        # Fast-path: standalone greeting (no tool calls needed)
+        if cls._GREETING_RE.match(q_lower):
+            log.info("[omnyx] Intent detected (greeting fast-path): greeting → no tools")
+            return "greeting", []
 
         # Rule-based matching
         for intent, keywords in cls.PATTERNS.items():
@@ -376,6 +393,15 @@ class OmnyxDirector:
             "[omnyx] Session %s started: %r | complexity=%s persona=%d model=%s",
             session.session_id, query[:60], complexity, n_persona, synth_model,
         )
+
+        # Sprint UX-opt (2026-05-01): greeting fast-path — skip all tool calls
+        if intent == "greeting":
+            session.final_answer = self._greeting_response(query, persona)
+            session.confidence = "tinggi"
+            session.sources_used = ["greeting"]
+            session.total_latency_ms = int((time.monotonic() - t0) * 1000)
+            log.info("[omnyx] Greeting fast-path: %dms", session.total_latency_ms)
+            return session
 
         # Sprint B: Pre-query Hafidz memory retrieval
         hafidz_context = None
@@ -572,6 +598,31 @@ class OmnyxDirector:
         return session
 
     # ── Internal helpers ─────────────────────────────────────────────────
+
+    def _greeting_response(self, query: str, persona: str) -> str:
+        """Return a fast greeting response based on persona."""
+        greetings: dict[str, str] = {
+            "UTZ": "Halo! Senang bertemu dengan Anda. Ada yang bisa saya bantu hari ini?",
+            "ABOO": "Halo! Saya siap membantu dengan solusi teknis atau engineering. Ada project yang sedang dikerjakan?",
+            "OOMAR": "Selamat datang! Ada topik strategis atau visi besar yang ingin didiskusikan?",
+            "ALEY": "Halo! Ada penelitian, data, atau referensi yang sedang dicari?",
+            "AYMAN": "Halo! Saya di sini untuk membantu. Ada pertanyaan umum atau topik yang ingin dibahas?",
+        }
+        base = greetings.get(persona, greetings["UTZ"])
+        q = query.lower().strip()
+        if "terima kasih" in q or "makasih" in q or "thanks" in q:
+            return "Sama-sama! Senang bisa membantu. Ada hal lain yang perlu dibantu?"
+        if "pagi" in q:
+            return f"Selamat pagi! {base}"
+        if "siang" in q:
+            return f"Selamat siang! {base}"
+        if "sore" in q:
+            return f"Selamat sore! {base}"
+        if "malam" in q:
+            return f"Selamat malam! {base}"
+        if "assalamu" in q or "salam" in q:
+            return f"Waalaikumsalam warahmatullahi wabarakatuh! {base}"
+        return base
 
     def _find_corpus_primer(self, results: list[ToolResult]) -> Optional[dict]:
         """Check if corpus result has primer-tier data."""
