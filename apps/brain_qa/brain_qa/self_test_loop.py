@@ -121,9 +121,9 @@ async def generate_test_questions(
 
     # Parse questions — satu per baris, filter kosong
     questions = [
-        line.strip("-• \t")
+        line.strip("-• \t0123456789.")
         for line in response.splitlines()
-        if line.strip() and len(line.strip()) > 15 and not line.strip().startswith(("Contoh", "Buat", "Domain", "Instruksi"))
+        if line.strip() and len(line.strip()) > 15 and not line.strip().lower().startswith(("contoh", "buat", "domain", "instruksi", "format"))
     ]
     return questions[:n] if questions else _fallback_questions(n)
 
