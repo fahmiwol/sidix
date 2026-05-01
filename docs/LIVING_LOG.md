@@ -16829,3 +16829,56 @@ curl -X POST http://localhost:8765/agent/maqashid/tune -d '{"sample_size":30}'
 
 **Refer**: branch `work/gallant-ellis-7cd14d`
 
+
+
+## 2026-04-30 — AUDIT SPRINT A–I + Riset Sprint K Multi-Agent Spawning
+
+**Tag**: AUDIT + RESEARCH + DOC
+**Trigger**: User minta review, catat, dan riset sebelum sprint lanjut.
+
+**Audit Hasil (comprehensive codebase audit oleh explore agent):**
+
+1. **Sprint A–I Implementation Status**:
+   - 9 sprint selesai, 101 tests total PASSED
+   - OMNYX pipeline wiring: Sprint A/B/C/D/E/H wired; Sprint F/G/I standalone endpoint only
+   - File inventory verified (existence, line count, test coverage)
+
+2. **Critical Issues Found**:
+   - 🔴 `sanad_orchestrator.py` = **ORPHAN/DUPLICATE** — tidak dipakai OMNYX, tidak ada test. Risk: maintenance drift.
+   - 🔴 `self_test_loop.py:208` — references `tools_used` tapi `omnyx_process()` hanya return `sources_used`. Komposit score inaccurate.
+   - 🟡 `pencipta_mode.py` — `asyncio.run()` di dalam sync function (fragile)
+   - 🟡 `persona_adapter.py` — tidak dipakai OMNYX synthesis (hardcoded descriptions di `multi_source_orchestrator`)
+   - 🟡 Filename mismatch: `aspiration_detector.py` (actual) vs `aspiration_tool.py` (dokumen)
+
+3. **Existing Multi-Agent Scaffolding Mapped**:
+   - `council.py` — MoA-lite parallel spawn + synthesis ✅ Working, no tests
+   - `parallel_executor.py` — bundle execution engine ✅ Working, tested
+   - `parallel_planner.py` — Kahn's algorithm scheduling ✅ Working, tested
+   - `hands_orchestrator.py` — goal split → dispatch → synthesis ⚠️ Sequential stub
+   - `shadow_pool.py` — 8-shadow dispatch + consensus ✅ MVP
+   - `agent_critic.py` — adversarial refinement ✅ Working
+   - `taskgraph.py` — wave DAG scheduling ⚠️ Pure scheduling, no executor
+   - `persona_research_fanout.py` — 5-persona angles ⚠️ Stub
+
+4. **Bio-Cognitive Mapping**:
+   - Fase I–IV & VI: DONE (Produksi)
+   - Fase V (Berkembang Biak): QUEUED = Sprint K
+
+**Riset Sprint K (Multi-Agent Spawning):**
+- Visi: Supervisor Agent dynamically spawns sub-agents (Research/Generation/Validation/Memory/Orchestration)
+- Arsitektur: Supervisor → Sub-Agent Factory → Lifecycle Manager → Shared Context Bus → Lead Synthesizer
+- Actor-Critic integration: Actor (UTZ/Generation) → Output → Critic (ALEY + Sanad) → threshold ≥9.5
+- Safety guardrails: max 10 agents, timeout 120s, no recursive spawn, audit log
+- Reuse strategy: council pattern (parallel spawn) + parallel_planner (dependency scheduling) + parallel_executor (bundle execution) + agent_critic (validation loop)
+- New modules: `spawning/supervisor.py`, `spawning/sub_agent_factory.py`, `spawning/lifecycle_manager.py`, `spawning/shared_context.py`
+- New endpoints: `POST /agent/spawn`, `GET /agent/spawn/{id}`, `POST /agent/spawn/{id}/aggregate`, `GET /agent/spawn/stats`
+- Target tests: 12–15 tests, all mocked LLM
+
+**Dokumen baru**:
+- `docs/HANDOFF_SPRINT_A_I_2026-04-30.md` — comprehensive audit + context preservation
+- `docs/SPRINT_K_RESEARCH_AND_PLAN.md` — detailed implementation plan for Sprint K
+
+**DECISION**: Sprint K scope = 5 sub-agent types, Actor-Critic validation, shared context bus, lifecycle management. Estimated 3 hari implementasi (Phase 1–5).
+
+**Refer**: branch `work/gallant-ellis-7cd14d`
+

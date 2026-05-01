@@ -1,8 +1,8 @@
-# SIDIX — Status Teknis Lengkap (Update 2026-05-01)
+# SIDIX — Status Teknis Lengkap (Update 2026-04-30)
 
 > Dokumen ini merangkum audit penuh terhadap **server produksi**, **codebase**, dan **live app**.
 > Tujuan: referensi bagi semua agen (dan manusia) yang bekerja di repo ini.
-> Update terakhir: 2026-05-01 — deep architecture audit + roadmap remapping + sprint A+B planning.
+> Update terakhir: 2026-04-30 — Sprint A–I COMPLETE + Sprint K research & planning + comprehensive audit.
 
 ---
 
@@ -32,7 +32,7 @@
 | **SIDIX UI** | `pm2 id:9`, `serve dist -p 4000` |
 | **Model** | `sidix-lora:latest` (Qwen2.5-7B Q4_K_M) + `qwen2.5:1.5b` (fallback) |
 | **Corpus** | 3237+ docs indexed, BM25 + sanad-tier rerank |
-| **Tests** | 79+ PASSED (Sprint A–F: 72 + Sprint 6.5: 8 + existing) |
+| **Tests** | 101+ PASSED (Sprint A–I: 101 + Sprint 6.5: 8 + existing) |
 | **Benchmark** | 70/70 pass Maqashid v2 (Sprint 6.5) |
 | **Health** | `/health` → `ok: true`, `model_ready: true`, `tools_available: 35` |
 
@@ -249,7 +249,22 @@ browser/social-radar-extension/
 
 ---
 
-_Update: 2026-04-30 — Sprint I (DoRA Persona Adapter Foundation) implemented & tested. 15/15 tests PASSED. Sprint A–I complete (101 tests total). Next: Sprint K (Multi-Agent Spawning / Bio-Cognitive Fase V)._
+_Update: 2026-04-30 — Sprint A–I COMPLETE (101 tests). Comprehensive audit menemukan 7 issues (2 high, 2 medium, 3 low). Sprint K (Multi-Agent Spawning / Bio-Cognitive Fase V) research & plan selesai. Implementation siap dimulai._
+
+**Audit Issues:**
+- 🔴 `sanad_orchestrator.py` = ORPHAN/DUPLICATE — bisa dihapus
+- 🔴 `self_test_loop.py` — `tools_used` mismatch dengan `omnyx_process()` return
+- 🟡 `pencipta_mode.py` — `asyncio.run()` di sync function (fragile)
+- 🟡 `persona_adapter.py` — tidak di-wire ke OMNYX synthesis
+- 🟢 Filename mismatch, Phase 1 stub, prompt-only adapter
+
+**Sprint K Research:**
+- Fase V Bio-Cognitive: "Berkembang Biak" — Supervisor → 5 sub-agents → synthesis
+- Reuse: council.py + parallel_planner.py + parallel_executor.py + agent_critic.py
+- New: `spawning/supervisor.py`, `spawning/sub_agent_factory.py`, `spawning/lifecycle_manager.py`, `spawning/shared_context.py`
+- Endpoints: `/agent/spawn`, `/agent/spawn/{id}`, `/agent/spawn/stats`
+- Safety: max 10 agents, timeout 120s, no recursive spawn, audit log
+- Target: 12–15 tests, 3 hari implementasi
 
 **Dokumen Penting Baru:**
 - `docs/SIDIX_POSITION_ANALYSIS_2026-05-01.md` — analisa posisi + gap + roadmap baru
