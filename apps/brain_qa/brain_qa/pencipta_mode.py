@@ -513,6 +513,18 @@ def run_pencipta(
     
     if not output:
         return None
+
+    # Sprint H: Creative Output Polish — iterate improve quality
+    try:
+        from .creative_polish import iterate_polish
+        polish_results = iterate_polish(output.content, max_iterations=2)
+        if polish_results:
+            best = polish_results[-1]
+            output.content = best.output_content
+            log.info("[pencipta] Polished: %d iterations, composite %.2f → %.2f",
+                     best.iteration, best.scores_before.composite, best.scores_after.composite)
+    except Exception as e:
+        log.debug("[pencipta] Polish skipped: %s", e)
     
     # Validate via Sanad (if possible)
     try:

@@ -1334,6 +1334,85 @@ def create_app() -> "FastAPI":
         except Exception as e:
             return {"ok": False, "error": str(e)}
 
+    # ════════════════════════════════════════════════════════════════════════
+    # SPRINT H — Creative Output Polish
+    # ════════════════════════════════════════════════════════════════════════
+
+    @app.post("/agent/pencipta/polish")
+    async def pencipta_polish(request: Request):
+        """Polish existing creative content via iteration loop."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+        except Exception:
+            body = {}
+        content = body.get("content", "")
+        if not content:
+            return {"ok": False, "error": "content wajib diisi"}
+
+        max_iter = max(1, min(int(body.get("max_iterations", 2)), 5))
+
+        try:
+            from .creative_polish import iterate_polish
+            results = iterate_polish(content, max_iterations=max_iter)
+            return {
+                "ok": True,
+                "iterations": len(results),
+                "final_content": results[-1].output_content if results else content,
+                "improvements": [
+                    {
+                        "iteration": r.iteration,
+                        "composite_before": r.scores_before.composite,
+                        "composite_after": r.scores_after.composite,
+                        "improvement": r.improvement,
+                        "converged": r.converged,
+                    }
+                    for r in results
+                ],
+            }
+        except Exception as e:
+            log.warning("[pencipta_polish] Failed: %s", e)
+            return {"ok": False, "error": str(e)}
+
+    @app.get("/agent/pencipta/quality")
+    async def pencipta_quality(request: Request):
+        """Evaluate quality of creative content (single-pass)."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+        except Exception:
+            body = {}
+        content = body.get("content", "")
+        if not content:
+            return {"ok": False, "error": "content wajib diisi"}
+
+        try:
+            from .creative_polish import evaluate_quality
+            score = evaluate_quality(content)
+            return {
+                "ok": True,
+                "scores": {
+                    "originality": score.originality,
+                    "clarity": score.clarity,
+                    "usefulness": score.usefulness,
+                    "maqashid": score.maqashid,
+                    "composite": score.composite,
+                },
+                "feedback": score.feedback,
+            }
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    @app.get("/agent/pencipta/polish_stats")
+    async def pencipta_polish_stats(request: Request):
+        """Creative polish aggregate statistics."""
+        _enforce_rate(request)
+        try:
+            from .creative_polish import get_polish_stats
+            return {"ok": True, "stats": get_polish_stats()}
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
     # Sprint 14g: CouncilRequest moved to module top-level (line ~456) for
     # Pydantic 2.13 schema gen compat — broke /openapi.json before fix.
     @app.post("/agent/council")
