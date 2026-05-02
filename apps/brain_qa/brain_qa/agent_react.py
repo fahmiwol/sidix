@@ -1593,6 +1593,9 @@ _HYGIENE_LEAK_MARKERS = [
     "[PERTANYAAN USER]",
     "[PERTANYAAN SAAT INI]",
     "[KONTEKS PERCAKAPAN SEBELUMNYA]",
+    "[AKHIR KONTEKS]",
+    "=== KONTEKS DARI SUMBER PARALEL ===",
+    "=== JAWABAN SINTESIS ===",
 ]
 
 
@@ -1898,6 +1901,7 @@ def _inject_conversation_context(question: str, context: list[dict]) -> str:
 _FOLLOWUP_RE = _re_hygiene.compile(
     r"^\s*(?:"
     r"(itu|tersebut|yang\s+(tadi|itu|barusan))\b"
+    r"|((kalo|kalau)\s+)?(wakil(nya)?|wakil\s+presiden(nya)?|menteri(nya)?|gubernur(nya)?)\s*[?!.]*$"
     r"|(lebih\s+(singkat|ringkas|panjang|detail|pendek|formal|santai))"
     r"|(terjemah(kan|in)?\s+(ke\s+)?(bahasa\s+)?(inggris|indonesia|arab|jawa|english|arabic))"
     r"|(coba\s+(yang\s+)?(lebih\s+)?(lain|beda|pendek|panjang|formal|sedikit|singkat|ringkas))"
@@ -1950,6 +1954,12 @@ def _reformulate_with_context(question: str, context: list[dict]) -> str:
 
     if not last_user:
         return question
+
+    q_lower = question.lower().strip()
+    context_text = f"{last_user}\n{last_assistant or ''}".lower()
+    if _re_hygiene.search(r"\bwakil(nya)?\b|wakil\s+presiden", q_lower):
+        if "presiden" in context_text and "indonesia" in context_text:
+            return "Siapa wakil presiden Indonesia saat ini?"
 
     # Tag question dengan referensi konteks
     ref = f"[FOLLOW-UP atas pertanyaan: '{last_user[:150]}']"

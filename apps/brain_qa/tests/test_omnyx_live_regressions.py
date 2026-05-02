@@ -1,8 +1,10 @@
 from brain_qa.omnyx_direction import (
     IntentClassifier,
+    _sanitize_public_answer,
     _personal_memory_response,
     _select_relevant_web_answer,
 )
+from brain_qa.agent_react import _apply_hygiene, _reformulate_with_context
 
 
 def test_hijau_does_not_match_hi_greeting():
@@ -69,3 +71,45 @@ Dari catatan QA tadi, apa kode taman saya dan apa prioritas saya? Jawab singkat.
 
     assert "Kode taman Anda: Raudah-Alpha" in answer
     assert "Prioritas Anda: anti-halusinasi" in answer
+
+
+def test_followup_wakilnya_reformulates_from_president_context():
+    context = [
+        {"role": "user", "content": "siapa presiden indonesia?"},
+        {
+            "role": "assistant",
+            "content": "Presiden Indonesia saat ini adalah Prabowo Subianto, dilantik pada Oktober 2024.",
+        },
+    ]
+
+    reformulated = _reformulate_with_context("kalo wakilnya?", context)
+
+    assert reformulated == "Siapa wakil presiden Indonesia saat ini?"
+
+
+def test_public_answer_sanitizer_removes_prompt_leak_sections():
+    leaky = """Presiden Indonesia saat ini adalah Prabowo Subianto.
+
+---
+
+**ATRIBUSI**
+
+- Web Search: Dari Wikipedia.
+
+---
+
+**RESPONS NATURAL**
+
+Kalau kamu perlu informasi lebih lanjut, hubungi saya!
+[AKHIR KONTEKS]
+
+[PERTANYAAN SAAT INI]
+kalo wakilnya?
+"""
+
+    answer = _sanitize_public_answer(leaky)
+    hygienic = _apply_hygiene(leaky)
+
+    assert answer == "Presiden Indonesia saat ini adalah Prabowo Subianto."
+    assert "[AKHIR KONTEKS]" not in hygienic
+    assert "[PERTANYAAN SAAT INI]" not in hygienic

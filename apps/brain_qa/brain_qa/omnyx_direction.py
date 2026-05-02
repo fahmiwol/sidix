@@ -52,6 +52,29 @@ def _actual_question(query: str) -> str:
     return query.strip()
 
 
+def _sanitize_public_answer(text: str) -> str:
+    """Remove internal prompt/context leakage before returning an answer."""
+    if not text:
+        return text
+    try:
+        from .agent_react import _apply_hygiene
+        text = _apply_hygiene(text)
+    except Exception:
+        pass
+
+    markers = ["\n---", "**ATRIBUSI**", "**RESPONS NATURAL**", "[AKHIR KONTEKS]"]
+    cut_positions = [text.find(marker) for marker in markers if text.find(marker) > 0]
+    if cut_positions:
+        candidate = text[:min(cut_positions)].strip()
+        if len(candidate) >= 20:
+            text = candidate
+
+    text = re.sub(r"(?im)^\s*\*\*(ATRIBUSI|RESPONS NATURAL)\*\*\s*$", "", text)
+    text = re.sub(r"(?im)^\s*-\s*(Web Search|Corpus|Semantic Index|Persona)\s*:.*$", "", text)
+    text = re.sub(r"\n{3,}", "\n\n", text)
+    return text.strip()
+
+
 def _clean_memory_value(value: str) -> str:
     value = value.strip(" \t\r\n:;,.!?\"'")
     bad_values = {"tadi", "barusan", "ini", "itu", "apa", "siapa", "jawab singkat"}
@@ -525,10 +548,11 @@ class OmnyxDirector:
         """
         import uuid
         t0 = time.monotonic()
+        tool_query = _actual_question(query)
 
         session = OmnyxSession(
             session_id=f"omnyx_{uuid.uuid4().hex[:8]}",
-            query=query,
+            query=tool_query,
             persona=persona,
         )
 
@@ -565,7 +589,7 @@ class OmnyxDirector:
         try:
             from .hafidz_injector import HafidzInjector, build_hafidz_prompt
             hafidz = HafidzInjector()
-            hafidz_context = await hafidz.retrieve_context(query, persona, max_examples=2)
+            hafidz_context = await hafidz.retrieve_context(tool_query, persona, max_examples=2)
             if hafidz_context.golden_examples or hafidz_context.lesson_warnings:
                 session.hafidz_injected = True
                 log.info("[omnyx] Hafidz context injected: %d examples, %d warnings",
@@ -579,7 +603,7 @@ class OmnyxDirector:
         for i, tool_name in enumerate(recommended_tools):
             call = ToolCall(
                 tool_name=tool_name,
-                args={"query": query},
+                args={"query": tool_query},
                 call_id=f"t1_{i}_{tool_name}",
                 turn=1,
             )
@@ -608,7 +632,7 @@ class OmnyxDirector:
         # Turn 2: Determine if more tools needed (complexity-aware)
         # Sprint Speed Demon: skip extra turns for simple queries
         if complexity != "simple" and len(session.turns) < self.max_turns:
-            turn2 = await self._plan_next_turn(session, query, persona, complexity, n_persona)
+            turn2 = await self._plan_next_turn(session, tool_query, persona, complexity, n_persona)
             if turn2.tool_calls:
                 results = await asyncio.gather(*[
                     self.executor.execute(call) for call in turn2.tool_calls
@@ -619,12 +643,13 @@ class OmnyxDirector:
         # Synthesis: merge all tool results into final answer
         # Sprint B: inject Hafidz context into synthesis
         session.final_answer, session.confidence, session.sources_used = \
-            await self._synthesize(session, query, persona, complexity, synth_model, hafidz_context)
+            await self._synthesize(session, tool_query, persona, complexity, synth_model, hafidz_context)
+        session.final_answer = _sanitize_public_answer(session.final_answer)
 
         # Sprint G: Maqashid evaluation post-synthesis, pre-Sanad
         try:
             from .maqashid_profiles import evaluate_maqashid
-            maq_result = evaluate_maqashid(query, session.final_answer, persona_name=persona)
+            maq_result = evaluate_maqashid(tool_query, session.final_answer, persona_name=persona)
             if maq_result.get("status") == "block":
                 log.warning("[omnyx] Maqashid BLOCK: %s", maq_result.get("reasons"))
                 session.final_answer = maq_result.get("tagged_output", session.final_answer)
@@ -657,7 +682,7 @@ class OmnyxDirector:
             
             sanad_result = await sanad.validate(
                 answer=session.final_answer,
-                query=query,
+                query=tool_query,
                 sources=sources,
                 persona=persona,
                 tools_used=tools_used,
@@ -678,7 +703,7 @@ class OmnyxDirector:
                 hafidz_store = HafidzInjector()
                 threshold = get_threshold(complexity, tools_used)
                 store_result = await hafidz_store.store_result(
-                    query=query,
+                    query=tool_query,
                     answer=session.final_answer,
                     persona=persona,
                     sanad_score=sanad_result.consensus_score,
@@ -697,7 +722,7 @@ class OmnyxDirector:
             try:
                 from .pattern_extractor import maybe_extract_from_conversation
                 maybe_extract_from_conversation(
-                    user_message=query,
+                    user_message=tool_query,
                     assistant_response=session.final_answer,
                     session_id=session.session_id,
                 )
@@ -707,10 +732,10 @@ class OmnyxDirector:
             # Sprint D: Aspiration detection from conversation
             try:
                 from .aspiration_detector import detect_aspiration_keywords, analyze_aspiration
-                is_asp, matched = detect_aspiration_keywords(query)
+                is_asp, matched = detect_aspiration_keywords(tool_query)
                 if is_asp:
                     log.info("[omnyx] Aspiration detected: %r", matched)
-                    aspiration = analyze_aspiration(query, derived_from=session.session_id)
+                    aspiration = analyze_aspiration(tool_query, derived_from=session.session_id)
                     if aspiration:
                         from .aspiration_detector import _aspirations_index
                         # Save aspiration to index
@@ -740,13 +765,14 @@ class OmnyxDirector:
             if sanad_result.verdict == "retry" and sanad_result.failure_context:
                 log.info("[omnyx] Sanad retry triggered with failure context")
                 session.final_answer = await self._retry_synthesis(
-                    session, query, persona, complexity, synth_model, 
+                    session, tool_query, persona, complexity, synth_model,
                     sanad_result.failure_context, hafidz_context
                 )
+                session.final_answer = _sanitize_public_answer(session.final_answer)
                 # Re-validate after retry
                 sanad_result2 = await sanad.validate(
                     answer=session.final_answer,
-                    query=query,
+                    query=tool_query,
                     sources=sources,
                     persona=persona,
                     tools_used=tools_used,

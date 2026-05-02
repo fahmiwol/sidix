@@ -2033,11 +2033,14 @@ def create_app() -> "FastAPI":
             conversation_context = memory_store.get_recent_context(effective_conversation_id)
         except Exception:
             pass
-        # Inject context into question so OMNYX has prior turns
+        # Sprint J: match agent_react flow: reformulate short follow-ups
+        # before injecting conversation context for memory-aware OMNYX.
         working_question = req.question
+        contextual_question = req.question
         if conversation_context:
-            from .agent_react import _inject_conversation_context
-            working_question = _inject_conversation_context(req.question, conversation_context)
+            from .agent_react import _inject_conversation_context, _reformulate_with_context
+            contextual_question = _reformulate_with_context(req.question, conversation_context)
+            working_question = _inject_conversation_context(contextual_question, conversation_context)
 
         # OMNYX Direction — primary path
         # Sprint See & Hear: if image/audio present, use multimodal input
@@ -2073,6 +2076,12 @@ def create_app() -> "FastAPI":
 
             result = await director.run(working_question, persona=effective_persona)
             duration_ms = int((time.time() - t0) * 1000)
+
+            try:
+                from .agent_react import _apply_hygiene
+                result["answer"] = _apply_hygiene(str(result.get("answer", "")))
+            except Exception:
+                pass
 
             # Sprint J: persist user message + assistant answer to memory
             try:
@@ -2140,7 +2149,7 @@ def create_app() -> "FastAPI":
             from .multi_source_orchestrator import MultiSourceOrchestrator
             orchestrator = MultiSourceOrchestrator()
             bundle = await orchestrator.gather_all(
-                working_question,
+                contextual_question,
                 enable_web=True,
                 enable_corpus=True,
                 enable_persona_fanout=True,
@@ -2148,6 +2157,11 @@ def create_app() -> "FastAPI":
             from .cognitive_synthesizer import CognitiveSynthesizer
             synth = CognitiveSynthesizer()
             result = await synth.synthesize(bundle)
+            try:
+                from .agent_react import _apply_hygiene
+                result.answer = _apply_hygiene(result.answer)
+            except Exception:
+                pass
             duration_ms = int((time.time() - t0) * 1000)
 
             # Sprint J: persist to memory
