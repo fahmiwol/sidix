@@ -206,12 +206,36 @@ async def _wikipedia_search_async(query: str, max_results: int = 5) -> list[Moje
             except Exception:
                 return []
 
+        extracts: dict[str, str] = {}
+        if titles:
+            try:
+                extract_params = urllib.parse.urlencode({
+                    "action": "query",
+                    "prop": "extracts",
+                    "exintro": 1,
+                    "explaintext": 1,
+                    "redirects": 1,
+                    "format": "json",
+                    "titles": "|".join(titles[:max_results]),
+                })
+                extract_data = json.loads(
+                    _wiki_get(f"https://id.wikipedia.org/w/api.php?{extract_params}")
+                )
+                for page in extract_data.get("query", {}).get("pages", {}).values():
+                    title = page.get("title", "")
+                    extract = (page.get("extract") or "").strip()
+                    if title and extract:
+                        extracts[title] = extract
+            except Exception as e:
+                log.debug("[wikipedia] extract enrichment skipped: %s", e)
+
         hits = []
         for title in titles[:max_results]:
+            snippet = extracts.get(title) or f"Wikipedia: {title}"
             hits.append(MojeekHit(
                 title=title,
                 url=f"https://id.wikipedia.org/wiki/{urllib.parse.quote(title.replace(' ', '_'))}",
-                snippet=f"Wikipedia: {title}",
+                snippet=snippet[:900],
                 engine="wikipedia",
             ))
         return hits

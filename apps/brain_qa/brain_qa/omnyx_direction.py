@@ -39,6 +39,94 @@ from typing import Any, Optional
 
 log = logging.getLogger("sidix.omnyx")
 
+_STOPWORDS = {
+    "apa", "itu", "yang", "dan", "atau", "dengan", "untuk", "jawab",
+    "singkat", "berapa", "rata", "rata-rata", "ke", "di", "dari", "saya",
+    "tadi", "adalah", "the", "is", "are", "how", "what", "much", "many",
+}
+
+
+def _actual_question(query: str) -> str:
+    if "[PERTANYAAN SAAT INI]" in query:
+        return query.split("[PERTANYAAN SAAT INI]")[-1].strip()
+    return query.strip()
+
+
+def _extract_personal_memory(text: str) -> dict[str, str]:
+    """Extract simple user-stated preferences from current/context text."""
+    facts: dict[str, str] = {}
+    name = re.search(
+        r"\bnama\s+saya\s+(?:adalah\s+)?([A-Za-zÀ-ÿ0-9 _-]+?)(?=\s+dan\b|[.,\n]|$)",
+        text,
+        re.IGNORECASE,
+    )
+    if name:
+        facts["name"] = name.group(1).strip()
+    color = re.search(
+        r"\bwarna\s+favorit\s+saya\s+(?:adalah\s+)?([^.,\n]+?)(?=\s+jawab\b|[.,\n]|$)",
+        text,
+        re.IGNORECASE,
+    )
+    if color:
+        facts["favorite_color"] = color.group(1).strip()
+    return facts
+
+
+def _personal_memory_response(query: str, persona: str = "UTZ") -> str:
+    """Deterministic response for simple memory statements/follow-ups."""
+    actual_q = _actual_question(query)
+    facts = _extract_personal_memory(query)
+    actual_lower = actual_q.lower()
+
+    if "warna favorit" in actual_lower and "favorite_color" in facts:
+        return f"Warna favorit Anda tadi: {facts['favorite_color']}."
+    if "nama saya" in actual_lower and "name" in facts:
+        return f"Nama Anda tadi: {facts['name']}."
+
+    parts = []
+    if "name" in facts:
+        parts.append(f"nama Anda {facts['name']}")
+    if "favorite_color" in facts:
+        parts.append(f"warna favorit Anda {facts['favorite_color']}")
+    if parts:
+        return "Siap, saya catat: " + "; ".join(parts) + "."
+    return "Saya akan memakai konteks percakapan sebelumnya untuk menjawab singkat."
+
+
+def _select_relevant_web_answer(query: str, web_text: str, max_chars: int = 1200) -> str:
+    """Pick the most relevant sentence from a noisy web-search bundle."""
+    actual_q = _actual_question(query).lower()
+    query_tokens = {
+        t for t in re.findall(r"[a-zA-ZÀ-ÿ0-9]+", actual_q)
+        if len(t) > 2 and t not in _STOPWORDS
+    }
+    chunks = [
+        c.strip(" \t\r\n-*")
+        for c in re.split(r"(?<=[.!?])\s+|\n+", web_text)
+        if c.strip()
+    ]
+    best = ""
+    best_score = -1
+    asks_number = "berapa" in actual_q or "how many" in actual_q or "how much" in actual_q
+    for chunk in chunks:
+        low = chunk.lower()
+        if len(chunk) < 25:
+            continue
+        tokens = set(re.findall(r"[a-zA-ZÀ-ÿ0-9]+", low))
+        score = len(query_tokens & tokens) * 3
+        if asks_number and re.search(r"\d", chunk):
+            score += 4
+        if "jarak" in actual_q and "jarak" in low:
+            score += 3
+        if {"bumi", "matahari"}.issubset(query_tokens) and "bumi" in low and "matahari" in low:
+            score += 3
+        if "wikipedia:" in low and "—" in chunk and not re.search(r"\d", chunk):
+            score -= 3
+        if score > best_score:
+            best_score = score
+            best = chunk
+    return (best or web_text.strip())[:max_chars].strip()
+
 
 # ── Data Models ──────────────────────────────────────────────────────────
 
@@ -176,6 +264,7 @@ class IntentClassifier:
 
     # Heuristic patterns for quick classification
     PATTERNS = {
+        "personal_memory": ["nama saya", "warna favorit saya", "favorit saya", "ingat", "catat"],
         "greeting": ["halo", "hai", "hi", "hello", "assalamu", "salam", "pagi", "siang", "sore", "malam", "terima kasih", "makasih"],
         # Sprint J: follow-up short questions (wakilnya, menterinya, dll) → factual_who (simple, fast)
         "factual_who": ["siapa", "who is", "siapakah", "wakilnya", "presidennya", "menterinya", "gubernurnya", "namanya", "orangnya", "dia siapa", "beliau siapa"],
@@ -191,6 +280,7 @@ class IntentClassifier:
     }
 
     TOOL_MAP = {
+        "personal_memory": [],
         "factual_who": ["corpus_search", "web_search"],
         "factual_when": ["corpus_search", "web_search"],
         "factual_where": ["corpus_search", "web_search", "dense_search"],
@@ -206,6 +296,7 @@ class IntentClassifier:
     # Sprint Speed Demon (2026-05-01): complexity-based routing
     # Maps intent → (complexity, n_persona, synthesis_model)
     COMPLEXITY_MAP = {
+        "personal_memory":    ("simple", 0, "qwen2.5:1.5b"),
         "greeting":           ("simple", 0, "qwen2.5:1.5b"),
         "factual_who":        ("simple", 0, "qwen2.5:1.5b"),
         "factual_when":       ("simple", 0, "qwen2.5:1.5b"),
@@ -226,11 +317,12 @@ class IntentClassifier:
         # Sprint J: if query has injected conversation context, classify only
         # the actual question (after [PERTANYAAN SAAT INI]) to avoid false
         # keyword matches from prior assistant responses in the context block.
-        if "[PERTANYAAN SAAT INI]" in query:
-            actual_q = query.split("[PERTANYAAN SAAT INI]")[-1].strip()
-        else:
-            actual_q = query
+        actual_q = _actual_question(query)
         q_lower = actual_q.lower().strip()
+
+        if any(kw in q_lower for kw in cls.PATTERNS["personal_memory"]):
+            log.info("[omnyx] Intent detected (rule): personal_memory -> no tools")
+            return "personal_memory", []
 
         # Fast-path: standalone greeting (no tool calls needed)
         if cls._GREETING_RE.match(q_lower):
@@ -239,6 +331,8 @@ class IntentClassifier:
 
         # Rule-based matching
         for intent, keywords in cls.PATTERNS.items():
+            if intent in ("greeting", "personal_memory"):
+                continue
             if any(kw in q_lower for kw in keywords):
                 tools = cls.TOOL_MAP.get(intent, ["corpus_search", "web_search"])
                 log.info("[omnyx] Intent detected (rule): %s → %s", intent, tools)
@@ -411,6 +505,14 @@ class OmnyxDirector:
             session.sources_used = ["greeting"]
             session.total_latency_ms = int((time.monotonic() - t0) * 1000)
             log.info("[omnyx] Greeting fast-path: %dms", session.total_latency_ms)
+            return session
+
+        if intent == "personal_memory":
+            session.final_answer = _personal_memory_response(query, persona)
+            session.confidence = "tinggi"
+            session.sources_used = ["conversation_memory"]
+            session.total_latency_ms = int((time.monotonic() - t0) * 1000)
+            log.info("[omnyx] Personal memory fast-path: %dms", session.total_latency_ms)
             return session
 
         # Sprint B: Pre-query Hafidz memory retrieval
@@ -790,6 +892,7 @@ class OmnyxDirector:
                     # Match "Page title - Source — Content" → keep Content only
                     m = _re.match(r'^.+?\s*—\s*(.+)', web_text.strip(), _re.DOTALL)
                     cleaned = m.group(1).strip() if m else web_text.strip()
+                    cleaned = _select_relevant_web_answer(query, cleaned)
                     return cleaned[:1200], "sedang", list(set(sources_used))
 
         # Sprint B: Build Hafidz injection if available

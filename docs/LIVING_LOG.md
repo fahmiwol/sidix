@@ -17154,3 +17154,14 @@ curl -X POST http://localhost:8765/agent/maqashid/tune -d '{"sample_size":30}'
 - **ISSUE:** UTZ persona timeout 60s+ — RunPod cold start
 - **GAP:** Sprint J + Sprint L belum deploy ke VPS — endpoint 404
 - **ACTION:** `cd /opt/sidix && git pull origin work/gallant-ellis-7cd14d && pm2 restart sidix-brain --update-env`
+
+### 2026-05-02 (Codex — P4 Live Sync + UX Regression Fix)
+
+- **DOC:** Session Start Protocol dibaca ulang: `AGENT_ONBOARDING`, `SIDIX_BACKLOG`, `VISI_TRANSLATION_MATRIX`, `FOUNDER_IDEA_LOG`, `SIDIX_FRAMEWORKS`, `SIDIX_SELF_BOOTSTRAP_ROADMAP`, `CLAUDE.md`, `SIDIX_NORTH_STAR`, `SIDIX_CANONICAL_V1`, `SIDIX_CONTINUITY_MANIFEST`, note 312.
+- **TEST:** Git sync lokal: `work/gallant-ellis-7cd14d` lokal = `origin/work/gallant-ellis-7cd14d` pada `26bbf4e`; branch kerja masih 89 commit ahead dari `origin/main`, jadi deploy canonical tetap branch work.
+- **DEPLOY:** VPS pull pertama blocked oleh untracked files yang akan ditimpa Git (`brain/patterns/induction.jsonl`, README persona corpus). File konflik distash spesifik dengan `git stash push -u -m deploy-prepull-2026-05-02-conflicting-untracked -- ...`, lalu pull fast-forward `269115f -> 26bbf4e` dan `pm2 restart sidix-brain --update-env`.
+- **TEST:** Live health setelah restart: `model_ready=true`, `corpus_doc_count=3237`, `tools_available=50`; `sidix-brain` online, UI asset hash browser = VPS dist (`index-_7ooCiY3.js`, `index-CE_N1O_Q.css`).
+- **TEST:** UX live menemukan 2 regresi: query jarak Bumi-Matahari masih mengembalikan blok Wikipedia mentah; conversation memory gagal untuk preferensi "warna favorit hijau zamrud" karena `hi` greeting detector match substring di kata `hijau`.
+- **FIX:** `omnyx_direction.py` — tambah `personal_memory` fast-path deterministik, greeting regex standalone saja, dan `_select_relevant_web_answer()` untuk memilih kalimat web paling relevan pada simple factual.
+- **FIX:** `mojeek_search.py` — Wikipedia fallback kini enrich search result dengan intro extract API, bukan hanya judul/snippet `Wikipedia: Title`, sehingga direct answer punya konteks faktual lebih kaya saat Mojeek/DDG diblokir VPS.
+- **TEST:** Regresi lokal `apps/brain_qa/tests/test_omnyx_live_regressions.py` 3/3 PASS; gabungan memory tests 24/24 PASS; `py_compile` untuk `omnyx_direction.py` + `mojeek_search.py` PASS.
