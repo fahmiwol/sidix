@@ -2189,6 +2189,55 @@ def create_app() -> "FastAPI":
         except Exception as fallback_err:
             log.error("[chat_holistic] Fallback also failed: %s", fallback_err)
             raise HTTPException(status_code=500, detail=f"OMNYX error: {omnyx_err_str}; fallback: {fallback_err}")
+
+    @app.post("/agent/chat_holistic_stream")
+    async def agent_chat_holistic_stream(req: ChatRequest, request: Request):
+        """SSE wrapper for the canonical OMNYX holistic path used by the UI."""
+        from fastapi.responses import StreamingResponse as _SR
+        import asyncio
+        import json as _json
+        import re as _re
+
+        async def generate():
+            try:
+                yield f"data: {_json.dumps({'type': 'start', 'query': req.question})}\n\n"
+                yield f"data: {_json.dumps({'type': 'orchestrator_start'})}\n\n"
+
+                chat_response = await agent_chat_holistic(req, request)
+                answer = (chat_response.answer or "").strip()
+                yield f"data: {_json.dumps({'type': 'synthesis_start'})}\n\n"
+
+                for part in _re.findall(r'\S+\s*', answer):
+                    yield f"data: {_json.dumps({'type': 'token', 'text': part})}\n\n"
+                    await asyncio.sleep(0.005)
+
+                sources_used = list(getattr(chat_response, "sources_used", None) or [])
+                if not sources_used:
+                    sources_used = [
+                        c.get("source", "")
+                        for c in (getattr(chat_response, "citations", None) or [])
+                        if isinstance(c, dict) and c.get("source")
+                    ]
+                done_payload = {
+                    "type": "done",
+                    "duration_ms": chat_response.duration_ms,
+                    "confidence": chat_response.confidence,
+                    "n_sources": chat_response.n_sources or len(sources_used),
+                    "sources_used": sources_used,
+                    "method": chat_response.method,
+                    "session_id": chat_response.session_id,
+                    "conversation_id": chat_response.conversation_id,
+                }
+                yield f"data: {_json.dumps(done_payload)}\n\n"
+            except HTTPException as exc:
+                payload = {"type": "error", "message": str(exc.detail), "status_code": exc.status_code}
+                yield f"data: {_json.dumps(payload)}\n\n"
+            except Exception as exc:
+                payload = {"type": "error", "message": str(exc)}
+                yield f"data: {_json.dumps(payload)}\n\n"
+
+        return _SR(generate(), media_type="text/event-stream")
+
     # ── GET /dashboard ─ public visi coverage dashboard (HTML) ────────────────
     @app.get("/dashboard")
     def get_dashboard():
