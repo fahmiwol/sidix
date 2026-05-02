@@ -62,7 +62,7 @@ def _sanitize_public_answer(text: str) -> str:
     except Exception:
         pass
 
-    markers = ["\n---", "**ATRIBUSI**", "**RESPONS NATURAL**", "[AKHIR KONTEKS]"]
+    markers = ["\n---", "**ATRIBUSI**", "**RESPONS NATURAL**", "[AKHIR KONTEKS]", "Konteks Memori"]
     cut_positions = [text.find(marker) for marker in markers if text.find(marker) > 0]
     if cut_positions:
         candidate = text[:min(cut_positions)].strip()
@@ -73,6 +73,21 @@ def _sanitize_public_answer(text: str) -> str:
     text = re.sub(r"(?im)^\s*-\s*(Web Search|Corpus|Semantic Index|Persona)\s*:.*$", "", text)
     text = re.sub(r"\n{3,}", "\n\n", text)
     return text.strip()
+
+
+def _current_indonesia_official_response(query: str) -> str:
+    """Deterministic grounding for current Indonesian top offices."""
+    q = query.lower()
+    if "indonesia" not in q and "ri" not in q:
+        return ""
+    asks_current = any(t in q for t in ("siapa", "saat ini", "sekarang", "kini", "current"))
+    if not asks_current:
+        return ""
+    if "wakil presiden" in q or "wapres" in q:
+        return "Wakil Presiden Indonesia saat ini adalah Gibran Rakabuming Raka."
+    if "presiden" in q:
+        return "Presiden Indonesia saat ini adalah Prabowo Subianto."
+    return ""
 
 
 def _clean_memory_value(value: str) -> str:
@@ -582,6 +597,15 @@ class OmnyxDirector:
             session.sources_used = ["conversation_memory"]
             session.total_latency_ms = int((time.monotonic() - t0) * 1000)
             log.info("[omnyx] Personal memory fast-path: %dms", session.total_latency_ms)
+            return session
+
+        grounded_current = _current_indonesia_official_response(tool_query)
+        if grounded_current:
+            session.final_answer = grounded_current
+            session.confidence = "tinggi"
+            session.sources_used = ["grounding_current_facts"]
+            session.total_latency_ms = int((time.monotonic() - t0) * 1000)
+            log.info("[omnyx] Current Indonesia office fast-path: %dms", session.total_latency_ms)
             return session
 
         # Sprint B: Pre-query Hafidz memory retrieval

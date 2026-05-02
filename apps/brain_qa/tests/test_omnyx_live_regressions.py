@@ -1,5 +1,6 @@
 from brain_qa.omnyx_direction import (
     IntentClassifier,
+    _current_indonesia_official_response,
     _sanitize_public_answer,
     _personal_memory_response,
     _select_relevant_web_answer,
@@ -85,6 +86,18 @@ def test_followup_wakilnya_reformulates_from_president_context():
     reformulated = _reformulate_with_context("kalo wakilnya?", context)
 
     assert reformulated == "Siapa wakil presiden Indonesia saat ini?"
+
+
+def test_current_indonesia_official_fast_path_answers_president():
+    answer = _current_indonesia_official_response("siapa presiden indonesia?")
+
+    assert answer == "Presiden Indonesia saat ini adalah Prabowo Subianto."
+
+
+def test_current_indonesia_official_fast_path_answers_vice_president():
+    answer = _current_indonesia_official_response("Siapa wakil presiden Indonesia saat ini?")
+
+    assert answer == "Wakil Presiden Indonesia saat ini adalah Gibran Rakabuming Raka."
 
 
 def test_public_answer_sanitizer_removes_prompt_leak_sections():
