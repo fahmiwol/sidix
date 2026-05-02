@@ -2222,9 +2222,9 @@ def create_app() -> "FastAPI":
                     "type": "done",
                     "duration_ms": chat_response.duration_ms,
                     "confidence": chat_response.confidence,
-                    "n_sources": chat_response.n_sources or len(sources_used),
+                    "n_sources": getattr(chat_response, "n_sources", 0) or len(sources_used),
                     "sources_used": sources_used,
-                    "method": chat_response.method,
+                    "method": getattr(chat_response, "method", "holistic_stream"),
                     "session_id": chat_response.session_id,
                     "conversation_id": chat_response.conversation_id,
                 }
