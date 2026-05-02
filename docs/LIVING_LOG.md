@@ -17110,3 +17110,10 @@ curl -X POST http://localhost:8765/agent/maqashid/tune -d '{"sample_size":30}'
 - **TEST:** Compileall PASS, pytest 35 passed / 1 skipped (pre-existing pytest-asyncio missing). ✅
 - **DEPLOY:** VPS `git pull` + `pm2 restart sidix-brain` — health ok, model_ready=true, corpus=3237. ✅
 
+### 2026-05-02 (Kimi — Merge main attempt + Status sync)
+
+- **MERGE:** `work/gallant-ellis-7cd14d` → `main` lokal — fast-forward berhasil (`13d1071` → `ad0c93a`, 1.545 file). ✅
+- **BLOCK:** Push `main` ke GitHub — conflict dengan `origin/main` (7 file: `agent_serve.py`, `cognitive_synthesizer.py`, `multi_source_orchestrator.py`, `api.ts`, `main.ts`, `LIVING_LOG.md`, `daily_synthesis.sh`). Merge di-abort; `main` direcreate dari `origin/main`. 🚫
+- **DECISION:** Merge `main` ditunda untuk manual resolution — conflict di file kritis (8.000+ baris `agent_serve.py`) terlalu risky untuk auto-resolve. `work/gallant-ellis-7cd14d` tetap sebagai branch kanonis deploy.
+- **UPDATE:** `docs/STATUS_TODAY.md` — versi landing page + donate section tercatat.
+
