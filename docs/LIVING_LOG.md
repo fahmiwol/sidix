@@ -17128,3 +17128,18 @@ curl -X POST http://localhost:8765/agent/maqashid/tune -d '{"sample_size":30}'
 - **DOC:** `brain/public/research_notes/312_ai_agent_landscape_2025_sidix_gap_analysis.md` — competitive analysis (GPT/Claude/Gemini/Perplexity/Mistral), I/O comparison table, MCP ecosystem, user expectations ranking, SIDIX position + gaps + unique advantages, Sprint L blueprint, brain/nerves/senses metaphor. ✅
 - **COMMIT:** `129c83a` feat(sprint-l) — 1719 insertions, 6 files. Pushed `work/gallant-ellis-7cd14d`. ✅
 - **STATUS:** Sprint L fully implemented + pushed. VPS deploy pending (see next session or manual trigger).
+
+### 2026-05-02 (Claude — P1: Merge origin/main ke work branch)
+
+- **MERGE:** `origin/main` → `work/gallant-ellis-7cd14d` — 8 conflict files resolved manually.
+- **RESOLVED:**
+  - `agent_serve.py`: keep ours (OMNYX+Sprint-L) + cherry-pick `/dashboard` + `/agent/sidix_state` dari main
+  - `cognitive_synthesizer.py` + `multi_source_orchestrator.py`: keep ours (lebih lengkap, 333 vs 281, 361 vs 301 baris)
+  - `api.ts` + `main.ts`: keep ours (Sprint J conversation memory + detectIntentMode + streaming fallback)
+  - `LIVING_LOG.md`: keep ours (main section empty)
+  - `daily_synthesis.sh`: take main (env var REPO + docs/ output path, lebih robust)
+  - `.gitignore`: keep ours (more patterns)
+- **INCOMING dari main**: `SIDIX_NEXT_UI/` (Next.js UI scaffold), `.claude/skills/`, docs updates
+- **SYNTAX CHECK:** `agent_serve.py`, `cognitive_synthesizer.py`, `multi_source_orchestrator.py` — semua OK ✅
+- **COMMIT:** `3c1cc3c` merge(main) — pushed ke `work/gallant-ellis-7cd14d` ✅
+- **STATUS:** Branch kita sekarang up-to-date dengan main. VPS deploy diperlukan.
