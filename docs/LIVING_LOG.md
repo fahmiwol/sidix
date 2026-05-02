@@ -17143,3 +17143,14 @@ curl -X POST http://localhost:8765/agent/maqashid/tune -d '{"sample_size":30}'
 - **SYNTAX CHECK:** `agent_serve.py`, `cognitive_synthesizer.py`, `multi_source_orchestrator.py` — semua OK ✅
 - **COMMIT:** `3c1cc3c` merge(main) — pushed ke `work/gallant-ellis-7cd14d` ✅
 - **STATUS:** Branch kita sekarang up-to-date dengan main. VPS deploy diperlukan.
+
+### 2026-05-02 (Claude — P4: Sprint J Browser Testing + VPS Audit)
+
+- **TEST:** Live VPS `ctrl.sidixlab.com/health` — model_ready=true, corpus=3237, tools=48, senses=12 (9 active) OK
+- **TEST:** `/agent/chat_holistic` factual query — latency 9-12s, LLM responding OK
+- **ISSUE:** `sanad_score` stuck di 0.6 — kemungkinan scale 0-1 bukan 0-10 (mismatch threshold Sprint L < 4.0)
+- **ISSUE:** Jawaban = web article title saja, synthesis tidak optimal — quality gap pre-deploy
+- **ISSUE:** `tools_used: []` padahal web search digunakan — tracking bug pre-deploy
+- **ISSUE:** UTZ persona timeout 60s+ — RunPod cold start
+- **GAP:** Sprint J + Sprint L belum deploy ke VPS — endpoint 404
+- **ACTION:** `cd /opt/sidix && git pull origin work/gallant-ellis-7cd14d && pm2 restart sidix-brain --update-env`
