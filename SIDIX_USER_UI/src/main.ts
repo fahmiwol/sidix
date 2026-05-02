@@ -1412,6 +1412,9 @@ async function doHolistic(question: string) {
         onDone: (meta) => {
           clearInterval(elapsedTimer);
           sendBtn.disabled = false;
+          if (meta.conversationId) {
+            setCurrentConversationId(meta.conversationId);
+          }
           addProgressLine(`Done: confidence=${meta.confidence}, ${meta.nSources} sources, ${(meta.durationMs / 1000).toFixed(1)}s`, 'ok');
           usedStream = true;
         },
@@ -1419,7 +1422,7 @@ async function doHolistic(question: string) {
           // If streaming fails (404 / not implemented), fall through to non-streaming
           addProgressLine(`Stream tidak tersedia, beralih ke mode sinkron...`);
         },
-      });
+      }, undefined, { conversationId: getCurrentConversationId() || undefined });
     } catch { /* streaming not available */ }
 
     // Non-streaming fallback (primary path until chat_holistic_stream is live)

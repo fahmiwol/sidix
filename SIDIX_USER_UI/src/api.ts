@@ -245,20 +245,25 @@ export async function askHolisticStream(
       method: string;
       outputType?: string;
       attachments?: SidixAttachment[];
+      conversationId?: string;
     }) => void;
     onError: (msg: string) => void;
   },
   signal?: AbortSignal,
+  opts?: { conversationId?: string },
 ): Promise<void> {
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
     ..._authHeaders(),
   };
+  if (opts?.conversationId) headers['x-conversation-id'] = opts.conversationId;
+  const body: Record<string, unknown> = { question, persona };
+  if (opts?.conversationId) body.conversation_id = opts.conversationId;
   try {
     const res = await fetch(`${BRAIN_QA_BASE}/agent/chat_holistic_stream`, {
       method: 'POST',
       headers,
-      body: JSON.stringify({ question, persona }),
+      body: JSON.stringify(body),
       signal,
     });
     if (!res.ok || !res.body) {
@@ -315,6 +320,7 @@ export async function askHolisticStream(
                 method: evt.method || '',
                 outputType: evt.output_type,
                 attachments: evt.attachments || [],
+                conversationId: evt.conversation_id,
               });
               break;
             case 'error':
