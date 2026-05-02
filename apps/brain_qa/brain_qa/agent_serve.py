@@ -2085,9 +2085,9 @@ def create_app() -> "FastAPI":
             except Exception as mem_err:
                 log.debug("[chat_holistic] memory save skipped: %s", mem_err)
 
-            # Sprint L: confidence auto-trigger — sanad_score < 4.0 → log error + trigger harvest
+            # Sprint L: confidence auto-trigger — sanad_score < 0.4 (scale 0-1) → log error
             sanad_score_val = float(result.get("sanad_score") or 0.0)
-            if sanad_score_val < 4.0 and sanad_score_val > 0.0:
+            if sanad_score_val < 0.4 and sanad_score_val > 0.0:
                 try:
                     from .error_registry import log_error, ErrorType
                     log_error(
