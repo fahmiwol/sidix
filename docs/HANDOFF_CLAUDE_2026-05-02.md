@@ -95,22 +95,24 @@ cd /opt/sidix/SIDIX_USER_UI && npm run build && pm2 restart sidix-ui --update-en
 - `SIDIX_USER_UI/src/api.ts`
 **Action needed**: Manual review + selective merge. JANGAN auto-resolve. Prioritas: ambil semua perubahan dari branch kita, cek main apakah ada hal penting yang belum ada.
 
-### P2 — Cleanup Untracked Files
-File untracked yang perlu di-commit atau di-.gitignore:
-```
-brain/public/praxis/lessons/lesson_20260501_*.md  (16 files)
-brain/patterns/
-brain/pencipta/
-brain/public/persona_corpus/
-```
-Action: `git add brain/public/praxis/lessons/ brain/patterns/ brain/pencipta/ && git commit`
-VPS scripts (opsional di-.gitignore): `_check_*.py _deploy_vps.py _test_chat_vps.py`
+### P2 — Cleanup Untracked Files ✅ SELESAI (2026-05-02)
+Commit: `edbfa93` — brain/ outputs (29 files)
+Commit: `6839ed1` — .gitignore update (VPS scripts + local artifacts)
+`git status --short | grep "??"` → empty ✅
 
-### P3 — Sprint L: Self-Modifying + Foresight (BELUM DIMULAI)
-Scope:
-- Self-modifying: auto-refactor berdasarkan pattern extraction dari korpus
-- Foresight: trend radar cron, weak signal aggregation
-Referensi Kimi: `docs/MEGA_HANDOFF_2026_04_30.md` Sprint L section
+### P3 — Sprint L: Self-Modifying + Foresight ✅ SELESAI (2026-05-02)
+Commit: `129c83a`
+Files baru:
+- `apps/brain_qa/brain_qa/error_registry.py` — 9 error types, JSONL storage, LLM pattern analysis
+- `apps/brain_qa/brain_qa/foresight_radar.py` — RSS (arXiv/HN/ProductHunt) + weak signal detector + auto-draft
+- `apps/brain_qa/brain_qa/self_modifier.py` — holistic diagnostics → LLM proposals → owner review
+- `apps/brain_qa/scripts/sprint_l_cron.py` — cron runner (daily 06:00 UTC)
+agent_serve.py changes:
+- 8 endpoints: `/admin/sprint-l/run-radar`, `radar-signals`, `radar-drafts`, `analyze-errors`, `error-stats`, `generate-proposal`, `proposals`, `review-proposal/{id}`
+- Confidence auto-trigger: `sanad_score < 4.0` → `log_error(LOW_CONFIDENCE)` 
+- OMNYX exception hook → `log_error(OMNYX_EXCEPTION)`
+VPS deploy needed: `git pull && pm2 restart sidix-brain`
+VPS cron needed: `0 6 * * * /opt/sidix/venv/bin/python /opt/sidix/apps/brain_qa/scripts/sprint_l_cron.py`
 
 ### P4 — Sprint J Testing Lebih Dalam
 - Test conversation memory lewat browser (live app) untuk confirm
