@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 """Final Jiwa validation test on VPS."""
 
+import os
 import paramiko, sys, time, io
 
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
 
-HOST = '72.62.125.6'
-USER = 'root'
-PASS = 'gY2UkMePh,Zvt5)5'
+HOST = os.environ.get("SIDIX_VPS_HOST", "sidix-vps")
+USER = os.environ.get("SIDIX_VPS_USER", "root")
+PASS = os.environ.get("SIDIX_VPS_PASSWORD")
 
 def run(client, label, cmd, timeout=90):
     print(f'\n[{label}]')
@@ -20,7 +21,10 @@ def run(client, label, cmd, timeout=90):
 
 client = paramiko.SSHClient()
 client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-client.connect(HOST, username=USER, password=PASS, timeout=20)
+connect_kwargs = {"hostname": HOST, "username": USER, "timeout": 20}
+if PASS:
+    connect_kwargs["password"] = PASS
+client.connect(**connect_kwargs)
 print('=== Jiwa Final Test ===\n')
 
 # pull fix

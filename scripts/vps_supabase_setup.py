@@ -2,14 +2,20 @@
 import paramiko
 import sys
 import io
+import os
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
 
-HOST = "72.62.125.6"
-USER = "root"
-PASS = "gY2UkMePh,Zvt5)5"
+HOST = os.environ.get("SIDIX_VPS_HOST", "sidix-vps")
+USER = os.environ.get("SIDIX_VPS_USER", "root")
+PASS = os.environ.get("SIDIX_VPS_PASSWORD")
 
-SUPABASE_URL = "https://fkgnmrnckcnqvjsyunla.supabase.co"
-SUPABASE_KEY = "sb_publishable_ZGcdlsaf-ghUqKvkZn3HQg_GE1CFUWM"
+SUPABASE_URL = os.environ.get("SIDIX_SUPABASE_URL", "")
+SUPABASE_KEY = os.environ.get("SIDIX_SUPABASE_PUBLISHABLE_KEY", "")
+
+if not SUPABASE_URL or not SUPABASE_KEY:
+    raise RuntimeError(
+        "Set SIDIX_SUPABASE_URL and SIDIX_SUPABASE_PUBLISHABLE_KEY before running this script."
+    )
 
 
 def ssh_run(client, cmd, timeout=120):
@@ -27,7 +33,10 @@ def ssh_run(client, cmd, timeout=120):
 def main():
     client = paramiko.SSHClient()
     client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    client.connect(HOST, username=USER, password=PASS, timeout=15)
+    connect_kwargs = {"hostname": HOST, "username": USER, "timeout": 15}
+    if PASS:
+        connect_kwargs["password"] = PASS
+    client.connect(**connect_kwargs)
     print("=== CONNECTED ===\n")
 
     # ── 1. UPDATE .ENV DENGAN SUPABASE CREDENTIALS ─────────────────────────

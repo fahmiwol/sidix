@@ -177,14 +177,15 @@ class AutoHarvest:
 Gunakan SSH key yang sama dengan sebelumnya:
 
 ```python
+import os
 import paramiko
 key = paramiko.Ed25519Key.from_private_key_file(
     r"C:\Users\ASUS\.ssh\id_ed25519",
-    password="gY2UkMePh,Zvt6)6"
+    password=os.environ["SIDIX_SSH_KEY_PASSPHRASE"]
 )
 client = paramiko.SSHClient()
 client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-client.connect("72.62.125.6", username="root", pkey=key, timeout=30)
+client.connect(os.environ["SIDIX_VPS_HOST"], username="root", pkey=key, timeout=30)
 ```
 
 ---

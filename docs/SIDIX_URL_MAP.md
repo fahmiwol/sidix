@@ -33,7 +33,7 @@ Anti-menguap: file ini ringkas semua URL SIDIX biar tidak hilang.
 
 Admin token di `/opt/sidix/.env` di VPS:
 ```
-BRAIN_QA_ADMIN_TOKEN=d7fabad311a15d88c8d8b6308162f27499fd5b0c0cef0f11c85df00386d300fc
+BRAIN_QA_ADMIN_TOKEN=<set di VPS, jangan commit value>
 ```
 
 Ganti via:

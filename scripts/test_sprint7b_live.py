@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Live testing Sprint 7b endpoints on VPS."""
 
+import os
 import paramiko
 import sys
 import time
@@ -9,9 +10,9 @@ import json
 
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
 
-HOST = '72.62.125.6'
-USER = 'root'
-PASS = 'gY2UkMePh,Zvt5)5'
+HOST = os.environ.get("SIDIX_VPS_HOST", "sidix-vps")
+USER = os.environ.get("SIDIX_VPS_USER", "root")
+PASS = os.environ.get("SIDIX_VPS_PASSWORD")
 
 def run(client, label, cmd, timeout=90):
     print(f'\n{"="*55}')
@@ -27,7 +28,10 @@ def run(client, label, cmd, timeout=90):
 client = paramiko.SSHClient()
 client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 print(f'Connecting {HOST}...')
-client.connect(HOST, username=USER, password=PASS, timeout=20)
+connect_kwargs = {"hostname": HOST, "username": USER, "timeout": 20}
+if PASS:
+    connect_kwargs["password"] = PASS
+client.connect(**connect_kwargs)
 print('Connected.\n')
 
 # 1. Health
