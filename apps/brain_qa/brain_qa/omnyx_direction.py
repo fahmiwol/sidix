@@ -177,11 +177,12 @@ class IntentClassifier:
     # Heuristic patterns for quick classification
     PATTERNS = {
         "greeting": ["halo", "hai", "hi", "hello", "assalamu", "salam", "pagi", "siang", "sore", "malam", "terima kasih", "makasih"],
-        "factual_who": ["siapa", "who is", "siapakah"],
+        # Sprint J: follow-up short questions (wakilnya, menterinya, dll) → factual_who (simple, fast)
+        "factual_who": ["siapa", "who is", "siapakah", "wakilnya", "presidennya", "menterinya", "gubernurnya", "namanya", "orangnya", "dia siapa", "beliau siapa"],
         "factual_when": ["kapan", "when", "tanggal berapa"],
         "factual_where": ["dimana", "di mana", "where is"],
-        "factual_what": ["apa", "what is", "apakah"],
-        "factual_how_many": ["berapa", "how many", "how much"],
+        "factual_what": ["apa", "what is", "apakah", "kalo", "gimana", "bagaimana", "seperti apa", "apa itu"],
+        "factual_how_many": ["berapa", "how many", "how much", "berapa tahun", "berapa lama", "berapa kali"],
         "coding": ["buat kode", "coding", "function", "script", "code"],
         "creative": ["buat gambar", "image", "design", "video", "tts"],
         "calculation": ["hitung", "calculate", "kali", "bagi", "tambah", "kurang"],
