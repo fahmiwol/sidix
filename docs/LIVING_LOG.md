@@ -17176,3 +17176,8 @@ curl -X POST http://localhost:8765/agent/maqashid/tune -d '{"sample_size":30}'
 - **FIX:** `omnyx_direction.py` memory fast-path dibuat lebih deterministik: filter nilai pertanyaan palsu, jawab jujur bila belum ada catatan, dan ekstrak catatan `Fakta N: ... saya adalah ...` dari konteks percakapan.
 - **FIX:** `memory_store.py` default recent context dinaikkan 6 -> 12 turn supaya recall user experience 10+ turn tidak cepat kehilangan fakta awal.
 - **TEST:** Regression memory lokal PASS: `test_omnyx_live_regressions.py` 5/5; gabungan `test_conversation_memory.py`, `test_memory_store.py`, `test_omnyx_live_regressions.py` 26/26.
+- **COMMIT:** `237dae9` `fix(memory): make personal recall safer across chats` pushed ke `origin/work/gallant-ellis-7cd14d`.
+- **DEPLOY:** VPS fast-forward ke `237dae9`, `pm2 restart sidix-brain --update-env`; health OK (`model_ready=true`, `tools_available=50`).
+- **TEST:** Live memory QA ulang PASS: same-conversation recall `hijau zamrud`; New Chat isolation menjawab belum punya catatan; 7 seed fact recall menjawab `Kode taman Anda: Raudah-Alpha; Prioritas Anda: anti-halusinasi.` dengan latency sub-detik.
+- **TEST:** UX subset live: query jarak Bumi-Matahari tetap bersih dengan angka `149,5978707×106 kilometer`; query dokumen SIDIX menjawab dari konteks proyek (latency ±33s); `/admin/sprint-l/error-stats` dan `/admin/sprint-l/proposals` OK via server-side token.
+- **NOTE:** GitHub plugin cek commit `237dae9`: tidak ada CI/status check terdaftar. Hugging Face plugin ditahan untuk fase P5 LoRA/model research agar tidak melenceng dari P4 deploy+QA.
