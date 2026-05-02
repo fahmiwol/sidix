@@ -761,8 +761,11 @@ def create_app() -> "FastAPI":
             tadabbur_auto,                # noqa: F401  vol 19 — auto-trigger Tadabbur
             response_cache,               # noqa: F401  vol 19 — LRU cache
             codeact_integration,          # noqa: F401  vol 19 — hook CodeAct ke /ask
+            error_registry,               # noqa: F401  Sprint L — error tracking
+            foresight_radar,              # noqa: F401  Sprint L — RSS + weak signal
+            self_modifier,                # noqa: F401  Sprint L — self-improvement proposals
         )
-        _startup_logger.info("[startup] cognitive modules eager-loaded (vol 5-19)")
+        _startup_logger.info("[startup] cognitive modules eager-loaded (vol 5-19 + Sprint L)")
     except Exception as e:
         _startup_logger.warning("[startup] cognitive eager-load skipped: %s", e)
 
@@ -1606,6 +1609,120 @@ def create_app() -> "FastAPI":
         except Exception as e:
             return {"ok": False, "error": str(e)}
 
+    # ── SPRINT L — Self-Modifying + Foresight Radar ──────────────────────────
+
+    @app.post("/admin/sprint-l/run-radar", tags=["Sprint L"])
+    async def sprint_l_run_radar(request: Request):
+        """Sprint L2: Jalankan 1 siklus Foresight Radar — fetch RSS + detect weak signals."""
+        _enforce_rate(request)
+        from .error_registry import log_error, ErrorType
+        try:
+            from .foresight_radar import run_radar_cycle
+            # Attempt LLM for draft generation
+            try:
+                from .ollama_llm import ollama_generate
+                llm_fn = lambda p: ollama_generate(p, max_tokens=600)
+            except Exception:
+                llm_fn = None
+            result = run_radar_cycle(llm_fn=llm_fn)
+            return {"ok": True, **result}
+        except Exception as e:
+            log_error(ErrorType.UNKNOWN, f"foresight radar failed: {e}")
+            return {"ok": False, "error": str(e)}
+
+    @app.get("/admin/sprint-l/radar-signals", tags=["Sprint L"])
+    async def sprint_l_radar_signals(request: Request, n: int = 20):
+        """Sprint L2: Ambil sinyal radar terbaru."""
+        _enforce_rate(request)
+        try:
+            from .foresight_radar import get_recent_signals
+            return {"ok": True, "signals": get_recent_signals(n=n)}
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    @app.get("/admin/sprint-l/radar-drafts", tags=["Sprint L"])
+    async def sprint_l_radar_drafts(request: Request):
+        """Sprint L2: Ambil draft research notes dari radar yang belum di-review."""
+        _enforce_rate(request)
+        try:
+            from .foresight_radar import get_pending_drafts
+            return {"ok": True, "drafts": get_pending_drafts()}
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    @app.post("/admin/sprint-l/analyze-errors", tags=["Sprint L"])
+    async def sprint_l_analyze_errors(request: Request):
+        """Sprint L1: LLM analisis pola error → proposal perbaikan."""
+        _enforce_rate(request)
+        try:
+            from .error_registry import analyze_patterns
+            try:
+                from .ollama_llm import ollama_generate
+                llm_fn = lambda p: ollama_generate(p, max_tokens=800)
+            except Exception:
+                llm_fn = None
+            result = analyze_patterns(llm_fn=llm_fn)
+            return {"ok": True, **result}
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    @app.get("/admin/sprint-l/error-stats", tags=["Sprint L"])
+    async def sprint_l_error_stats(request: Request):
+        """Sprint L1: Error registry statistics."""
+        _enforce_rate(request)
+        try:
+            from .error_registry import get_error_stats
+            return {"ok": True, **get_error_stats()}
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    @app.post("/admin/sprint-l/generate-proposal", tags=["Sprint L"])
+    async def sprint_l_generate_proposal(request: Request):
+        """Sprint L1: Generate self-improvement proposal dari diagnostics holistic."""
+        _enforce_rate(request)
+        try:
+            from .self_modifier import generate_improvement_proposal
+            try:
+                from .ollama_llm import ollama_generate
+                llm_fn = lambda p: ollama_generate(p, max_tokens=1000)
+            except Exception:
+                llm_fn = None
+            result = generate_improvement_proposal(llm_fn=llm_fn)
+            return {"ok": True, **result}
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    @app.get("/admin/sprint-l/proposals", tags=["Sprint L"])
+    async def sprint_l_get_proposals(request: Request):
+        """Sprint L1: Lihat pending self-improvement proposals."""
+        _enforce_rate(request)
+        try:
+            from .self_modifier import get_pending_proposals, get_proposal_stats
+            return {
+                "ok": True,
+                "stats": get_proposal_stats(),
+                "pending": get_pending_proposals(),
+            }
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    @app.post("/admin/sprint-l/review-proposal/{proposal_id}", tags=["Sprint L"])
+    async def sprint_l_review_proposal(proposal_id: str, request: Request):
+        """Sprint L1: Review (approve/reject) self-improvement proposal."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+        except Exception:
+            body = {}
+        approved = bool(body.get("approved", False))
+        notes = str(body.get("notes", ""))
+        try:
+            from .self_modifier import mark_proposal_reviewed
+            found = mark_proposal_reviewed(proposal_id, approved=approved, notes=notes)
+            return {"ok": found, "proposal_id": proposal_id, "approved": approved}
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
     # Sprint 14g: CouncilRequest moved to module top-level (line ~456) for
     # Pydantic 2.13 schema gen compat — broke /openapi.json before fix.
     @app.post("/agent/council")
@@ -1968,6 +2085,21 @@ def create_app() -> "FastAPI":
             except Exception as mem_err:
                 log.debug("[chat_holistic] memory save skipped: %s", mem_err)
 
+            # Sprint L: confidence auto-trigger — sanad_score < 4.0 → log error + trigger harvest
+            sanad_score_val = float(result.get("sanad_score") or 0.0)
+            if sanad_score_val < 4.0 and sanad_score_val > 0.0:
+                try:
+                    from .error_registry import log_error, ErrorType
+                    log_error(
+                        ErrorType.LOW_CONFIDENCE,
+                        f"sanad_score={sanad_score_val:.1f} untuk query: {req.question[:80]}",
+                        context={"persona": effective_persona, "sanad_score": sanad_score_val},
+                        root_cause="insufficient_corpus_or_web_coverage",
+                        session_id=effective_conversation_id,
+                    )
+                except Exception:
+                    pass
+
             return ChatResponse(
                 session_id=f"holistic_{uuid.uuid4().hex[:8]}",
                 answer=result.get("answer", ""),
@@ -1989,6 +2121,17 @@ def create_app() -> "FastAPI":
                 hafidz_stored=result.get("hafidz_stored", False),
             )
         except Exception as omnyx_err:
+            # Sprint L: log OMNYX exceptions to error registry
+            try:
+                from .error_registry import log_error, ErrorType
+                log_error(
+                    ErrorType.OMNYX_EXCEPTION,
+                    str(omnyx_err)[:200],
+                    context={"persona": effective_persona, "question_len": len(req.question)},
+                    session_id=effective_conversation_id,
+                )
+            except Exception:
+                pass
             omnyx_err_str = str(omnyx_err)
             log.warning("[chat_holistic] OMNYX fail: %s", omnyx_err)
 
