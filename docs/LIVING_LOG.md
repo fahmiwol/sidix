@@ -17165,3 +17165,8 @@ curl -X POST http://localhost:8765/agent/maqashid/tune -d '{"sample_size":30}'
 - **FIX:** `omnyx_direction.py` — tambah `personal_memory` fast-path deterministik, greeting regex standalone saja, dan `_select_relevant_web_answer()` untuk memilih kalimat web paling relevan pada simple factual.
 - **FIX:** `mojeek_search.py` — Wikipedia fallback kini enrich search result dengan intro extract API, bukan hanya judul/snippet `Wikipedia: Title`, sehingga direct answer punya konteks faktual lebih kaya saat Mojeek/DDG diblokir VPS.
 - **TEST:** Regresi lokal `apps/brain_qa/tests/test_omnyx_live_regressions.py` 3/3 PASS; gabungan memory tests 24/24 PASS; `py_compile` untuk `omnyx_direction.py` + `mojeek_search.py` PASS.
+- **COMMIT:** `c06cc4a` pushed ke `origin/work/gallant-ellis-7cd14d`.
+- **DEPLOY:** VPS fast-forward `26bbf4e -> c06cc4a`, `pm2 restart sidix-brain --update-env`, live health OK (`model_ready=true`, `tools_available=50`).
+- **TEST:** Live query `Berapa jarak rata-rata Bumi ke Matahari?` kini menjawab kalimat relevan dengan angka `149,5978707×106 kilometer` (latency ±10.8s), bukan dump judul Wikipedia.
+- **TEST:** Live conversation memory: turn 1 `warna favorit saya hijau zamrud` -> turn 2 `Apa warna favorit saya tadi?` menjawab `Warna favorit Anda tadi: hijau zamrud.`
+- **TEST:** Sprint L admin endpoints di VPS OK: `/admin/sprint-l/error-stats` → `ok=true,total=0`; `/admin/sprint-l/proposals` → `ok=true,total=0`.
