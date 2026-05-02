@@ -17117,3 +17117,14 @@ curl -X POST http://localhost:8765/agent/maqashid/tune -d '{"sample_size":30}'
 - **DECISION:** Merge `main` ditunda untuk manual resolution — conflict di file kritis (8.000+ baris `agent_serve.py`) terlalu risky untuk auto-resolve. `work/gallant-ellis-7cd14d` tetap sebagai branch kanonis deploy.
 - **UPDATE:** `docs/STATUS_TODAY.md` — versi landing page + donate section tercatat.
 
+
+### 2026-05-02 (Claude — Sprint L: Self-Modifying + Foresight Radar)
+
+- **IMPL:** `error_registry.py` — thread-safe JSONL error tracker. 9 error types (low_confidence, omnyx_exception, tool_failure, llm_timeout, intent_mismatch, memory_fail, harvest_fail, synthesis_empty, rate_limit). API: `log_error()`, `get_recent_errors()`, `get_error_stats()`, `analyze_patterns(llm_fn)`. Storage: `.data/error_registry.jsonl`. ✅
+- **IMPL:** `foresight_radar.py` — RSS aggregator (arXiv cs.AI/cs.CL/cs.LG, HN Best, ProductHunt AI) + relevance scorer + weak signal detector + auto-draft research notes. Relevance scoring 4-category keyword matching (core/sidix_specific/creative/architecture). Storage: `.data/radar_signals.jsonl` + `.data/radar_drafts.jsonl`. ✅
+- **IMPL:** `self_modifier.py` — holistic self-improvement engine. Collects: error stats + pattern library + self-test stats + corpus stats → LLM → TOP 3 improvement proposals → owner review workflow. Storage: `.data/self_improvement_proposals.jsonl`. ✅
+- **IMPL:** `scripts/sprint_l_cron.py` — background cron runner. Usage: `--task radar/errors/proposal/all`. Crontab: `0 6 * * * /opt/sidix/venv/bin/python .../sprint_l_cron.py`. ✅
+- **IMPL:** `agent_serve.py` — 8 new endpoints `/admin/sprint-l/*` (run-radar, radar-signals, radar-drafts, analyze-errors, error-stats, generate-proposal, proposals, review-proposal). Confidence auto-trigger: `sanad_score < 4.0` → `log_error(LOW_CONFIDENCE)`. OMNYX exception hook → `log_error(OMNYX_EXCEPTION)`. Sprint L modules eager-loaded at startup. ✅
+- **DOC:** `brain/public/research_notes/312_ai_agent_landscape_2025_sidix_gap_analysis.md` — competitive analysis (GPT/Claude/Gemini/Perplexity/Mistral), I/O comparison table, MCP ecosystem, user expectations ranking, SIDIX position + gaps + unique advantages, Sprint L blueprint, brain/nerves/senses metaphor. ✅
+- **COMMIT:** `129c83a` feat(sprint-l) — 1719 insertions, 6 files. Pushed `work/gallant-ellis-7cd14d`. ✅
+- **STATUS:** Sprint L fully implemented + pushed. VPS deploy pending (see next session or manual trigger).
