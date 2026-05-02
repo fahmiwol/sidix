@@ -52,6 +52,16 @@ def _actual_question(query: str) -> str:
     return query.strip()
 
 
+def _clean_memory_value(value: str) -> str:
+    value = value.strip(" \t\r\n:;,.!?\"'")
+    bad_values = {"tadi", "barusan", "ini", "itu", "apa", "siapa", "jawab singkat"}
+    if not value or value.lower() in bad_values:
+        return ""
+    if "?" in value:
+        return ""
+    return value
+
+
 def _extract_personal_memory(text: str) -> dict[str, str]:
     """Extract simple user-stated preferences from current/context text."""
     facts: dict[str, str] = {}
@@ -61,33 +71,68 @@ def _extract_personal_memory(text: str) -> dict[str, str]:
         re.IGNORECASE,
     )
     if name:
-        facts["name"] = name.group(1).strip()
+        value = _clean_memory_value(name.group(1))
+        if value:
+            facts["name"] = value
     color = re.search(
         r"\bwarna\s+favorit\s+saya\s+(?:adalah\s+)?([^.,\n]+?)(?=\s+jawab\b|[.,\n]|$)",
         text,
         re.IGNORECASE,
     )
     if color:
-        facts["favorite_color"] = color.group(1).strip()
+        value = _clean_memory_value(color.group(1))
+        if value:
+            facts["favorite_color"] = value
     return facts
+
+
+def _extract_structured_memory(text: str) -> dict[str, str]:
+    """Extract lightweight "Fakta N: X saya adalah Y" notes from context."""
+    notes: dict[str, str] = {}
+    for match in re.finditer(
+        r"\bfakta\s*\d+\s*:\s*([^.\n:]+?)\s+(?:saya\s+)?(?:adalah|ialah)\s+([^.\n]+)",
+        text,
+        re.IGNORECASE,
+    ):
+        label = re.sub(r"\s+saya$", "", match.group(1).strip().lower())
+        value = _clean_memory_value(match.group(2))
+        if label and value:
+            notes[label] = value
+    return notes
 
 
 def _personal_memory_response(query: str, persona: str = "UTZ") -> str:
     """Deterministic response for simple memory statements/follow-ups."""
     actual_q = _actual_question(query)
     facts = _extract_personal_memory(query)
+    notes = _extract_structured_memory(query)
     actual_lower = actual_q.lower()
 
     if "warna favorit" in actual_lower and "favorite_color" in facts:
         return f"Warna favorit Anda tadi: {facts['favorite_color']}."
+    if "warna favorit" in actual_lower:
+        return "Saya belum punya catatan warna favorit Anda di percakapan ini."
     if "nama saya" in actual_lower and "name" in facts:
         return f"Nama Anda tadi: {facts['name']}."
+    if "nama saya" in actual_lower or "siapa nama" in actual_lower:
+        return "Saya belum punya catatan nama Anda di percakapan ini."
+
+    requested_notes = [
+        (label, value)
+        for label, value in notes.items()
+        if label in actual_lower or any(word for word in label.split() if len(word) > 3 and word in actual_lower)
+    ]
+    if requested_notes:
+        parts = [f"{label.capitalize()} Anda: {value}" for label, value in requested_notes[:4]]
+        return "; ".join(parts) + "."
 
     parts = []
     if "name" in facts:
         parts.append(f"nama Anda {facts['name']}")
     if "favorite_color" in facts:
         parts.append(f"warna favorit Anda {facts['favorite_color']}")
+    for label, value in list(notes.items())[:3]:
+        parts.append(f"{label} Anda {value}")
     if parts:
         return "Siap, saya catat: " + "; ".join(parts) + "."
     return "Saya akan memakai konteks percakapan sebelumnya untuk menjawab singkat."

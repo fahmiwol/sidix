@@ -45,3 +45,27 @@ Apa warna favorit saya tadi?"""
     answer = _personal_memory_response(query, "UTZ")
 
     assert answer == "Warna favorit Anda tadi: hijau zamrud."
+
+
+def test_personal_memory_response_does_not_invent_without_context():
+    answer = _personal_memory_response("Apa warna favorit saya tadi? Jawab singkat.", "UTZ")
+
+    assert "belum punya catatan warna favorit" in answer
+    assert "tadi?" not in answer
+
+
+def test_personal_memory_response_reads_structured_notes_from_context():
+    query = """[KONTEKS PERCAKAPAN SEBELUMNYA]
+User: Tolong catat untuk QA: Fakta 1: kode taman saya adalah Raudah-Alpha. Jawab OK saja.
+Assistant: Siap, saya catat.
+User: Tolong catat untuk QA: Fakta 7: prioritas saya adalah anti-halusinasi. Jawab OK saja.
+Assistant: Siap, saya catat.
+[AKHIR KONTEKS]
+
+[PERTANYAAN SAAT INI]
+Dari catatan QA tadi, apa kode taman saya dan apa prioritas saya? Jawab singkat."""
+
+    answer = _personal_memory_response(query, "UTZ")
+
+    assert "Kode taman Anda: Raudah-Alpha" in answer
+    assert "Prioritas Anda: anti-halusinasi" in answer

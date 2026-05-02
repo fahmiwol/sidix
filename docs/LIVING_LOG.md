@@ -17172,3 +17172,7 @@ curl -X POST http://localhost:8765/agent/maqashid/tune -d '{"sample_size":30}'
 - **TEST:** Sprint L admin endpoints di VPS OK: `/admin/sprint-l/error-stats` → `ok=true,total=0`; `/admin/sprint-l/proposals` → `ok=true,total=0`.
 - **FIX:** Security hygiene repo tracked: redaksi admin token, SSH key passphrase, VPS password lama, dan Supabase publishable key dari dokumen/script; semua nilai runtime sekarang harus lewat environment variable atau file `.env` server yang tidak di-commit.
 - **TEST:** Tracked-file credential scan PASS untuk pola token/password/key relevan; `py_compile` PASS untuk script deploy/test VPS yang disentuh.
+- **TEST:** P4 live QA lanjutan menemukan gap Sprint J: New Chat tanpa konteks masih bisa menjawab memori palsu (`warna favorit` -> `tadi?`), dan catatan/fakta bebas belum bisa direcall setelah beberapa turn.
+- **FIX:** `omnyx_direction.py` memory fast-path dibuat lebih deterministik: filter nilai pertanyaan palsu, jawab jujur bila belum ada catatan, dan ekstrak catatan `Fakta N: ... saya adalah ...` dari konteks percakapan.
+- **FIX:** `memory_store.py` default recent context dinaikkan 6 -> 12 turn supaya recall user experience 10+ turn tidak cepat kehilangan fakta awal.
+- **TEST:** Regression memory lokal PASS: `test_omnyx_live_regressions.py` 5/5; gabungan `test_conversation_memory.py`, `test_memory_store.py`, `test_omnyx_live_regressions.py` 26/26.
