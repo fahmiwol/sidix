@@ -1614,6 +1614,206 @@ def _tool_web_fetch(args: dict) -> ToolResult:
     )
 
 
+# ── Σ-1H: browser_fetch — structured article extraction (richer than web_fetch) ──
+def _tool_browser_fetch(args: dict) -> ToolResult:
+    """
+    Σ-1H: Fetch URL publik dengan structured extraction — lebih kaya dari web_fetch.
+    Ekstrak: title, main article text (prioritas <article>/<main>), meta description,
+    OG data, JSON-LD, published date. Cocok untuk berita/blog/artikel.
+    Standing-alone: httpx + bs4, no headless browser needed.
+    Params: url (wajib), max_chars (default 8000), include_meta (bool, default true).
+    """
+    url = str(args.get("url", "")).strip()
+    if not url or not url.startswith(("http://", "https://")):
+        return ToolResult(success=False, output="", error="url wajib http/https")
+
+    max_chars = max(500, min(int(args.get("max_chars", 8000)), 20000))
+    include_meta = str(args.get("include_meta", "true")).lower() != "false"
+
+    try:
+        import httpx
+        from bs4 import BeautifulSoup
+    except ImportError as e:
+        return ToolResult(success=False, output="", error=f"dependency: {e}")
+
+    try:
+        with httpx.Client(
+            follow_redirects=True, timeout=20.0,
+            headers={"User-Agent": "SIDIX-Agent/1.0 (mighan-browser-fetch)"},
+        ) as client:
+            r = client.get(url)
+            r.raise_for_status()
+            raw = r.content[:500_000]
+    except Exception as e:
+        return ToolResult(success=False, output="", error=f"fetch gagal: {e}")
+
+    try:
+        soup = BeautifulSoup(raw, "html.parser")
+
+        # Title
+        title = (soup.title.string or "").strip() if soup.title else ""
+        og_title = soup.find("meta", property="og:title")
+        if og_title and og_title.get("content"):
+            title = og_title["content"].strip() or title
+
+        # Meta description
+        meta_desc = ""
+        if include_meta:
+            _md = soup.find("meta", attrs={"name": "description"})
+            og_desc = soup.find("meta", property="og:description")
+            meta_desc = (og_desc or _md or {}).get("content", "") or ""  # type: ignore[union-attr]
+
+        # Published date (try common patterns)
+        pub_date = ""
+        for _dt_attr in [
+            ("meta", {"property": "article:published_time"}),
+            ("meta", {"name": "date"}),
+            ("time", {}),
+        ]:
+            tag = soup.find(_dt_attr[0], _dt_attr[1])
+            if tag:
+                pub_date = (tag.get("content") or tag.get("datetime") or tag.get_text("")).strip()[:30]
+                if pub_date:
+                    break
+
+        # Main content — prioritize semantic containers
+        for tag in soup(["script", "style", "noscript", "nav", "footer", "aside", "header", "form"]):
+            tag.decompose()
+
+        article_text = ""
+        for selector in ("article", "main", "[role='main']", ".article-body",
+                         ".post-content", ".entry-content", "#content", ".content"):
+            container = soup.select_one(selector)
+            if container:
+                article_text = container.get_text("\n").strip()
+                break
+        if not article_text:
+            article_text = soup.body.get_text("\n").strip() if soup.body else soup.get_text("\n")
+
+        article_text = re.sub(r"\n{3,}", "\n\n", article_text)
+        article_text = re.sub(r"[ \t]+", " ", article_text).strip()
+        truncated = len(article_text) > max_chars
+        article_text = article_text[:max_chars] + ("\n…(dipotong)" if truncated else "")
+
+        # Compose output
+        parts = [f"# {title or 'Untitled'}", f"URL: {url}"]
+        if pub_date:
+            parts.append(f"Tanggal: {pub_date}")
+        if meta_desc and include_meta:
+            parts.append(f"Ringkasan: {meta_desc[:300]}")
+        parts += ["", article_text]
+        out = "\n".join(parts)
+    except Exception as e:
+        return ToolResult(success=False, output="", error=f"parse gagal: {e}")
+
+    return ToolResult(
+        success=True, output=out,
+        citations=[{"type": "browser_fetch", "url": url, "title": title}],
+    )
+
+
+# ── Σ-1H: social_search — Reddit + YouTube RSS (no API key required) ─────────
+def _tool_social_search(args: dict) -> ToolResult:
+    """
+    Σ-1H: Cari di platform sosial (Reddit + YouTube RSS). No API key.
+    - Reddit: public JSON API (search.json) — diskusi komunitas + opini
+    - YouTube: RSS search — video title + channel + views
+    Standing-alone: urllib only, no vendor API.
+    Params: query (wajib), platform (default 'reddit', options: 'reddit'|'youtube'|'all'),
+            max_results (default 5, max 10).
+    """
+    query = str(args.get("query", "")).strip()
+    if not query:
+        return ToolResult(success=False, output="", error="query wajib diisi")
+    platform = str(args.get("platform", "reddit")).lower()
+    max_results = max(1, min(int(args.get("max_results", 5)), 10))
+
+    import urllib.request
+    import urllib.parse
+    import urllib.error
+    import json as _json
+    import xml.etree.ElementTree as ET
+
+    results_text: list[str] = []
+    citations: list[dict] = []
+
+    # ── Reddit search (public JSON, no auth) ─────────────────────────────────
+    if platform in ("reddit", "all"):
+        try:
+            q_enc = urllib.parse.quote(query)
+            reddit_url = (
+                f"https://www.reddit.com/search.json?q={q_enc}"
+                f"&limit={max_results}&sort=relevance&type=link"
+            )
+            req = urllib.request.Request(
+                reddit_url,
+                headers={"User-Agent": "SIDIX-Agent/1.0 (mighan-social-search)"},
+            )
+            with urllib.request.urlopen(req, timeout=15) as resp:
+                data = _json.loads(resp.read().decode())
+
+            posts = data.get("data", {}).get("children", [])
+            if posts:
+                results_text.append(f"## Reddit: '{query}'\n")
+                for i, post in enumerate(posts[:max_results], 1):
+                    p = post.get("data", {})
+                    sub = p.get("subreddit", "?")
+                    ptitle = p.get("title", "")[:120]
+                    score = p.get("score", 0)
+                    permalink = "https://reddit.com" + p.get("permalink", "")
+                    selftext = (p.get("selftext", "") or "")[:200]
+                    results_text.append(
+                        f"{i}. **r/{sub}** — {ptitle}\n"
+                        f"   Score: {score} | {permalink}\n"
+                        + (f"   {selftext}\n" if selftext else "")
+                    )
+                    citations.append({"type": "reddit", "url": permalink, "title": ptitle})
+        except Exception as e:
+            results_text.append(f"Reddit search error: {e}")
+
+    # ── YouTube RSS search (public, no auth) ─────────────────────────────────
+    if platform in ("youtube", "all"):
+        try:
+            q_enc = urllib.parse.quote(query)
+            yt_url = (
+                f"https://www.youtube.com/feeds/videos.xml?search={q_enc}"
+            )
+            req_yt = urllib.request.Request(
+                yt_url,
+                headers={"User-Agent": "SIDIX-Agent/1.0 (mighan-social-search)"},
+            )
+            with urllib.request.urlopen(req_yt, timeout=15) as resp_yt:
+                xml_data = resp_yt.read().decode("utf-8", errors="replace")
+
+            root = ET.fromstring(xml_data)
+            ns = {"atom": "http://www.w3.org/2005/Atom"}
+            entries = root.findall("atom:entry", ns)[:max_results]
+            if entries:
+                results_text.append(f"\n## YouTube: '{query}'\n")
+                for i, entry in enumerate(entries, 1):
+                    yt_title = (entry.findtext("atom:title", "", ns) or "").strip()
+                    yt_link_el = entry.find("atom:link", ns)
+                    yt_link = yt_link_el.get("href", "") if yt_link_el is not None else ""
+                    yt_pub = (entry.findtext("atom:published", "", ns) or "")[:10]
+                    results_text.append(
+                        f"{i}. **{yt_title}**\n"
+                        f"   {yt_link}\n"
+                        + (f"   Published: {yt_pub}\n" if yt_pub else "")
+                    )
+                    citations.append({"type": "youtube", "url": yt_link, "title": yt_title})
+        except Exception as e:
+            results_text.append(f"\nYouTube RSS error: {e}")
+
+    if not results_text:
+        return ToolResult(success=False, output="", error="semua platform tidak ada hasil")
+
+    return ToolResult(
+        success=True,
+        output="\n".join(results_text),
+        citations=citations,
+    )
+
+
 # ── code_sandbox — Python subprocess own-stack, timeout + output cap ───────────
 _CODE_SANDBOX_TIMEOUT = 30     # detik (ditingkatkan dari 10 → 30 untuk analisis data)
 _CODE_SANDBOX_MAX_OUTPUT = 8000  # karakter stdout+stderr
@@ -3063,6 +3263,30 @@ TOOL_REGISTRY: dict[str, ToolSpec] = {
         params=["url", "max_chars"],
         permission="open",
         fn=_tool_web_fetch,
+    ),
+    "browser_fetch": ToolSpec(
+        name="browser_fetch",
+        description=(
+            "Sigma-1H: Fetch URL dengan structured extraction — lebih kaya dari web_fetch. "
+            "Ekstrak: title, main article text (prioritas <article>/<main>), meta description, "
+            "OG data, tanggal publish. Cocok untuk artikel berita, blog, dokumentasi panjang. "
+            "Params: url (wajib), max_chars (default 8000), include_meta (bool, default true)."
+        ),
+        params=["url", "max_chars", "include_meta"],
+        permission="open",
+        fn=_tool_browser_fetch,
+    ),
+    "social_search": ToolSpec(
+        name="social_search",
+        description=(
+            "Sigma-1H: Cari di platform sosial — Reddit (diskusi/opini komunitas) + YouTube (video). "
+            "No API key. Standing-alone: urllib only. "
+            "Params: query (wajib), platform ('reddit'|'youtube'|'all', default 'reddit'), "
+            "max_results (default 5)."
+        ),
+        params=["query", "platform", "max_results"],
+        permission="open",
+        fn=_tool_social_search,
     ),
     "code_sandbox": ToolSpec(
         name="code_sandbox",

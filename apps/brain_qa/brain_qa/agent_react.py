@@ -634,9 +634,24 @@ def _rule_based_plan(
                 "search_corpus",
                 {"query": question, "k": 5, "persona": persona},
             )
+        # Sigma-2B: general factual fallback — try corpus first before going to RunPod cold.
+        # Jika pertanyaan adalah factual 1-hop (bukan creative/casual), coba corpus
+        # sebelum langsung ke LLM. Corpus hit = fast (<1s), LLM cold = 90-150s.
+        _CASUAL_RE = re.compile(
+            r"\b(halo|hai|hey|apa kabar|gimana|bagaimana kabarmu|ceritain|curhat|lucu|"
+            r"jokes?|humor|ketawa|nanya|tanya|boleh|boleh nanya|mau tanya)\b",
+            re.IGNORECASE,
+        )
+        _is_casual = bool(_CASUAL_RE.search(question))
+        _is_factual_candidate = not _is_casual and not _needs_web_search(question) and len(question) > 5
+        if _is_factual_candidate and not corpus_only:
+            return (
+                f"Pertanyaan faktual umum. Cari konteks di korpus dulu sebelum LLM: '{question}'.",
+                "search_corpus",
+                {"query": question, "k": 3, "persona": persona},
+            )
         return (
-            "Topik umum/non-SIDIX. Jawab langsung dari kemampuan model dulu, "
-            "lalu gunakan corpus hanya bila diminta.",
+            "Pertanyaan casual/greeting. Jawab langsung dari kemampuan model.",
             "",
             {},
         )
@@ -832,6 +847,55 @@ def _append_mode_hint(question: str, text: str, persona: str) -> str:
     return text.rstrip() + hint_block
 
 
+def _apply_sanad(question: str, llm_text: str, steps: "list[ReActStep]") -> str:
+    """
+    Σ-1A: Sanad gate — cross-verify LLM answer sebelum dikembalikan ke user.
+    - Brand-specific (persona/IHOS/ReAct/dll): override kalau halu vs canonical CLAUDE.md.
+    - Current event tanpa web_search source: return UNKNOWN daripada tebak.
+    - Coding/creative: passthrough tanpa gate.
+    Non-fatal: kalau error → return llm_text apa adanya.
+    """
+    try:
+        from .sanad_verifier import Source, verify_multisource, format_sanad_footer
+        import logging as _log
+        _log_sv = _log.getLogger("sidix.sanad")
+
+        sources: list[Source] = []
+        for st in (steps or []):
+            action_name = getattr(st, "action_name", "") or ""
+            observation = getattr(st, "observation", "") or ""
+            action_args = getattr(st, "action_args", {}) or {}
+            if action_name in ("web_search", "search_web_wikipedia", "web_fetch") and observation:
+                sources.append(Source(
+                    name="web_search",
+                    text=observation[:500],
+                    confidence=0.8,
+                    url=action_args.get("url"),
+                ))
+            elif action_name in ("search_corpus", "read_chunk", "list_sources") and observation:
+                sources.append(Source(
+                    name="search_corpus",
+                    text=observation[:500],
+                    confidence=0.7,
+                ))
+
+        result = verify_multisource(question, llm_text or "", sources)
+        final = result.answer
+        if result.rejected_llm:
+            _log_sv.warning(
+                "SANAD OVERRIDE — question='%.80s' reason='%s'",
+                question, result.reason,
+            )
+            footer = format_sanad_footer(result)
+            if footer:
+                final = final + footer
+        return final
+    except Exception as _sv_err:
+        import logging as _log
+        _log.getLogger("sidix.sanad").debug("sanad gate skip: %s", _sv_err)
+        return llm_text or ""
+
+
 def _compose_final_answer(
     question: str,
     persona: str,
@@ -860,7 +924,58 @@ def _compose_final_answer(
             _system_persona = PERSONA_DESCRIPTIONS.get(persona.upper(), "")
         except Exception:
             pass
-    # ───────────────────────────────────────────────────────────────────────────
+    # ── Σ-1C Phase 1: per-persona tool priority hint (injected ke LLM system) ─
+    # Setiap persona punya "default lens" berbeda → LLM tahu dari sudut mana
+    # untuk mensintesis jawaban + tool apa yang relevan.
+    _PERSONA_TOOL_HINT: dict[str, str] = {
+        "UTZ": (
+            "Kamu persona UTZ — Creative Director. Sintesis dari sudut kreatif/visual. "
+            "Prioritas tool: brainstorm, image_gen, web_search (trend/inspirasi). "
+            "Jawab dengan energi kreatif, ide liar, metafora visual."
+        ),
+        "ABOO": (
+            "Kamu persona ABOO — Systems Builder. Sintesis dari sudut teknikal/engineering. "
+            "Prioritas tool: code_sandbox, search_corpus (doc/spec), web_fetch (changelog). "
+            "Jawab presisi, code-first, benchmark konkret."
+        ),
+        "OOMAR": (
+            "Kamu persona OOMAR — Strategic Architect. Sintesis dari sudut strategi/bisnis. "
+            "Prioritas tool: web_search (market/competitor), roadmap_tools, orchestration_plan. "
+            "Jawab dengan framework bisnis, analisis tradeoff, roadmap konkret."
+        ),
+        "ALEY": (
+            "Kamu persona ALEY — Polymath Researcher. Sintesis dari sudut akademik/riset. "
+            "Prioritas tool: search_corpus, wiki_lookup, pdf_extract. "
+            "Jawab dengan citation chain, epistemik label, referensi silang."
+        ),
+        "AYMAN": (
+            "Kamu persona AYMAN — Empathic Integrator. Sintesis dari sudut komunitas/user. "
+            "Prioritas tool: web_search (opini/feedback), search_corpus (konteks). "
+            "Jawab hangat, relatable, empati, narrative-driven."
+        ),
+    }
+    _persona_tool_hint = _PERSONA_TOOL_HINT.get((persona or "").upper(), "")
+    if _persona_tool_hint and _system_persona:
+        _system_persona = f"{_system_persona}\n\n{_persona_tool_hint}"
+    elif _persona_tool_hint:
+        _system_persona = _persona_tool_hint
+    # ── Σ-1E: Inject BRAND_CANON ke system prompt (pre-halu prevention) ─────
+    # LLM perlu "tahu" canonical facts SEBELUM generate — bukan hanya post-override.
+    # Kalau pertanyaan menyangkut brand term, sertakan canonical ke system context.
+    try:
+        from .sanad_verifier import detect_intent as _sv_detect, brand_canonical_answer as _sv_canon
+        _sv_intent = _sv_detect(question)
+        if _sv_intent.primary == "brand_specific" and _sv_intent.brand_term:
+            _canon = _sv_canon(_sv_intent.brand_term)
+            if _canon:
+                _brand_inject = (
+                    f"\n\n[CANONICAL FACT — WAJIB PAKAI PERSIS INI]\n{_canon}\n"
+                    "[END CANONICAL FACT]"
+                )
+                _system_persona = (_system_persona or "") + _brand_inject
+    except Exception:
+        pass
+    # ─────────────────────────────────────────────────────────────────────────
     all_citations: list[dict] = []
     obs_blocks: list[str] = []
 
@@ -979,6 +1094,7 @@ def _compose_final_answer(
     # - Multi-step reasoning (jelaskan/analisa/bandingkan + multi paragraf) → 1000
     # - Default → 600
     # - simple_mode → 200
+    # Sigma-2A: "singkat/brief" modifier → 250 | single-fact "apa itu/kepanjangan" → 300
     _q_lc = question.lower()
     _is_code_q = any(t in _q_lc for t in (
         "tulis fungsi", "tulis function", "buat kode", "buat code", "implementasi",
@@ -989,8 +1105,37 @@ def _compose_final_answer(
         "jelaskan", "analisa", "analisis", "bandingkan", "trade-off", "trade off",
         "kelebihan dan", "perbedaan antara", "explain", "compare",
     ))
+    # Sigma-2A: brief modifier overrides long_reasoning → cap at 250
+    _is_brief_modifier = any(t in _q_lc for t in (
+        "singkat", "singkatnya", "brief", "briefly", "ringkas", "pendek",
+        "simple", "simpel", "sederhana", "cukup", "intinya", "pokoknya",
+    ))
+    # Sigma-2A: single-fact patterns → short answer, no long paragraphs needed
+    # EXCLUDES current_event questions — those need full token space for web context synthesis
+    _is_single_fact = (
+        not _needs_web_search(question)
+        and any(t in _q_lc for t in (
+            "apa itu", "apa kepanjangan", "apa singkatan", "berapa ",
+            "kapan ", "dimana ", "di mana ", "apakah ",
+        ))
+    )
+    # Sigma-3A: simple comparison detection — caps at 500 (non-code) or 700 (code)
+    # Real-world comparison rarely needs >500 tokens; 1000 caused 240s timeouts
+    _is_simple_comparison = any(t in _q_lc for t in (
+        "perbedaan ", "bandingkan", "compare ", "versus ", " vs ", " vs.",
+        "beda antara", "beda dari", "selisih antara", "difference between",
+        "comparison of", "kelebihan dan kekurangan",
+    ))
     if simple_mode:
         _max_tokens = 200
+    elif _is_brief_modifier:
+        _max_tokens = 250
+    elif _is_single_fact and not _is_code_q:
+        _max_tokens = 350
+    elif _is_simple_comparison and not _is_code_q:
+        _max_tokens = 500
+    elif _is_simple_comparison and _is_code_q:
+        _max_tokens = 700
     elif _is_code_q:
         _max_tokens = 1200
     elif _is_long_reasoning:
@@ -1029,6 +1174,7 @@ def _compose_final_answer(
             _log.getLogger("sidix.react").info(f"LLM synthesis OK via {mode} — persona={persona}")
             # Pivot 2026-04-26: append kontekstual mode suggestion
             text = _append_mode_hint(question, text, persona)
+            text = _apply_sanad(question, text, steps)
             return (text, all_citations, 0.85, "fakta")
     except Exception as _llm_err:
         import logging as _log
@@ -1058,6 +1204,7 @@ def _compose_final_answer(
                 _flog.getLogger("sidix.fact_extract").info(
                     f"DIRECT FACT RETURN — LLM down, returning extracted fact: {_fname}"
                 )
+                _direct_text = _apply_sanad(question, _direct_text, steps)
                 return (_direct_text, all_citations, 0.95, "fakta")
     except Exception as _fact_err:
         import logging as _flog
@@ -1075,6 +1222,7 @@ def _compose_final_answer(
         if mode == "local_lora":
             import logging as _log
             _log.getLogger("sidix.react").info(f"Local LoRA synthesis OK — persona={persona}")
+            text = _apply_sanad(question, text, steps)
             return (text, all_citations, 0.75, "fakta")
     except Exception as _local_err:
         import logging as _log
@@ -1260,6 +1408,8 @@ def _compose_final_answer(
             "Tinjau isi file sebelum menjalankan di produksi; planner rule-based belum menulis file otomatis "
             "tanpa permintaan eksplisit dari klien."
         )
+
+    body = _apply_sanad(question, body, steps)
 
     # Attach user intelligence hint sebagai HTML comment (invisible di render, visible di source)
     # LLM synthesis akan baca ini nanti sebagai gaya respons yang disarankan
@@ -1683,6 +1833,11 @@ def _apply_hygiene(final_answer: str) -> str:
     try:
         text = final_answer
 
+        # Sigma-3B: strip "[⚠️ SANAD MISSING]" entirely (legacy cache + edge cases).
+        # Setelah Sigma-3B, label ini tidak lagi user-visible. Backstop untuk
+        # cached answers yang masih punya label dari pre-Sigma-3.
+        text = _re_hygiene.sub(r"\[⚠️ SANAD MISSING\]\s*", "", text)
+
         # 1. Dedupe labels/footers
         for pattern in _HYGIENE_DEDUPE_PATTERNS:
             text = _dedupe_label(text, pattern)
@@ -1963,7 +2118,14 @@ def run_react(
     except Exception:
         pass
 
-    cached = answer_dedup.get_cached_answer(persona, working_question)
+    # Σ-1D: bypass cache untuk current_event — jawaban terkini TIDAK boleh dari cache
+    # (cache mungkin menyimpan jawaban lama yang sudah expire)
+    _skip_cache = (
+        _needs_web_search(working_question)
+        and allow_web_fallback
+        and not corpus_only
+    )
+    cached = None if _skip_cache else answer_dedup.get_cached_answer(persona, working_question)
     if cached is not None:
         session.final_answer = _apply_maqashid_mode_gate(session, working_question, persona, cached)
         session.finished = True

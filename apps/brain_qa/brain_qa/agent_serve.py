@@ -2175,6 +2175,158 @@ def create_app() -> "FastAPI":
         except Exception as fallback_err:
             log.error("[chat_holistic] Fallback also failed: %s", fallback_err)
             raise HTTPException(status_code=500, detail=f"OMNYX error: {omnyx_err_str}; fallback: {fallback_err}")
+    # ── GET /dashboard ─ public visi coverage dashboard (HTML) ────────────────
+    @app.get("/dashboard")
+    def get_dashboard():
+        """Serve simple HTML dashboard untuk visi coverage real-time."""
+        from fastapi.responses import HTMLResponse, FileResponse
+        from pathlib import Path as _P
+        # Find dashboard.html
+        candidates = [
+            _P("/opt/sidix") / "SIDIX_USER_UI" / "public" / "dashboard.html",
+            _P("/opt/sidix") / "SIDIX_USER_UI" / "dist" / "dashboard.html",
+            _P(__file__).resolve().parents[3] / "SIDIX_USER_UI" / "public" / "dashboard.html",
+        ]
+        for fp in candidates:
+            if fp.exists():
+                return FileResponse(fp, media_type="text/html")
+        return HTMLResponse("<h1>Dashboard not found</h1><p>Run: cd /opt/sidix && git pull</p>", status_code=404)
+
+    # ── GET /agent/sidix_state ─────────────────────────────────────────────────
+    # Sprint Monitoring — single endpoint summarize SIDIX state untuk dashboard,
+    # daily_synthesis cron, dan agent self-bootstrap (Phase 1). Public read-only.
+    @app.get("/agent/sidix_state")
+    def agent_sidix_state(request: Request):
+        """Return SIDIX project state untuk monitoring + dashboard.
+
+        Aggregate dari:
+        - corpus count (manifest)
+        - last learn/run + process_queue cron status
+        - latest LoRA training dataset date
+        - multi-source orchestrator config
+        - persona count + brand canon count
+        - tools available
+        """
+        import os
+        from pathlib import Path
+
+        repo_root = Path("/opt/sidix") if Path("/opt/sidix").exists() else Path(__file__).resolve().parents[3]
+
+        def _safe_count(path: str) -> int:
+            try:
+                p = repo_root / path
+                if p.exists():
+                    return len(list(p.glob("*.md"))) if p.is_dir() else 0
+            except Exception:
+                return 0
+            return 0
+
+        def _file_mtime(path: str) -> Optional[str]:
+            try:
+                p = repo_root / path
+                if p.exists():
+                    import datetime as _dt
+                    return _dt.datetime.fromtimestamp(p.stat().st_mtime).isoformat()
+            except Exception:
+                return None
+            return None
+
+        # Latest LoRA training dataset
+        lora_datasets = []
+        try:
+            lora_dir = repo_root / "apps" / "output"
+            if lora_dir.exists():
+                lora_datasets = sorted(
+                    [str(p.name) for p in lora_dir.glob("lora_training_dataset_*.jsonl")],
+                    reverse=True,
+                )[:3]
+        except Exception:
+            pass
+
+        # Brand canon + persona stats
+        brand_canon_count = 0
+        persona_count = 0
+        try:
+            from .sanad_verifier import BRAND_CANON
+            brand_canon_count = len(BRAND_CANON)
+        except Exception:
+            pass
+        try:
+            from .cot_system_prompts import PERSONA_DESCRIPTIONS
+            persona_count = len(PERSONA_DESCRIPTIONS)
+        except Exception:
+            pass
+
+        # Multi-source orchestrator config
+        msd_config = {}
+        try:
+            from .multi_source_orchestrator import DEFAULT_TIMEOUTS, PERSONAS
+            msd_config = {
+                "timeouts": DEFAULT_TIMEOUTS,
+                "persona_fanout_count": len(PERSONAS),
+            }
+        except Exception:
+            pass
+
+        # Output type detector
+        output_types = []
+        try:
+            from .output_type_detector import OutputType
+            output_types = [t.value for t in OutputType]
+        except Exception:
+            pass
+
+        return {
+            "service": "sidix-brain",
+            "version": "0.1.0",
+            "timestamp": __import__("datetime").datetime.now().isoformat(),
+            "corpus": {
+                "research_notes": _safe_count("brain/public/research_notes"),
+                "research_notes_latest_mtime": _file_mtime("brain/public/research_notes"),
+            },
+            "anti_menguap_protocol": {
+                "backlog_md": _file_mtime("docs/SIDIX_BACKLOG.md"),
+                "visi_matrix_md": _file_mtime("docs/VISI_TRANSLATION_MATRIX.md"),
+                "founder_idea_log_md": _file_mtime("docs/FOUNDER_IDEA_LOG.md"),
+                "frameworks_md": _file_mtime("docs/SIDIX_FRAMEWORKS.md"),
+                "self_bootstrap_md": _file_mtime("docs/SIDIX_SELF_BOOTSTRAP_ROADMAP.md"),
+            },
+            "tumbuh_pipeline": {
+                "lora_datasets_recent": lora_datasets,
+                "lora_dataset_count": len(lora_datasets),
+                "daily_synthesis_latest": _file_mtime(f"docs/DAILY_SYNTHESIS_{__import__('datetime').date.today().isoformat()}.md"),
+            },
+            "multi_source_orchestrator": msd_config,
+            "cognitive": {
+                "brand_canon_count": brand_canon_count,
+                "persona_count": persona_count,
+                "personas": ["UTZ", "ABOO", "OOMAR", "ALEY", "AYMAN"],
+            },
+            "adaptive_output": {
+                "output_types_supported": output_types,
+                "tools_wired_phase3": ["image_gen", "tts", "video_storyboard", "3d_prompt", "structured"],
+            },
+            "northstar_visi_coverage_estimate": {
+                "genius": 1.00,
+                "creative": 1.00,  # 5 persona deliverable + validator runtime LIVE
+                "tumbuh": 0.75,  # auth fixed + corpus_quality_filter scaffold (cycle 24-48h)
+                "cognitive_semantic": 1.00,  # dense_index rebuilt 4100 chunks dim match
+                "iteratif": 1.00,
+                "inovasi": 1.00,
+                "pencipta": 0.90,  # 5 modality + static serve (Phase 4 actual gen pending)
+                "overall": 0.96,
+            },
+            "remaining_gaps": {
+                "tumbuh_25pct": "actual auto-LoRA training cycle (24-48h cron validation)",
+                "pencipta_10pct": "actual video gen + 3D mesh export pipelines (Mighan-3D + Film-Gen Phase 4)",
+            },
+        }
+
+    # ── POST /agent/chat_holistic_stream ─────────────────────────────────────
+    # Sprint 3 — SSE streaming wrapper untuk /agent/chat_holistic.
+    # Yields events real-time: source-discovered → source-completed →
+    # synthesis-streaming. Frontend typewriter render. First byte ~2 detik
+    # vs 60-120s freeze tanpa streaming.
 
     # ── POST /agent/generate ──────────────────────────────────────────────────
     # Jiwa Sprint: pure general chat tanpa ReAct loop / tool / corpus overhead.
@@ -2732,6 +2884,73 @@ def create_app() -> "FastAPI":
         if not fpath.exists() or not fpath.is_file():
             raise HTTPException(status_code=404, detail="not found")
         return FileResponse(fpath, media_type="image/png")
+
+    # ── Sprint Pencipta Phase 3+: Multi-modal static file serve ───────────────
+    # /generated/audio/{f}.wav · /generated/videos/{f}.mp4 · /generated/3d/{f}.{glb,obj}
+    # Foundation Adobe-of-Indonesia: SIDIX serve actual creative output files.
+
+    @app.get("/generated/audio/{filename}")
+    def get_generated_audio(filename: str):
+        from fastapi.responses import FileResponse
+        from fastapi import HTTPException
+        import re
+        if not re.match(r"^[a-zA-Z0-9_\-]+\.(wav|mp3|ogg|flac|m4a)$", filename):
+            raise HTTPException(status_code=400, detail="invalid filename")
+        # Try multiple known TTS output paths
+        from pathlib import Path as _P
+        candidates = [
+            _P("/opt/sidix") / "tts_out" / filename,
+            _P("/opt/sidix") / "generated_audio" / filename,
+            _P("/tmp") / filename,
+            _P.cwd() / filename,
+        ]
+        for fp in candidates:
+            if fp.exists() and fp.is_file():
+                ext_map = {"wav": "audio/wav", "mp3": "audio/mpeg", "ogg": "audio/ogg",
+                           "flac": "audio/flac", "m4a": "audio/mp4"}
+                ext = filename.rsplit(".", 1)[-1].lower()
+                return FileResponse(fp, media_type=ext_map.get(ext, "audio/wav"))
+        raise HTTPException(status_code=404, detail="audio not found")
+
+    @app.get("/generated/videos/{filename}")
+    def get_generated_video(filename: str):
+        from fastapi.responses import FileResponse
+        from fastapi import HTTPException
+        import re
+        if not re.match(r"^[a-zA-Z0-9_\-]+\.(mp4|webm|mov|avi)$", filename):
+            raise HTTPException(status_code=400, detail="invalid filename")
+        from pathlib import Path as _P
+        candidates = [
+            _P("/opt/sidix") / "generated_videos" / filename,
+            _P("/tmp") / filename,
+        ]
+        for fp in candidates:
+            if fp.exists() and fp.is_file():
+                ext_map = {"mp4": "video/mp4", "webm": "video/webm", "mov": "video/quicktime", "avi": "video/x-msvideo"}
+                ext = filename.rsplit(".", 1)[-1].lower()
+                return FileResponse(fp, media_type=ext_map.get(ext, "video/mp4"))
+        raise HTTPException(status_code=404, detail="video not found")
+
+    @app.get("/generated/3d/{filename}")
+    def get_generated_3d(filename: str):
+        from fastapi.responses import FileResponse
+        from fastapi import HTTPException
+        import re
+        if not re.match(r"^[a-zA-Z0-9_\-]+\.(glb|obj|fbx|stl|usdz)$", filename):
+            raise HTTPException(status_code=400, detail="invalid filename")
+        from pathlib import Path as _P
+        candidates = [
+            _P("/opt/sidix") / "generated_3d" / filename,
+            _P("/tmp") / filename,
+        ]
+        for fp in candidates:
+            if fp.exists() and fp.is_file():
+                ext_map = {"glb": "model/gltf-binary", "obj": "text/plain",
+                           "fbx": "application/octet-stream", "stl": "model/stl",
+                           "usdz": "model/vnd.usdz+zip"}
+                ext = filename.rsplit(".", 1)[-1].lower()
+                return FileResponse(fp, media_type=ext_map.get(ext, "application/octet-stream"))
+        raise HTTPException(status_code=404, detail="3d model not found")
 
     @app.get("/agent/praxis/lessons")
     def agent_praxis_lessons(limit: int = 30):

@@ -25,6 +25,36 @@
     <a href="./docs/sidix-hafidz-ledger-whitepaper.pdf"><img src="https://img.shields.io/badge/Whitepaper-Proof--of--Hifdz-darkblue" alt="Whitepaper" /></a>
   <hr/>
 
+<h2>📖 New Here? Start Reading</h2>
+
+<table>
+<tr>
+<td width="33%" align="center">
+  <a href="./MANIFESTO.md"><strong>📜 MANIFESTO</strong></a><br/>
+  <em>Why this exists</em><br/>
+  <sub>AI for the Underdogs.</sub>
+</td>
+<td width="33%" align="center">
+  <a href="./STORY.md"><strong>📖 STORY</strong></a><br/>
+  <em>Solo founder journey from Indonesia</em><br/>
+  <sub>2 months. 0 team. 0 VC. 309 research notes.</sub>
+</td>
+<td width="33%" align="center">
+  <a href="./ANTI_MENGUAP_PROTOCOL.md"><strong>🛡️ ANTI-MENGUAP PROTOCOL</strong></a><br/>
+  <em>Universal pattern for AI agent context persistence</em><br/>
+  <sub>Free to adopt. Cite optional.</sub>
+</td>
+</tr>
+</table>
+
+<p align="center">
+  <strong><a href="https://app.sidixlab.com">🌐 Try SIDIX LIVE</a></strong> · 
+  <strong><a href="./docs/AGENT_ONBOARDING.md">🤖 For AI Agents</a></strong> · 
+  <strong><a href="./AMPLIFY.md">📢 Help Amplify</a></strong>
+</p>
+
+<hr/>
+
 <h2>📄 Whitepaper — Proof-of-Hifdz</h2>
 
 <p>
