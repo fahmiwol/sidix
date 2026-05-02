@@ -1,10 +1,12 @@
 from brain_qa.omnyx_direction import (
     IntentClassifier,
+    _current_datetime_response,
     _current_indonesia_official_response,
     _sanitize_public_answer,
     _personal_memory_response,
     _select_relevant_web_answer,
 )
+from datetime import datetime, timezone
 from brain_qa.agent_react import _apply_hygiene, _reformulate_with_context
 
 
@@ -92,6 +94,15 @@ def test_current_indonesia_official_fast_path_answers_president():
     answer = _current_indonesia_official_response("siapa presiden indonesia?")
 
     assert answer == "Presiden Indonesia saat ini adalah Prabowo Subianto."
+
+
+def test_current_datetime_fast_path_answers_day_without_web_search():
+    now = datetime(2026, 5, 2, 9, 51, tzinfo=timezone.utc)
+
+    answer = _current_datetime_response("hari apa sekarang?", now=now)
+
+    assert answer == "Sekarang hari Sabtu, 2 Mei 2026 (WIB)."
+    assert "Hari Bumi" not in answer
 
 
 def test_current_indonesia_official_fast_path_answers_vice_president():

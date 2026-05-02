@@ -35,7 +35,9 @@ import logging
 import re
 import time
 from dataclasses import dataclass, field
+from datetime import datetime, timedelta, timezone
 from typing import Any, Optional
+from zoneinfo import ZoneInfo
 
 log = logging.getLogger("sidix.omnyx")
 
@@ -88,6 +90,46 @@ def _current_indonesia_official_response(query: str) -> str:
     if "presiden" in q:
         return "Presiden Indonesia saat ini adalah Prabowo Subianto."
     return ""
+
+
+_DAY_NAMES_ID = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"]
+_MONTH_NAMES_ID = [
+    "Januari", "Februari", "Maret", "April", "Mei", "Juni",
+    "Juli", "Agustus", "September", "Oktober", "November", "Desember",
+]
+
+
+def _now_jakarta() -> datetime:
+    try:
+        return datetime.now(ZoneInfo("Asia/Jakarta"))
+    except Exception:
+        return datetime.now(timezone(timedelta(hours=7)))
+
+
+def _format_jakarta_date(now: datetime) -> str:
+    day = _DAY_NAMES_ID[now.weekday()]
+    month = _MONTH_NAMES_ID[now.month - 1]
+    return f"{day}, {now.day} {month} {now.year}"
+
+
+def _current_datetime_response(query: str, now: datetime | None = None) -> str:
+    """Answer simple current day/date/time questions from SIDIX runtime clock."""
+    q = query.lower()
+    asks_day = "hari apa" in q or "sekarang hari" in q or "hari ini" in q
+    asks_date = "tanggal" in q or "tgl" in q
+    asks_time = "jam berapa" in q or "pukul berapa" in q or "waktu sekarang" in q
+    if not (asks_day or asks_date or asks_time):
+        return ""
+
+    now = now or _now_jakarta()
+    date_text = _format_jakarta_date(now)
+    if asks_time:
+        return f"Sekarang pukul {now:%H:%M} WIB, {date_text}."
+    if asks_date and asks_day:
+        return f"Sekarang {date_text} (WIB)."
+    if asks_date:
+        return f"Sekarang tanggal {now.day} {_MONTH_NAMES_ID[now.month - 1]} {now.year} (WIB)."
+    return f"Sekarang hari {_DAY_NAMES_ID[now.weekday()]}, {now.day} {_MONTH_NAMES_ID[now.month - 1]} {now.year} (WIB)."
 
 
 def _clean_memory_value(value: str) -> str:
@@ -597,6 +639,15 @@ class OmnyxDirector:
             session.sources_used = ["conversation_memory"]
             session.total_latency_ms = int((time.monotonic() - t0) * 1000)
             log.info("[omnyx] Personal memory fast-path: %dms", session.total_latency_ms)
+            return session
+
+        current_datetime = _current_datetime_response(tool_query)
+        if current_datetime:
+            session.final_answer = current_datetime
+            session.confidence = "tinggi"
+            session.sources_used = ["runtime_clock"]
+            session.total_latency_ms = int((time.monotonic() - t0) * 1000)
+            log.info("[omnyx] Runtime clock fast-path: %dms", session.total_latency_ms)
             return session
 
         grounded_current = _current_indonesia_official_response(tool_query)
