@@ -782,11 +782,15 @@ class OmnyxDirector:
             direct = _try_corpus_passthrough(bundle)
             if direct:
                 return direct, "tinggi", list(set(sources_used))
-            # Try web direct answer
+            # Try web direct answer — strip "Title - Source — " prefix from search results
             if bundle.web and bundle.web.success and bundle.web.data:
                 web_text = bundle.web.data.get("output", "")
                 if web_text:
-                    return web_text[:1200], "sedang", list(set(sources_used))
+                    import re as _re
+                    # Match "Page title - Source — Content" → keep Content only
+                    m = _re.match(r'^.+?\s*—\s*(.+)', web_text.strip(), _re.DOTALL)
+                    cleaned = m.group(1).strip() if m else web_text.strip()
+                    return cleaned[:1200], "sedang", list(set(sources_used))
 
         # Sprint B: Build Hafidz injection if available
         hafidz_prompt = ""
