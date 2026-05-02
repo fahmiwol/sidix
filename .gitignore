@@ -95,3 +95,24 @@ docs/SIDIX_CHECKPOINT_*.md
 # ── VPS scripts (contain credentials via env var, internal use only) ─────────
 scripts/vps_*.py
 scripts/vps_check.py
+
+# ── Local VPS operational scripts (root dir, internal only) ──────────────────
+_check_*.py
+_deploy_vps.py
+_test_chat_vps.py
+
+# ── Local artifacts / screenshots / temp extracts ────────────────────────────
+*.b64
+holistic_test_*.png
+sidix_*.png
+sidix_*.yml
+sidix_homepage_*.png
+Bio_Cognitive_extracted.txt
+SIDIX_Architecture_extracted.txt
+check_halo.sh
+gemini_tool_combination.yml
+patch_multi_source.py
+patch_websearch.py
+test_websearch.py
+.playwright-mcp/
+apps/brain_qa/brain/
