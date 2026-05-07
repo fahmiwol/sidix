@@ -3813,6 +3813,7 @@ def call_tool(
     """
     Entry point utama untuk memanggil tool.
     Permission gate + audit log terpusat di sini.
+    Supports both static tools and dynamically generated tools (Voyager Protocol).
     """
     spec = TOOL_REGISTRY.get(tool_name)
 
@@ -3868,15 +3869,31 @@ def call_tool(
 
 
 def list_available_tools(permission_filter: str | None = None) -> list[dict]:
-    """Return daftar tool yang tersedia (untuk prompt agent)."""
+    """Return daftar tool yang tersedia (untuk prompt agent).
+    Includes metadata for Voyager-generated tools.
+    """
     out = []
+    # Lazy import to avoid circular dependency at module load
+    try:
+        from .voyager_protocol import _load_metadata
+        voyager_meta = _load_metadata()
+    except Exception:
+        voyager_meta = {}
+
     for name, spec in TOOL_REGISTRY.items():
         if permission_filter and spec.permission != permission_filter:
             continue
-        out.append({
+        entry: dict = {
             "name": name,
             "description": spec.description,
             "params": spec.params,
             "permission": spec.permission,
-        })
+        }
+        # Attach Voyager metadata if this is a generated tool
+        if name in voyager_meta:
+            meta = voyager_meta[name]
+            entry["is_generated"] = meta.get("is_generated", True)
+            entry["created_by"] = meta.get("created_by", "voyager_protocol")
+            entry["created_at"] = meta.get("created_at", "")
+        out.append(entry)
     return out

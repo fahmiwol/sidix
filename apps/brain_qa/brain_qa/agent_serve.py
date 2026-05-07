@@ -49,6 +49,15 @@ except ImportError:
 from .agent_react import run_react, format_trace, AgentSession
 from .agent_tools import list_available_tools, call_tool, get_agent_workspace_root
 from .local_llm import adapter_fingerprint, adapter_weights_exist, find_adapter_dir, generate_sidix
+from .voyager_protocol import (
+    VoyagerToolRequest,
+    VoyagerToolResult,
+    create_tool as _voyager_create_tool,
+    list_generated_tools as _voyager_list_tools,
+    get_generated_tool as _voyager_get_tool,
+    delete_generated_tool as _voyager_delete_tool,
+    load_generated_tools_at_startup,
+)
 from .agency_kit import (
     AgencyKitRequest as _AgencyKitRequest,
     create_agency_kit_job,
@@ -459,6 +468,7 @@ class GenerateResponse(BaseModel):
     model: str
     mode: str  # "mock" | "local_lora" | "api"
     duration_ms: int
+    persona: str = ""
 
 
 class FeedbackRequest(BaseModel):
@@ -623,6 +633,22 @@ class AgentGenerateResponse(BaseModel):
     persona: str
 
 
+# ── Voyager Protocol models ───────────────────────────────────────────────────
+class VoyagerCreateRequest(BaseModel):
+    intent: str
+    tool_name: str | None = None
+    description: str | None = None
+
+
+class VoyagerCreateResponse(BaseModel):
+    success: bool
+    tool_name: str
+    code: str
+    error: str = ""
+    security_passed: bool
+    registered: bool
+
+
 class DebateRequest(BaseModel):
     """Debate Ring REAL — multi-agent consensus request."""
     topic: str
@@ -720,6 +746,7 @@ def _llm_generate(
     temperature: float = 0.7,
     context_snippets: list[str] | None = None,
     preferred_model: str | None = None,
+    persona: str | None = None,
 ) -> tuple[str, str]:
     """
     Returns (generated_text, mode).
@@ -738,6 +765,7 @@ def _llm_generate(
             temperature=temperature,
             context_snippets=context_snippets,
             preferred_model=preferred_model,
+            persona=persona,
         )
         if result.text:
             return result.text, result.mode
@@ -793,6 +821,15 @@ def create_app() -> "FastAPI":
     # ── Vol 20c: Bootstrap semantic cache embedding ─────────────────────────
     # Try load embedding model di startup. Kalau gagal (sentence-transformers
     # not installed), semantic_cache stay dormant — Vol 20b graceful disable.
+    @app.on_event("startup")
+    async def _bootstrap_voyager_tools():
+        """Load previously generated tools from Voyager Protocol into registry."""
+        try:
+            load_generated_tools_at_startup()
+            log.info("[startup] voyager tools loaded")
+        except Exception as e:
+            log.info("[startup] voyager tools load skipped: %s", e)
+
     @app.on_event("startup")
     async def _bootstrap_semantic_cache():
         try:
@@ -2523,14 +2560,15 @@ def create_app() -> "FastAPI":
         if detected_mode == SidixMode.INSTANT:
             try:
                 from .local_llm import generate_sidix
-                instant_answer = generate_sidix(
+                instant_text, _ = generate_sidix(
                     prompt=working_question,
-                    system_prompt="Kamu SIDIX. Jawab singkat, tepat, dan ramah.",
+                    system="Kamu SIDIX. Jawab singkat, tepat, dan ramah.",
                     max_tokens=mode_config["max_tokens"],
                     temperature=mode_config["temperature"],
+                    persona=effective_persona,
                 )
                 duration_ms = int((time.time() - t0) * 1000)
-                _ans = str(instant_answer)
+                _ans = instant_text
                 if _auto_tune_enabled(request, req.auto_tune):
                     try:
                         _ans = auto_tune_response(_ans, mode="general", auto_correct=False)
@@ -3023,6 +3061,7 @@ def create_app() -> "FastAPI":
                 system=_system,
                 max_tokens=req.max_tokens,
                 temperature=req.temperature,
+                persona=p,
             )
             if mode == "local_lora":
                 _gen_text = text
@@ -3096,6 +3135,7 @@ def create_app() -> "FastAPI":
                     system=_system,
                     max_tokens=req.max_tokens,
                     temperature=req.temperature,
+                    persona=p,
                 )
                 if mode == "local_lora":
                     yield f"data: {json.dumps({'type': 'token', 'text': text})}\n\n"
@@ -3534,12 +3574,17 @@ def create_app() -> "FastAPI":
         if not req.prompt.strip():
             raise HTTPException(status_code=400, detail="prompt tidak boleh kosong")
 
+        p = (req.persona or "UTZ").strip().upper() or "UTZ"
+        if p not in _ALLOWED_PERSONAS:
+            p = "UTZ"
+
         t0 = time.time()
         text, mode = _llm_generate(
             prompt=req.prompt,
             system=req.system,
             max_tokens=req.max_tokens,
             temperature=req.temperature,
+            persona=p,
         )
         duration_ms = int((time.time() - t0) * 1000)
         (None if _is_whitelisted(request) else rate_limit.record_daily_use(_daily_client_key(request)))
@@ -3549,6 +3594,7 @@ def create_app() -> "FastAPI":
             model="Qwen2.5-7B-Instruct-LoRA" if mode != "mock" else "mock",
             mode=mode,
             duration_ms=duration_ms,
+            persona=p,
         )
 
     # ── GET /agent/tools ──────────────────────────────────────────────────────
@@ -9174,7 +9220,7 @@ h1{{color:#0af}}p{{color:#aaa}}a{{color:#0af}}</style></head>
 
     # ── Sprint 5: Creative Agency Kit endpoint (async background job) ────────
     @app.post("/creative/agency_kit", tags=["Creative"])
-    async def creative_agency_kit(req: _AgencyKitRequest):
+    def creative_agency_kit(req: _AgencyKitRequest):
         """
         Agency Kit 1-Click — create background job, return job_id immediately.
 
@@ -9199,7 +9245,7 @@ h1{{color:#0af}}p{{color:#aaa}}a{{color:#0af}}</style></head>
             if not target_audience:
                 req.target_audience = "audiens Indonesia umum"
 
-            job_id = await asyncio.to_thread(create_agency_kit_job, req)
+            job_id = create_agency_kit_job(req)
             return {"ok": True, "job_id": job_id}
         except HTTPException:
             raise
@@ -9595,6 +9641,76 @@ h1{{color:#0af}}p{{color:#aaa}}a{{color:#0af}}</style></head>
                 status_code=500,
                 detail=f"synthesis error: {e}",
             )
+
+    # ════════════════════════════════════════════════════════════════════════
+    # VOYAGER PROTOCOL — Dynamic Tool Creator (Phase 1)
+    # ════════════════════════════════════════════════════════════════════════
+
+    @app.post("/app/voyager/create", tags=["Voyager"])
+    async def voyager_create(req: VoyagerCreateRequest, request: Request):
+        """
+        Create a new tool from natural language intent.
+        Body: { "intent": "Buat tool yang menghitung BMI...", "tool_name": "bmi_calculator" }
+        """
+        _enforce_rate(request)
+        if not req.intent.strip():
+            raise HTTPException(status_code=400, detail="intent wajib diisi")
+        try:
+            result = _voyager_create_tool(
+                VoyagerToolRequest(
+                    intent=req.intent,
+                    tool_name=req.tool_name,
+                    description=req.description,
+                )
+            )
+            return VoyagerCreateResponse(
+                success=result.success,
+                tool_name=result.tool_name,
+                code=result.code,
+                error=result.error,
+                security_passed=result.security_passed,
+                registered=result.registered,
+            )
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"voyager create error: {e}")
+
+    @app.get("/app/voyager/tools", tags=["Voyager"])
+    async def voyager_list_tools(request: Request):
+        """List all generated tools with metadata."""
+        _enforce_rate(request)
+        try:
+            tools = _voyager_list_tools()
+            return {"ok": True, "tools": tools, "count": len(tools)}
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"voyager list error: {e}")
+
+    @app.get("/app/voyager/tools/{tool_name}", tags=["Voyager"])
+    async def voyager_get_tool(tool_name: str, request: Request):
+        """Get a generated tool's metadata + code."""
+        _enforce_rate(request)
+        try:
+            info = _voyager_get_tool(tool_name)
+            if info is None:
+                raise HTTPException(status_code=404, detail="tool not found")
+            return {"ok": True, "tool": info}
+        except HTTPException:
+            raise
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"voyager get error: {e}")
+
+    @app.post("/app/voyager/tools/{tool_name}/delete", tags=["Voyager"])
+    async def voyager_delete_tool(tool_name: str, request: Request):
+        """Delete a generated tool."""
+        _enforce_rate(request)
+        try:
+            ok = _voyager_delete_tool(tool_name)
+            if not ok:
+                raise HTTPException(status_code=404, detail="tool not found")
+            return {"ok": True, "tool_name": tool_name, "deleted": True}
+        except HTTPException:
+            raise
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"voyager delete error: {e}")
 
     # ── Agency OS: Tiranyx pilot client ──────────────────────────────────────
     try:

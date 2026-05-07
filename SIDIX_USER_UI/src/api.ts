@@ -425,7 +425,7 @@ export async function checkHealth(): Promise<HealthResponse> {
  */
 export async function agentGenerate(
   prompt: string,
-  opts?: { max_tokens?: number; temperature?: number; system?: string },
+  opts?: { max_tokens?: number; temperature?: number; system?: string; persona?: Persona },
 ): Promise<AgentGenerateResponse> {
   const body: Record<string, unknown> = {
     prompt,
@@ -433,6 +433,7 @@ export async function agentGenerate(
     temperature: opts?.temperature ?? 0.7,
   };
   if (opts?.system != null) body.system = opts.system;
+  if (opts?.persona != null) body.persona = opts.persona;
 
   return request<AgentGenerateResponse>(
     '/agent/generate',
@@ -1106,6 +1107,72 @@ export async function runDebate(req: DebateRequest): Promise<DebateResult> {
  */
 export async function getDebatePersonas(): Promise<{ pairs: Array<{ name: string; persona_a: string; persona_b: string }> }> {
   return request<{ pairs: Array<{ name: string; persona_a: string; persona_b: string }> }>('/creative/debate/personas');
+}
+
+// ════════════════════════════════════════════════════════════════════════
+// VOYAGER PROTOCOL — Dynamic Tool Creator
+// ════════════════════════════════════════════════════════════════════════
+
+export interface VoyagerToolRequest {
+  intent: string;
+  tool_name?: string;
+  description?: string;
+}
+
+export interface VoyagerToolResult {
+  success: boolean;
+  tool_name: string;
+  code: string;
+  error?: string;
+  security_passed: boolean;
+  registered: boolean;
+}
+
+/**
+ * POST /app/voyager/create — create a new tool from natural language intent.
+ */
+export async function createVoyagerTool(req: VoyagerToolRequest): Promise<VoyagerToolResult> {
+  const res = await fetch(`${BRAIN_QA_BASE}/app/voyager/create`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ..._authHeaders() },
+    body: JSON.stringify(req),
+  });
+  if (!res.ok) throw new BrainQAError('server', `voyager/create ${res.status}`);
+  return res.json();
+}
+
+/**
+ * GET /app/voyager/tools — list generated tools.
+ */
+export async function listVoyagerTools(): Promise<{ ok: boolean; tools: Array<Record<string, unknown>>; count: number }> {
+  const res = await fetch(`${BRAIN_QA_BASE}/app/voyager/tools`, {
+    headers: _authHeaders(),
+  });
+  if (!res.ok) throw new BrainQAError('server', `voyager/tools ${res.status}`);
+  return res.json();
+}
+
+/**
+ * GET /app/voyager/tools/{tool_name} — get generated tool code.
+ */
+export async function getVoyagerTool(toolName: string): Promise<{ ok: boolean; tool: Record<string, unknown> }> {
+  const res = await fetch(`${BRAIN_QA_BASE}/app/voyager/tools/${encodeURIComponent(toolName)}`, {
+    headers: _authHeaders(),
+  });
+  if (!res.ok) throw new BrainQAError('server', `voyager/tool ${res.status}`);
+  return res.json();
+}
+
+/**
+ * POST /app/voyager/tools/{tool_name}/delete — delete generated tool.
+ */
+export async function deleteVoyagerTool(toolName: string): Promise<{ ok: boolean; tool_name: string; deleted: boolean }> {
+  const res = await fetch(`${BRAIN_QA_BASE}/app/voyager/tools/${encodeURIComponent(toolName)}/delete`, {
+    method: 'POST',
+    headers: _authHeaders(),
+  });
+  if (!res.ok) throw new BrainQAError('server', `voyager/delete ${res.status}`);
+  return res.json();
 }
 
 // ════════════════════════════════════════════════════════════════════════

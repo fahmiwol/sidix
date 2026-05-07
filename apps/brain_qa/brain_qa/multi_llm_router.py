@@ -59,6 +59,7 @@ def route_generate(
     context_snippets: Optional[list[str]] = None,
     preferred_model: Optional[str] = None,  # kept for API compat (unused)
     skip_local: bool = False,
+    persona: Optional[str] = None,
 ) -> LLMResult:
     """
     Router lokal untuk text generation.
@@ -102,6 +103,7 @@ def route_generate(
                 system or "",
                 max_tokens=max_tokens,
                 temperature=temperature,
+                persona=persona,
             )
             if mode == "local_lora" and text:
                 _elapsed = int((time.time() - t0) * 1000)

@@ -1220,6 +1220,7 @@ def _compose_final_answer(
             system=_combined_system,
             max_tokens=512 if not simple_mode else 200,
             temperature=0.7,
+            persona=persona,
         )
         if mode == "local_lora":
             import logging as _log

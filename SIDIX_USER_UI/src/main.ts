@@ -28,11 +28,13 @@ import {
   exportArtifact, createArtifactVersion, updateArtifact, deleteArtifact,
   runDebate, getDebatePersonas,
   createAgencyKit, getAgencyKitJob, listAgencyKitJobs,
+  createVoyagerTool, listVoyagerTools, getVoyagerTool, deleteVoyagerTool,
   BrainQAError,
   type Persona, type CorpusDocument, type Citation, type HealthResponse,
   type AskInferenceOpts, type QuotaInfo, type SidixMode, type Artifact,
   type DebateRequest, type DebateResult,
   type AgencyKitRequest, type AgencyKitJob,
+  type VoyagerToolRequest, type VoyagerToolResult,
 } from './api';
 
 import { initWaitingRoom } from './waiting-room';
@@ -3230,7 +3232,8 @@ async function refreshModelTabPanel() {
       }
       if (testMeta) testMeta.classList.add('hidden');
       try {
-        const r = await agentGenerate(prompt, { max_tokens: 256 });
+        const persona = (personaSel?.value ?? 'AYMAN') as Persona;
+        const r = await agentGenerate(prompt, { max_tokens: 256, persona });
         if (testMeta) {
           testMeta.classList.remove('hidden');
           testMeta.textContent = `mode=${r.mode} · model=${r.model} · ${r.duration_ms} ms`;
@@ -4064,3 +4067,23 @@ renderAgencyKitResults = function(job: AgencyKitJob) {
   (window as any).__lastAgencyKitResults = job.results || {};
   _origRender(job);
 };
+
+// ════════════════════════════════════════════════════════════════════════
+// VOYAGER PROTOCOL — Dynamic Tool Creator (Phase 1)
+// Minimal wiring for future UI expansion.
+// ════════════════════════════════════════════════════════════════════════
+
+/**
+ * Create a new SIDIX tool from natural language intent.
+ * Future UI: add a "Voyager" panel where users describe what they want
+ * and SIDIX writes the tool for them.
+ */
+async function voyagerCreateTool(intent: string, toolName?: string): Promise<VoyagerToolResult> {
+  return createVoyagerTool({ intent, tool_name: toolName });
+}
+
+// Expose to global scope for console experimentation
+(window as any).voyagerCreateTool = voyagerCreateTool;
+(window as any).voyagerListTools = listVoyagerTools;
+(window as any).voyagerGetTool = getVoyagerTool;
+(window as any).voyagerDeleteTool = deleteVoyagerTool;

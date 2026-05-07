@@ -103,10 +103,36 @@ def generate_sidix(
     *,
     max_tokens: int = 256,
     temperature: float = 0.7,
+    persona: str | None = None,
 ) -> tuple[str, str]:
     """
     Returns (text, mode). mode is 'local_lora' or 'mock' with explanation.
+
+    persona: optional persona override untuk DoRA adapter switching.
+             Kalau disediakan, coba load adapter fisik; kalau tidak ada
+             fallback ke logical adapter (system prompt + temperature).
     """
+    # DoRA path: persona-specific adapter
+    if persona:
+        p = persona.strip().upper()
+        if p:
+            try:
+                from . import dora_adapter
+
+                text = dora_adapter.generate_with_persona(
+                    prompt=prompt,
+                    persona=p,
+                    system=system,
+                    max_tokens=max_tokens,
+                    temperature=temperature,
+                )
+                return text, "local_lora"
+            except Exception as e:
+                return (
+                    f"[SIDIX] Persona adapter gagal: {e!s}",
+                    "mock",
+                )
+
     adapter = find_adapter_dir()
     if adapter is None:
         return (

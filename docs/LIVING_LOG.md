@@ -17781,3 +17781,91 @@ curl -X POST http://localhost:8765/agent/maqashid/tune -d '{"sample_size":30}'
   - Fix: `scripts/qa_smoke_test.py` — update expected key check + method.
 - **COMMITS:** `e1026fa`, `658376c`, `2d62b6f`
 - **STATUS:** All endpoints green. Ready for next sprint batch.
+
+
+### 2026-05-07 (Kimi — Batch 4 Start: DoRA Adapter + Voyager Protocol P1)
+
+- **DECISION:** Founder directive: "lanjut, catat, analisa, iterasi, QA, review, testing, catat, recap"
+- **QA COMPLETE:** 15/15 endpoint PASS. 3 bug fixes. Ready for next batch.
+- **BATCH EKSEKUSI:** 2 sprint paralel:
+  1. Persona DoRA Adapter (dynamic LoRA switching)
+  2. Voyager Protocol Phase 1 (dynamic tool creator)
+- **TASK CARD:** docs/TASK_CARD_2026-05-07_DORA_VOYAGER.md
+
+
+### 2026-05-07 (Kimi — Voyager Protocol Phase 1 Implementation)
+
+- **IMPL:** `apps/brain_qa/brain_qa/voyager_protocol.py` — Dynamic Tool Creator.
+  - Models: `VoyagerToolRequest`, `VoyagerToolResult`
+  - Security scanner: `ast_security_scan()` — AST parse + forbidden patterns (`exec`, `eval`, `compile`, `__import__`, `os.system`, `subprocess`, `socket`, `open()` write mode, network calls).
+  - Whitelist import check: only `json`, `re`, `math`, `random`, `datetime`, `typing`, `collections`, `itertools`, `statistics`, `hashlib`, etc.
+  - Code generator: `generate_tool_code()` using self-hosted `generate_sidix()` with strict system prompt.
+  - Tool registration: `register_generated_tool()` — writes to `agent_workspace/generated_tools/`, py_compile validation, restricted-namespace `exec()`, wraps to `ToolSpec`, adds to `TOOL_REGISTRY`, persists metadata JSON.
+  - Management: `create_tool()`, `list_generated_tools()`, `get_generated_tool()`, `delete_generated_tool()`.
+  - Startup loader: `load_generated_tools_at_startup()` for persistence across restarts.
+- **UPDATE:** `apps/brain_qa/brain_qa/agent_tools.py` — Dynamic tool support.
+  - `call_tool()` now checks both static and dynamic registries (already supported via `TOOL_REGISTRY` mutation).
+  - `list_available_tools()` includes Voyager metadata: `is_generated`, `created_by`, `created_at`.
+- **UPDATE:** `apps/brain_qa/brain_qa/agent_serve.py` — Wired 4 endpoints.
+  - `POST /app/voyager/create` — create new tool from intent.
+  - `GET /app/voyager/tools` — list generated tools.
+  - `GET /app/voyager/tools/{tool_name}` — get tool code.
+  - `POST /app/voyager/tools/{tool_name}/delete` — delete generated tool.
+  - Startup hook `_bootstrap_voyager_tools()` loads persisted tools on server start.
+  - Added Pydantic models: `VoyagerCreateRequest`, `VoyagerCreateResponse`.
+- **UPDATE:** `SIDIX_USER_UI/src/api.ts` — TypeScript client.
+  - Interfaces: `VoyagerToolRequest`, `VoyagerToolResult`.
+  - Functions: `createVoyagerTool()`, `listVoyagerTools()`, `getVoyagerTool()`, `deleteVoyagerTool()`.
+- **UPDATE:** `SIDIX_USER_UI/src/main.ts` — Minimal UI wiring.
+  - Imported Voyager functions from `api.ts`.
+  - Added `voyagerCreateTool()` wrapper + exposed to `window` for console experimentation.
+- **TEST:** `python -m py_compile` on all 3 Python files → **ALL PASS** ✅
+  - `voyager_protocol.py`: OK
+  - `agent_tools.py`: OK
+  - `agent_serve.py`: OK
+- **CONSTRAINTS MET:**
+  - Self-hosted ONLY (`generate_sidix()`, no external APIs).
+  - Security: AST scan + pattern scan + whitelist imports + py_compile + restricted exec.
+  - Generated tools run in same sandbox namespace as `code_sandbox`.
+  - No external API calls allowed in generated code.
+  - Existing tools preserved; no deletions.
+- **STATUS:** Voyager Protocol Phase 1 complete. Ready for Phase 2 (auto-trigger from agent intent + tool self-testing).
+
+
+### 2026-05-07
+
+- **IMPL:** `apps/brain_qa/brain_qa/dora_adapter.py` — Persona DoRA Adapter infrastructure (NEW).
+  - `PERSONA_ADAPTERS` registry: AYMAN, ABOO, OOMAR, ALEY, UTZ dengan path/temp/max_tokens.
+  - `PERSONA_SYSTEM_PROMPTS` logical fallback untuk setiap persona.
+  - `adapter_exists()` — cek keberadaan adapter fisik.
+  - `load_persona_adapter()` — thread-safe load via PEFT `load_adapter` + `set_adapter`.
+  - `unload_persona_adapter()` — revert ke adapter default.
+  - `get_persona_config()` — merged config + system prompt.
+  - `generate_with_persona()` — jalur physical adapter (load → generate → unload) atau logical fallback (system prompt + temperature).
+- **UPDATE:** `apps/brain_qa/brain_qa/local_llm.py` — `generate_sidix()` now accepts `persona: str | None = None`.
+  - Kalau persona disediakan: delegate ke `dora_adapter.generate_with_persona()`.
+  - Backward compatibility: tanpa persona = perilaku existing (tidak berubah).
+- **UPDATE:** `apps/brain_qa/brain_qa/multi_llm_router.py` — `route_generate()` accepts `persona: Optional[str] = None` dan meneruskannya ke `generate_sidix()`.
+- **UPDATE:** `apps/brain_qa/brain_qa/agent_react.py` — `run_react()` fallback ke `generate_sidix()` sekarang mem-pass `persona=persona`.
+- **UPDATE:** `apps/brain_qa/brain_qa/agent_serve.py` — multiple endpoint updates.
+  - `GenerateResponse` model: ditambah field `persona: str = ""`.
+  - `_llm_generate()`: parameter baru `persona` diteruskan ke `route_generate()`.
+  - `/agent/generate` (GenerateResponse path): extract persona dari request, pass ke `_llm_generate()`, include persona di response.
+  - `/agent/generate` (AgentGenerateResponse path): pass `persona=p` ke `generate_sidix()` fallback.
+  - `/agent/generate/stream`: pass `persona=p` ke `generate_sidix()` fallback.
+  - `/agent/chat_holistic` INSTANT mode: fix `system_prompt` → `system`, fix tuple unpacking `str(instant_answer)` → `instant_text`, tambah `persona=effective_persona`.
+  - `/agent/chat`: persona sudah mengalir ke `run_react()` (existing), kini `run_react` meneruskannya ke `generate_sidix()`.
+- **UPDATE:** `SIDIX_USER_UI/src/api.ts` — `agentGenerate()` opts menerima `persona?: Persona`.
+- **UPDATE:** `SIDIX_USER_UI/src/main.ts` — test generate button sekarang mengirim persona terpilih ke backend via `agentGenerate(..., { persona })`.
+- **TEST:** `python -m py_compile` pada 5 file Python → **ALL PASS** ✅
+  - `dora_adapter.py`: OK
+  - `local_llm.py`: OK
+  - `agent_serve.py`: OK
+  - `multi_llm_router.py`: OK
+  - `agent_react.py`: OK
+- **CONSTRAINTS MET:**
+  - Self-hosted ONLY — tidak ada external API calls.
+  - Thread-safe: `_adapter_lock = threading.RLock()` mengamankan PEFT adapter switch.
+  - Fallback logical adapter bila physical adapter belum ada (Self-Train Fase 1 belum selesai).
+  - Backward compatibility: semua caller existing tanpa persona tetap jalan.
+- **DECISION:** Tidak memperbaiki semua bug laten existing di `agent_serve.py` (misal endpoint overwrite `/agent/generate` ×2, `system_prompt` vs `system` di path lain) agar scope tetap minimal sesuai task.
