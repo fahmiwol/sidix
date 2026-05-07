@@ -3441,6 +3441,115 @@ def create_app() -> "FastAPI":
             log.warning("[tts/elevenlabs/health] error: %s", e)
             raise HTTPException(status_code=500, detail=f"elevenlabs health error: {e}")
 
+    # ═══════════════════════════════════════════════════════════════════════════
+    # SIDIX SPARK — Ethical Dataset Curation (Adobe Firefly-inspired)
+    # ═══════════════════════════════════════════════════════════════════════════
+
+    # ── POST /spark/curate ────────────────────────────────────────────────────
+    @app.post("/spark/curate")
+    async def spark_curate(request: Request):
+        """Curate dataset dengan ethical filtering."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+            entries = body.get("entries", [])
+            if not entries:
+                raise HTTPException(status_code=400, detail="entries wajib diisi")
+            from dataset_spark_curation import curate_ethical_dataset
+            result = curate_ethical_dataset(
+                entries=entries,
+                output_path=body.get("output_path", "dataset/spark_curated.jsonl"),
+                curator=body.get("curator", "sidix-spark"),
+            )
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "curate gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[spark/curate] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"spark curate error: {e}")
+
+    # ── POST /spark/validate ──────────────────────────────────────────────────
+    @app.post("/spark/validate")
+    async def spark_validate(request: Request):
+        """Validate license satu entry."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+            entry = body.get("entry", {})
+            if not entry:
+                raise HTTPException(status_code=400, detail="entry wajib diisi")
+            from dataset_spark_curation import validate_license
+            result = validate_license(entry)
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "validate gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[spark/validate] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"spark validate error: {e}")
+
+    # ── POST /spark/bias ──────────────────────────────────────────────────────
+    @app.post("/spark/bias")
+    async def spark_bias(request: Request):
+        """Audit bias pada dataset."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+            entries = body.get("entries", [])
+            if not entries:
+                raise HTTPException(status_code=400, detail="entries wajib diisi")
+            from dataset_spark_curation import audit_bias
+            result = audit_bias(entries)
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "bias gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[spark/bias] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"spark bias error: {e}")
+
+    # ── GET /spark/pinterest ──────────────────────────────────────────────────
+    @app.get("/spark/pinterest")
+    async def spark_pinterest(request: Request):
+        """Show detailed warning tentang risiko scraping Pinterest."""
+        _enforce_rate(request)
+        try:
+            from dataset_spark_curation import get_pinterest_warning
+            result = get_pinterest_warning()
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "warning gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[spark/pinterest] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"spark pinterest error: {e}")
+
+    # ── POST /spark/provenance ────────────────────────────────────────────────
+    @app.post("/spark/provenance")
+    async def spark_provenance(request: Request):
+        """Generate provenance report untuk dataset."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+            credentials = body.get("credentials", [])
+            if not credentials:
+                raise HTTPException(status_code=400, detail="credentials wajib diisi")
+            from dataset_spark_curation import generate_provenance_report
+            result = generate_provenance_report(credentials)
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "provenance gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[spark/provenance] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"spark provenance error: {e}")
+
     # ── POST /agent/chat ──────────────────────────────────────────────────────
     @app.post("/agent/chat", response_model=ChatResponse)
     def agent_chat(req: ChatRequest, request: Request):

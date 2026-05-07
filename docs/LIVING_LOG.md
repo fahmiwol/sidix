@@ -18400,3 +18400,50 @@ curl -X POST http://localhost:8765/agent/maqashid/tune -d '{"sample_size":30}'
 - **Anti-menguap checklist:**
   - ✅ LIVING_LOG updated
   - ✅ Code committed + pushed
+
+
+
+### 2026-05-08 (Kimi — SPRINT: SIDIX Spark Ethical Dataset Curator)
+
+- **TASK CARD:** Sprint SIDIX Spark — Ethical Dataset Curation (Adobe Firefly-inspired)
+  - WHAT: Curator pipeline yang hanya menerima licensed content + content credentials + bias audit
+  - WHY: Bos minta explore Pinterest + Muse/Spark + Adobe approach → Pinterest DITOLAK, Adobe DIADOPSI
+  - ACCEPTANCE: 1 module baru, 5 tools, 5 endpoints, research doc, py_compile PASS
+  - PLAN: riset Pinterest/Muse/Adobe → design Spark pipeline → implementasi → test → commit
+  - RISKS: Pinterest DITOLAK — bos perlu tahu alternatives
+- **RESEARCH:** `docs/research/SPARK_DATASET_CURATOR.md` — NEW
+  - Pinterest = BLACKLISTED (ToS violation + DMCA + copyright risk)
+  - Muse Spark (Meta) = proprietary multimodal LLM, closed source, private API
+  - Adobe Firefly approach = DIADOPSI (licensed-only + provenance + indemnification)
+  - SIDIX Spark = Adobe Firefly approach untuk SIDIX
+- **IMPL:** `apps/brain_qa/brain_qa/dataset_spark_curation.py` — NEW
+  - `validate_license()`: whitelist/blacklist checker
+  - `create_content_credential()`: C2PA-like manifest per asset
+  - `verify_content_credential()`: HMAC tamper-evidence
+  - `audit_bias()`: gender/western/professional bias detection
+  - `curate_ethical_dataset()`: main pipeline (validate → audit → credential → export)
+  - `generate_provenance_report()`: compliance audit report
+  - `get_pinterest_warning()`: educational warning
+  - Whitelist: agency_owned, cc0, cc-by, cc-by-sa, unsplash, pexels, public_domain, self_generated
+  - Blacklist: pinterest, instagram, tumblr, deviantart, artstation, behance, dribbble, facebook, twitter, x
+- **IMPL:** `apps/brain_qa/brain_qa/agent_tools.py` — 5 tool baru
+  - `spark_curate`, `spark_validate`, `spark_bias`, `spark_pinterest_warn`, `spark_provenance`
+  - Total tools: 70 → **75** (+5)
+- **IMPL:** `apps/brain_qa/brain_qa/agent_serve.py` — 5 endpoint baru
+  - `POST /spark/curate`, `/spark/validate`, `/spark/bias`, `/spark/provenance`
+  - `GET /spark/pinterest`
+- **TEST:** py_compile 4/4 PASS ✅
+- **FIX:** N/A — no bugs found
+- **DECISION:** Pinterest scraping DITOLAK secara keras
+  - Alasan: ToS violation, DMCA Section 1201, copyright infringement
+  - Alternatives: Wikimedia Commons, Unsplash, Pexels, Google Drive agency, LAION-5B, RunPod self-gen
+- **Anti-menguap checklist:**
+  - ✅ BACKLOG updated
+  - ✅ VISI_MATRIX updated
+  - ✅ LIVING_LOG updated
+  - ✅ Code committed + pushed
+- **Session stats:**
+  - Files modified: 5 (1 new + 2 modified + 1 new doc + 1 update)
+  - Lines added: ~1000
+  - Tests: 4 py_compile PASS
+  - Bugs found: 0 new

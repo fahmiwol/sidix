@@ -4076,6 +4076,132 @@ def _tool_elevenlabs_health(args: dict) -> ToolResult:
         return ToolResult(success=False, output="", error=f"Health check error: {exc}")
 
 
+def _tool_spark_curate(args: dict) -> ToolResult:
+    """Curate dataset dengan ethical filtering (Adobe Firefly approach). Hanya licensed content."""
+    entries = args.get("entries", [])
+    if not entries:
+        return ToolResult(success=False, output="", error="entries wajib diisi (list of dict)")
+    try:
+        from dataset_spark_curation import curate_ethical_dataset
+        result = curate_ethical_dataset(
+            entries=entries,
+            output_path=args.get("output_path", "dataset/spark_curated.jsonl"),
+            curator=args.get("curator", "sidix-spark"),
+        )
+        if result.get("ok"):
+            data = result["data"]
+            out = "[SIDIX Spark — Ethical Dataset Curation]\n"
+            out += f"Input: {data.get('total_input')} | Accepted: {data.get('accepted')} | Rejected: {data.get('rejected')}\n"
+            out += f"Acceptance rate: {data.get('acceptance_rate')}%\n"
+            out += f"License dist: {data.get('license_distribution')}\n"
+            out += f"Output: {data.get('output_path')}\n"
+            bias = data.get("bias_audit", {})
+            out += f"Bias score: {bias.get('overall_bias_score', '?')}/100\n"
+            flags = bias.get("bias_flags", [])
+            if flags and flags[0] != "None detected":
+                out += "Bias flags:\n"
+                for f in flags:
+                    out += f"  ⚠️ {f}\n"
+            return ToolResult(success=True, output=out)
+        return ToolResult(success=False, output="", error=result.get("fallback_instructions", "Curation gagal"))
+    except Exception as exc:
+        return ToolResult(success=False, output="", error=f"Curation error: {exc}")
+
+
+def _tool_spark_validate(args: dict) -> ToolResult:
+    """Validate license satu entry (whitelist/blacklist check)."""
+    entry = args.get("entry", {})
+    if not entry:
+        return ToolResult(success=False, output="", error="entry wajib diisi (dict)")
+    try:
+        from dataset_spark_curation import validate_license
+        result = validate_license(entry)
+        if result.get("ok"):
+            data = result["data"]
+            out = f"[Spark License Validator]\n"
+            out += f"Valid: {'YES' if data.get('is_valid') else 'NO'}\n"
+            out += f"License: {data.get('license_type')}\n"
+            out += f"Risk: {data.get('risk_level')}\n"
+            out += f"Action: {data.get('action')}\n"
+            out += f"Note: {data.get('notes')}\n"
+            return ToolResult(success=True, output=out)
+        return ToolResult(success=False, output="", error=result.get("fallback_instructions", "Validate gagal"))
+    except Exception as exc:
+        return ToolResult(success=False, output="", error=f"Validate error: {exc}")
+
+
+def _tool_spark_bias(args: dict) -> ToolResult:
+    """Audit bias pada dataset (gender, western, professional)."""
+    entries = args.get("entries", [])
+    if not entries:
+        return ToolResult(success=False, output="", error="entries wajib diisi")
+    try:
+        from dataset_spark_curation import audit_bias
+        result = audit_bias(entries)
+        if result.get("ok"):
+            data = result["data"]
+            out = "[Spark Bias Audit]\n"
+            out += f"Total: {data.get('total_entries')}\n"
+            out += f"Gender balance: {data.get('gender_balance_score')}/100\n"
+            out += f"Western: {data.get('western_content_percentage')}%\n"
+            out += f"Professional: {data.get('professional_content_percentage')}%\n"
+            out += f"Overall bias: {data.get('overall_bias_score')}/100\n"
+            flags = data.get("bias_flags", [])
+            if flags and flags[0] != "None detected":
+                out += "Flags:\n"
+                for f in flags:
+                    out += f"  ⚠️ {f}\n"
+            return ToolResult(success=True, output=out)
+        return ToolResult(success=False, output="", error=result.get("fallback_instructions", "Audit gagal"))
+    except Exception as exc:
+        return ToolResult(success=False, output="", error=f"Audit error: {exc}")
+
+
+def _tool_spark_pinterest_warn(args: dict) -> ToolResult:
+    """Show detailed warning tentang risiko scraping Pinterest."""
+    try:
+        from dataset_spark_curation import get_pinterest_warning
+        result = get_pinterest_warning()
+        if result.get("ok"):
+            data = result["data"]
+            out = f"[⚠️ {data.get('source')} — {data.get('status')}]\n"
+            out += f"Risk: {data.get('risk_level')}\n\n"
+            out += "Alasan ditolak:\n"
+            for r in data.get("reasons", []):
+                out += f"  • {r}\n"
+            out += "\nAlternatives yang legal:\n"
+            for a in data.get("alternatives", []):
+                out += f"  ✅ {a}\n"
+            return ToolResult(success=True, output=out)
+        return ToolResult(success=False, output="", error="Warning gagal")
+    except Exception as exc:
+        return ToolResult(success=False, output="", error=f"Warning error: {exc}")
+
+
+def _tool_spark_provenance(args: dict) -> ToolResult:
+    """Generate provenance report untuk dataset (compliance audit)."""
+    credentials = args.get("credentials", [])
+    if not credentials:
+        return ToolResult(success=False, output="", error="credentials wajib diisi (list of manifest dict)")
+    try:
+        from dataset_spark_curation import generate_provenance_report
+        result = generate_provenance_report(credentials)
+        if result.get("ok"):
+            data = result["data"]
+            out = "[Spark Provenance Report]\n"
+            out += f"Assets: {data.get('total_assets')}\n"
+            out += f"Sources: {data.get('sources')}\n"
+            out += f"Licenses: {data.get('licenses')}\n"
+            out += f"Standard: {data.get('compliance_standard')}\n"
+            out += "Requirements met:\n"
+            for r in data.get("requirements", []):
+                out += f"  ✓ {r}\n"
+            return ToolResult(success=True, output=out)
+        return ToolResult(success=False, output="", error=result.get("fallback_instructions", "Report gagal"))
+    except Exception as exc:
+        return ToolResult(success=False, output="", error=f"Report error: {exc}")
+
+
 TOOL_REGISTRY: dict[str, ToolSpec] = {
     "search_corpus": ToolSpec(
         name="search_corpus",
@@ -4645,6 +4771,55 @@ TOOL_REGISTRY: dict[str, ToolSpec] = {
         params=[],
         permission="open",
         fn=_tool_elevenlabs_health,
+    ),
+    "spark_curate": ToolSpec(
+        name="spark_curate",
+        description=(
+            "Curate dataset dengan ethical filtering (Adobe Firefly approach). Hanya licensed content yang diterima. "
+            "Params: entries (wajib, list of dict), output_path (opsional), curator (opsional)."
+        ),
+        params=["entries", "output_path", "curator"],
+        permission="open",
+        fn=_tool_spark_curate,
+    ),
+    "spark_validate": ToolSpec(
+        name="spark_validate",
+        description=(
+            "Validate license satu entry (whitelist/blacklist check). "
+            "Params: entry (wajib, dict dengan source dan license)."
+        ),
+        params=["entry"],
+        permission="open",
+        fn=_tool_spark_validate,
+    ),
+    "spark_bias": ToolSpec(
+        name="spark_bias",
+        description=(
+            "Audit bias pada dataset (gender, western, professional). "
+            "Params: entries (wajib, list of dict)."
+        ),
+        params=["entries"],
+        permission="open",
+        fn=_tool_spark_bias,
+    ),
+    "spark_pinterest_warn": ToolSpec(
+        name="spark_pinterest_warn",
+        description=(
+            "Show detailed warning tentang risiko scraping Pinterest. No params."
+        ),
+        params=[],
+        permission="open",
+        fn=_tool_spark_pinterest_warn,
+    ),
+    "spark_provenance": ToolSpec(
+        name="spark_provenance",
+        description=(
+            "Generate provenance report untuk dataset (compliance audit). "
+            "Params: credentials (wajib, list of manifest dict dari spark_curate)."
+        ),
+        params=["credentials"],
+        permission="open",
+        fn=_tool_spark_provenance,
     ),
     "concept_graph": ToolSpec(
         name="concept_graph",
