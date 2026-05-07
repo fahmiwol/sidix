@@ -17352,3 +17352,32 @@ curl -X POST http://localhost:8765/agent/maqashid/tune -d '{"sample_size":30}'
 - **TOTAL COMMITS HARI INI:** 4 commits (`b3ffb9f`, `b2350fe`, `7453f8b`, `c0e8abf`)
 - **TOTAL INSERTIONS:** ~921 baris kode baru
 
+
+
+### 2026-05-07 (Kimi — DEPLOY SUCCESS: Mode System + MCP + Deep Research + A2A LIVE!)
+
+- **DEPLOY:** VPS 187.77.116.139 deploy berhasil! Semua fitur baru sekarang live di production.
+  - Git pull: `5bca23d` → `8e7f754` (fast-forward)
+  - Backend: `pm2 restart sidix-brain` → online, memory 114MB
+  - Frontend: `npm run build` PASS 1.83s → `pm2 restart sidix-ui` → online, memory 64.9MB
+- **SMOKE TEST ALL PASS:**
+  - `/health` → `model_ready: true`, `tools_available: 51`, `corpus_doc_count: 3788` ✅
+  - `POST /mcp` → `tools/list` return **16 tools** (4 baru: web_search, generate_image, execute_python, deep_research) ✅
+  - `GET /.well-known/agent-card.json` → 6 skills, capabilities, authentication ✅
+  - `POST /agent/chat_holistic` mode=`instant` → `duration_ms: 19`, `mode: "instant"` ✅
+- **FIX:** `agent_serve.py` MCP endpoint — FastAPI validation error karena `MCPRequest` model tanpa `Body()` annotation. Fix: parse `await request.json()` manual. `py_compile` PASS. ✅
+- **STATUS PRODUKSI:**
+  - App: https://app.sidixlab.com
+  - API: https://ctrl.sidixlab.com
+  - MCP: https://ctrl.sidixlab.com/mcp
+  - AgentCard: https://ctrl.sidixlab.com/.well-known/agent-card.json
+- **COMMIT:** `8e7f754` (`fix(mcp): parse JSON body manually`) pushed ke `origin/work/gallant-ellis-7cd14d`. 🚀
+- **RINGKASAN HARI INI:**
+  - 6 commits total
+  - +~1,100 baris kode baru
+  - 7 file baru (mode_router, deep_research, deploy scripts, workflow, AgentCard)
+  - Semua backend py_compile PASS
+  - Semua frontend build PASS
+  - Deploy VPS PASS
+  - Smoke test 7/7 PASS
+
