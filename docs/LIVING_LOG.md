@@ -17381,3 +17381,94 @@ curl -X POST http://localhost:8765/agent/maqashid/tune -d '{"sample_size":30}'
   - Deploy VPS PASS
   - Smoke test 7/7 PASS
 
+
+
+### 2026-05-07 (Kimi — Sprint Continuation: A2A Phase 2 + Code Canvas + MCP stdio)
+
+- **DECISION:** Master sprint continuation — 3 sprint paralel dieksekusi dalam 1 session.
+  - Sprint A2A Phase 2: A2AServer (accept external tasks)
+  - Sprint Code Canvas MVP: built-in code editor + runner
+  - Sprint MCP stdio: desktop integration transport
+- **TASK CARD:** `docs/TASK_CARD_2026-05-07_ALL_SPRINTS.md` — format WHAT/WHY/ACCEPTANCE/PLAN/RISKS complete.
+- **PLAN:**
+  1. A2AServer: `a2a_server.py` + endpoint wiring
+  2. Code Canvas: backend `/app/code/*` + frontend split-pane
+  3. MCP stdio: `mcp_stdio_server.py` stdin/stdout JSON-RPC
+  4. Integration test + commit + deploy
+
+
+### 2026-05-07 (Kimi — MCP stdio transport implementation)
+
+- **IMPL:** `apps/brain_qa/brain_qa/mcp_stdio_server.py` — standalone MCP stdio server (JSON-RPC 2.0).
+  - Methods: `initialize`, `initialized` (notification), `tools/list`, `tools/call`, `notifications/initialized`.
+  - stdout = JSON-RPC only; stderr = logs.
+  - Env override: `SIDIX_MCP_ADMIN_OK`, `SIDIX_MCP_ALLOW_RESTRICTED` (default `1` untuk local desktop).
+  - Graceful shutdown on `KeyboardInterrupt` / `EOFError`.
+- **IMPL:** `apps/brain_qa/mcp_stdio_entry.py` — entry point script dengan `sys.path` guard.
+- **DOC:** `docs/MCP_STDIO_SETUP.md` — panduan konfigurasi Claude Desktop (macOS/Windows) + Cursor + troubleshooting.
+- **TEST:** `python -m py_compile` PASS untuk kedua file Python. ✅
+- **TEST:** Manual stdin test `initialize` → response JSON-RPC valid dengan `serverInfo.name="SIDIX-MCP"`. ✅
+- **TEST:** Manual stdin test `tools/list` → return 16+ tools dari `mcp_server_wrap.list_tools()`. ✅
+- **TEST:** Manual stdin test `tools/call` tool non-existent → `isError: true` dengan pesan error. ✅
+- **TEST:** Manual stdin test `tools/call` `sidix_execute_python` {"code":"print(2+2)"} → output `4`, `isError: false`, citations tersertakan. ✅
+- **NOTE:** HTTP transport `POST /mcp` di `agent_serve.py` tidak diubah — stdio dan HTTP berjalan paralel.
+
+
+### 2026-05-07 (Kimi — A2A Phase 2 implementation)
+
+- **IMPL:** `apps/brain_qa/brain_qa/a2a_server.py` — A2AServer yang bisa ACCEPT tasks dari external agents (Google A2A protocol).
+  - Pydantic models: `Task`, `Message`, `Artifact`, `Part`, `TextPart`, `FilePart`.
+  - Task status enum: `submitted`, `working`, `input-required`, `completed`, `canceled`, `failed`.
+  - In-memory task store `_TASKS: dict[str, Task]` dengan `threading.Lock` untuk thread-safety.
+  - `create_task(message) -> Task` — buat task, trigger background processing via `threading.Thread`.
+  - `get_task(task_id) -> Task | None` — lookup task state.
+  - `process_task_async(task_id)` — background thread, panggil existing brain:
+    - Heuristic: query simple & pendek (<15 kata, tidak ada keyword kompleks) → `generate_sidix`
+    - Query kompleks → `run_react` (ReAct loop penuh)
+  - `tasks_send(body) -> dict` — sync blocking (max 5 menit) untuk `POST /a2a/tasks/send`.
+  - `tasks_get(task_id) -> dict` — state lookup untuk `GET /a2a/tasks/{taskId}`.
+  - `tasks_send_subscribe(body)` — SSE generator untuk `POST /a2a/tasks/sendSubscribe`.
+  - `tasks_cancel(task_id) -> dict` — cancel task untuk `POST /a2a/tasks/cancel`.
+- **UPDATE:** `apps/brain_qa/brain_qa/agent_serve.py` — wire 4 endpoint A2A.
+  - Import `from . import a2a_server` di top-level.
+  - `POST /a2a/tasks/send` — `_enforce_rate` + `asyncio.to_thread(tasks_send, body)`.
+  - `GET /a2a/tasks/{task_id}` — `_enforce_rate` + `tasks_get`.
+  - `POST /a2a/tasks/sendSubscribe` — `_enforce_rate` + `StreamingResponse` SSE.
+  - `POST /a2a/tasks/cancel` — `_enforce_rate` + `tasks_cancel`.
+- **TEST:** `python -m py_compile` PASS untuk `a2a_server.py` dan `agent_serve.py`. ✅
+- **TEST:** Import test: `from brain_qa import a2a_server` + `from brain_qa import agent_serve` PASS. ✅
+- **TEST:** App creation + route registration check: `/.well-known/agent-card.json`, `/a2a/tasks/send`, `/a2a/tasks/{task_id}`, `/a2a/tasks/sendSubscribe`, `/a2a/tasks/cancel` — semua terdaftar. ✅
+- **NOTE:** Self-hosted inference ONLY — tidak ada call ke OpenAI/Anthropic/Gemini API.
+- **NOTE:** A2A Phase 1 (AgentCard) sudah ada sebelumnya di `GET /.well-known/agent-card.json`.
+
+
+### 2026-05-07 (Kimi — Code Canvas MVP implementation)
+
+- **IMPL:** `apps/brain_qa/brain_qa/app_code_canvas.py` — Code Canvas backend module.
+  - Pydantic models: `CodeRunRequest`, `CodeRunResponse`, `CodeDebugRequest`, `CodeDebugResponse`, `CodeArtifact`.
+  - In-memory store `_CODE_ARTIFACTS: dict[str, CodeArtifact]` dengan prune otomatis (max 200).
+  - `run_code(code, language)` — wrapper `call_tool("code_sandbox", ...)`, hanya Python yang fully supported di MVP.
+  - `debug_code(code, error)` — panggil `generate_sidix` (self-hosted inference ONLY), parse suggestions + fixed_code.
+  - `get_artifact(artifact_id)` dan `list_artifacts()` untuk history.
+- **UPDATE:** `apps/brain_qa/brain_qa/agent_serve.py` — wire 4 endpoint Code Canvas.
+  - `POST /app/code/run` — jalankan kode, return output + artifact_id.
+  - `POST /app/code/debug` — analisis error via LLM lokal, return suggestions + fixed_code.
+  - `GET /app/code/history` — list semua artifacts.
+  - `GET /app/code/history/{artifact_id}` — ambil artifact spesifik.
+- **UPDATE:** `SIDIX_USER_UI/src/api.ts` — tambah interface + fungsi `runCode()` dan `debugCode()`.
+- **UPDATE:** `SIDIX_USER_UI/index.html` — split-pane Code Canvas panel di kanan chat.
+  - Toggle button di header (desktop only).
+  - Canvas: language selector (Python/JS/HTML), textarea, Run button, output panel, Debug button (muncul saat error).
+  - Styling pakai design system existing (dark theme, gold accents, glass, warm palette).
+- **UPDATE:** `SIDIX_USER_UI/src/main.ts` — state management + event handlers Code Canvas.
+  - `toggleCodeCanvas()`, responsive resize handler (desktop 60/40, mobile 100% canvas).
+  - `handleCanvasRun()` → fetch `/app/code/run`, render output, tampilkan Debug button kalau error.
+  - `handleCanvasDebug()` → fetch `/app/code/debug`, render suggestions + auto-populate fixed_code.
+  - `populateCodeCanvas(text)` — deteksi blok ```python / ```javascript dari AI response, auto-populate textarea + buka canvas.
+  - Wired ke `onDone` streaming (`askStream`) dan `doHolistic` supaya auto-detect setelah AI generate code.
+- **TEST:** `python -m py_compile apps/brain_qa/brain_qa/app_code_canvas.py` PASS. ✅
+- **TEST:** `python -m py_compile apps/brain_qa/brain_qa/agent_serve.py` PASS. ✅
+- **TEST:** `cd SIDIX_USER_UI && npm run build` PASS (vite build sukses, 132 KB JS gzip 35 KB). ✅
+- **NOTE:** Self-hosted inference ONLY — debug memanggil `generate_sidix` lokal, TIDAK ada call ke OpenAI/Anthropic/Gemini API.
+- **NOTE:** Tidak install Monaco Editor — pakai textarea + CSS classes untuk minimal bundle size.
+- **DECISION:** JavaScript/HTML di language selector hanya placeholder (MVP); execution backend hanya Python karena `code_sandbox` tool hanya mendukung Python.

@@ -14,12 +14,14 @@ import {
   FolderTree, ShieldCheck, Folder, Lock, LockOpen, MoreHorizontal,
   LoaderCircle, Zap, BookOpen, ShieldAlert, Key,
   Users, Code2, Palette, Coffee, ExternalLink, User,
+  Terminal, Play, Bug, X,
 } from 'lucide';
 
 import {
   checkHealth, askStream, askHolistic, askHolisticStream, BRAIN_QA_BASE, listCorpus, uploadDocument, deleteDocument,
   triggerReindex, getReindexStatus, agentGenerate, submitFeedback, forgetAgentSession,
   agentBurst, agentTwoEyed, agentForesight, agentResurrect,
+  runCode, debugCode,
   BrainQAError,
   type Persona, type CorpusDocument, type Citation, type HealthResponse,
   type AskInferenceOpts, type QuotaInfo, type SidixMode,
@@ -128,6 +130,7 @@ function initIcons() {
       FolderTree, ShieldCheck, Folder, Lock, LockOpen, MoreHorizontal,
       LoaderCircle, Zap, BookOpen, ShieldAlert, Key,
       Users, Code2, Palette, Coffee, ExternalLink, User,
+      Terminal, Play, Bug, X,
     },
   });
 }
@@ -1469,6 +1472,8 @@ async function doHolistic(question: string, mode: SidixMode = 'agent') {
         'ok',
       );
     }
+    // Code Canvas: auto-detect code blocks from AI response
+    populateCodeCanvas(fullAnswer);
   } catch (e) {
     clearInterval(elapsedTimer);
     sendBtn.disabled = false;
@@ -2028,6 +2033,9 @@ async function handleSend() {
         streamBubble.appendChild(citeRow);
         initIcons();
       }
+      // Code Canvas: auto-detect code blocks from AI response
+      populateCodeCanvas(fullText);
+
       // Latency footer — kasih tau user durasi total (transparency + UX feel)
       const latencySec = (totalMs / 1000).toFixed(1);
       const speedHint = cacheHit
@@ -2972,6 +2980,199 @@ $('reset-workspace-btn')?.addEventListener('click', () => {
     switchScreen('chat');
   }
 });
+
+// ════════════════════════════════════════════════════════════════════════
+// CODE CANVAS MVP
+// ════════════════════════════════════════════════════════════════════════
+
+const chatPane = document.getElementById('chat-pane') as HTMLDivElement | null;
+const codeCanvas = document.getElementById('code-canvas') as HTMLDivElement | null;
+const btnToggleCanvas = document.getElementById('btn-toggle-canvas') as HTMLButtonElement | null;
+const btnCloseCanvas = document.getElementById('btn-close-canvas') as HTMLButtonElement | null;
+const canvasLanguage = document.getElementById('canvas-language') as HTMLSelectElement | null;
+const canvasCodeInput = document.getElementById('canvas-code-input') as HTMLTextAreaElement | null;
+const canvasRunBtn = document.getElementById('canvas-run-btn') as HTMLButtonElement | null;
+const canvasDebugBtn = document.getElementById('canvas-debug-btn') as HTMLButtonElement | null;
+const canvasOutput = document.getElementById('canvas-output') as HTMLPreElement | null;
+const canvasStatus = document.getElementById('canvas-status') as HTMLSpanElement | null;
+
+let codeCanvasVisible = false;
+let currentCode = '';
+let currentOutput = '';
+let currentError = '';
+
+function toggleCodeCanvas(force?: boolean) {
+  codeCanvasVisible = force !== undefined ? force : !codeCanvasVisible;
+  if (!chatPane || !codeCanvas) return;
+
+  if (codeCanvasVisible) {
+    codeCanvas.classList.remove('hidden');
+    chatPane.style.width = '60%';
+    // On mobile, hide chat pane entirely when canvas is open
+    if (window.innerWidth < 768) {
+      chatPane.classList.add('hidden');
+      codeCanvas.style.width = '100%';
+    } else {
+      chatPane.classList.remove('hidden');
+      codeCanvas.style.width = '40%';
+    }
+  } else {
+    codeCanvas.classList.add('hidden');
+    chatPane.style.width = '100%';
+    chatPane.classList.remove('hidden');
+  }
+  initIcons();
+}
+
+btnToggleCanvas?.addEventListener('click', () => toggleCodeCanvas());
+btnCloseCanvas?.addEventListener('click', () => toggleCodeCanvas(false));
+
+// Responsive: adjust layout on resize
+window.addEventListener('resize', () => {
+  if (!codeCanvasVisible || !chatPane || !codeCanvas) return;
+  if (window.innerWidth < 768) {
+    chatPane.classList.add('hidden');
+    codeCanvas.style.width = '100%';
+  } else {
+    chatPane.classList.remove('hidden');
+    chatPane.style.width = '60%';
+    codeCanvas.style.width = '40%';
+  }
+});
+
+function setCanvasStatus(text: string, type: 'idle' | 'running' | 'error' | 'success' = 'idle') {
+  if (!canvasStatus) return;
+  canvasStatus.textContent = text;
+  const colors: Record<string, string> = {
+    idle: '#7A6B58',
+    running: '#D4A017',
+    error: '#C46B6B',
+    success: '#6EAE7C',
+  };
+  canvasStatus.style.color = colors[type] || colors.idle;
+}
+
+async function handleCanvasRun() {
+  if (!canvasCodeInput) return;
+  const code = canvasCodeInput.value;
+  if (!code.trim()) return;
+
+  currentCode = code;
+  currentOutput = '';
+  currentError = '';
+  if (canvasOutput) canvasOutput.textContent = '';
+  canvasDebugBtn?.classList.add('hidden');
+  setCanvasStatus('Running…', 'running');
+  if (canvasRunBtn) canvasRunBtn.disabled = true;
+
+  try {
+    const result = await runCode({ code, language: canvasLanguage?.value || 'python' });
+    currentOutput = result.output || '';
+    currentError = result.error || '';
+    if (canvasOutput) {
+      canvasOutput.textContent = result.output || '(no output)';
+      if (result.error) {
+        canvasOutput.textContent += '\n\n[ERROR]\n' + result.error;
+      }
+    }
+    setCanvasStatus(`${result.duration_ms}ms · ${result.artifact_id.slice(0, 8)}`, result.error ? 'error' : 'success');
+    if (result.error) {
+      canvasDebugBtn?.classList.remove('hidden');
+    }
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e);
+    currentError = msg;
+    if (canvasOutput) canvasOutput.textContent = 'Run failed:\n' + msg;
+    setCanvasStatus('Failed', 'error');
+    canvasDebugBtn?.classList.remove('hidden');
+  } finally {
+    if (canvasRunBtn) canvasRunBtn.disabled = false;
+    initIcons();
+  }
+}
+
+canvasRunBtn?.addEventListener('click', handleCanvasRun);
+
+async function handleCanvasDebug() {
+  if (!canvasCodeInput || !currentError) return;
+  setCanvasStatus('Debugging…', 'running');
+  if (canvasDebugBtn) canvasDebugBtn.disabled = true;
+
+  try {
+    const result = await debugCode({ code: canvasCodeInput.value, error: currentError });
+    if (canvasOutput) {
+      const lines: string[] = [];
+      if (result.suggestions.length) {
+        lines.push('Suggestions:');
+        result.suggestions.forEach((s, i) => lines.push(`${i + 1}. ${s}`));
+      }
+      if (result.fixed_code) {
+        lines.push('\nFixed code:');
+        lines.push(result.fixed_code);
+      }
+      canvasOutput.textContent = lines.join('\n') || 'No suggestions.';
+    }
+    // Auto-populate fixed code if available
+    if (result.fixed_code && canvasCodeInput) {
+      canvasCodeInput.value = result.fixed_code;
+      currentCode = result.fixed_code;
+    }
+    setCanvasStatus('Debug done', 'success');
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e);
+    if (canvasOutput) canvasOutput.textContent = 'Debug failed:\n' + msg;
+    setCanvasStatus('Debug failed', 'error');
+  } finally {
+    if (canvasDebugBtn) canvasDebugBtn.disabled = false;
+  }
+}
+
+canvasDebugBtn?.addEventListener('click', handleCanvasDebug);
+
+canvasLanguage?.addEventListener('change', () => {
+  // Simple placeholder update based on language
+  if (!canvasCodeInput) return;
+  const lang = canvasLanguage.value;
+  const placeholders: Record<string, string> = {
+    python: '# Tulis kode Python di sini...',
+    javascript: '// Tulis kode JavaScript di sini...',
+    html: '<!-- Tulis HTML di sini... -->',
+  };
+  canvasCodeInput.placeholder = placeholders[lang] || '# Tulis kode di sini...';
+});
+
+/** Populate canvas with code extracted from AI message text */
+function populateCodeCanvas(text: string) {
+  // Detect ```python, ```javascript, or ```js blocks
+  const match = text.match(/```(?:python|py|javascript|js|html)\n([\s\S]*?)```/);
+  if (!match) return;
+  const extracted = match[1].trim();
+  if (!extracted) return;
+
+  // Detect language
+  const langMatch = text.match(/```(python|py|javascript|js|html)/);
+  let lang = 'python';
+  if (langMatch) {
+    const raw = langMatch[1].toLowerCase();
+    if (raw === 'py') lang = 'python';
+    else if (raw === 'js') lang = 'javascript';
+    else lang = raw;
+  }
+
+  if (canvasCodeInput) canvasCodeInput.value = extracted;
+  if (canvasLanguage) canvasLanguage.value = lang;
+  currentCode = extracted;
+  currentOutput = '';
+  currentError = '';
+  if (canvasOutput) canvasOutput.textContent = '';
+  canvasDebugBtn?.classList.add('hidden');
+  setCanvasStatus('Loaded from AI', 'idle');
+
+  // Auto-open canvas on desktop
+  if (window.innerWidth >= 768) {
+    toggleCodeCanvas(true);
+  }
+}
 
 // ── Initial render ────────────────────────────────────────────────────────────
 switchScreen('chat');

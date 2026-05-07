@@ -707,6 +707,52 @@ export interface ForesightResponse {
   signals_extracted?: string;
 }
 
+// ════════════════════════════════════════════════════════════════════════
+// CODE CANVAS MVP
+// ════════════════════════════════════════════════════════════════════════
+
+export interface CodeRunRequest {
+  code: string;
+  language?: string;
+}
+
+export interface CodeRunResponse {
+  artifact_id: string;
+  output: string;
+  error?: string;
+  duration_ms: number;
+}
+
+export interface CodeDebugRequest {
+  code: string;
+  error: string;
+}
+
+export interface CodeDebugResponse {
+  suggestions: string[];
+  fixed_code?: string;
+}
+
+export async function runCode(req: CodeRunRequest): Promise<CodeRunResponse> {
+  const res = await fetch(`${BRAIN_QA_BASE}/app/code/run`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(req),
+  });
+  if (!res.ok) throw new BrainQAError('server', `code/run ${res.status}`);
+  return res.json();
+}
+
+export async function debugCode(req: CodeDebugRequest): Promise<CodeDebugResponse> {
+  const res = await fetch(`${BRAIN_QA_BASE}/app/code/debug`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(req),
+  });
+  if (!res.ok) throw new BrainQAError('server', `code/debug ${res.status}`);
+  return res.json();
+}
+
 export interface ResurrectResponse {
   topic: string;
   n_gems: number;

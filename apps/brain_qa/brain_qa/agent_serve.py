@@ -51,9 +51,20 @@ from .local_llm import adapter_fingerprint, adapter_weights_exist, find_adapter_
 from . import rate_limit
 from . import social_radar
 from . import memory_store
+from . import a2a_server
 from .sensor_hub import probe_all
 from .council import run_council
 from .mode_router import resolve_mode, SidixMode, ModeRouter
+from .app_code_canvas import (
+    CodeRunRequest,
+    CodeRunResponse,
+    CodeDebugRequest,
+    CodeDebugResponse,
+    run_code,
+    debug_code,
+    get_artifact,
+    list_artifacts,
+)
 
 _PROCESS_STARTED = time.time()
 _ALLOWED_PERSONAS = {"AYMAN", "ABOO", "OOMAR", "ALEY", "UTZ"}
@@ -986,6 +997,39 @@ def create_app() -> "FastAPI":
             "senses": probe_all()
         }
 
+    # ── Code Canvas MVP ────────────────────────────────────────────────────────
+    @app.post("/app/code/run")
+    async def code_run(req: CodeRunRequest):
+        """Run code in sandbox and store artifact."""
+        try:
+            result = run_code(code=req.code, language=req.language)
+            return result.model_dump()
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"code run error: {e}")
+
+    @app.post("/app/code/debug")
+    async def code_debug(req: CodeDebugRequest):
+        """Debug code error using local LLM (self-hosted)."""
+        try:
+            result = debug_code(code=req.code, error=req.error)
+            return result.model_dump()
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"code debug error: {e}")
+
+    @app.get("/app/code/history")
+    async def code_history():
+        """List all code artifacts."""
+        artifacts = list_artifacts()
+        return {"artifacts": [a.model_dump() for a in artifacts]}
+
+    @app.get("/app/code/history/{artifact_id}")
+    async def code_history_item(artifact_id: str):
+        """Get a specific code artifact."""
+        artifact = get_artifact(artifact_id)
+        if not artifact:
+            raise HTTPException(status_code=404, detail="artifact not found")
+        return artifact.model_dump()
+
     # ── A2A AgentCard (Phase 1 — 2026-05-07) ───────────────────────────────────
     # Google A2A protocol: Agent Card published at well-known path for discovery.
     @app.get("/.well-known/agent-card.json")
@@ -1131,6 +1175,49 @@ def create_app() -> "FastAPI":
             "id": req_id,
             "error": {"code": -32601, "message": f"Method '{method}' not found"},
         }
+
+    # ── A2A Task endpoints (Phase 2 — 2026-05-07) ──────────────────────────────
+    # Google A2A protocol: accept tasks from external agents.
+    @app.post("/a2a/tasks/send")
+    async def a2a_tasks_send(request: Request):
+        """A2A sync task send — create task and wait for completion."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+        except Exception:
+            raise HTTPException(status_code=400, detail="body JSON tidak valid")
+        import asyncio
+        return await asyncio.to_thread(a2a_server.tasks_send, body)
+
+    @app.get("/a2a/tasks/{task_id}")
+    async def a2a_tasks_get(task_id: str, request: Request):
+        """A2A task state lookup."""
+        _enforce_rate(request)
+        return a2a_server.tasks_get(task_id)
+
+    @app.post("/a2a/tasks/sendSubscribe")
+    async def a2a_tasks_send_subscribe(request: Request):
+        """A2A streaming task send — SSE events until completion."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+        except Exception:
+            raise HTTPException(status_code=400, detail="body JSON tidak valid")
+        from fastapi.responses import StreamingResponse as _SR
+        return _SR(a2a_server.tasks_send_subscribe(body), media_type="text/event-stream")
+
+    @app.post("/a2a/tasks/cancel")
+    async def a2a_tasks_cancel(request: Request):
+        """A2A task cancellation."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+        except Exception:
+            raise HTTPException(status_code=400, detail="body JSON tidak valid")
+        task_id = body.get("taskId", body.get("id", ""))
+        if not task_id:
+            raise HTTPException(status_code=400, detail="taskId or id required")
+        return a2a_server.tasks_cancel(task_id)
 
     # ── Sprint A+B: Sanad Orchestra + Hafidz Injection endpoints ───────────────
     @app.get("/agent/sanad/stats")
