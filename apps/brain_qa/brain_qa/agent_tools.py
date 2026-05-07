@@ -3231,7 +3231,7 @@ def _tool_transcribe_audio(args: dict) -> ToolResult:
     if not path:
         return ToolResult(success=False, output="", error="path wajib diisi (relatif workspace/uploads)")
     try:
-        from audio_capability import transcribe_audio
+        from .audio_capability import transcribe_audio
         result = transcribe_audio(path, lang=lang)
         if result.get("ok"):
             data = result["data"]
@@ -3255,7 +3255,7 @@ def _tool_synthesize_speech(args: dict) -> ToolResult:
     if not text:
         return ToolResult(success=False, output="", error="text wajib diisi")
     try:
-        from audio_capability import synthesize_speech
+        from .audio_capability import synthesize_speech
         out_path = args.get("out_path", "tts_out.wav")
         result = synthesize_speech(text, voice=voice, lang=lang, out_path=out_path)
         if result.get("ok"):
@@ -3278,7 +3278,7 @@ def _tool_parse_document(args: dict) -> ToolResult:
     if not path:
         return ToolResult(success=False, output="", error="path wajib diisi (relatif workspace)")
     try:
-        from document_parser import parse_document
+        from .document_parser import parse_document
         result = parse_document(path)
         if result.get("ok"):
             data = result["data"]
@@ -3316,7 +3316,7 @@ def _tool_analyze_image(args: dict) -> ToolResult:
     if not path:
         return ToolResult(success=False, output="", error="path wajib diisi (relatif workspace/uploads)")
     try:
-        from vision_analyzer import analyze_image
+        from .vision_analyzer import analyze_image
         result = analyze_image(path, prompt=prompt)
         if result.get("ok"):
             data = result["data"]
@@ -3339,7 +3339,7 @@ def _tool_analyze_video(args: dict) -> ToolResult:
     if not path:
         return ToolResult(success=False, output="", error="path wajib diisi")
     try:
-        from vision_analyzer import analyze_video
+        from .vision_analyzer import analyze_video
         result = analyze_video(path, prompt=prompt)
         if result.get("ok"):
             data = result["data"]
@@ -3361,7 +3361,7 @@ def _tool_code_lint(args: dict) -> ToolResult:
     if not code:
         return ToolResult(success=False, output="", error="code wajib diisi")
     try:
-        from coding_agent_enhanced import lint_code
+        from .coding_agent_enhanced import lint_code
         result = lint_code(code)
         if result.get("ok"):
             data = result["data"]
@@ -3384,7 +3384,7 @@ def _tool_code_debug(args: dict) -> ToolResult:
     if not code:
         return ToolResult(success=False, output="", error="code wajib diisi")
     try:
-        from coding_agent_enhanced import debug_trace
+        from .coding_agent_enhanced import debug_trace
         result = debug_trace(code, inputs)
         if result.get("ok"):
             data = result["data"]
@@ -3402,7 +3402,7 @@ def _tool_code_tests(args: dict) -> ToolResult:
     if not code:
         return ToolResult(success=False, output="", error="code wajib diisi")
     try:
-        from coding_agent_enhanced import generate_tests
+        from .coding_agent_enhanced import generate_tests
         result = generate_tests(code, num_tests=num)
         if result.get("ok"):
             data = result["data"]
@@ -3422,7 +3422,7 @@ def _tool_code_review(args: dict) -> ToolResult:
     if not code:
         return ToolResult(success=False, output="", error="code wajib diisi")
     try:
-        from coding_agent_enhanced import code_review
+        from .coding_agent_enhanced import code_review
         result = code_review(code, context=context)
         if result.get("ok"):
             data = result["data"]
@@ -3446,7 +3446,7 @@ def _tool_brand_guidelines(args: dict) -> ToolResult:
     if not name or not niche:
         return ToolResult(success=False, output="", error="brand_name dan niche wajib diisi")
     try:
-        from brand_guidelines import generate_full_guidelines
+        from .brand_guidelines import generate_full_guidelines
         result = generate_full_guidelines(name, niche, colors, archetype)
         if result.get("ok"):
             data = result["data"]
@@ -3470,7 +3470,7 @@ def _tool_web_fetch_expanded(args: dict) -> ToolResult:
     if not platform or not query:
         return ToolResult(success=False, output="", error="platform dan query wajib diisi")
     try:
-        from mcp_web_fetch_expanded import fetch_web_unified
+        from .mcp_web_fetch_expanded import fetch_web_unified
         result = fetch_web_unified(
             platform=platform,
             query=query,
@@ -3499,7 +3499,7 @@ def _tool_generate_image_runpod(args: dict) -> ToolResult:
     if not prompt:
         return ToolResult(success=False, output="", error="prompt wajib diisi")
     try:
-        from runpod_connector import generate_image
+        from .runpod_connector import generate_image
         result = generate_image(
             prompt=prompt,
             negative_prompt=args.get("negative_prompt", ""),
@@ -3524,7 +3524,7 @@ def _tool_generate_3d_runpod(args: dict) -> ToolResult:
     if not prompt and not image_path:
         return ToolResult(success=False, output="", error="prompt atau image_path wajib diisi")
     try:
-        from runpod_connector import generate_3d
+        from .runpod_connector import generate_3d
         result = generate_3d(
             image_path=image_path,
             prompt=prompt,
@@ -3548,7 +3548,7 @@ def _tool_scan_dataset(args: dict) -> ToolResult:
     if not path:
         return ToolResult(success=False, output="", error="path wajib diisi")
     try:
-        from dataset_collector import scan_folder
+        from .dataset_collector import scan_folder
         result = scan_folder(path)
         if result.get("ok"):
             data = result["data"]
@@ -3567,7 +3567,7 @@ def _tool_scan_dataset(args: dict) -> ToolResult:
 def _tool_collect_dataset(args: dict) -> ToolResult:
     """Collect dataset dari Mighan-Web / Mighan-3D assets."""
     try:
-        from dataset_collector import collect_dataset, auto_tag_by_folder
+        from .dataset_collector import collect_dataset, auto_tag_by_folder
         result = collect_dataset(
             sources=args.get("sources"),
             tags=args.get("tags"),
@@ -3590,7 +3590,7 @@ def _tool_search_unsplash(args: dict) -> ToolResult:
     if not query:
         return ToolResult(success=False, output="", error="query wajib diisi")
     try:
-        from dataset_web_collector import search_unsplash
+        from .dataset_web_collector import search_unsplash
         result = search_unsplash(
             query=query,
             per_page=int(args.get("per_page", 20)),
@@ -3617,7 +3617,7 @@ def _tool_search_pexels(args: dict) -> ToolResult:
     if not query:
         return ToolResult(success=False, output="", error="query wajib diisi")
     try:
-        from dataset_web_collector import search_pexels
+        from .dataset_web_collector import search_pexels
         result = search_pexels(
             query=query,
             per_page=int(args.get("per_page", 20)),
@@ -3644,7 +3644,7 @@ def _tool_search_wikimedia(args: dict) -> ToolResult:
     if not query:
         return ToolResult(success=False, output="", error="query wajib diisi")
     try:
-        from dataset_web_collector import search_wikimedia
+        from .dataset_web_collector import search_wikimedia
         result = search_wikimedia(
             query=query,
             limit=int(args.get("limit", 20)),
@@ -3670,7 +3670,7 @@ def _tool_search_dataset_web(args: dict) -> ToolResult:
     if not query:
         return ToolResult(success=False, output="", error="query wajib diisi")
     try:
-        from dataset_web_collector import search_all
+        from .dataset_web_collector import search_all
         result = search_all(
             query=query,
             sources=args.get("sources"),
@@ -3698,7 +3698,7 @@ def _tool_analyze_dataset_dna(args: dict) -> ToolResult:
     if not entries:
         return ToolResult(success=False, output="", error="entries wajib diisi (list of dict)")
     try:
-        from dataset_web_collector import analyze_dataset_dna
+        from .dataset_web_collector import analyze_dataset_dna
         result = analyze_dataset_dna(entries)
         if result.get("ok"):
             data = result["data"]
@@ -3722,7 +3722,7 @@ def _tool_analyze_dataset_dna(args: dict) -> ToolResult:
 def _tool_get_laion_info(args: dict) -> ToolResult:
     """Get LAION-5B dataset information and metadata pointers."""
     try:
-        from dataset_web_collector import get_laion_info
+        from .dataset_web_collector import get_laion_info
         result = get_laion_info()
         if result.get("ok"):
             data = result["data"]
@@ -3744,7 +3744,7 @@ def _tool_get_laion_info(args: dict) -> ToolResult:
 def _tool_drive_auth_url(args: dict) -> ToolResult:
     """Generate Google OAuth2 authorization URL untuk akses Google Drive."""
     try:
-        from dataset_drive_collector import get_auth_url
+        from .dataset_drive_collector import get_auth_url
         result = get_auth_url(redirect_uri=args.get("redirect_uri", "http://localhost:8080"))
         if result.get("ok"):
             data = result["data"]
@@ -3763,7 +3763,7 @@ def _tool_drive_exchange_code(args: dict) -> ToolResult:
     if not code:
         return ToolResult(success=False, output="", error="code wajib diisi (dari URL redirect setelah authorize)")
     try:
-        from dataset_drive_collector import exchange_auth_code
+        from .dataset_drive_collector import exchange_auth_code
         result = exchange_auth_code(
             code=code,
             redirect_uri=args.get("redirect_uri", "http://localhost:8080"),
@@ -3786,7 +3786,7 @@ def _tool_drive_list_images(args: dict) -> ToolResult:
     folder_id = args.get("folder_id", "").strip() or None
     account = args.get("account", "").strip() or None
     try:
-        from dataset_drive_collector import collect_drive_dataset
+        from .dataset_drive_collector import collect_drive_dataset
         result = collect_drive_dataset(
             folder_id=folder_id,
             max_files=int(args.get("max_files", 5000)),
@@ -3817,7 +3817,7 @@ def _tool_drive_health(args: dict) -> ToolResult:
     """Check Google Drive API connectivity dan token validity."""
     account = args.get("account", "").strip() or None
     try:
-        from dataset_drive_collector import drive_health_check
+        from .dataset_drive_collector import drive_health_check
         result = drive_health_check(account=account)
         if result.get("ok"):
             data = result["data"]
@@ -3837,7 +3837,7 @@ def _tool_drive_explore(args: dict) -> ToolResult:
     folder_id = args.get("folder_id", "").strip() or None
     account = args.get("account", "").strip() or None
     try:
-        from dataset_drive_collector import explore_drive_structure
+        from .dataset_drive_collector import explore_drive_structure
         result = explore_drive_structure(
             folder_id=folder_id,
             account=account,
@@ -3871,7 +3871,7 @@ def _tool_drive_overview(args: dict) -> ToolResult:
     """Get overview satu Google Drive account (user, storage, total images, top folders)."""
     account = args.get("account", "").strip() or None
     try:
-        from dataset_drive_collector import get_account_overview
+        from .dataset_drive_collector import get_account_overview
         result = get_account_overview(account=account)
         if result.get("ok"):
             data = result["data"]
@@ -3895,7 +3895,7 @@ def _tool_drive_batch_collect(args: dict) -> ToolResult:
     if isinstance(accounts, str):
         accounts = [a.strip() for a in accounts.split(",") if a.strip()]
     try:
-        from dataset_drive_collector import batch_collect_drive_datasets
+        from .dataset_drive_collector import batch_collect_drive_datasets
         result = batch_collect_drive_datasets(
             accounts=accounts,
             max_files_per_account=int(args.get("max_files_per_account", 1000)),
@@ -3921,7 +3921,7 @@ def _tool_drive_batch_collect(args: dict) -> ToolResult:
 def _tool_drive_config(args: dict) -> ToolResult:
     """Get step-by-step instructions untuk setup multiple Google Drive accounts."""
     try:
-        from dataset_drive_collector import get_account_config_instructions
+        from .dataset_drive_collector import get_account_config_instructions
         result = get_account_config_instructions()
         if result.get("ok"):
             data = result["data"]
@@ -3945,7 +3945,7 @@ def _tool_elevenlabs_tts(args: dict) -> ToolResult:
     if not text:
         return ToolResult(success=False, output="", error="text wajib diisi")
     try:
-        from elevenlabs_connector import generate_tts
+        from .elevenlabs_connector import generate_tts
         result = generate_tts(
             text=text,
             voice_id=args.get("voice_id", "21m00Tcm4TlvDq8ikWAM"),
@@ -3972,7 +3972,7 @@ def _tool_elevenlabs_tts(args: dict) -> ToolResult:
 def _tool_elevenlabs_voices(args: dict) -> ToolResult:
     """List semua voice ElevenLabs (premade + custom + community)."""
     try:
-        from elevenlabs_connector import list_voices
+        from .elevenlabs_connector import list_voices
         result = list_voices()
         if result.get("ok"):
             data = result["data"]
@@ -3999,7 +3999,7 @@ def _tool_elevenlabs_clone(args: dict) -> ToolResult:
     if not file_paths:
         return ToolResult(success=False, output="", error="file_paths wajib diisi (minimal 1 audio file)")
     try:
-        from elevenlabs_connector import clone_voice
+        from .elevenlabs_connector import clone_voice
         result = clone_voice(
             name=name,
             description=args.get("description", ""),
@@ -4022,7 +4022,7 @@ def _tool_elevenlabs_clone(args: dict) -> ToolResult:
 def _tool_elevenlabs_user(args: dict) -> ToolResult:
     """Check ElevenLabs user quota dan usage."""
     try:
-        from elevenlabs_connector import get_user_info
+        from .elevenlabs_connector import get_user_info
         result = get_user_info()
         if result.get("ok"):
             data = result["data"]
@@ -4042,7 +4042,7 @@ def _tool_elevenlabs_sound(args: dict) -> ToolResult:
     if not text:
         return ToolResult(success=False, output="", error="text wajib diisi (deskripsi sound effect)")
     try:
-        from elevenlabs_connector import generate_sound_effect
+        from .elevenlabs_connector import generate_sound_effect
         result = generate_sound_effect(
             text=text,
             duration_seconds=args.get("duration_seconds"),
@@ -4062,7 +4062,7 @@ def _tool_elevenlabs_sound(args: dict) -> ToolResult:
 def _tool_elevenlabs_health(args: dict) -> ToolResult:
     """Check ElevenLabs API connectivity dan quota."""
     try:
-        from elevenlabs_connector import elevenlabs_health_check
+        from .elevenlabs_connector import elevenlabs_health_check
         result = elevenlabs_health_check()
         if result.get("ok"):
             data = result["data"]
@@ -4082,7 +4082,7 @@ def _tool_spark_curate(args: dict) -> ToolResult:
     if not entries:
         return ToolResult(success=False, output="", error="entries wajib diisi (list of dict)")
     try:
-        from dataset_spark_curation import curate_ethical_dataset
+        from .dataset_spark_curation import curate_ethical_dataset
         result = curate_ethical_dataset(
             entries=entries,
             output_path=args.get("output_path", "dataset/spark_curated.jsonl"),
@@ -4114,7 +4114,7 @@ def _tool_spark_validate(args: dict) -> ToolResult:
     if not entry:
         return ToolResult(success=False, output="", error="entry wajib diisi (dict)")
     try:
-        from dataset_spark_curation import validate_license
+        from .dataset_spark_curation import validate_license
         result = validate_license(entry)
         if result.get("ok"):
             data = result["data"]
@@ -4136,7 +4136,7 @@ def _tool_spark_bias(args: dict) -> ToolResult:
     if not entries:
         return ToolResult(success=False, output="", error="entries wajib diisi")
     try:
-        from dataset_spark_curation import audit_bias
+        from .dataset_spark_curation import audit_bias
         result = audit_bias(entries)
         if result.get("ok"):
             data = result["data"]
@@ -4160,7 +4160,7 @@ def _tool_spark_bias(args: dict) -> ToolResult:
 def _tool_spark_pinterest_warn(args: dict) -> ToolResult:
     """Show detailed warning tentang risiko scraping Pinterest."""
     try:
-        from dataset_spark_curation import get_pinterest_warning
+        from .dataset_spark_curation import get_pinterest_warning
         result = get_pinterest_warning()
         if result.get("ok"):
             data = result["data"]
@@ -4184,7 +4184,7 @@ def _tool_spark_provenance(args: dict) -> ToolResult:
     if not credentials:
         return ToolResult(success=False, output="", error="credentials wajib diisi (list of manifest dict)")
     try:
-        from dataset_spark_curation import generate_provenance_report
+        from .dataset_spark_curation import generate_provenance_report
         result = generate_provenance_report(credentials)
         if result.get("ok"):
             data = result["data"]

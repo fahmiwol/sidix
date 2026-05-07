@@ -457,6 +457,8 @@ class ChatResponse(BaseModel):
     sanad_verdict: str = ""         # golden | pass | retry | fail
     hafidz_injected: bool = False   # True jika few-shot context di-inject
     hafidz_stored: bool = False     # True jika result disimpan ke Hafidz
+    # ── Output Modality Attachments (Sprint Beta: image / audio / 3D / video) ──
+    attachments: list[dict] = []    # [{type: image|audio|3d|video, url: str, mime_type: str, title: str}]
 
 
 class GenerateRequest(BaseModel):
@@ -3550,6 +3552,80 @@ def create_app() -> "FastAPI":
             log.warning("[spark/provenance] error: %s", e)
             raise HTTPException(status_code=500, detail=f"spark provenance error: {e}")
 
+    # ═════════════════════════════════════════════════════════════════════════════
+    # ── Output Modality Detector (Beta: auto-detect image / audio / 3D / video)
+    # ═════════════════════════════════════════════════════════════════════════════
+    def _detect_output_modality(question: str) -> list[dict]:
+        """Deteksi intent generate image, audio, 3D, video dari pertanyaan user.
+        Return: list of attachment dicts dengan type + prompt untuk tool.
+        """
+        q = question.lower()
+        attachments = []
+
+        # Image generation signals
+        image_signals = [
+            "bikin gambar", "buat gambar", "generate image", "generate gambar",
+            "desain logo", "desain banner", "buat ilustrasi", "generate logo",
+            "text to image", "text-to-image", "buat poster", "buat thumbnail",
+        ]
+        if any(s in q for s in image_signals):
+            attachments.append({"type": "image", "prompt": question, "tool": "text_to_image"})
+
+        # TTS signals
+        tts_signals = [
+            "baca teks", "text to speech", "text-to-speech", "suara", "voice",
+            "bacakan", "bikin suara", "generate suara", "buat audio", "jadi suara",
+        ]
+        if any(s in q for s in tts_signals):
+            # Extract text setelah keyword
+            text = question
+            for kw in ["baca teks", "text to speech", "bacakan", "bikin suara", "generate suara", "buat audio", "jadi suara"]:
+                if kw in q:
+                    text = question.split(kw, 1)[-1].strip()
+                    break
+            attachments.append({"type": "audio", "text": text, "tool": "synthesize_speech"})
+
+        # 3D signals
+        three_d_signals = [
+            "3d model", "model 3d", "generate 3d", "buat 3d", "mesh", "3d object",
+        ]
+        if any(s in q for s in three_d_signals):
+            attachments.append({"type": "3d", "prompt": question, "tool": "generate_3d_runpod"})
+
+        return attachments
+
+    def _run_modality_tool(attachment: dict) -> dict | None:
+        """Panggil tool modality dan return attachment metadata."""
+        try:
+            from .agent_tools import call_tool, ToolResult
+            if attachment["tool"] == "text_to_image":
+                result = call_tool(
+                    tool_name="text_to_image",
+                    args={"prompt": attachment["prompt"], "model": "flux", "width": 512, "height": 512},
+                    session_id="modality_auto", step=0, allow_restricted=False,
+                )
+                if result.success and result.output:
+                    return {"type": "image", "url": result.output, "mime_type": "image/png", "title": "Generated Image"}
+            elif attachment["tool"] == "synthesize_speech":
+                result = call_tool(
+                    tool_name="synthesize_speech",
+                    args={"text": attachment["text"], "voice": "default", "speed": 1.0},
+                    session_id="modality_auto", step=0, allow_restricted=False,
+                )
+                if result.success and result.output:
+                    return {"type": "audio", "url": result.output, "mime_type": "audio/mp3", "title": "Generated Speech"}
+            elif attachment["tool"] == "generate_3d_runpod":
+                result = call_tool(
+                    tool_name="generate_3d_runpod",
+                    args={"prompt": attachment["prompt"], "format": "glb"},
+                    session_id="modality_auto", step=0, allow_restricted=False,
+                )
+                if result.success and result.output:
+                    return {"type": "3d", "url": result.output, "mime_type": "model/gltf-binary", "title": "Generated 3D Model"}
+        except Exception as e:
+            log.warning("[modality_auto] %s error: %s", attachment.get("tool"), e)
+        return None
+
     # ── POST /agent/chat ──────────────────────────────────────────────────────
     @app.post("/agent/chat", response_model=ChatResponse)
     def agent_chat(req: ChatRequest, request: Request):
@@ -3624,6 +3700,18 @@ def create_app() -> "FastAPI":
         _store_session(session)
         (None if _is_whitelisted(request) else rate_limit.record_daily_use(_daily_client_key(request)))
 
+        # ── Output Modality Auto-Detect (Beta) ──────────────────────────────────
+        attachments = []
+        try:
+            detected = _detect_output_modality(req.question)
+            for d in detected:
+                att = _run_modality_tool(d)
+                if att:
+                    attachments.append(att)
+        except Exception as _mod_err:
+            log.debug("[modality_auto] error: %s", _mod_err)
+        # ─────────────────────────────────────────────────────────────────────
+
         # Persist to memory (best-effort, non-blocking)
         try:
             memory_store.save_session(session, conv_id=effective_conversation_id, user_id=effective_user_id)
@@ -3672,6 +3760,8 @@ def create_app() -> "FastAPI":
             steps_trace=_build_steps_trace(session.steps),
             planner_used=getattr(session, "planner_used", False),
             planner_savings=getattr(session, "planner_savings", 0.0),
+            # ── Output Modality Attachments (Beta) ──────────────────────────
+            attachments=attachments,
         )
 
     # ── POST /agent/chat_holistic ─────────────────────────────────────────────
