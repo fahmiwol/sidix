@@ -2647,6 +2647,218 @@ def create_app() -> "FastAPI":
             log.warning("[upload] document error: %s", e)
             raise HTTPException(status_code=500, detail=f"upload document error: {e}")
 
+    # ── POST /upload/image/analyze ────────────────────────────────────────────
+    @app.post("/upload/image/analyze")
+    async def analyze_image_endpoint(request: Request):
+        """Analisis gambar via VLM (Ollama vision model)."""
+        _enforce_rate(request)
+        try:
+            form = await request.form()
+            filename = form.get("filename") or form.get("file")
+            prompt = form.get("prompt", "")
+            if not filename:
+                raise HTTPException(status_code=400, detail="filename wajib diisi")
+            workspace = get_agent_workspace_root()
+            upload_dir = Path(workspace) / "uploads"
+            filepath = upload_dir / filename
+            if not filepath.exists():
+                raise HTTPException(status_code=404, detail="file tidak ditemukan, upload dulu via /upload/image")
+
+            from vision_analyzer import analyze_image
+            result = analyze_image(str(filepath), prompt=prompt)
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "analisis gagal"))
+            data = result["data"]
+            return {
+                "ok": True,
+                "description": data.get("description", ""),
+                "model": data.get("model", "unknown"),
+                "backend": data.get("backend", "unknown"),
+                "prompt": data.get("prompt", ""),
+            }
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[image/analyze] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"image analyze error: {e}")
+
+    # ── POST /upload/video/analyze ────────────────────────────────────────────
+    @app.post("/upload/video/analyze")
+    async def analyze_video_endpoint(request: Request):
+        """Analisis video via VLM (extract keyframes → analyze)."""
+        _enforce_rate(request)
+        try:
+            form = await request.form()
+            filename = form.get("filename") or form.get("file")
+            prompt = form.get("prompt", "")
+            if not filename:
+                raise HTTPException(status_code=400, detail="filename wajib diisi")
+            workspace = get_agent_workspace_root()
+            upload_dir = Path(workspace) / "uploads"
+            filepath = upload_dir / filename
+            if not filepath.exists():
+                raise HTTPException(status_code=404, detail="file tidak ditemukan, upload dulu")
+
+            from vision_analyzer import analyze_video
+            result = analyze_video(str(filepath), prompt=prompt)
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "analisis gagal"))
+            data = result["data"]
+            return {
+                "ok": True,
+                "combined_description": data.get("combined_description", ""),
+                "frames_extracted": data.get("frames_extracted", 0),
+                "keyframes_analyzed": data.get("keyframes_analyzed", 0),
+                "model": data.get("model", "unknown"),
+            }
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[video/analyze] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"video analyze error: {e}")
+
+    # ── POST /code/lint ───────────────────────────────────────────────────────
+    @app.post("/code/lint")
+    async def code_lint(request: Request):
+        """Lint code Python (ruff / py_compile)."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+            code = body.get("code", "")
+            if not code:
+                raise HTTPException(status_code=400, detail="code wajib diisi")
+            from coding_agent_enhanced import lint_code
+            result = lint_code(code)
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "lint gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[code/lint] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"lint error: {e}")
+
+    # ── POST /code/debug ──────────────────────────────────────────────────────
+    @app.post("/code/debug")
+    async def code_debug(request: Request):
+        """Debug trace code Python line-by-line."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+            code = body.get("code", "")
+            inputs = body.get("inputs", "")
+            if not code:
+                raise HTTPException(status_code=400, detail="code wajib diisi")
+            from coding_agent_enhanced import debug_trace
+            result = debug_trace(code, inputs)
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "debug gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[code/debug] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"debug error: {e}")
+
+    # ── POST /code/tests ──────────────────────────────────────────────────────
+    @app.post("/code/tests")
+    async def code_tests(request: Request):
+        """Generate unit test stubs dari code."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+            code = body.get("code", "")
+            num = body.get("num_tests", 3)
+            if not code:
+                raise HTTPException(status_code=400, detail="code wajib diisi")
+            from coding_agent_enhanced import generate_tests
+            result = generate_tests(code, num_tests=num)
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "test gen gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[code/tests] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"test gen error: {e}")
+
+    # ── POST /code/review ─────────────────────────────────────────────────────
+    @app.post("/code/review")
+    async def code_review_endpoint(request: Request):
+        """Rule-based code review (security + complexity + style)."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+            code = body.get("code", "")
+            context = body.get("context", "")
+            if not code:
+                raise HTTPException(status_code=400, detail="code wajib diisi")
+            from coding_agent_enhanced import code_review
+            result = code_review(code, context=context)
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "review gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[code/review] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"review error: {e}")
+
+    # ── POST /brand/guidelines ────────────────────────────────────────────────
+    @app.post("/brand/guidelines")
+    async def brand_guidelines_endpoint(request: Request):
+        """Generate brand guidelines komplet."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+            name = body.get("brand_name", "").strip()
+            niche = body.get("niche", "").strip()
+            colors = body.get("base_colors", ["#3B82F6", "#10B981", "#F59E0B"])
+            archetype = body.get("archetype", "everyman")
+            if not name or not niche:
+                raise HTTPException(status_code=400, detail="brand_name dan niche wajib diisi")
+            from brand_guidelines import generate_full_guidelines
+            result = generate_full_guidelines(name, niche, colors, archetype)
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "guidelines gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[brand/guidelines] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"guidelines error: {e}")
+
+    # ── POST /web/fetch ───────────────────────────────────────────────────────
+    @app.post("/web/fetch")
+    async def web_fetch_expanded(request: Request):
+        """Unified web fetch: Reddit, YouTube, GitHub, arXiv, HackerNews."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+            platform = body.get("platform", "").strip().lower()
+            query = body.get("query", "").strip()
+            if not platform or not query:
+                raise HTTPException(status_code=400, detail="platform dan query wajib diisi")
+            from mcp_web_fetch_expanded import fetch_web_unified
+            result = fetch_web_unified(
+                platform=platform,
+                query=query,
+                subreddit=body.get("subreddit", ""),
+                language=body.get("language", ""),
+                owner=body.get("owner", ""),
+                repo=body.get("repo", ""),
+                transcript=body.get("transcript", False),
+                max_results=body.get("max_results", 5),
+            )
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "fetch gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[web/fetch] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"web fetch error: {e}")
+
     # ── POST /agent/chat ──────────────────────────────────────────────────────
     @app.post("/agent/chat", response_model=ChatResponse)
     def agent_chat(req: ChatRequest, request: Request):

@@ -3309,6 +3309,190 @@ def _tool_parse_document(args: dict) -> ToolResult:
         return ToolResult(success=False, output="", error=f"parse_document error: {exc}")
 
 
+def _tool_analyze_image(args: dict) -> ToolResult:
+    """Analisis gambar via VLM Ollama."""
+    path = args.get("path", "").strip()
+    prompt = args.get("prompt", "").strip()
+    if not path:
+        return ToolResult(success=False, output="", error="path wajib diisi (relatif workspace/uploads)")
+    try:
+        from vision_analyzer import analyze_image
+        result = analyze_image(path, prompt=prompt)
+        if result.get("ok"):
+            data = result["data"]
+            desc = data.get("description", "")
+            model = data.get("model", "unknown")
+            return ToolResult(
+                success=True,
+                output=f"[Vision — {model}]\n{desc}",
+                citations=result.get("citations", []),
+            )
+        return ToolResult(success=False, output="", error=result.get("fallback_instructions", "Vision gagal"))
+    except Exception as exc:  # noqa: BLE001
+        return ToolResult(success=False, output="", error=f"analyze_image error: {exc}")
+
+
+def _tool_analyze_video(args: dict) -> ToolResult:
+    """Analisis video via VLM Ollama (keyframes)."""
+    path = args.get("path", "").strip()
+    prompt = args.get("prompt", "").strip()
+    if not path:
+        return ToolResult(success=False, output="", error="path wajib diisi")
+    try:
+        from vision_analyzer import analyze_video
+        result = analyze_video(path, prompt=prompt)
+        if result.get("ok"):
+            data = result["data"]
+            desc = data.get("combined_description", "")
+            model = data.get("model", "unknown")
+            return ToolResult(
+                success=True,
+                output=f"[Vision Video — {model}]\n{desc}",
+                citations=result.get("citations", []),
+            )
+        return ToolResult(success=False, output="", error=result.get("fallback_instructions", "Video analysis gagal"))
+    except Exception as exc:  # noqa: BLE001
+        return ToolResult(success=False, output="", error=f"analyze_video error: {exc}")
+
+
+def _tool_code_lint(args: dict) -> ToolResult:
+    """Lint code Python (ruff / py_compile)."""
+    code = args.get("code", "").strip()
+    if not code:
+        return ToolResult(success=False, output="", error="code wajib diisi")
+    try:
+        from coding_agent_enhanced import lint_code
+        result = lint_code(code)
+        if result.get("ok"):
+            data = result["data"]
+            issues = data.get("issues", [])
+            passed = data.get("passed", False)
+            backend = data.get("backend", "unknown")
+            out = f"[Lint — {backend}] {'PASS' if passed else 'FAIL'} ({len(issues)} issues)\n"
+            for i in issues[:10]:
+                out += f"  L{i.get('line', 0)}: [{i.get('severity', '?')}] {i.get('message', '')}\n"
+            return ToolResult(success=True, output=out)
+        return ToolResult(success=False, output="", error=result.get("fallback_instructions", "Lint gagal"))
+    except Exception as exc:  # noqa: BLE001
+        return ToolResult(success=False, output="", error=f"lint error: {exc}")
+
+
+def _tool_code_debug(args: dict) -> ToolResult:
+    """Debug trace code Python line-by-line."""
+    code = args.get("code", "").strip()
+    inputs = args.get("inputs", "")
+    if not code:
+        return ToolResult(success=False, output="", error="code wajib diisi")
+    try:
+        from coding_agent_enhanced import debug_trace
+        result = debug_trace(code, inputs)
+        if result.get("ok"):
+            data = result["data"]
+            out = f"[Debug — trace]\nstdout:\n{data.get('stdout', '')[:1000]}\nstderr:\n{data.get('stderr', '')[:500]}"
+            return ToolResult(success=True, output=out)
+        return ToolResult(success=False, output="", error=result.get("fallback_instructions", "Debug gagal"))
+    except Exception as exc:  # noqa: BLE001
+        return ToolResult(success=False, output="", error=f"debug error: {exc}")
+
+
+def _tool_code_tests(args: dict) -> ToolResult:
+    """Generate unit test stubs dari code."""
+    code = args.get("code", "").strip()
+    num = int(args.get("num_tests", 3))
+    if not code:
+        return ToolResult(success=False, output="", error="code wajib diisi")
+    try:
+        from coding_agent_enhanced import generate_tests
+        result = generate_tests(code, num_tests=num)
+        if result.get("ok"):
+            data = result["data"]
+            return ToolResult(
+                success=True,
+                output=f"[Test Gen — {data.get('backend', 'ast')}]\n{data.get('test_code', '')}",
+            )
+        return ToolResult(success=False, output="", error=result.get("fallback_instructions", "Test gen gagal"))
+    except Exception as exc:  # noqa: BLE001
+        return ToolResult(success=False, output="", error=f"test gen error: {exc}")
+
+
+def _tool_code_review(args: dict) -> ToolResult:
+    """Rule-based code review (security + complexity + style)."""
+    code = args.get("code", "").strip()
+    context = args.get("context", "")
+    if not code:
+        return ToolResult(success=False, output="", error="code wajib diisi")
+    try:
+        from coding_agent_enhanced import code_review
+        result = code_review(code, context=context)
+        if result.get("ok"):
+            data = result["data"]
+            issues = data.get("issues", [])
+            passed = data.get("passed", False)
+            out = f"[Code Review] {'PASS' if passed else 'ISSUES FOUND'} ({len(issues)} issues)\n"
+            for i in issues[:15]:
+                out += f"  L{i.get('line', 0)} [{i.get('severity', '?')}] {i.get('message', '')}\n"
+            return ToolResult(success=True, output=out)
+        return ToolResult(success=False, output="", error=result.get("fallback_instructions", "Review gagal"))
+    except Exception as exc:  # noqa: BLE001
+        return ToolResult(success=False, output="", error=f"review error: {exc}")
+
+
+def _tool_brand_guidelines(args: dict) -> ToolResult:
+    """Generate brand guidelines komplet."""
+    name = args.get("brand_name", "").strip()
+    niche = args.get("niche", "").strip()
+    colors = args.get("base_colors", ["#3B82F6", "#10B981", "#F59E0B"])
+    archetype = args.get("archetype", "everyman")
+    if not name or not niche:
+        return ToolResult(success=False, output="", error="brand_name dan niche wajib diisi")
+    try:
+        from brand_guidelines import generate_full_guidelines
+        result = generate_full_guidelines(name, niche, colors, archetype)
+        if result.get("ok"):
+            data = result["data"]
+            out = (
+                f"[Brand Guidelines — {name}]\n"
+                f"Archetype: {data.get('archetype', '')}\n"
+                f"Colors: {json.dumps(data.get('color_system', {}).get('colors', {}), indent=2)[:500]}\n"
+                f"Typography: {json.dumps(data.get('typography', {}).get('scale', {}), indent=2)[:300]}\n"
+                f"Voice: {data.get('voice_tone', {}).get('voice', '')}"
+            )
+            return ToolResult(success=True, output=out)
+        return ToolResult(success=False, output="", error=result.get("fallback_instructions", "Guidelines gagal"))
+    except Exception as exc:  # noqa: BLE001
+        return ToolResult(success=False, output="", error=f"brand guidelines error: {exc}")
+
+
+def _tool_web_fetch_expanded(args: dict) -> ToolResult:
+    """Unified web fetch: Reddit, YouTube, GitHub, arXiv, HackerNews."""
+    platform = args.get("platform", "").strip().lower()
+    query = args.get("query", "").strip()
+    if not platform or not query:
+        return ToolResult(success=False, output="", error="platform dan query wajib diisi")
+    try:
+        from mcp_web_fetch_expanded import fetch_web_unified
+        result = fetch_web_unified(
+            platform=platform,
+            query=query,
+            subreddit=args.get("subreddit", ""),
+            language=args.get("language", ""),
+            owner=args.get("owner", ""),
+            repo=args.get("repo", ""),
+            transcript=args.get("transcript", False),
+            max_results=int(args.get("max_results", 5)),
+        )
+        if result.get("ok"):
+            data = result["data"]
+            results = data.get("results", [])
+            out = f"[Web Fetch — {platform}] {data.get('count', len(results))} results\n"
+            for r in results[:5]:
+                out += f"- {r.get('title', r.get('name', ''))}: {r.get('url', '')}\n"
+            return ToolResult(success=True, output=out, citations=result.get("citations", []))
+        return ToolResult(success=False, output="", error=result.get("fallback_instructions", "Fetch gagal"))
+    except Exception as exc:  # noqa: BLE001
+        return ToolResult(success=False, output="", error=f"web fetch error: {exc}")
+
+
 TOOL_REGISTRY: dict[str, ToolSpec] = {
     "search_corpus": ToolSpec(
         name="search_corpus",
@@ -3558,6 +3742,87 @@ TOOL_REGISTRY: dict[str, ToolSpec] = {
         params=["path"],
         permission="open",
         fn=_tool_parse_document,
+    ),
+    "analyze_image": ToolSpec(
+        name="analyze_image",
+        description=(
+            "Analisis gambar via VLM Ollama (moondream/llava). Deskripsi objek, warna, teks, mood. "
+            "Params: path (wajib, relatif workspace/uploads), prompt (opsional)."
+        ),
+        params=["path", "prompt"],
+        permission="open",
+        fn=_tool_analyze_image,
+    ),
+    "analyze_video": ToolSpec(
+        name="analyze_video",
+        description=(
+            "Analisis video via VLM Ollama (extract keyframes). Deskripsi adegan, aksi, objek. "
+            "Params: path (wajib, relatif workspace/uploads), prompt (opsional)."
+        ),
+        params=["path", "prompt"],
+        permission="open",
+        fn=_tool_analyze_video,
+    ),
+    "code_lint": ToolSpec(
+        name="code_lint",
+        description=(
+            "Lint code Python (ruff/py_compile). Deteksi syntax error, style issues. "
+            "Params: code (wajib, Python source string)."
+        ),
+        params=["code"],
+        permission="open",
+        fn=_tool_code_lint,
+    ),
+    "code_debug": ToolSpec(
+        name="code_debug",
+        description=(
+            "Debug trace code Python line-by-line. Lihat eksekusi per baris. "
+            "Params: code (wajib), inputs (opsional, stdin string)."
+        ),
+        params=["code", "inputs"],
+        permission="open",
+        fn=_tool_code_debug,
+    ),
+    "code_tests": ToolSpec(
+        name="code_tests",
+        description=(
+            "Generate unit test stubs dari code Python (AST-based). "
+            "Params: code (wajib), num_tests (opsional, default 3)."
+        ),
+        params=["code", "num_tests"],
+        permission="open",
+        fn=_tool_code_tests,
+    ),
+    "code_review": ToolSpec(
+        name="code_review",
+        description=(
+            "Rule-based code review: security patterns, complexity, style. "
+            "Params: code (wajib), context (opsional)."
+        ),
+        params=["code", "context"],
+        permission="open",
+        fn=_tool_code_review,
+    ),
+    "brand_guidelines": ToolSpec(
+        name="brand_guidelines",
+        description=(
+            "Generate brand guidelines komplet: color system, typography, spacing, voice & tone. "
+            "Params: brand_name (wajib), niche (wajib), base_colors (opsional, list hex), archetype (opsional)."
+        ),
+        params=["brand_name", "niche", "base_colors", "archetype"],
+        permission="open",
+        fn=_tool_brand_guidelines,
+    ),
+    "web_fetch_expanded": ToolSpec(
+        name="web_fetch_expanded",
+        description=(
+            "Unified web fetch: Reddit, YouTube, GitHub, arXiv, HackerNews. No API key. "
+            "Params: platform (wajib: reddit/youtube/github/arxiv/hackernews), query (wajib), "
+            "subreddit (opsional), language (opsional), max_results (opsional, default 5)."
+        ),
+        params=["platform", "query", "subreddit", "language", "max_results"],
+        permission="open",
+        fn=_tool_web_fetch_expanded,
     ),
     "concept_graph": ToolSpec(
         name="concept_graph",
