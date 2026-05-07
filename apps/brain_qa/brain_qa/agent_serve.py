@@ -1084,6 +1084,23 @@ def create_app() -> "FastAPI":
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"artifact create error: {e}")
 
+    @app.get("/app/artifact/list")
+    async def artifact_list(
+        user_id: str = "",
+        type: str = "",
+        status: str = "",
+    ):
+        """List artifacts dengan filter."""
+        artifacts = _fw_list_artifacts(
+            user_id=user_id,
+            artifact_type=type,
+            status=status,
+        )
+        return {
+            "artifacts": [a.model_dump() for a in artifacts],
+            "total": len(artifacts),
+        }
+
     @app.get("/app/artifact/{artifact_id}")
     async def artifact_get(artifact_id: str):
         """Ambil artifact berdasarkan ID."""
@@ -1123,23 +1140,6 @@ def create_app() -> "FastAPI":
         if not artifact:
             raise HTTPException(status_code=404, detail="artifact not found")
         return artifact.model_dump()
-
-    @app.get("/app/artifact/list")
-    async def artifact_list(
-        user_id: str = "",
-        type: str = "",
-        status: str = "",
-    ):
-        """List artifacts dengan filter."""
-        artifacts = _fw_list_artifacts(
-            user_id=user_id,
-            artifact_type=type,
-            status=status,
-        )
-        return {
-            "artifacts": [a.model_dump() for a in artifacts],
-            "total": len(artifacts),
-        }
 
     @app.get("/app/artifact/{artifact_id}/export")
     async def artifact_export(artifact_id: str, format: str = "md"):
