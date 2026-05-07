@@ -3303,6 +3303,144 @@ def create_app() -> "FastAPI":
             log.warning("[dataset/drive/config] error: %s", e)
             raise HTTPException(status_code=500, detail=f"drive config error: {e}")
 
+    # ═══════════════════════════════════════════════════════════════════════════
+    # ELEVENLABS — Guru Trainer Voice
+    # ═══════════════════════════════════════════════════════════════════════════
+
+    # ── POST /tts/elevenlabs ──────────────────────────────────────────────────
+    @app.post("/tts/elevenlabs")
+    async def elevenlabs_tts_endpoint(request: Request):
+        """Generate audio dari text menggunakan ElevenLabs TTS."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+            text = body.get("text", "").strip()
+            if not text:
+                raise HTTPException(status_code=400, detail="text wajib diisi")
+            from elevenlabs_connector import generate_tts
+            result = generate_tts(
+                text=text,
+                voice_id=body.get("voice_id", "21m00Tcm4TlvDq8ikWAM"),
+                model_id=body.get("model_id", "eleven_multilingual_v2"),
+                stability=body.get("stability", 0.5),
+                similarity_boost=body.get("similarity_boost", 0.75),
+                style=body.get("style", 0.0),
+                output_format=body.get("output_format", "mp3_44100_128"),
+            )
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "tts gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[tts/elevenlabs] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"elevenlabs tts error: {e}")
+
+    # ── GET /tts/elevenlabs/voices ────────────────────────────────────────────
+    @app.get("/tts/elevenlabs/voices")
+    async def elevenlabs_voices(request: Request):
+        """List semua voice ElevenLabs."""
+        _enforce_rate(request)
+        try:
+            from elevenlabs_connector import list_voices
+            result = list_voices()
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "voices gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[tts/elevenlabs/voices] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"elevenlabs voices error: {e}")
+
+    # ── POST /tts/elevenlabs/clone ────────────────────────────────────────────
+    @app.post("/tts/elevenlabs/clone")
+    async def elevenlabs_clone(request: Request):
+        """Clone voice dari audio samples."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+            name = body.get("name", "").strip()
+            if not name:
+                raise HTTPException(status_code=400, detail="name wajib diisi")
+            file_paths = body.get("file_paths", [])
+            if not file_paths:
+                raise HTTPException(status_code=400, detail="file_paths wajib diisi")
+            from elevenlabs_connector import clone_voice
+            result = clone_voice(
+                name=name,
+                description=body.get("description", ""),
+                file_paths=file_paths if isinstance(file_paths, list) else [file_paths],
+                labels=body.get("labels"),
+            )
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "clone gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[tts/elevenlabs/clone] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"elevenlabs clone error: {e}")
+
+    # ── GET /tts/elevenlabs/user ──────────────────────────────────────────────
+    @app.get("/tts/elevenlabs/user")
+    async def elevenlabs_user(request: Request):
+        """Check ElevenLabs user quota dan usage."""
+        _enforce_rate(request)
+        try:
+            from elevenlabs_connector import get_user_info
+            result = get_user_info()
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "user info gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[tts/elevenlabs/user] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"elevenlabs user error: {e}")
+
+    # ── POST /tts/elevenlabs/sound ────────────────────────────────────────────
+    @app.post("/tts/elevenlabs/sound")
+    async def elevenlabs_sound(request: Request):
+        """Generate sound effect dari text description."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+            text = body.get("text", "").strip()
+            if not text:
+                raise HTTPException(status_code=400, detail="text wajib diisi")
+            from elevenlabs_connector import generate_sound_effect
+            result = generate_sound_effect(
+                text=text,
+                duration_seconds=body.get("duration_seconds"),
+                prompt_influence=body.get("prompt_influence", 0.3),
+            )
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "sound gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[tts/elevenlabs/sound] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"elevenlabs sound error: {e}")
+
+    # ── GET /tts/elevenlabs/health ────────────────────────────────────────────
+    @app.get("/tts/elevenlabs/health")
+    async def elevenlabs_health(request: Request):
+        """Check ElevenLabs API connectivity."""
+        _enforce_rate(request)
+        try:
+            from elevenlabs_connector import elevenlabs_health_check
+            result = elevenlabs_health_check()
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "health gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[tts/elevenlabs/health] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"elevenlabs health error: {e}")
+
     # ── POST /agent/chat ──────────────────────────────────────────────────────
     @app.post("/agent/chat", response_model=ChatResponse)
     def agent_chat(req: ChatRequest, request: Request):

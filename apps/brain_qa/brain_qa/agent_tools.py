@@ -3939,6 +3939,143 @@ def _tool_drive_config(args: dict) -> ToolResult:
         return ToolResult(success=False, output="", error=f"Config error: {exc}")
 
 
+def _tool_elevenlabs_tts(args: dict) -> ToolResult:
+    """Generate audio dari text menggunakan ElevenLabs TTS (Guru Trainer voice)."""
+    text = args.get("text", "").strip()
+    if not text:
+        return ToolResult(success=False, output="", error="text wajib diisi")
+    try:
+        from elevenlabs_connector import generate_tts
+        result = generate_tts(
+            text=text,
+            voice_id=args.get("voice_id", "21m00Tcm4TlvDq8ikWAM"),
+            model_id=args.get("model_id", "eleven_multilingual_v2"),
+            stability=float(args.get("stability", 0.5)),
+            similarity_boost=float(args.get("similarity_boost", 0.75)),
+            style=float(args.get("style", 0.0)),
+            output_format=args.get("output_format", "mp3_44100_128"),
+        )
+        if result.get("ok"):
+            data = result["data"]
+            out = "[ElevenLabs TTS — Guru Trainer Voice]\n"
+            out += f"Voice: {data.get('voice_id')}\n"
+            out += f"Text length: {data.get('text_length')} chars\n"
+            out += f"Model: {data.get('model')}\n"
+            out += f"Output: {data.get('output_path')}\n"
+            out += f"Size: {data.get('size_bytes')} bytes\n"
+            return ToolResult(success=True, output=out)
+        return ToolResult(success=False, output="", error=result.get("fallback_instructions", "TTS gagal"))
+    except Exception as exc:
+        return ToolResult(success=False, output="", error=f"TTS error: {exc}")
+
+
+def _tool_elevenlabs_voices(args: dict) -> ToolResult:
+    """List semua voice ElevenLabs (premade + custom + community)."""
+    try:
+        from elevenlabs_connector import list_voices
+        result = list_voices()
+        if result.get("ok"):
+            data = result["data"]
+            out = f"[ElevenLabs Voices] {data.get('total_voices')} total\n\n"
+            out += "Recommended for Guru Trainer:\n"
+            for v in data.get("recommended_for_guru", []):
+                out += f"  🎙️ {v['name']} ({v['voice_id']})\n"
+                out += f"     {v.get('description', '')[:60]}...\n"
+            out += "\nBy category:\n"
+            for cat, voices in data.get("by_category", {}).items():
+                out += f"  {cat}: {len(voices)} voices\n"
+            return ToolResult(success=True, output=out)
+        return ToolResult(success=False, output="", error=result.get("fallback_instructions", "List voices gagal"))
+    except Exception as exc:
+        return ToolResult(success=False, output="", error=f"List voices error: {exc}")
+
+
+def _tool_elevenlabs_clone(args: dict) -> ToolResult:
+    """Clone voice guru dari audio samples."""
+    name = args.get("name", "").strip()
+    if not name:
+        return ToolResult(success=False, output="", error="name wajib diisi (nama voice guru)")
+    file_paths = args.get("file_paths", [])
+    if not file_paths:
+        return ToolResult(success=False, output="", error="file_paths wajib diisi (minimal 1 audio file)")
+    try:
+        from elevenlabs_connector import clone_voice
+        result = clone_voice(
+            name=name,
+            description=args.get("description", ""),
+            file_paths=file_paths if isinstance(file_paths, list) else [file_paths],
+            labels=args.get("labels"),
+        )
+        if result.get("ok"):
+            data = result["data"]
+            out = "[ElevenLabs Voice Clone — Guru Trainer]\n"
+            out += f"Voice ID: {data.get('voice_id')}\n"
+            out += f"Name: {data.get('name')}\n"
+            out += f"Files: {data.get('files_uploaded')}\n"
+            out += f"{data.get('note', '')}\n"
+            return ToolResult(success=True, output=out)
+        return ToolResult(success=False, output="", error=result.get("fallback_instructions", "Clone gagal"))
+    except Exception as exc:
+        return ToolResult(success=False, output="", error=f"Clone error: {exc}")
+
+
+def _tool_elevenlabs_user(args: dict) -> ToolResult:
+    """Check ElevenLabs user quota dan usage."""
+    try:
+        from elevenlabs_connector import get_user_info
+        result = get_user_info()
+        if result.get("ok"):
+            data = result["data"]
+            out = "[ElevenLabs User Info]\n"
+            out += f"Tier: {data.get('tier')}\n"
+            out += f"Usage: {data.get('character_count')} / {data.get('character_limit')} chars ({data.get('character_usage_percentage')}%)\n"
+            out += f"Voice limit: {data.get('voice_limit')}\n"
+            return ToolResult(success=True, output=out)
+        return ToolResult(success=False, output="", error=result.get("fallback_instructions", "User info gagal"))
+    except Exception as exc:
+        return ToolResult(success=False, output="", error=f"User info error: {exc}")
+
+
+def _tool_elevenlabs_sound(args: dict) -> ToolResult:
+    """Generate sound effect dari text description."""
+    text = args.get("text", "").strip()
+    if not text:
+        return ToolResult(success=False, output="", error="text wajib diisi (deskripsi sound effect)")
+    try:
+        from elevenlabs_connector import generate_sound_effect
+        result = generate_sound_effect(
+            text=text,
+            duration_seconds=args.get("duration_seconds"),
+            prompt_influence=float(args.get("prompt_influence", 0.3)),
+        )
+        if result.get("ok"):
+            data = result["data"]
+            out = "[ElevenLabs Sound Effect]\n"
+            out += f"Description: {data.get('description')}\n"
+            out += f"Output: {data.get('output_path')}\n"
+            return ToolResult(success=True, output=out)
+        return ToolResult(success=False, output="", error=result.get("fallback_instructions", "Sound effect gagal"))
+    except Exception as exc:
+        return ToolResult(success=False, output="", error=f"Sound effect error: {exc}")
+
+
+def _tool_elevenlabs_health(args: dict) -> ToolResult:
+    """Check ElevenLabs API connectivity dan quota."""
+    try:
+        from elevenlabs_connector import elevenlabs_health_check
+        result = elevenlabs_health_check()
+        if result.get("ok"):
+            data = result["data"]
+            out = "[ElevenLabs Health]\n"
+            out += f"Connected: {'YES' if data.get('connected') else 'NO'}\n"
+            out += f"API Key valid: {'YES' if data.get('api_key_valid') else 'NO'}\n"
+            out += f"Voices available: {data.get('voices_available', 0)}\n"
+            return ToolResult(success=True, output=out)
+        return ToolResult(success=False, output="", error=result.get("fallback_instructions", "Health check gagal"))
+    except Exception as exc:
+        return ToolResult(success=False, output="", error=f"Health check error: {exc}")
+
+
 TOOL_REGISTRY: dict[str, ToolSpec] = {
     "search_corpus": ToolSpec(
         name="search_corpus",
@@ -4449,6 +4586,65 @@ TOOL_REGISTRY: dict[str, ToolSpec] = {
         params=[],
         permission="open",
         fn=_tool_drive_config,
+    ),
+    "elevenlabs_tts": ToolSpec(
+        name="elevenlabs_tts",
+        description=(
+            "Generate audio dari text menggunakan ElevenLabs TTS (Guru Trainer voice). "
+            "Butuh ELEVENLABS_API_KEY. Params: text (wajib), voice_id (opsional, default Rachel), "
+            "model_id (opsional, default eleven_multilingual_v2), stability/similarity_boost/style (opsional)."
+        ),
+        params=["text", "voice_id", "model_id", "stability", "similarity_boost", "style"],
+        permission="open",
+        fn=_tool_elevenlabs_tts,
+    ),
+    "elevenlabs_voices": ToolSpec(
+        name="elevenlabs_voices",
+        description=(
+            "List semua voice ElevenLabs (premade + custom + community). "
+            "Recommended voices untuk Guru Trainer ditampilkan pertama. No params."
+        ),
+        params=[],
+        permission="open",
+        fn=_tool_elevenlabs_voices,
+    ),
+    "elevenlabs_clone": ToolSpec(
+        name="elevenlabs_clone",
+        description=(
+            "Clone voice guru dari audio samples (MP3/WAV, ~30 detik per file, clear voice). "
+            "Params: name (wajib), file_paths (wajib, list), description (opsional), labels (opsional)."
+        ),
+        params=["name", "file_paths", "description", "labels"],
+        permission="open",
+        fn=_tool_elevenlabs_clone,
+    ),
+    "elevenlabs_user": ToolSpec(
+        name="elevenlabs_user",
+        description=(
+            "Check ElevenLabs user quota dan usage (character count, tier, voice limit). No params."
+        ),
+        params=[],
+        permission="open",
+        fn=_tool_elevenlabs_user,
+    ),
+    "elevenlabs_sound": ToolSpec(
+        name="elevenlabs_sound",
+        description=(
+            "Generate sound effect dari text description. "
+            "Params: text (wajib, e.g. 'rain falling on tin roof'), duration_seconds (opsional), prompt_influence (opsional)."
+        ),
+        params=["text", "duration_seconds", "prompt_influence"],
+        permission="open",
+        fn=_tool_elevenlabs_sound,
+    ),
+    "elevenlabs_health": ToolSpec(
+        name="elevenlabs_health",
+        description=(
+            "Check ElevenLabs API connectivity dan quota. No params."
+        ),
+        params=[],
+        permission="open",
+        fn=_tool_elevenlabs_health,
     ),
     "concept_graph": ToolSpec(
         name="concept_graph",

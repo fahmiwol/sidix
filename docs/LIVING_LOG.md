@@ -18337,3 +18337,52 @@ curl -X POST http://localhost:8765/agent/maqashid/tune -d '{"sample_size":30}'
   - Lines added: ~600
   - Tests: 3 py_compile PASS
   - Bugs found: 0 new
+
+
+
+### 2026-05-08 (Kimi — SPRINT: ElevenLabs Guru Trainer Voice)
+
+- **TASK CARD:** Sprint ElevenLabs Guru Trainer Voice Integration
+  - WHAT: Integrasi ElevenLabs API untuk TTS + voice clone + sound effects
+  - WHY: Bos punya API key ElevenLabs dan ingin jadikan GURU trainer voice untuk SIDIX
+  - ACCEPTANCE: 1 module baru, 6 tools, 6 endpoints, .env.example, py_compile PASS
+  - PLAN: elevenlabs_connector.py → tools → endpoints → .env.example → test → commit
+  - RISKS: API key security — JANGAN commit ke repo
+- **IMPL:** `apps/brain_qa/brain_qa/elevenlabs_connector.py` — NEW
+  - `generate_tts()`: TTS dengan voice settings (stability, similarity_boost, style)
+  - `list_voices()`: List semua voice + recommended untuk Guru Trainer
+  - `clone_voice()`: Clone voice dari audio samples (MP3/WAV)
+  - `get_user_info()`: Check quota & usage
+  - `generate_sound_effect()`: Sound effect dari text description
+  - `elevenlabs_health_check()`: API connectivity check
+  - Pure HTTP (urllib) — no external dependencies
+  - Auto-save audio ke dataset/ folder
+- **IMPL:** `apps/brain_qa/brain_qa/agent_tools.py` — 6 tool baru
+  - `elevenlabs_tts`, `elevenlabs_voices`, `elevenlabs_clone`
+  - `elevenlabs_user`, `elevenlabs_sound`, `elevenlabs_health`
+  - Total tools: 64 → **70** (+6)
+- **IMPL:** `apps/brain_qa/brain_qa/agent_serve.py` — 6 endpoint baru
+  - `POST /tts/elevenlabs` — TTS generation
+  - `GET /tts/elevenlabs/voices` — List voices
+  - `POST /tts/elevenlabs/clone` — Voice clone
+  - `GET /tts/elevenlabs/user` — User quota
+  - `POST /tts/elevenlabs/sound` — Sound effect
+  - `GET /tts/elevenlabs/health` — Health check
+- **IMPL:** `.env.example` — NEW
+  - Template env var untuk semua services (RunPod, Google Drive, ElevenLabs, Unsplash, Pexels)
+  - Security reminder: JANGAN commit secret ke repo
+- **SECURITY:** API key ElevenLabs TIDAK disimpan di repo
+  - Hanya diterima via env var ELEVENLABS_API_KEY
+  - .env.example sebagai template (tanpa nilai)
+- **TEST:** py_compile 4/4 PASS ✅
+- **FIX:** N/A — no bugs found
+- **Anti-menguap checklist:**
+  - ✅ BACKLOG updated
+  - ✅ VISI_MATRIX updated
+  - ✅ LIVING_LOG updated
+  - ✅ Code committed + pushed
+- **Session stats:**
+  - Files modified: 4 (1 new + 2 modified + 1 new)
+  - Lines added: ~850
+  - Tests: 4 py_compile PASS
+  - Bugs found: 0 new
