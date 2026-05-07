@@ -2859,6 +2859,127 @@ def create_app() -> "FastAPI":
             log.warning("[web/fetch] error: %s", e)
             raise HTTPException(status_code=500, detail=f"web fetch error: {e}")
 
+    # ── POST /generate/image ──────────────────────────────────────────────────
+    @app.post("/generate/image")
+    async def generate_image_endpoint(request: Request):
+        """Generate image via RunPod media worker (SDXL/Flux)."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+            prompt = body.get("prompt", "").strip()
+            if not prompt:
+                raise HTTPException(status_code=400, detail="prompt wajib diisi")
+            from runpod_connector import generate_image
+            result = generate_image(
+                prompt=prompt,
+                negative_prompt=body.get("negative_prompt", ""),
+                width=body.get("width", 1024),
+                height=body.get("height", 1024),
+                num_inference_steps=body.get("num_inference_steps", 30),
+                guidance_scale=body.get("guidance_scale", 7.5),
+            )
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "image gen gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[generate/image] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"image gen error: {e}")
+
+    # ── POST /generate/3d ─────────────────────────────────────────────────────
+    @app.post("/generate/3d")
+    async def generate_3d_endpoint(request: Request):
+        """Generate 3D mesh via RunPod 3D worker (TripoSR / Hunyuan3D)."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+            prompt = body.get("prompt", "").strip()
+            image_path = body.get("image_path", "")
+            mode = body.get("mode", "triposr")
+            from runpod_connector import generate_3d
+            result = generate_3d(
+                image_path=image_path,
+                prompt=prompt,
+                mode=mode,
+                remove_bg=body.get("remove_bg", True),
+                output_format=body.get("output_format", "glb"),
+            )
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "3D gen gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[generate/3d] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"3D gen error: {e}")
+
+    # ── POST /dataset/scan ────────────────────────────────────────────────────
+    @app.post("/dataset/scan")
+    async def dataset_scan(request: Request):
+        """Scan folder lokal untuk collect metadata gambar (read-only)."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+            path = body.get("path", "").strip()
+            if not path:
+                raise HTTPException(status_code=400, detail="path wajib diisi")
+            from dataset_collector import scan_folder
+            result = scan_folder(path, max_depth=body.get("max_depth", 3))
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "scan gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[dataset/scan] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"dataset scan error: {e}")
+
+    # ── POST /dataset/collect ─────────────────────────────────────────────────
+    @app.post("/dataset/collect")
+    async def dataset_collect(request: Request):
+        """Collect dataset dari multiple sources (Mighan-Web, Mighan-3D, dll)."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+            sources = body.get("sources")
+            tags = body.get("tags")
+            from dataset_collector import collect_dataset, auto_tag_by_folder
+            result = collect_dataset(sources=sources, tags=tags)
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "collect gagal"))
+            data = result["data"]
+            files = auto_tag_by_folder(data.get("files", []))
+            return {
+                "ok": True,
+                "total_files": len(files),
+                "total_size_mb": data.get("total_size_mb", 0),
+                "sources": data.get("sources", []),
+                "files": files[:50],  # limit response size
+            }
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[dataset/collect] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"dataset collect error: {e}")
+
+    # ── GET /dataset/sources ──────────────────────────────────────────────────
+    @app.get("/dataset/sources")
+    async def dataset_sources(request: Request):
+        """List available dataset sources."""
+        _enforce_rate(request)
+        try:
+            from dataset_collector import get_available_sources
+            result = get_available_sources()
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "sources gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[dataset/sources] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"dataset sources error: {e}")
+
     # ── POST /agent/chat ──────────────────────────────────────────────────────
     @app.post("/agent/chat", response_model=ChatResponse)
     def agent_chat(req: ChatRequest, request: Request):

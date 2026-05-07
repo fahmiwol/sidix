@@ -3493,6 +3493,97 @@ def _tool_web_fetch_expanded(args: dict) -> ToolResult:
         return ToolResult(success=False, output="", error=f"web fetch error: {exc}")
 
 
+def _tool_generate_image_runpod(args: dict) -> ToolResult:
+    """Generate image via RunPod GPU worker (SDXL/Flux)."""
+    prompt = args.get("prompt", "").strip()
+    if not prompt:
+        return ToolResult(success=False, output="", error="prompt wajib diisi")
+    try:
+        from runpod_connector import generate_image
+        result = generate_image(
+            prompt=prompt,
+            negative_prompt=args.get("negative_prompt", ""),
+            width=int(args.get("width", 1024)),
+            height=int(args.get("height", 1024)),
+        )
+        if result.get("ok"):
+            data = result["data"]
+            return ToolResult(
+                success=True,
+                output=f"[Image Gen — {data.get('backend', '')}]\nImage URL: {data.get('image_url', '')}\nPrompt: {prompt}",
+            )
+        return ToolResult(success=False, output="", error=result.get("fallback_instructions", "Image gen gagal"))
+    except Exception as exc:  # noqa: BLE001
+        return ToolResult(success=False, output="", error=f"image gen error: {exc}")
+
+
+def _tool_generate_3d_runpod(args: dict) -> ToolResult:
+    """Generate 3D mesh via RunPod GPU worker (TripoSR)."""
+    prompt = args.get("prompt", "").strip()
+    image_path = args.get("image_path", "").strip()
+    if not prompt and not image_path:
+        return ToolResult(success=False, output="", error="prompt atau image_path wajib diisi")
+    try:
+        from runpod_connector import generate_3d
+        result = generate_3d(
+            image_path=image_path,
+            prompt=prompt,
+            mode=args.get("mode", "triposr"),
+            output_format=args.get("output_format", "glb"),
+        )
+        if result.get("ok"):
+            data = result["data"]
+            return ToolResult(
+                success=True,
+                output=f"[3D Gen — {data.get('backend', '')}]\nMesh: {data.get('mesh_url', '')}\nVertices: {data.get('vertices', 0)} | Faces: {data.get('faces', 0)}",
+            )
+        return ToolResult(success=False, output="", error=result.get("fallback_instructions", "3D gen gagal"))
+    except Exception as exc:  # noqa: BLE001
+        return ToolResult(success=False, output="", error=f"3D gen error: {exc}")
+
+
+def _tool_scan_dataset(args: dict) -> ToolResult:
+    """Scan folder lokal untuk collect metadata gambar (read-only)."""
+    path = args.get("path", "").strip()
+    if not path:
+        return ToolResult(success=False, output="", error="path wajib diisi")
+    try:
+        from dataset_collector import scan_folder
+        result = scan_folder(path)
+        if result.get("ok"):
+            data = result["data"]
+            files = data.get("files", [])
+            out = f"[Dataset Scan] {len(files)} files, {data.get('total_size_mb', 0)} MB\n"
+            for f in files[:10]:
+                out += f"- {f['filename']} ({f['width']}x{f['height']}, {f['size_bytes']} bytes)\n"
+            if len(files) > 10:
+                out += f"... dan {len(files) - 10} file lainnya"
+            return ToolResult(success=True, output=out)
+        return ToolResult(success=False, output="", error=result.get("fallback_instructions", "Scan gagal"))
+    except Exception as exc:  # noqa: BLE001
+        return ToolResult(success=False, output="", error=f"scan error: {exc}")
+
+
+def _tool_collect_dataset(args: dict) -> ToolResult:
+    """Collect dataset dari Mighan-Web / Mighan-3D assets."""
+    try:
+        from dataset_collector import collect_dataset, auto_tag_by_folder
+        result = collect_dataset(
+            sources=args.get("sources"),
+            tags=args.get("tags"),
+        )
+        if result.get("ok"):
+            data = result["data"]
+            files = auto_tag_by_folder(data.get("files", []))
+            out = f"[Dataset Collect] {len(files)} files dari {len(data.get('sources', []))} sources\n"
+            for s in data.get("sources", []):
+                out += f"- {s['source']}: {s['count']} files ({s['size_mb']} MB)\n"
+            return ToolResult(success=True, output=out)
+        return ToolResult(success=False, output="", error=result.get("fallback_instructions", "Collect gagal"))
+    except Exception as exc:  # noqa: BLE001
+        return ToolResult(success=False, output="", error=f"collect error: {exc}")
+
+
 TOOL_REGISTRY: dict[str, ToolSpec] = {
     "search_corpus": ToolSpec(
         name="search_corpus",
@@ -3823,6 +3914,46 @@ TOOL_REGISTRY: dict[str, ToolSpec] = {
         params=["platform", "query", "subreddit", "language", "max_results"],
         permission="open",
         fn=_tool_web_fetch_expanded,
+    ),
+    "generate_image_runpod": ToolSpec(
+        name="generate_image_runpod",
+        description=(
+            "Generate image via RunPod GPU worker (SDXL/Flux). Butuh RUNPOD_API_KEY env var. "
+            "Params: prompt (wajib), negative_prompt (opsional), width/height (opsional, default 1024)."
+        ),
+        params=["prompt", "negative_prompt", "width", "height"],
+        permission="open",
+        fn=_tool_generate_image_runpod,
+    ),
+    "generate_3d_runpod": ToolSpec(
+        name="generate_3d_runpod",
+        description=(
+            "Generate 3D mesh via RunPod GPU worker (TripoSR/Hunyuan3D). Butuh RUNPOD_API_KEY. "
+            "Params: prompt atau image_path (salah satu wajib), mode (opsional, default triposr), output_format (opsional, default glb)."
+        ),
+        params=["prompt", "image_path", "mode", "output_format"],
+        permission="open",
+        fn=_tool_generate_3d_runpod,
+    ),
+    "scan_dataset": ToolSpec(
+        name="scan_dataset",
+        description=(
+            "Scan folder lokal untuk collect metadata gambar (read-only, tidak edit file). "
+            "Params: path (wajib)."
+        ),
+        params=["path"],
+        permission="open",
+        fn=_tool_scan_dataset,
+    ),
+    "collect_dataset": ToolSpec(
+        name="collect_dataset",
+        description=(
+            "Collect dataset dari Mighan-Web / Mighan-3D assets. Auto-tag berdasarkan folder. "
+            "Params: sources (opsional, list path), tags (opsional, list string)."
+        ),
+        params=["sources", "tags"],
+        permission="open",
+        fn=_tool_collect_dataset,
     ),
     "concept_graph": ToolSpec(
         name="concept_graph",
