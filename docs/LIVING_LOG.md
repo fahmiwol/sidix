@@ -17885,3 +17885,81 @@ curl -X POST http://localhost:8765/agent/maqashid/tune -d '{"sample_size":30}'
 - **TOTAL FILE BARU:** 20+ (termasuk QA scripts)
 - **TOTAL BARIS KODE BARU:** ~8,500+
 - **STATUS PRODUKSI:** All features live.
+
+
+### 2026-05-07 (Kimi — RESEARCH: AI Landscape 2026 + Gap Benchmark)
+
+- **DOC:** Research note 317 committed: `brain/public/research_notes/317_sidix_trend_research_2026_05_07.md`
+  - 8 sections: Protocol Landscape, Evaluation Frameworks, Self-Improving AI, Multi-LoRA/PEFT, Edge/CPU Inference, Gap Analysis, Benchmark Recommendations, Strategic Position
+  - 12 web sources synthesized, 9 gap items mapped with severity
+- **DECISION:** Prioritas implementasi berbasis riset (dampak × effort):
+  1. **Voyager Phase 2** (HIGH impact, MEDIUM effort) — Skill Library Pattern: usage tracking + self-refinement + BM25 index + Anthropic Agent Skills compat
+  2. **Maqashid Phase 2 Hybrid** (HIGH impact, MEDIUM effort) — Heuristic fast-path + lightweight judge for borderline + trace-aware step scoring
+  3. **Raudah Protocol v0.2** (MEDIUM impact, MEDIUM effort) — TaskGraph DAG execution + `/raudah/run` endpoint
+  4. **Protocol Polish** (MEDIUM impact, LOW effort) — MCP Streamable HTTP stub + A2A v0.3 compat
+- **DECISION:** TIDAK implementasi GGUF/vLLM/multi-LoRA concurrent dalam batch ini — infrastruktur GPU belum siap (VPS CPU-only, 16GB RAM). Fokus pada self-improvement capabilities (software layer) yang tidak bergantung hardware.
+- **NOTE:** Key trend insight 2026 — "The winner is not a single protocol, it is the layered ecosystem." SIDIX sudah dual-protocol (MCP+A2A) = ahead of curve. Differentiator utama = self-improving depth (Voyager skill library + Maqashid evaluation loop).
+
+
+### 2026-05-07 (Kimi — IMPLEMENTASI: Voyager P2 + Maqashid P2 + Raudah v0.2)
+
+- **IMPL:** Voyager Protocol Phase 2 — Skill Library Pattern
+  - `apps/brain_qa/brain_qa/voyager_protocol.py` extended dengan:
+    - `_USAGE_STORE` + `_USAGE_LOCK`: thread-safe in-memory usage tracking (call_count, success_count, failure_count, total_latency_ms, avg_latency_ms, last_used, first_used, refinement_count)
+    - `_record_tool_usage()`: latency + success/failure tracking per tool call via `_build_tool_wrapper()`
+    - `discover_similar_tools()`: keyword overlap scoring sebelum generate tool baru (threshold 0.3, block create kalau score >= 0.6)
+    - `refine_tool()`: self-refinement loop untuk tool dengan success_rate < 50% dan >= 3 calls (max 3 attempts, security scan, backup old version)
+    - `HistoricalJudge`: lightweight rule-based judge dengan learned coefficients dari feedback history
+    - `get_tool_stats()` / `list_tool_stats()`: aggregated usage analytics
+    - `_to_agent_skills_format()`: Anthropic Agent Skills v1 compatible metadata
+    - Metadata schema extended: `usage_stats`, `skill_format`, `version`, `updated_at`
+  - `apps/brain_qa/brain_qa/agent_serve.py` — 5 endpoint baru:
+    - `GET /app/voyager/tools/{tool_name}/stats` — usage stats per tool
+    - `GET /app/voyager/stats` — all tools stats
+    - `POST /app/voyager/discover` — skill discovery sebelum create
+    - `POST /app/voyager/tools/{tool_name}/refine` — self-refinement
+    - `GET /app/voyager/tools/{tool_name}/skills-format` — Agent Skills format
+  - **py_compile**: PASS ✅
+  - **smoke test**: All imports PASS ✅
+
+- **IMPL:** Maqashid Auto-Tune Phase 2 — Hybrid Judge + Trace-Aware
+  - `apps/brain_qa/brain_qa/maqashid_auto_tune.py` extended dengan:
+    - `HistoricalJudge`: self-hosted lightweight judge yang adjust scoring weights dari user feedback (thumbs up/down). Coeffs computed dari false_negative / false_positive rates. Fallback neutral kalau data < 10 samples.
+    - `record_feedback()`: persist user feedback ke JSONL dengan hash chain, pre-compute heuristic score untuk training data.
+    - `TraceStep` + `TraceEvalResult`: trace-aware evaluation models
+    - `evaluate_trace()`: score EVERY step dalam reasoning chain (tool_call, thought, final_answer). Weighted: 40% avg step + 60% final answer. HistoricalJudge calibration applied.
+    - `_score_trace_step()`: per-step scoring dengan tool success, citation check, over-confidence detection
+  - `apps/brain_qa/brain_qa/agent_serve.py` — endpoint update:
+    - `POST /app/maqashid/evaluate` — sekarang support `trace` array untuk trace-aware eval (eval_type: "trace_aware" | "heuristic")
+    - `POST /app/maqashid/feedback` — record user thumbs up/down untuk judge calibration
+  - **py_compile**: PASS ✅
+  - **smoke test**: All imports PASS ✅
+
+- **IMPL:** Raudah Protocol v0.2 — TaskGraph DAG + `/raudah/run`
+  - `brain/raudah/taskgraph.py` enhanced:
+    - `_build_dependency_graph()`: adjacency list dari explicit `depends_on` edges
+    - `_topological_levels()`: topological sort dengan parallelizable levels (detects cycles gracefully)
+    - `build_execution_waves()`: priority — explicit dependency > role-based fallback
+  - `brain/raudah/core.py` enhanced:
+    - `RaudahTask.depends_on`: list[str] field baru untuk explicit DAG edges
+    - `Specialist._jalankan_tools()`: v0.2 — call ReAct tools dari TOOL_REGISTRY sebelum LLM call
+    - `Specialist._panggil_llm()`: includes tool outputs in context
+  - `apps/brain_qa/brain_qa/agent_serve.py` — endpoint baru:
+    - `POST /raudah/run` — Raudah multi-agent orchestration API
+  - **py_compile**: PASS ✅
+  - **smoke test**: All imports PASS ✅
+
+- **DECISION:** Protocol Polish (MCP Streamable HTTP + A2A v0.3) di-defer ke batch berikutnya — lower priority dibanding self-improvement capabilities.
+
+- **TOTAL FILE MODIFIED:** 4 files
+  - `apps/brain_qa/brain_qa/voyager_protocol.py` (+~310 lines Phase 2)
+  - `apps/brain_qa/brain_qa/maqashid_auto_tune.py` (+~220 lines Phase 2)
+  - `brain/raudah/taskgraph.py` (+~60 lines dependency DAG)
+  - `brain/raudah/core.py` (+~40 lines tool integration + depends_on)
+  - `apps/brain_qa/brain_qa/agent_serve.py` (+~80 lines endpoint baru)
+
+- **NEXT BATCH (queued):**
+  1. Protocol Polish — MCP Streamable HTTP skeleton + A2A v0.3 compat
+  2. Kaggle Auto-Retrain — shadow LoRA candidates, trigger >500 pairs
+  3. Voyager Phase 3 — tool composition (tools calling other tools)
+  4. Maqashid Phase 3 — eval dataset auto-build dari feedback history

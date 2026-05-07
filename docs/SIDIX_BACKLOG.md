@@ -421,3 +421,39 @@ Setiap agent (Claude/GPT/Gemini/SIDIX) yang kerja di proyek ini WAJIB ikuti prot
   - Voyager Protocol Phase 2 (self-improving generated tools)
   - Persona DoRA Adapter Phase 2 (physical LoRA adapters from Self-Train data)
 - **Differentiator narrative:** "ChatGPT yang bisa kamu bawa pulang — anti-halusinasi, 5 persona, self-hosted, Islamic ethical AI"
+
+
+### Sprint Batch Riset-Driven 2026-05-07 — Trend Analysis + 3 Sprint Implementasi
+
+- **Visi mapping**: Self-Bootstrap Phase 2→3 (Voyager skill library), Cognitive (90%→93%), Iteratif (85%→90%)
+- **Date**: 2026-05-07
+- **Research**: `brain/public/research_notes/317_sidix_trend_research_2026_05_07.md`
+  - 8 sections, 12 web sources, 9 gap items mapped
+  - Key finding: self-improving AI (Voyager/SAGE/Anthropic Skills) = highest ROI path
+- **Deliverables:**
+  1. **Voyager Protocol Phase 2** — Skill Library Pattern (DONE)
+     - Usage tracking (call_count, success_rate, avg_latency)
+     - Skill discovery (keyword overlap, block create if similar >= 0.6)
+     - Self-refinement (auto-improve tool kalau success_rate < 50%)
+     - Anthropic Agent Skills v1 compatible metadata
+     - 5 endpoint baru di agent_serve.py
+  2. **Maqashid Auto-Tune Phase 2** — Hybrid Judge + Trace-Aware (DONE)
+     - HistoricalJudge: lightweight self-hosted judge, learns dari thumbs up/down feedback
+     - Trace-aware evaluation: score every reasoning step (tool_call, thought, final_answer)
+     - `/app/maqashid/feedback` endpoint untuk judge calibration
+     - `/app/maqashid/evaluate` support trace array
+  3. **Raudah Protocol v0.2** — TaskGraph DAG + `/raudah/run` (DONE)
+     - Dependency-based topological sort (explicit `depends_on` edges)
+     - Specialist tool integration: call ReAct tools dari TOOL_REGISTRY sebelum LLM
+     - `POST /raudah/run` endpoint exposed
+- **QA:**
+  - py_compile: 5/5 files PASS ✅
+  - smoke test: all imports PASS ✅
+  - encoding: UTF-8 enforced on all file writes (fix known VPS bug)
+- **Commits**: TBD (pending git commit)
+- **Status**: IMPLEMENTATION DONE. Deploy ke VPS = next step.
+- **Next batch (queued):**
+  - Protocol Polish — MCP Streamable HTTP skeleton + A2A v0.3 compat
+  - Kaggle Auto-Retrain — shadow LoRA candidates, trigger >500 pairs
+  - Voyager Phase 3 — tool composition (tools calling other tools)
+  - Maqashid Phase 3 — eval dataset auto-build dari feedback history

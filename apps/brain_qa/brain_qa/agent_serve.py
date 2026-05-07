@@ -57,6 +57,11 @@ from .voyager_protocol import (
     get_generated_tool as _voyager_get_tool,
     delete_generated_tool as _voyager_delete_tool,
     load_generated_tools_at_startup,
+    get_tool_stats as _voyager_get_tool_stats,
+    list_tool_stats as _voyager_list_tool_stats,
+    discover_similar_tools as _voyager_discover,
+    refine_tool as _voyager_refine_tool,
+    _to_agent_skills_format as _voyager_to_skills_format,
 )
 from .agency_kit import (
     AgencyKitRequest as _AgencyKitRequest,
@@ -64,6 +69,10 @@ from .agency_kit import (
     get_job_status,
     list_jobs,
 )
+
+# Raudah Protocol v0.2
+from brain.raudah.core import run_raudah as _raudah_run
+
 from . import rate_limit
 from . import social_radar
 from . import memory_store
@@ -101,6 +110,10 @@ from .maqashid_auto_tune import (
     auto_tune_response,
     get_global_stats,
     AutoTuneResult,
+    evaluate_trace,
+    record_feedback,
+    TraceStep,
+    TraceEvalResult,
 )
 from .debate_ring import (
     DebateResult as DebateResultModel,
@@ -1822,7 +1835,10 @@ def create_app() -> "FastAPI":
     # ── POST /app/maqashid/evaluate ───────────────────────────────────────────
     @app.post("/app/maqashid/evaluate")
     async def maqashid_evaluate(request: Request):
-        """Manual evaluation endpoint — evaluate arbitrary text with Maqashid Auto-Tune."""
+        """
+        Manual evaluation endpoint — evaluate arbitrary text with Maqashid Auto-Tune.
+        Phase 2: supports trace-aware evaluation (pass steps for per-step scoring).
+        """
         _enforce_rate(request)
         try:
             body = await request.json()
@@ -1830,20 +1846,73 @@ def create_app() -> "FastAPI":
             raise HTTPException(status_code=400, detail="body JSON tidak valid")
         text = body.get("text", "")
         mode = body.get("mode", "general")
-        if not text:
-            raise HTTPException(status_code=400, detail="text wajib diisi")
+        trace_raw = body.get("trace", [])
+        if not text and not trace_raw:
+            raise HTTPException(status_code=400, detail="text atau trace wajib diisi")
+
         try:
-            result = evaluate_output(text, mode=mode)
-            return {
-                "ok": True,
-                "score": result.score,
-                "passed": result.passed,
-                "violations": result.violations,
-                "suggestions": result.suggestions,
-                "corrected_output": result.corrected_output,
-            }
+            # Phase 2: Trace-aware evaluation jika trace disediakan
+            if trace_raw:
+                steps = []
+                for i, raw in enumerate(trace_raw):
+                    steps.append(TraceStep(
+                        step_number=raw.get("step_number", i + 1),
+                        step_type=raw.get("step_type", "unknown"),
+                        content=raw.get("content", ""),
+                        tool_name=raw.get("tool_name", ""),
+                        tool_result_success=raw.get("tool_result_success", True),
+                        citations=raw.get("citations", []),
+                    ))
+                result = evaluate_trace(steps, mode=mode)
+                return {
+                    "ok": True,
+                    "score": result.overall_score,
+                    "passed": result.passed,
+                    "violations": result.violations,
+                    "suggestions": result.suggestions,
+                    "step_scores": result.step_scores,
+                    "eval_type": "trace_aware",
+                }
+            else:
+                result = evaluate_output(text, mode=mode)
+                return {
+                    "ok": True,
+                    "score": result.score,
+                    "passed": result.passed,
+                    "violations": result.violations,
+                    "suggestions": result.suggestions,
+                    "corrected_output": result.corrected_output,
+                    "eval_type": "heuristic",
+                }
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"evaluation error: {e}")
+
+    # ── POST /app/maqashid/feedback ───────────────────────────────────────────
+    @app.post("/app/maqashid/feedback")
+    async def maqashid_feedback(request: Request):
+        """
+        Phase 2: Record user feedback (thumbs up/down) untuk judge calibration.
+        Body: { "query": "...", "output": "...", "thumbs_up": true, "persona": "AYMAN" }
+        """
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+        except Exception:
+            raise HTTPException(status_code=400, detail="body JSON tidak valid")
+
+        query = body.get("query", "")
+        output = body.get("output", "")
+        thumbs_up = bool(body.get("thumbs_up", True))
+        persona = body.get("persona", "AYMAN")
+
+        if not query or not output:
+            raise HTTPException(status_code=400, detail="query dan output wajib diisi")
+
+        try:
+            result = record_feedback(query=query, output=output, thumbs_up=thumbs_up, persona=persona)
+            return result
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"feedback error: {e}")
 
     # ── GET /app/maqashid/stats ───────────────────────────────────────────────
     @app.get("/app/maqashid/stats")
@@ -1854,6 +1923,48 @@ def create_app() -> "FastAPI":
             return {"ok": True, **get_global_stats()}
         except Exception as e:
             return {"ok": False, "error": str(e)}
+
+    # ════════════════════════════════════════════════════════════════════════
+    # RAUDAH PROTOCOL v0.2 — TaskGraph DAG + /raudah/run
+    # ════════════════════════════════════════════════════════════════════════
+
+    class RaudahRunRequest(BaseModel):
+        task: str
+        max_specialists: int = 10
+
+    @app.post("/raudah/run", tags=["Raudah"])
+    async def raudah_run(req: RaudahRunRequest, request: Request):
+        """
+        Raudah Protocol v0.2: Multi-agent parallel orchestration.
+        Dekomposisi task → IHOS guardrail → specialist parallel execution → aggregation.
+        """
+        _enforce_rate(request)
+        if not req.task.strip():
+            raise HTTPException(status_code=400, detail="task wajib diisi")
+        try:
+            import asyncio
+            result = await _raudah_run(req.task, max_specialist=req.max_specialists)
+            return {
+                "ok": True,
+                "session_id": result.session_id,
+                "task_asal": result.task_asal,
+                "jawaban_final": result.jawaban_final,
+                "durasi_s": result.durasi_s,
+                "ihos_lulus": result.ihos_lulus,
+                "specialists": [
+                    {
+                        "task_id": t.task_id,
+                        "role": t.role,
+                        "status": t.status,
+                        "elapsed_s": t.elapsed_s,
+                        "result": t.result[:300],
+                    }
+                    for t in result.hasil_spesialis
+                ],
+            }
+        except Exception as e:
+            log.warning("[raudah_run] Failed: %s", e)
+            raise HTTPException(status_code=500, detail=f"raudah error: {e}")
 
     # ════════════════════════════════════════════════════════════════════════
     # SPRINT H — Creative Output Polish
@@ -9711,6 +9822,90 @@ h1{{color:#0af}}p{{color:#aaa}}a{{color:#0af}}</style></head>
             raise
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"voyager delete error: {e}")
+
+    # ════════════════════════════════════════════════════════════════════════
+    # VOYAGER PROTOCOL — Phase 2: Skill Library Pattern
+    # ════════════════════════════════════════════════════════════════════════
+
+    @app.get("/app/voyager/tools/{tool_name}/stats", tags=["Voyager"])
+    async def voyager_tool_stats(tool_name: str, request: Request):
+        """Get usage statistics for a generated tool."""
+        _enforce_rate(request)
+        try:
+            stats = _voyager_get_tool_stats(tool_name)
+            if stats is None:
+                raise HTTPException(status_code=404, detail="tool not found")
+            return {"ok": True, "stats": stats.model_dump()}
+        except HTTPException:
+            raise
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"voyager stats error: {e}")
+
+    @app.get("/app/voyager/stats", tags=["Voyager"])
+    async def voyager_all_stats(request: Request):
+        """Get usage statistics for ALL generated tools."""
+        _enforce_rate(request)
+        try:
+            stats_list = _voyager_list_tool_stats()
+            return {"ok": True, "tools": [s.model_dump() for s in stats_list], "count": len(stats_list)}
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"voyager all stats error: {e}")
+
+    @app.post("/app/voyager/discover", tags=["Voyager"])
+    async def voyager_discover(req: dict, request: Request):
+        """
+        Discover similar existing tools before creating new.
+        Body: { "intent": "calculate BMI from weight and height" }
+        """
+        _enforce_rate(request)
+        intent = req.get("intent", "").strip()
+        if not intent:
+            raise HTTPException(status_code=400, detail="intent wajib diisi")
+        try:
+            result = _voyager_discover(intent, threshold=0.3)
+            return {
+                "ok": True,
+                "should_create_new": result.should_create_new,
+                "suggestion": result.suggestion,
+                "similar_tools": result.similar_tools,
+            }
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"voyager discover error: {e}")
+
+    @app.post("/app/voyager/tools/{tool_name}/refine", tags=["Voyager"])
+    async def voyager_refine_tool(tool_name: str, request: Request):
+        """
+        Self-refinement: auto-improve a generated tool based on usage data.
+        Only works if tool has < 50% success rate and >= 3 calls.
+        """
+        _enforce_rate(request)
+        try:
+            result = _voyager_refine_tool(tool_name, max_attempts=3)
+            return {
+                "ok": result.success,
+                "tool_name": result.tool_name,
+                "old_success_rate": result.old_success_rate,
+                "security_passed": result.security_passed,
+                "error": result.error,
+            }
+        except HTTPException:
+            raise
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"voyager refine error: {e}")
+
+    @app.get("/app/voyager/tools/{tool_name}/skills-format", tags=["Voyager"])
+    async def voyager_skills_format(tool_name: str, request: Request):
+        """Get tool metadata in Anthropic Agent Skills compatible format."""
+        _enforce_rate(request)
+        try:
+            data = _voyager_to_skills_format(tool_name)
+            if data is None:
+                raise HTTPException(status_code=404, detail="tool not found")
+            return {"ok": True, "skill": data}
+        except HTTPException:
+            raise
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"voyager skills format error: {e}")
 
     # ── Agency OS: Tiranyx pilot client ──────────────────────────────────────
     try:

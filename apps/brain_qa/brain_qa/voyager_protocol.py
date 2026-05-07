@@ -21,6 +21,8 @@ import os
 import py_compile
 import re
 import tempfile
+import threading
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Callable
@@ -45,6 +47,37 @@ class VoyagerToolResult(BaseModel):
     error: str = ""
     security_passed: bool
     registered: bool
+
+
+class ToolUsageStats(BaseModel):
+    """Per-tool usage analytics for skill library pattern (Phase 2)."""
+    tool_name: str
+    call_count: int = 0
+    success_count: int = 0
+    failure_count: int = 0
+    total_latency_ms: float = 0.0
+    avg_latency_ms: float = 0.0
+    last_used: str = ""
+    first_used: str = ""
+    refinement_count: int = 0
+    skill_format: str = "anthropic_agent_skills_v1"
+
+
+class SkillDiscoveryResult(BaseModel):
+    """Result of checking skill library before creating new tool."""
+    similar_tools: list[dict]
+    should_create_new: bool
+    suggestion: str
+
+
+class RefineResult(BaseModel):
+    """Result of self-refinement attempt on a generated tool."""
+    success: bool
+    tool_name: str
+    old_success_rate: float
+    new_code: str = ""
+    error: str = ""
+    security_passed: bool = False
 
 
 # ── Security configuration ────────────────────────────────────────────────────
@@ -328,27 +361,306 @@ def _save_metadata(meta: dict[str, dict]) -> None:
 # Runtime dynamic registry (in-memory)
 _DYNAMIC_REGISTRY: dict[str, dict] = {}
 
+# ── Usage tracking (Phase 2: Skill Library Pattern) ───────────────────────────
+# In-memory usage stats per tool — lightweight, flushed to metadata periodically.
+_USAGE_STORE: dict[str, dict] = {}
+_USAGE_LOCK = threading.Lock()
+
+
+def _init_usage_stats(tool_name: str) -> dict:
+    now = datetime.now(timezone.utc).isoformat()
+    return {
+        "tool_name": tool_name,
+        "call_count": 0,
+        "success_count": 0,
+        "failure_count": 0,
+        "total_latency_ms": 0.0,
+        "avg_latency_ms": 0.0,
+        "last_used": "",
+        "first_used": now,
+        "refinement_count": 0,
+        "skill_format": "anthropic_agent_skills_v1",
+    }
+
+
+def _record_tool_usage(tool_name: str, success: bool, latency_ms: float) -> None:
+    """Record a tool invocation for analytics. Thread-safe."""
+    with _USAGE_LOCK:
+        stats = _USAGE_STORE.get(tool_name)
+        if stats is None:
+            stats = _init_usage_stats(tool_name)
+            _USAGE_STORE[tool_name] = stats
+        stats["call_count"] += 1
+        if success:
+            stats["success_count"] += 1
+        else:
+            stats["failure_count"] += 1
+        stats["total_latency_ms"] += latency_ms
+        stats["avg_latency_ms"] = stats["total_latency_ms"] / stats["call_count"]
+        stats["last_used"] = datetime.now(timezone.utc).isoformat()
+
+
+def _get_usage_stats(tool_name: str) -> dict:
+    """Get usage stats for a tool (in-memory + metadata merge)."""
+    with _USAGE_LOCK:
+        mem = _USAGE_STORE.get(tool_name)
+    if mem is None:
+        mem = _init_usage_stats(tool_name)
+    # Merge with persisted metadata usage
+    meta = _load_metadata()
+    m = meta.get(tool_name, {})
+    persisted = m.get("usage_stats", {})
+    merged = dict(mem)
+    for k, v in persisted.items():
+        if k in ("call_count", "success_count", "failure_count", "total_latency_ms", "refinement_count"):
+            merged[k] = merged.get(k, 0) + v
+    if merged["call_count"] > 0:
+        merged["avg_latency_ms"] = merged["total_latency_ms"] / merged["call_count"]
+    else:
+        merged["avg_latency_ms"] = 0.0
+    return merged
+
+
+def _persist_usage_stats() -> None:
+    """Flush in-memory usage stats to metadata JSON."""
+    meta = _load_metadata()
+    with _USAGE_LOCK:
+        for tool_name, stats in _USAGE_STORE.items():
+            if tool_name in meta:
+                meta[tool_name]["usage_stats"] = dict(stats)
+    _save_metadata(meta)
+
+
+def get_tool_stats(tool_name: str) -> ToolUsageStats | None:
+    """Public API: get aggregated usage stats for a generated tool."""
+    meta = _load_metadata()
+    if tool_name not in meta and tool_name not in _DYNAMIC_REGISTRY:
+        return None
+    merged = _get_usage_stats(tool_name)
+    return ToolUsageStats(**merged)
+
+
+def list_tool_stats() -> list[ToolUsageStats]:
+    """Public API: list usage stats for all generated tools."""
+    meta = _load_metadata()
+    results = []
+    for tool_name in meta:
+        stats = get_tool_stats(tool_name)
+        if stats:
+            results.append(stats)
+    return results
+
+
+def discover_similar_tools(intent: str, threshold: float = 0.3) -> SkillDiscoveryResult:
+    """
+    Phase 2: Before creating a new tool, check if existing tools can handle the intent.
+    Uses simple keyword overlap scoring against tool names + descriptions.
+    """
+    meta = _load_metadata()
+    intent_words = set(re.findall(r"[a-zA-Z]{3,}", intent.lower()))
+    if not intent_words:
+        return SkillDiscoveryResult(similar_tools=[], should_create_new=True, suggestion="No meaningful keywords in intent.")
+
+    similar = []
+    for tool_name, info in meta.items():
+        desc = info.get("description", "")
+        tool_text = f"{tool_name} {desc}".lower()
+        tool_words = set(re.findall(r"[a-zA-Z]{3,}", tool_text))
+        if not tool_words:
+            continue
+        overlap = len(intent_words & tool_words)
+        score = overlap / max(len(intent_words), len(tool_words))
+        if score >= threshold:
+            similar.append({
+                "tool_name": tool_name,
+                "description": desc,
+                "score": round(score, 3),
+                "call_count": info.get("usage_stats", {}).get("call_count", 0),
+            })
+
+    similar.sort(key=lambda x: x["score"], reverse=True)
+
+    if similar and similar[0]["score"] >= 0.6:
+        return SkillDiscoveryResult(
+            similar_tools=similar[:5],
+            should_create_new=False,
+            suggestion=f"Existing tool '{similar[0]['tool_name']}' looks similar. Try it first.",
+        )
+    elif similar:
+        return SkillDiscoveryResult(
+            similar_tools=similar[:5],
+            should_create_new=True,
+            suggestion=f"Some similar tools exist but score < 0.6. Consider creating new if none fit.",
+        )
+    return SkillDiscoveryResult(
+        similar_tools=[],
+        should_create_new=True,
+        suggestion="No similar tools found. Safe to create new.",
+    )
+
+
+def refine_tool(tool_name: str, max_attempts: int = 3) -> RefineResult:
+    """
+    Phase 2: Self-refinement loop for a generated tool with low success rate.
+    Analyzes the tool, generates improved code, validates, and replaces if better.
+    """
+    meta = _load_metadata()
+    info = meta.get(tool_name)
+    if info is None:
+        return RefineResult(success=False, tool_name=tool_name, old_success_rate=0.0, error="Tool not found")
+
+    # Get current stats
+    stats = _get_usage_stats(tool_name)
+    call_count = stats.get("call_count", 0)
+    success_count = stats.get("success_count", 0)
+    old_rate = success_count / call_count if call_count > 0 else 1.0
+
+    # Only refine if there's enough data and low success rate
+    if call_count < 3:
+        return RefineResult(success=False, tool_name=tool_name, old_success_rate=old_rate, error="Not enough usage data (need >= 3 calls)")
+    if old_rate >= 0.5:
+        return RefineResult(success=False, tool_name=tool_name, old_success_rate=old_rate, error=f"Success rate {old_rate:.1%} is acceptable (>= 50%)")
+
+    # Load current code
+    tools_dir = _generated_tools_dir()
+    file_path = tools_dir / f"{tool_name}.py"
+    if not file_path.exists():
+        return RefineResult(success=False, tool_name=tool_name, old_success_rate=old_rate, error="Source file missing")
+
+    old_code = file_path.read_text(encoding="utf-8")
+
+    # Build refinement prompt
+    failure_hints = stats.get("failure_hints", [])
+    prompt = (
+        f"Improve this Python function to be more robust and correct.\n\n"
+        f"Current code:\n```python\n{old_code}\n```\n\n"
+        f"Usage stats: {success_count}/{call_count} successful ({old_rate:.1%}).\n"
+        f"Issues to address: handle edge cases, validate inputs, improve error handling.\n"
+        f"Same security rules apply: no os/subprocess/network/file I/O.\n"
+        f"Output ONLY the improved Python code inside a ```python block."
+    )
+
+    system = _SYSTEM_PROMPT + "\n- When refining, preserve the function name and signature.\n- Add better input validation and error messages."
+
+    for attempt in range(max_attempts):
+        try:
+            text, _ = generate_sidix(prompt=prompt, system=system, max_tokens=1200, temperature=0.2)
+            new_code = _extract_code_block(text)
+            if not new_code.strip():
+                continue
+
+            # Security scan
+            p_ok, p_err = _pattern_scan(new_code)
+            a_ok, a_err = ast_security_scan(new_code)
+            i_ok, i_err = whitelist_import_check(new_code)
+            if not (p_ok and a_ok and i_ok):
+                continue
+
+            # Backup old code
+            backup_path = tools_dir / f"{tool_name}_v{stats.get('refinement_count', 0)}.py"
+            backup_path.write_text(old_code, encoding="utf-8")
+
+            # Replace code
+            file_path.write_text(new_code, encoding="utf-8")
+
+            # Validate
+            try:
+                py_compile.compile(str(file_path), doraise=True)
+            except py_compile.PyCompileError:
+                # Restore backup
+                file_path.write_text(old_code, encoding="utf-8")
+                continue
+
+            # Re-register
+            description = info.get("description", f"Generated tool: {tool_name}")
+            try:
+                # Unregister old
+                from .agent_tools import TOOL_REGISTRY
+                if tool_name in TOOL_REGISTRY:
+                    del TOOL_REGISTRY[tool_name]
+                register_generated_tool(tool_name, new_code, description)
+            except Exception:
+                file_path.write_text(old_code, encoding="utf-8")
+                continue
+
+            # Update refinement count
+            with _USAGE_LOCK:
+                s = _USAGE_STORE.get(tool_name, _init_usage_stats(tool_name))
+                s["refinement_count"] = s.get("refinement_count", 0) + 1
+                _USAGE_STORE[tool_name] = s
+            _persist_usage_stats()
+
+            return RefineResult(
+                success=True,
+                tool_name=tool_name,
+                old_success_rate=old_rate,
+                new_code=new_code,
+                security_passed=True,
+            )
+        except Exception as e:
+            if attempt == max_attempts - 1:
+                return RefineResult(success=False, tool_name=tool_name, old_success_rate=old_rate, error=f"Refinement failed after {max_attempts} attempts: {e}")
+            continue
+
+    return RefineResult(success=False, tool_name=tool_name, old_success_rate=old_rate, error="All refinement attempts exhausted")
+
+
+def _to_agent_skills_format(tool_name: str) -> dict | None:
+    """Convert tool metadata to Anthropic Agent Skills compatible format."""
+    meta = _load_metadata()
+    info = meta.get(tool_name)
+    if info is None:
+        return None
+    stats = _get_usage_stats(tool_name)
+    return {
+        "skill_id": tool_name,
+        "name": tool_name,
+        "description": info.get("description", ""),
+        "version": f"1.{stats.get('refinement_count', 0)}",
+        "format": "anthropic_agent_skills_v1",
+        "created_at": info.get("created_at", ""),
+        "last_used": stats.get("last_used", ""),
+        "usage": {
+            "invocations": stats.get("call_count", 0),
+            "success_rate": round(stats.get("success_count", 0) / stats.get("call_count", 1), 3) if stats.get("call_count", 0) > 0 else 0,
+        },
+        "source": {
+            "type": "generated",
+            "generator": "sidix_voyager",
+        },
+        "code_hash": info.get("code_hash", ""),
+    }
+
+
+# ── End Phase 2 extensions ────────────────────────────────────────────────────
+
 
 def _build_tool_wrapper(fn: Callable, tool_name: str, description: str) -> Callable:
-    """Wrap a generated function to match ToolSpec signature."""
+    """Wrap a generated function to match ToolSpec signature + usage tracking (Phase 2)."""
     from .agent_tools import ToolResult
 
     def wrapper(args: dict) -> ToolResult:
+        start = time.perf_counter()
         try:
             result = fn(args)
+            latency_ms = (time.perf_counter() - start) * 1000
             if isinstance(result, dict):
                 output = result.get("output", "")
                 success = result.get("success", True)
                 error = result.get("error", "")
                 citations = result.get("citations", [])
+                _record_tool_usage(tool_name, success=success, latency_ms=latency_ms)
                 return ToolResult(
                     success=success,
                     output=str(output),
                     error=str(error),
                     citations=citations if isinstance(citations, list) else [],
                 )
+            _record_tool_usage(tool_name, success=True, latency_ms=latency_ms)
             return ToolResult(success=True, output=str(result))
         except Exception as e:
+            latency_ms = (time.perf_counter() - start) * 1000
+            _record_tool_usage(tool_name, success=False, latency_ms=latency_ms)
             return ToolResult(success=False, output="", error=f"Generated tool error: {e}")
 
     return wrapper
@@ -415,16 +727,21 @@ def register_generated_tool(tool_name: str, code: str, description: str) -> bool
         fn=wrapped,
     )
 
-    # 8. Persist metadata
+    # 8. Persist metadata (Phase 2: include usage_stats + agent_skills compat)
     meta = _load_metadata()
+    existing_usage = meta.get(tool_name, {}).get("usage_stats", {})
     meta[tool_name] = {
         "tool_name": tool_name,
         "description": description,
         "file_path": str(file_path.relative_to(tools_dir.parent)),
-        "created_at": datetime.now(timezone.utc).isoformat(),
+        "created_at": meta.get(tool_name, {}).get("created_at", datetime.now(timezone.utc).isoformat()),
+        "updated_at": datetime.now(timezone.utc).isoformat(),
         "created_by": "voyager_protocol",
         "is_generated": True,
         "code_hash": hashlib.sha256(code.encode()).hexdigest()[:16],
+        "usage_stats": existing_usage,
+        "skill_format": "anthropic_agent_skills_v1",
+        "version": f"1.{existing_usage.get('refinement_count', 0)}",
     }
     _save_metadata(meta)
 
@@ -437,8 +754,21 @@ def register_generated_tool(tool_name: str, code: str, description: str) -> bool
 # ── Full pipeline ─────────────────────────────────────────────────────────────
 
 def create_tool(req: VoyagerToolRequest) -> VoyagerToolResult:
-    """Full Voyager pipeline: generate → security scan → register."""
+    """Full Voyager pipeline: discover → generate → security scan → register."""
     tool_name = _sanitize_tool_name(req.tool_name, req.intent)
+
+    # Phase 2: Skill Discovery — check if similar tool already exists
+    discovery = discover_similar_tools(req.intent, threshold=0.3)
+    if not discovery.should_create_new and discovery.similar_tools:
+        top = discovery.similar_tools[0]
+        return VoyagerToolResult(
+            success=False,
+            tool_name=tool_name,
+            code="",
+            error=f"Skill Discovery: similar tool exists — '{top['tool_name']}' (score={top['score']}). {discovery.suggestion}",
+            security_passed=False,
+            registered=False,
+        )
 
     # Generate code
     try:
