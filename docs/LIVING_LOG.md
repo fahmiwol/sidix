@@ -18477,3 +18477,51 @@ curl -X POST http://localhost:8765/agent/maqashid/tune -d '{"sample_size":30}'
 - **Anti-menguap checklist:**
   - ✅ LIVING_LOG updated
   - ⏳ Code committed + pushed (setelah tokens didapat & test)
+
+
+### 2026-05-08 (Kimi — Google Drive Admin + MCP Integration)
+
+- **TASK CARD:** Google Drive MCP + Admin Panel Integration
+  - WHAT: Tambah tab Google Drive di admin panel + admin endpoints + token manager
+  - WHY: Bos mau setup Drive lewat admin (tidak perlu manual .env) + MCP untuk multi-drive
+  - ACCEPTANCE: Admin tab Drive bisa generate auth URL, exchange token, list accounts, browse folder
+  - PLAN: riset pattern admin + MCP → buat drive_admin_manager.py → admin endpoints → admin UI tab → test
+  - RISKS: OAuth flow dari browser perlu redirect URI proper; client secret tidak boleh leak ke frontend
+- **IMPL:** `apps/brain_qa/brain_qa/drive_admin_manager.py` — NEW
+  - `list_accounts()` — list all accounts + connection status (live check via Drive API)
+  - `generate_auth_url()` — generate OAuth2 auth URL dengan state=account_name
+  - `exchange_and_store()` — exchange code → store refresh_token + access_token ke JSON file
+  - `refresh_account_token()` — refresh access token via refresh_token
+  - `delete_account()` — hapus account + clear env var
+  - `get_account_token()` — get account detail tanpa expose secret
+  - Token storage: `apps/brain_qa/brain_qa/.data/drive_tokens.json` (runtime-reloadable)
+  - Auto-set env var setelah exchange/refresh untuk immediate use
+- **IMPL:** `apps/brain_qa/brain_qa/agent_serve.py` — 6 admin endpoints baru
+  - `GET /admin/drive/accounts` — list accounts + status
+  - `POST /admin/drive/connect` — generate auth URL
+  - `POST /admin/drive/exchange` — exchange code → store token
+  - `POST /admin/drive/refresh` — refresh access token
+  - `DELETE /admin/drive/account/{name}` — delete account
+  - `GET /admin/drive/account/{name}` — get account detail
+  - Semua gated by `_admin_ok()` (x-admin-token)
+- **IMPL:** `apps/brain_qa/brain_qa/static/admin.html` — tab Google Drive baru
+  - Sidebar nav: "Data Sources" → "Google Drive"
+  - OAuth Connect Wizard: generate auth URL → exchange code → store token
+  - Multi-account manager: list, refresh, delete accounts
+  - Folder Browser: select account → input folder ID → list files / explore tree / collect dataset
+  - Auto-refresh account list dengan status (connected/disconnected/error)
+- **UPDATE:** `apps/brain_qa/brain_qa/dataset_drive_collector.py` — fallback token reader
+  - `_get_access_token()` dan `_get_refresh_token()` sekarang juga membaca dari admin token store
+  - Priority: env var → admin token file (runtime-managed)
+  - Collector otomatis compatible dengan tokens yang di-manage via admin panel
+- **TEST:** py_compile 3/3 PASS — drive_admin_manager.py, dataset_drive_collector.py, agent_serve.py
+- **STATUS:** MVP admin Drive integration selesai. MCP registration (Node.js + Python) pending untuk next iteration.
+- **RISKS:** Token file (.data/drive_tokens.json) belum di-encrypt — acceptable untuk MVP, perlu improvement di sprint berikutnya.
+- **Anti-menguap checklist:**
+  - ✅ LIVING_LOG updated
+  - ⏳ Code committed + pushed (setelah approval)
+- **Session stats:**
+  - Files modified: 4 (1 new + 3 modified)
+  - Lines added: ~800
+  - Tests: 3 py_compile PASS
+  - Bugs found: 0 new

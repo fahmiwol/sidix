@@ -88,23 +88,41 @@ def _http_request(
 
 
 def _get_access_token(account: str | None = None) -> str | None:
-    """Get access token from env var. Support multi-account via suffix.
+    """Get access token from env var or admin token store. Support multi-account.
     
-    Examples:
-      account=None     → GOOGLE_DRIVE_ACCESS_TOKEN
-      account="fahmiwol" → GOOGLE_DRIVE_ACCESS_TOKEN_FAHMIWOL
+    Priority: env var → admin token file (runtime-managed by drive_admin_manager)
     """
     key = "GOOGLE_DRIVE_ACCESS_TOKEN"
     if account:
         key += f"_{account.upper()}"
-    return os.environ.get(key) or os.environ.get("GOOGLE_DRIVE_ACCESS_TOKEN") or None
+    token = os.environ.get(key) or os.environ.get("GOOGLE_DRIVE_ACCESS_TOKEN")
+    if token:
+        return token
+    # Fallback: read from admin token store
+    try:
+        from drive_admin_manager import _load_tokens
+        data = _load_tokens()
+        cfg = data.get("accounts", {}).get(account or "", {})
+        return cfg.get("access_token")
+    except Exception:
+        return None
 
 
 def _get_refresh_token(account: str | None = None) -> str | None:
     key = "GOOGLE_DRIVE_REFRESH_TOKEN"
     if account:
         key += f"_{account.upper()}"
-    return os.environ.get(key) or os.environ.get("GOOGLE_DRIVE_REFRESH_TOKEN") or None
+    token = os.environ.get(key) or os.environ.get("GOOGLE_DRIVE_REFRESH_TOKEN")
+    if token:
+        return token
+    # Fallback: read from admin token store
+    try:
+        from drive_admin_manager import _load_tokens
+        data = _load_tokens()
+        cfg = data.get("accounts", {}).get(account or "", {})
+        return cfg.get("refresh_token")
+    except Exception:
+        return None
 
 
 def _get_client_credentials() -> tuple[str | None, str | None]:

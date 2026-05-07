@@ -6583,6 +6583,86 @@ def create_app() -> "FastAPI":
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"whitelist remove fail: {e}")
 
+    # ── Google Drive Admin ─────────────────────────────────────────────────────
+
+    @app.get("/admin/drive/accounts", tags=["Admin"])
+    def admin_drive_accounts(request: Request):
+        """List semua Google Drive accounts + connection status (admin only)."""
+        if not _admin_ok(request):
+            raise HTTPException(status_code=403, detail="Akses ditolak")
+        try:
+            from .drive_admin_manager import list_accounts
+            return list_accounts()
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"drive accounts fail: {e}")
+
+    @app.post("/admin/drive/connect", tags=["Admin"])
+    async def admin_drive_connect(request: Request):
+        """Generate OAuth2 auth URL untuk connect Google Drive account (admin only)."""
+        if not _admin_ok(request):
+            raise HTTPException(status_code=403, detail="Akses ditolak")
+        try:
+            body = await request.json()
+            from .drive_admin_manager import generate_auth_url
+            return generate_auth_url(
+                account_name=body.get("account", "default"),
+                client_id=body.get("client_id"),
+                client_secret=body.get("client_secret"),
+                redirect_uri=body.get("redirect_uri", "https://sidixlab.com/admin/drive/callback"),
+                scope=body.get("scope", "https://www.googleapis.com/auth/drive.readonly"),
+            )
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"drive connect fail: {e}")
+
+    @app.post("/admin/drive/exchange", tags=["Admin"])
+    async def admin_drive_exchange(request: Request):
+        """Exchange OAuth2 code dan store token untuk Drive account (admin only)."""
+        if not _admin_ok(request):
+            raise HTTPException(status_code=403, detail="Akses ditolak")
+        try:
+            body = await request.json()
+            from .drive_admin_manager import exchange_and_store
+            return exchange_and_store(
+                account_name=body.get("account", "default"),
+                code=body.get("code", ""),
+            )
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"drive exchange fail: {e}")
+
+    @app.post("/admin/drive/refresh", tags=["Admin"])
+    async def admin_drive_refresh(request: Request):
+        """Refresh access token untuk Drive account (admin only)."""
+        if not _admin_ok(request):
+            raise HTTPException(status_code=403, detail="Akses ditolak")
+        try:
+            body = await request.json()
+            from .drive_admin_manager import refresh_account_token
+            return refresh_account_token(account_name=body.get("account", "default"))
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"drive refresh fail: {e}")
+
+    @app.delete("/admin/drive/account/{account_name}", tags=["Admin"])
+    def admin_drive_delete_account(account_name: str, request: Request):
+        """Hapus Google Drive account dari token store (admin only)."""
+        if not _admin_ok(request):
+            raise HTTPException(status_code=403, detail="Akses ditolak")
+        try:
+            from .drive_admin_manager import delete_account
+            return delete_account(account_name)
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"drive delete fail: {e}")
+
+    @app.get("/admin/drive/account/{account_name}", tags=["Admin"])
+    def admin_drive_account_detail(account_name: str, request: Request):
+        """Get Drive account detail (tanpa expose secret) (admin only)."""
+        if not _admin_ok(request):
+            raise HTTPException(status_code=403, detail="Akses ditolak")
+        try:
+            from .drive_admin_manager import get_account_token
+            return get_account_token(account_name)
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"drive detail fail: {e}")
+
     # ── Branch Management ──────────────────────────────────────────────────────
 
     @app.post("/branch/create")
