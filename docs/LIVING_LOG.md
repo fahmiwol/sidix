@@ -18447,3 +18447,33 @@ curl -X POST http://localhost:8765/agent/maqashid/tune -d '{"sample_size":30}'
   - Lines added: ~1000
   - Tests: 4 py_compile PASS
   - Bugs found: 0 new
+
+
+### 2026-05-08 (Kimi — Google Drive OAuth2 Token Exchange)
+
+- **TASK CARD:** Exchange Google Drive auth codes → refresh_tokens (3 agency accounts)
+  - WHAT: Bos sudah dapat 3 authorization code dari OAuth Playground, perlu exchange ke refresh_token
+  - WHY: refresh_token persistent (tidak expired), diperlukan untuk collector otomatis
+  - ACCEPTANCE: 3 refresh_token tersimpan, collector bisa list images dari Drive
+  - PLAN: buat script exchange → instruct Bos → collect tokens → test collector
+  - RISKS: Playground client_id tidak bisa dipakai via script (client_secret tidak public)
+- **IMPL:** `scripts/exchange_drive_tokens.py` — NEW
+  - Script CLI untuk exchange auth code → access_token + refresh_token
+  - Pure urllib, no deps
+  - Output format env var langsung
+- **UPDATE:** `.env.sample` — komentar setup Google Drive diperjelas
+  - Tambah instruksi OAuth Playground step-by-step
+  - Tambah referensi helper script
+- **UPDATE:** `apps/brain_qa/.env.drive.tokens` — NEW template
+  - Template env var untuk 3-4 akun agency
+  - Dengan instruksi setup
+- **STATUS:** Menunggu Bos exchange via Playground Step 2
+  - 3 auth codes sudah didapat (Drive 1, 2, 3)
+  - Perlu klik "Step 2: Exchange authorization code for tokens" di Playground
+  - Copy refresh_token ke .env
+- **NOTE:** Playground default client_id = `407408718192.apps.googleusercontent.com`
+  - Refresh_token dari Playground bisa dipakai dengan client_id yang sama
+  - Untuk production proper, buat client_id sendiri di Google Cloud Console
+- **Anti-menguap checklist:**
+  - ✅ LIVING_LOG updated
+  - ⏳ Code committed + pushed (setelah tokens didapat & test)
