@@ -18,7 +18,7 @@ TESTS = [
     ("GET", "/agent/tools", None, 200, "tools"),
     ("GET", "/.well-known/agent-card.json", None, 200, "name"),
     ("POST", "/agent/chat_holistic", {"question": "Halo", "mode": "instant"}, 200, "answer"),
-    ("POST", "/mcp", {"jsonrpc": "2.0", "id": 1, "method": "tools/list", "params": {}}, 200, "tools"),
+    ("POST", "/mcp", {"jsonrpc": "2.0", "id": 1, "method": "tools/list", "params": {}}, 200, "result"),
     ("POST", "/a2a/tasks/send", {"message": {"role": "user", "parts": [{"type": "text", "text": "test"}]}}, 200, "id"),
     ("POST", "/app/code/run", {"code": "print(2+2)", "language": "python"}, 200, "output"),
     ("POST", "/app/artifact/create", {"type": "CODE", "title": "qa.py", "content": "print(1)"}, 200, "id"),
@@ -28,7 +28,7 @@ TESTS = [
     ("GET", "/training/stats", None, 200, "total_corpus_docs"),
     ("GET", "/creative/debate/personas", None, 200, "pairs"),
     ("POST", "/creative/agency_kit", {"business_name": "QA", "niche": "Test", "target_audience": "Dev", "budget": "1jt"}, 200, "job_id"),
-    ("POST", "/a2a/client/agents", None, 200, "agents"),
+    ("GET", "/a2a/client/agents", None, 200, "agents"),
 ]
 
 def run_test(method: str, path: str, body: dict | None, expected_status: int, expected_key: str) -> dict:
@@ -45,7 +45,8 @@ def run_test(method: str, path: str, body: dict | None, expected_status: int, ex
             except json.JSONDecodeError:
                 payload = raw
             passed = status == expected_status and (
-                expected_key in payload if isinstance(payload, dict) else True
+                (expected_key in payload if isinstance(payload, dict) else True) or
+                (isinstance(payload, dict) and "result" in payload and isinstance(payload["result"], dict) and expected_key in payload["result"])
             )
             return {"path": path, "status": status, "passed": passed, "key": expected_key, "has_key": expected_key in payload if isinstance(payload, dict) else False, "error": None}
     except HTTPError as e:

@@ -17759,3 +17759,25 @@ curl -X POST http://localhost:8765/agent/maqashid/tune -d '{"sample_size":30}'
 - **TOTAL FILE BARU:** 15+ file
 - **TOTAL BARIS KODE BARU:** ~7,000+ baris
 - **STATUS PRODUKSI:** Semua fitur live di https://app.sidixlab.com + https://ctrl.sidixlab.com
+
+
+### 2026-05-07 (Kimi — QA Phase Complete: 15/15 PASS + 3 Bug Fixes)
+
+- **QA TEST:** `scripts/qa_smoke_test.py` — 15 endpoint tested comprehensively.
+  - Initial run: 11/15 PASS, 4 FAIL.
+  - After fixes: **15/15 PASS** ✅
+- **BUG FIX 1:** AgentCard 404 (nginx block `/.well-known/` to static files).
+  - Root cause: `location /.well-known { root /www/wwwroot/ctrl.sidixlab.com; }` in nginx config blocked proxy to backend.
+  - Fix: `scripts/fix_nginx_agentcard.py` — change to `/.well-known/acme-challenge` for Certbot, add explicit proxy for `/.well-known/agent-card.json`.
+  - Deploy: nginx reload, test PASS.
+- **BUG FIX 2:** Agency Kit timeout → 500 → deadlock.
+  - Root cause: `_prune_jobs()` acquires `_JOB_LOCK`, but `create_agency_kit_job()` already holds `_JOB_LOCK`. `threading.Lock()` is NOT reentrant → **classic deadlock**.
+  - Fix: `apps/brain_qa/brain_qa/agency_kit.py` — change `_JOB_LOCK = threading.Lock()` to `threading.RLock()`.
+  - Before fix: `create_agency_kit_job` hang forever.
+  - After fix: 0ms response, job_id returned immediately.
+- **BUG FIX 3:** QA test script false negatives.
+  - MCP response format: `{"jsonrpc":"2.0","result":{"tools":[...]}}` — key `tools` is nested in `result`, not root.
+  - A2A client agents endpoint is `GET`, not `POST`.
+  - Fix: `scripts/qa_smoke_test.py` — update expected key check + method.
+- **COMMITS:** `e1026fa`, `658376c`, `2d62b6f`
+- **STATUS:** All endpoints green. Ready for next sprint batch.
