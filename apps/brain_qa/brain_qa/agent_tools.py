@@ -3741,6 +3741,92 @@ def _tool_get_laion_info(args: dict) -> ToolResult:
         return ToolResult(success=False, output="", error=f"LAION info error: {exc}")
 
 
+def _tool_drive_auth_url(args: dict) -> ToolResult:
+    """Generate Google OAuth2 authorization URL untuk akses Google Drive."""
+    try:
+        from dataset_drive_collector import get_auth_url
+        result = get_auth_url(redirect_uri=args.get("redirect_uri", "http://localhost:8080"))
+        if result.get("ok"):
+            data = result["data"]
+            out = "[Google Drive Auth]\n"
+            out += f"URL: {data.get('auth_url')}\n\n"
+            out += data.get("instructions", "")
+            return ToolResult(success=True, output=out)
+        return ToolResult(success=False, output="", error=result.get("fallback_instructions", "Auth URL gagal"))
+    except Exception as exc:
+        return ToolResult(success=False, output="", error=f"Drive auth error: {exc}")
+
+
+def _tool_drive_exchange_code(args: dict) -> ToolResult:
+    """Exchange Google OAuth2 authorization code untuk access token + refresh token."""
+    code = args.get("code", "").strip()
+    if not code:
+        return ToolResult(success=False, output="", error="code wajib diisi (dari URL redirect setelah authorize)")
+    try:
+        from dataset_drive_collector import exchange_auth_code
+        result = exchange_auth_code(
+            code=code,
+            redirect_uri=args.get("redirect_uri", "http://localhost:8080"),
+        )
+        if result.get("ok"):
+            data = result["data"]
+            out = "[Google Drive Token]\n"
+            out += f"Access Token: {data.get('access_token', '')[:30]}...\n"
+            out += f"Refresh Token: {data.get('refresh_token', '')[:30]}...\n"
+            out += f"Expires in: {data.get('expires_in')} detik\n\n"
+            out += data.get("instructions", "")
+            return ToolResult(success=True, output=out)
+        return ToolResult(success=False, output="", error=result.get("fallback_instructions", "Exchange gagal"))
+    except Exception as exc:
+        return ToolResult(success=False, output="", error=f"Drive exchange error: {exc}")
+
+
+def _tool_drive_list_images(args: dict) -> ToolResult:
+    """List gambar dari Google Drive folder. Butuh GOOGLE_DRIVE_ACCESS_TOKEN."""
+    folder_id = args.get("folder_id", "").strip() or None
+    try:
+        from dataset_drive_collector import collect_drive_dataset
+        result = collect_drive_dataset(
+            folder_id=folder_id,
+            max_files=int(args.get("max_files", 5000)),
+        )
+        if result.get("ok"):
+            data = result["data"]
+            files = data.get("files", [])
+            out = f"[Google Drive Dataset] {len(files)} gambar\n"
+            out += f"Folder: {data.get('folder_id')}\n"
+            out += f"Total size: {data.get('total_size_mb', 0)} MB\n"
+            out += f"License: {data.get('license_note', '')}\n\n"
+            for f in files[:15]:
+                dim = f"{f.get('width')}x{f.get('height')}" if f.get('width') else "?"
+                out += f"- {f['name']} ({dim}, {f.get('size_bytes', 0)} bytes)\n"
+                out += f"  Tags: {', '.join(f.get('tags', []))}\n"
+                out += f"  URL: {f.get('web_view_url', '')}\n"
+            if len(files) > 15:
+                out += f"... dan {len(files) - 15} gambar lainnya\n"
+            return ToolResult(success=True, output=out)
+        return ToolResult(success=False, output="", error=result.get("fallback_instructions", "Drive list gagal"))
+    except Exception as exc:
+        return ToolResult(success=False, output="", error=f"Drive list error: {exc}")
+
+
+def _tool_drive_health(args: dict) -> ToolResult:
+    """Check Google Drive API connectivity dan token validity."""
+    try:
+        from dataset_drive_collector import drive_health_check
+        result = drive_health_check()
+        if result.get("ok"):
+            data = result["data"]
+            out = "[Google Drive Health]\n"
+            out += f"Connected: {'YES' if data.get('connected') else 'NO'}\n"
+            out += f"User: {data.get('user_name', '?')} ({data.get('user_email', '?')})\n"
+            out += f"Storage used: {data.get('used_storage', '?')} / {data.get('total_storage', '?')}\n"
+            return ToolResult(success=True, output=out)
+        return ToolResult(success=False, output="", error=result.get("fallback_instructions", "Health check gagal"))
+    except Exception as exc:
+        return ToolResult(success=False, output="", error=f"Drive health error: {exc}")
+
+
 TOOL_REGISTRY: dict[str, ToolSpec] = {
     "search_corpus": ToolSpec(
         name="search_corpus",
@@ -4170,6 +4256,45 @@ TOOL_REGISTRY: dict[str, ToolSpec] = {
         params=[],
         permission="open",
         fn=_tool_get_laion_info,
+    ),
+    "drive_auth_url": ToolSpec(
+        name="drive_auth_url",
+        description=(
+            "Generate Google OAuth2 authorization URL untuk akses Google Drive. "
+            "Butuh GOOGLE_DRIVE_CLIENT_ID di env var. Params: redirect_uri (opsional, default http://localhost:8080)."
+        ),
+        params=["redirect_uri"],
+        permission="open",
+        fn=_tool_drive_auth_url,
+    ),
+    "drive_exchange_code": ToolSpec(
+        name="drive_exchange_code",
+        description=(
+            "Exchange Google OAuth2 authorization code untuk access token + refresh token. "
+            "Params: code (wajib, dari URL redirect), redirect_uri (opsional)."
+        ),
+        params=["code", "redirect_uri"],
+        permission="open",
+        fn=_tool_drive_exchange_code,
+    ),
+    "drive_list_images": ToolSpec(
+        name="drive_list_images",
+        description=(
+            "List gambar dari Google Drive folder (agency assets). Butuh GOOGLE_DRIVE_ACCESS_TOKEN. "
+            "Auto-tag berdasarkan folder path. Params: folder_id (opsional), max_files (opsional, default 5000)."
+        ),
+        params=["folder_id", "max_files"],
+        permission="open",
+        fn=_tool_drive_list_images,
+    ),
+    "drive_health": ToolSpec(
+        name="drive_health",
+        description=(
+            "Check Google Drive API connectivity dan token validity. No params."
+        ),
+        params=[],
+        permission="open",
+        fn=_tool_drive_health,
     ),
     "concept_graph": ToolSpec(
         name="concept_graph",

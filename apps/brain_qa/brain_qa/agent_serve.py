@@ -3140,6 +3140,87 @@ def create_app() -> "FastAPI":
             log.warning("[dataset/laion] error: %s", e)
             raise HTTPException(status_code=500, detail=f"laion info error: {e}")
 
+    # ── POST /dataset/drive/auth ──────────────────────────────────────────────
+    @app.post("/dataset/drive/auth")
+    async def dataset_drive_auth(request: Request):
+        """Generate Google OAuth2 authorization URL for Drive access."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+            from dataset_drive_collector import get_auth_url
+            result = get_auth_url(redirect_uri=body.get("redirect_uri", "http://localhost:8080"))
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "drive auth gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[dataset/drive/auth] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"drive auth error: {e}")
+
+    # ── POST /dataset/drive/exchange ──────────────────────────────────────────
+    @app.post("/dataset/drive/exchange")
+    async def dataset_drive_exchange(request: Request):
+        """Exchange Google OAuth2 code for access + refresh token."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+            code = body.get("code", "").strip()
+            if not code:
+                raise HTTPException(status_code=400, detail="code wajib diisi")
+            from dataset_drive_collector import exchange_auth_code
+            result = exchange_auth_code(
+                code=code,
+                redirect_uri=body.get("redirect_uri", "http://localhost:8080"),
+            )
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "drive exchange gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[dataset/drive/exchange] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"drive exchange error: {e}")
+
+    # ── POST /dataset/drive/list ──────────────────────────────────────────────
+    @app.post("/dataset/drive/list")
+    async def dataset_drive_list(request: Request):
+        """List images from Google Drive folder (agency assets)."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+            folder_id = body.get("folder_id", "").strip() or None
+            from dataset_drive_collector import collect_drive_dataset
+            result = collect_drive_dataset(
+                folder_id=folder_id,
+                max_files=body.get("max_files", 5000),
+            )
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "drive list gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[dataset/drive/list] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"drive list error: {e}")
+
+    # ── GET /dataset/drive/health ─────────────────────────────────────────────
+    @app.get("/dataset/drive/health")
+    async def dataset_drive_health(request: Request):
+        """Check Google Drive API connectivity."""
+        _enforce_rate(request)
+        try:
+            from dataset_drive_collector import drive_health_check
+            result = drive_health_check()
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "drive health gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[dataset/drive/health] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"drive health error: {e}")
+
     # ── POST /agent/chat ──────────────────────────────────────────────────────
     @app.post("/agent/chat", response_model=ChatResponse)
     def agent_chat(req: ChatRequest, request: Request):

@@ -18246,3 +18246,50 @@ curl -X POST http://localhost:8765/agent/maqashid/tune -d '{"sample_size":30}'
   - Lines added: ~850
   - Tests: 3 py_compile PASS
   - Bugs found: 0 new
+
+
+
+### 2026-05-08 (Kimi — SPRINT: Google Drive Dataset Collector)
+
+- **TASK CARD:** Sprint Google Drive Dataset Collection
+  - WHAT: Integrasi Google Drive API untuk collect metadata gambar dari agency assets
+  - WHY: Bos punya Google Drive isinya banyak gambar hasil agency — 100% legal untuk training
+  - ACCEPTANCE: 1 module baru, 4 tools, 4 endpoints, OAuth2 flow, py_compile PASS
+  - PLAN: pure HTTP Drive API → OAuth2 helpers → list images → auto-tag → export JSONL → test → commit
+  - RISKS: Token belum di-set — auth flow instructions built-in
+- **IMPL:** `apps/brain_qa/brain_qa/dataset_drive_collector.py` — NEW
+  - `get_auth_url()`: Generate Google OAuth2 authorization URL
+  - `exchange_auth_code()`: Exchange code → access_token + refresh_token
+  - `refresh_access_token()`: Refresh expired token
+  - `list_drive_images()`: List all image files dari Drive folder (metadata only)
+  - `collect_drive_dataset()`: Primary entry point dengan auto-tagging
+  - `get_drive_file()`: Single file metadata detail
+  - `export_drive_dataset_jsonl()`: Export ke training-compatible JSONL
+  - `drive_health_check()`: Check token validity + user info + storage quota
+  - Pure HTTP (urllib) — no external dependencies
+  - Auto-tag berdasarkan folder path: npc, sprite, texture, design, logo, photo, product, banner, social, web, mobile, icon, background, mockup
+  - Dimension-based tags: high_res, ultra_high_res, square, landscape, portrait
+  - Safety limit: max 5000 files
+- **IMPL:** `apps/brain_qa/brain_qa/agent_tools.py` — 4 tool baru
+  - `drive_auth_url`, `drive_exchange_code`, `drive_list_images`, `drive_health`
+  - Total tools: 56 → **60** (+4)
+- **IMPL:** `apps/brain_qa/brain_qa/agent_serve.py` — 4 endpoint baru
+  - `POST /dataset/drive/auth` — OAuth2 auth URL
+  - `POST /dataset/drive/exchange` — Token exchange
+  - `POST /dataset/drive/list` — List images
+  - `GET /dataset/drive/health` — Health check
+- **TEST:** py_compile 3/3 PASS ✅ (dataset_drive_collector.py, agent_tools.py, agent_serve.py)
+- **FIX:** N/A — no bugs found
+- **DECISION:** Google Drive API via pure HTTP (urllib) tanpa google-api-python-client
+  - Alasan: avoid dependency hell (cffi/cryptography incompatible dengan Python 3.14)
+  - Trade-off: lebih sedikit abstraction tapi lebih reliable
+- **Anti-menguap checklist:**
+  - ✅ BACKLOG updated
+  - ✅ VISI_MATRIX updated
+  - ✅ LIVING_LOG updated
+  - ✅ Code committed + pushed
+- **Session stats:**
+  - Files modified: 4 (1 new + 2 modified)
+  - Lines added: ~900
+  - Tests: 3 py_compile PASS
+  - Bugs found: 0 new
