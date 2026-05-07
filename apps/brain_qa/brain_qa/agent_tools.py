@@ -3784,16 +3784,19 @@ def _tool_drive_exchange_code(args: dict) -> ToolResult:
 def _tool_drive_list_images(args: dict) -> ToolResult:
     """List gambar dari Google Drive folder. Butuh GOOGLE_DRIVE_ACCESS_TOKEN."""
     folder_id = args.get("folder_id", "").strip() or None
+    account = args.get("account", "").strip() or None
     try:
         from dataset_drive_collector import collect_drive_dataset
         result = collect_drive_dataset(
             folder_id=folder_id,
             max_files=int(args.get("max_files", 5000)),
+            account=account,
         )
         if result.get("ok"):
             data = result["data"]
             files = data.get("files", [])
-            out = f"[Google Drive Dataset] {len(files)} gambar\n"
+            acc_label = f" [{account}]" if account else ""
+            out = f"[Google Drive Dataset{acc_label}] {len(files)} gambar\n"
             out += f"Folder: {data.get('folder_id')}\n"
             out += f"Total size: {data.get('total_size_mb', 0)} MB\n"
             out += f"License: {data.get('license_note', '')}\n\n"
@@ -3812,12 +3815,14 @@ def _tool_drive_list_images(args: dict) -> ToolResult:
 
 def _tool_drive_health(args: dict) -> ToolResult:
     """Check Google Drive API connectivity dan token validity."""
+    account = args.get("account", "").strip() or None
     try:
         from dataset_drive_collector import drive_health_check
-        result = drive_health_check()
+        result = drive_health_check(account=account)
         if result.get("ok"):
             data = result["data"]
-            out = "[Google Drive Health]\n"
+            acc_label = f" [{account}]" if account else ""
+            out = f"[Google Drive Health{acc_label}]\n"
             out += f"Connected: {'YES' if data.get('connected') else 'NO'}\n"
             out += f"User: {data.get('user_name', '?')} ({data.get('user_email', '?')})\n"
             out += f"Storage used: {data.get('used_storage', '?')} / {data.get('total_storage', '?')}\n"
@@ -3825,6 +3830,113 @@ def _tool_drive_health(args: dict) -> ToolResult:
         return ToolResult(success=False, output="", error=result.get("fallback_instructions", "Health check gagal"))
     except Exception as exc:
         return ToolResult(success=False, output="", error=f"Drive health error: {exc}")
+
+
+def _tool_drive_explore(args: dict) -> ToolResult:
+    """Explore Google Drive folder structure recursively (folder tree + image count)."""
+    folder_id = args.get("folder_id", "").strip() or None
+    account = args.get("account", "").strip() or None
+    try:
+        from dataset_drive_collector import explore_drive_structure
+        result = explore_drive_structure(
+            folder_id=folder_id,
+            account=account,
+            max_depth=int(args.get("max_depth", 3)),
+        )
+        if result.get("ok"):
+            data = result["data"]
+            acc_label = f" [{account}]" if account else ""
+            out = f"[Drive Explorer{acc_label}]\n"
+            out += _format_drive_tree(data, prefix="")
+            return ToolResult(success=True, output=out)
+        return ToolResult(success=False, output="", error=result.get("fallback_instructions", "Explore gagal"))
+    except Exception as exc:
+        return ToolResult(success=False, output="", error=f"Drive explore error: {exc}")
+
+
+def _format_drive_tree(node: dict, prefix: str = "") -> str:
+    """Helper untuk format folder tree."""
+    name = node.get("name", "?")
+    count = node.get("image_count", 0)
+    subfolders = node.get("folders", [])
+    out = f"{prefix}{name}/ ({count} images)\n"
+    for i, child in enumerate(subfolders):
+        is_last = i == len(subfolders) - 1
+        child_prefix = prefix + ("└── " if is_last else "├── ")
+        out += _format_drive_tree(child, prefix=child_prefix)
+    return out
+
+
+def _tool_drive_overview(args: dict) -> ToolResult:
+    """Get overview satu Google Drive account (user, storage, total images, top folders)."""
+    account = args.get("account", "").strip() or None
+    try:
+        from dataset_drive_collector import get_account_overview
+        result = get_account_overview(account=account)
+        if result.get("ok"):
+            data = result["data"]
+            acc_label = f" [{account}]" if account else ""
+            out = f"[Drive Overview{acc_label}]\n"
+            out += f"User: {data.get('user_name', '?')} ({data.get('user_email', '?')})\n"
+            out += f"Storage: {data.get('used_storage', '?')} / {data.get('total_storage', '?')}\n"
+            out += f"Total images: {data.get('total_images', 0)}\n"
+            out += "Top folders:\n"
+            for f in data.get("top_folders", [])[:10]:
+                out += f"  📁 {f['name']}: {f['image_count']} images\n"
+            return ToolResult(success=True, output=out)
+        return ToolResult(success=False, output="", error=result.get("fallback_instructions", "Overview gagal"))
+    except Exception as exc:
+        return ToolResult(success=False, output="", error=f"Drive overview error: {exc}")
+
+
+def _tool_drive_batch_collect(args: dict) -> ToolResult:
+    """Collect images dari multiple Google Drive accounts sekaligus."""
+    accounts = args.get("accounts")
+    if isinstance(accounts, str):
+        accounts = [a.strip() for a in accounts.split(",") if a.strip()]
+    try:
+        from dataset_drive_collector import batch_collect_drive_datasets
+        result = batch_collect_drive_datasets(
+            accounts=accounts,
+            max_files_per_account=int(args.get("max_files_per_account", 1000)),
+        )
+        if result.get("ok"):
+            data = result["data"]
+            out = "[Drive Batch Collect]\n"
+            out += f"Accounts: {', '.join(data.get('accounts', []))}\n"
+            out += f"Total images: {data.get('total_images_across_accounts', 0)}\n\n"
+            for acc, r in data.get("results", {}).items():
+                if r.get("ok"):
+                    overview = r["data"].get("overview", {})
+                    collection = r["data"].get("collection", {})
+                    out += f"✅ {acc}: {collection.get('total_files', 0)} images\n"
+                else:
+                    out += f"❌ {acc}: {r.get('fallback_instructions', '?')}\n"
+            return ToolResult(success=True, output=out)
+        return ToolResult(success=False, output="", error=result.get("fallback_instructions", "Batch collect gagal"))
+    except Exception as exc:
+        return ToolResult(success=False, output="", error=f"Batch collect error: {exc}")
+
+
+def _tool_drive_config(args: dict) -> ToolResult:
+    """Get step-by-step instructions untuk setup multiple Google Drive accounts."""
+    try:
+        from dataset_drive_collector import get_account_config_instructions
+        result = get_account_config_instructions()
+        if result.get("ok"):
+            data = result["data"]
+            out = f"[{data.get('title')}]\n\n"
+            out += f"Accounts: {', '.join(data.get('accounts', []))}\n\n"
+            for step in data.get("steps", []):
+                out += f"Step {step['step']}: {step['title']}\n"
+                out += f"  {step.get('instructions', '')}\n\n"
+            out += "Env vars template:\n"
+            for k, v in data.get("env_vars_template", {}).items():
+                out += f"  {k}={v}\n"
+            return ToolResult(success=True, output=out)
+        return ToolResult(success=False, output="", error="Config gagal")
+    except Exception as exc:
+        return ToolResult(success=False, output="", error=f"Config error: {exc}")
 
 
 TOOL_REGISTRY: dict[str, ToolSpec] = {
@@ -4281,20 +4393,62 @@ TOOL_REGISTRY: dict[str, ToolSpec] = {
         name="drive_list_images",
         description=(
             "List gambar dari Google Drive folder (agency assets). Butuh GOOGLE_DRIVE_ACCESS_TOKEN. "
-            "Auto-tag berdasarkan folder path. Params: folder_id (opsional), max_files (opsional, default 5000)."
+            "Auto-tag berdasarkan folder path. Params: folder_id (opsional), max_files (opsional, default 5000), "
+            "account (opsional: fahmiwol/tiranyx/operationalnyx/nirmananyx)."
         ),
-        params=["folder_id", "max_files"],
+        params=["folder_id", "max_files", "account"],
         permission="open",
         fn=_tool_drive_list_images,
     ),
     "drive_health": ToolSpec(
         name="drive_health",
         description=(
-            "Check Google Drive API connectivity dan token validity. No params."
+            "Check Google Drive API connectivity dan token validity. "
+            "Params: account (opsional: fahmiwol/tiranyx/operationalnyx/nirmananyx)."
+        ),
+        params=["account"],
+        permission="open",
+        fn=_tool_drive_health,
+    ),
+    "drive_explore": ToolSpec(
+        name="drive_explore",
+        description=(
+            "Explore Google Drive folder structure recursively (folder tree + image count). "
+            "Params: folder_id (opsional), account (opsional), max_depth (opsional, default 3)."
+        ),
+        params=["folder_id", "account", "max_depth"],
+        permission="open",
+        fn=_tool_drive_explore,
+    ),
+    "drive_overview": ToolSpec(
+        name="drive_overview",
+        description=(
+            "Get overview satu Google Drive account (user, storage, total images, top folders). "
+            "Params: account (opsional: fahmiwol/tiranyx/operationalnyx/nirmananyx)."
+        ),
+        params=["account"],
+        permission="open",
+        fn=_tool_drive_overview,
+    ),
+    "drive_batch_collect": ToolSpec(
+        name="drive_batch_collect",
+        description=(
+            "Collect images dari multiple Google Drive accounts sekaligus. "
+            "Params: accounts (wajib, comma-separated: fahmiwol,tiranyx,operationalnyx,nirmananyx), "
+            "max_files_per_account (opsional, default 1000)."
+        ),
+        params=["accounts", "max_files_per_account"],
+        permission="open",
+        fn=_tool_drive_batch_collect,
+    ),
+    "drive_config": ToolSpec(
+        name="drive_config",
+        description=(
+            "Get step-by-step instructions untuk setup 4 Google Drive accounts. No params."
         ),
         params=[],
         permission="open",
-        fn=_tool_drive_health,
+        fn=_tool_drive_config,
     ),
     "concept_graph": ToolSpec(
         name="concept_graph",

@@ -18293,3 +18293,47 @@ curl -X POST http://localhost:8765/agent/maqashid/tune -d '{"sample_size":30}'
   - Lines added: ~900
   - Tests: 3 py_compile PASS
   - Bugs found: 0 new
+
+
+
+### 2026-05-08 (Kimi — SPRINT: Multi-Account Google Drive Dataset Explorer)
+
+- **TASK CARD:** Sprint Multi-Account Google Drive Dataset Explorer
+  - WHAT: Update module untuk support 4 Google Drive accounts + batch explore + folder tree
+  - WHY: Bos punya 4 Drive (fahmiwol, tiranyx, operationalnyx, nirmananyx) — mau explore semua
+  - ACCEPTANCE: Multi-account env var, batch collect, folder tree explorer, account overview, py_compile PASS
+  - PLAN: Update token helper → add explore_drive_structure → add get_account_overview → add batch_collect → update tools → update endpoints → test → commit
+  - RISKS: Token belum di-set — config instructions built-in
+- **UPDATE:** `apps/brain_qa/brain_qa/dataset_drive_collector.py` — major expansion
+  - Multi-account env var support: GOOGLE_DRIVE_ACCESS_TOKEN_{ACCOUNT}
+  - `list_configured_accounts()`: Auto-detect semua configured accounts
+  - `explore_drive_structure()`: Recursive folder tree + image count per folder (max_depth=3)
+  - `get_account_overview()`: User info, storage, total images, top folders by image count
+  - `batch_collect_drive_datasets()`: Collect dari multiple accounts sekaligus
+  - `get_account_config_instructions()`: Step-by-step untuk setup 4 akun
+  - Auto-tag tambahan: nama account sebagai tag (fahmiwol, tiranyx, dll)
+- **UPDATE:** `apps/brain_qa/brain_qa/agent_tools.py` — 4 tool baru + 2 updated
+  - `drive_explore`: Recursive folder tree explorer
+  - `drive_overview`: Account overview (user, storage, top folders)
+  - `drive_batch_collect`: Multi-account batch collect
+  - `drive_config`: Setup instructions untuk 4 akun
+  - Updated: `drive_list_images` + `drive_health` support `account` param
+  - Total tools: 60 → **64** (+4)
+- **UPDATE:** `apps/brain_qa/brain_qa/agent_serve.py` — 4 endpoint baru + 2 updated
+  - `POST /dataset/drive/explore` — Folder tree explorer
+  - `POST /dataset/drive/overview` — Account overview
+  - `POST /dataset/drive/batch` — Multi-account batch collect
+  - `GET /dataset/drive/config` — Setup instructions
+  - Updated: `/dataset/drive/list` + `/dataset/drive/health` support `account` param
+- **TEST:** py_compile 3/3 PASS ✅
+- **FIX:** N/A — no bugs found
+- **Anti-menguap checklist:**
+  - ✅ BACKLOG updated
+  - ✅ VISI_MATRIX updated
+  - ✅ LIVING_LOG updated
+  - ✅ Code committed + pushed
+- **Session stats:**
+  - Files modified: 3
+  - Lines added: ~600
+  - Tests: 3 py_compile PASS
+  - Bugs found: 0 new

@@ -3194,6 +3194,7 @@ def create_app() -> "FastAPI":
             result = collect_drive_dataset(
                 folder_id=folder_id,
                 max_files=body.get("max_files", 5000),
+                account=body.get("account"),
             )
             if not result.get("ok"):
                 raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "drive list gagal"))
@@ -3210,8 +3211,9 @@ def create_app() -> "FastAPI":
         """Check Google Drive API connectivity."""
         _enforce_rate(request)
         try:
+            account = request.query_params.get("account")
             from dataset_drive_collector import drive_health_check
-            result = drive_health_check()
+            result = drive_health_check(account=account)
             if not result.get("ok"):
                 raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "drive health gagal"))
             return {"ok": True, **result["data"]}
@@ -3220,6 +3222,86 @@ def create_app() -> "FastAPI":
         except Exception as e:
             log.warning("[dataset/drive/health] error: %s", e)
             raise HTTPException(status_code=500, detail=f"drive health error: {e}")
+
+    # ── POST /dataset/drive/explore ───────────────────────────────────────────
+    @app.post("/dataset/drive/explore")
+    async def dataset_drive_explore(request: Request):
+        """Explore Google Drive folder structure recursively."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+            folder_id = body.get("folder_id", "").strip() or None
+            from dataset_drive_collector import explore_drive_structure
+            result = explore_drive_structure(
+                folder_id=folder_id,
+                account=body.get("account"),
+                max_depth=body.get("max_depth", 3),
+            )
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "drive explore gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[dataset/drive/explore] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"drive explore error: {e}")
+
+    # ── POST /dataset/drive/overview ──────────────────────────────────────────
+    @app.post("/dataset/drive/overview")
+    async def dataset_drive_overview(request: Request):
+        """Get overview satu Google Drive account."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+            from dataset_drive_collector import get_account_overview
+            result = get_account_overview(account=body.get("account"))
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "drive overview gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[dataset/drive/overview] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"drive overview error: {e}")
+
+    # ── POST /dataset/drive/batch ─────────────────────────────────────────────
+    @app.post("/dataset/drive/batch")
+    async def dataset_drive_batch(request: Request):
+        """Collect images dari multiple Google Drive accounts sekaligus."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+            accounts = body.get("accounts")
+            from dataset_drive_collector import batch_collect_drive_datasets
+            result = batch_collect_drive_datasets(
+                accounts=accounts,
+                max_files_per_account=body.get("max_files_per_account", 1000),
+            )
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "drive batch gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[dataset/drive/batch] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"drive batch error: {e}")
+
+    # ── GET /dataset/drive/config ─────────────────────────────────────────────
+    @app.get("/dataset/drive/config")
+    async def dataset_drive_config(request: Request):
+        """Get step-by-step instructions untuk setup multiple Google Drive accounts."""
+        _enforce_rate(request)
+        try:
+            from dataset_drive_collector import get_account_config_instructions
+            result = get_account_config_instructions()
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "drive config gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[dataset/drive/config] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"drive config error: {e}")
 
     # ── POST /agent/chat ──────────────────────────────────────────────────────
     @app.post("/agent/chat", response_model=ChatResponse)
