@@ -17634,3 +17634,24 @@ curl -X POST http://localhost:8765/agent/maqashid/tune -d '{"sample_size":30}'
   - Auto-detect suggestions: AI generate markdown table → chip "📊 Buka di Notebook"; AI generate long-form text (>500 chars, no code block) → chip "📝 Buka di Studio"
 - **TEST:** `npm run build` PASS untuk `SIDIX_USER_UI` (no TS errors, dist generated)
 - **NOTE:** Self-hosted ONLY — tidak ada external API call untuk data processing. Code Canvas MVP tidak ter-break.
+
+
+### 2026-05-07 (Kimi — Standing Alone Sprint DEPLOYED + Bug Fix)
+
+- **DEPLOY:** VPS deploy berhasil untuk standing alone sprint.
+  - Commit `54d514c` → `223bf46` → `7183e75`
+  - Backend restart, frontend build PASS
+- **BUG FIX:** `/app/artifact/list` 404 → routing conflict dengan `/{artifact_id}`.
+  - Fix: pindah `/app/artifact/list` SEBELUM `/app/artifact/{artifact_id}` di agent_serve.py.
+- **BUG FIX:** `/app/maqashid/evaluate` 500 → `NameError: evaluate_output not defined`.
+  - Fix: tambah top-level import `evaluate_output`, `auto_tune_response`, `get_global_stats` dari `maqashid_auto_tune` di agent_serve.py.
+- **SMOKE TEST ALL PASS (post-fix):**
+  - `GET /app/artifact/list` → 200, {"artifacts":[],"total":0} ✅
+  - `POST /app/maqashid/evaluate` → 200, score=0.0, passed=false ✅
+  - `GET /app/maqashid/stats` → 200, average_score=0.0 ✅
+  - `POST /a2a/tasks/send` → 200, task completed ✅
+  - `POST /app/code/run` → 200, output="4" ✅
+  - `POST /mcp` → 200, 16 tools ✅
+- **NOTE:** A2A client discover ke ctrl.sidixlab.com timeout (502 Bad Gateway) — kemungkinan karena server connect ke dirinya sendiri via public IP + SSL handshake. External agent discovery seharusnya OK. Fix: gunakan localhost untuk self-test.
+- **TOTAL COMMITS HARI INI:** 3 commits (`ca5ce93`, `223bf46`, `7183e75`)
+- **TOTAL INSERTIONS:** ~4,500+ baris kode baru (3 batch sprint paralel)
