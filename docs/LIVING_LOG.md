@@ -17223,3 +17223,20 @@ curl -X POST http://localhost:8765/agent/maqashid/tune -d '{"sample_size":30}'
 - **TEST:** py_compile do_state.py PASS. No runtime test karena infrastruktur Docker belum deploy.
 - **DOC:** Semua artefak menggunakan bilingual ID/EN sesuai SOP. Tidak ada secret di-commit. Password Docker Compose menggunakan env var placeholder.
 
+
+
+### 2026-05-07 (Claude — Product Layer Spec: SIDIX = ChatGPT/Kimi-class Consumer AI)
+
+- **DECISION:** Koreksi arah fundamental — SIDIX = **produk consumer AI assistant** (ChatGPT/Kimi-class), Migancore = **engine/backend** yang menyokongnya. Foundation ADO (SOUL/State/Memory/Docker) = infrastruktur, bukan tujuan akhir.
+- **IMPL:** docs/SIDIX_PRODUCT_ARCHITECTURE.md — separasi Engine vs Product, 3 layer (Mode System / Built-in Apps / Projects), 4-tier memory, MCP full integration roadmap, Agent Swarm design, UI/UX roadmap 4 phase. 14,455 words. ?
+- **IMPL:** docs/SIDIX_MODE_SYSTEM.md — 4 mode: Instant (<2s, no tools), Thinking (5-30s, selected tools, auto-persona), Agent (30-120s, jurus seribu bayangan, all 5 persona), Deep Research (2-10min, recursive, report). Mode router spec, UI toggle design, auto-escalation rules, backend integration dengan ADOState. ?
+- **IMPL:** docs/SIDIX_BUILT_IN_APPS_SPEC.md — 9 app types: Code Canvas (Monaco+run), Document Studio (TipTap), Image Studio (FLUX), Web Preview (iframe), Data Notebook (ECharts), Audio Player, Video Storyboard, 3D Viewer. Artifact lifecycle, JSON schema, Phase 1–4 implementation plan. ?
+- **AUDIT:** pps/brain_qa/brain_qa/mcp_server_wrap.py — 17 tools registered, registry + manifest export complete. **GAP:** belum ada transport layer (stdio/HTTP/SSE), missing critical tools (web_search, generate_image, execute_python, deep_research). Perlu multi-server split (brain/web/code/creative). ?
+- **IMPL:** rain/public/research_notes/316_sidix_product_chatgpt_kimi_analysis_20260507.md — feature parity analysis ChatGPT 16 fitur vs Kimi 8 fitur vs SIDIX. Gap HIGH di: Canvas, Image Gen, Vision, ASR/TTS, Mode System, Agent Swarm. SIDIX unfair advantages: epistemic integrity, IHOS, 5 persona, self-hosted, Nusantara native, growth loop. Product roadmap 6 sprints. ?
+- **UPDATE:** docs/SIDIX_BACKLOG.md — sprint Product Layer ditambahkan. Next: Mode System implementation + Code Canvas MVP. ?
+- **UPDATE:** docs/VISI_TRANSLATION_MATRIX.md — dimensi PRODUCT baru ditambahkan (15% coverage), post-adopsi table updated. ?
+- **DECISION:** Differentiator narrative locked: *'ChatGPT yang bisa kamu bawa pulang — anti-halusinasi, 5 persona, self-hosted, Islamic ethical AI.'*
+- **RISIT:** Kimi K2.5 (Jan 2026) — 1T param MoE, Agent Swarm 100 sub-agents, 1500 parallel tool calls, 4.5x faster, vision-to-code. ChatGPT (Mei 2026) — Canvas, Custom GPTs, Projects, Connectors 10+, Memory improvements, o3-pro, Scheduled tasks.
+- **NOTE:** Role locked: Claude = implementator, Kimi = review/strategi, Codex = QA. Tidak ada agent lain edit scope Claude.
+- **TEST:** py_compile mcp_server_wrap.py PASS. Semua spec dokumen markdown valid.
+

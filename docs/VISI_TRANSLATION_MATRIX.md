@@ -140,6 +140,21 @@ Plus visi besar:
 | Pencipta | 30% | 45% | +15% | Stateful orchestration + MCP tool invoke |
 | **Overall** | **~73%** | **~82%** | **+9pp** | Foundation ADO canonical |
 
+### 8. PRODUCT (NEW DIMENSION — Consumer AI Assistant)
+
+**Bos directive (2026-05-07):** SIDIX harus seperti ChatGPT/Kimi — AI model Agent, full MCP, built-in Apps.
+
+| Deliverable Teknis | Status | Sprint | Evidence |
+|---|---|---|---|
+| Mode System (Instant/Thinking/Agent/Deep Research) | ⏳ SPEC DONE | Product Layer Sprint | `docs/SIDIX_MODE_SYSTEM.md` |
+| Built-in Apps (Code Canvas, Document Studio, Image Studio) | ⏳ SPEC DONE | Product Layer Sprint | `docs/SIDIX_BUILT_IN_APPS_SPEC.md` |
+| MCP Full Integration (transport + multi-server) | ⚠️ REGISTRY ONLY | Product Layer Sprint | `mcp_server_wrap.py` |
+| Multimodal (image gen, vision, ASR, TTS) | ⏳ NOT YET | Child Stage | roadmap 2026 Q3 |
+| Projects (chat + file organization) | ⏳ NOT YET | Product Layer Sprint | spec pending |
+| Agent Swarm (sub-agent spawn) | ⏳ NOT YET | Q3 2026 | spec pending |
+
+**Coverage: 15%** — product layer baru didefinisikan, implementasi pending.
+
 ## Sprint Recommendation Berdasarkan Gap (Updated 2026-05-07)
 
 **Highest leverage** (per gap):

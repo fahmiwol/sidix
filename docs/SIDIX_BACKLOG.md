@@ -380,3 +380,21 @@ Setiap agent (Claude/GPT/Gemini/SIDIX) yang kerja di proyek ini WAJIB ikuti prot
 - **Evidence**: commit TBD (this session)
 - **Status**: IMPLEMENTATION DONE. Deploy Docker stack + dense index rebuild = next sprint.
 - **Next:** Stage 2 Memory Tier Live (PostgreSQL + Qdrant deploy + conversation migration)
+
+### Sprint Product Layer — Mode System + Built-in Apps + MCP Full (ChatGPT/Kimi Parity)
+- **Visi mapping**: Pencipta (45%→60%) + Cognitive (85%→90%) + Product differentiation
+- **Date**: 2026-05-07 (spec) → 2026-05-14~28 (implementation)
+- **Deliverable**:
+  - `docs/SIDIX_PRODUCT_ARCHITECTURE.md` — separasi Engine (Migancore) vs Product (SIDIX)
+  - `docs/SIDIX_MODE_SYSTEM.md` — 4 mode: Instant/Thinking/Agent/Deep Research
+  - `docs/SIDIX_BUILT_IN_APPS_SPEC.md` — Canvas/Studio/Artifact system spec
+  - `brain/public/research_notes/316_sidix_product_chatgpt_kimi_analysis_20260507.md` — gap analysis
+  - `apps/brain_qa/brain_qa/mcp_server_wrap.py` — audit existing, enhance dengan transport layer
+- **Acceptance**:
+  - ✅ 4 spec dokumen committed
+  - ✅ MCP registry audited (17 tools, missing critical tools identified)
+  - ⏳ Mode System implementation (backend router + UI toggle)
+  - ⏳ Code Canvas MVP (Monaco + run button)
+  - ⏳ MCP transport layer (stdio + HTTP + SSE)
+- **Status**: SPEC DONE. Implementation = next 2 sprints.
+- **Differentiator narrative:** "ChatGPT yang bisa kamu bawa pulang — anti-halusinasi, 5 persona, self-hosted, Islamic ethical AI"
