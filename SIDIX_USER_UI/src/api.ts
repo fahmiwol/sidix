@@ -119,6 +119,7 @@ export interface AskInferenceOpts {
   corpus_only?: boolean;
   allow_web_fallback?: boolean;
   simple_mode?: boolean;
+  mode?: SidixMode;
 }
 
 export interface StreamDoneMeta {
@@ -586,6 +587,7 @@ export async function askStream(
         corpus_only: opts?.corpus_only ?? false,
         allow_web_fallback: opts?.allow_web_fallback ?? true,
         simple_mode: opts?.simple_mode ?? false,
+        mode: opts?.mode ?? 'agent',
         conversation_id: opts?.conversationId ?? '',
         user_id: opts?.userId ?? '',
       }),

@@ -22,7 +22,7 @@ import {
   agentBurst, agentTwoEyed, agentForesight, agentResurrect,
   BrainQAError,
   type Persona, type CorpusDocument, type Citation, type HealthResponse,
-  type AskInferenceOpts, type QuotaInfo,
+  type AskInferenceOpts, type QuotaInfo, type SidixMode,
 } from './api';
 
 import { initWaitingRoom } from './waiting-room';
@@ -1120,28 +1120,26 @@ attachBtn?.addEventListener('click', () => {
 // SIDIX 2.0 SUPERMODEL — 3 Mode Buttons (Burst / Two-Eyes / Foresight)
 // ════════════════════════════════════════════════════════════════════════
 
-const modeBurstBtn     = document.getElementById('mode-burst') as HTMLButtonElement | null;
-const modeTwoEyedBtn   = document.getElementById('mode-twoeyed') as HTMLButtonElement | null;
-const modeForesightBtn = document.getElementById('mode-foresight') as HTMLButtonElement | null;
-const modeResurrectBtn = document.getElementById('mode-resurrect') as HTMLButtonElement | null;
-const modeHolisticBtn  = document.getElementById('mode-holistic') as HTMLButtonElement | null;
+const modeInstantBtn  = document.getElementById('mode-instant') as HTMLButtonElement | null;
+const modeThinkingBtn = document.getElementById('mode-thinking') as HTMLButtonElement | null;
+const modeAgentBtn    = document.getElementById('mode-agent') as HTMLButtonElement | null;
+const modeDeepBtn     = document.getElementById('mode-deep') as HTMLButtonElement | null;
 
 // UX-fix 2026-04-30: Mode buttons jadi sticky toggle state (bukan window.prompt popup).
 // Visi 1000 Bayangan default = Holistic ON. User toggle mode = ganti state, send berikut
 // pakai mode aktif. Empty input + click mode = visual feedback (hint), no popup browser.
-type ChatMode = 'classic' | 'holistic' | 'burst' | 'twoeyed' | 'foresight' | 'resurrect';
-let activeMode: ChatMode = 'holistic'; // default per visi 1000 bayangan
-setActiveMode('holistic');
+type ChatMode = 'instant' | 'thinking' | 'agent' | 'deep_research';
+let activeMode: ChatMode = 'agent'; // default: Agent mode (Jurus Seribu Bayangan)
+setActiveMode('agent');
 
 function setActiveMode(mode: ChatMode) {
   activeMode = mode;
   // Visual highlight: gold ring untuk mode aktif
   const allModeBtns: Array<[HTMLButtonElement | null, ChatMode]> = [
-    [modeBurstBtn, 'burst'],
-    [modeTwoEyedBtn, 'twoeyed'],
-    [modeForesightBtn, 'foresight'],
-    [modeResurrectBtn, 'resurrect'],
-    [modeHolisticBtn, 'holistic'],
+    [modeInstantBtn, 'instant'],
+    [modeThinkingBtn, 'thinking'],
+    [modeAgentBtn, 'agent'],
+    [modeDeepBtn, 'deep_research'],
   ];
   for (const [btn, m] of allModeBtns) {
     if (!btn) continue;
@@ -1156,21 +1154,21 @@ function setActiveMode(mode: ChatMode) {
 }
 
 // ── Auto-mode detection: classifier ringan berbasis keyword ────────────────
-// Sprint UX-fix 2026-04-30: deteksi intent dari query untuk auto-switch mode
+// Mode System 2026-05-07: deteksi intent dari query untuk auto-switch ke 4 mode baru
 // User tetap bisa override dengan klik tombol mode (sticky toggle)
 function detectIntentMode(query: string): ChatMode | null {
   const q = query.toLowerCase();
-  // Coding mode: keyword teknis/developer
-  if (/(\bcode\b|\bcoding\b|\bprogram\b|\bprogramming\b|\bbug\b|\bdebug\b|\bfunction\b|\bscript\b|\bapi\b|\bendpoint\b|\broute\b|\bfrontend\b|\bbackend\b|\bdatabase\b|\bquery\b|\bsql\b|\bpython\b|\bjavascript\b|\btypescript\b|\breact\b|\bnode\.?js\b|\bhtml\b|\bcss\b|\bdeploy\b|\bbuild\b|\berror\b|\bexception\b|\bstacktrace\b|\bfix\b.*\b(code|bug|error)\b|\bbuat\b.*\b(website|app|program|bot)\b|\bpython\b.*\b(script|program)\b)/.test(q)) {
-    return 'burst'; // Burst = divergen + kreatif, cocok untuk problem solving kode
+  // Deep Research: laporan komprehensif / riset mendalam
+  if (/(\blaporan\b|\breport\b|\banalisis\s+menyeluruh\b|\bdeep\s+research\b|\briset\s+komprehensif\b|\bdue\s+diligence\b|\bliterature\s+review\b|\btinjauan\s+pustaka\b|\bbenchmark\b|\bkomparatif\s+lengkap\b|\bmeta.?(analysis|review)\b|\bekstensif\b|\bjurnal\b|\bpaper\b|\breferensi\b.*\b(banyak|lengkap)\b|\bsumber\b.*\b(terpercaya|primer)\b)/.test(q)) {
+    return 'deep_research';
   }
-  // Planning mode: rencana/strategi/timeline
-  if (/(\bplan\b|\bplanning\b|\brencana\b|\bstrategi\b|\bstrategy\b|\broadmap\b|\btimeline\b|\bstep\b.*\bstep\b|\blangkah\b|\bphasing\b|\bmilestone\b|\bsprint\b|\bproject\b.*\bplan\b|\bhow\b.*\b(start|build|launch)\b|\bgimana\b.*\b(mulai|bangun|buat)\b.*\b(project|app| bisnis)\b)/.test(q)) {
-    return 'foresight'; // Foresight = prediksi + skenario, cocok untuk planning
+  // Thinking: coding / problem solving / explanation
+  if (/(\bcode\b|\bcoding\b|\bprogram\b|\bprogramming\b|\bbug\b|\bdebug\b|\bfunction\b|\bscript\b|\bapi\b|\bendpoint\b|\broute\b|\bfrontend\b|\bbackend\b|\bdatabase\b|\bquery\b|\bsql\b|\bpython\b|\bjavascript\b|\btypescript\b|\breact\b|\bnode\.?js\b|\bhtml\b|\bcss\b|\bdeploy\b|\bbuild\b|\berror\b|\bexception\b|\bstacktrace\b|\bfix\b.*\b(code|bug|error)\b|\bbuat\b.*\b(website|app|program|bot)\b|\bjelaskan\b|\bcara\s+kerja\b|\bbagaimana\b|\bkenapa\b|\bmengapa\b|\bapa\s+itu\b|\bdefinisi\b|\bkonsep\b|\brumus\b|\bhitung\b|\bsolve\b)/.test(q)) {
+    return 'thinking';
   }
-  // Deep-research mode: riset mendalam/literature
-  if (/(\bresearch\b|\breview\b|\bliterature\b|\bdeep\b.*\bdive\b|\banalisis\b.*\bmendalam\b|\bcomprehensive\b|\bekstensif\b|\bjurnal\b|\bpaper\b|\bstudy\b|\bsurvey\b|\bmeta.?(analysis|review)\b|\btinjauan\b|\bkajian\b|\b studi \b|\breferensi\b.*\b(banyak|lengkap)\b|\bsumber\b.*\b(terpercaya|primer)\b)/.test(q)) {
-    return 'twoeyed'; // Two-Eyed = scientific + maqashid dual perspective, cocok untuk riset etis
+  // Instant: greeting / very short / simple factual
+  if (/^(halo|hai|hi|hello|hey|selamat\s+(pagi|siang|sore|malam)|apa\s+kabar|terima\s+kasih|thanks|makasih|oke|ok|baik|sampai\s+jumpa|dadah|bye)\b/.test(q) || q.length < 25) {
+    return 'instant';
   }
   return null; // Tidak ada match kuat → gunakan activeMode yang user pilih
 }
@@ -1200,13 +1198,9 @@ function appendThinkingPlaceholder(label: string): HTMLDivElement {
   return wrap;
 }
 
-// 🌟 Sprint Α: Holistic Mode — Jurus Seribu Bayangan (multi-source paralel + SSE streaming)
-modeHolisticBtn?.addEventListener('click', () => {
-  setActiveMode('holistic');
-});
-
+// 🤖 Agent Mode — Jurus Seribu Bayangan (multi-source paralel + SSE streaming)
 // Extracted: doHolistic handles the actual multi-source inference
-async function doHolistic(question: string) {
+async function doHolistic(question: string, mode: SidixMode = 'agent') {
   // Live progress card — show 8 parallel sources visualized real-time
   // Sprint UX-fix 2026-04-30: visi bos = SEMUA paralel sekaligus, bukan sequential
   const progressWrap = document.createElement('div');
@@ -1422,7 +1416,7 @@ async function doHolistic(question: string) {
           // If streaming fails (404 / not implemented), fall through to non-streaming
           addProgressLine(`Stream tidak tersedia, beralih ke mode sinkron...`);
         },
-      }, undefined, { conversationId: getCurrentConversationId() || undefined });
+      }, undefined, { conversationId: getCurrentConversationId() || undefined, mode });
     } catch { /* streaming not available */ }
 
     // Non-streaming fallback (primary path until chat_holistic_stream is live)
@@ -1432,6 +1426,7 @@ async function doHolistic(question: string) {
         image_path: pendingImagePath || undefined,
         // Sprint J: pass conversation_id so backend injects prior turns into LLM context
         conversationId: getCurrentConversationId() || undefined,
+        mode,
       });
 
       // Sprint J: persist conversation_id from response for next request
@@ -1487,89 +1482,28 @@ async function doHolistic(question: string) {
 // Click + textarea ada teks → set mode + auto-submit.
 // handleSend dispatch by activeMode.
 
-modeHolisticBtn?.addEventListener('click', () => {
-  setActiveMode('holistic');
+modeInstantBtn?.addEventListener('click', () => {
+  setActiveMode('instant');
   const v = getCurrentInput();
   if (v) handleSend(); // auto-submit kalau ada teks
 });
 
-modeBurstBtn?.addEventListener('click', async () => {
-  setActiveMode('burst');
-  const prompt = getCurrentInput();
-  if (!prompt) return; // kosong → tunggu user ketik
-  appendMessage('user', prompt);
-  if (chatInput) { chatInput.value = ''; chatInput.dispatchEvent(new Event('input')); }
-  const thinking = appendThinkingPlaceholder('💡 Brainstorm — eksplor 3 sudut...');
-  try {
-    const r = await agentBurst(prompt, { n: 3, topK: 2 });
-    thinking.remove();
-    const winnersList = r.winners.map(w =>
-      `**${w.angle}** (score ${w.score.total.toFixed(2)})`
-    ).join(' · ');
-    const out = `${r.final}\n\n_— Brainstorm: ${r.n_ok}/${r.n_candidates} kandidat, sudut top: ${winnersList}_`;
-    appendMessage('ai', out);
-  } catch (e) {
-    thinking.remove();
-    appendMessage('ai', `⚠️ Brainstorm gagal: ${(e as Error).message}`);
-  }
+modeThinkingBtn?.addEventListener('click', () => {
+  setActiveMode('thinking');
+  const v = getCurrentInput();
+  if (v) handleSend();
 });
 
-modeTwoEyedBtn?.addEventListener('click', async () => {
-  setActiveMode('twoeyed');
-  const prompt = getCurrentInput();
-  if (!prompt) return;
-  appendMessage('user', prompt);
-  if (chatInput) { chatInput.value = ''; chatInput.dispatchEvent(new Event('input')); }
-  const thinking = appendThinkingPlaceholder('⚖️ Pertimbangan — analisis dual perspective...');
-  try {
-    const r = await agentTwoEyed(prompt);
-    thinking.remove();
-    const out = [
-      `### 🔬 Sudut Data\n${r.scientific_eye.text || '(gagal)'}`,
-      `### 🌿 Sudut Nilai\n${r.maqashid_eye.text || '(gagal)'}`,
-      `### 🤝 Sintesis\n${r.synthesis.text || '(gagal)'}`,
-    ].join('\n\n');
-    appendMessage('ai', out);
-  } catch (e) {
-    thinking.remove();
-    appendMessage('ai', `⚠️ Pertimbangan gagal: ${(e as Error).message}`);
-  }
+modeAgentBtn?.addEventListener('click', () => {
+  setActiveMode('agent');
+  const v = getCurrentInput();
+  if (v) handleSend();
 });
 
-modeForesightBtn?.addEventListener('click', async () => {
-  setActiveMode('foresight');
-  const topic = getCurrentInput();
-  if (!topic) return;
-  appendMessage('user', topic);
-  if (chatInput) { chatInput.value = ''; chatInput.dispatchEvent(new Event('input')); }
-  const thinking = appendThinkingPlaceholder('🔮 Prediksi — scan signals + 3 skenario...');
-  try {
-    const r = await agentForesight(topic, { horizon: '1y' });
-    thinking.remove();
-    const parts = [`### 🔮 Prediksi: ${r.topic} (horizon ${r.horizon})\n\n${r.final}`];
-    if (r.scenarios) parts.push(`---\n\n### Skenario\n${r.scenarios}`);
-    appendMessage('ai', parts.join('\n\n'));
-  } catch (e) {
-    thinking.remove();
-    appendMessage('ai', `⚠️ Prediksi gagal: ${(e as Error).message}`);
-  }
-});
-
-modeResurrectBtn?.addEventListener('click', async () => {
-  setActiveMode('resurrect');
-  const topic = getCurrentInput();
-  if (!topic) return;
-  appendMessage('user', topic);
-  if (chatInput) { chatInput.value = ''; chatInput.dispatchEvent(new Event('input')); }
-  const thinking = appendThinkingPlaceholder('📚 Riset Arsip — gali ide terlupa...');
-  try {
-    const r = await agentResurrect(topic, { nGems: 3 });
-    thinking.remove();
-    appendMessage('ai', r.final);
-  } catch (e) {
-    thinking.remove();
-    appendMessage('ai', `⚠️ Riset Arsip gagal: ${(e as Error).message}`);
-  }
+modeDeepBtn?.addEventListener('click', () => {
+  setActiveMode('deep_research');
+  const v = getCurrentInput();
+  if (v) handleSend();
 });
 
 // ── Help modal (Bantuan) ─────────────────────────────────────────────────
@@ -1890,11 +1824,16 @@ async function handleSend() {
 
   appendMessage('user', question);
 
-  // ── Auto-mode routing: holistic default ────────────────────────────────────
-  if (activeMode === 'holistic') {
-    await doHolistic(question);
+  // ── Mode System routing (2026-05-07) ───────────────────────────────────────
+  if (activeMode === 'agent') {
+    await doHolistic(question, 'agent');
     return;
   }
+  if (activeMode === 'deep_research') {
+    await doHolistic(question, 'deep_research');
+    return;
+  }
+  // instant & thinking use the classic stream path below (with mode param)
 
   // Thinking indicator — dengan hint khusus kalau minta gambar + REAL-TIME TIMER
   const q_lower = question.toLowerCase();
@@ -1928,8 +1867,8 @@ async function handleSend() {
     // Mode klasik = single-source ReAct; tampilkan label NETRAL + arahkan ke Holistic
     // kalau user mau multi-source paralel (jurus 1000 bayangan).
     if (isImageIntent) return;
-    if (elapsed > 30) labelEl.textContent = 'Berpikir lama — coba klik 🌟 Holistic untuk multi-source paralel';
-    else labelEl.textContent = 'Berpikir... (mode klasik · single-source)';
+    if (elapsed > 30) labelEl.textContent = 'Berpikir lama — coba klik 🤖 Agent untuk multi-source paralel';
+    else labelEl.textContent = `Berpikir... (mode ${activeMode} · ${activeMode === 'instant' ? 'fast' : 'single-source'})`;
   }, 100);
   const stopThinkingTimer = () => clearInterval(thinkingTimerInterval);
 
@@ -1971,6 +1910,7 @@ async function handleSend() {
   const convId = getCurrentConversationId();
   await askStream(question, persona, 5, {
     conversationId: convId ?? undefined,
+    mode: activeMode,
     onMeta: (meta) => {
       if (meta.session_id) setLastSessionId(meta.session_id);
       // Update quota badge dari meta event

@@ -438,6 +438,7 @@ class AskRequest(BaseModel):
     strict_mode: bool = False  # OPT-IN: RAG-first, full filter, formal citations
     conversation_id: str = ""  # Thread id untuk memory persistence
     user_id: str = "anon"
+    mode: str = "agent"        # Mode System: instant|thinking|agent|deep_research
 
 
 class ImageGenRequest(BaseModel):
@@ -2082,11 +2083,11 @@ def create_app() -> "FastAPI":
             pass
         # Sprint J: match agent_react flow: reformulate short follow-ups
         # before injecting conversation context for memory-aware OMNYX.
-        working_question = req.question
-        contextual_question = req.question
+        # FIX 2026-05-07: preserve strip_override result, don't overwrite with raw req.question
+        contextual_question = working_question
         if conversation_context:
             from .agent_react import _inject_conversation_context, _reformulate_with_context
-            contextual_question = _reformulate_with_context(req.question, conversation_context)
+            contextual_question = _reformulate_with_context(working_question, conversation_context)
             working_question = _inject_conversation_context(contextual_question, conversation_context)
 
         # OMNYX Direction — primary path

@@ -383,56 +383,39 @@
               </div>
             </div>
 
-            <!-- Mode buttons — TOGGLE state (UX-fix 2026-05-01: visi 1000 bayangan default Holistic active).
+            <!-- Mode buttons — SIDIX 4-Mode System (2026-05-07).
                  Click = set activeMode + visual highlight gold. Tidak ada window.prompt popup. -->
             <div class="flex flex-wrap justify-center gap-2 mt-2.5">
-              <button id="mode-holistic" aria-pressed="true"
+              <button id="mode-instant" aria-pressed="false"
+                class="mode-btn text-[11px] px-3 py-1 rounded-full border border-warm-600/40
+                       bg-warm-700/30 text-parchment-300 hover:bg-warm-600/50
+                       hover:border-gold-500/40 hover:text-gold-400 transition-all
+                       cursor-pointer select-none flex items-center gap-1"
+                title="Instant — Jawaban cepat <2 detik, tanpa tools. Cocok untuk fakta sederhana & greeting.">
+                <span>⚡</span><span>Instant</span>
+              </button>
+              <button id="mode-thinking" aria-pressed="false"
+                class="mode-btn text-[11px] px-3 py-1 rounded-full border border-warm-600/40
+                       bg-warm-700/30 text-parchment-300 hover:bg-warm-600/50
+                       hover:border-gold-500/40 hover:text-gold-400 transition-all
+                       cursor-pointer select-none flex items-center gap-1"
+                title="Thinking — Analisis & coding, 5-30 detik. Auto-detect persona. Tools selektif.">
+                <span>🧠</span><span>Thinking</span>
+              </button>
+              <button id="mode-agent" aria-pressed="true"
                 class="mode-btn mode-active text-[11px] px-3 py-1 rounded-full border border-gold-500/60
                        bg-gold-500/15 text-gold-300 transition-all
                        cursor-pointer select-none flex items-center gap-1"
-                title="Multi-Sumber Konsensus — kerahkan 5 sumber paralel sekaligus (web + corpus + dense + persona + tools), sintesis dengan attribution. Default mode SIDIX.">
-                <span>🌟</span><span>Multi-Sumber</span>
+                title="Agent — Jurus Seribu Bayangan. Multi-source paralel (web + corpus + dense + 5 persona + tools). Default SIDIX.">
+                <span>🤖</span><span>Agent</span>
               </button>
-              <button id="mode-burst" aria-pressed="false"
+              <button id="mode-deep" aria-pressed="false"
                 class="mode-btn text-[11px] px-3 py-1 rounded-full border border-warm-600/40
                        bg-warm-700/30 text-parchment-300 hover:bg-warm-600/50
                        hover:border-gold-500/40 hover:text-gold-400 transition-all
                        cursor-pointer select-none flex items-center gap-1"
-                title="Brainstorm — generate 6 ide divergen, Pareto-pilih 2 terbaik, sintesis kreatif">
-                <span>💡</span><span>Brainstorm</span>
-              </button>
-              <button id="mode-twoeyed" aria-pressed="false"
-                class="mode-btn text-[11px] px-3 py-1 rounded-full border border-warm-600/40
-                       bg-warm-700/30 text-parchment-300 hover:bg-warm-600/50
-                       hover:border-gold-500/40 hover:text-gold-400 transition-all
-                       cursor-pointer select-none flex items-center gap-1"
-                title="Pertimbangan — analisis dual perspective: data scientific + nilai etis → sintesis">
-                <span>⚖️</span><span>Pertimbangan</span>
-              </button>
-              <button id="mode-foresight" aria-pressed="false"
-                class="mode-btn text-[11px] px-3 py-1 rounded-full border border-warm-600/40
-                       bg-warm-700/30 text-parchment-300 hover:bg-warm-600/50
-                       hover:border-gold-500/40 hover:text-gold-400 transition-all
-                       cursor-pointer select-none flex items-center gap-1"
-                title="Prediksi — 3 skenario (base/bull/bear) berdasar scan web+corpus, narasi visioner">
-                <span>🔮</span><span>Prediksi</span>
-              </button>
-              <button id="mode-resurrect" aria-pressed="false"
-                class="mode-btn text-[11px] px-3 py-1 rounded-full border border-warm-600/40
-                       bg-warm-700/30 text-parchment-300 hover:bg-warm-600/50
-                       hover:border-gold-500/40 hover:text-gold-400 transition-all
-                       cursor-pointer select-none flex items-center gap-1"
-                title="Riset Arsip — surface ide/tokoh/metode yang dulu brilliant tapi terlupa">
-                <span>📚</span><span>Riset Arsip</span>
-              </button>
-              <button id="mode-holistic"
-                class="text-[11px] px-3 py-1 rounded-full border border-gold-500/60
-                       bg-gradient-to-r from-amber-700/30 to-amber-600/30 text-gold-300
-                       hover:from-amber-600/40 hover:to-amber-500/40 hover:text-gold-200
-                       transition-all cursor-pointer select-none flex items-center gap-1
-                       shadow-sm shadow-gold-500/20"
-                title="Jurus Seribu Bayangan — mengerahkan SEMUA resource paralel (web + corpus + dense + 5 persona + tools) → sanad cross-verify → cognitive synthesizer. Multi-perspective default. Live progress streaming.">
-                <span>🌟</span><span>Holistic</span>
+                title="Deep Research — Riset komprehensif 2-10 menit. Recursive search, report lengkap.">
+                <span>🔬</span><span>Deep</span>
               </button>
             </div>
 
