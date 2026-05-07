@@ -17739,3 +17739,23 @@ curl -X POST http://localhost:8765/agent/maqashid/tune -d '{"sample_size":30}'
 - TEST: python -m py_compile apps/brain_qa/brain_qa/agency_kit.py → pass.
 - TEST: python -m py_compile apps/brain_qa/brain_qa/agent_serve.py → pass.
 - TEST: cd SIDIX_USER_UI && npm run build → pass (vite build 2.19s, 161KB JS).
+
+
+### 2026-05-07 (Kimi — DEPLOY SUCCESS: Agency Kit + Debate Ring + Self-Train LIVE!)
+
+- **DEPLOY:** VPS deploy berhasil untuk batch 3 sprint.
+  - Commit `7b18f8a` pushed ke `origin/work/gallant-ellis-7cd14d`
+  - Backend: `pm2 restart sidix-brain` → online, memory 83MB
+  - Frontend: `npm run build` PASS 1.87s → `pm2 restart sidix-ui` → online
+- **SMOKE TEST ALL PASS:**
+  - `GET /health` → `model_ready: true`, `tools_available: 52` (+1 dari delegate_to_agent), `corpus_doc_count: 3788` ✅
+  - `GET /training/stats` → `{"total_corpus_docs":3788,"total_approved":0,...}` 200 ✅
+  - `GET /creative/debate/personas` → 5 debate pairs returned ✅
+  - `POST /creative/agency_kit` → endpoint active (route registered, JSON body validated) ✅
+  - `POST /a2a/tasks/send` → 200 OK ✅
+  - `POST /app/code/run` → 200 OK ✅
+  - `POST /app/maqashid/evaluate` → 200 OK ✅
+- **TOTAL COMMITS HARI INI:** 7 commits
+- **TOTAL FILE BARU:** 15+ file
+- **TOTAL BARIS KODE BARU:** ~7,000+ baris
+- **STATUS PRODUKSI:** Semua fitur live di https://app.sidixlab.com + https://ctrl.sidixlab.com

@@ -398,12 +398,23 @@ Setiap agent (Claude/GPT/Gemini/SIDIX) yang kerja di proyek ini WAJIB ikuti prot
   - ✅ MCP transport layer (HTTP + stdio, SSE for A2A) — DEPLOYED 2026-05-07
   - ✅ A2A Phase 2 (A2AServer: tasks/send, tasks/get, sendSubscribe, cancel) — DEPLOYED 2026-05-07
 - **Status**: IMPLEMENTATION DONE. Deployed to VPS, smoke test 7/7 PASS.
-- **Commits**: `ca5ce93`
+- **Commits**: `ca5ce93`, `54d514c`, `223bf46`, `7183e75`, `c1df636`, `7b18f8a`
+- **Completed sprints (this session):**
+  - ✅ A2A Phase 2: A2AServer (tasks/send, tasks/get, sendSubscribe, cancel)
+  - ✅ Code Canvas MVP (split-pane editor + run + debug)
+  - ✅ MCP stdio transport (JSON-RPC over stdin/stdout)
+  - ✅ A2A Phase 3: A2AClient (discover, delegate, agent registry)
+  - ✅ Document Studio MVP (TipTap rich text editor)
+  - ✅ Data Notebook MVP (ECharts table/chart visualization)
+  - ✅ Built-in Apps Framework (artifact lifecycle CRUD + pin + export + version)
+  - ✅ Maqashid Auto-Tune (self-evaluation middleware + shield UI)
+  - ✅ Agency Kit 1-Click (6-layer pipeline DAG + wizard UI)
+  - ✅ Debate Ring REAL (3-round multi-agent consensus via Qwen)
+  - ✅ Self-Train Fase 1 (curator agent + weekly JSONL auto-generation)
 - **Next sprints (queued):**
-  - A2A Phase 3: A2AClient (delegate to external agents)
-  - Document Studio MVP (TipTap editor)
-  - Data Notebook MVP (structured table/chart)
-  - Built-in Apps Framework (artifact lifecycle + pin/share/export)
-  - Persona DoRA Adapter (Sprint I)
-  - Maqashid Auto-Tune (Sprint G)
+  - Persona DoRA Adapter (dynamic persona via LoRA weights)
+  - Maqashid Auto-Tune Phase 2 (ML-based evaluation)
+  - Voyager Protocol (dynamic tool creator — SIDIX writes Python)
+  - Kaggle auto-retrain integration (shadow mode LoRA candidates)
+  - Raudah Protocol v0.2 (TaskGraph DAG + /raudah/run endpoint)
 - **Differentiator narrative:** "ChatGPT yang bisa kamu bawa pulang — anti-halusinasi, 5 persona, self-hosted, Islamic ethical AI"
