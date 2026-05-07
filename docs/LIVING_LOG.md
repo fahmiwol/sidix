@@ -17259,3 +17259,28 @@ curl -X POST http://localhost:8765/agent/maqashid/tune -d '{"sample_size":30}'
 - **STATUS:** Mode System backend = **DONE**. End-to-end flow: frontend kirim `mode` → backend `chat_holistic` detect → route INSTANT (fast-path) atau OMNYX (normal) → response balik dengan `mode` field. Frontend UI toggle = next sprint setelah UI lock dibuka.
 - **NEXT:** (1) Frontend mode toggle UI migration (`main.ts`), (2) MCP transport layer + 4 critical missing tools, (3) Deep Research recursive implementation, (4) Deploy test ke VPS setelah SSH access tersedia.
 
+
+
+### 2026-05-07 (Kimi — Mode System End-to-End: Frontend Migration + Backend Fix)
+
+- **NOTE:** Claude handoff complete. Kimi mengambil alih penuh end-to-end SIDIX. Semua keputusan teknis, implementasi, deploy, dan troubleshooting sekarang di tangan Kimi. Tidak ada intervensi Claude.
+- **FIX:** `apps/brain_qa/brain_qa/agent_serve.py` baris 2085 — bug kritis: `working_question` di-overwrite kembali ke `req.question` setelah sudah di-`strip_override()` di awal fungsi. Akibatnya slash commands (`/instant`, `/think`, dll.) tidak ter-strip sebelum masuk ke OMNYX path. Fix: gunakan `contextual_question = working_question` (hasil strip) sebagai dasar reformulasi memory context. `py_compile` PASS. ✅
+- **UPDATE:** `apps/brain_qa/brain_qa/agent_serve.py` — `AskRequest` menambah field `mode: str = "agent"` agar endpoint `/ask/stream` juga menerima mode parameter (meskipun logika routing defer ke iterasi berikutnya). `py_compile` PASS. ✅
+- **UPDATE:** `SIDIX_USER_UI/index.html` — migrasi 6 tombol legacy (`holistic`×2 duplikat, `burst`, `twoeyed`, `foresight`, `resurrect`) → 4 tombol mode baru: ⚡ Instant, 🧠 Thinking, 🤖 Agent, 🔬 Deep. Tombol Agent = default active (mode-active gold). ✅
+- **UPDATE:** `SIDIX_USER_UI/src/main.ts` — migrasi lengkap mode system:
+  - `type ChatMode` = `'instant' | 'thinking' | 'agent' | 'deep_research'`
+  - `activeMode` default = `'agent'` (bukan holistic)
+  - `setActiveMode()` updated untuk 4 tombol baru
+  - `detectIntentMode()` updated dengan keyword classifier untuk 4 mode baru
+  - Event listeners: hapus 5 listener legacy (burst/twoeyed/foresight/resurrect/holistic), tambah 4 listener baru (instant/thinking/agent/deep) dengan auto-submit pattern
+  - `handleSend()` routing: `agent`/`deep_research` → `doHolistic()`; `instant`/`thinking` → jalur klasik `askStream()` dengan `mode` param
+  - `doHolistic(question, mode?)` sekarang menerima `SidixMode` dan mempass ke `askHolisticStream` + `askHolistic`
+  - Import `SidixMode` type dari `./api`
+  - Hapus variabel `modeHolisticBtn` yang menyebabkan duplikat ID di HTML
+- **UPDATE:** `SIDIX_USER_UI/src/api.ts` — `AskInferenceOpts` menambah `mode?: SidixMode`; `askStream()` mengirim `mode` ke backend dalam JSON body. ✅
+- **BUILD:** `npm run build` PASS — 2.51s, bundle `index-GdUmglXb.js` (126.87 kB · gzip 33.94 kB). Tidak ada error TypeScript. ✅
+- **TEST:** `py_compile` PASS untuk `agent_serve.py`, `mode_router.py`, `ado_state.py`. ✅
+- **COMMIT:** `b3ffb9f` (`feat(mode-system): full frontend migration + backend wiring end-to-end`) pushed ke `origin/work/gallant-ellis-7cd14d`. +91 −146, 5 files. 🚀
+- **STATUS:** Mode System = **end-to-end DONE**. Frontend UI toggle → Backend routing → Response mode field, semua terkoneksi. Legacy mode buttons (burst/twoeyed/foresight/resurrect) sudah tidak ada di UI; endpoint legacy (`/agent/burst`, `/agent/two-eyed`, `/agent/foresight`, `/agent/resurrect`) tetap ada di backend tapi tidak diakses dari UI utama.
+- **NEXT:** (1) MCP transport layer (stdio/HTTP/SSE) + 4 critical missing tools (`web_search`, `generate_image`, `execute_python`, `deep_research`), (2) Deep Research recursive implementation, (3) Deploy & smoke test ke VPS.
+

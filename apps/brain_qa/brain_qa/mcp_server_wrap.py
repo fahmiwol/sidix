@@ -327,7 +327,173 @@ _TOOL_REGISTRY: list[MCPToolSpec] = [
         sidix_module="apps/brain_qa/brain_qa/wisdom_gate.py",
         category="cognitive",
     ),
+
+    # === Web & Search (tools yang sudah ada di agent_tools.py, belum di-MCP-wrap) ===
+    MCPToolSpec(
+        name="sidix_web_search",
+        description="Cari web umum via DuckDuckGo HTML (own parser, no API vendor). "
+                    "Gunakan untuk pencarian luas, baru, atau yang tidak tercakup corpus/Wikipedia. "
+                    "Params: query (str, wajib), max_results (int, default 8, max 15). "
+                    "Return: daftar judul + URL + snippet.",
+        input_schema={
+            "type": "object",
+            "properties": {
+                "query": {"type": "string", "description": "Query pencarian"},
+                "max_results": {"type": "integer", "default": 8, "minimum": 1, "maximum": 15},
+            },
+            "required": ["query"],
+        },
+        sidix_module="apps/brain_qa/brain_qa/agent_tools.py",
+        category="web",
+    ),
+
+    # === Image Generation ===
+    MCPToolSpec(
+        name="sidix_generate_image",
+        description="Generate gambar dari prompt teks via FLUX.1-schnell (local, no GPU needed for mock). "
+                    "Graceful degradation: FLUX.1 → mock SVG placeholder. "
+                    "Params: prompt (str wajib), steps (int 1-50 default 4), width/height (int 512-1536 default 1024), seed (int opsional).",
+        input_schema={
+            "type": "object",
+            "properties": {
+                "prompt": {"type": "string", "description": "Prompt teks untuk gambar"},
+                "steps": {"type": "integer", "default": 4, "minimum": 1, "maximum": 50},
+                "width": {"type": "integer", "default": 1024, "minimum": 512, "maximum": 1536},
+                "height": {"type": "integer", "default": 1024, "minimum": 512, "maximum": 1536},
+                "seed": {"type": "integer"},
+            },
+            "required": ["prompt"],
+        },
+        sidix_module="apps/brain_qa/brain_qa/agent_tools.py",
+        category="creative",
+    ),
+
+    # === Code Execution ===
+    MCPToolSpec(
+        name="sidix_execute_python",
+        description="Jalankan snippet Python (komputasi murni, no IO sistem) di subprocess terisolasi. "
+                    "Cocok untuk: hitung, transformasi data, simulasi, parse teks. Timeout 30 detik. "
+                    "Params: code (str, Python source). Return: stdout + stderr.",
+        input_schema={
+            "type": "object",
+            "properties": {
+                "code": {"type": "string", "description": "Python source code"},
+                "timeout": {"type": "integer", "default": 30, "minimum": 5, "maximum": 60},
+            },
+            "required": ["code"],
+        },
+        sidix_module="apps/brain_qa/brain_qa/agent_tools.py",
+        category="code",
+    ),
+
+    # === Deep Research ===
+    MCPToolSpec(
+        name="sidix_deep_research",
+        description="Recursive multi-source deep research: corpus → web → follow-up → synthesis report. "
+                    "Mode DEEP_RESEARCH implementation. Generate laporan komprehensif dengan citations. "
+                    "Params: query (str wajib), max_iterations (int default 3), max_depth (int default 2). "
+                    "Return: markdown report + findings + citations.",
+        input_schema={
+            "type": "object",
+            "properties": {
+                "query": {"type": "string", "description": "Topik/pertanyaan riset"},
+                "max_iterations": {"type": "integer", "default": 3, "minimum": 1, "maximum": 10},
+                "max_depth": {"type": "integer", "default": 2, "minimum": 1, "maximum": 5},
+            },
+            "required": ["query"],
+        },
+        sidix_module="apps/brain_qa/brain_qa/deep_research.py",
+        category="research",
+    ),
 ]
+
+
+# ── Tool Execution Wiring (Phase B — 2026-05-07) ──────────────────────────────
+
+# Mapping: nama MCP tool → nama tool di agent_tools.TOOL_REGISTRY
+# Format: mcp_name: (agent_name, needs_allow_restricted)
+_MCP_TO_AGENT_TOOL: dict[str, tuple[str, bool]] = {
+    "sidix_search_corpus": ("search_corpus", False),
+    "sidix_web_search": ("web_search", False),
+    "sidix_generate_image": ("text_to_image", False),
+    "sidix_execute_python": ("code_sandbox", False),
+    "sidix_deep_research": ("deep_research", False),
+    "sidix_web_fetch": ("web_fetch", False),
+    "sidix_browser_fetch": ("browser_fetch", False),
+    "sidix_calculator": ("calculator", False),
+    "sidix_pdf_extract": ("pdf_extract", False),
+    "sidix_workspace_list": ("workspace_list", False),
+    "sidix_workspace_read": ("workspace_read", False),
+    "sidix_workspace_write": ("workspace_write", True),
+    "sidix_workspace_patch": ("workspace_patch", True),
+}
+
+
+def execute_tool(name: str, args: dict, *, session_id: str = "", step: int = 1, admin_ok: bool = False, allow_restricted: bool = False) -> dict:
+    """
+    Execute an MCP tool by dispatching to agent_tools.call_tool().
+
+    Args:
+        name: MCP tool name (e.g. 'sidix_web_search')
+        args: Tool arguments dict
+        session_id: Session ID for audit logging
+        step: Step number for audit logging
+        admin_ok: Whether admin-only tools are permitted
+        allow_restricted: Whether restricted tools are permitted
+
+    Returns:
+        dict with keys: success (bool), output (str), error (str), citations (list)
+    """
+    from .agent_tools import call_tool as _agent_call_tool
+
+    # Lookup mapping
+    mapping = _MCP_TO_AGENT_TOOL.get(name)
+    if not mapping:
+        # Try direct name (some tools use same name)
+        agent_name = name.replace("sidix_", "")
+        needs_restricted = False
+    else:
+        agent_name, needs_restricted = mapping
+
+    if needs_restricted and not allow_restricted:
+        return {
+            "success": False,
+            "output": "",
+            "error": f"Tool '{name}' requires allow_restricted=true. Set flag untuk mengaktifkan.",
+            "citations": [],
+        }
+
+    # Check admin gate for tools that have is_admin in registry
+    spec = get_tool_spec(name)
+    if spec and spec.is_admin and not admin_ok:
+        return {
+            "success": False,
+            "output": "",
+            "error": f"Tool '{name}' is admin-only.",
+            "citations": [],
+        }
+
+    try:
+        result = _agent_call_tool(
+            tool_name=agent_name,
+            args=args,
+            session_id=session_id or f"mcp_{uuid.uuid4().hex[:8]}",
+            step=step,
+        )
+        return {
+            "success": result.success,
+            "output": result.output,
+            "error": result.error,
+            "citations": [asdict(c) if hasattr(c, "__dataclass_fields__") else c for c in (result.citations or [])],
+        }
+    except Exception as e:
+        log.exception("[mcp] execute_tool failed: %s", name)
+        return {
+            "success": False,
+            "output": "",
+            "error": f"Execution error: {e}",
+            "citations": [],
+        }
 
 
 # ── MCP JSON-RPC handler (Phase A foundation) ─────────────────────────────────

@@ -3105,6 +3105,45 @@ def _tool_graph_search(args: dict) -> ToolResult:
     return ToolResult(success=True, output=output, citations=citations)
 
 
+def _tool_deep_research(args: dict) -> ToolResult:
+    """
+    Recursive multi-source deep research: corpus → web → follow-up → synthesis report.
+    Mode DEEP_RESEARCH implementation.
+
+    Params:
+      query (str, wajib) — topik/pertanyaan riset
+      max_iterations (int, default 3) — max recursive search rounds
+      max_depth (int, default 2) — max depth per sub-query chain
+    """
+    query = str(args.get("query", "")).strip()
+    if not query:
+        return ToolResult(success=False, output="", error="query wajib diisi")
+
+    max_iterations = max(1, min(int(args.get("max_iterations", 3)), 10))
+    max_depth = max(1, min(int(args.get("max_depth", 2)), 5))
+
+    try:
+        from .deep_research import deep_research_tool
+        result = deep_research_tool({
+            "query": query,
+            "max_iterations": max_iterations,
+            "max_depth": max_depth,
+        })
+        if not result.get("success"):
+            return ToolResult(success=False, output="", error=result.get("error", "Deep research failed"))
+
+        output = result.get("output", "")
+        metadata = result.get("metadata", {})
+        meta_line = f"\n\n---\n**Meta:** {metadata.get('n_findings', 0)} findings, {metadata.get('iterations', 0)} iterasi, {metadata.get('duration_ms', 0)/1000:.1f}s"
+        return ToolResult(
+            success=True,
+            output=output + meta_line,
+            citations=result.get("citations", []),
+        )
+    except Exception as e:
+        return ToolResult(success=False, output="", error=f"Deep research error: {e}")
+
+
 TOOL_REGISTRY: dict[str, ToolSpec] = {
     "search_corpus": ToolSpec(
         name="search_corpus",
@@ -3556,6 +3595,18 @@ TOOL_REGISTRY: dict[str, ToolSpec] = {
         params=["query", "top_k"],
         permission="open",
         fn=_tool_graph_search,
+    ),
+    "deep_research": ToolSpec(
+        name="deep_research",
+        description=(
+            "Recursive multi-source deep research: corpus → web → follow-up → synthesis report. "
+            "Mode DEEP_RESEARCH implementation. Generate laporan komprehensif dengan citations. "
+            "Params: query (str wajib), max_iterations (int default 3), max_depth (int default 2). "
+            "Return: markdown report + findings + citations."
+        ),
+        params=["query", "max_iterations", "max_depth"],
+        permission="open",
+        fn=_tool_deep_research,
     ),
     # ── Coding Agent Phase 2: shell / test / git ─────────────────────────────
     "shell_run": ToolSpec(

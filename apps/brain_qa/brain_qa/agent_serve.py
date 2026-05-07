@@ -986,6 +986,79 @@ def create_app() -> "FastAPI":
             "senses": probe_all()
         }
 
+    # ── MCP HTTP Transport (Phase B — 2026-05-07) ──────────────────────────────
+    # JSON-RPC 2.0 over HTTP for Model Context Protocol.
+    # Methods: tools/list, tools/call
+    from pydantic import BaseModel as _BaseModel
+
+    class MCPRequest(_BaseModel):
+        jsonrpc: str = "2.0"
+        id: str | int | None = None
+        method: str
+        params: dict = {}
+
+    @app.post("/mcp")
+    async def mcp_http(req: MCPRequest, request: Request):
+        """MCP HTTP endpoint — JSON-RPC 2.0 dispatch."""
+        _enforce_rate(request)
+        from . import mcp_server_wrap as _mcp
+
+        method = req.method
+        params = req.params or {}
+        req_id = req.id
+
+        if method == "tools/list":
+            category = params.get("category", "")
+            tools = _mcp.list_tools(category=category)
+            return {
+                "jsonrpc": "2.0",
+                "id": req_id,
+                "result": {"tools": tools},
+            }
+
+        if method == "tools/call":
+            tool_name = params.get("name", "")
+            tool_args = params.get("arguments", {})
+            admin_ok = request.headers.get("x-admin-token", "") == os.environ.get("SIDIX_ADMIN_TOKEN", "")
+            allow_restricted = params.get("allow_restricted", False)
+
+            result = _mcp.execute_tool(
+                tool_name,
+                tool_args,
+                session_id=f"mcp_http_{uuid.uuid4().hex[:8]}",
+                step=1,
+                admin_ok=admin_ok,
+                allow_restricted=allow_restricted,
+            )
+            return {
+                "jsonrpc": "2.0",
+                "id": req_id,
+                "result": {
+                    "content": [
+                        {"type": "text", "text": result.get("output", "")},
+                    ],
+                    "isError": not result.get("success", False),
+                    "metadata": {
+                        "error": result.get("error", ""),
+                        "citations": result.get("citations", []),
+                    },
+                },
+            }
+
+        if method == "server/info":
+            manifest = _mcp.export_manifest()
+            return {
+                "jsonrpc": "2.0",
+                "id": req_id,
+                "result": manifest,
+            }
+
+        return {
+            "jsonrpc": "2.0",
+            "id": req_id,
+            "error": {"code": -32601, "message": f"Method '{method}' not found"},
+        }
+
     # ── Sprint A+B: Sanad Orchestra + Hafidz Injection endpoints ───────────────
     @app.get("/agent/sanad/stats")
     async def sanad_stats(request: Request):
