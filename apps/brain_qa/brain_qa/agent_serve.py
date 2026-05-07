@@ -986,6 +986,78 @@ def create_app() -> "FastAPI":
             "senses": probe_all()
         }
 
+    # ── A2A AgentCard (Phase 1 — 2026-05-07) ───────────────────────────────────
+    # Google A2A protocol: Agent Card published at well-known path for discovery.
+    @app.get("/.well-known/agent-card.json")
+    async def agent_card(request: Request):
+        """A2A Agent Card — discoverable by external agents."""
+        _enforce_rate(request)
+        from .mcp_server_wrap import list_tools as _mcp_list_tools
+        mcp_tools = _mcp_list_tools()
+        return {
+            "name": "SIDIX Core",
+            "description": "Self-hosted RAG-first AI assistant with epistemic integrity, 5 personas, and Islamic ethical AI framework. Supports multi-source research, code execution, image generation, and deep recursive research.",
+            "url": "https://ctrl.sidixlab.com",
+            "version": "2.1.0",
+            "capabilities": {
+                "streaming": True,
+                "pushNotifications": False,
+                "statePersistence": True,
+            },
+            "authentication": {
+                "schemes": ["bearer"],
+                "credentials": "API key via x-api-key header or Bearer JWT",
+            },
+            "defaultInputModes": ["text"],
+            "defaultOutputModes": ["text", "image", "code"],
+            "skills": [
+                {
+                    "id": "rag_query",
+                    "name": "RAG Query",
+                    "description": "Search SIDIX knowledge corpus (3237+ docs) with BM25 + sanad-tier rerank. Returns citations with chain of sources.",
+                    "tags": ["knowledge", "search", "citation"],
+                    "examples": ["Apa itu IHOS framework?", "Siapa presiden Indonesia saat ini?"],
+                },
+                {
+                    "id": "deep_research",
+                    "name": "Deep Research",
+                    "description": "Recursive multi-source research: corpus → web → follow-up → synthesis report. Generates comprehensive markdown report with citations.",
+                    "tags": ["research", "report", "recursive"],
+                    "examples": ["Analisis komprehensif AI di Indonesia 2026", "Laporan due diligence startup X"],
+                },
+                {
+                    "id": "code_execution",
+                    "name": "Code Execution",
+                    "description": "Execute Python code in isolated subprocess sandbox. Safe eval with forbidden pattern scanner.",
+                    "tags": ["code", "python", "sandbox"],
+                    "examples": ["Hitung rumus kompleks", "Parse dan transform data CSV"],
+                },
+                {
+                    "id": "image_generation",
+                    "name": "Image Generation",
+                    "description": "Generate images from text prompt via FLUX.1-schnell (local). Graceful fallback to mock SVG.",
+                    "tags": ["image", "creative", "flux"],
+                    "examples": ["Generate logo minimalist untuk kopi brand", "Buat ilustrasi pemandangan gunung"],
+                },
+                {
+                    "id": "web_search",
+                    "name": "Web Search",
+                    "description": "Multi-engine web search via DuckDuckGo HTML (own parser, no API vendor). Standing-alone.",
+                    "tags": ["web", "search", "real-time"],
+                    "examples": ["Berita teknologi terbaru", "Cari referensi jurnal AI"],
+                },
+                {
+                    "id": "mode_chat",
+                    "name": "Mode Chat",
+                    "description": "4-mode chat system: Instant (<2s), Thinking (5-30s), Agent (multi-source parallel), Deep Research (recursive report).",
+                    "tags": ["chat", "modes", "conversation"],
+                    "examples": ["Halo, apa kabar?", "Jelaskan konsep quantum computing", "Riset mendalam tentang energi terbarukan"],
+                },
+            ],
+            "mcpEndpoint": "https://ctrl.sidixlab.com/mcp",
+            "mcpToolsCount": len(mcp_tools),
+        }
+
     # ── MCP HTTP Transport (Phase B — 2026-05-07) ──────────────────────────────
     # JSON-RPC 2.0 over HTTP for Model Context Protocol.
     # Methods: tools/list, tools/call
