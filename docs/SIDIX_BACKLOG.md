@@ -457,3 +457,122 @@ Setiap agent (Claude/GPT/Gemini/SIDIX) yang kerja di proyek ini WAJIB ikuti prot
   - Kaggle Auto-Retrain — shadow LoRA candidates, trigger >500 pairs
   - Voyager Phase 3 — tool composition (tools calling other tools)
   - Maqashid Phase 3 — eval dataset auto-build dari feedback history
+
+
+### Sprint Batch Riset-Driven 2026-05-08 — Cognitive Expansion: Input · Orkestrasi · Metode · Output · Built-in
+
+- **Visi mapping**: Pencipta (55%→75%) + Cognitive (93%→96%) + Tumbuh (62%→77%) + Product (15%→40%)
+- **Date**: 2026-05-08
+- **Research**: `brain/public/research_notes/318_sidix_cognitive_expansion_research_synthesis_20260508.md`
+  - 12 internal sources + 8 external web sources
+  - Key finding: multimodal input/output + self-improving loop + Active Inference blueprint = highest leverage untuk Q2 2026
+- **Context bos verbatim**: "Perbanyak Jenis input, Perbanyak tools orkestrasi, Perbanyak metode olah data sintesis belajar MCP dll, Perbanyak Jenis Output, Built-in tools"
+- **Differentiator narrative shift**: "ChatGPT yang bisa kamu bawa pulang — **self-improving**, anti-halusinasi, 5 persona, self-hosted, Islamic ethical AI"
+
+#### Sprint 1: INPUT EXPANSION (P0 — User-Facing Impact Tertinggi)
+- **Visi mapping**: Cognitive & Semantic + Product
+- **Deliverable**:
+  1. Deploy Qwen3-VL untuk vision analysis (`/upload/image` → actual VLM inference)
+  2. Deploy Whisper.cpp untuk ASR (`/upload/audio` → actual transcription)
+  3. Deploy Qwen3-TTS / Kokoro untuk TTS output (self-hosted, no vendor API)
+  4. Add Word/Excel parser (`python-docx`, `openpyxl`)
+  5. Add CSV/JSON structured data ingestion endpoint
+- **Acceptance**: 7/8 input types functional (kecuali screen sharing)
+- **Effort**: 2-3 session
+- **Risk**: GPU memory — manage dengan RunPod burst untuk VLM, CPU untuk TTS
+- **Status**: 📋 QUEUED
+
+#### Sprint 2: ORKESTRASI POLISH (P2 — Protocol Readiness)
+- **Visi mapping**: Genius + Cognitive
+- **Deliverable**:
+  1. MCP Streamable HTTP transport skeleton (`mcp_server_wrap.py` enhancement)
+  2. MCP Server Card discovery endpoint (`/.well-known/mcp-server-card.json`)
+  3. A2A v0.3 compatibility (signed Agent Cards, push notifications)
+  4. Protocol observability (audit trail per tool call)
+- **Acceptance**: MCP server callable dari Claude Desktop / Cursor via HTTP
+- **Effort**: 1-2 session
+- **Risk**: OAuth 2.1 complexity — defer ke Sprint 10
+- **Status**: 📋 QUEUED
+
+#### Sprint 3: METODE & BELAJAR (P1 — Self-Improving Moat)
+- **Visi mapping**: Tumbuh + Iteratif + Cognitive
+- **Deliverable**:
+  1. Voyager P3 — Tool Composition: tools calling other tools, nested execution
+  2. Maqashid P3 — Eval dataset auto-build dari feedback history → JSONL training data
+  3. Memory Tier Phase 1 — PostgreSQL + pgvector deploy untuk Episodic memory
+  4. BGE-M3 dense index rebuild (1024-dim hybrid dense+BM25+RRF)
+- **Acceptance**:
+  - Tool composition functional (≥2 composed tools)
+  - Eval dataset auto-generated ≥50 pairs dari feedback
+  - Episodic memory persistent across sessions
+- **Effort**: 3-4 session
+- **Risk**: Database migration — backup required
+- **Status**: 📋 QUEUED
+
+#### Sprint 4: OUTPUT MODALITY WIRE (P0 — Adobe-of-Indonesia Foundation)
+- **Visi mapping**: Pencipta (gap terbesar)
+- **Deliverable**:
+  1. Wire `text_to_image` ke chat flow (actual FLUX.1 call, bukan prompt only)
+  2. Wire TTS ke chat flow (audio attachment auto-play)
+  3. Wire video storyboard ke Film-Gen pipeline (text → multi-scene → render)
+  4. Wire 3D prompt ke Mighan-3D bridge (mesh generation)
+  5. Add PDF/DOCX export untuk Document Studio
+- **Acceptance**: 5 modality actual (text, image, audio, video, 3D) callable dari chat
+- **Effort**: 2-3 session
+- **Risk**: GPU queue management — image gen butuh queue supaya tidak block chat
+- **Status**: 📋 QUEUED
+
+#### Sprint 5: BUILT-IN APPS ENHANCE (P3 — Product Stickiness)
+- **Visi mapping**: Pencipta + Product
+- **Deliverable**:
+  1. Image Studio — integrate FLUX.1 dengan prompt enhancement + gallery
+  2. Audio Studio — TTS + voice clone + music gen (AudioCraft)
+  3. Project / file organization — chat threads dengan file attachment persist
+  4. Agent marketplace UI — browse Voyager-generated skills, install/uninstall
+  5. Code Canvas enhance — lint (ruff), debug (pdb trace), preview (HTML render)
+- **Acceptance**: 3 studio baru + 2 enhance = 5 app improvements
+- **Effort**: 3-4 session
+- **Risk**: Frontend complexity — butuh design system consistency
+- **Status**: 📋 QUEUED
+
+#### Sprint 6: ACTIVE INFERENCE BLUEPRINT (P1 — Moat Arsitektural)
+- **Visi mapping**: Inovasi + Cognitive (frontier)
+- **Deliverable**:
+  1. Research note: Active Inference integration blueprint (pymdp vs RxInfer.jl)
+  2. Minimal viable loop: 1-domain curiosity-driven exploration (vs RL reward hacking)
+  3. Living Causal Graph spec (DoWhy + EconML + SCM layer)
+  4. Whitepaper outline 12-15 halaman
+- **Acceptance**: Blueprint committed, 1 domain demo spec ready
+- **Effort**: 2-3 session (research + spec)
+- **Risk**: Active Inference belum menang di general benchmark — caveat harus jelas
+- **Status**: 💡 IDEAS → scoped
+
+#### Batch Execution Plan
+```
+Minggu 1: Sprint 1 (Input Expansion) session 1-2 + Sprint 2 (Orchestration) session 2
+Minggu 2: Sprint 3 (Metode) session 3-5 + Sprint 4 (Output) session 3-4
+Minggu 3: Sprint 5 (Apps) session 6-7 + Sprint 6 (Blueprint) session 6-8
+```
+
+#### Target Visi Coverage Post-Batch
+| Visi Word | Pre-Batch | Post-Batch | Δ |
+|---|---|---|---|
+| Pencipta | 55% | 75% | +20pp |
+| Cognitive | 93% | 96% | +3pp |
+| Tumbuh | 62% | 77% | +15pp |
+| Product | 15% | 40% | +25pp |
+| **Overall** | **~87%** | **~93%** | **+6pp** |
+
+#### Hypothesis & Benchmarking
+1. **H1**: Self-improving loop ↑ task completion +15% (measure: `/agent/metrics` before/after Voyager P3)
+2. **H2**: Multimodal input ↑ engagement +25% (measure: messages/session post image/audio upload)
+3. **H3**: Memory tiers ↑ coherence +10% thumbs up (measure: follow-up question satisfaction)
+
+#### Risiko & Mitigasi
+| Risiko | P | Mitigasi |
+|---|---|---|
+| GPU memory insufficient | HIGH | RunPod burst untuk VLM, CPU untuk TTS (Kokoro) |
+| DB migration corrupt | MEDIUM | Backup before migrate, dry-run staging |
+| Frontend scope creep | MEDIUM | Strict design system, reusable components |
+| Self-improvement runaway | LOW | HITL approval gate, max 3 auto-refinement |
+| Quality regression | MEDIUM | CQF gate ≥7.0 untuk semua output baru |

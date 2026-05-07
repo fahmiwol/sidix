@@ -186,3 +186,57 @@ Catat: Sprint Frontend Wire + Streaming SSE sudah LIVE.
   - Voyager skill library = SIDIX tools improve themselves from usage
   - Maqashid trace-aware = score every reasoning step, not just output
   - HistoricalJudge = learns from user feedback without external API
+
+
+---
+
+## Sprint Recommendation Berdasarkan Gap (Updated 2026-05-08)
+
+**Highest leverage** (per gap):
+1. **Sprint Input Expansion** (Cognitive + Product) — Qwen3-VL + Whisper.cpp + Qwen3-TTS + document parsers
+2. **Sprint Output Modality Wire** (Pencipta) — actual FLUX.1 call + TTS audio + video render + 3D mesh
+3. **Sprint Metode & Belajar** (Tumbuh + Iteratif) — Voyager P3 + Maqashid P3 + Memory Tier + BGE-M3 rebuild
+4. **Sprint Orchestration Polish** (Genius) — MCP Streamable HTTP + A2A v0.3 + observability
+5. **Sprint Built-in Apps Enhance** (Product + Pencipta) — Image/Audio Studio + Project threads + Marketplace
+6. **Sprint Active Inference Blueprint** (Inovasi + Cognitive) — pymdp/RxInfer.jl + Causal Graph spec
+
+### 10. TREND-DRIVEN BATCH (2026-05-08 — Research + 5 Sprint + 1 Blueprint)
+
+**Research basis**: Cognitive Expansion analysis (note 318) — 20 sources (12 internal + 8 external), 5 gap dimensions mapped.
+
+| Dimensi Visi | Before | After | Δ | Evidence |
+|---|---|---|---|---|
+| Pencipta | 55% | 75% | +20% | Output Modality Wire (image/audio/video/3D actual) + Apps Enhance |
+| Cognitive | 93% | 96% | +3% | Input Expansion (vision/ASR/TTS) + Memory Tier + BGE-M3 rebuild |
+| Iteratif | 90% | 93% | +3% | Voyager P3 (tool composition), Maqashid P3 (dataset auto-build) |
+| Tumbuh | 62% | 77% | +15% | Memory Tier live + eval dataset auto-build + BGE-M3 rebuild |
+| Product | 15% | 40% | +25% | Input Expansion + Apps Enhance + Project threads |
+| Inovasi | 100% | 100% | — | Maintain + Active Inference blueprint sebagai frontier moat |
+| **Overall** | **~87%** | **~93%** | **+6pp** | Research-driven implementation |
+
+**Key differentiator shift**:
+- Sebelum: "ChatGPT yang bisa kamu bawa pulang — **self-improving**, anti-halusinasi, 5 persona, self-hosted"
+- Sesudah: "ChatGPT yang bisa kamu bawa pulang — **self-improving, multimodal, creative studio**, anti-halusinasi, 5 persona, self-hosted, Islamic ethical AI"
+  - Input Expansion = SIDIX bisa "melihat, mendengar, membaca dokumen"
+  - Output Modality Wire = SIDIX bisa "mencipta gambar, suara, video, 3D"
+  - Built-in Apps = full creative workspace di dalam 1 platform
+  - Active Inference blueprint = moat arsitektural 5+ tahun
+
+### PRODUCT Dimension Update (2026-05-08)
+
+| Deliverable Teknis | Status | Sprint | Evidence |
+|---|---|---|---|
+| Mode System (Instant/Thinking/Agent/Deep Research) | ✅ DEPLOYED | Product Layer Sprint | `agent_serve.py` router LIVE |
+| Code Canvas MVP | ✅ DEPLOYED | Product Layer Sprint | split-pane editor + run + debug |
+| Document Studio MVP | ✅ DEPLOYED | Product Layer Sprint | TipTap rich text editor |
+| Data Notebook MVP | ✅ DEPLOYED | Product Layer Sprint | ECharts table/chart |
+| Built-in Apps Framework | ✅ DEPLOYED | Product Layer Sprint | artifact lifecycle CRUD + pin + export |
+| MCP Full Integration (transport + multi-server) | ⚠️ REGISTRY + stdio | Product Layer Sprint | `mcp_server_wrap.py` — Streamable HTTP queued |
+| Multimodal input (vision, ASR, document) | ⏳ QUEUED | Sprint 1 (2026-05-08) | note 318 |
+| Multimodal output (TTS, video, 3D) | ⏳ QUEUED | Sprint 4 (2026-05-08) | note 318 |
+| Image Studio | ⏳ QUEUED | Sprint 5 (2026-05-08) | note 318 |
+| Audio Studio | ⏳ QUEUED | Sprint 5 (2026-05-08) | note 318 |
+| Project / file organization | ⏳ QUEUED | Sprint 5 (2026-05-08) | note 318 |
+| Agent marketplace / skill store | ⏳ QUEUED | Sprint 5 (2026-05-08) | note 318 |
+
+**Coverage: 15% → 40% target** — post-batch implementasi.
