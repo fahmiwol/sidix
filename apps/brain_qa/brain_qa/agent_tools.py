@@ -3584,6 +3584,163 @@ def _tool_collect_dataset(args: dict) -> ToolResult:
         return ToolResult(success=False, output="", error=f"collect error: {exc}")
 
 
+def _tool_search_unsplash(args: dict) -> ToolResult:
+    """Search photos via Unsplash API (free commercial use)."""
+    query = args.get("query", "").strip()
+    if not query:
+        return ToolResult(success=False, output="", error="query wajib diisi")
+    try:
+        from dataset_web_collector import search_unsplash
+        result = search_unsplash(
+            query=query,
+            per_page=int(args.get("per_page", 20)),
+            orientation=args.get("orientation"),
+        )
+        if result.get("ok"):
+            data = result["data"]
+            photos = data.get("photos", [])
+            out = f"[Unsplash] {len(photos)} hasil untuk '{query}' (total: {data.get('total', 0)})\n"
+            out += f"License: {data.get('license_note', '')}\n"
+            for p in photos[:10]:
+                out += f"- {p['id']}: {p['width']}x{p['height']} by {p.get('author', '?')}\n"
+                out += f"  {p.get('description', '')[:80]}...\n"
+                out += f"  URL: {p.get('image_url', '')}\n"
+            return ToolResult(success=True, output=out)
+        return ToolResult(success=False, output="", error=result.get("fallback_instructions", "Unsplash gagal"))
+    except Exception as exc:
+        return ToolResult(success=False, output="", error=f"Unsplash error: {exc}")
+
+
+def _tool_search_pexels(args: dict) -> ToolResult:
+    """Search photos via Pexels API (free commercial use)."""
+    query = args.get("query", "").strip()
+    if not query:
+        return ToolResult(success=False, output="", error="query wajib diisi")
+    try:
+        from dataset_web_collector import search_pexels
+        result = search_pexels(
+            query=query,
+            per_page=int(args.get("per_page", 20)),
+            orientation=args.get("orientation"),
+            color=args.get("color"),
+        )
+        if result.get("ok"):
+            data = result["data"]
+            photos = data.get("photos", [])
+            out = f"[Pexels] {len(photos)} hasil untuk '{query}' (total: {data.get('total', 0)})\n"
+            out += f"License: {data.get('license_note', '')}\n"
+            for p in photos[:10]:
+                out += f"- {p['id']}: {p['width']}x{p['height']} by {p.get('author', '?')}\n"
+                out += f"  {p.get('description', '')[:80]}...\n"
+            return ToolResult(success=True, output=out)
+        return ToolResult(success=False, output="", error=result.get("fallback_instructions", "Pexels gagal"))
+    except Exception as exc:
+        return ToolResult(success=False, output="", error=f"Pexels error: {exc}")
+
+
+def _tool_search_wikimedia(args: dict) -> ToolResult:
+    """Search CC-licensed media from Wikimedia Commons."""
+    query = args.get("query", "").strip()
+    if not query:
+        return ToolResult(success=False, output="", error="query wajib diisi")
+    try:
+        from dataset_web_collector import search_wikimedia
+        result = search_wikimedia(
+            query=query,
+            limit=int(args.get("limit", 20)),
+            license_filter=args.get("license_filter"),
+        )
+        if result.get("ok"):
+            data = result["data"]
+            files = data.get("files", [])
+            out = f"[Wikimedia Commons] {len(files)} hasil untuk '{query}' (total: {data.get('total', 0)})\n"
+            out += f"License: {data.get('license_note', '')}\n"
+            for f in files[:10]:
+                out += f"- {f['title']}: {f.get('description', '')[:80]}...\n"
+                out += f"  Page: {f.get('source_url', '')}\n"
+            return ToolResult(success=True, output=out)
+        return ToolResult(success=False, output="", error=result.get("fallback_instructions", "Wikimedia gagal"))
+    except Exception as exc:
+        return ToolResult(success=False, output="", error=f"Wikimedia error: {exc}")
+
+
+def _tool_search_dataset_web(args: dict) -> ToolResult:
+    """Search across all legal web dataset sources (Unsplash + Pexels + Wikimedia)."""
+    query = args.get("query", "").strip()
+    if not query:
+        return ToolResult(success=False, output="", error="query wajib diisi")
+    try:
+        from dataset_web_collector import search_all
+        result = search_all(
+            query=query,
+            sources=args.get("sources"),
+            per_source=int(args.get("per_source", 10)),
+        )
+        if result.get("ok"):
+            data = result["data"]
+            out = f"[Web Dataset Search] '{query}' — {data.get('total_items', 0)} items\n"
+            out += f"Sources: {', '.join(data.get('sources', []))}\n"
+            out += f"{data.get('legal_summary', '')}\n"
+            for src, r in data.get("results", {}).items():
+                if r.get("ok"):
+                    d = r["data"]
+                    count = len(d.get("photos", [])) + len(d.get("files", []))
+                    out += f"- {src}: {count} items\n"
+            return ToolResult(success=True, output=out)
+        return ToolResult(success=False, output="", error=result.get("fallback_instructions", "Search gagal"))
+    except Exception as exc:
+        return ToolResult(success=False, output="", error=f"Web search error: {exc}")
+
+
+def _tool_analyze_dataset_dna(args: dict) -> ToolResult:
+    """Analyze dataset DNA (resolution, caption coverage, diversity, LoRA suitability)."""
+    entries = args.get("entries", [])
+    if not entries:
+        return ToolResult(success=False, output="", error="entries wajib diisi (list of dict)")
+    try:
+        from dataset_web_collector import analyze_dataset_dna
+        result = analyze_dataset_dna(entries)
+        if result.get("ok"):
+            data = result["data"]
+            out = "[Dataset DNA Analysis]\n"
+            out += f"Total entries: {data.get('total_entries', 0)}\n"
+            out += f"Quality (>=1024px): {data.get('quality_score', {}).get('high_res_percentage', 0)}%\n"
+            out += f"Caption coverage: {data.get('caption_coverage', {}).get('percentage', 0)}%\n"
+            out += f"Author diversity: {data.get('diversity_score', {}).get('diversity_percentage', 0)}%\n"
+            out += f"LoRA suitable: {'YES' if data.get('lora_suitability', {}).get('recommended') else 'NO'}\n"
+            flags = data.get("bias_risk_flags", [])
+            if flags and flags[0] != "None detected":
+                out += "Risk flags:\n"
+                for f in flags:
+                    out += f"  ⚠️ {f}\n"
+            return ToolResult(success=True, output=out)
+        return ToolResult(success=False, output="", error=result.get("fallback_instructions", "DNA analysis gagal"))
+    except Exception as exc:
+        return ToolResult(success=False, output="", error=f"DNA analysis error: {exc}")
+
+
+def _tool_get_laion_info(args: dict) -> ToolResult:
+    """Get LAION-5B dataset information and metadata pointers."""
+    try:
+        from dataset_web_collector import get_laion_info
+        result = get_laion_info()
+        if result.get("ok"):
+            data = result["data"]
+            out = f"[LAION-5B] {data.get('description', '')}\n"
+            out += f"License: {data.get('license', '')}\n"
+            out += "Subsets:\n"
+            for s in data.get("subsets", []):
+                out += f"  - {s['name']}: {s.get('size', '?')} — {s.get('use_case', '')}\n"
+            out += "Caveats:\n"
+            for c in data.get("caveats", []):
+                out += f"  ⚠️ {c}\n"
+            out += f"Download: {data.get('download', {}).get('metadata', '')}\n"
+            return ToolResult(success=True, output=out)
+        return ToolResult(success=False, output="", error=result.get("fallback_instructions", "LAION info gagal"))
+    except Exception as exc:
+        return ToolResult(success=False, output="", error=f"LAION info error: {exc}")
+
+
 TOOL_REGISTRY: dict[str, ToolSpec] = {
     "search_corpus": ToolSpec(
         name="search_corpus",
@@ -3954,6 +4111,65 @@ TOOL_REGISTRY: dict[str, ToolSpec] = {
         params=["sources", "tags"],
         permission="open",
         fn=_tool_collect_dataset,
+    ),
+    "search_unsplash": ToolSpec(
+        name="search_unsplash",
+        description=(
+            "Cari foto gratis dari Unsplash API (free commercial use). Butuh UNSPLASH_ACCESS_KEY env var. "
+            "Params: query (wajib), per_page (opsional, default 20), orientation (opsional: landscape/portrait/square)."
+        ),
+        params=["query", "per_page", "orientation"],
+        permission="open",
+        fn=_tool_search_unsplash,
+    ),
+    "search_pexels": ToolSpec(
+        name="search_pexels",
+        description=(
+            "Cari foto gratis dari Pexels API (free commercial use). Butuh PEXELS_API_KEY env var. "
+            "Params: query (wajib), per_page (opsional, default 20), orientation (opsional), color (opsional)."
+        ),
+        params=["query", "per_page", "orientation", "color"],
+        permission="open",
+        fn=_tool_search_pexels,
+    ),
+    "search_wikimedia": ToolSpec(
+        name="search_wikimedia",
+        description=(
+            "Cari media CC-licensed dari Wikimedia Commons (no API key needed). "
+            "Params: query (wajib), limit (opsional, default 20), license_filter (opsional)."
+        ),
+        params=["query", "limit", "license_filter"],
+        permission="open",
+        fn=_tool_search_wikimedia,
+    ),
+    "search_dataset_web": ToolSpec(
+        name="search_dataset_web",
+        description=(
+            "Cari dataset gambar dari semua sumber legal web (Unsplash + Pexels + Wikimedia). "
+            "Params: query (wajib), sources (opsional, list: unsplash/pexels/wikimedia), per_source (opsional, default 10)."
+        ),
+        params=["query", "sources", "per_source"],
+        permission="open",
+        fn=_tool_search_dataset_web,
+    ),
+    "analyze_dataset_dna": ToolSpec(
+        name="analyze_dataset_dna",
+        description=(
+            "Analisis DNA dataset (karakteristik, kualitas, bias, LoRA suitability). "
+            "Params: entries (wajib, list of dict dengan width/height/description/author/source/license)."
+        ),
+        params=["entries"],
+        permission="open",
+        fn=_tool_analyze_dataset_dna,
+    ),
+    "get_laion_info": ToolSpec(
+        name="get_laion_info",
+        description=(
+            "Info dataset LAION-5B (5.85B image-text pairs) + download pointers + bias caveats. No params."
+        ),
+        params=[],
+        permission="open",
+        fn=_tool_get_laion_info,
     ),
     "concept_graph": ToolSpec(
         name="concept_graph",

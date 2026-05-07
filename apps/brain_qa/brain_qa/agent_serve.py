@@ -2980,6 +2980,166 @@ def create_app() -> "FastAPI":
             log.warning("[dataset/sources] error: %s", e)
             raise HTTPException(status_code=500, detail=f"dataset sources error: {e}")
 
+    # ── POST /dataset/web/unsplash ────────────────────────────────────────────
+    @app.post("/dataset/web/unsplash")
+    async def dataset_web_unsplash(request: Request):
+        """Search photos via Unsplash API (free commercial use)."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+            query = body.get("query", "").strip()
+            if not query:
+                raise HTTPException(status_code=400, detail="query wajib diisi")
+            from dataset_web_collector import search_unsplash
+            result = search_unsplash(
+                query=query,
+                per_page=body.get("per_page", 20),
+                orientation=body.get("orientation"),
+            )
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "unsplash gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[dataset/web/unsplash] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"unsplash error: {e}")
+
+    # ── POST /dataset/web/pexels ──────────────────────────────────────────────
+    @app.post("/dataset/web/pexels")
+    async def dataset_web_pexels(request: Request):
+        """Search photos via Pexels API (free commercial use)."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+            query = body.get("query", "").strip()
+            if not query:
+                raise HTTPException(status_code=400, detail="query wajib diisi")
+            from dataset_web_collector import search_pexels
+            result = search_pexels(
+                query=query,
+                per_page=body.get("per_page", 20),
+                orientation=body.get("orientation"),
+                color=body.get("color"),
+            )
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "pexels gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[dataset/web/pexels] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"pexels error: {e}")
+
+    # ── POST /dataset/web/wikimedia ───────────────────────────────────────────
+    @app.post("/dataset/web/wikimedia")
+    async def dataset_web_wikimedia(request: Request):
+        """Search CC-licensed media from Wikimedia Commons."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+            query = body.get("query", "").strip()
+            if not query:
+                raise HTTPException(status_code=400, detail="query wajib diisi")
+            from dataset_web_collector import search_wikimedia
+            result = search_wikimedia(
+                query=query,
+                limit=body.get("limit", 20),
+                license_filter=body.get("license_filter"),
+            )
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "wikimedia gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[dataset/web/wikimedia] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"wikimedia error: {e}")
+
+    # ── POST /dataset/web/wikimedia/file ──────────────────────────────────────
+    @app.post("/dataset/web/wikimedia/file")
+    async def dataset_web_wikimedia_file(request: Request):
+        """Get detailed file info from Wikimedia Commons."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+            title = body.get("title", "").strip()
+            if not title:
+                raise HTTPException(status_code=400, detail="title wajib diisi (e.g. 'File:Example.jpg')")
+            from dataset_web_collector import get_wikimedia_file_info
+            result = get_wikimedia_file_info(title)
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "wikimedia file gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[dataset/web/wikimedia/file] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"wikimedia file error: {e}")
+
+    # ── POST /dataset/web/search ──────────────────────────────────────────────
+    @app.post("/dataset/web/search")
+    async def dataset_web_search(request: Request):
+        """Search across all legal web dataset sources."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+            query = body.get("query", "").strip()
+            if not query:
+                raise HTTPException(status_code=400, detail="query wajib diisi")
+            from dataset_web_collector import search_all
+            result = search_all(
+                query=query,
+                sources=body.get("sources"),
+                per_source=body.get("per_source", 10),
+            )
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "web search gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[dataset/web/search] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"web search error: {e}")
+
+    # ── POST /dataset/dna ─────────────────────────────────────────────────────
+    @app.post("/dataset/dna")
+    async def dataset_dna(request: Request):
+        """Analyze dataset DNA (LoRA suitability, quality, bias)."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+            entries = body.get("entries", [])
+            if not entries:
+                raise HTTPException(status_code=400, detail="entries wajib diisi (list of dict)")
+            from dataset_web_collector import analyze_dataset_dna
+            result = analyze_dataset_dna(entries)
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "dna analysis gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[dataset/dna] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"dna analysis error: {e}")
+
+    # ── GET /dataset/laion ────────────────────────────────────────────────────
+    @app.get("/dataset/laion")
+    async def dataset_laion(request: Request):
+        """Get LAION-5B dataset information and metadata pointers."""
+        _enforce_rate(request)
+        try:
+            from dataset_web_collector import get_laion_info
+            result = get_laion_info()
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "laion info gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[dataset/laion] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"laion info error: {e}")
+
     # ── POST /agent/chat ──────────────────────────────────────────────────────
     @app.post("/agent/chat", response_model=ChatResponse)
     def agent_chat(req: ChatRequest, request: Request):

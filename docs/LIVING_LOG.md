@@ -18194,3 +18194,55 @@ curl -X POST http://localhost:8765/agent/maqashid/tune -d '{"sample_size":30}'
   - Lines added: ~647
   - Tests: 4 py_compile PASS + 2 smoke test PASS
   - Bugs found: 0 new
+
+
+
+### 2026-05-08 (Kimi — SPRINT: Web Dataset Collector + Legal Source Analysis)
+
+- **TASK CARD:** Sprint Web Dataset Collector + Legal Source Analysis
+  - WHAT: Riset sumber dataset gambar web + implementasi connector legal sources + analisis DNA dataset
+  - WHY: Bos minta dataset dari Shutterstock/microstock/Instagram/Adobe Stock/Canva — perlu riset legal dulu
+  - ACCEPTANCE: 1 module baru, 6 tools, 7 endpoints, research doc, py_compile PASS
+  - PLAN: riset web → analisis legal → implementasi legal sources → DNA analysis → test → commit
+  - RISKS: API key Unsplash/Pexels belum di-set — fallback instructions built-in
+- **RESEARCH:** `docs/research/WEB_DATASET_SOURCES_ANALYSIS.md` — NEW
+  - Analisis legal 6 sumber komersial: semua DITOLAK (copyright infringement + ToS violation)
+  - Basis legal: US Copyright Office May 2025, Getty vs Stability AI (2025), Bartz v. Anthropic (2025)
+  - Sumber AMAN: Unsplash API, Pexels API, Wikimedia Commons, LAION-5B metadata
+  - Analisis DNA dataset: resolution, caption coverage, author diversity, bias risk, LoRA suitability
+  - LAION-Aesthetics bias warning (Taylor et al. 2026): gender imbalance, western-centric
+- **IMPL:** `apps/brain_qa/brain_qa/dataset_web_collector.py` — NEW
+  - `search_unsplash()`: Unsplash API (50 req/hour free, free commercial use)
+  - `search_pexels()`: Pexels API (200 req/hour free, free commercial use)
+  - `search_wikimedia()`: Wikimedia Commons API (no key, CC-licensed)
+  - `get_wikimedia_file_info()`: Detailed file info including license
+  - `get_laion_info()`: LAION-5B reference + subsets + caveats + download pointers
+  - `search_all()`: Cross-source unified search (Unsplash+Pexels+Wikimedia)
+  - `analyze_dataset_dna()`: Resolution, caption coverage, diversity, bias flags, LoRA suitability score
+- **IMPL:** `apps/brain_qa/brain_qa/agent_tools.py` — 6 tool baru
+  - `search_unsplash`, `search_pexels`, `search_wikimedia`, `search_dataset_web`
+  - `analyze_dataset_dna`, `get_laion_info`
+  - Total tools: 50 → **56** (+6)
+- **IMPL:** `apps/brain_qa/brain_qa/agent_serve.py` — 7 endpoint baru
+  - `POST /dataset/web/unsplash` — Unsplash search
+  - `POST /dataset/web/pexels` — Pexels search
+  - `POST /dataset/web/wikimedia` — Wikimedia search
+  - `POST /dataset/web/wikimedia/file` — Wikimedia file detail
+  - `POST /dataset/web/search` — Cross-source search
+  - `POST /dataset/dna` — Dataset DNA analysis
+  - `GET /dataset/laion` — LAION-5B info
+- **TEST:** py_compile 3/3 PASS ✅ (dataset_web_collector.py, agent_tools.py, agent_serve.py)
+- **FIX:** N/A — no bugs found
+- **DECISION:** Scraping Shutterstock/Adobe Stock/Getty/Canva/Instagram = DITOLAK karena risiko legal tinggi
+  - Alternatif: Unsplash + Pexels + Wikimedia + LAION-5B metadata
+  - Bos perlu set UNSPLASH_ACCESS_KEY dan PEXELS_API_KEY untuk aktifkan API search
+- **Anti-menguap checklist:**
+  - ✅ BACKLOG updated
+  - ✅ VISI_MATRIX updated
+  - ✅ LIVING_LOG updated
+  - ✅ Code committed + pushed
+- **Session stats:**
+  - Files modified: 4 (1 new + 2 modified + 1 new doc)
+  - Lines added: ~850
+  - Tests: 3 py_compile PASS
+  - Bugs found: 0 new
