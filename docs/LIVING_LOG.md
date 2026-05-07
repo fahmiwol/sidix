@@ -17326,3 +17326,29 @@ curl -X POST http://localhost:8765/agent/maqashid/tune -d '{"sample_size":30}'
   - A2A adoption = next sprint. Butuh: AgentCard endpoint (`/.well-known/agent-card.json`), A2AServer (Starlette), A2AClient (delegasi ke external agents).
 - **NEXT:** (1) A2A Phase 1-2 implementation (AgentCard + A2AServer), (2) Deploy manual ke VPS + smoke test `/mcp` endpoint, (3) MCP stdio transport untuk desktop integration.
 
+
+
+### 2026-05-07 (Kimi — A2A AgentCard + GitHub Actions Deploy Setup)
+
+- **IMPL:** `apps/brain_qa/brain_qa/agent_serve.py` — NEW endpoint `GET /.well-known/agent-card.json`:
+  - A2A AgentCard dengan 6 skills: `rag_query`, `deep_research`, `code_execution`, `image_generation`, `web_search`, `mode_chat`
+  - Capabilities: streaming, statePersistence
+  - Authentication: bearer JWT
+  - MCP endpoint reference: `https://ctrl.sidixlab.com/mcp`
+  - Dynamic `mcpToolsCount` dari `list_tools()`
+  - `py_compile` PASS. ✅
+- **NOTE:** GitHub Actions workflow untuk auto-deploy dibuat tapi **tidak bisa di-push** karena PAT tidak memiliki `workflow` scope. File disimpan di `deploy-scripts/github-actions-deploy.yml` — user perlu:
+  1. Setup GitHub Secrets: `VPS_HOST`, `VPS_USER`, `VPS_SSH_KEY`
+  2. Copy file ke `.github/workflows/deploy-vps.yml`
+  3. Push dengan credential yang punya `workflow` scope
+- **COMMIT:** `c0e8abf` (`feat(a2a): AgentCard endpoint`) pushed ke `origin/work/gallant-ellis-7cd14d`. +72, 1 file. 🚀
+- **STATUS HARI INI (ringkasan):**
+  - ✅ Mode System: end-to-end DONE (frontend + backend)
+  - ✅ MCP Transport: HTTP JSON-RPC DONE (POST /mcp)
+  - ✅ 4 Missing Tools: DONE (21 tools di registry)
+  - ✅ Deep Research: recursive engine DONE
+  - ✅ A2A AgentCard: Phase 1 DONE
+  - ⏳ Deploy: script ready, menunggu manual trigger atau GitHub Actions setup
+- **TOTAL COMMITS HARI INI:** 4 commits (`b3ffb9f`, `b2350fe`, `7453f8b`, `c0e8abf`)
+- **TOTAL INSERTIONS:** ~921 baris kode baru
+
