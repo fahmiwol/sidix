@@ -18032,3 +18032,49 @@ curl -X POST http://localhost:8765/agent/maqashid/tune -d '{"sample_size":30}'
   - Lines added: ~1,800 (research note ~1,100 + BACKLOG ~500 + VISI_MATRIX ~200)
   - Tests: N/A (planning session, no code changes)
   - Bugs found: 0 new
+
+
+### 2026-05-08 (Kimi — SPRINT: Input Expansion Phase 1)
+
+- **TASK CARD:** Sprint Input Expansion Phase 1 (CPU-friendly multimodal input)
+  - WHAT: Deploy document parser + STT/TTS endpoints + tool registry expansion
+  - WHY: P0 user-facing impact, foundation untuk sprint lain, tidak butuh GPU
+  - ACCEPTANCE: 3 endpoints LIVE, 3 tools registered, py_compile + smoke test PASS
+  - PLAN: document_parser.py → agent_serve.py endpoints → agent_tools.py registry → test → commit
+  - RISKS: VPS dependency install (python-docx, openpyxl) — fallback instructions built-in
+- **IMPL:** `apps/brain_qa/brain_qa/document_parser.py` — NEW
+  - Word (.docx) via python-docx
+  - Excel (.xlsx/.xls) via openpyxl / xlrd
+  - CSV/TSV via stdlib csv
+  - JSON via stdlib json
+  - Text (.txt/.md/.py/.yaml/.jsonl) via stdlib open
+  - Auto-detect router `parse_document(path)`
+  - All return unified dict format {ok, data, fallback_instructions, citations}
+- **IMPL:** `apps/brain_qa/brain_qa/agent_serve.py` — 3 endpoint baru
+  - `POST /upload/audio/transcribe` — transcribe uploaded audio → text
+  - `POST /tts` — synthesize text → WAV file
+  - `POST /upload/document` — upload + auto-parse Word/Excel/CSV/JSON/TXT
+- **IMPL:** `apps/brain_qa/brain_qa/agent_tools.py` — 3 tool baru di TOOL_REGISTRY
+  - `transcribe_audio` — ASR tool untuk ReAct agent
+  - `synthesize_speech` — TTS tool untuk ReAct agent
+  - `parse_document` — document parser tool untuk ReAct agent
+  - Total tools: 35 → **38** (+3)
+- **TEST:** py_compile 3/3 PASS ✅ (document_parser.py, agent_serve.py, agent_tools.py)
+- **TEST:** smoke test 2/2 PASS ✅ (document_parser import, audio_capability import)
+- **FIX:** N/A — no bugs found
+- **DECISION:** Phase 1 CPU-only deploy (tidak butuh GPU). Phase 2 Qwen3-VL deploy ke RunPod.
+- **COMMIT:** `8bd45dc` pushed ke `origin/work/gallant-ellis-7cd14d`
+  - 3 files changed, 436 insertions(+)
+- **Anti-menguap checklist:**
+  - ✅ BACKLOG updated (sprint batch 2026-05-08)
+  - ✅ VISI_MATRIX updated
+  - ✅ LIVING_LOG updated (this entry)
+  - ✅ Research note 318 committed
+  - ✅ Code committed + pushed
+  - ⏸️ FOUNDER_IDEA_LOG — no new founder verbatim
+  - ⏸️ FOUNDER_JOURNAL — no new founder decisions
+- **Session stats:**
+  - Files modified: 3 (1 new + 2 modified)
+  - Lines added: ~436
+  - Tests: 3 py_compile PASS + 2 smoke test PASS
+  - Bugs found: 0 new
