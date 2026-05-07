@@ -48,6 +48,12 @@ except ImportError:
 from .agent_react import run_react, format_trace, AgentSession
 from .agent_tools import list_available_tools, call_tool, get_agent_workspace_root
 from .local_llm import adapter_fingerprint, adapter_weights_exist, find_adapter_dir, generate_sidix
+from .agency_kit import (
+    AgencyKitRequest as _AgencyKitRequest,
+    create_agency_kit_job,
+    get_job_status,
+    list_jobs,
+)
 from . import rate_limit
 from . import social_radar
 from . import memory_store
@@ -85,6 +91,11 @@ from .maqashid_auto_tune import (
     auto_tune_response,
     get_global_stats,
     AutoTuneResult,
+)
+from .debate_ring import (
+    DebateResult as DebateResultModel,
+    run_debate,
+    get_debate_personas,
 )
 
 _PROCESS_STARTED = time.time()
@@ -609,6 +620,14 @@ class AgentGenerateResponse(BaseModel):
     text: str
     mode: str  # "ollama" | "local_lora" | "mock"
     persona: str
+
+
+class DebateRequest(BaseModel):
+    """Debate Ring REAL — multi-agent consensus request."""
+    topic: str
+    persona_a: str = "UTZ"
+    persona_b: str = "OOMAR"
+    max_rounds: int = 3
 
 
 # ── A2A Phase 3 Client models ────────────────────────────────────────────────
@@ -3316,6 +3335,53 @@ def create_app() -> "FastAPI":
             raise HTTPException(status_code=400, detail=str(e))
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"kitabah failed: {e}")
+
+    # ── POST /creative/debate — Debate Ring REAL ─────────────────────────────
+    @app.post("/creative/debate", tags=["Supermodel"])
+    def creative_debate(req: DebateRequest, request: Request):
+        """
+        Debate Ring REAL — multi-agent consensus via Qwen LLM.
+        3-round debate: Creator → Critic → Creator revises → Neutral synthesis.
+        """
+        _enforce_rate(request)
+        _enforce_daily(request)
+        _bump_metric("creative_debate")
+        if not (req.topic or "").strip():
+            raise HTTPException(status_code=400, detail="topic kosong")
+
+        t0 = time.time()
+        try:
+            result = run_debate(
+                topic=req.topic,
+                persona_a=req.persona_a,
+                persona_b=req.persona_b,
+                max_rounds=max(1, min(req.max_rounds, 5)),
+            )
+        except Exception as e:
+            log.warning("[debate] failed: %s", e)
+            raise HTTPException(status_code=500, detail=f"debate failed: {e}")
+
+        _log_user_activity(
+            request,
+            action="creative/debate",
+            question=req.topic,
+            answer=result.consensus_text[:160],
+            mode="debate",
+            latency_ms=int((time.time() - t0) * 1000),
+        )
+        return {
+            "topic": result.topic,
+            "rounds": [r.model_dump() for r in result.rounds],
+            "consensus_text": result.consensus_text,
+            "winner": result.winner,
+            "cqf_score": result.cqf_score,
+            "duration_ms": result.duration_ms,
+        }
+
+    @app.get("/creative/debate/personas", tags=["Supermodel"])
+    def creative_debate_personas():
+        """List available debate persona pairs."""
+        return {"pairs": get_debate_personas()}
 
     # ── POST /agent/rasa — Sprint 21: 🎭 RASA Aesthetic/Quality Scorer ───────
     @app.post("/agent/rasa", tags=["Supermodel"])
@@ -7011,11 +7077,76 @@ def create_app() -> "FastAPI":
 
     @app.get("/training/stats")
     def training_stats():
-        """Statistik training pairs yang sudah digenerate dari corpus."""
+        """Dashboard stats untuk Self-Train Fase 1 curation pipeline."""
         try:
-            from .corpus_to_training import get_training_stats
-            stats = get_training_stats()
-            return {"ok": True, "stats": stats}
+            from .curator_agent import get_curation_stats, get_training_data_info, load_corpus_docs
+            stats = get_curation_stats()
+            latest = get_training_data_info()
+            corpus_docs = load_corpus_docs(limit=5000)
+
+            total_approved = stats.get("approved", 0)
+            total_rejected = stats.get("rejected", 0)
+            total_premium = stats.get("premium_pairs", 0)
+            last_curation = stats.get("last_run", "")
+            pairs_this_week = latest.get("pairs", 0) if latest.get("ok") else 0
+            premium_this_week = sum(
+                1 for _ in (
+                    Path(latest.get("path", "")).parent.glob("corpus_pairs_premium.jsonl")
+                )
+            ) if latest.get("ok") else 0
+
+            return {
+                "total_corpus_docs": len(corpus_docs),
+                "total_approved": total_approved,
+                "total_premium": total_premium,
+                "total_rejected": total_rejected,
+                "last_curation": last_curation.split("T")[0] if last_curation else "",
+                "pairs_this_week": pairs_this_week,
+                "premium_this_week": premium_this_week,
+            }
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=str(e))
+
+    @app.post("/training/curate")
+    async def training_curate(request: Request):
+        """Trigger manual curation pipeline. Body: {threshold: 0.70, limit: 500}"""
+        if not _admin_ok(request):
+            raise HTTPException(status_code=403, detail="Admin access required")
+        try:
+            body = await request.json()
+        except Exception:
+            body = {}
+        threshold = float(body.get("threshold", 0.70))
+        limit = int(body.get("limit", 500))
+        try:
+            from .curator_agent import run_curation
+            import asyncio
+            loop = asyncio.get_event_loop()
+            result = await loop.run_in_executor(
+                None,
+                lambda: run_curation(min_score=threshold, max_pairs=limit),
+            )
+            return {
+                "approved": result.get("approved", 0),
+                "rejected": result.get("rejected", 0),
+                "premium": result.get("premium_pairs", 0),
+            }
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=str(e))
+
+    @app.get("/training/data/latest")
+    def training_data_latest():
+        """Get latest training data file info."""
+        try:
+            from .curator_agent import get_training_data_info
+            info = get_training_data_info()
+            if not info.get("ok"):
+                return {"ok": False, "error": info.get("error", "unknown")}
+            return {
+                "path": info.get("path", ""),
+                "pairs": info.get("pairs", 0),
+                "size_bytes": info.get("size_bytes", 0),
+            }
         except Exception as e:
             raise HTTPException(status_code=500, detail=str(e))
 
@@ -9040,45 +9171,74 @@ h1{{color:#0af}}p{{color:#aaa}}a{{color:#0af}}</style></head>
         except Exception as e:
             return {"ok": False, "error": str(e)}
 
-    # ── Sprint 5: Creative Agency Kit endpoint ───────────────────────────────
+    # ── Sprint 5: Creative Agency Kit endpoint (async background job) ────────
     @app.post("/creative/agency_kit", tags=["Creative"])
-    def creative_agency_kit(body: dict[str, Any] = {}):
+    def creative_agency_kit(req: _AgencyKitRequest):
         """
-        Build Agency Kit lengkap dalam 1 panggilan.
+        Agency Kit 1-Click — create background job, return job_id immediately.
 
         Body:
           business_name   (str, wajib) — nama bisnis/brand
-          niche           (str, wajib) — bidang usaha (kuliner, fashion, jasa, dll)
-          target_audience (str)        — deskripsi audiens target
-          budget          (str)        — budget iklan (contoh: '1.5jt', '500rb', default '1.5jt')
+          niche           (str, wajib) — bidang usaha
+          target_audience (str, wajib) — deskripsi audiens target
+          budget          (str)        — budget iklan (default '1.5jt')
+          brand_tone      (str, opt)   — tone brand
+          color_preference (str, opt)  — preferensi warna
 
-        Returns:
-          {ok, brand_kit, captions, content_plan, campaign, ads, thumbnails,
-           cqf_composite, cqf_tier, elapsed_s, warnings}
+        Returns: {ok, job_id}
         """
         try:
-            from .agency_kit import build_agency_kit
-            business_name = str((body or {}).get("business_name", "")).strip()
-            niche = str((body or {}).get("niche", "")).strip()
-            target_audience = str((body or {}).get("target_audience", "")).strip()
-            budget = str((body or {}).get("budget", "1.5jt")).strip() or "1.5jt"
-
+            business_name = (req.business_name or "").strip()
+            niche = (req.niche or "").strip()
+            target_audience = (req.target_audience or "").strip()
             if not business_name:
                 raise HTTPException(status_code=400, detail="business_name wajib diisi")
             if not niche:
                 raise HTTPException(status_code=400, detail="niche wajib diisi")
+            if not target_audience:
+                req.target_audience = "audiens Indonesia umum"
 
-            result = build_agency_kit(
-                business_name=business_name,
-                niche=niche,
-                target_audience=target_audience or "audiens Indonesia umum",
-                budget=budget,
-            )
-            return result
+            job_id = create_agency_kit_job(req)
+            return {"ok": True, "job_id": job_id}
         except HTTPException:
             raise
         except Exception as e:
-            return {"ok": False, "error": str(e)}
+            raise HTTPException(status_code=500, detail=str(e))
+
+    @app.get("/creative/agency_kit/{job_id}", tags=["Creative"])
+    def creative_agency_kit_status(job_id: str):
+        """Get job status + partial/completed results."""
+        job = get_job_status(job_id)
+        if not job:
+            raise HTTPException(status_code=404, detail="job_id tidak ditemukan")
+        return {
+            "ok": True,
+            "job_id": job.job_id,
+            "status": job.status,
+            "progress": job.progress,
+            "results": job.results,
+            "created_at": job.created_at,
+            "completed_at": job.completed_at,
+        }
+
+    @app.get("/creative/agency_kit/list", tags=["Creative"])
+    def creative_agency_kit_list():
+        """List all agency kit jobs (max 50, oldest pruned automatically)."""
+        jobs = list_jobs()
+        return {
+            "ok": True,
+            "count": len(jobs),
+            "jobs": [
+                {
+                    "job_id": j.job_id,
+                    "status": j.status,
+                    "progress": j.progress,
+                    "created_at": j.created_at,
+                    "completed_at": j.completed_at,
+                }
+                for j in jobs
+            ],
+        }
 
     # ── Sprint 6: Prompt Optimizer endpoints ────────────────────────────────
     @app.post("/creative/prompt_optimize/all", tags=["Creative"])

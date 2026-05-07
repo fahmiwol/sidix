@@ -17655,3 +17655,87 @@ curl -X POST http://localhost:8765/agent/maqashid/tune -d '{"sample_size":30}'
 - **NOTE:** A2A client discover ke ctrl.sidixlab.com timeout (502 Bad Gateway) — kemungkinan karena server connect ke dirinya sendiri via public IP + SSL handshake. External agent discovery seharusnya OK. Fix: gunakan localhost untuk self-test.
 - **TOTAL COMMITS HARI INI:** 3 commits (`ca5ce93`, `223bf46`, `7183e75`)
 - **TOTAL INSERTIONS:** ~4,500+ baris kode baru (3 batch sprint paralel)
+
+
+### 2026-05-07 (Kimi — Batch 3 Start: Agency Kit + Debate Ring + Self-Train)
+
+- **DECISION:** Founder directive: "kamu atur sesuai dampak dan dependencinya"
+- **ANALISIS PRIORITAS:**
+  1. Agency Kit 1-Click = dampak bisnis TINGGI, dependensi RENDAH. Killer offer langsung ke user.
+  2. Debate Ring REAL = dampak quality TINGGI, dependensi RENDAH. Multi-agent consensus → output +30-50%.
+  3. Self-Train Fase 1 = dampak long-term TINGGI, dependensi RENDAH. Fondasi untuk DoRA + Voyager.
+- **BATCH EKSEKUSI:** 3 sprint paralel via subagent.
+- **TASK CARD:** docs/TASK_CARD_2026-05-07_AGENCY_DEBATE_TRAIN.md
+
+
+### 2026-05-07 (Kimi — Debate Ring REAL Implementation)
+
+- **IMPL:** `apps/brain_qa/brain_qa/debate_ring.py` — Debate Ring REAL multi-agent consensus via Qwen LLM (self-hosted).
+  - Models: `DebateRole`, `DebateRound`, `DebateResult` (Pydantic)
+  - `run_debate(topic, persona_a, persona_b, max_rounds=3)` — 3-round flow: Creator → Critic → Creator revises → Neutral synthesizer.
+  - `_heuristic_cqf()` + `_score_cqf()` — minimal CQF scorer with fallback to `creative_quality.heuristic_score` if available.
+  - `debate_layer_output(layer_name, output_text, persona_a, persona_b)` — helper for Agency Kit integration.
+  - `get_debate_personas()` — returns 5 pre-defined debate pairs (UTZ↔OOMAR, UTZ↔ABOO, UTZ↔ALEY, AYMAN↔OOMAR, ABOO↔ALEY).
+  - Fail-open: if any round fails, returns best available text so far.
+  - All inference via `generate_sidix()` — zero external API calls.
+- **UPDATE:** `apps/brain_qa/brain_qa/agent_serve.py` — wired 2 new endpoints under `create_app()`:
+  - `POST /creative/debate` — runs debate, returns `DebateResult` JSON (with `_enforce_rate`, `_enforce_daily`, `_bump_metric`, `_log_user_activity`).
+  - `GET /creative/debate/personas` — lists available debate pairs.
+  - Added `DebateRequest` Pydantic model at module top-level for FastAPI schema compat.
+- **UPDATE:** `SIDIX_USER_UI/src/api.ts` — added TypeScript types and client:
+  - `DebateRequest`, `DebateRound`, `DebateResult` interfaces.
+  - `runDebate(req)` — POST `/creative/debate` with auth headers + 30s timeout.
+  - `getDebatePersonas()` — GET `/creative/debate/personas`.
+- **UPDATE:** `SIDIX_USER_UI/src/main.ts` — imported `runDebate`, `getDebatePersonas`, `DebateRequest`, `DebateResult`.
+  - Added `callDebate()` helper for future UI/Agency Kit wizard use.
+  - Exposed `window.sidixDebate` and `window.sidixDebatePersonas` for console debugging.
+- **TEST:** `python -m py_compile apps/brain_qa/brain_qa/debate_ring.py` → PASS (exit 0).
+- **TEST:** `python -m py_compile apps/brain_qa/brain_qa/agent_serve.py` → PASS (exit 0).
+- **DECISION:** Each debate round uses `max_tokens=512, temperature=0.7` as specified. Total debate timeout is implicitly bounded by FastAPI request handling (no infinite blocking).
+
+
+### 2026-05-07 (Kimi — Self-Train Fase 1: Automated Corpus Curation)
+
+- **IMPL:** `apps/brain_qa/brain_qa/curator_agent.py` — rewritten with rule-based scoring pipeline for Self-Train Fase 1.
+  - Scoring dimensions (0.0–1.0): relevance (BM25 percentile) × 25%, sanad_tier × 20%, maqashid_score × 20%, dedupe_score × 15%, length_score × 10%, structure_score × 10%.
+  - `load_corpus_docs(limit=1000)` — loads from BM25 index + metadata via existing `_load_chunks`/`_load_tokens`.
+  - `score_document(doc)` — scores single document with all dimensions.
+  - `curate_batch(docs, threshold=0.70)` — returns (approved, rejected) with coarse simhash deduplication.
+  - `get_premium_pairs(threshold=0.85)` — loads high-score pairs from `lora_all_pairs.jsonl`.
+  - `run_curation()` — full pipeline writing to `brain/public/training_data/YYYY-MM-DD/corpus_pairs.jsonl` + premium variant.
+  - Thread-safe via `_curator_lock` for concurrent runs.
+  - Zero external API calls; all heuristic scoring.
+- **CREATE:** `scripts/corpus_to_training.py` — standalone weekly cron script.
+  - Loads corpus docs via curator agent, scores all, generates instruction-tuning JSONL.
+  - Output: `brain/public/training_data/YYYY-MM-DD/corpus_pairs.jsonl` + `_summary.json`.
+  - Also appends to aggregate `.data/lora_all_pairs.jsonl` and `.data/lora_premium_pairs.jsonl`.
+  - Target: 100–300 pairs per week.
+- **UPDATE:** `scripts/dataset_id_sea_collector.py` — enhanced to output training-compatible JSONL.
+  - Added `score`, `sanad_tier`, `maqashid_passed` fields to each pair.
+  - Writes consolidated `id_sea_pairs.jsonl` to `brain/public/training_data/YYYY-MM-DD/`.
+- **UPDATE:** `apps/brain_qa/brain_qa/agent_serve.py` — wired 3 training endpoints.
+  - `GET /training/stats` — returns `{total_corpus_docs, total_approved, total_premium, total_rejected, last_curation, pairs_this_week, premium_this_week}`.
+  - `POST /training/curate` — manual curation trigger (admin-only), body `{threshold, limit}`.
+  - `GET /training/data/latest` — returns `{path, pairs, size_bytes}` for latest training data file.
+  - Existing `/training/run` and `/training/files` preserved for backward compat.
+- **CREATE:** `docs/SELF_TRAIN_CRON.md` — cron documentation.
+  - Weekly cron: `0 3 * * 1` (Monday 03:00 UTC).
+  - Script: `cd /opt/sidix && python scripts/corpus_to_training.py >> /var/log/sidix_training.log 2>&1`.
+- **UPDATE:** `SIDIX_USER_UI/src/api.ts` — added TrainingStats client.
+  - `TrainingStats` interface.
+  - `getTrainingStats()`, `triggerCuration(threshold?, limit?)`, `getLatestTrainingData()`.
+- **TEST:** `python -m py_compile apps/brain_qa/brain_qa/curator_agent.py` → PASS.
+- **TEST:** `python -m py_compile scripts/corpus_to_training.py` → PASS.
+- **TEST:** `python -m py_compile apps/brain_qa/brain_qa/agent_serve.py` → PASS.
+- **TEST:** `python -m py_compile scripts/dataset_id_sea_collector.py` → PASS.
+
+### 2026-05-07
+
+- IMPL: Agency Kit 1-Click async background pipeline (pps/brain_qa/brain_qa/agency_kit.py). Pydantic models AgencyKitRequest, AgencyKitJob, AgencyKitResult. 6-layer DAG with 	hreading.Thread background jobs, in-memory store (max 50), progress 0-100, Debate Ring integration, CQF scoring. All LLM calls route through generate_sidix() (self-hosted only).
+- UPDATE: pps/brain_qa/brain_qa/agent_serve.py — refactor /creative/agency_kit to return job_id immediately (async), add /creative/agency_kit/{job_id} and /creative/agency_kit/list endpoints.
+- UPDATE: SIDIX_USER_UI/src/api.ts — add AgencyKitRequest, AgencyKitJob, createAgencyKit, getAgencyKitJob, listAgencyKitJobs.
+- UPDATE: SIDIX_USER_UI/index.html — add sidebar + mobile nav 🏢 Agency Kit button, wizard modal with form fields, progress bar, result gallery modal with brand kit / captions / threads / scripts / timeline / thumbnails / IG grid / CQF score cards.
+- UPDATE: SIDIX_USER_UI/src/main.ts — Agency Kit wizard logic: open/close modals, submit + polling (2s interval), render results, export to Markdown.
+- TEST: python -m py_compile apps/brain_qa/brain_qa/agency_kit.py → pass.
+- TEST: python -m py_compile apps/brain_qa/brain_qa/agent_serve.py → pass.
+- TEST: cd SIDIX_USER_UI && npm run build → pass (vite build 2.19s, 161KB JS).

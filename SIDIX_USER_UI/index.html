@@ -188,6 +188,12 @@
           title="Knowledge Base">
           <i data-lucide="library" class="w-5 h-5"></i>
         </button>
+        <button id="nav-agency-kit"
+          class="nav-item w-10 h-10 rounded-xl flex items-center justify-center text-parchment-400
+                 hover:bg-warm-700 hover:text-parchment-100 transition-all duration-150"
+          title="Agency Kit">
+          <span class="text-lg">🏢</span>
+        </button>
       </nav>
 
       <!-- Bottom -->
@@ -915,6 +921,13 @@
           <span class="text-[10px] font-medium" id="mob-label-about">Tentang</span>
         </button>
 
+        <button id="mob-nav-agency"
+          class="flex flex-col items-center gap-0.5 px-4 py-1.5 rounded-xl transition-all text-parchment-500 hover:text-parchment-300"
+          aria-label="Agency Kit">
+          <span class="text-lg">🏢</span>
+          <span class="text-[10px] font-medium" id="mob-label-agency">Agency</span>
+        </button>
+
         <button id="mob-nav-settings"
           class="flex flex-col items-center gap-0.5 px-4 py-1.5 rounded-xl transition-all text-parchment-500 hover:text-parchment-300"
           aria-label="Pengaturan">
@@ -1076,6 +1089,168 @@
           <button id="admin-pin-cancel" class="flex-1 px-4 py-2.5 rounded-xl text-sm text-parchment-400
                   hover:bg-warm-700 transition-all border border-warm-600">Batal</button>
           <button id="admin-pin-confirm" class="flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold btn-gold">Login</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════════════════
+         AGENCY KIT WIZARD MODAL
+    ════════════════════════════════════════════════════ -->
+    <div id="agency-kit-modal" class="hidden fixed inset-0 z-[150] contrib-modal-backdrop">
+      <div class="about-modal-card max-w-lg">
+        <div class="w-10 h-1 rounded-full bg-warm-600 mx-auto mb-5"></div>
+        <div class="text-center mb-5">
+          <h2 class="font-display text-xl font-bold glow-gold">🏢 Agency Kit 1-Click</h2>
+          <p class="text-xs text-parchment-400 mt-1">Generate brand kit + konten + campaign dalam 1 klik</p>
+        </div>
+        <div class="space-y-3 text-sm">
+          <div>
+            <label class="block text-[11px] text-parchment-400 mb-1 uppercase tracking-wider">Nama Bisnis / Brand</label>
+            <input id="ak-business-name" type="text" placeholder="Contoh: Kopi Sejati"
+              class="w-full bg-warm-800 border border-warm-600 rounded-lg px-3 py-2 text-sm text-parchment-100 placeholder:text-parchment-600 focus:outline-none focus:border-gold-500/40" />
+          </div>
+          <div>
+            <label class="block text-[11px] text-parchment-400 mb-1 uppercase tracking-wider">Niche / Bidang</label>
+            <input id="ak-niche" type="text" placeholder="Contoh: Kuliner, Fashion, Jasa..."
+              class="w-full bg-warm-800 border border-warm-600 rounded-lg px-3 py-2 text-sm text-parchment-100 placeholder:text-parchment-600 focus:outline-none focus:border-gold-500/40" />
+          </div>
+          <div>
+            <label class="block text-[11px] text-parchment-400 mb-1 uppercase tracking-wider">Target Audiens</label>
+            <textarea id="ak-target" rows="2" placeholder="Contoh: Milenial urban, usia 25-35, pecinta kopi..."
+              class="w-full bg-warm-800 border border-warm-600 rounded-lg px-3 py-2 text-sm text-parchment-100 placeholder:text-parchment-600 focus:outline-none focus:border-gold-500/40 resize-none"></textarea>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-[11px] text-parchment-400 mb-1 uppercase tracking-wider">Budget</label>
+              <input id="ak-budget" type="text" value="1.5jt" placeholder="1.5jt"
+                class="w-full bg-warm-800 border border-warm-600 rounded-lg px-3 py-2 text-sm text-parchment-100 placeholder:text-parchment-600 focus:outline-none focus:border-gold-500/40" />
+            </div>
+            <div>
+              <label class="block text-[11px] text-parchment-400 mb-1 uppercase tracking-wider">Brand Tone</label>
+              <input id="ak-tone" type="text" placeholder="friendly, profesional..."
+                class="w-full bg-warm-800 border border-warm-600 rounded-lg px-3 py-2 text-sm text-parchment-100 placeholder:text-parchment-600 focus:outline-none focus:border-gold-500/40" />
+            </div>
+          </div>
+          <div>
+            <label class="block text-[11px] text-parchment-400 mb-1 uppercase tracking-wider">Preferensi Warna</label>
+            <input id="ak-color" type="text" placeholder="Contoh: earth tone, monochrome, bold..."
+              class="w-full bg-warm-800 border border-warm-600 rounded-lg px-3 py-2 text-sm text-parchment-100 placeholder:text-parchment-600 focus:outline-none focus:border-gold-500/40" />
+          </div>
+        </div>
+        <div id="agency-kit-progress" class="hidden mt-5">
+          <div class="flex items-center justify-between text-[11px] text-parchment-400 mb-1">
+            <span id="ak-progress-label">Memulai...</span>
+            <span id="ak-progress-pct">0%</span>
+          </div>
+          <div class="w-full h-2 bg-warm-700 rounded-full overflow-hidden">
+            <div id="ak-progress-bar" class="h-full bg-gold-500 transition-all duration-500" style="width:0%"></div>
+          </div>
+        </div>
+        <div id="agency-kit-error" class="hidden mt-3 text-xs text-status-failed text-center"></div>
+        <div class="flex gap-3 mt-6">
+          <button id="ak-cancel" class="flex-1 px-4 py-2.5 rounded-xl text-sm text-parchment-400 hover:bg-warm-700 transition-all border border-warm-600">Batal</button>
+          <button id="ak-submit" class="flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold btn-gold">Generate 🚀</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════════════════
+         AGENCY KIT RESULT GALLERY
+    ════════════════════════════════════════════════════ -->
+    <div id="agency-kit-gallery" class="hidden fixed inset-0 z-[160] flex items-end sm:items-center justify-center" style="background:rgba(0,0,0,0.88);backdrop-filter:blur(8px)">
+      <div class="w-full max-w-3xl mx-4 mb-0 sm:mb-0 rounded-t-3xl sm:rounded-3xl overflow-hidden flex flex-col max-h-[92vh]" style="background:#1a1208;border:1px solid rgba(204,152,49,0.25)">
+        <div class="w-10 h-1 rounded-full bg-warm-600 mx-auto mt-3 sm:hidden"></div>
+        <div class="px-6 pt-5 pb-3 flex items-center justify-between flex-shrink-0">
+          <div>
+            <h2 class="font-display text-lg font-bold glow-gold">🏢 Agency Kit Result</h2>
+            <p class="text-[11px] text-parchment-400 mt-0.5" id="ak-result-subtitle">—</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button id="ak-export-btn" class="px-3 py-1.5 rounded-lg text-[11px] font-semibold border border-warm-600 text-parchment-300 hover:border-gold-500/40 hover:text-gold-400 transition-colors flex items-center gap-1.5">
+              <i data-lucide="download" class="w-3.5 h-3.5"></i> Export MD
+            </button>
+            <button id="ak-gallery-close" class="w-8 h-8 rounded-lg flex items-center justify-center text-parchment-500 hover:text-parchment-200 transition-colors">
+              <i data-lucide="x" class="w-4 h-4"></i>
+            </button>
+          </div>
+        </div>
+        <div id="ak-gallery-content" class="flex-1 overflow-y-auto px-6 pb-6 space-y-4 text-sm">
+          <!-- Brand Kit Card -->
+          <div class="academic-card p-4">
+            <h3 class="text-gold-400 font-semibold text-xs uppercase tracking-wider mb-2">🎨 Brand Kit</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+              <div><span class="text-parchment-500">Nama:</span> <span id="ak-res-brand-name" class="text-parchment-200">—</span></div>
+              <div><span class="text-parchment-500">Archetype:</span> <span id="ak-res-archetype" class="text-parchment-200">—</span></div>
+              <div><span class="text-parchment-500">Paleta:</span> <span id="ak-res-palette" class="text-parchment-200">—</span></div>
+              <div><span class="text-parchment-500">Tipografi:</span> <span id="ak-res-typography" class="text-parchment-200">—</span></div>
+              <div class="sm:col-span-2"><span class="text-parchment-500">Voice & Tone:</span> <span id="ak-res-voice" class="text-parchment-200">—</span></div>
+            </div>
+          </div>
+          <!-- Logo Prompt -->
+          <div class="academic-card p-4">
+            <h3 class="text-gold-400 font-semibold text-xs uppercase tracking-wider mb-2">🖌️ Logo Prompt</h3>
+            <p id="ak-res-logo" class="text-xs text-parchment-300 leading-relaxed">—</p>
+          </div>
+          <!-- Captions -->
+          <div class="academic-card p-4">
+            <h3 class="text-gold-400 font-semibold text-xs uppercase tracking-wider mb-2">💬 IG Captions (<span id="ak-res-caption-count">0</span>)</h3>
+            <div id="ak-res-captions" class="space-y-2"></div>
+          </div>
+          <!-- Threads -->
+          <div class="academic-card p-4">
+            <h3 class="text-gold-400 font-semibold text-xs uppercase tracking-wider mb-2">🧵 X/Twitter Threads (<span id="ak-res-thread-count">0</span>)</h3>
+            <div id="ak-res-threads" class="space-y-2"></div>
+          </div>
+          <!-- Scripts -->
+          <div class="academic-card p-4">
+            <h3 class="text-gold-400 font-semibold text-xs uppercase tracking-wider mb-2">🎬 Video Scripts (<span id="ak-res-script-count">0</span>)</h3>
+            <div id="ak-res-scripts" class="space-y-2"></div>
+          </div>
+          <!-- Campaign Timeline -->
+          <div class="academic-card p-4">
+            <h3 class="text-gold-400 font-semibold text-xs uppercase tracking-wider mb-2">📅 Campaign Timeline</h3>
+            <div id="ak-res-timeline" class="text-xs text-parchment-300 leading-relaxed whitespace-pre-wrap">—</div>
+          </div>
+          <!-- Thumbnails -->
+          <div class="academic-card p-4">
+            <h3 class="text-gold-400 font-semibold text-xs uppercase tracking-wider mb-2">🖼️ Thumbnail Prompts (<span id="ak-res-thumb-count">0</span>)</h3>
+            <div id="ak-res-thumbnails" class="space-y-2"></div>
+          </div>
+          <!-- IG Grid -->
+          <div class="academic-card p-4">
+            <h3 class="text-gold-400 font-semibold text-xs uppercase tracking-wider mb-2">📱 IG Grid Preview (<span id="ak-res-grid-count">0</span>)</h3>
+            <div id="ak-res-grid" class="grid grid-cols-3 gap-2"></div>
+          </div>
+          <!-- CQF Score -->
+          <div class="academic-card p-4">
+            <h3 class="text-gold-400 font-semibold text-xs uppercase tracking-wider mb-2">📊 CQF Score</h3>
+            <div class="grid grid-cols-3 gap-2 text-center text-xs">
+              <div class="rounded-lg p-2" style="background:rgba(255,255,255,0.04)">
+                <p class="text-parchment-500">Relevance</p>
+                <p id="ak-cqf-rel" class="text-parchment-200 font-semibold">—</p>
+              </div>
+              <div class="rounded-lg p-2" style="background:rgba(255,255,255,0.04)">
+                <p class="text-parchment-500">Quality</p>
+                <p id="ak-cqf-qual" class="text-parchment-200 font-semibold">—</p>
+              </div>
+              <div class="rounded-lg p-2" style="background:rgba(255,255,255,0.04)">
+                <p class="text-parchment-500">Creativity</p>
+                <p id="ak-cqf-crea" class="text-parchment-200 font-semibold">—</p>
+              </div>
+              <div class="rounded-lg p-2" style="background:rgba(255,255,255,0.04)">
+                <p class="text-parchment-500">Brand</p>
+                <p id="ak-cqf-brand" class="text-parchment-200 font-semibold">—</p>
+              </div>
+              <div class="rounded-lg p-2" style="background:rgba(255,255,255,0.04)">
+                <p class="text-parchment-500">Actionability</p>
+                <p id="ak-cqf-act" class="text-parchment-200 font-semibold">—</p>
+              </div>
+              <div class="rounded-lg p-2" style="background:rgba(204,152,49,0.12);border:1px solid rgba(204,152,49,0.25)">
+                <p class="text-gold-400">Total</p>
+                <p id="ak-cqf-total" class="text-gold-300 font-bold">—</p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

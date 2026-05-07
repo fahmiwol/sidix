@@ -993,3 +993,154 @@ export async function createArtifactVersion(id: string): Promise<Artifact> {
   if (!res.ok) throw new BrainQAError('server', `artifact/version ${res.status}`);
   return res.json();
 }
+
+// ════════════════════════════════════════════════════════════════════════
+// AGENCY KIT 1-CLICK
+// ════════════════════════════════════════════════════════════════════════
+
+export interface AgencyKitRequest {
+  business_name: string;
+  niche: string;
+  target_audience: string;
+  budget: string;
+  brand_tone?: string;
+  color_preference?: string;
+}
+
+export interface AgencyKitJob {
+  job_id: string;
+  status: string;
+  progress: number;
+  results: any;
+  created_at: string;
+  completed_at: string | null;
+}
+
+export async function createAgencyKit(req: AgencyKitRequest): Promise<{ job_id: string }> {
+  const res = await fetch(`${BRAIN_QA_BASE}/creative/agency_kit`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ..._authHeaders() },
+    body: JSON.stringify(req),
+  });
+  if (!res.ok) throw new BrainQAError('server', `agency_kit ${res.status}`);
+  const data = await res.json();
+  if (!data.ok) throw new BrainQAError('server', data.detail || data.error || 'agency_kit error');
+  return { job_id: data.job_id };
+}
+
+export async function getAgencyKitJob(job_id: string): Promise<AgencyKitJob> {
+  const res = await fetch(`${BRAIN_QA_BASE}/creative/agency_kit/${encodeURIComponent(job_id)}`, {
+    headers: _authHeaders(),
+  });
+  if (!res.ok) throw new BrainQAError('server', `agency_kit/status ${res.status}`);
+  const data = await res.json();
+  if (!data.ok) throw new BrainQAError('server', data.detail || 'agency_kit status error');
+  return {
+    job_id: data.job_id,
+    status: data.status,
+    progress: data.progress,
+    results: data.results,
+    created_at: data.created_at,
+    completed_at: data.completed_at,
+  };
+}
+
+export async function listAgencyKitJobs(): Promise<{ count: number; jobs: AgencyKitJob[] }> {
+  const res = await fetch(`${BRAIN_QA_BASE}/creative/agency_kit/list`, {
+    headers: _authHeaders(),
+  });
+  if (!res.ok) throw new BrainQAError('server', `agency_kit/list ${res.status}`);
+  const data = await res.json();
+  if (!data.ok) throw new BrainQAError('server', data.detail || 'agency_kit list error');
+  return { count: data.count, jobs: data.jobs };
+}
+
+// ════════════════════════════════════════════════════════════════════════
+// DEBATE RING REAL — Multi-agent consensus API
+// ════════════════════════════════════════════════════════════════════════
+
+export interface DebateRequest {
+  topic: string;
+  persona_a: string;
+  persona_b: string;
+  max_rounds?: number;
+}
+
+export interface DebateRound {
+  round_number: number;
+  speaker: string;
+  text: string;
+  critique_score: number;
+}
+
+export interface DebateResult {
+  topic: string;
+  rounds: DebateRound[];
+  consensus_text: string;
+  winner: string;
+  cqf_score: number;
+  duration_ms: number;
+}
+
+/**
+ * POST /creative/debate — run multi-agent debate consensus.
+ * 3-round debate: Creator → Critic → Creator revises → Neutral synthesis.
+ */
+export async function runDebate(req: DebateRequest): Promise<DebateResult> {
+  const res = await fetch(`${BRAIN_QA_BASE}/creative/debate`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ..._authHeaders() },
+    body: JSON.stringify({
+      topic: req.topic,
+      persona_a: req.persona_a,
+      persona_b: req.persona_b,
+      max_rounds: req.max_rounds ?? 3,
+    }),
+  });
+  if (!res.ok) throw new BrainQAError('server', `debate ${res.status}`);
+  return res.json();
+}
+
+/**
+ * GET /creative/debate/personas — list available debate pairs.
+ */
+export async function getDebatePersonas(): Promise<{ pairs: Array<{ name: string; persona_a: string; persona_b: string }> }> {
+  return request<{ pairs: Array<{ name: string; persona_a: string; persona_b: string }> }>('/creative/debate/personas');
+}
+
+// ════════════════════════════════════════════════════════════════════════
+// SELF-TRAIN FASE 1 — Training Data Curation
+// ════════════════════════════════════════════════════════════════════════
+
+export interface TrainingStats {
+  total_corpus_docs: number;
+  total_approved: number;
+  total_premium: number;
+  total_rejected: number;
+  pairs_this_week: number;
+}
+
+/**
+ * GET /training/stats — dashboard stats untuk curation pipeline.
+ */
+export async function getTrainingStats(): Promise<TrainingStats> {
+  return request<TrainingStats>('/training/stats');
+}
+
+/**
+ * POST /training/curate — trigger manual curation (admin only).
+ */
+export async function triggerCuration(threshold?: number, limit?: number): Promise<any> {
+  return request('/training/curate', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ threshold: threshold ?? 0.70, limit: limit ?? 500 }),
+  });
+}
+
+/**
+ * GET /training/data/latest — get latest training data file info.
+ */
+export async function getLatestTrainingData(): Promise<{ path: string; pairs: number; size_bytes: number }> {
+  return request<{ path: string; pairs: number; size_bytes: number }>('/training/data/latest');
+}

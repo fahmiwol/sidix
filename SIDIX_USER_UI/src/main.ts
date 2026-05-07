@@ -26,9 +26,13 @@ import {
   runCode, debugCode,
   createArtifact, getArtifact, listArtifacts, pinArtifact, unpinArtifact,
   exportArtifact, createArtifactVersion, updateArtifact, deleteArtifact,
+  runDebate, getDebatePersonas,
+  createAgencyKit, getAgencyKitJob, listAgencyKitJobs,
   BrainQAError,
   type Persona, type CorpusDocument, type Citation, type HealthResponse,
   type AskInferenceOpts, type QuotaInfo, type SidixMode, type Artifact,
+  type DebateRequest, type DebateResult,
+  type AgencyKitRequest, type AgencyKitJob,
 } from './api';
 
 import { initWaitingRoom } from './waiting-room';
@@ -3762,3 +3766,301 @@ document.getElementById('notebook-export-format')?.addEventListener('change', (e
 
 // ── Initial render ────────────────────────────────────────────────────────────
 switchScreen('chat');
+
+// ════════════════════════════════════════════════════════════════════════
+// DEBATE RING REAL — Minimal UI hooks (future expansion)
+// ════════════════════════════════════════════════════════════════════════
+
+async function callDebate(topic: string, personaA: Persona = 'UTZ', personaB: Persona = 'OOMAR'): Promise<DebateResult> {
+  return runDebate({ topic, persona_a: personaA, persona_b: personaB, max_rounds: 3 });
+}
+
+// Expose to window for console debugging / Agency Kit wizard integration
+if (typeof window !== 'undefined') {
+  (window as any).sidixDebate = callDebate;
+  (window as any).sidixDebatePersonas = getDebatePersonas;
+}
+
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// AGENCY KIT 1-CLICK
+// ═══════════════════════════════════════════════════════════════════════════════
+
+const akModal = document.getElementById('agency-kit-modal') as HTMLDivElement | null;
+const akGallery = document.getElementById('agency-kit-gallery') as HTMLDivElement | null;
+let akPollTimer: ReturnType<typeof setInterval> | null = null;
+let currentAgencyKitJobId: string | null = null;
+
+function openAgencyKitModal() {
+  if (!akModal) return;
+  akModal.classList.remove('hidden');
+  document.getElementById('agency-kit-progress')?.classList.add('hidden');
+  document.getElementById('agency-kit-error')?.classList.add('hidden');
+  (document.getElementById('ak-submit') as HTMLButtonElement | null)!.disabled = false;
+  (document.getElementById('ak-submit') as HTMLButtonElement | null)!.textContent = 'Generate 🚀';
+}
+
+function closeAgencyKitModal() {
+  if (!akModal) return;
+  akModal.classList.add('hidden');
+  if (akPollTimer) { clearInterval(akPollTimer); akPollTimer = null; }
+}
+
+function openAgencyKitGallery() {
+  if (!akGallery) return;
+  akGallery.classList.remove('hidden');
+  initIcons();
+}
+
+function closeAgencyKitGallery() {
+  if (!akGallery) return;
+  akGallery.classList.add('hidden');
+}
+
+function updateAgencyKitProgress(label: string, pct: number) {
+  const bar = document.getElementById('ak-progress-bar');
+  const lbl = document.getElementById('ak-progress-label');
+  const pctx = document.getElementById('ak-progress-pct');
+  if (bar) bar.style.width = `${pct}%`;
+  if (lbl) lbl.textContent = label;
+  if (pctx) pctx.textContent = `${pct}%`;
+}
+
+async function submitAgencyKit() {
+  const businessName = (document.getElementById('ak-business-name') as HTMLInputElement | null)?.value.trim();
+  const niche = (document.getElementById('ak-niche') as HTMLInputElement | null)?.value.trim();
+  const target = (document.getElementById('ak-target') as HTMLTextAreaElement | null)?.value.trim();
+  const budget = (document.getElementById('ak-budget') as HTMLInputElement | null)?.value.trim() || '1.5jt';
+  const tone = (document.getElementById('ak-tone') as HTMLInputElement | null)?.value.trim();
+  const color = (document.getElementById('ak-color') as HTMLInputElement | null)?.value.trim();
+  const errorEl = document.getElementById('agency-kit-error');
+
+  if (!businessName || !niche || !target) {
+    if (errorEl) { errorEl.textContent = 'Nama bisnis, niche, dan target audiens wajib diisi.'; errorEl.classList.remove('hidden'); }
+    return;
+  }
+  if (errorEl) errorEl.classList.add('hidden');
+
+  const submitBtn = document.getElementById('ak-submit') as HTMLButtonElement | null;
+  if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Mengirim...'; }
+
+  const req: AgencyKitRequest = {
+    business_name: businessName,
+    niche,
+    target_audience: target,
+    budget,
+    brand_tone: tone || undefined,
+    color_preference: color || undefined,
+  };
+
+  try {
+    const { job_id } = await createAgencyKit(req);
+    currentAgencyKitJobId = job_id;
+    document.getElementById('agency-kit-progress')?.classList.remove('hidden');
+    updateAgencyKitProgress('Layer 1: Brand Builder...', 5);
+
+    if (akPollTimer) clearInterval(akPollTimer);
+    akPollTimer = setInterval(async () => {
+      if (!currentAgencyKitJobId) return;
+      try {
+        const job = await getAgencyKitJob(currentAgencyKitJobId);
+        const layerLabels: Record<number, string> = {
+          5: 'Layer 1: Brand Builder...',
+          15: 'Layer 1: Brand Builder...',
+          30: 'Layer 2: Content Planner...',
+          55: 'Layer 3: Copywriter...',
+          70: 'Layer 4: Campaign Strategist...',
+          85: 'Layer 5: Thumbnail Generator...',
+          100: 'Layer 6: Synthesis...',
+        };
+        const label = layerLabels[job.progress] || `Processing... ${job.progress}%`;
+        updateAgencyKitProgress(label, job.progress);
+
+        if (job.status === 'completed') {
+          if (akPollTimer) { clearInterval(akPollTimer); akPollTimer = null; }
+          closeAgencyKitModal();
+          renderAgencyKitResults(job);
+          openAgencyKitGallery();
+        } else if (job.status === 'failed') {
+          if (akPollTimer) { clearInterval(akPollTimer); akPollTimer = null; }
+          updateAgencyKitProgress('Gagal', 100);
+          if (errorEl) { errorEl.textContent = 'Pipeline gagal. Coba lagi.'; errorEl.classList.remove('hidden'); }
+          if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Generate 🚀'; }
+        }
+      } catch {
+        // keep polling
+      }
+    }, 2000);
+  } catch (e) {
+    if (errorEl) { errorEl.textContent = `Error: ${(e as Error).message}`; errorEl.classList.remove('hidden'); }
+    if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Generate 🚀'; }
+  }
+}
+
+function renderAgencyKitResults(job: AgencyKitJob) {
+  const r = job.results || {};
+  const bk = r.brand_kit || {};
+  const cp = r.copy || {};
+  const camp = r.campaign || {};
+  const vis = r.visuals || {};
+  const cqf = r.cqf || {};
+
+  const setText = (id: string, text: string) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = text || '—';
+  };
+
+  setText('ak-result-subtitle', `${bk.brand_name || r._request?.business_name || ''} — ${r._request?.niche || ''}`);
+  setText('ak-res-brand-name', bk.brand_name || '');
+  setText('ak-res-archetype', bk.archetype || '');
+  setText('ak-res-palette', bk.palette || '');
+  setText('ak-res-typography', bk.typography || '');
+  setText('ak-res-voice', bk.voice_tone || '');
+  setText('ak-res-logo', bk.logo_prompt || '');
+
+  const renderList = (id: string, items: string[], emptyMsg = '—') => {
+    const container = document.getElementById(id);
+    if (!container) return;
+    container.innerHTML = '';
+    if (!items || !items.length) {
+      container.innerHTML = `<p class="text-xs text-parchment-500">${emptyMsg}</p>`;
+      return;
+    }
+    items.forEach((item, i) => {
+      const div = document.createElement('div');
+      div.className = 'text-xs text-parchment-300 bg-warm-800/40 rounded-lg px-3 py-2 border border-warm-600/30';
+      div.textContent = `${i + 1}. ${item}`;
+      container.appendChild(div);
+    });
+  };
+
+  const captions = cp.captions || [];
+  renderList('ak-res-captions', captions);
+  setText('ak-res-caption-count', String(captions.length));
+
+  const threads = cp.threads || [];
+  renderList('ak-res-threads', threads);
+  setText('ak-res-thread-count', String(threads.length));
+
+  const scripts = cp.scripts || [];
+  renderList('ak-res-scripts', scripts);
+  setText('ak-res-script-count', String(scripts.length));
+
+  setText('ak-res-timeline', camp.timeline || '');
+
+  const thumbs = vis.thumbnails || [];
+  renderList('ak-res-thumbnails', thumbs);
+  setText('ak-res-thumb-count', String(thumbs.length));
+
+  const grid = vis.grid_posts || [];
+  const gridContainer = document.getElementById('ak-res-grid');
+  if (gridContainer) {
+    gridContainer.innerHTML = '';
+    grid.forEach((g: string) => {
+      const div = document.createElement('div');
+      div.className = 'aspect-square rounded-lg bg-warm-800/60 border border-warm-600/30 flex items-center justify-center text-[10px] text-parchment-500 text-center p-1';
+      div.textContent = g.length > 40 ? g.slice(0, 40) + '…' : g;
+      gridContainer.appendChild(div);
+    });
+    // Fill remaining to 3x3
+    for (let i = grid.length; i < 9; i++) {
+      const div = document.createElement('div');
+      div.className = 'aspect-square rounded-lg bg-warm-800/30 border border-warm-600/20 flex items-center justify-center text-[10px] text-parchment-600';
+      div.textContent = `${i + 1}`;
+      gridContainer.appendChild(div);
+    }
+  }
+  setText('ak-res-grid-count', String(grid.length));
+
+  setText('ak-cqf-rel', String(cqf.relevance ?? '—'));
+  setText('ak-cqf-qual', String(cqf.quality ?? '—'));
+  setText('ak-cqf-crea', String(cqf.creativity ?? '—'));
+  setText('ak-cqf-brand', String(cqf.brand ?? '—'));
+  setText('ak-cqf-act', String(cqf.actionability ?? '—'));
+  setText('ak-cqf-total', String(cqf.total ?? '—'));
+}
+
+function exportAgencyKitMarkdown() {
+  const r = (currentAgencyKitJobId ? (window as any).__lastAgencyKitResults : null) || {};
+  if (!r || !r.brand_kit) {
+    alert('Belum ada hasil Agency Kit.');
+    return;
+  }
+  const bk = r.brand_kit || {};
+  const cp = r.copy || {};
+  const camp = r.campaign || {};
+  const vis = r.visuals || {};
+  const cqf = r.cqf || {};
+
+  const md = `# Agency Kit — ${bk.brand_name || 'Brand'}
+
+## 🎨 Brand Kit
+- **Nama Brand:** ${bk.brand_name || '-'}
+- **Archetype:** ${bk.archetype || '-'}
+- **Paleta Warna:** ${bk.palette || '-'}
+- **Tipografi:** ${bk.typography || '-'}
+- **Voice & Tone:** ${bk.voice_tone || '-'}
+
+## 🖌️ Logo Prompt
+${bk.logo_prompt || '-'}
+
+## 💬 IG Captions (${(cp.captions || []).length})
+${(cp.captions || []).map((c: string, i: number) => `${i + 1}. ${c}`).join('\n')}
+
+## 🧵 X/Twitter Threads (${(cp.threads || []).length})
+${(cp.threads || []).map((t: string, i: number) => `${i + 1}. ${t}`).join('\n')}
+
+## 🎬 Video Scripts (${(cp.scripts || []).length})
+${(cp.scripts || []).map((s: string, i: number) => `${i + 1}. ${s}`).join('\n')}
+
+## 📅 Campaign Timeline
+${camp.timeline || '-'}
+
+## 🖼️ Thumbnail Prompts (${(vis.thumbnails || []).length})
+${(vis.thumbnails || []).map((t: string, i: number) => `${i + 1}. ${t}`).join('\n')}
+
+## 📱 IG Grid Concepts (${(vis.grid_posts || []).length})
+${(vis.grid_posts || []).map((g: string, i: number) => `${i + 1}. ${g}`).join('\n')}
+
+## 📊 CQF Score
+- Relevance: ${cqf.relevance ?? '-'}
+- Quality: ${cqf.quality ?? '-'}
+- Creativity: ${cqf.creativity ?? '-'}
+- Brand: ${cqf.brand ?? '-'}
+- Actionability: ${cqf.actionability ?? '-'}
+- **Total:** ${cqf.total ?? '-'}
+
+---
+Generated by SIDIX Agency Kit
+`;
+  const blob = new Blob([md], { type: 'text/markdown' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `agency-kit-${bk.brand_name || 'brand'}.md`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// Wire events
+document.getElementById('nav-agency-kit')?.addEventListener('click', openAgencyKitModal);
+document.getElementById('mob-nav-agency')?.addEventListener('click', openAgencyKitModal);
+document.getElementById('ak-cancel')?.addEventListener('click', closeAgencyKitModal);
+document.getElementById('ak-submit')?.addEventListener('click', submitAgencyKit);
+document.getElementById('ak-gallery-close')?.addEventListener('click', closeAgencyKitGallery);
+document.getElementById('ak-export-btn')?.addEventListener('click', exportAgencyKitMarkdown);
+
+// Close modals on backdrop click
+akModal?.addEventListener('click', (e) => {
+  if (e.target === akModal) closeAgencyKitModal();
+});
+akGallery?.addEventListener('click', (e) => {
+  if (e.target === akGallery) closeAgencyKitGallery();
+});
+
+// Hook into renderAgencyKitResults to stash results for export
+const _origRender = renderAgencyKitResults;
+renderAgencyKitResults = function(job: AgencyKitJob) {
+  (window as any).__lastAgencyKitResults = job.results || {};
+  _origRender(job);
+};
