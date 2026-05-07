@@ -9173,7 +9173,7 @@ h1{{color:#0af}}p{{color:#aaa}}a{{color:#0af}}</style></head>
 
     # ── Sprint 5: Creative Agency Kit endpoint (async background job) ────────
     @app.post("/creative/agency_kit", tags=["Creative"])
-    def creative_agency_kit(req: _AgencyKitRequest):
+    async def creative_agency_kit(req: _AgencyKitRequest):
         """
         Agency Kit 1-Click — create background job, return job_id immediately.
 
@@ -9198,7 +9198,7 @@ h1{{color:#0af}}p{{color:#aaa}}a{{color:#0af}}</style></head>
             if not target_audience:
                 req.target_audience = "audiens Indonesia umum"
 
-            job_id = create_agency_kit_job(req)
+            job_id = await asyncio.to_thread(create_agency_kit_job, req)
             return {"ok": True, "job_id": job_id}
         except HTTPException:
             raise
