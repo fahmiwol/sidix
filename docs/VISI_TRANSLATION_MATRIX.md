@@ -166,3 +166,23 @@ Plus visi besar:
 6. Sprint Tumbuh — verify corpus auto-grow pipeline + SimPO E2E
 
 Catat: Sprint Frontend Wire + Streaming SSE sudah LIVE.
+
+
+### 9. TREND-DRIVEN BATCH (2026-05-07 — Research + 3 Sprint)
+
+**Research basis**: AI Landscape 2026 analysis (note 317) — 12 sources, gap benchmark 9 items.
+
+| Dimensi Visi | Before | After | Δ | Evidence |
+|---|---|---|---|---|
+| Pencipta | 45% | 55% | +10% | Voyager P2 (skill library, self-refinement, Agent Skills compat) |
+| Cognitive | 90% | 93% | +3% | Maqashid P2 (trace-aware eval, HistoricalJudge), Raudah v0.2 (DAG deps) |
+| Iteratif | 85% | 90% | +5% | Voyager P2 (self-improving tools), Maqashid P2 (feedback calibration loop) |
+| Tumbuh | 60% | 62% | +2% | Maqashid P2 (eval dataset dari feedback history) |
+| **Overall** | **~82%** | **~87%** | **+5pp** | Research-driven implementation |
+
+**Key differentiator shift**:
+- Sebelum: "ChatGPT yang bisa kamu bawa pulang — anti-halusinasi, 5 persona, self-hosted"
+- Sesudah: "ChatGPT yang bisa kamu bawa pulang — **self-improving**, anti-halusinasi, 5 persona, self-hosted"
+  - Voyager skill library = SIDIX tools improve themselves from usage
+  - Maqashid trace-aware = score every reasoning step, not just output
+  - HistoricalJudge = learns from user feedback without external API
