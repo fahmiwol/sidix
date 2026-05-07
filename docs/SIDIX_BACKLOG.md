@@ -411,10 +411,13 @@ Setiap agent (Claude/GPT/Gemini/SIDIX) yang kerja di proyek ini WAJIB ikuti prot
   - ✅ Agency Kit 1-Click (6-layer pipeline DAG + wizard UI)
   - ✅ Debate Ring REAL (3-round multi-agent consensus via Qwen)
   - ✅ Self-Train Fase 1 (curator agent + weekly JSONL auto-generation)
+  - ✅ Persona DoRA Adapter (dynamic persona switching via LoRA + logical fallback)
+  - ✅ Voyager Protocol Phase 1 (dynamic tool creator — AST scan + whitelist + registration)
+- **QA Phase:** 15/15 endpoint PASS, 3 bug fixes (nginx proxy, deadlock RLock, test script)
 - **Next sprints (queued):**
-  - Persona DoRA Adapter (dynamic persona via LoRA weights)
   - Maqashid Auto-Tune Phase 2 (ML-based evaluation)
-  - Voyager Protocol (dynamic tool creator — SIDIX writes Python)
   - Kaggle auto-retrain integration (shadow mode LoRA candidates)
   - Raudah Protocol v0.2 (TaskGraph DAG + /raudah/run endpoint)
+  - Voyager Protocol Phase 2 (self-improving generated tools)
+  - Persona DoRA Adapter Phase 2 (physical LoRA adapters from Self-Train data)
 - **Differentiator narrative:** "ChatGPT yang bisa kamu bawa pulang — anti-halusinasi, 5 persona, self-hosted, Islamic ethical AI"
