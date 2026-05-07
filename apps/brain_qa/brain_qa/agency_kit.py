@@ -487,7 +487,7 @@ else:
 
 # ── In-memory job store ───────────────────────────────────────────────────────
 _JOB_STORE: dict[str, AgencyKitJob] = {}
-_JOB_LOCK = threading.Lock()
+_JOB_LOCK = threading.RLock()
 _MAX_JOBS = 50
 
 
