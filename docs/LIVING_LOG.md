@@ -18386,3 +18386,17 @@ curl -X POST http://localhost:8765/agent/maqashid/tune -d '{"sample_size":30}'
   - Lines added: ~850
   - Tests: 4 py_compile PASS
   - Bugs found: 0 new
+
+
+
+### 2026-05-08 (Kimi — UPDATE: RunPod API Key + .env.sample)
+
+- **UPDATE:** `.env.sample` — tambahkan section RunPod GPU Workers
+  - RUNPOD_API_KEY, RUNPOD_MEDIA_ENDPOINT_ID, RUNPOD_3D_ENDPOINT_ID
+  - Security: API key HANYA via env var, tidak di-commit ke repo
+- **NOTE:** RunPod API key diterima dari bos (rpa_...)
+  - Key akan di-set sebagai env var lokal, TIDAK masuk repo
+- **DECISION:** `runpod_connector.py` sudah support env var — tidak perlu modifikasi
+- **Anti-menguap checklist:**
+  - ✅ LIVING_LOG updated
+  - ✅ Code committed + pushed
