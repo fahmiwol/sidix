@@ -17472,3 +17472,26 @@ curl -X POST http://localhost:8765/agent/maqashid/tune -d '{"sample_size":30}'
 - **NOTE:** Self-hosted inference ONLY — debug memanggil `generate_sidix` lokal, TIDAK ada call ke OpenAI/Anthropic/Gemini API.
 - **NOTE:** Tidak install Monaco Editor — pakai textarea + CSS classes untuk minimal bundle size.
 - **DECISION:** JavaScript/HTML di language selector hanya placeholder (MVP); execution backend hanya Python karena `code_sandbox` tool hanya mendukung Python.
+
+
+### 2026-05-07 (Kimi — DEPLOY SUCCESS: A2A Phase 2 + Code Canvas + MCP stdio LIVE!)
+
+- **DEPLOY:** VPS 187.77.116.139 deploy berhasil! 3 sprint paralel sekarang live di production.
+  - Git pull: `f918aeb` → `ca5ce93` (fast-forward, +1,422 baris)
+  - Backend: `pm2 restart sidix-brain` → online, memory 80MB
+  - Frontend: `npm run build` PASS 1.76s → `pm2 restart sidix-ui` → online, memory 11MB
+- **SMOKE TEST ALL PASS:**
+  - `POST /a2a/tasks/send` → task created + processed → status "completed" ✅
+  - `POST /app/code/run` {"code":"print(2+2)"} → output "4", duration_ms: 14 ✅
+  - `POST /mcp` tools/list → 16 tools returned ✅
+  - `GET /health` → model_ready: true, tools_available: 51, corpus_doc_count: 3788 ✅
+- **TOTAL COMMITS HARI INI:** 1 commit (`ca5ce93`) — tapi isinya 3 sprint paralel.
+- **TOTAL INSERTIONS:** ~1,422 baris kode baru.
+- **FILE BARU:** 6 file (a2a_server.py, app_code_canvas.py, mcp_stdio_server.py, mcp_stdio_entry.py, MCP_STDIO_SETUP.md, TASK_CARD)
+- **STATUS PRODUKSI:**
+  - App: https://app.sidixlab.com (dengan Code Canvas split-pane)
+  - API: https://ctrl.sidixlab.com
+  - A2A: https://ctrl.sidixlab.com/a2a/tasks/send
+  - MCP HTTP: https://ctrl.sidixlab.com/mcp
+  - MCP stdio: `python apps/brain_qa/mcp_stdio_entry.py`
+  - AgentCard: https://ctrl.sidixlab.com/.well-known/agent-card.json

@@ -392,9 +392,18 @@ Setiap agent (Claude/GPT/Gemini/SIDIX) yang kerja di proyek ini WAJIB ikuti prot
   - `apps/brain_qa/brain_qa/mcp_server_wrap.py` — audit existing, enhance dengan transport layer
 - **Acceptance**:
   - ✅ 4 spec dokumen committed
-  - ✅ MCP registry audited (17 tools, missing critical tools identified)
-  - ⏳ Mode System implementation (backend router + UI toggle)
-  - ⏳ Code Canvas MVP (Monaco + run button)
-  - ⏳ MCP transport layer (stdio + HTTP + SSE)
-- **Status**: SPEC DONE. Implementation = next 2 sprints.
+  - ✅ MCP registry audited (17 tools → 21 tools, 4 missing tools added)
+  - ✅ Mode System implementation (backend router + UI toggle) — DEPLOYED 2026-05-07
+  - ✅ Code Canvas MVP (textarea + run button + debug + split-pane) — DEPLOYED 2026-05-07
+  - ✅ MCP transport layer (HTTP + stdio, SSE for A2A) — DEPLOYED 2026-05-07
+  - ✅ A2A Phase 2 (A2AServer: tasks/send, tasks/get, sendSubscribe, cancel) — DEPLOYED 2026-05-07
+- **Status**: IMPLEMENTATION DONE. Deployed to VPS, smoke test 7/7 PASS.
+- **Commits**: `ca5ce93`
+- **Next sprints (queued):**
+  - A2A Phase 3: A2AClient (delegate to external agents)
+  - Document Studio MVP (TipTap editor)
+  - Data Notebook MVP (structured table/chart)
+  - Built-in Apps Framework (artifact lifecycle + pin/share/export)
+  - Persona DoRA Adapter (Sprint I)
+  - Maqashid Auto-Tune (Sprint G)
 - **Differentiator narrative:** "ChatGPT yang bisa kamu bawa pulang — anti-halusinasi, 5 persona, self-hosted, Islamic ethical AI"
