@@ -123,15 +123,31 @@ Plus visi besar:
 | Pencipta | 30% | 🔴 GAP TERBESAR — text+code only, visi Adobe-of-Indonesia butuh adaptive output |
 
 **Overall: ~73% visi bos coverage**. Gap utama:
-1. **Pencipta (30%)** — paling kritis untuk visi besar Adobe-of-Indonesia. Sprint berikutnya focus sini.
+1. **Pencipta (30%)** — paling kritis untuk visi besar Adobe-of-Indonesia.
 2. **Tumbuh (40%)** — pipeline corpus auto-grow + LoRA retrain perlu verify cycle complete.
 3. **Cognitive & Semantic (70%)** — dense_index rebuild dengan dimension yang konsisten.
 
-## Sprint Recommendation Berdasarkan Gap
+## Post-Adopsi Migancore Coverage Shift (Target)
+
+| Visi Word | Pre-Adopsi | Post-Adopsi | Delta | Driver |
+|---|---|---|---|---|
+| Genius | 100% | 100% | — | Maintain |
+| Creative | 75% | 85% | +10% | Skill library + procedural memory |
+| Tumbuh | 40% | 60% | +20% | Auto-pipeline verify + sleep-time compute |
+| Cognitive & Semantic | 70% | 85% | +15% | 4-tier memory + BGE-M3 rebuild |
+| Iteratif | 100% | 100% | — | Maintain |
+| Inovasi | 100% | 100% | — | Maintain |
+| Pencipta | 30% | 45% | +15% | Stateful orchestration + MCP tool invoke |
+| **Overall** | **~73%** | **~82%** | **+9pp** | Foundation ADO canonical |
+
+## Sprint Recommendation Berdasarkan Gap (Updated 2026-05-07)
 
 **Highest leverage** (per gap):
-1. Sprint Adaptive Output (Pencipta) — wire image_gen + video + 3D + TTS ke chat flow
-2. Sprint Tumbuh — verify corpus auto-grow pipeline + quality filter
-3. Sprint Dense Index Rebuild — fix dim mismatch atau upgrade PyTorch 2.6
+1. **Sprint ADO Foundation Adopsi** (Cognitive + Tumbuh + Pencipta) — Soul + State + Memory Arch + Docker Stack ✅ DONE 2026-05-07
+2. Sprint Memory Tier Live — PostgreSQL + Qdrant deploy + conversation migration + Redis Streams
+3. Sprint MCP Exposure — MCP server + A2A peer readiness
+4. Sprint Dense Index Rebuild — BGE-M3 1024-dim, hybrid dense+BM25+RRF
+5. Sprint Adaptive Output (Pencipta) — wire image_gen + video + 3D + TTS ke chat flow
+6. Sprint Tumbuh — verify corpus auto-grow pipeline + SimPO E2E
 
-Catat: Sprint Frontend Wire + Streaming SSE (sudah QUEUED di BACKLOG) bukan untuk "tutup visi gap" — tapi untuk **expose existing capability ke user**. Itu berbeda focus.
+Catat: Sprint Frontend Wire + Streaming SSE sudah LIVE.

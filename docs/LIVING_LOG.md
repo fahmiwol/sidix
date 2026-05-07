@@ -17205,3 +17205,21 @@ curl -X POST http://localhost:8765/agent/maqashid/tune -d '{"sample_size":30}'
 - **TEST:** TDD regression `test_holistic_stream_route_wiring.py` merah dulu (route tidak ada), lalu PASS; gabungan memory+OMNYX+UI stream+route tests PASS 34/34; `py_compile agent_serve.py` PASS; `npm run build` PASS.
 - **DEPLOY:** VPS fast-forward sampai `891ee3b`, `pm2 restart sidix-brain --update-env`, `npm run build`, `pm2 restart sidix-ui --update-env`.
 - **TEST:** Live `/agent/chat_holistic_stream` PASS: endpoint tidak 404, `hari apa sekarang?` streaming token `Sabtu, 2 Mei 2026` + event `done` membawa `conversation_id`; follow-up stream same conversation `siapa presiden indonesia?` -> Prabowo, `kalo wakilnya?` -> Gibran, tanpa marker leak internal.
+
+
+### 2026-05-07 (Claude — ADO Foundation Adopsi: Migancore ? SIDIX)
+
+- **DECISION:** Adopsi foundation migancore ke SIDIX — 4 pilar: SOUL identitas canonical, ADO state schema, 4-tier memory architecture, Docker Compose stack. Mengarah ke Self-Bootstrap Phase 1 + visi coverage 73% ? 82%.
+- **IMPL:** docs/SIDIX_SOUL.md — canonical ADO identity v1.0. 12 constitutional guardrails, 9 core values (include Anti-Halusinasi + Sanad + Muhasabah), 5 fingerprint prompts, capability manifest dengan 14 item status. Adapted dari MiganCore SOUL.md + IHOS framework SIDIX. ?
+- **IMPL:** pps/brain_qa/brain_qa/ado_state.py — TypedDict ADOState (LangGraph-compatible), 40+ fields, tenant-aware, serializable, backward-compatible rom_chat_request(). Enum: AgentStatus, OutputType, MemoryTier. Helper: make_initial_state(), state_to_serializable(), state_summary(). Syntax verified py_compile PASS. ?
+- **IMPL:** docs/ADO_MEMORY_ARCHITECTURE.md — 4-tier memory design (Working/Episodic/Semantic/Procedural). Tier 1: Letta core blocks pattern dengan SOUL.md injection. Tier 2: PostgreSQL 16 schema (conversations, messages, memory_events). Tier 3: Qdrant/pgvector hybrid dense+BM25+RRF, BGE-M3 1024-dim, migration dari MiniLM 384-dim. Tier 4: LoRA adapters + skill library + causal graph (frontier). Resource budget 16GB KVM 4. ?
+- **IMPL:** docker-compose.sidix.yml — Ollama 6GB + PostgreSQL 2GB + Qdrant 2GB + Redis 1GB + API 1GB + Nginx 256M. Tuned untuk 16GB RAM (bukan 32GB migancore). OLLAMA_NUM_PARALLEL=1, Redis maxmemory 768mb, swap 4GB safety. ?
+- **IMPL:** rain/public/research_notes/315_migancore_adoption_sidix_20260507.md — riset note 8 sections: (1) executive summary, (2) landscape 10 verified findings (MCP/A2A adoption, reasoning models, memory tier, self-evolving, agentic commerce x402, causal AI, Active Inference, Indonesia SEA window), (3) gap analysis arsitektur + visi, (4) roadmap 4 stage, (5) evaluasi dampak/manfaat/risiko, (6) benchmarking KPI, (7) 3 hypothesis, (8) conclusion. 14,173 words. ?
+- **UPDATE:** docs/SIDIX_BACKLOG.md — sprint ADO Foundation Adopsi ditambahkan di COMPLETED. Next sprint: Stage 2 Memory Tier Live. ?
+- **UPDATE:** docs/VISI_TRANSLATION_MATRIX.md — post-adopsi coverage shift table (73% ? 82%), sprint recommendation re-ordered dengan ADO Foundation di posisi 1. ?
+- **RISIT:** Web research Mei 2026 — Qwen3.5 rilis Feb 2026 (tool calls, vision, reasoning, 128K context). MCP 78% enterprise adoption. A2A 150+ orgs production. Agentic commerce x402: 69K agents, 165M txn,  volume. DeepSeek R1-0528 10–20× cheaper than o3. Gartner: 40% agentic projects canceled by 2027 — top reason agent washing + sprawl + dumb RAG.
+- **NOTE:** VPS SSH audit gagal (timeout) — tidak bisa verifikasi live stack 187.77.116.139 dan 72.62.125.6 dari environment ini. Deploy Docker stack defer ke manual trigger setelah network access tersedia.
+- **NOTE:** Role locked per bos instruction: Claude = main implementator, Kimi = review/strategi/docs/lesson/validasi, Codex = QA/read-only conflict watcher.
+- **TEST:** py_compile do_state.py PASS. No runtime test karena infrastruktur Docker belum deploy.
+- **DOC:** Semua artefak menggunakan bilingual ID/EN sesuai SOP. Tidak ada secret di-commit. Password Docker Compose menggunakan env var placeholder.
+

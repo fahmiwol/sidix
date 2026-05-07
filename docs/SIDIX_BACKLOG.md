@@ -363,3 +363,20 @@ Setiap agent (Claude/GPT/Gemini/SIDIX) yang kerja di proyek ini WAJIB ikuti prot
 - **Status**: SCRIPT READY. Cron deploy + 30-day accumulation = ~10K pairs target untuk SIDIX-Text v1 fine-tune.
 - **Compound**: tiap hari corpus tumbuh → bulan ke-3 dataset siap fine-tune actual.
 - **Refer**: research_notes/310, scripts/dataset_id_sea_collector.py
+
+### Sprint ADO Foundation Adopsi — Migancore → SIDIX (Pilar 1: Soul + State + Memory + Docker)
+- **Visi mapping**: Cognitive & Semantic (70%→85%) + Tumbuh (40%→60%) + Pencipta (30%→45%) + Self-Bootstrap Phase 1
+- **Date**: 2026-05-07
+- **Deliverable**:
+  - `docs/SIDIX_SOUL.md` — canonical ADO identity dengan 12 constitutional guardrails + 5 fingerprint prompts + capability manifest
+  - `apps/brain_qa/brain_qa/ado_state.py` — TypedDict ADOState (LangGraph-compatible) dengan tenant-aware, serializable, 40+ fields
+  - `docs/ADO_MEMORY_ARCHITECTURE.md` — 4-tier memory design (Working/Episodic/Semantic/Procedural) + migration plan + 16GB resource budget
+  - `docker-compose.sidix.yml` — Ollama + PostgreSQL 16 + pgvector + Qdrant + Redis + SIDIX API + Nginx (tuned untuk KVM 4 16GB)
+  - `brain/public/research_notes/315_migancore_adoption_sidix_20260507.md` — synthesize tren AI 2026-2027 + gap analysis + roadmap adaptasi + evaluasi dampak/risiko
+- **Acceptance**:
+  - ✅ 4 artefak foundation committed + syntax OK (ado_state.py py_compile PASS)
+  - ✅ Research note 315: 8 sections, landscape 10 findings, gap analysis, roadmap 4 stage, hypothesis 3
+  - ✅ BACKLOG + VISI_MATRIX + LIVING_LOG updated
+- **Evidence**: commit TBD (this session)
+- **Status**: IMPLEMENTATION DONE. Deploy Docker stack + dense index rebuild = next sprint.
+- **Next:** Stage 2 Memory Tier Live (PostgreSQL + Qdrant deploy + conversation migration)
