@@ -3224,6 +3224,91 @@ def _tool_deep_research(args: dict) -> ToolResult:
         return ToolResult(success=False, output="", error=f"Deep research error: {e}")
 
 
+def _tool_transcribe_audio(args: dict) -> ToolResult:
+    """Transkripsi file audio ke teks (ASR)."""
+    path = args.get("path", "").strip()
+    lang = args.get("lang", "id").strip()
+    if not path:
+        return ToolResult(success=False, output="", error="path wajib diisi (relatif workspace/uploads)")
+    try:
+        from audio_capability import transcribe_audio
+        result = transcribe_audio(path, lang=lang)
+        if result.get("ok"):
+            data = result["data"]
+            text = data.get("text", "")
+            backend = data.get("backend", "unknown")
+            return ToolResult(
+                success=True,
+                output=f"[Transkripsi — {backend}]\n{text}",
+                citations=result.get("citations", []),
+            )
+        return ToolResult(success=False, output="", error=result.get("fallback_instructions", "ASR gagal"))
+    except Exception as exc:  # noqa: BLE001
+        return ToolResult(success=False, output="", error=f"transcribe_audio error: {exc}")
+
+
+def _tool_synthesize_speech(args: dict) -> ToolResult:
+    """Sintesis teks ke file audio (TTS)."""
+    text = args.get("text", "").strip()
+    voice = args.get("voice", "default").strip()
+    lang = args.get("lang", "id").strip()
+    if not text:
+        return ToolResult(success=False, output="", error="text wajib diisi")
+    try:
+        from audio_capability import synthesize_speech
+        out_path = args.get("out_path", "tts_out.wav")
+        result = synthesize_speech(text, voice=voice, lang=lang, out_path=out_path)
+        if result.get("ok"):
+            data = result["data"]
+            backend = data.get("backend", "unknown")
+            out = data.get("out_path", out_path)
+            return ToolResult(
+                success=True,
+                output=f"[TTS — {backend}] Audio disimpan ke: {out}",
+                citations=result.get("citations", []),
+            )
+        return ToolResult(success=False, output="", error=result.get("fallback_instructions", "TTS gagal"))
+    except Exception as exc:  # noqa: BLE001
+        return ToolResult(success=False, output="", error=f"synthesize_speech error: {exc}")
+
+
+def _tool_parse_document(args: dict) -> ToolResult:
+    """Parse dokumen Word/Excel/CSV/JSON/TXT menjadi teks/structured data."""
+    path = args.get("path", "").strip()
+    if not path:
+        return ToolResult(success=False, output="", error="path wajib diisi (relatif workspace)")
+    try:
+        from document_parser import parse_document
+        result = parse_document(path)
+        if result.get("ok"):
+            data = result["data"]
+            backend = data.get("backend", "unknown")
+            text = data.get("text", "")
+            rows = data.get("rows", [])
+            if text:
+                preview = text[:800] + ("..." if len(text) > 800 else "")
+                return ToolResult(
+                    success=True,
+                    output=f"[Document Parser — {backend}]\n{preview}",
+                    citations=result.get("citations", []),
+                )
+            if rows:
+                preview = "\n".join(str(r) for r in rows[:10])
+                return ToolResult(
+                    success=True,
+                    output=f"[Document Parser — {backend}]\n{preview}",
+                    citations=result.get("citations", []),
+                )
+            return ToolResult(
+                success=True,
+                output=f"[Document Parser — {backend}] Dokumen berhasil diparse.",
+                citations=result.get("citations", []),
+            )
+        return ToolResult(success=False, output="", error=result.get("fallback_instructions", "Parse gagal"))
+    except Exception as exc:  # noqa: BLE001
+        return ToolResult(success=False, output="", error=f"parse_document error: {exc}")
+
+
 TOOL_REGISTRY: dict[str, ToolSpec] = {
     "search_corpus": ToolSpec(
         name="search_corpus",
@@ -3440,6 +3525,39 @@ TOOL_REGISTRY: dict[str, ToolSpec] = {
         params=["path", "pages"],
         permission="open",
         fn=_tool_pdf_extract,
+    ),
+    "transcribe_audio": ToolSpec(
+        name="transcribe_audio",
+        description=(
+            "Transkripsi file audio ke teks (ASR). Prioritas: faster-whisper → openai-whisper. "
+            "Gunakan setelah user upload audio via /upload/audio. "
+            "Params: path (wajib, relatif workspace/uploads), lang (opsional, default 'id')."
+        ),
+        params=["path", "lang"],
+        permission="open",
+        fn=_tool_transcribe_audio,
+    ),
+    "synthesize_speech": ToolSpec(
+        name="synthesize_speech",
+        description=(
+            "Sintesis teks ke file audio WAV (TTS). Prioritas: Coqui-TTS → pyttsx3. "
+            "Gunakan untuk membuat SIDIX 'berbicara'. "
+            "Params: text (wajib), voice (opsional, default 'default'), lang (opsional, default 'id'), out_path (opsional)."
+        ),
+        params=["text", "voice", "lang", "out_path"],
+        permission="open",
+        fn=_tool_synthesize_speech,
+    ),
+    "parse_document": ToolSpec(
+        name="parse_document",
+        description=(
+            "Parse dokumen Word/Excel/CSV/JSON/TXT menjadi teks atau structured data. "
+            "Auto-detect format berdasarkan ekstensi. "
+            "Params: path (wajib, relatif workspace). Supported: .docx .xlsx .csv .json .txt .md .py .yaml .jsonl"
+        ),
+        params=["path"],
+        permission="open",
+        fn=_tool_parse_document,
     ),
     "concept_graph": ToolSpec(
         name="concept_graph",

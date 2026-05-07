@@ -2524,6 +2524,129 @@ def create_app() -> "FastAPI":
             log.warning("[upload] audio error: %s", e)
             raise HTTPException(status_code=500, detail=f"upload error: {e}")
 
+    # ── POST /upload/audio/transcribe ─────────────────────────────────────────
+    @app.post("/upload/audio/transcribe")
+    async def transcribe_uploaded_audio(request: Request):
+        """Transkripsi file audio yang sudah di-upload via /upload/audio."""
+        _enforce_rate(request)
+        try:
+            form = await request.form()
+            filename = form.get("filename") or form.get("file")
+            if not filename:
+                raise HTTPException(status_code=400, detail="filename wajib diisi")
+            workspace = get_agent_workspace_root()
+            upload_dir = Path(workspace) / "uploads"
+            filepath = upload_dir / filename
+            if not filepath.exists():
+                raise HTTPException(status_code=404, detail="file audio tidak ditemukan, upload dulu via /upload/audio")
+
+            from audio_capability import transcribe_audio
+            result = transcribe_audio(str(filepath), lang=form.get("lang", "id"))
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "transkripsi gagal"))
+            return {
+                "ok": True,
+                "text": result["data"].get("text", ""),
+                "language": result["data"].get("language", "id"),
+                "backend": result["data"].get("backend", "unknown"),
+                "segments": result["data"].get("segments", []),
+                "duration": result["data"].get("duration", 0),
+            }
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[stt] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"stt error: {e}")
+
+    # ── POST /tts ─────────────────────────────────────────────────────────────
+    @app.post("/tts")
+    async def text_to_speech(request: Request):
+        """Sintesis teks ke file audio WAV."""
+        _enforce_rate(request)
+        try:
+            form = await request.form()
+            text = form.get("text", "").strip()
+            if not text:
+                raise HTTPException(status_code=400, detail="text wajib diisi")
+            voice = form.get("voice", "default")
+            lang = form.get("lang", "id")
+
+            workspace = get_agent_workspace_root()
+            upload_dir = Path(workspace) / "uploads"
+            upload_dir.mkdir(parents=True, exist_ok=True)
+            out_name = f"tts_{uuid.uuid4().hex[:8]}.wav"
+            out_path = upload_dir / out_name
+
+            from audio_capability import synthesize_speech
+            result = synthesize_speech(text, voice=voice, lang=lang, out_path=str(out_path))
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "tts gagal"))
+            return {
+                "ok": True,
+                "text": text,
+                "url": f"/workspace/uploads/{out_name}",
+                "path": str(out_path),
+                "backend": result["data"].get("backend", "unknown"),
+            }
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[tts] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"tts error: {e}")
+
+    # ── POST /upload/document ─────────────────────────────────────────────────
+    @app.post("/upload/document")
+    async def upload_document(request: Request):
+        """Upload dokumen (Word/Excel/CSV/JSON/TXT) → parse → return structured data."""
+        _enforce_rate(request)
+        try:
+            form = await request.form()
+            file = form.get("file")
+            if not file:
+                raise HTTPException(status_code=400, detail="file wajib di-upload")
+            content_type = file.content_type or ""
+            workspace = get_agent_workspace_root()
+            upload_dir = Path(workspace) / "uploads"
+            upload_dir.mkdir(parents=True, exist_ok=True)
+
+            # Extract extension from filename or content_type
+            filename = file.filename or "upload"
+            ext = Path(filename).suffix.lower()
+            if not ext:
+                # guess from content_type
+                ct_map = {
+                    "application/vnd.openxmlformats-officedocument.wordprocessingml.document": ".docx",
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": ".xlsx",
+                    "text/csv": ".csv",
+                    "application/json": ".json",
+                    "text/plain": ".txt",
+                }
+                ext = ct_map.get(content_type, ".bin")
+                filename += ext
+
+            filepath = upload_dir / filename
+            content = await file.read()
+            if len(content) > 10 * 1024 * 1024:  # 10MB limit
+                raise HTTPException(status_code=413, detail="file melebihi 10MB")
+            filepath.write_bytes(content)
+            log.info("[upload] document saved: %s (%d bytes)", filename, len(content))
+
+            from document_parser import parse_document
+            parsed = parse_document(str(filepath))
+            return {
+                "ok": True,
+                "filename": filename,
+                "path": str(filepath),
+                "url": f"/workspace/uploads/{filename}",
+                "size": len(content),
+                "parsed": parsed,
+            }
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[upload] document error: %s", e)
+            raise HTTPException(status_code=500, detail=f"upload document error: {e}")
+
     # ── POST /agent/chat ──────────────────────────────────────────────────────
     @app.post("/agent/chat", response_model=ChatResponse)
     def agent_chat(req: ChatRequest, request: Request):
