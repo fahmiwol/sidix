@@ -18078,3 +18078,70 @@ curl -X POST http://localhost:8765/agent/maqashid/tune -d '{"sample_size":30}'
   - Lines added: ~436
   - Tests: 3 py_compile PASS + 2 smoke test PASS
   - Bugs found: 0 new
+
+
+### 2026-05-08 (Kimi — SPRINT: Multimodal Input + Coding Agent + Brand + Web Fetch)
+
+- **TASK CARD:** Sprint Multimodal Input Phase 2 + Coding Agent + Brand Guidelines + MCP Web Fetch
+  - WHAT: 4 new modules + 8 endpoints + 8 tools for image/video analysis, coding, brand design, web fetch
+  - WHY: Bos minta suara, gambar, video recognition + coding agent paling penting + UX design + web fetch
+  - ACCEPTANCE: 4 modules py_compile PASS, 8 endpoints defined, 8 tools registered, 4 smoke tests PASS
+  - PLAN: vision_analyzer → coding_agent_enhanced → brand_guidelines → mcp_web_fetch_expanded → agent_serve endpoints → agent_tools registry → test → commit
+  - RISKS: VLM model belum terinstall — fallback instructions built-in
+- **IMPL:** `apps/brain_qa/brain_qa/vision_analyzer.py` — NEW
+  - `analyze_image()`: VLM via Ollama (moondream → llava-phi3 → llava → bakllava fallback chain)
+  - `analyze_video()`: ffmpeg extract frames → analyze keyframes via VLM
+  - `generate_image_prompt()`: image-to-prompt untuk regenerasi
+  - Auto-detect vision model dari Ollama /api/tags
+  - Fallback kalau ffmpeg atau vision model tidak tersedia
+- **IMPL:** `apps/brain_qa/brain_qa/coding_agent_enhanced.py` — NEW
+  - `lint_code()`: ruff → py_compile fallback
+  - `debug_trace()`: trace module line-by-line execution
+  - `generate_tests()`: AST-based unit test stub generator
+  - `dependency_analysis()`: extract imports, detect third-party deps
+  - `code_review()`: heuristic security + complexity + style review
+- **IMPL:** `apps/brain_qa/brain_qa/brand_guidelines.py` — NEW
+  - `generate_color_system()`: WCAG AA contrast ratio calculator + shade generator
+  - `generate_typography_scale()`: golden ratio (1.618) scale
+  - `generate_spacing_scale()`: 4-point grid system
+  - `generate_component_tokens()`: button/card/input tokens (Tailwind/SCSS/Figma compatible)
+  - `generate_voice_tone()`: archetype-based voice guidelines
+  - `generate_full_guidelines()`: unified brand kit export
+- **IMPL:** `apps/brain_qa/brain_qa/mcp_web_fetch_expanded.py` — NEW
+  - `fetch_reddit()`: Reddit JSON API (no auth)
+  - `fetch_youtube_transcript()`: timedtext API (no auth)
+  - `fetch_youtube_search()`: scrape search results
+  - `fetch_github_repo()`: GitHub REST API (public repos)
+  - `fetch_github_search()`: GitHub search API
+  - `fetch_arxiv()`: arXiv API
+  - `fetch_hackernews()`: Algolia API + Firebase top stories
+  - `fetch_web_unified()`: router untuk semua platform
+- **IMPL:** `apps/brain_qa/brain_qa/agent_serve.py` — 8 endpoint baru
+  - `POST /upload/image/analyze` — image VLM analysis
+  - `POST /upload/video/analyze` — video VLM analysis
+  - `POST /code/lint` — code linting
+  - `POST /code/debug` — debug trace
+  - `POST /code/tests` — test generation
+  - `POST /code/review` — code review
+  - `POST /brand/guidelines` — brand guidelines generator
+  - `POST /web/fetch` — unified web fetch
+- **IMPL:** `apps/brain_qa/brain_qa/agent_tools.py` — 8 tool baru di TOOL_REGISTRY
+  - `analyze_image`, `analyze_video`, `code_lint`, `code_debug`, `code_tests`, `code_review`, `brand_guidelines`, `web_fetch_expanded`
+  - Total tools: 38 → **46** (+8)
+- **TEST:** py_compile 6/6 PASS ✅
+- **TEST:** smoke test 4/4 PASS ✅ (vision, coding, brand, webfetch)
+- **FIX:** N/A — no bugs found
+- **COMMIT:** `1563eea` pushed ke `origin/work/gallant-ellis-7cd14d`
+  - 6 files changed, 1,410 insertions(+)
+- **Anti-menguap checklist:**
+  - ✅ BACKLOG updated
+  - ✅ VISI_MATRIX updated
+  - ✅ LIVING_LOG updated
+  - ✅ Code committed + pushed
+  - ⏸️ FOUNDER_IDEA_LOG — no new founder verbatim
+  - ⏸️ FOUNDER_JOURNAL — no new founder decisions
+- **Session stats:**
+  - Files modified: 6 (4 new + 2 modified)
+  - Lines added: ~1,410
+  - Tests: 6 py_compile PASS + 4 smoke test PASS
+  - Bugs found: 0 new
