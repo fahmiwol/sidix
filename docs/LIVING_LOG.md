@@ -18145,3 +18145,52 @@ curl -X POST http://localhost:8765/agent/maqashid/tune -d '{"sample_size":30}'
   - Lines added: ~1,410
   - Tests: 6 py_compile PASS + 4 smoke test PASS
   - Bugs found: 0 new
+
+
+### 2026-05-08 (Kimi — SPRINT: RunPod GPU Connector + Dataset Collector)
+
+- **TASK CARD:** Sprint RunPod Integration + Local Dataset Collection
+  - WHAT: Connector ke RunPod serverless + read-only dataset scanner dari Mighan-Web/Mighan-3D
+  - WHY: Bos punya RunPod GPU workers (mighan-media-worker, mighan-3d-worker) + dataset lokal untuk training
+  - ACCEPTANCE: 2 modules, 5 endpoints, 4 tools, py_compile + smoke test PASS
+  - PLAN: runpod_connector.py → dataset_collector.py → agent_serve endpoints → agent_tools registry → test → commit
+  - RISKS: RunPod API key belum di-set — fallback instructions built-in
+- **IMPL:** `apps/brain_qa/brain_qa/runpod_connector.py` — NEW
+  - `generate_image()`: SDXL/Flux via RunPod media worker
+  - `generate_3d()`: TripoSR / Hunyuan3D via RunPod 3D worker
+  - `generate_tts()`: TTS via RunPod media worker
+  - `design_edit()`: remove_bg, upscale, etc
+  - `health_check()`: check endpoint status
+  - Auto-poll job status (max 120s, 2s interval)
+  - Env vars: RUNPOD_API_KEY, RUNPOD_MEDIA_ENDPOINT_ID, RUNPOD_3D_ENDPOINT_ID
+- **IMPL:** `apps/brain_qa/brain_qa/dataset_collector.py` — NEW
+  - `scan_folder()`: read-only recursive scan, PIL dimension extraction
+  - `collect_dataset()`: multi-source collection (Mighan-Web, Mighan-3D)
+  - `auto_tag_by_folder()`: heuristic tagging (npc, sprite, design, photo, canvas)
+  - `export_dataset_jsonl()`: training-compatible JSONL output
+  - `get_available_sources()`: existence check + file count
+  - Safety limit: max 5000 files, read-only (no edit/move/delete)
+- **IMPL:** `apps/brain_qa/brain_qa/agent_serve.py` — 5 endpoint baru
+  - `POST /generate/image` — RunPod image generation
+  - `POST /generate/3d` — RunPod 3D mesh generation
+  - `POST /dataset/scan` — scan folder lokal
+  - `POST /dataset/collect` — collect multi-source dataset
+  - `GET /dataset/sources` — list available sources
+- **IMPL:** `apps/brain_qa/brain_qa/agent_tools.py` — 4 tool baru
+  - `generate_image_runpod`, `generate_3d_runpod`, `scan_dataset`, `collect_dataset`
+  - Total tools: 46 → **50** (+4)
+- **TEST:** py_compile 4/4 PASS ✅
+- **TEST:** smoke test 2/2 PASS ✅ (runpod, dataset)
+- **FIX:** N/A — no bugs found
+- **COMMIT:** `daf9b03` pushed ke `origin/work/gallant-ellis-7cd14d`
+  - 4 files changed, 647 insertions(+)
+- **Anti-menguap checklist:**
+  - ✅ BACKLOG updated
+  - ✅ VISI_MATRIX updated
+  - ✅ LIVING_LOG updated
+  - ✅ Code committed + pushed
+- **Session stats:**
+  - Files modified: 4 (2 new + 2 modified)
+  - Lines added: ~647
+  - Tests: 4 py_compile PASS + 2 smoke test PASS
+  - Bugs found: 0 new
