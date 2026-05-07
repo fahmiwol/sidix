@@ -1070,14 +1070,15 @@ def create_app() -> "FastAPI":
         params: dict = {}
 
     @app.post("/mcp")
-    async def mcp_http(req: MCPRequest, request: Request):
+    async def mcp_http(request: Request):
         """MCP HTTP endpoint — JSON-RPC 2.0 dispatch."""
         _enforce_rate(request)
         from . import mcp_server_wrap as _mcp
 
-        method = req.method
-        params = req.params or {}
-        req_id = req.id
+        body = await request.json()
+        method = body.get("method", "")
+        params = body.get("params", {})
+        req_id = body.get("id")
 
         if method == "tools/list":
             category = params.get("category", "")
