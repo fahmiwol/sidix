@@ -92,6 +92,7 @@ class ADOState(TypedDict, total=False):
     # --- Persona Fan-out (OPTIONAL) ---
     persona_outputs: Dict[str, str]   # {"UTZ": "...", "ABOO": "...", ...}
     persona_selected: Optional[str]   # If single-mode selected
+    mode: str                         # "instant|thinking|agent|deep_research"
     persona_mode: str                 # "basic|single|pro|holistic"
 
     # --- Tool Execution (OPTIONAL) ---

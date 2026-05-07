@@ -53,6 +53,7 @@ from . import social_radar
 from . import memory_store
 from .sensor_hub import probe_all
 from .council import run_council
+from .mode_router import resolve_mode, SidixMode, ModeRouter
 
 _PROCESS_STARTED = time.time()
 _ALLOWED_PERSONAS = {"AYMAN", "ABOO", "OOMAR", "ALEY", "UTZ"}
@@ -303,6 +304,7 @@ def _log_user_activity(
 
 class ChatRequest(BaseModel):
     question: str
+    mode: str = "agent"       # Mode System: instant|thinking|agent|deep_research
     persona: str = "UTZ"
     persona_style: str = ""   # Task 22: "pembimbing"|"faktual"|"kreatif"|"akademik"|"rencana"|"singkat"
     output_lang: str = "auto" # Task 26: "auto"|"id"|"en"|"ar"
@@ -332,6 +334,7 @@ class ChatResponse(BaseModel):
     session_id: str
     answer: str
     persona: str
+    mode: str = "agent"            # Mode System: instant|thinking|agent|deep_research
     steps: int
     citations: list[dict]
     duration_ms: int
@@ -1966,6 +1969,7 @@ def create_app() -> "FastAPI":
             session_id=session.session_id,
             answer=session.final_answer,
             persona=session.persona,
+            mode="agent",
             steps=len(session.steps),
             citations=session.citations,
             duration_ms=duration_ms,
@@ -2015,7 +2019,50 @@ def create_app() -> "FastAPI":
             raise HTTPException(status_code=400, detail="question tidak boleh kosong")
 
         t0 = time.time()
+
+        # ── Mode System (2026-05-07) ────────────────────────────────────────────
+        # Detect mode dari query + override, strip slash commands
+        detected_mode, mode_config = resolve_mode(req.question, req.mode)
+        working_question = ModeRouter.strip_override(req.question)
+        log.info("[mode] detected=%s question=%s", detected_mode.value, working_question[:60])
+
+        # INSTANT mode: fast path, no tools, direct LLM
+        if detected_mode == SidixMode.INSTANT:
+            try:
+                from .local_llm import generate_sidix
+                instant_answer = generate_sidix(
+                    prompt=working_question,
+                    system_prompt="Kamu SIDIX. Jawab singkat, tepat, dan ramah.",
+                    max_tokens=mode_config["max_tokens"],
+                    temperature=mode_config["temperature"],
+                )
+                duration_ms = int((time.time() - t0) * 1000)
+                return ChatResponse(
+                    session_id=f"instant_{uuid.uuid4().hex[:8]}",
+                    answer=str(instant_answer),
+                    persona="AYMAN",
+                    steps=0,
+                    citations=[],
+                    duration_ms=duration_ms,
+                    finished=True,
+                    error="",
+                    confidence="tinggi",
+                    confidence_score=0.9,
+                    answer_type="fakta",
+                    user_id=req.user_id or "anon",
+                    conversation_id=req.conversation_id or "",
+                    mode=detected_mode.value,
+                )
+            except Exception as instant_err:
+                log.warning("[mode] instant fallback: %s", instant_err)
+                # fallback ke AGENT path
+
         effective_persona = (req.persona or "UTZ").strip().upper()
+        if effective_mode_persona := mode_config.get("persona"):
+            if effective_mode_persona == "auto":
+                effective_persona = ModeRouter.detect_persona(working_question)
+            elif effective_mode_persona in _ALLOWED_PERSONAS:
+                effective_persona = effective_mode_persona
         if effective_persona not in _ALLOWED_PERSONAS:
             effective_persona = "UTZ"
 
@@ -2062,6 +2109,7 @@ def create_app() -> "FastAPI":
                     session_id=f"holistic_mm_{uuid.uuid4().hex[:8]}",
                     answer=mm_result.get("answer", ""),
                     persona=effective_persona,
+                    mode=detected_mode.value,
                     steps=1,
                     citations=[],
                     duration_ms=duration_ms,
@@ -2113,6 +2161,7 @@ def create_app() -> "FastAPI":
                 session_id=f"holistic_{uuid.uuid4().hex[:8]}",
                 answer=result.get("answer", ""),
                 persona=effective_persona,
+                mode=detected_mode.value,
                 steps=result.get("n_turns", 1),
                 citations=[{"source": s} for s in result.get("sources_used", [])],
                 duration_ms=duration_ms,
@@ -2175,6 +2224,7 @@ def create_app() -> "FastAPI":
                 session_id=f"holistic_legacy_{uuid.uuid4().hex[:8]}",
                 answer=result.answer,
                 persona=effective_persona,
+                mode=detected_mode.value,
                 steps=1,
                 citations=result.citations,
                 duration_ms=duration_ms,

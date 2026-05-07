@@ -154,6 +154,8 @@ export interface ChatHolisticResponse {
   // Sprint J: conversation memory
   conversation_id?: string;
   session_id?: string;
+  // Mode system
+  mode?: string;
 }
 
 /**
@@ -164,17 +166,20 @@ export interface ChatHolisticResponse {
  * @param persona optional persona override (default: brain auto)
  * @param signal optional AbortSignal untuk cancellation
  */
+export type SidixMode = 'instant' | 'thinking' | 'agent' | 'deep_research';
+
 export async function askHolistic(
   question: string,
   persona?: Persona,
   signal?: AbortSignal,
-  opts?: { image_path?: string; audio_path?: string; conversationId?: string },
+  opts?: { image_path?: string; audio_path?: string; conversationId?: string; mode?: SidixMode },
 ): Promise<ChatHolisticResponse> {
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
     ..._authHeaders(),
   };
   const body: Record<string, unknown> = { question };
+  if (opts?.mode) body.mode = opts.mode;
   if (persona) body.persona = persona;
   if (opts?.image_path) body.image_path = opts.image_path;
   if (opts?.audio_path) body.audio_path = opts.audio_path;
@@ -250,7 +255,7 @@ export async function askHolisticStream(
     onError: (msg: string) => void;
   },
   signal?: AbortSignal,
-  opts?: { conversationId?: string },
+  opts?: { conversationId?: string; mode?: SidixMode },
 ): Promise<void> {
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
@@ -258,6 +263,7 @@ export async function askHolisticStream(
   };
   if (opts?.conversationId) headers['x-conversation-id'] = opts.conversationId;
   const body: Record<string, unknown> = { question, persona };
+  if (opts?.mode) body.mode = opts.mode;
   if (opts?.conversationId) body.conversation_id = opts.conversationId;
   try {
     const res = await fetch(`${BRAIN_QA_BASE}/agent/chat_holistic_stream`, {
