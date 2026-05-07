@@ -135,6 +135,13 @@ export interface AgentGenerateResponse {
   duration_ms: number;
 }
 
+export interface AutoTuneResult {
+  score: number;
+  passed: boolean;
+  violations: string[];
+  suggestions: string[];
+}
+
 /**
  * Sprint Α: Respons POST /agent/chat_holistic — Jurus Seribu Bayangan.
  * Multi-source orchestrator paralel (web + corpus + dense + persona fanout +
@@ -157,6 +164,10 @@ export interface ChatHolisticResponse {
   session_id?: string;
   // Mode system
   mode?: string;
+  // Maqashid Auto-Tune
+  maqashid_score?: number;
+  maqashid_passed?: boolean;
+  maqashid_violations?: string[];
 }
 
 /**
@@ -530,6 +541,48 @@ export async function getReindexStatus(): Promise<ReindexStatus> {
   return request<ReindexStatus>('/corpus/reindex/status');
 }
 
+// ════════════════════════════════════════════════════════════════════════
+// A2A CLIENT — Phase 3: SIDIX as orchestrator (delegate to external agents)
+// ════════════════════════════════════════════════════════════════════════
+
+export interface ExternalAgent {
+  name: string;
+  url: string;
+  skills: string[];
+  agent_card?: Record<string, unknown>;
+  mcp_endpoint?: string;
+  capabilities?: Record<string, unknown>;
+}
+
+export interface DelegationResult {
+  success: boolean;
+  task_id: string;
+  agent_name: string;
+  artifact_text: string;
+  duration_ms: number;
+  error: string;
+}
+
+export async function discoverAgent(url: string): Promise<ExternalAgent> {
+  return request<ExternalAgent>('/a2a/client/discover', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ url }),
+  });
+}
+
+export async function delegateTask(agent_url: string, message: string): Promise<DelegationResult> {
+  return request<DelegationResult>('/a2a/client/delegate', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ agent_url, message }),
+  });
+}
+
+export async function listExternalAgents(): Promise<{ ok: boolean; count: number; agents: ExternalAgent[] }> {
+  return request<{ ok: boolean; count: number; agents: ExternalAgent[] }>('/a2a/client/agents');
+}
+
 /**
  * POST /ask/stream — SSE streaming jawaban token per token.
  * onToken dipanggil per token, onCitation per citation, onDone saat selesai.
@@ -788,6 +841,22 @@ export async function agentResurrect(
  * POST /agent/foresight — Visionary scenario planning (web + corpus + 3 scenarios).
  * Pipeline: scan → extract → project (base/bull/bear) → synthesize.
  */
+export async function evaluateMaqashid(text: string): Promise<AutoTuneResult> {
+  const res = await fetch(`${BRAIN_QA_BASE}/app/maqashid/evaluate`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ..._authHeaders() },
+    body: JSON.stringify({ text }),
+  });
+  if (!res.ok) throw new BrainQAError('server', `evaluateMaqashid ${res.status}`);
+  const data = await res.json();
+  return {
+    score: data.score ?? 0.0,
+    passed: data.passed ?? true,
+    violations: data.violations ?? [],
+    suggestions: data.suggestions ?? [],
+  };
+}
+
 export async function agentForesight(
   topic: string,
   opts?: { horizon?: string; withScenarios?: boolean; returnIntermediate?: boolean },
@@ -803,5 +872,124 @@ export async function agentForesight(
     }),
   });
   if (!res.ok) throw new BrainQAError(`Foresight error: ${res.status}`, 'http');
+  return res.json();
+}
+
+// ════════════════════════════════════════════════════════════════════════
+// UNIFIED ARTIFACT FRAMEWORK
+// ════════════════════════════════════════════════════════════════════════
+
+export interface Artifact {
+  id: string;
+  type: string;
+  status: string;
+  title: string;
+  content: string;
+  metadata: object;
+  created_at: number;
+  updated_at: number;
+  user_id?: string;
+  conversation_id?: string;
+  version?: number;
+  parent_id?: string;
+}
+
+export interface ArtifactListResponse {
+  artifacts: Artifact[];
+  total: number;
+}
+
+export async function createArtifact(req: {
+  type: string;
+  title: string;
+  content: string;
+  metadata?: object;
+  user_id?: string;
+  conversation_id?: string;
+}): Promise<Artifact> {
+  const res = await fetch(`${BRAIN_QA_BASE}/app/artifact/create`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ..._authHeaders() },
+    body: JSON.stringify(req),
+  });
+  if (!res.ok) throw new BrainQAError('server', `artifact/create ${res.status}`);
+  return res.json();
+}
+
+export async function getArtifact(id: string): Promise<Artifact> {
+  const res = await fetch(`${BRAIN_QA_BASE}/app/artifact/${encodeURIComponent(id)}`, {
+    headers: _authHeaders(),
+  });
+  if (!res.ok) throw new BrainQAError('server', `artifact/get ${res.status}`);
+  return res.json();
+}
+
+export async function listArtifacts(type?: string, status?: string): Promise<Artifact[]> {
+  const params = new URLSearchParams();
+  if (type) params.set('type', type);
+  if (status) params.set('status', status);
+  const res = await fetch(`${BRAIN_QA_BASE}/app/artifact/list?${params.toString()}`, {
+    headers: _authHeaders(),
+  });
+  if (!res.ok) throw new BrainQAError('server', `artifact/list ${res.status}`);
+  const data: ArtifactListResponse = await res.json();
+  return data.artifacts ?? [];
+}
+
+export async function updateArtifact(
+  id: string,
+  req: { title?: string; content?: string; metadata?: object; status?: string },
+): Promise<Artifact> {
+  const res = await fetch(`${BRAIN_QA_BASE}/app/artifact/${encodeURIComponent(id)}/update`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ..._authHeaders() },
+    body: JSON.stringify(req),
+  });
+  if (!res.ok) throw new BrainQAError('server', `artifact/update ${res.status}`);
+  return res.json();
+}
+
+export async function deleteArtifact(id: string): Promise<{ ok: boolean }> {
+  const res = await fetch(`${BRAIN_QA_BASE}/app/artifact/${encodeURIComponent(id)}/delete`, {
+    method: 'POST',
+    headers: _authHeaders(),
+  });
+  if (!res.ok) throw new BrainQAError('server', `artifact/delete ${res.status}`);
+  return res.json();
+}
+
+export async function pinArtifact(id: string): Promise<Artifact> {
+  const res = await fetch(`${BRAIN_QA_BASE}/app/artifact/${encodeURIComponent(id)}/pin`, {
+    method: 'POST',
+    headers: _authHeaders(),
+  });
+  if (!res.ok) throw new BrainQAError('server', `artifact/pin ${res.status}`);
+  return res.json();
+}
+
+export async function unpinArtifact(id: string): Promise<Artifact> {
+  const res = await fetch(`${BRAIN_QA_BASE}/app/artifact/${encodeURIComponent(id)}/unpin`, {
+    method: 'POST',
+    headers: _authHeaders(),
+  });
+  if (!res.ok) throw new BrainQAError('server', `artifact/unpin ${res.status}`);
+  return res.json();
+}
+
+export async function exportArtifact(id: string, format: string): Promise<{ artifact_id: string; format: string; data: string }> {
+  const res = await fetch(
+    `${BRAIN_QA_BASE}/app/artifact/${encodeURIComponent(id)}/export?format=${encodeURIComponent(format)}`,
+    { headers: _authHeaders() },
+  );
+  if (!res.ok) throw new BrainQAError('server', `artifact/export ${res.status}`);
+  return res.json();
+}
+
+export async function createArtifactVersion(id: string): Promise<Artifact> {
+  const res = await fetch(`${BRAIN_QA_BASE}/app/artifact/${encodeURIComponent(id)}/version`, {
+    method: 'POST',
+    headers: _authHeaders(),
+  });
+  if (!res.ok) throw new BrainQAError('server', `artifact/version ${res.status}`);
   return res.json();
 }

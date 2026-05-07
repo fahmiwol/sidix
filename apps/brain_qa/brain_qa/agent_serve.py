@@ -52,6 +52,7 @@ from . import rate_limit
 from . import social_radar
 from . import memory_store
 from . import a2a_server
+from . import a2a_client
 from .sensor_hub import probe_all
 from .council import run_council
 from .mode_router import resolve_mode, SidixMode, ModeRouter
@@ -64,6 +65,20 @@ from .app_code_canvas import (
     debug_code,
     get_artifact,
     list_artifacts,
+)
+from .app_framework import (
+    ArtifactCreateRequest,
+    ArtifactUpdateRequest,
+    ArtifactExportRequest,
+    create_artifact as _fw_create_artifact,
+    get_artifact as _fw_get_artifact,
+    update_artifact as _fw_update_artifact,
+    delete_artifact as _fw_delete_artifact,
+    pin_artifact as _fw_pin_artifact,
+    unpin_artifact as _fw_unpin_artifact,
+    list_artifacts as _fw_list_artifacts,
+    export_artifact as _fw_export_artifact,
+    create_version as _fw_create_version,
 )
 
 _PROCESS_STARTED = time.time()
@@ -147,6 +162,18 @@ def _simple_corpus_context(question: str, *, max_chars: int = 500) -> str:
 def _client_ip(request: Request) -> str:
     c = request.client
     return c.host if c else "unknown"
+
+
+def _auto_tune_enabled(request: Request, req_flag: bool = True) -> bool:
+    """
+    Cek apakah Maqashid Auto-Tune aktif.
+    Priority: env SIDIX_AUTO_TUNE > request flag.
+    Default: enabled (SIDIX_AUTO_TUNE=1 atau tidak di-set).
+    """
+    env_val = os.environ.get("SIDIX_AUTO_TUNE", "1").strip()
+    if env_val == "0":
+        return False
+    return req_flag
 
 
 def _is_whitelisted(request: Request) -> bool:
@@ -339,6 +366,7 @@ class ChatRequest(BaseModel):
     # Sprint See & Hear (2026-05-01): multimodal input paths
     image_path: str = ""       # Path ke uploaded image (setelah /upload/image)
     audio_path: str = ""       # Path ke uploaded audio (setelah /upload/audio)
+    auto_tune: bool = True     # Maqashid Auto-Tune middleware (default ON)
 
 
 class ChatResponse(BaseModel):
@@ -359,6 +387,8 @@ class ChatResponse(BaseModel):
     yaqin_level: str = ""          # ilm | ain | haqq
     maqashid_score: float = 0.0    # weighted maqashid 5-axis [0.0–1.0]
     maqashid_passes: bool = True
+    maqashid_passed: bool = True   # alias untuk API konsisten
+    maqashid_violations: list[str] = []
     maqashid_profile_status: str = ""   # pass | warn | block (mode gate)
     maqashid_profile_reasons: str = ""
     audience_register: str = ""    # burhan | jadal | khitabah
@@ -565,6 +595,7 @@ class AgentGenerateRequest(BaseModel):
     persona: str = "UTZ"
     max_tokens: int = 600
     temperature: float = 0.7
+    auto_tune: bool = True
 
 
 class AgentGenerateResponse(BaseModel):
@@ -572,6 +603,19 @@ class AgentGenerateResponse(BaseModel):
     text: str
     mode: str  # "ollama" | "local_lora" | "mock"
     persona: str
+
+
+# ── A2A Phase 3 Client models ────────────────────────────────────────────────
+
+class A2ADiscoverRequest(BaseModel):
+    """Request to discover an external A2A agent at a given URL."""
+    url: str
+
+
+class A2ADelegateRequest(BaseModel):
+    """Request to delegate a task to an external A2A agent."""
+    agent_url: str = ""
+    message: str
 
 
 class WisdomRequest(BaseModel):
@@ -1030,6 +1074,96 @@ def create_app() -> "FastAPI":
             raise HTTPException(status_code=404, detail="artifact not found")
         return artifact.model_dump()
 
+    # ── Unified Artifact Framework ────────────────────────────────────────────
+    @app.post("/app/artifact/create")
+    async def artifact_create(req: ArtifactCreateRequest):
+        """Buat artifact baru via unified framework."""
+        try:
+            artifact = _fw_create_artifact(req)
+            return artifact.model_dump()
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"artifact create error: {e}")
+
+    @app.get("/app/artifact/{artifact_id}")
+    async def artifact_get(artifact_id: str):
+        """Ambil artifact berdasarkan ID."""
+        artifact = _fw_get_artifact(artifact_id)
+        if not artifact:
+            raise HTTPException(status_code=404, detail="artifact not found")
+        return artifact.model_dump()
+
+    @app.post("/app/artifact/{artifact_id}/update")
+    async def artifact_update(artifact_id: str, req: ArtifactUpdateRequest):
+        """Update artifact."""
+        artifact = _fw_update_artifact(artifact_id, req)
+        if not artifact:
+            raise HTTPException(status_code=404, detail="artifact not found")
+        return artifact.model_dump()
+
+    @app.post("/app/artifact/{artifact_id}/delete")
+    async def artifact_delete(artifact_id: str):
+        """Soft delete artifact."""
+        ok = _fw_delete_artifact(artifact_id)
+        if not ok:
+            raise HTTPException(status_code=404, detail="artifact not found")
+        return {"ok": True, "artifact_id": artifact_id}
+
+    @app.post("/app/artifact/{artifact_id}/pin")
+    async def artifact_pin(artifact_id: str):
+        """Pin artifact."""
+        artifact = _fw_pin_artifact(artifact_id)
+        if not artifact:
+            raise HTTPException(status_code=404, detail="artifact not found")
+        return artifact.model_dump()
+
+    @app.post("/app/artifact/{artifact_id}/unpin")
+    async def artifact_unpin(artifact_id: str):
+        """Unpin artifact."""
+        artifact = _fw_unpin_artifact(artifact_id)
+        if not artifact:
+            raise HTTPException(status_code=404, detail="artifact not found")
+        return artifact.model_dump()
+
+    @app.get("/app/artifact/list")
+    async def artifact_list(
+        user_id: str = "",
+        type: str = "",
+        status: str = "",
+    ):
+        """List artifacts dengan filter."""
+        artifacts = _fw_list_artifacts(
+            user_id=user_id,
+            artifact_type=type,
+            status=status,
+        )
+        return {
+            "artifacts": [a.model_dump() for a in artifacts],
+            "total": len(artifacts),
+        }
+
+    @app.get("/app/artifact/{artifact_id}/export")
+    async def artifact_export(artifact_id: str, format: str = "md"):
+        """Export artifact ke md/json/html."""
+        try:
+            data = _fw_export_artifact(artifact_id, format)
+            return {
+                "artifact_id": artifact_id,
+                "format": format,
+                "data": data,
+            }
+        except ValueError as e:
+            raise HTTPException(status_code=404, detail=str(e))
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"export error: {e}")
+
+    @app.post("/app/artifact/{artifact_id}/version")
+    async def artifact_version(artifact_id: str):
+        """Buat version baru dari artifact."""
+        artifact = _fw_create_version(artifact_id)
+        if not artifact:
+            raise HTTPException(status_code=404, detail="artifact not found")
+        return artifact.model_dump()
+
     # ── A2A AgentCard (Phase 1 — 2026-05-07) ───────────────────────────────────
     # Google A2A protocol: Agent Card published at well-known path for discovery.
     @app.get("/.well-known/agent-card.json")
@@ -1218,6 +1352,54 @@ def create_app() -> "FastAPI":
         if not task_id:
             raise HTTPException(status_code=400, detail="taskId or id required")
         return a2a_server.tasks_cancel(task_id)
+
+    # ── A2A Client endpoints (Phase 3 — 2026-05-07) ────────────────────────────
+    # SIDIX as orchestrator: discover, delegate, and poll external A2A agents.
+    @app.post("/a2a/client/discover")
+    async def a2a_client_discover(req: A2ADiscoverRequest, request: Request):
+        """Discover an external A2A agent at the given URL."""
+        _enforce_rate(request)
+        if not req.url.strip():
+            raise HTTPException(status_code=400, detail="url wajib diisi")
+        agent = a2a_client.discover_agent(req.url.strip())
+        if agent is None:
+            raise HTTPException(status_code=502, detail="gagal discover agent — periksa URL atau konektivitas")
+        return agent.model_dump()
+
+    @app.post("/a2a/client/delegate")
+    async def a2a_client_delegate(req: A2ADelegateRequest, request: Request):
+        """Delegate a task to an external A2A agent."""
+        _enforce_rate(request)
+        if not req.message.strip():
+            raise HTTPException(status_code=400, detail="message wajib diisi")
+
+        agent_url = req.agent_url.strip()
+        # Auto-select best agent if URL not provided
+        if not agent_url:
+            agents = a2a_client.list_known_agents()
+            if not agents:
+                raise HTTPException(
+                    status_code=400,
+                    detail="agent_url kosong dan tidak ada agent di registry. Gunakan /a2a/client/discover dulu.",
+                )
+            best = a2a_client.find_best_agent_for_task(req.message, agents)
+            if best is None:
+                raise HTTPException(status_code=404, detail="tidak ditemukan agent yang cocok di registry")
+            agent_url = best.url
+
+        result = a2a_client.send_task(agent_url, req.message)
+        return result.model_dump()
+
+    @app.get("/a2a/client/agents")
+    async def a2a_client_agents(request: Request):
+        """List known external agents from in-memory registry."""
+        _enforce_rate(request)
+        agents = a2a_client.list_known_agents()
+        return {
+            "ok": True,
+            "count": len(agents),
+            "agents": [a.model_dump() for a in agents],
+        }
 
     # ── Sprint A+B: Sanad Orchestra + Hafidz Injection endpoints ───────────────
     @app.get("/agent/sanad/stats")
@@ -1571,6 +1753,42 @@ def create_app() -> "FastAPI":
                 "weights": profile.weights,
                 "message": "Profile reset to default",
             }
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    # ── POST /app/maqashid/evaluate ───────────────────────────────────────────
+    @app.post("/app/maqashid/evaluate")
+    async def maqashid_evaluate(request: Request):
+        """Manual evaluation endpoint — evaluate arbitrary text with Maqashid Auto-Tune."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+        except Exception:
+            raise HTTPException(status_code=400, detail="body JSON tidak valid")
+        text = body.get("text", "")
+        mode = body.get("mode", "general")
+        if not text:
+            raise HTTPException(status_code=400, detail="text wajib diisi")
+        try:
+            result = evaluate_output(text, mode=mode)
+            return {
+                "ok": True,
+                "score": result.score,
+                "passed": result.passed,
+                "violations": result.violations,
+                "suggestions": result.suggestions,
+                "corrected_output": result.corrected_output,
+            }
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"evaluation error: {e}")
+
+    # ── GET /app/maqashid/stats ───────────────────────────────────────────────
+    @app.get("/app/maqashid/stats")
+    async def maqashid_stats(request: Request):
+        """Global auto-tune statistics."""
+        _enforce_rate(request)
+        try:
+            return {"ok": True, **get_global_stats()}
         except Exception as e:
             return {"ok": False, "error": str(e)}
 
@@ -2190,6 +2408,19 @@ def create_app() -> "FastAPI":
 
         duration_ms = int((time.time() - t0) * 1000)
 
+        # ── Maqashid Auto-Tune Middleware ─────────────────────────────────────
+        _at_enabled = _auto_tune_enabled(request, req.auto_tune)
+        _at_result = None
+        if _at_enabled:
+            try:
+                tuned = auto_tune_response(session.final_answer or "", mode="general", auto_correct=False)
+                if tuned != session.final_answer:
+                    session.final_answer = tuned
+                    _at_result = evaluate_output(tuned, mode="general")
+            except Exception as _at_err:
+                log.debug("[auto_tune] /agent/chat fail-open: %s", _at_err)
+        # ─────────────────────────────────────────────────────────────────────
+
         _store_session(session)
         (None if _is_whitelisted(request) else rate_limit.record_daily_use(_daily_client_key(request)))
 
@@ -2217,6 +2448,8 @@ def create_app() -> "FastAPI":
             yaqin_level=getattr(session, "yaqin_level", ""),
             maqashid_score=getattr(session, "maqashid_score", 0.0),
             maqashid_passes=getattr(session, "maqashid_passes", True),
+            maqashid_passed=_at_result.passed if _at_result else getattr(session, "maqashid_passes", True),
+            maqashid_violations=_at_result.violations if _at_result else [],
             maqashid_profile_status=getattr(session, "maqashid_profile_status", ""),
             maqashid_profile_reasons=getattr(session, "maqashid_profile_reasons", ""),
             audience_register=getattr(session, "audience_register", ""),
@@ -2271,9 +2504,15 @@ def create_app() -> "FastAPI":
                     temperature=mode_config["temperature"],
                 )
                 duration_ms = int((time.time() - t0) * 1000)
+                _ans = str(instant_answer)
+                if _auto_tune_enabled(request, req.auto_tune):
+                    try:
+                        _ans = auto_tune_response(_ans, mode="general", auto_correct=False)
+                    except Exception:
+                        pass
                 return ChatResponse(
                     session_id=f"instant_{uuid.uuid4().hex[:8]}",
-                    answer=str(instant_answer),
+                    answer=_ans,
                     persona="AYMAN",
                     steps=0,
                     citations=[],
@@ -2339,9 +2578,15 @@ def create_app() -> "FastAPI":
                     persona=effective_persona,
                 )
                 duration_ms = int((time.time() - t0) * 1000)
+                _mm_ans = mm_result.get("answer", "")
+                if _auto_tune_enabled(request, req.auto_tune):
+                    try:
+                        _mm_ans = auto_tune_response(_mm_ans, mode="general", auto_correct=False)
+                    except Exception:
+                        pass
                 return ChatResponse(
                     session_id=f"holistic_mm_{uuid.uuid4().hex[:8]}",
-                    answer=mm_result.get("answer", ""),
+                    answer=_mm_ans,
                     persona=effective_persona,
                     mode=detected_mode.value,
                     steps=1,
@@ -2364,6 +2609,12 @@ def create_app() -> "FastAPI":
                 result["answer"] = _apply_hygiene(str(result.get("answer", "")))
             except Exception:
                 pass
+
+            if _auto_tune_enabled(request, req.auto_tune):
+                try:
+                    result["answer"] = auto_tune_response(result.get("answer", ""), mode="general", auto_correct=False)
+                except Exception:
+                    pass
 
             # Sprint J: persist user message + assistant answer to memory
             try:
@@ -2445,6 +2696,13 @@ def create_app() -> "FastAPI":
                 result.answer = _apply_hygiene(result.answer)
             except Exception:
                 pass
+
+            if _auto_tune_enabled(request, req.auto_tune):
+                try:
+                    result.answer = auto_tune_response(result.answer, mode="general", auto_correct=False)
+                except Exception:
+                    pass
+
             duration_ms = int((time.time() - t0) * 1000)
 
             # Sprint J: persist to memory
@@ -2721,7 +2979,13 @@ def create_app() -> "FastAPI":
                     temperature=req.temperature,
                 )
                 if mode == "ollama":
-                    return AgentGenerateResponse(text=text, mode="ollama", persona=p)
+                    _gen_text = text
+                    if _auto_tune_enabled(request, req.auto_tune):
+                        try:
+                            _gen_text = auto_tune_response(_gen_text, mode="general", auto_correct=False)
+                        except Exception:
+                            pass
+                    return AgentGenerateResponse(text=_gen_text, mode="ollama", persona=p)
         except Exception:
             pass
 
@@ -2735,7 +2999,13 @@ def create_app() -> "FastAPI":
                 temperature=req.temperature,
             )
             if mode == "local_lora":
-                return AgentGenerateResponse(text=text, mode="local_lora", persona=p)
+                _gen_text = text
+                if _auto_tune_enabled(request, req.auto_tune):
+                    try:
+                        _gen_text = auto_tune_response(_gen_text, mode="general", auto_correct=False)
+                    except Exception:
+                        pass
+                return AgentGenerateResponse(text=_gen_text, mode="local_lora", persona=p)
         except Exception:
             pass
 

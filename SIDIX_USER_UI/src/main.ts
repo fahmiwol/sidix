@@ -12,9 +12,11 @@ import {
   UploadCloud, AlertTriangle, Cpu, Info,
   ChevronDown, Sparkles, Paperclip, Copy, Check, Trash2,
   FolderTree, ShieldCheck, Folder, Lock, LockOpen, MoreHorizontal,
-  LoaderCircle, Zap, BookOpen, ShieldAlert, Key,
+  LoaderCircle, Zap, BookOpen, ShieldAlert, Key, Shield,
   Users, Code2, Palette, Coffee, ExternalLink, User,
   Terminal, Play, Bug, X,
+  Pin, PinOff, Download, FileDown,
+  BarChart3, List, ListOrdered, Quote, Code,
 } from 'lucide';
 
 import {
@@ -22,9 +24,11 @@ import {
   triggerReindex, getReindexStatus, agentGenerate, submitFeedback, forgetAgentSession,
   agentBurst, agentTwoEyed, agentForesight, agentResurrect,
   runCode, debugCode,
+  createArtifact, getArtifact, listArtifacts, pinArtifact, unpinArtifact,
+  exportArtifact, createArtifactVersion, updateArtifact, deleteArtifact,
   BrainQAError,
   type Persona, type CorpusDocument, type Citation, type HealthResponse,
-  type AskInferenceOpts, type QuotaInfo, type SidixMode,
+  type AskInferenceOpts, type QuotaInfo, type SidixMode, type Artifact,
 } from './api';
 
 import { initWaitingRoom } from './waiting-room';
@@ -128,13 +132,194 @@ function initIcons() {
       UploadCloud, AlertTriangle, Cpu, Info,
       ChevronDown, Sparkles, Paperclip, Copy, Check, Trash2,
       FolderTree, ShieldCheck, Folder, Lock, LockOpen, MoreHorizontal,
-      LoaderCircle, Zap, BookOpen, ShieldAlert, Key,
+      LoaderCircle, Zap, BookOpen, ShieldAlert, Key, Shield,
       Users, Code2, Palette, Coffee, ExternalLink, User,
       Terminal, Play, Bug, X,
+      BarChart3, List, ListOrdered, Quote, Code,
     },
   });
 }
 initIcons();
+
+// ════════════════════════════════════════════════════════════════════════
+// ARTIFACT GALLERY SIDEBAR
+// ════════════════════════════════════════════════════════════════════════
+
+const artifactGallery = document.getElementById('artifact-gallery') as HTMLDivElement | null;
+const btnToggleArtifacts = document.getElementById('btn-toggle-artifacts') as HTMLButtonElement | null;
+const btnCloseArtifacts = document.getElementById('btn-close-artifacts') as HTMLButtonElement | null;
+const artifactListEl = document.getElementById('artifact-list') as HTMLDivElement | null;
+const canvasPinBtn = document.getElementById('canvas-pin-btn') as HTMLButtonElement | null;
+const canvasUnpinBtn = document.getElementById('canvas-unpin-btn') as HTMLButtonElement | null;
+const canvasExportFormat = document.getElementById('canvas-export-format') as HTMLSelectElement | null;
+const canvasVersionSelect = document.getElementById('canvas-version-select') as HTMLSelectElement | null;
+
+let artifactGalleryVisible = false;
+let currentArtifactId: string | null = null;
+let artifactVersions: Map<string, Artifact[]> = new Map();
+
+function toggleArtifactGallery(force?: boolean) {
+  artifactGalleryVisible = force !== undefined ? force : !artifactGalleryVisible;
+  if (!artifactGallery) return;
+  if (artifactGalleryVisible) {
+    artifactGallery.classList.remove('hidden');
+    loadArtifactGallery();
+  } else {
+    artifactGallery.classList.add('hidden');
+  }
+  initIcons();
+}
+
+btnToggleArtifacts?.addEventListener('click', () => toggleArtifactGallery());
+btnCloseArtifacts?.addEventListener('click', () => toggleArtifactGallery(false));
+
+async function loadArtifactGallery() {
+  if (!artifactListEl) return;
+  try {
+    const artifacts = await listArtifacts();
+    artifactListEl.innerHTML = '';
+    if (!artifacts.length) {
+      artifactListEl.innerHTML = '<div class="text-xs text-parchment-500 text-center py-8">Belum ada artifact.</div>';
+      return;
+    }
+    for (const a of artifacts) {
+      const el = document.createElement('div');
+      el.className = `rounded-lg border px-3 py-2 cursor-pointer transition-colors ${
+        a.status === 'PINNED'
+          ? 'border-gold-500/40 bg-gold-500/10'
+          : 'border-warm-600/40 bg-warm-800/40 hover:bg-warm-700/50'
+      }`;
+      el.dataset.id = a.id;
+      const iconMap: Record<string, string> = {
+        CODE: 'code-2', DOCUMENT: 'file-text', NOTEBOOK: 'book-open',
+        IMAGE: 'image', WEB_PREVIEW: 'globe', AUDIO: 'audio', VIDEO: 'video', THREED: 'box',
+      };
+      const icon = iconMap[a.type] || 'file';
+      el.innerHTML = `
+        <div class="flex items-center gap-2">
+          <i data-lucide="${icon}" class="w-3.5 h-3.5 text-parchment-400 flex-shrink-0"></i>
+          <span class="text-xs font-medium text-parchment-200 truncate flex-1" title="${a.title}">${a.title}</span>
+          ${a.status === 'PINNED' ? '<i data-lucide="pin" class="w-3 h-3 text-gold-400 flex-shrink-0"></i>' : ''}
+        </div>
+        <div class="text-[10px] text-parchment-500 mt-0.5 truncate">${a.type} · v${a.version ?? 1}</div>
+      `;
+      el.addEventListener('click', () => loadArtifactIntoCanvas(a.id));
+      artifactListEl.appendChild(el);
+    }
+    initIcons();
+  } catch {
+    artifactListEl.innerHTML = '<div class="text-xs text-status-failed text-center py-8">Gagal memuat artifact.</div>';
+  }
+}
+
+async function loadArtifactIntoCanvas(id: string) {
+  try {
+    const a = await getArtifact(id);
+    currentArtifactId = a.id;
+    if (a.type === 'CODE' && canvasCodeInput) {
+      canvasCodeInput.value = a.content;
+      const lang = (a.metadata as any)?.language || 'python';
+      if (canvasLanguage) canvasLanguage.value = lang;
+      currentCode = a.content;
+      if (canvasOutput) canvasOutput.textContent = (a.metadata as any)?.output || '';
+      setCanvasStatus(`Loaded: ${a.title}`, 'idle');
+      updatePinButtons(a.status === 'PINNED');
+      updateVersionDropdown(a.id);
+      toggleCodeCanvas(true);
+    }
+  } catch (e) {
+    console.warn('[artifact] load failed:', e);
+  }
+}
+
+function updatePinButtons(isPinned: boolean) {
+  if (isPinned) {
+    canvasPinBtn?.classList.add('hidden');
+    canvasUnpinBtn?.classList.remove('hidden');
+  } else {
+    canvasPinBtn?.classList.remove('hidden');
+    canvasUnpinBtn?.classList.add('hidden');
+  }
+}
+
+async function updateVersionDropdown(artifactId: string) {
+  if (!canvasVersionSelect) return;
+  canvasVersionSelect.innerHTML = `<option value="" disabled selected>v1</option>`;
+}
+
+canvasPinBtn?.addEventListener('click', async () => {
+  if (!currentArtifactId) {
+    try {
+      const a = await createArtifact({
+        type: 'CODE',
+        title: `Code Canvas — ${canvasLanguage?.value || 'python'}`,
+        content: canvasCodeInput?.value || '',
+        metadata: { language: canvasLanguage?.value || 'python', output: canvasOutput?.textContent || '' },
+      });
+      currentArtifactId = a.id;
+      await pinArtifact(a.id);
+      updatePinButtons(true);
+      loadArtifactGallery();
+    } catch (e) {
+      setCanvasStatus('Pin failed', 'error');
+    }
+    return;
+  }
+  try {
+    await pinArtifact(currentArtifactId);
+    updatePinButtons(true);
+    loadArtifactGallery();
+  } catch (e) {
+    setCanvasStatus('Pin failed', 'error');
+  }
+});
+
+canvasUnpinBtn?.addEventListener('click', async () => {
+  if (!currentArtifactId) return;
+  try {
+    await unpinArtifact(currentArtifactId);
+    updatePinButtons(false);
+    loadArtifactGallery();
+  } catch (e) {
+    setCanvasStatus('Unpin failed', 'error');
+  }
+});
+
+canvasExportFormat?.addEventListener('change', async () => {
+  const format = canvasExportFormat.value;
+  if (!format || !currentArtifactId) {
+    setCanvasStatus('No artifact to export', 'error');
+    return;
+  }
+  try {
+    const result = await exportArtifact(currentArtifactId, format);
+    const blob = new Blob([result.data], { type: format === 'html' ? 'text/html' : format === 'json' ? 'application/json' : 'text/markdown' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `artifact-${currentArtifactId.slice(0, 8)}.${format}`;
+    a.click();
+    URL.revokeObjectURL(url);
+    setCanvasStatus(`Exported as .${format}`, 'success');
+  } catch (e) {
+    setCanvasStatus('Export failed', 'error');
+  } finally {
+    canvasExportFormat.value = '';
+  }
+});
+
+canvasVersionSelect?.addEventListener('change', async () => {
+  if (!currentArtifactId || !canvasVersionSelect.value) return;
+  try {
+    const newArtifact = await createArtifactVersion(currentArtifactId);
+    currentArtifactId = newArtifact.id;
+    updateVersionDropdown(newArtifact.id);
+    setCanvasStatus(`Version ${newArtifact.version} created`, 'success');
+    loadArtifactGallery();
+  } catch (e) {
+    setCanvasStatus('Version failed', 'error');
+  }
+});
 
 // ── Language Detection & i18n ─────────────────────────────────────────────────
 // Detect via browser locale + timezone (no IP call, instant)
@@ -1465,6 +1650,16 @@ async function doHolistic(question: string, mode: SidixMode = 'agent') {
       answerEl.textContent = fullAnswer;
       if (chatMessages) chatMessages.scrollTop = chatMessages.scrollHeight;
 
+      // Maqashid Auto-Tune shield
+      if (progressBubble) {
+        attachMaqashidShield(
+          progressBubble,
+          result.maqashid_passed,
+          result.maqashid_violations,
+          result.maqashid_score,
+        );
+      }
+
       clearInterval(elapsedTimer);
       sendBtn.disabled = false;
       addProgressLine(
@@ -1474,6 +1669,21 @@ async function doHolistic(question: string, mode: SidixMode = 'agent') {
     }
     // Code Canvas: auto-detect code blocks from AI response
     populateCodeCanvas(fullAnswer);
+
+    // Auto-suggest Document Studio / Data Notebook
+    const tableData2 = parseMarkdownTable(fullAnswer);
+    if (tableData2 && progressBubble) {
+      addSuggestionChip(progressBubble, '📊 Buka di Notebook', () => {
+        populateDataNotebook(tableData2);
+        showRightPanel('notebook');
+      });
+    }
+    if (fullAnswer.length > 500 && !fullAnswer.includes('```') && !tableData2 && progressBubble) {
+      addSuggestionChip(progressBubble, '📝 Buka di Studio', () => {
+        populateDocumentStudio(fullAnswer);
+        showRightPanel('studio');
+      });
+    }
   } catch (e) {
     clearInterval(elapsedTimer);
     sendBtn.disabled = false;
@@ -1709,7 +1919,7 @@ function appendMessage(
     });
   }
 
-  // Copy button (AI only)
+  // Copy button + Maqashid shield (AI only)
   if (role === 'ai') {
     const copyBtn = document.createElement('button');
     copyBtn.className =
@@ -1727,6 +1937,9 @@ function appendMessage(
       });
     });
     wrap.appendChild(copyBtn);
+
+    // Neutral shield (will be updated if metadata arrives)
+    attachMaqashidShield(bubble);
   }
 
   // Citations (skip text_to_image — sudah di-render sebagai <img> di atas)
@@ -1781,6 +1994,39 @@ function appendError(message: string) {
     </div>`;
   chatMessages.appendChild(wrap);
   chatMessages.scrollTop = chatMessages.scrollHeight;
+  initIcons();
+}
+
+// ── Maqashid Auto-Tune Shield ──────────────────────────────────────────────
+
+function attachMaqashidShield(
+  bubble: HTMLElement,
+  passed?: boolean,
+  violations?: string[],
+  score?: number,
+) {
+  // Remove existing shield if any
+  const existing = bubble.querySelector('.maqashid-shield');
+  if (existing) existing.remove();
+
+  const shieldWrap = document.createElement('div');
+  shieldWrap.className = 'maqashid-shield absolute -left-7 top-2';
+
+  let colorClass = 'text-parchment-600';
+  let title = 'Maqashid Auto-Tune: neutral';
+
+  if (passed === true) {
+    colorClass = 'text-emerald-400';
+    title = `Maqashid Auto-Tune: passed (${(score ?? 0).toFixed(2)})`;
+  } else if (passed === false && violations && violations.length > 0) {
+    colorClass = 'text-amber-400';
+    title = `Maqashid Auto-Tune: warning (${(score ?? 0).toFixed(2)})\n• ${violations.join('\n• ')}`;
+  }
+
+  shieldWrap.innerHTML = `<i data-lucide="shield" class="w-4 h-4 ${colorClass}"></i>`;
+  shieldWrap.title = title;
+
+  bubble.appendChild(shieldWrap);
   initIcons();
 }
 
@@ -2036,6 +2282,21 @@ async function handleSend() {
       // Code Canvas: auto-detect code blocks from AI response
       populateCodeCanvas(fullText);
 
+      // Auto-suggest Document Studio / Data Notebook
+      const tableData = parseMarkdownTable(fullText);
+      if (tableData && streamBubble) {
+        addSuggestionChip(streamBubble, '📊 Buka di Notebook', () => {
+          populateDataNotebook(tableData);
+          showRightPanel('notebook');
+        });
+      }
+      if (fullText.length > 500 && !fullText.includes('```') && !tableData && streamBubble) {
+        addSuggestionChip(streamBubble, '📝 Buka di Studio', () => {
+          populateDocumentStudio(fullText);
+          showRightPanel('studio');
+        });
+      }
+
       // Latency footer — kasih tau user durasi total (transparency + UX feel)
       const latencySec = (totalMs / 1000).toFixed(1);
       const speedHint = cacheHit
@@ -2067,6 +2328,18 @@ async function handleSend() {
       const extrasHTML = extras.length > 0 ? `<span>·</span>${extras.join('<span>·</span>')}` : '';
       latencyRow.innerHTML = `<span style="font-variant-numeric: tabular-nums;">⏱ ${latencySec}s</span><span>·</span><span>${speedHint}</span>${extrasHTML}`;
       streamBubble.appendChild(latencyRow);
+
+      // Maqashid Auto-Tune shield
+      const _meta = meta as Record<string, unknown> | undefined;
+      if (_meta && (typeof _meta.maqashid_passed === 'boolean')) {
+        attachMaqashidShield(
+          streamBubble,
+          _meta.maqashid_passed as boolean,
+          (_meta.maqashid_violations as string[]) || [],
+          (_meta.maqashid_score as number) || 0,
+        );
+      }
+
       // SIDIX 2.0: hide confidence & feedback untuk agent mode (conversational)
       // Metadata epistemic hanya ditampilkan di strict_mode / research — nanti bisa
       // di-enable via flag dari backend. Untuk sekarang, biarkan conversation bersih.
@@ -2982,6 +3255,269 @@ $('reset-workspace-btn')?.addEventListener('click', () => {
 });
 
 // ════════════════════════════════════════════════════════════════════════
+// RIGHT PANEL SYSTEM — Code Canvas + Document Studio + Data Notebook
+// ════════════════════════════════════════════════════════════════════════
+
+type RightPanel = 'none' | 'code' | 'studio' | 'notebook';
+let activeRightPanel: RightPanel = 'none';
+
+const documentStudio = document.getElementById('document-studio') as HTMLDivElement | null;
+const dataNotebook = document.getElementById('data-notebook') as HTMLDivElement | null;
+
+function showRightPanel(panel: RightPanel) {
+  activeRightPanel = panel;
+  codeCanvas?.classList.add('hidden');
+  documentStudio?.classList.add('hidden');
+  dataNotebook?.classList.add('hidden');
+  if (chatPane) {
+    chatPane.style.width = '100%';
+    chatPane.classList.remove('hidden');
+  }
+  if (panel === 'none') return;
+  const el = panel === 'code' ? codeCanvas : panel === 'studio' ? documentStudio : dataNotebook;
+  if (!el || !chatPane) return;
+  el.classList.remove('hidden');
+  if (window.innerWidth < 768) {
+    chatPane.classList.add('hidden');
+    el.style.width = '100%';
+  } else {
+    chatPane.classList.remove('hidden');
+    chatPane.style.width = '60%';
+    el.style.width = '40%';
+  }
+  initIcons();
+}
+
+function addSuggestionChip(container: HTMLElement, label: string, onClick: () => void) {
+  const chip = document.createElement('button');
+  chip.className = 'mt-2 mr-2 text-[11px] px-2.5 py-1 rounded-md border border-gold-500/30 text-gold-400 hover:bg-gold-500/10 transition-colors inline-flex items-center gap-1';
+  chip.textContent = label;
+  chip.addEventListener('click', onClick);
+  container.appendChild(chip);
+}
+
+// ── Document Studio ──────────────────────────────────────────────────────────
+let tiptapEditor: any = null;
+
+function initTipTapEditor() {
+  const el = document.getElementById('studio-editor');
+  if (!el) return;
+  const win = window as any;
+  let Editor: any, StarterKit: any;
+  if (win.tiptap?.Editor) Editor = win.tiptap.Editor;
+  else if (win.TiptapEditor) Editor = win.TiptapEditor;
+  if (win.TiptapStarterKit?.default) StarterKit = win.TiptapStarterKit.default;
+  else if (win.TiptapStarterKit) StarterKit = win.TiptapStarterKit;
+  else if (win.tiptap?.StarterKit) StarterKit = win.tiptap.StarterKit;
+  if (Editor && StarterKit) {
+    try {
+      tiptapEditor = new Editor({ element: el, extensions: [StarterKit], content: '<p>Mulai menulis di sini...</p>' });
+      return;
+    } catch (e) { console.warn('[SIDIX] TipTap init failed, falling back:', e); }
+  }
+  el.contentEditable = 'true';
+  el.innerHTML = '<p>Mulai menulis di sini...</p>';
+  tiptapEditor = null;
+}
+
+function execStudioCommand(cmd: string) {
+  if (tiptapEditor) {
+    const chain = tiptapEditor.chain().focus();
+    switch (cmd) {
+      case 'bold': chain.toggleBold().run(); break;
+      case 'italic': chain.toggleItalic().run(); break;
+      case 'h1': chain.toggleHeading({ level: 1 }).run(); break;
+      case 'h2': chain.toggleHeading({ level: 2 }).run(); break;
+      case 'h3': chain.toggleHeading({ level: 3 }).run(); break;
+      case 'bulletList': chain.toggleBulletList().run(); break;
+      case 'orderedList': chain.toggleOrderedList().run(); break;
+      case 'blockquote': chain.toggleBlockquote().run(); break;
+      case 'codeBlock': chain.toggleCodeBlock().run(); break;
+    }
+  } else {
+    const el = document.getElementById('studio-editor');
+    if (!el) return;
+    el.focus();
+    switch (cmd) {
+      case 'bold': document.execCommand('bold'); break;
+      case 'italic': document.execCommand('italic'); break;
+      case 'h1': document.execCommand('formatBlock', false, '<h1>'); break;
+      case 'h2': document.execCommand('formatBlock', false, '<h2>'); break;
+      case 'h3': document.execCommand('formatBlock', false, '<h3>'); break;
+      case 'bulletList': document.execCommand('insertUnorderedList'); break;
+      case 'orderedList': document.execCommand('insertOrderedList'); break;
+      case 'blockquote': document.execCommand('formatBlock', false, '<blockquote>'); break;
+      case 'codeBlock': document.execCommand('formatBlock', false, '<pre>'); break;
+    }
+  }
+}
+
+function populateDocumentStudio(text: string) {
+  const html = text.split('\n\n').map(p => `<p>${p.replace(/\n/g, '<br>')}</p>`).join('');
+  if (tiptapEditor) { tiptapEditor.commands.setContent(html); }
+  else { const el = document.getElementById('studio-editor'); if (el) el.innerHTML = html; }
+}
+
+function htmlToMarkdown(html: string): string {
+  const tmp = document.createElement('div');
+  tmp.innerHTML = html;
+  let md = '';
+  tmp.childNodes.forEach(node => {
+    if (node.nodeName === 'P') md += (node.textContent || '') + '\n\n';
+    else if (node.nodeName.match(/^H[1-6]$/)) md += '#'.repeat(parseInt(node.nodeName[1])) + ' ' + (node.textContent || '') + '\n\n';
+    else if (node.nodeName === 'UL') { node.childNodes.forEach(li => { if (li.nodeName === 'LI') md += '- ' + (li.textContent || '') + '\n'; }); md += '\n'; }
+    else if (node.nodeName === 'OL') { let i = 1; node.childNodes.forEach(li => { if (li.nodeName === 'LI') md += `${i++}. ` + (li.textContent || '') + '\n'; }); md += '\n'; }
+    else if (node.nodeName === 'BLOCKQUOTE') md += '> ' + (node.textContent || '').replace(/\n/g, '\n> ') + '\n\n';
+    else if (node.nodeName === 'PRE') md += '```\n' + (node.textContent || '') + '\n```\n\n';
+    else if (node.nodeName === 'DIV') md += (node.textContent || '') + '\n\n';
+  });
+  return md.trim();
+}
+
+function downloadBlob(blob: Blob, filename: string) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+async function handleStudioSave() {
+  const el = document.getElementById('studio-editor');
+  if (!el) return;
+  const title = 'Studio Document ' + new Date().toLocaleString('id-ID');
+  try {
+    const res = await fetch(`${BRAIN_QA_BASE}/app/artifact/create`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ title, type: 'DOCUMENT', content: el.innerHTML }),
+    });
+    if (!res.ok) throw new Error(`${res.status}`);
+    alert('Dokumen disimpan sebagai artifact.');
+  } catch (e) {
+    alert('Gagal menyimpan: ' + (e as Error).message);
+  }
+}
+
+function handleStudioExport(format: 'md' | 'html') {
+  const el = document.getElementById('studio-editor');
+  if (!el) return;
+  let content = '', filename = 'studio-export', mime = 'text/plain';
+  if (format === 'md') { content = htmlToMarkdown(el.innerHTML); filename += '.md'; mime = 'text/markdown'; }
+  else { content = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>Document Studio Export</title></head><body style="font-family:system-ui,sans-serif;max-width:720px;margin:40px auto;line-height:1.6;color:#333;">${el.innerHTML}</body></html>`; filename += '.html'; mime = 'text/html'; }
+  downloadBlob(new Blob([content], { type: mime }), filename);
+}
+
+// ── Data Notebook ────────────────────────────────────────────────────────────
+let currentNotebookData: { headers: string[]; rows: string[][] } | null = null;
+let currentSortCol = -1;
+let currentSortAsc = true;
+
+function parseMarkdownTable(text: string): { headers: string[]; rows: string[][] } | null {
+  const lines = text.split('\n').map(l => l.trim()).filter(l => l.startsWith('|'));
+  if (lines.length < 2) return null;
+  const rows = lines.map(line => line.split('|').map(c => c.trim()).filter(c => c.length > 0));
+  if (rows.length < 2) return null;
+  const headers = rows[0];
+  const dataRows = rows.slice(1).filter(r => !r.every(c => /^[-:]+$/.test(c)));
+  return { headers, rows: dataRows };
+}
+
+function renderTable(data: { headers: string[]; rows: string[][] }, container: HTMLElement) {
+  currentNotebookData = data;
+  const table = document.createElement('table');
+  table.className = 'w-full text-xs text-parchment-200 border-collapse';
+  const thead = document.createElement('thead');
+  thead.innerHTML = `<tr class="border-b border-warm-600/50">${data.headers.map((h, i) => `<th class="text-left px-2 py-2 text-parchment-400 font-semibold cursor-pointer hover:text-gold-400 select-none" data-col="${i}">${h} <span class="sort-indicator text-[9px] opacity-50">⇅</span></th>`).join('')}</tr>`;
+  const tbody = document.createElement('tbody');
+  function renderBody(rows: string[][]) {
+    tbody.innerHTML = rows.map(row => `<tr class="border-b border-warm-600/20 hover:bg-warm-800/40 transition-colors">${row.map(cell => `<td class="px-2 py-1.5">${cell}</td>`).join('')}</tr>`).join('');
+  }
+  renderBody(data.rows);
+  table.appendChild(thead); table.appendChild(tbody);
+  container.innerHTML = ''; container.appendChild(table);
+  thead.querySelectorAll('th').forEach((th, idx) => {
+    th.addEventListener('click', () => {
+      currentSortAsc = currentSortCol === idx ? !currentSortAsc : true;
+      currentSortCol = idx;
+      thead.querySelectorAll('.sort-indicator').forEach((el, i) => { (el as HTMLElement).textContent = i === idx ? (currentSortAsc ? '▲' : '▼') : '⇅'; (el as HTMLElement).style.opacity = i === idx ? '1' : '0.5'; });
+      const sorted = [...data.rows].sort((a, b) => {
+        const av = a[idx] || '', bv = b[idx] || '';
+        const an = parseFloat(av.replace(/[^0-9.-]/g, '')), bn = parseFloat(bv.replace(/[^0-9.-]/g, ''));
+        if (!isNaN(an) && !isNaN(bn) && av !== '' && bv !== '') return currentSortAsc ? an - bn : bn - an;
+        return currentSortAsc ? av.localeCompare(bv) : bv.localeCompare(av);
+      });
+      renderBody(sorted);
+    });
+  });
+}
+
+function renderChart(data: { headers: string[]; rows: string[][] }, type: string, container: HTMLElement) {
+  if (typeof (window as any).echarts === 'undefined') {
+    container.innerHTML = '<div class="text-xs text-parchment-500 text-center py-8">ECharts tidak tersedia.</div>';
+    return;
+  }
+  const echarts = (window as any).echarts;
+  if ((container as any).__chartInstance) { (container as any).__chartInstance.dispose(); }
+  const chart = echarts.init(container, null, { renderer: 'canvas', backgroundColor: 'transparent' });
+  const numericCols: number[] = [];
+  for (let c = 0; c < data.headers.length; c++) {
+    const isNumeric = data.rows.every(r => { const v = (r[c] || '').replace(/[^0-9.-]/g, ''); return v === '' || !isNaN(parseFloat(v)); });
+    if (isNumeric) numericCols.push(c);
+  }
+  const labelCol = numericCols.includes(0) ? -1 : 0;
+  const labels = labelCol >= 0 ? data.rows.map(r => r[labelCol]) : data.rows.map((_, i) => `Row ${i + 1}`);
+  let valueCol = numericCols.find(c => c !== labelCol) ?? 1;
+  if (valueCol >= data.headers.length) valueCol = 1;
+  const seriesData = data.rows.map(r => { const raw = r[valueCol] || '0'; const num = parseFloat(raw.replace(/[^0-9.-]/g, '')); return isNaN(num) ? 0 : num; });
+  const colors = ['#c9985a', '#6EAE7C', '#D4A017', '#C46B6B', '#7A6B58', '#d4c5a9', '#a89b82'];
+  const option: any = {
+    backgroundColor: 'transparent',
+    textStyle: { color: '#d4c5a9' },
+    title: { text: data.headers[valueCol] || 'Chart', left: 'center', textStyle: { color: '#d4c5a9', fontSize: 12 } },
+    tooltip: { trigger: type === 'pie' ? 'item' : 'axis', backgroundColor: 'rgba(20,15,8,0.95)', borderColor: 'rgba(204,152,49,0.3)', textStyle: { color: '#d4c5a9' } },
+    grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
+  };
+  if (type !== 'pie') {
+    option.xAxis = { type: 'category', data: labels, axisLine: { lineStyle: { color: '#7A6B58' } }, axisLabel: { color: '#a89b82' } };
+    option.yAxis = { type: 'value', axisLine: { lineStyle: { color: '#7A6B58' } }, splitLine: { lineStyle: { color: '#2a2018' } }, axisLabel: { color: '#a89b82' } };
+  }
+  option.series = [{
+    type,
+    data: type === 'pie' ? labels.map((l, i) => ({ name: l, value: seriesData[i] })) : seriesData,
+    itemStyle: type === 'pie' ? { color: (params: any) => colors[params.dataIndex % colors.length] } : { color: '#c9985a' },
+  }];
+  if (type === 'pie') option.series[0].radius = '60%';
+  chart.setOption(option);
+  (container as any).__chartInstance = chart;
+}
+
+function populateDataNotebook(data: { headers: string[]; rows: string[][] }) {
+  currentNotebookData = data;
+  const tableContainer = document.getElementById('notebook-table-view');
+  const chartContainer = document.getElementById('notebook-chart-view');
+  if (tableContainer) renderTable(data, tableContainer);
+  if (chartContainer) {
+    const type = (document.getElementById('notebook-chart-type') as HTMLSelectElement)?.value || 'bar';
+    renderChart(data, type, chartContainer);
+  }
+}
+
+function handleNotebookExport(format: 'csv' | 'json') {
+  if (!currentNotebookData) return;
+  let content = '', filename = 'notebook-export', mime = 'text/plain';
+  if (format === 'csv') {
+    const escape = (s: string) => `"${(s || '').replace(/"/g, '""')}"`;
+    content = [currentNotebookData.headers.map(escape).join(','), ...currentNotebookData.rows.map(r => r.map(escape).join(','))].join('\n');
+    filename += '.csv'; mime = 'text/csv';
+  } else {
+    content = JSON.stringify({ headers: currentNotebookData.headers, rows: currentNotebookData.rows }, null, 2);
+    filename += '.json'; mime = 'application/json';
+  }
+  downloadBlob(new Blob([content], { type: mime }), filename);
+}
+
+// ════════════════════════════════════════════════════════════════════════
 // CODE CANVAS MVP
 // ════════════════════════════════════════════════════════════════════════
 
@@ -3003,25 +3539,7 @@ let currentError = '';
 
 function toggleCodeCanvas(force?: boolean) {
   codeCanvasVisible = force !== undefined ? force : !codeCanvasVisible;
-  if (!chatPane || !codeCanvas) return;
-
-  if (codeCanvasVisible) {
-    codeCanvas.classList.remove('hidden');
-    chatPane.style.width = '60%';
-    // On mobile, hide chat pane entirely when canvas is open
-    if (window.innerWidth < 768) {
-      chatPane.classList.add('hidden');
-      codeCanvas.style.width = '100%';
-    } else {
-      chatPane.classList.remove('hidden');
-      codeCanvas.style.width = '40%';
-    }
-  } else {
-    codeCanvas.classList.add('hidden');
-    chatPane.style.width = '100%';
-    chatPane.classList.remove('hidden');
-  }
-  initIcons();
+  showRightPanel(codeCanvasVisible ? 'code' : 'none');
 }
 
 btnToggleCanvas?.addEventListener('click', () => toggleCodeCanvas());
@@ -3029,14 +3547,16 @@ btnCloseCanvas?.addEventListener('click', () => toggleCodeCanvas(false));
 
 // Responsive: adjust layout on resize
 window.addEventListener('resize', () => {
-  if (!codeCanvasVisible || !chatPane || !codeCanvas) return;
+  if (activeRightPanel === 'none' || !chatPane) return;
+  const el = activeRightPanel === 'code' ? codeCanvas : activeRightPanel === 'studio' ? documentStudio : dataNotebook;
+  if (!el) return;
   if (window.innerWidth < 768) {
     chatPane.classList.add('hidden');
-    codeCanvas.style.width = '100%';
+    el.style.width = '100%';
   } else {
     chatPane.classList.remove('hidden');
     chatPane.style.width = '60%';
-    codeCanvas.style.width = '40%';
+    el.style.width = '40%';
   }
 });
 
@@ -3076,6 +3596,8 @@ async function handleCanvasRun() {
       }
     }
     setCanvasStatus(`${result.duration_ms}ms · ${result.artifact_id.slice(0, 8)}`, result.error ? 'error' : 'success');
+    currentArtifactId = result.artifact_id;
+    updatePinButtons(false);
     if (result.error) {
       canvasDebugBtn?.classList.remove('hidden');
     }
@@ -3173,6 +3695,70 @@ function populateCodeCanvas(text: string) {
     toggleCodeCanvas(true);
   }
 }
+
+// Wire new panel toggles
+document.getElementById('btn-toggle-studio')?.addEventListener('click', () => {
+  showRightPanel(activeRightPanel === 'studio' ? 'none' : 'studio');
+  if (activeRightPanel === 'studio' && !tiptapEditor) initTipTapEditor();
+});
+document.getElementById('btn-toggle-notebook')?.addEventListener('click', () => {
+  showRightPanel(activeRightPanel === 'notebook' ? 'none' : 'notebook');
+});
+document.getElementById('btn-close-studio')?.addEventListener('click', () => showRightPanel('none'));
+document.getElementById('btn-close-notebook')?.addEventListener('click', () => showRightPanel('none'));
+
+// Studio toolbar
+document.querySelectorAll<HTMLButtonElement>('.studio-tool').forEach(btn => {
+  btn.addEventListener('click', () => execStudioCommand(btn.dataset.studioCmd || ''));
+});
+
+// Studio save / export
+document.getElementById('btn-studio-save')?.addEventListener('click', handleStudioSave);
+document.getElementById('studio-export-format')?.addEventListener('change', (e) => {
+  const val = (e.target as HTMLSelectElement).value as 'md' | 'html';
+  if (val) { handleStudioExport(val); (e.target as HTMLSelectElement).value = ''; }
+});
+
+// Notebook tabs
+const notebookTabTable = document.getElementById('notebook-tab-table');
+const notebookTabChart = document.getElementById('notebook-tab-chart');
+const notebookTableView = document.getElementById('notebook-table-view');
+const notebookChartView = document.getElementById('notebook-chart-view');
+
+function setNotebookTab(tab: 'table' | 'chart') {
+  if (tab === 'table') {
+    notebookTableView?.classList.remove('hidden');
+    notebookChartView?.classList.add('hidden');
+    notebookTabTable?.classList.add('text-gold-400', 'border-b-2', 'border-gold-400');
+    notebookTabTable?.classList.remove('text-parchment-500');
+    notebookTabChart?.classList.remove('text-gold-400', 'border-b-2', 'border-gold-400');
+    notebookTabChart?.classList.add('text-parchment-500');
+  } else {
+    notebookTableView?.classList.add('hidden');
+    notebookChartView?.classList.remove('hidden');
+    notebookTabChart?.classList.add('text-gold-400', 'border-b-2', 'border-gold-400');
+    notebookTabChart?.classList.remove('text-parchment-500');
+    notebookTabTable?.classList.remove('text-gold-400', 'border-b-2', 'border-gold-400');
+    notebookTabTable?.classList.add('text-parchment-500');
+    if (currentNotebookData && notebookChartView) {
+      const type = (document.getElementById('notebook-chart-type') as HTMLSelectElement)?.value || 'bar';
+      renderChart(currentNotebookData, type, notebookChartView);
+    }
+  }
+}
+
+notebookTabTable?.addEventListener('click', () => setNotebookTab('table'));
+notebookTabChart?.addEventListener('click', () => setNotebookTab('chart'));
+
+// Notebook chart type + export
+document.getElementById('notebook-chart-type')?.addEventListener('change', (e) => {
+  const type = (e.target as HTMLSelectElement).value;
+  if (currentNotebookData && notebookChartView) renderChart(currentNotebookData, type, notebookChartView);
+});
+document.getElementById('notebook-export-format')?.addEventListener('change', (e) => {
+  const val = (e.target as HTMLSelectElement).value as 'csv' | 'json';
+  if (val) { handleNotebookExport(val); (e.target as HTMLSelectElement).value = ''; }
+});
 
 // ── Initial render ────────────────────────────────────────────────────────────
 switchScreen('chat');

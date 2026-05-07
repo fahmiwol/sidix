@@ -138,7 +138,22 @@
 
       /* ── Input focus iOS fix ───────────── */
       textarea:focus { -webkit-user-select: text; }
+
+      /* ── Maqashid Auto-Tune shield ─────── */
+      .maqashid-shield {
+        cursor: help;
+        opacity: 0.7;
+        transition: opacity 0.15s;
+      }
+      .maqashid-shield:hover {
+        opacity: 1;
+      }
     </style>
+    <!-- TipTap Rich Text Editor -->
+    <script src="https://cdn.jsdelivr.net/npm/@tiptap/core@2.0.0/dist/index.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tiptap/starter-kit@2.0.0/dist/index.umd.min.js"></script>
+    <!-- ECharts Data Visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
   </head>
 
   <body class="h-screen overflow-hidden flex relative bg-warm-950">
@@ -293,12 +308,34 @@
               <i data-lucide="more-horizontal" class="w-4 h-4"></i>
             </button>
 
+            <!-- Artifact Gallery toggle -->
+            <button id="btn-toggle-artifacts"
+              class="hidden md:flex w-8 h-8 rounded-lg glass items-center justify-center text-parchment-400
+                     hover:text-gold-400 hover:border-gold-500/30 transition-colors"
+              title="Artifact Gallery">
+              <i data-lucide="folder-tree" class="w-4 h-4"></i>
+            </button>
+
             <!-- Code Canvas toggle -->
             <button id="btn-toggle-canvas"
               class="hidden md:flex w-8 h-8 rounded-lg glass items-center justify-center text-parchment-400
                      hover:text-gold-400 hover:border-gold-500/30 transition-colors"
               title="Code Canvas">
               <i data-lucide="code-2" class="w-4 h-4"></i>
+            </button>
+            <!-- Document Studio toggle -->
+            <button id="btn-toggle-studio"
+              class="hidden md:flex w-8 h-8 rounded-lg glass items-center justify-center text-parchment-400
+                     hover:text-gold-400 hover:border-gold-500/30 transition-colors"
+              title="Document Studio">
+              <i data-lucide="file-text" class="w-4 h-4"></i>
+            </button>
+            <!-- Data Notebook toggle -->
+            <button id="btn-toggle-notebook"
+              class="hidden md:flex w-8 h-8 rounded-lg glass items-center justify-center text-parchment-400
+                     hover:text-gold-400 hover:border-gold-500/30 transition-colors"
+              title="Data Notebook">
+              <i data-lucide="bar-chart-3" class="w-4 h-4"></i>
             </button>
           </div>
         </header>
@@ -471,6 +508,28 @@
         </div>
 
         <!-- ════════════════════════════════════════════════════
+             ARTIFACT GALLERY PANEL
+        ════════════════════════════════════════════════════ -->
+        <div id="artifact-gallery"
+          class="hidden flex-shrink-0 h-full border-l border-warm-600/30 bg-warm-900/60 backdrop-blur-sm flex flex-col"
+          style="width:260px">
+          <!-- Gallery Header -->
+          <div class="glass-header flex items-center justify-between px-4 py-3 flex-shrink-0">
+            <div class="flex items-center gap-2">
+              <i data-lucide="folder-tree" class="w-4 h-4 text-gold-400"></i>
+              <span class="text-sm font-semibold text-parchment-200">Artifacts</span>
+            </div>
+            <button id="btn-close-artifacts" class="w-6 h-6 rounded-md flex items-center justify-center text-parchment-500 hover:text-parchment-200 transition-colors">
+              <i data-lucide="x" class="w-4 h-4"></i>
+            </button>
+          </div>
+          <!-- Gallery List -->
+          <div id="artifact-list" class="flex-1 overflow-y-auto px-3 py-2 space-y-2">
+            <div class="text-xs text-parchment-500 text-center py-8">Memuat…</div>
+          </div>
+        </div>
+
+        <!-- ════════════════════════════════════════════════════
              CODE CANVAS PANEL
         ════════════════════════════════════════════════════ -->
         <div id="code-canvas"
@@ -488,6 +547,29 @@
                 <option value="python">Python</option>
                 <option value="javascript">JavaScript</option>
                 <option value="html">HTML</option>
+              </select>
+              <button id="canvas-pin-btn"
+                class="w-6 h-6 rounded-md flex items-center justify-center text-parchment-500 hover:text-gold-400 transition-colors"
+                title="Pin artifact">
+                <i data-lucide="pin" class="w-3.5 h-3.5"></i>
+              </button>
+              <button id="canvas-unpin-btn"
+                class="hidden w-6 h-6 rounded-md flex items-center justify-center text-gold-400 hover:text-parchment-200 transition-colors"
+                title="Unpin artifact">
+                <i data-lucide="pin-off" class="w-3.5 h-3.5"></i>
+              </button>
+              <select id="canvas-export-format"
+                class="bg-warm-800 border border-warm-600 text-parchment-200 rounded-lg px-2 py-1 text-[11px] font-semibold appearance-none pr-5 focus:outline-none focus:ring-1 focus:ring-gold-500/50 cursor-pointer"
+                title="Export format">
+                <option value="" disabled selected>Export</option>
+                <option value="md">Markdown</option>
+                <option value="json">JSON</option>
+                <option value="html">HTML</option>
+              </select>
+              <select id="canvas-version-select"
+                class="bg-warm-800 border border-warm-600 text-parchment-200 rounded-lg px-2 py-1 text-[11px] font-semibold appearance-none pr-5 focus:outline-none focus:ring-1 focus:ring-gold-500/50 cursor-pointer max-w-[100px]"
+                title="Version history">
+                <option value="" disabled selected>v1</option>
               </select>
               <button id="btn-close-canvas" class="w-6 h-6 rounded-md flex items-center justify-center text-parchment-500 hover:text-parchment-200 transition-colors">
                 <i data-lucide="x" class="w-4 h-4"></i>
@@ -531,6 +613,106 @@
                   class="text-[11px] font-mono text-parchment-300 whitespace-pre-wrap break-words"></pre>
               </div>
             </div>
+          </div>
+        </div>
+
+        <!-- ════════════════════════════════════════════════════
+             DOCUMENT STUDIO PANEL
+        ════════════════════════════════════════════════════ -->
+        <div id="document-studio"
+          class="hidden flex-shrink-0 h-full border-l border-warm-600/30 bg-warm-900/60 backdrop-blur-sm flex flex-col"
+          style="width:40%">
+          <!-- Studio Header -->
+          <div class="glass-header flex items-center justify-between px-4 py-3 flex-shrink-0">
+            <div class="flex items-center gap-2">
+              <i data-lucide="file-text" class="w-4 h-4 text-gold-400"></i>
+              <span class="text-sm font-semibold text-parchment-200">Document Studio</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <button id="btn-studio-save"
+                class="px-2 py-1 rounded-lg text-[11px] font-semibold border border-warm-600
+                       text-parchment-300 hover:border-gold-500/40 hover:text-gold-400 transition-colors">
+                Save
+              </button>
+              <select id="studio-export-format"
+                class="bg-warm-800 border border-warm-600 text-parchment-200 rounded-lg px-2 py-1 text-[11px] font-semibold appearance-none pr-5 focus:outline-none focus:ring-1 focus:ring-gold-500/50 cursor-pointer">
+                <option value="" disabled selected>Export</option>
+                <option value="md">Markdown</option>
+                <option value="html">HTML</option>
+              </select>
+              <button id="btn-close-studio" class="w-6 h-6 rounded-md flex items-center justify-center text-parchment-500 hover:text-parchment-200 transition-colors">
+                <i data-lucide="x" class="w-4 h-4"></i>
+              </button>
+            </div>
+          </div>
+          <!-- Toolbar -->
+          <div class="flex items-center gap-1 px-3 py-2 flex-shrink-0 border-b border-warm-600/30 flex-wrap">
+            <button data-studio-cmd="bold" class="studio-tool w-7 h-7 rounded-md flex items-center justify-center text-parchment-400 hover:bg-warm-700 hover:text-parchment-100 transition-colors text-xs font-bold" title="Bold">B</button>
+            <button data-studio-cmd="italic" class="studio-tool w-7 h-7 rounded-md flex items-center justify-center text-parchment-400 hover:bg-warm-700 hover:text-parchment-100 transition-colors text-xs italic" title="Italic">I</button>
+            <div class="w-px h-4 bg-warm-600/40 mx-1"></div>
+            <button data-studio-cmd="h1" class="studio-tool w-7 h-7 rounded-md flex items-center justify-center text-parchment-400 hover:bg-warm-700 hover:text-parchment-100 transition-colors text-[10px] font-bold" title="Heading 1">H1</button>
+            <button data-studio-cmd="h2" class="studio-tool w-7 h-7 rounded-md flex items-center justify-center text-parchment-400 hover:bg-warm-700 hover:text-parchment-100 transition-colors text-[10px] font-bold" title="Heading 2">H2</button>
+            <button data-studio-cmd="h3" class="studio-tool w-7 h-7 rounded-md flex items-center justify-center text-parchment-400 hover:bg-warm-700 hover:text-parchment-100 transition-colors text-[10px] font-bold" title="Heading 3">H3</button>
+            <div class="w-px h-4 bg-warm-600/40 mx-1"></div>
+            <button data-studio-cmd="bulletList" class="studio-tool w-7 h-7 rounded-md flex items-center justify-center text-parchment-400 hover:bg-warm-700 hover:text-parchment-100 transition-colors" title="Bullet List">
+              <i data-lucide="list" class="w-3.5 h-3.5"></i>
+            </button>
+            <button data-studio-cmd="orderedList" class="studio-tool w-7 h-7 rounded-md flex items-center justify-center text-parchment-400 hover:bg-warm-700 hover:text-parchment-100 transition-colors" title="Numbered List">
+              <i data-lucide="list-ordered" class="w-3.5 h-3.5"></i>
+            </button>
+            <button data-studio-cmd="blockquote" class="studio-tool w-7 h-7 rounded-md flex items-center justify-center text-parchment-400 hover:bg-warm-700 hover:text-parchment-100 transition-colors" title="Blockquote">
+              <i data-lucide="quote" class="w-3.5 h-3.5"></i>
+            </button>
+            <button data-studio-cmd="codeBlock" class="studio-tool w-7 h-7 rounded-md flex items-center justify-center text-parchment-400 hover:bg-warm-700 hover:text-parchment-100 transition-colors" title="Code Block">
+              <i data-lucide="code" class="w-3.5 h-3.5"></i>
+            </button>
+          </div>
+          <!-- Editor -->
+          <div class="flex-1 min-h-0 p-3 overflow-y-auto">
+            <div id="studio-editor" class="w-full h-full bg-warm-950 border border-warm-600/50 rounded-xl p-4 text-sm text-parchment-200 focus:outline-none focus:border-gold-500/40 prose prose-invert prose-sm max-w-none overflow-y-auto"></div>
+          </div>
+        </div>
+
+        <!-- ════════════════════════════════════════════════════
+             DATA NOTEBOOK PANEL
+        ════════════════════════════════════════════════════ -->
+        <div id="data-notebook"
+          class="hidden flex-shrink-0 h-full border-l border-warm-600/30 bg-warm-900/60 backdrop-blur-sm flex flex-col"
+          style="width:40%">
+          <!-- Notebook Header -->
+          <div class="glass-header flex items-center justify-between px-4 py-3 flex-shrink-0">
+            <div class="flex items-center gap-2">
+              <i data-lucide="bar-chart-3" class="w-4 h-4 text-gold-400"></i>
+              <span class="text-sm font-semibold text-parchment-200">Data Notebook</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <select id="notebook-chart-type"
+                class="bg-warm-800 border border-warm-600 text-parchment-200 rounded-lg px-2 py-1 text-[11px] font-semibold appearance-none pr-5 focus:outline-none focus:ring-1 focus:ring-gold-500/50 cursor-pointer">
+                <option value="bar">Bar</option>
+                <option value="line">Line</option>
+                <option value="pie">Pie</option>
+                <option value="scatter">Scatter</option>
+              </select>
+              <select id="notebook-export-format"
+                class="bg-warm-800 border border-warm-600 text-parchment-200 rounded-lg px-2 py-1 text-[11px] font-semibold appearance-none pr-5 focus:outline-none focus:ring-1 focus:ring-gold-500/50 cursor-pointer">
+                <option value="" disabled selected>Export</option>
+                <option value="csv">CSV</option>
+                <option value="json">JSON</option>
+              </select>
+              <button id="btn-close-notebook" class="w-6 h-6 rounded-md flex items-center justify-center text-parchment-500 hover:text-parchment-200 transition-colors">
+                <i data-lucide="x" class="w-4 h-4"></i>
+              </button>
+            </div>
+          </div>
+          <!-- View Tabs -->
+          <div class="flex items-center gap-0 px-4 border-b border-warm-600/30 flex-shrink-0">
+            <button id="notebook-tab-table" class="notebook-tab px-3 py-2 text-[11px] font-semibold text-gold-400 border-b-2 border-gold-400 transition-colors">Table</button>
+            <button id="notebook-tab-chart" class="notebook-tab px-3 py-2 text-[11px] font-semibold text-parchment-500 hover:text-parchment-300 transition-colors">Chart</button>
+          </div>
+          <!-- Content -->
+          <div class="flex-1 min-h-0 overflow-y-auto p-3">
+            <div id="notebook-table-view" class="w-full h-full"></div>
+            <div id="notebook-chart-view" class="w-full h-full hidden"></div>
           </div>
         </div>
       </section>

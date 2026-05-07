@@ -133,6 +133,8 @@ class AgentSession:
     # ── Jiwa Sprint 4: Parallel Planner observability ────────────────────────────
     planner_used: bool = False        # True jika parallel_planner aktif sesi ini
     planner_savings: float = 0.0      # estimated savings dari parallel execution (0.0–1.0)
+    # ── Maqashid Auto-Tune Middleware ─────────────────────────────────────────────
+    auto_tune_result: Any = None      # AutoTuneResult | None
 
 
 # ── Rule-based "LLM" (offline planner) ───────────────────────────────────────
@@ -2586,6 +2588,18 @@ def run_react(
                 pass  # Self-learning non-blocking
             # ─────────────────────────────────────────────────────────────────
 
+            # ── Maqashid Auto-Tune Middleware (fail-open) ─────────────────────
+            try:
+                from .maqashid_auto_tune import auto_tune_response
+                tuned = auto_tune_response(final_answer, mode="general", auto_correct=False)
+                if tuned != final_answer:
+                    from .maqashid_auto_tune import evaluate_output
+                    session.auto_tune_result = evaluate_output(tuned, mode="general")
+                final_answer = tuned
+            except Exception:
+                pass
+            # ───────────────────────────────────────────────────────────────────
+
             session.final_answer = final_answer
             answer_dedup.set_cached_answer(persona, working_question, final_answer)
             session.finished = True
@@ -2704,6 +2718,17 @@ def run_react(
             final_answer, _csc_warnings = _cognitive_self_check(final_answer, citations, working_question, persona)
             if _csc_warnings:
                 session.csc_warnings = ",".join(_csc_warnings)[:300]
+        # ── Maqashid Auto-Tune Middleware (max-steps branch, fail-open) ──
+        try:
+            from .maqashid_auto_tune import auto_tune_response
+            tuned = auto_tune_response(final_answer, mode="general", auto_correct=False)
+            if tuned != final_answer:
+                from .maqashid_auto_tune import evaluate_output
+                session.auto_tune_result = evaluate_output(tuned, mode="general")
+            final_answer = tuned
+        except Exception:
+            pass
+        # ───────────────────────────────────────────────────────────────────
         final_answer = _apply_hygiene(final_answer)
         session.final_answer = final_answer
         # ─────────────────────────────────────────────────────────────────────

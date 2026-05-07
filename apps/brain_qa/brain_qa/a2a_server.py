@@ -165,6 +165,15 @@ def process_task_async(task_id: str) -> None:
             )
             answer = session.final_answer or "(kosong)"
 
+        # ── Maqashid Auto-Tune Middleware (A2A) ─────────────────────────────
+        try:
+            from .maqashid_auto_tune import auto_tune_response
+            tuned_answer = auto_tune_response(answer, mode="general", auto_correct=False)
+            answer = tuned_answer
+        except Exception:
+            pass
+        # ─────────────────────────────────────────────────────────────────────
+
         agent_message = Message(
             role="agent",
             parts=[{"type": "text", "text": answer}],

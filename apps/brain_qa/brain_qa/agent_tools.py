@@ -2790,6 +2790,86 @@ def _tool_analyze_audio(args: dict) -> ToolResult:
     )
 
 
+# ── A2A Phase 3: delegate_to_agent ───────────────────────────────────────────
+
+def _tool_delegate_to_agent(args: dict) -> ToolResult:
+    """
+    Delegate a task to an external A2A-compatible agent.
+    RESTRICTED (butuh allow_restricted=true).
+    Params: message (str, wajib), agent_url (str, opsional — auto-discover dari registry kalau tidak diisi).
+    """
+    message = str(args.get("message", "")).strip()
+    agent_url = str(args.get("agent_url", "")).strip()
+
+    if not message:
+        return ToolResult(success=False, output="", error="message wajib diisi")
+
+    try:
+        from . import a2a_client
+    except Exception as e:
+        return ToolResult(success=False, output="", error=f"a2a_client gagal dimuat: {e}")
+
+    # Auto-discover best agent if URL not provided
+    if not agent_url:
+        agents = a2a_client.list_known_agents()
+        if not agents:
+            return ToolResult(
+                success=False,
+                output="",
+                error=(
+                    "Tidak ada agent_url dan registry external agent kosong. "
+                    "Gunakan discover_agent(url) dulu atau berikan agent_url."
+                ),
+            )
+        best = a2a_client.find_best_agent_for_task(message, agents)
+        if best is None:
+            return ToolResult(
+                success=False,
+                output="",
+                error="Tidak ditemukan agent yang cocok di registry untuk task ini.",
+            )
+        agent_url = best.url
+
+    # Discover agent card if not already in registry (best-effort)
+    known = {a.url for a in a2a_client.list_known_agents()}
+    if agent_url not in known:
+        discovered = a2a_client.discover_agent(agent_url)
+        if discovered is None:
+            return ToolResult(
+                success=False,
+                output="",
+                error=f"Gagal discover agent di {agent_url}. Periksa URL atau konektivitas.",
+            )
+
+    result = a2a_client.send_task(agent_url, message)
+
+    if result.success:
+        lines = [
+            f"# Delegation Result — {result.agent_name or 'External Agent'}",
+            f"- Task ID: {result.task_id}",
+            f"- Duration: {result.duration_ms} ms",
+            "",
+            "## Artifact",
+            result.artifact_text or "(kosong)",
+        ]
+        return ToolResult(
+            success=True,
+            output="\n".join(lines),
+            citations=[{
+                "type": "a2a_delegation",
+                "agent_url": agent_url,
+                "task_id": result.task_id,
+                "agent_name": result.agent_name,
+            }],
+        )
+
+    return ToolResult(
+        success=False,
+        output="",
+        error=f"Delegation gagal: {result.error}",
+    )
+
+
 # ── Registry ──────────────────────────────────────────────────────────────────
 
 # ── code_analyze — static AST analysis ───────────────────────────────────────
@@ -3704,6 +3784,18 @@ TOOL_REGISTRY: dict[str, ToolSpec] = {
         params=["path"],
         permission="open",
         fn=_tool_analyze_audio,
+    ),
+    "delegate_to_agent": ToolSpec(
+        name="delegate_to_agent",
+        description=(
+            "Delegate a task to an external A2A-compatible agent. "
+            "Use this when SIDIX lacks the specific capability and another agent can handle it. "
+            "Params: message (str, wajib — task description), "
+            "agent_url (str, opsional — URL external agent; auto-discover dari registry kalau tidak diisi)."
+        ),
+        params=["message", "agent_url"],
+        permission="restricted",
+        fn=_tool_delegate_to_agent,
     ),
 }
 

@@ -17495,3 +17495,142 @@ curl -X POST http://localhost:8765/agent/maqashid/tune -d '{"sample_size":30}'
   - MCP HTTP: https://ctrl.sidixlab.com/mcp
   - MCP stdio: `python apps/brain_qa/mcp_stdio_entry.py`
   - AgentCard: https://ctrl.sidixlab.com/.well-known/agent-card.json
+
+
+### 2026-05-07 (Kimi — Standing Alone Sprint Start)
+
+- **DECISION:** Founder directive: "SIDIX harus standing alone, built tools sendiri, build logic dan orkestrasi sendiri, MCP sendiri."
+- **IMPLIKASI:** Semua sprint berikutnya harus self-hosted, self-built, no vendor API dependency.
+- **TASK CARD:** `docs/TASK_CARD_2026-05-07_STANDING_ALONE.md` — 5 sprint paralel.
+- **SPRINT YANG DI-EKSEKUSI:**
+  1. Built-in Apps Framework (artifact lifecycle)
+  2. A2A Phase 3: A2AClient (orkestrasi eksternal)
+  3. Document Studio MVP (TipTap editor)
+  4. Data Notebook MVP (ECharts visualisasi)
+  5. Maqashid Auto-Tune (self-evaluation middleware)
+
+
+### 2026-05-07 (Kimi — A2A Phase 3 Implementation)
+
+- **IMPL:** `apps/brain_qa/brain_qa/a2a_client.py` — A2A Client (Phase 3) untuk SIDIX sebagai orchestrator.
+  - Models: `ExternalAgent`, `A2AClientConfig`, `DelegationResult`
+  - Functions: `discover_agent()`, `send_task()`, `send_task_stream()`, `poll_task()`, `find_best_agent_for_task()`
+  - In-memory registry (`_KNOWN_AGENTS`) untuk known external agents
+  - Self-hosted ONLY: HTTP calls ke external A2A agents via `httpx`, no vendor LLM API
+  - Timeout default 30s, poll max 5 menit, retry/graceful error handling
+- **IMPL:** `apps/brain_qa/brain_qa/a2a_mock_agent.py` — Mock external A2A agent untuk integration testing.
+  - Mock AgentCard, sync task send, task get, task cancel, SSE streaming
+  - FastAPI app factory `create_mock_app()` + `__main__` runner di port 9999
+  - Simple heuristic: calculator untuk math expression, echo untuk sisanya
+- **IMPL:** `apps/brain_qa/brain_qa/agent_tools.py` — Tool `delegate_to_agent` ditambahkan ke `TOOL_REGISTRY`.
+  - Permission: `restricted` (butuh `allow_restricted=True`)
+  - Auto-discover dari registry kalau `agent_url` tidak diberikan
+  - Lazy import `a2a_client` untuk avoid circular dependency
+- **IMPL:** `apps/brain_qa/brain_qa/agent_serve.py` — 3 endpoint A2A Client ditambahkan.
+  - `POST /a2a/client/discover` — discover agent dari URL
+  - `POST /a2a/client/delegate` — delegate task ke external agent
+  - `GET /a2a/client/agents` — list known external agents dari in-memory registry
+  - Request models: `A2ADiscoverRequest`, `A2ADelegateRequest`
+- **IMPL:** `SIDIX_USER_UI/src/api.ts` — TypeScript client functions untuk A2A Client.
+  - Interfaces: `ExternalAgent`, `DelegationResult`
+  - Functions: `discoverAgent()`, `delegateTask()`, `listExternalAgents()`
+- **TEST:** `python -m py_compile` PASS untuk `a2a_client.py`, `a2a_mock_agent.py`, `agent_serve.py`, `agent_tools.py`
+- **NOTE:** A2A Phase 2 (server) endpoints tidak diubah — backward compatibility terjaga.
+
+
+### 2026-05-07 (Kimi — Built-in Apps Framework)
+
+- **IMPL:** `apps/brain_qa/brain_qa/app_framework.py` — Unified Artifact Lifecycle Framework (baru).
+  - Pydantic models: `ArtifactType` (CODE/DOCUMENT/NOTEBOOK/IMAGE/WEB_PREVIEW/AUDIO/VIDEO/THREED), `ArtifactStatus` (DRAFT/ACTIVE/PINNED/ARCHIVED/DELETED), `Artifact`, `ArtifactCreateRequest`, `ArtifactUpdateRequest`, `ArtifactExportRequest`, `ArtifactListResponse`, `ArtifactExportResponse`
+  - Thread-safe in-memory store `_ARTIFACTS` dengan `_ARTIFACT_LOCK = threading.Lock()`
+  - Functions: `create_artifact`, `get_artifact`, `update_artifact`, `delete_artifact` (soft delete), `pin_artifact`, `unpin_artifact`, `list_artifacts` (filterable + sorted PINNED first), `export_artifact` (md/json/html), `create_version`
+  - Max 500 artifact per user (prune oldest non-PINNED)
+  - `migrate_legacy_code_artifact()` helper untuk backward compat
+- **UPDATE:** `apps/brain_qa/brain_qa/agent_serve.py` — 9 endpoint artifact framework ditambahkan.
+  - `POST /app/artifact/create`, `GET /app/artifact/{id}`, `POST /app/artifact/{id}/update`, `POST /app/artifact/{id}/delete`
+  - `POST /app/artifact/{id}/pin`, `POST /app/artifact/{id}/unpin`, `GET /app/artifact/list`, `GET /app/artifact/{id}/export`, `POST /app/artifact/{id}/version`
+  - Endpoint Code Canvas lama (`/app/code/*`) tetap ada — backward compatibility terjaga
+- **UPDATE:** `apps/brain_qa/brain_qa/app_code_canvas.py` — Refactor untuk pakai `app_framework`.
+  - `run_code()` sekarang membuat `Artifact` unified (type=CODE) via `create_artifact`
+  - `get_artifact()` dan `list_artifacts()` delegate ke `app_framework` dengan lazy migration dari `_CODE_ARTIFACTS` lama
+  - `CodeArtifact` model lama tetap dipertahankan untuk API response backward compat
+- **UPDATE:** `SIDIX_USER_UI/src/api.ts` — Artifact API client functions ditambahkan.
+  - `Artifact` interface + `createArtifact`, `getArtifact`, `listArtifacts`, `updateArtifact`, `deleteArtifact`, `pinArtifact`, `unpinArtifact`, `exportArtifact`, `createArtifactVersion`
+- **UPDATE:** `SIDIX_USER_UI/src/main.ts` — Artifact gallery sidebar + tombol pin/unpin/export/version.
+  - `toggleArtifactGallery()` + `loadArtifactGallery()` untuk list artifact pinned/active
+  - Tombol Pin/Unpin, Export format selector (md/json/html), Version selector di Code Canvas header
+  - `currentArtifactId` tracking setelah `run_code` selesai
+- **UPDATE:** `SIDIX_USER_UI/index.html` — HTML markup untuk Artifact Gallery panel dan tombol baru di Code Canvas.
+- **TEST:** `python -m py_compile` PASS untuk `app_framework.py`, `app_code_canvas.py`, `agent_serve.py`
+- **TEST:** `npm run build` PASS untuk `SIDIX_USER_UI` (dist generated, no errors)
+- **NOTE:** Self-hosted ONLY — tidak ada external API call. Tidak ada endpoint lama yang dihapus.
+
+
+### 2026-05-07
+
+- **IMPL:** `apps/brain_qa/brain_qa/maqashid_auto_tune.py` — Self-evaluation middleware (Sprint G+).
+  - `AutoTuneResult(BaseModel)`: score (0.0–1.0), passed, violations, suggestions, corrected_output
+  - `evaluate_output(text, mode)`: heuristic evaluation (hate speech, misinformation markers, missing attribution, ad hominem, brand canon contradiction). Fallback ke `maqashid_profiles.evaluate_maqashid()` kalau tersedia. Target <50ms, no LLM API calls.
+  - `auto_tune_response(text, mode, auto_correct)`: inject warning prefix + suggestions kalau score < 0.6. Fail-open (error → return original).
+  - `AutoTuneConfig`: threshold, mode, auto_correct, enabled
+  - Global stats tracker (`get_global_stats()`) — in-memory, non-blocking
+  - Sprint G existing code preserved: `run_auto_tune()`, `TunedProfile`, `DEFAULT_WEIGHTS`, `load_tuned_profile()`, `reset_to_default()`
+- **UPDATE:** `apps/brain_qa/brain_qa/agent_react.py` — Wire auto-tune ke ReAct loop.
+  - `AgentSession` ditambah field `auto_tune_result: Any = None`
+  - Setelah final answer di-compose (branch normal + max-steps branch), panggil `auto_tune_response()` sebelum `session.final_answer = final_answer`
+- **UPDATE:** `apps/brain_qa/brain_qa/agent_serve.py` — Wire auto-tune ke semua response paths + endpoint baru.
+  - Import `auto_tune_response`, `evaluate_output`, `get_global_stats` dari `maqashid_auto_tune`
+  - `ChatRequest` ditambah `auto_tune: bool = True`
+  - `AgentGenerateRequest` ditambah `auto_tune: bool = True`
+  - `ChatResponse` ditambah `maqashid_passed: bool = True` dan `maqashid_violations: list[str] = []`
+  - Helper `_auto_tune_enabled(request, req_flag)` → cek env `SIDIX_AUTO_TUNE` (default ON, `SIDIX_AUTO_TUNE=0` untuk OFF)
+  - `/agent/chat`: auto-tune `session.final_answer` setelah `run_react()`, populate `maqashid_passed` + `maqashid_violations` di `ChatResponse`
+  - `/agent/chat_holistic`: auto-tune pada 4 return paths (instant, multimodal, OMNYX, legacy fallback)
+  - `/agent/generate`: auto-tune pada return Ollama + local_lora
+  - A2A `/a2a/tasks/send`: auto-tune pada artifact di `a2a_server.py` (`process_task_async`)
+  - POST `/app/maqashid/evaluate` — manual evaluation arbitrary text
+  - GET `/app/maqashid/stats` — global auto-tune statistics
+- **UPDATE:** `apps/brain_qa/brain_qa/a2a_server.py` — Auto-tune pada A2A artifact output.
+  - `process_task_async`: setelah generate answer, panggil `auto_tune_response()` sebelum artifact creation
+- **UPDATE:** `SIDIX_USER_UI/src/api.ts` — Maqashid client functions.
+  - `AutoTuneResult` interface
+  - `evaluateMaqashid(text)` → POST `/app/maqashid/evaluate`
+  - `ChatHolisticResponse` ditambah optional `maqashid_score`, `maqashid_passed`, `maqashid_violations`
+- **UPDATE:** `SIDIX_USER_UI/src/main.ts` — Shield UI indicator.
+  - Import `Shield` dari lucide
+  - `attachMaqashidShield(bubble, passed?, violations?, score?)` — small shield icon absolute positioned di kiri atas bubble AI
+  - Green (`text-emerald-400`) = passed, Yellow (`text-amber-400`) = warning (violations), Gray = neutral
+  - Tooltip native via `title` attribute: score + violations list
+  - `appendMessage('ai', ...)`: attach neutral shield
+  - `doHolistic` non-streaming fallback: update shield dengan metadata dari `ChatHolisticResponse`
+  - `askStream` `onDone`: update shield dari `meta` kalau tersedia
+- **UPDATE:** `SIDIX_USER_UI/index.html` — CSS untuk `.maqashid-shield` (opacity transition + cursor help)
+- **TEST:** `python -m py_compile` PASS untuk `maqashid_auto_tune.py`, `agent_react.py`, `agent_serve.py`, `a2a_server.py`
+- **TEST:** `npm run build` PASS untuk `SIDIX_USER_UI` (dist generated, no errors)
+- **DECISION:** Heuristic-only evaluation (no LLM API calls) — memenuhi constraint self-hosted & <50ms.
+- **DECISION:** Fail-open — kalau evaluation error, return original text tanpa block.
+
+
+### 2026-05-07 (Kimi — Document Studio MVP & Data Notebook MVP)
+
+- **IMPL:** `SIDIX_USER_UI/index.html` — Document Studio & Data Notebook panels ditambahkan di split-pane kanan.
+  - CDN scripts: TipTap (`@tiptap/core@2.0.0`, `@tiptap/starter-kit@2.0.0`) + ECharts (`echarts@5.4.3`) — no npm install
+  - Toggle buttons di header: `btn-toggle-studio` (📝) dan `btn-toggle-notebook` (📊)
+  - Document Studio panel: toolbar (Bold, Italic, H1/H2/H3, Bullet/Numbered List, Blockquote, Code Block), TipTap editor div, Save button, Export dropdown (md/html)
+  - Data Notebook panel: chart type selector (Bar/Line/Pie/Scatter), Export dropdown (csv/json), Table/Chart tabs, table view container + chart view container
+- **IMPL:** `SIDIX_USER_UI/src/main.ts` — Unified right panel system.
+  - `showRightPanel(panel)` — hanya SATU panel kanan yang visible (Code Canvas / Document Studio / Data Notebook)
+  - `toggleCodeCanvas()` di-refactor untuk pakai `showRightPanel` — backward compat terjaga
+  - Responsive resize handler updated untuk semua 3 panel
+  - `initTipTapEditor()` — initialize TipTap dengan fallback ke contenteditable + execCommand
+  - `execStudioCommand(cmd)` — toolbar commands untuk Bold, Italic, headings, lists, blockquote, code block
+  - `handleStudioSave()` — POST ke `/app/artifact/create` dengan type=DOCUMENT
+  - `handleStudioExport(format)` — export ke Markdown atau HTML via `downloadBlob`
+  - `parseMarkdownTable(text)` — parser markdown table dari AI output
+  - `renderTable(data, container)` — render sortable HTML table (click header untuk sort asc/desc, auto-detect numeric)
+  - `renderChart(data, type, container)` — render ECharts bar/line/pie/scatter dengan dark theme
+  - `handleNotebookExport(format)` — export ke CSV atau JSON
+  - `populateDocumentStudio(text)` dan `populateDataNotebook(data)` — populate panel dari AI response
+  - Auto-detect suggestions: AI generate markdown table → chip "📊 Buka di Notebook"; AI generate long-form text (>500 chars, no code block) → chip "📝 Buka di Studio"
+- **TEST:** `npm run build` PASS untuk `SIDIX_USER_UI` (no TS errors, dist generated)
+- **NOTE:** Self-hosted ONLY — tidak ada external API call untuk data processing. Code Canvas MVP tidak ter-break.
