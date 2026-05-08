@@ -3654,6 +3654,36 @@ def create_app() -> "FastAPI":
         except Exception:
             pass
 
+        # ── Multi-modal Input Processing (Beta: image + audio) ────────────────
+        multimodal_context = []
+        if req.image_path and os.path.exists(req.image_path):
+            try:
+                from .vision_analyzer import analyze_image
+                result = analyze_image(image_path=req.image_path, prompt="Deskripsikan gambar ini.")
+                if result.get("ok"):
+                    desc = result.get("data", {}).get("description", "")
+                    multimodal_context.append({
+                        "role": "system",
+                        "content": f"[IMAGE ANALYSIS] User uploaded an image. Description: {desc}",
+                    })
+            except Exception as _img_err:
+                log.debug("[multimodal] image analysis fail: %s", _img_err)
+        if req.audio_path and os.path.exists(req.audio_path):
+            try:
+                from .audio_capability import transcribe_audio
+                result = transcribe_audio(file_path=req.audio_path, lang="auto", model_size="small")
+                if result.get("ok"):
+                    text = result.get("data", {}).get("text", "")
+                    multimodal_context.append({
+                        "role": "system",
+                        "content": f"[AUDIO TRANSCRIPTION] User uploaded audio. Transcription: {text}",
+                    })
+            except Exception as _aud_err:
+                log.debug("[multimodal] audio transcription fail: %s", _aud_err)
+        if multimodal_context:
+            conversation_context = multimodal_context + conversation_context
+        # ─────────────────────────────────────────────────────────────────────
+
         try:
             from .persona import resolve_style_persona
             effective_persona = resolve_style_persona(req.persona_style, req.persona)
@@ -5911,9 +5941,9 @@ def create_app() -> "FastAPI":
 
     @app.post("/agent/vision", tags=["Sensorial"])
     async def vision_endpoint(request: Request):
-        """Receive image upload (base64 / URL). Save + EXIF strip + caption stub.
-        Body: {image_base64?, image_url?, user_id?}
-        VLM real integration target Q3 2026 (Qwen2.5-VL)."""
+        """Receive image upload (base64 / URL). Analyze via VLM (moondream/llava-phi3).
+        Body: {image_base64?, image_url?, user_id?, prompt?}
+        VLM integration: Ollama vision models (local)."""
         try:
             body = await request.json()
         except Exception:
@@ -5921,7 +5951,6 @@ def create_app() -> "FastAPI":
         if not body.get("image_base64") and not body.get("image_url"):
             raise HTTPException(status_code=400, detail="image_base64 atau image_url wajib")
 
-        # Extract user dari Bearer JWT kalau ada
         user_id = ""
         try:
             from . import auth_google
@@ -5931,6 +5960,7 @@ def create_app() -> "FastAPI":
         except Exception:
             pass
 
+        # Save + record
         try:
             from . import sensorial_input
             from dataclasses import asdict
@@ -5939,15 +5969,31 @@ def create_app() -> "FastAPI":
                 image_url=body.get("image_url", ""),
                 user_id=user_id or body.get("user_id", ""),
             )
-            return {"ok": record.processing_status != "failed", "record": asdict(record)}
         except Exception as e:
-            raise HTTPException(status_code=500, detail=f"vision fail: {e}")
+            raise HTTPException(status_code=500, detail=f"vision save fail: {e}")
+
+        # Analyze via VLM
+        try:
+            from .vision_analyzer import analyze_image
+            image_path = record.local_path or ""
+            prompt = body.get("prompt", "Deskripsikan gambar ini dalam Bahasa Indonesia.")
+            if image_path and os.path.exists(image_path):
+                result = analyze_image(image_path=image_path, prompt=prompt)
+                return {
+                    "ok": result.get("ok", False),
+                    "record": asdict(record),
+                    "analysis": result.get("data", {}),
+                    "fallback_instructions": result.get("fallback_instructions", ""),
+                }
+        except Exception as e:
+            log.warning("[vision] VLM analysis fail: %s", e)
+
+        return {"ok": record.processing_status != "failed", "record": asdict(record)}
 
     @app.post("/agent/audio", tags=["Sensorial"])
     async def audio_endpoint(request: Request):
-        """Receive audio upload (base64). STT real integration target Q3 2026
-        (Step-Audio / Qwen3-ASR / Whisper local).
-        Body: {audio_base64, user_id?}"""
+        """Receive audio upload (base64). Transcribe via Whisper (faster-whisper / openai-whisper).
+        Body: {audio_base64, user_id?, lang?}"""
         try:
             body = await request.json()
         except Exception:
@@ -5964,6 +6010,7 @@ def create_app() -> "FastAPI":
         except Exception:
             pass
 
+        # Save + record
         try:
             from . import sensorial_input
             from dataclasses import asdict
@@ -5971,9 +6018,30 @@ def create_app() -> "FastAPI":
                 audio_base64=body.get("audio_base64", ""),
                 user_id=user_id or body.get("user_id", ""),
             )
-            return {"ok": record.processing_status != "failed", "record": asdict(record)}
         except Exception as e:
-            raise HTTPException(status_code=500, detail=f"audio fail: {e}")
+            raise HTTPException(status_code=500, detail=f"audio save fail: {e}")
+
+        # Transcribe via Whisper
+        transcription = ""
+        try:
+            from .audio_capability import transcribe_audio
+            audio_path = record.local_path or ""
+            if audio_path and os.path.exists(audio_path):
+                result = transcribe_audio(
+                    file_path=audio_path,
+                    lang=body.get("lang", "auto"),
+                    model_size="small",
+                )
+                if result.get("ok"):
+                    transcription = result.get("data", {}).get("text", "")
+        except Exception as e:
+            log.warning("[audio] transcription fail: %s", e)
+
+        return {
+            "ok": record.processing_status != "failed",
+            "record": asdict(record),
+            "transcription": transcription,
+        }
 
     @app.post("/agent/voice", tags=["Sensorial"])
     async def voice_endpoint(request: Request):

@@ -381,13 +381,17 @@ def synthesize_voice(text: str, *, language: str = "id", user_id: str = "") -> d
         return {"ok": False, "error": "text empty or too long (max 1000)"}
 
     try:
-        from . import tts_engine
-        result = tts_engine.synthesize(text=text, language=language)  # type: ignore
+        import os as _os, sys as _sys
+        audio_dir = _os.path.join(_os.path.dirname(__file__), '..', '..', 'audio')
+        if audio_dir not in _sys.path:
+            _sys.path.insert(0, audio_dir)
+        import tts_engine  # type: ignore
+        result = tts_engine.synthesize(text=text, language=language)
         if isinstance(result, dict) and result.get("audio_path"):
             return {"ok": True, "audio_path": result["audio_path"], "engine": "piper"}
         return {"ok": False, "error": "tts_engine returned invalid", "raw": str(result)[:200]}
     except ImportError:
-        return {"ok": False, "error": "tts_engine not available"}
+        return {"ok": False, "error": "tts_engine not available (apps/audio/tts_engine.py missing)"}
     except Exception as e:
         return {"ok": False, "error": f"synthesis fail: {e}"}
 

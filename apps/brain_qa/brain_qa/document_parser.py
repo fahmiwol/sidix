@@ -174,6 +174,63 @@ def parse_text(path: str) -> dict:
         return _fallback(f"Text read gagal: {exc}")
 
 
+def parse_pdf(path: str) -> dict:
+    """Ekstrak teks dari PDF (PyPDF2 / pymupdf fallback)."""
+    if not os.path.exists(path):
+        return _fallback(f"File tidak ditemukan: {path}")
+
+    # Try pymupdf (fitz) first — best quality
+    try:
+        import fitz  # type: ignore
+        doc = fitz.open(path)
+        pages = []
+        for page in doc:
+            text = page.get_text().strip()
+            if text:
+                pages.append(text)
+        doc.close()
+        full_text = "\n\n".join(pages)
+        return _ok({
+            "backend": "pymupdf",
+            "extension": ".pdf",
+            "pages": pages,
+            "page_count": len(pages),
+            "text": full_text,
+            "char_count": len(full_text),
+        })
+    except ImportError:
+        pass
+    except Exception as exc:
+        return _fallback(f"pymupdf gagal: {exc}")
+
+    # Fallback: PyPDF2
+    try:
+        import PyPDF2  # type: ignore
+        pages = []
+        with open(path, "rb") as f:
+            reader = PyPDF2.PdfReader(f)
+            for page in reader.pages:
+                text = page.extract_text()
+                if text:
+                    pages.append(text.strip())
+        full_text = "\n\n".join(pages)
+        return _ok({
+            "backend": "PyPDF2",
+            "extension": ".pdf",
+            "pages": pages,
+            "page_count": len(pages),
+            "text": full_text,
+            "char_count": len(full_text),
+        })
+    except ImportError:
+        return _fallback(
+            "Library PDF belum terpasang. Jalankan: pip install pymupdf  (atau  pip install PyPDF2)",
+            data={"extension": ".pdf"},
+        )
+    except Exception as exc:
+        return _fallback(f"PyPDF2 gagal: {exc}")
+
+
 def parse_document(path: str) -> dict:
     """Router otomatis berdasarkan ekstensi file."""
     ext = Path(path).suffix.lower()
@@ -185,11 +242,13 @@ def parse_document(path: str) -> dict:
         return parse_csv(path, delimiter="\t" if ext == ".tsv" else ",")
     if ext == ".json":
         return parse_json(path)
+    if ext == ".pdf":
+        return parse_pdf(path)
     if ext in {".txt", ".md", ".py", ".js", ".ts", ".html", ".css", ".yaml", ".yml", ".jsonl"}:
         return parse_text(path)
 
     return _fallback(
         f"Ekstensi '{ext}' belum didukung. "
-        "Supported: .docx .xlsx .csv .json .txt .md .py .js .ts .html .css .yaml .jsonl",
+        "Supported: .docx .xlsx .csv .json .txt .md .py .js .ts .html .css .yaml .jsonl .pdf",
         data={"extension": ext},
     )
