@@ -274,3 +274,37 @@ _Update: 2026-04-30 — Sprint A–I COMPLETE (101 tests). Comprehensive audit m
 **Dokumen Penting Baru:**
 - `docs/SIDIX_POSITION_ANALYSIS_2026-05-01.md` — analisa posisi + gap + roadmap baru
 - `docs/SPRINT_A_B_SANAD_HAFIDZ_2026-05-01.md` — sprint plan detail Sanad + Hafidz
+
+
+---
+
+_Update: 2026-05-08 — Sprint Batch (Input Expansion + Output Modality + Admin Integration + QA Audit) COMPLETE (5 commits)._
+
+## ✅ Sprint Batch 2026-05-08 — SELESAI
+
+| Sprint | Scope | Deliverable | Status |
+|--------|-------|-------------|--------|
+| Sprint 1 | Input Expansion (P0) | VLM vision (Ollama), Whisper ASR, Piper TTS, PDF parser, multimodal chat routing | ✅ DONE |
+| Sprint 4 | Output Modality (P1) | Auto-detect image/audio/3D intent, `ChatResponse.attachments` | ✅ DONE |
+| — | Google Drive Admin | OAuth2 token store, 6 admin endpoints, admin.html tab | ✅ DONE |
+| — | Beta QA Audit | 92-tool audit script, 40 import path fixes, syntax error fix | ✅ DONE |
+
+**Production Status (pre-deploy):**
+- **Branch**: `work/gallant-ellis-7cd14d` (5 commits ahead of last deploy)
+- **Commits**: `4c50617` → `19b9248` → `737e0b8` → `b87d16f` → `a4554ee` → `3e81d9c`
+- **Tool Count**: 92 registered tools (51 audit-flagged sebagai "BROKEN" tapi sebagian besar false positive)
+- **True Broken**: `code_sandbox` (empty error), `pdf_extract` (pdfplumber not installed)
+
+**Known Blockers:**
+- 🔴 VPS deploy pending — `ctrl.sidixlab.com` masih belum terima commits terbaru
+- 🟡 Python 3.14 venv broken — `.venv\Scripts\pip.exe` fail, global install digunakan
+- 🟡 Google Drive OAuth — client_id baru dibuat, belum exchange token produksi
+- 🟡 ElevenLabs quota — belum verified aktif
+- 🟡 Ollama vision model — moondream/llava-phi3 harus di-pull manual di VPS
+
+**Next Actions (pilih satu):**
+1. 🚀 **Deploy VPS** — push ke produksi, `pm2 restart sidix-brain`, smoke test
+2. 🔧 **Sprint 2 (Orchestration Polish)** — plan routing, state machine, error recovery
+3. 🎨 **Sprint 3 (Metode & Belajar)** — Naskh handler, Maqashid auto-tune, self-test loop
+4. 🤖 **Sprint 6 (Active Inference)** — bio-cognitive spawning, supervisor/sub-agent factory
+5. 🐛 **Fix True Broken Tools** — `code_sandbox`, `pdf_extract`, audit false positives
