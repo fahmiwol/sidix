@@ -472,15 +472,17 @@ Setiap agent (Claude/GPT/Gemini/SIDIX) yang kerja di proyek ini WAJIB ikuti prot
 #### Sprint 1: INPUT EXPANSION (P0 — User-Facing Impact Tertinggi)
 - **Visi mapping**: Cognitive & Semantic + Product
 - **Deliverable**:
-  1. Deploy Qwen3-VL untuk vision analysis (`/upload/image` → actual VLM inference)
-  2. Deploy Whisper.cpp untuk ASR (`/upload/audio` → actual transcription)
-  3. Deploy Qwen3-TTS / Kokoro untuk TTS output (self-hosted, no vendor API)
-  4. Add Word/Excel parser (`python-docx`, `openpyxl`)
-  5. Add CSV/JSON structured data ingestion endpoint
-- **Acceptance**: 7/8 input types functional (kecuali screen sharing)
+  1. ✅ Vision analysis via Ollama VLM (`/agent/vision` → `vision_analyzer.analyze_image()`) — moondream/llava-phi3
+  2. ✅ ASR via Whisper Python (`/agent/audio` → `audio_capability.transcribe_audio()`) — faster-whisper/openai-whisper
+  3. ✅ TTS via Piper (`/agent/voice` + `sensorial_input.py`) — id/en/ar/ms voices
+  4. ✅ Word/Excel parser (`python-docx`, `openpyxl`) — sudah ada
+  5. ✅ CSV/JSON structured data ingestion endpoint — sudah ada
+  6. ✅ PDF parser (`document_parser.py`) — pymupdf primary + PyPDF2 fallback
+  7. ✅ Multimodal routing di `/agent/chat` — `image_path` + `audio_path` di-consume ReAct
+- **Acceptance**: 7/8 input types functional (kecuali screen sharing) ✅
 - **Effort**: 2-3 session
 - **Risk**: GPU memory — manage dengan RunPod burst untuk VLM, CPU untuk TTS
-- **Status**: 📋 QUEUED
+- **Status**: ✅ DONE (2026-05-08)
 
 #### Sprint 2: ORKESTRASI POLISH (P2 — Protocol Readiness)
 - **Visi mapping**: Genius + Cognitive
