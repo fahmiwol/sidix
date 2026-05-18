@@ -26,10 +26,12 @@ License: MIT
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import logging
 import os
 import re
+import threading
 import time
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
@@ -121,6 +123,261 @@ _AUTO_TUNE_STATS: dict[str, Any] = {
     "total_corrected": 0,
     "score_sum": 0.0,
 }
+
+# Phase 2: Historical feedback store (user thumbs up/down) — lightweight JSONL
+_FEEDBACK_PATH = TUNE_ROOT / "feedback_history.jsonl"
+_FEEDBACK_LOCK = threading.Lock()
+_FEEDBACK_CACHE: list[dict] = []
+
+
+def _load_feedback_history() -> list[dict]:
+    """Load user feedback history for judge calibration."""
+    global _FEEDBACK_CACHE
+    if _FEEDBACK_CACHE:
+        return _FEEDBACK_CACHE
+    if not _FEEDBACK_PATH.exists():
+        return []
+    entries = []
+    for line in _FEEDBACK_PATH.read_text(encoding="utf-8").strip().splitlines():
+        try:
+            entries.append(json.loads(line))
+        except Exception:
+            continue
+    _FEEDBACK_CACHE = entries
+    return entries
+
+
+def record_feedback(
+    query: str,
+    output: str,
+    thumbs_up: bool,
+    persona: str = "AYMAN",
+    trace: list[dict] | None = None,
+) -> dict:
+    """
+    Phase 2: Record user feedback (thumbs up/down) untuk judge calibration.
+    Called dari frontend/API saat user rate jawaban.
+    """
+    entry = {
+        "ts": datetime.now(timezone.utc).isoformat(),
+        "query": query[:500],
+        "output": output[:1000],
+        "thumbs_up": thumbs_up,
+        "persona": persona,
+        "trace_steps": len(trace) if trace else 0,
+        "heuristic_score": 0.0,
+    }
+    # Pre-compute heuristic score untuk training data
+    try:
+        result = evaluate_output(output, mode="general")
+        entry["heuristic_score"] = result.score
+    except Exception:
+        pass
+
+    with _FEEDBACK_LOCK:
+        TUNE_ROOT.mkdir(parents=True, exist_ok=True)
+        with _FEEDBACK_PATH.open("a", encoding="utf-8") as f:
+            f.write(json.dumps(entry, ensure_ascii=False) + "\n")
+        _FEEDBACK_CACHE.append(entry)
+
+    return {"ok": True, "feedback_id": hashlib.sha256(json.dumps(entry, sort_keys=True).encode()).hexdigest()[:12]}
+
+
+# Phase 2: Historical Judge — lightweight calibration dari feedback
+class HistoricalJudge:
+    """
+    Lightweight judge yang adjust scoring weights berdasarkan historical feedback.
+    Self-hosted, no LLM API calls. Rule-based dengan learned coefficients.
+    """
+
+    def __init__(self):
+        self.feedback = _load_feedback_history()
+        self._coeffs = self._compute_coeffs()
+
+    def _compute_coeffs(self) -> dict[str, float]:
+        """Compute adjustment coefficients dari feedback history."""
+        if len(self.feedback) < 10:
+            # Not enough data — return neutral coeffs
+            return {"hate": 1.0, "misinfo": 1.0, "attribution": 1.0, "ad_hominem": 1.0, "brand": 1.0, "bias": 0.0}
+
+        # Analyze: feedback yang thumbs_down tapi heuristic_score tinggi → heuristic terlalu lenient
+        # feedback yang thumbs_up tapi heuristic_score rendah → heuristic terlalu strict
+        false_negatives = 0  # thumbs_down tapi score > 0.6
+        false_positives = 0  # thumbs_up tapi score < 0.6
+        for fb in self.feedback:
+            score = fb.get("heuristic_score", 0.5)
+            if not fb.get("thumbs_up", True) and score > 0.6:
+                false_negatives += 1
+            if fb.get("thumbs_up", True) and score < 0.6:
+                false_positives += 1
+
+        total = len(self.feedback)
+        fn_rate = false_negatives / total
+        fp_rate = false_positives / total
+
+        # Adjust: high FN → lebih strict (boost violation weights)
+        # high FP → lebih lenient (reduce violation weights)
+        bias = (fn_rate - fp_rate) * 0.5  # -0.5 to +0.5
+        return {
+            "hate": 1.0 + bias,
+            "misinfo": 1.0 + bias,
+            "attribution": 1.0 + bias * 0.5,
+            "ad_hominem": 1.0 + bias,
+            "brand": 1.0 + bias * 0.3,
+            "bias": bias,
+        }
+
+    def adjust_score(self, base_score: float, violations: list[str]) -> float:
+        """Apply learned adjustments ke heuristic score."""
+        if not self.feedback or len(self.feedback) < 10:
+            return base_score
+
+        # Count violation types
+        v_counts = {"hate": 0, "misinfo": 0, "attribution": 0, "ad_hominem": 0, "brand": 0}
+        for v in violations:
+            vl = v.lower()
+            if "kebencian" in vl or "diskriminasi" in vl:
+                v_counts["hate"] += 1
+            elif "misinformasi" in vl or "keyakinan mutlak" in vl:
+                v_counts["misinfo"] += 1
+            elif "atribusi" in vl:
+                v_counts["attribution"] += 1
+            elif "ad hominem" in vl:
+                v_counts["ad_hominem"] += 1
+            elif "kontradiksi" in vl or "brand" in vl:
+                v_counts["brand"] += 1
+
+        # Apply weighted penalty
+        penalty = 0.0
+        for vtype, count in v_counts.items():
+            if count > 0:
+                penalty += count * 0.15 * self._coeffs.get(vtype, 1.0)
+
+        adjusted = max(0.0, min(1.0, base_score - penalty + self._coeffs.get("bias", 0.0)))
+        return round(adjusted, 3)
+
+
+# Phase 2: Trace-aware evaluation models
+class TraceStep(BaseModel if _PYDANTIC_OK else object):
+    """Single step dalam reasoning chain untuk trace-aware eval."""
+    step_number: int = 0
+    step_type: str = ""  # "thought", "tool_call", "observation", "final_answer"
+    content: str = ""
+    tool_name: str = ""
+    tool_result_success: bool = True
+    citations: list[dict] = field(default_factory=list)
+
+    if not _PYDANTIC_OK:
+        def __init__(self, **kwargs):
+            self.step_number = kwargs.get("step_number", 0)
+            self.step_type = kwargs.get("step_type", "")
+            self.content = kwargs.get("content", "")
+            self.tool_name = kwargs.get("tool_name", "")
+            self.tool_result_success = kwargs.get("tool_result_success", True)
+            self.citations = kwargs.get("citations", [])
+
+
+class TraceEvalResult(BaseModel if _PYDANTIC_OK else object):
+    """Result of trace-aware evaluation."""
+    overall_score: float = 0.0
+    passed: bool = True
+    step_scores: list[dict] = field(default_factory=list)
+    violations: list[str] = field(default_factory=list)
+    suggestions: list[str] = field(default_factory=list)
+
+    if not _PYDANTIC_OK:
+        def __init__(self, **kwargs):
+            self.overall_score = kwargs.get("overall_score", 0.0)
+            self.passed = kwargs.get("passed", True)
+            self.step_scores = kwargs.get("step_scores", [])
+            self.violations = kwargs.get("violations", [])
+            self.suggestions = kwargs.get("suggestions", [])
+
+
+def _score_trace_step(step: TraceStep) -> dict:
+    """Score individual step dalam reasoning chain."""
+    score = 1.0
+    violations: list[str] = []
+
+    if step.step_type == "tool_call":
+        if not step.tool_result_success:
+            score -= 0.2
+            violations.append(f"Step {step.step_number}: tool '{step.tool_name}' failed")
+        if not step.citations and step.tool_name in ("search_corpus", "read_chunk"):
+            score -= 0.1
+            violations.append(f"Step {step.step_number}: RAG tool without citations")
+
+    elif step.step_type == "thought":
+        # Check for over-confidence in reasoning
+        lower = step.content.lower()
+        if any(m in lower for m in _MISINFO_MARKERS):
+            score -= 0.15
+            violations.append(f"Step {step.step_number}: over-confident reasoning marker")
+
+    elif step.step_type == "final_answer":
+        # Run full heuristic on final answer
+        result = evaluate_output(step.content, mode="general")
+        score = result.score
+        violations.extend(result.violations)
+
+    return {
+        "step_number": step.step_number,
+        "step_type": step.step_type,
+        "score": round(max(0.0, score), 3),
+        "violations": violations,
+    }
+
+
+def evaluate_trace(steps: list[TraceStep], mode: str = "general") -> TraceEvalResult:
+    """
+    Phase 2: Trace-aware evaluation — score EVERY step, not just final output.
+    Identifies exact step where reasoning went wrong.
+    """
+    if not steps:
+        return TraceEvalResult(overall_score=1.0, passed=True)
+
+    step_results = []
+    all_violations = []
+    total_score = 0.0
+
+    for step in steps:
+        sr = _score_trace_step(step)
+        step_results.append(sr)
+        total_score += sr["score"]
+        all_violations.extend(sr["violations"])
+
+    avg_score = total_score / len(steps) if steps else 1.0
+
+    # Weight final answer more heavily
+    final_steps = [s for s in step_results if s["step_type"] == "final_answer"]
+    if final_steps:
+        final_score = final_steps[0]["score"]
+        overall = (avg_score * 0.4) + (final_score * 0.6)
+    else:
+        overall = avg_score
+
+    # Generate suggestions
+    suggestions = []
+    if any("tool" in v and "failed" in v for v in all_violations):
+        suggestions.append("Periksa kembali tool calls — ada yang gagal dieksekusi")
+    if any("citations" in v for v in all_violations):
+        suggestions.append("Pastikan setiap klaim faktual memiliki sanad/citation")
+    if any("over-confident" in v for v in all_violations):
+        suggestions.append("Gunakan bahasa yang menunjukkan tingkat keyakinan yang sesuai")
+
+    # Apply historical judge calibration
+    judge = HistoricalJudge()
+    overall = judge.adjust_score(overall, all_violations)
+
+    passed = overall >= 0.6
+
+    return TraceEvalResult(
+        overall_score=round(overall, 3),
+        passed=passed,
+        step_scores=step_results,
+        violations=all_violations,
+        suggestions=suggestions,
+    )
 
 
 def _bump_stats(passed: bool, corrected: bool, score: float) -> None:

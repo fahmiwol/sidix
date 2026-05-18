@@ -274,25 +274,24 @@ def _infer_template(prompt: str) -> str:
 
 
 # ── Phase 2: Creative Thinking Principles (Bisnizy.com) ─────────────────────
-271: 
-272: def reframe_problem(problem: str) -> str:
-273:     """Mengubah masalah statis menjadi pertanyaan terbuka 'Bagaimana jika...'."""
-274:     p = problem.strip().lower()
-275:     if p.startswith(("bagaimana", "mengapa", "apa")):
-276:         return problem
-277:     return f"Bagaimana jika kita melihat '{problem}' dari sudut pandang yang berbeda?"
-278: 
-279: def brainstorm_divergent_ideas(problem: str, n: int = 3) -> list[str]:
-280:     """Simulasi menghasilkan banyak ide (kuantitas) tanpa penilaian awal."""
-281:     # Placeholder untuk LLM call nanti, saat ini berbasis rule/template
-282:     reframed = reframe_problem(problem)
-283:     return [
-284:         f"Opsi 1 (Konvensional): Solusi standar untuk '{problem}'",
-285:         f"Opsi 2 (Out-of-the-box): {reframed} — dengan pendekatan radikal.",
-286:         f"Opsi 3 (Sintesis): Gabungkan '{problem}' dengan elemen yang tak terduga."
-287:     ]
-288: 
-289: # ── Divergence-3 Pattern (untuk future use: generate 3 orthogonal variants) ────
+
+def reframe_problem(problem: str) -> str:
+    """Mengubah masalah statis menjadi pertanyaan terbuka 'Bagaimana jika...'."""
+    p = problem.strip().lower()
+    if p.startswith(("bagaimana", "mengapa", "apa")):
+        return problem
+    return f"Bagaimana jika kita melihat '{problem}' dari sudut pandang yang berbeda?"
+
+def brainstorm_divergent_ideas(problem: str, n: int = 3) -> list[str]:
+    """Simulasi menghasilkan banyak ide (kuantitas) tanpa penilaian awal."""
+    # Placeholder untuk LLM call nanti, saat ini berbasis rule/template
+    reframed = reframe_problem(problem)
+    return [
+f"Opsi 1 (Konvensional): Solusi standar untuk '{problem}'",
+f"Opsi 2 (Out-of-the-box): {reframed} — dengan pendekatan radikal.",
+f"Opsi 3 (Sintesis): Gabungkan '{problem}' dengan elemen yang tak terduga."
+]
+# ── Divergence-3 Pattern (untuk future use: generate 3 orthogonal variants) ────
 
 def suggest_divergent_archetypes(primary: ArchetypeName) -> list[ArchetypeName]:
     """

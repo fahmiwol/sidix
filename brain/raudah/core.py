@@ -55,6 +55,7 @@ class RaudahTask:
     instruction: str
     role:        str           # peneliti | analis | penulis | perekayasa | verifikator
     tools:       list[str] = field(default_factory=list)
+    depends_on:  list[str] = field(default_factory=list)  # v0.2: task_ids yang harus selesai dulu
     result:      str = ""
     status:      str = "pending"   # pending | running | done | failed
     elapsed_s:   float = 0.0
@@ -164,7 +165,12 @@ class Specialist:
         task.status = "running"
 
         try:
-            teks_hasil = await self._panggil_llm(task)
+            # v0.2: Execute declared tools first, then synthesize with LLM
+            tool_outputs: list[str] = []
+            if task.tools:
+                tool_outputs = await self._jalankan_tools(task)
+
+            teks_hasil = await self._panggil_llm(task, tool_outputs=tool_outputs)
             # Context sharding: kirim maks CONTEXT_SHARD_LEN karakter ke orchestrator
             task.result = (
                 f"[{task.role.upper()}] "
@@ -179,12 +185,41 @@ class Specialist:
         task.elapsed_s = round(time.time() - mulai, 2)
         return task
 
-    async def _panggil_llm(self, task: RaudahTask) -> str:
+    async def _jalankan_tools(self, task: RaudahTask) -> list[str]:
+        """v0.2: Call ReAct tools from TOOL_REGISTRY untuk specialist."""
+        outputs = []
+        try:
+            import sys, os
+            sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../.."))
+            from apps.brain_qa.brain_qa.agent_tools import call_tool
+
+            for tool_name in task.tools:
+                try:
+                    result = call_tool(tool_name, {"query": task.instruction}, session_id=task.task_id)
+                    if result.success:
+                        outputs.append(f"[{tool_name}] {result.output[:400]}")
+                    else:
+                        outputs.append(f"[{tool_name}] ERROR: {result.error}")
+                except Exception as e:
+                    outputs.append(f"[{tool_name}] ERROR: {e}")
+        except Exception as e:
+            logger.warning("[Raudah] Tool execution failed: %s", e)
+        return outputs
+
+    async def _panggil_llm(self, task: RaudahTask, tool_outputs: list[str] | None = None) -> str:
         """
         Panggil SIDIX local LLM (Ollama) via HTTP non-blocking.
         asyncio.to_thread wraps sync requests call.
+        v0.2: Includes tool outputs in context if available.
         """
         sistem = self._SISTEM_PROMPTS.get(task.role, self._SISTEM_PROMPTS["peneliti"])
+
+        user_content = task.instruction
+        if tool_outputs:
+            user_content = (
+                f"TOOL RESULTS:\n" + "\n".join(tool_outputs) + "\n\n"
+                f"TASK: {task.instruction}"
+            )
 
         def _sync() -> str:
             try:
@@ -196,7 +231,7 @@ class Specialist:
                     "model": model,
                     "messages": [
                         {"role": "system", "content": sistem},
-                        {"role": "user",   "content": task.instruction},
+                        {"role": "user",   "content": user_content},
                     ],
                     "stream": False,
                     "options": {"num_predict": 600, "temperature": 0.7},

@@ -243,6 +243,9 @@
       <a class="nav-item" data-tab="aspirations"><span class="icon">🎯</span><span>Aspirations</span></a>
       <a class="nav-item" data-tab="skills"><span class="icon">🛠️</span><span>Skills</span></a>
 
+      <div class="nav-section">Data Sources</div>
+      <a class="nav-item" data-tab="drive"><span class="icon">🗂️</span><span>Google Drive</span></a>
+
       <div class="nav-section">Monitoring</div>
       <a class="nav-item" data-tab="health"><span class="icon">💚</span><span>System Health</span></a>
       <a class="nav-item" data-tab="activity"><span class="icon">📜</span><span>Activity Log</span></a>
@@ -540,6 +543,79 @@
         <p id="activity-info" style="font-size: 12px; color: var(--text-dim); margin-bottom: 12px;">Belum dimuat.</p>
         <div id="activity-list">
           <div class="empty">Belum dimuat. Klik Load Activity Log.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── TAB: Google Drive ── -->
+    <div class="tab-pane" id="tab-drive">
+      <div class="page-header">
+        <h2>🗂️ Google Drive</h2>
+        <p>Connect & manage Google Drive accounts for dataset collection. OAuth2 flow, multi-account, folder browser.</p>
+      </div>
+
+      <!-- OAuth Wizard -->
+      <div class="card">
+        <h3>🔐 Connect New Account</h3>
+        <div class="row">
+          <div>
+            <label>Account Name</label>
+            <input id="drive-account-name" type="text" placeholder="e.g. fahmiwol" value="" />
+          </div>
+          <div>
+            <label>Redirect URI</label>
+            <input id="drive-redirect-uri" type="text" value="https://sidixlab.com/admin/drive/callback" />
+          </div>
+        </div>
+        <div style="margin-top: 12px;">
+          <button onclick="driveGenerateAuthUrl()">🔗 Generate Auth URL</button>
+          <button class="ghost" onclick="driveOpenGoogleConsole()">⚙️ Google Cloud Console</button>
+        </div>
+        <div id="drive-auth-url-box" style="margin-top: 12px; display: none;">
+          <label>Auth URL (buka di browser, login, authorize)</label>
+          <textarea id="drive-auth-url" rows="3" readonly style="font-size: 11px;"></textarea>
+          <div style="margin-top: 8px;">
+            <label>Authorization Code (dari redirect URL)</label>
+            <input id="drive-auth-code" type="text" placeholder="4/0AeoWuM..." />
+            <button onclick="driveExchangeCode()" style="margin-top: 8px;">🚀 Exchange & Store Token</button>
+          </div>
+        </div>
+        <div id="drive-connect-status" style="margin-top: 10px;"></div>
+      </div>
+
+      <!-- Account List -->
+      <div class="card">
+        <h3>📋 Connected Accounts</h3>
+        <div style="margin-bottom: 12px;">
+          <button onclick="loadDriveAccounts()">🔄 Refresh Status</button>
+        </div>
+        <div id="drive-accounts-list">
+          <div class="empty">Belum ada account terhubung. Klik Refresh atau Connect New Account.</div>
+        </div>
+      </div>
+
+      <!-- Folder Browser -->
+      <div class="card">
+        <h3>📁 Folder Browser</h3>
+        <div class="row">
+          <div>
+            <label>Account</label>
+            <select id="drive-browser-account">
+              <option value="">-- Pilih account --</option>
+            </select>
+          </div>
+          <div>
+            <label>Folder ID</label>
+            <input id="drive-folder-id" type="text" placeholder="root atau folder ID" value="root" />
+          </div>
+        </div>
+        <div style="margin-top: 12px;">
+          <button onclick="driveListFiles()">📂 List Files</button>
+          <button class="ghost" onclick="driveExploreFolder()">🌳 Explore Tree</button>
+          <button onclick="driveCollectDataset()" style="background: var(--green);">📥 Collect Dataset</button>
+        </div>
+        <div id="drive-browser-results" style="margin-top: 14px;">
+          <div class="empty">Pilih account dan folder, lalu klik List Files.</div>
         </div>
       </div>
     </div>
@@ -1202,6 +1278,209 @@
         showLogin();
       }
     });
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // ── Google Drive Admin Functions ──
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    async function driveGenerateAuthUrl() {
+      const tok = getToken();
+      if (!tok) { showLogin(); return; }
+      const name = document.getElementById('drive-account-name').value.trim();
+      if (!name) { showStatus('drive-connect-status', '⚠️ Account name wajib.', false); return; }
+      const redirectUri = document.getElementById('drive-redirect-uri').value.trim();
+      try {
+        const res = await fetch(`${API_BASE}/admin/drive/connect`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'x-admin-token': tok },
+          body: JSON.stringify({ account: name, redirect_uri: redirectUri }),
+        });
+        if (res.status === 403) { sessionStorage.removeItem('sidix_admin_token'); showLogin(); return; }
+        const data = await res.json();
+        if (data.ok) {
+          document.getElementById('drive-auth-url').value = data.auth_url;
+          document.getElementById('drive-auth-url-box').style.display = 'block';
+          showStatus('drive-connect-status', '✅ Auth URL generated. Buka URL di browser, authorize, lalu paste code.', true);
+        } else {
+          showStatus('drive-connect-status', '❌ ' + (data.error || 'Gagal'), false);
+        }
+      } catch (e) {
+        showStatus('drive-connect-status', 'Network: ' + e.message, false);
+      }
+    }
+
+    async function driveExchangeCode() {
+      const tok = getToken();
+      if (!tok) { showLogin(); return; }
+      const name = document.getElementById('drive-account-name').value.trim();
+      const code = document.getElementById('drive-auth-code').value.trim();
+      if (!name || !code) { showStatus('drive-connect-status', '⚠️ Name & code wajib.', false); return; }
+      try {
+        const res = await fetch(`${API_BASE}/admin/drive/exchange`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'x-admin-token': tok },
+          body: JSON.stringify({ account: name, code: code }),
+        });
+        if (res.status === 403) { sessionStorage.removeItem('sidix_admin_token'); showLogin(); return; }
+        const data = await res.json();
+        if (data.ok) {
+          showStatus('drive-connect-status', `✅ ${data.note}`, true);
+          document.getElementById('drive-auth-code').value = '';
+          loadDriveAccounts();
+        } else {
+          showStatus('drive-connect-status', '❌ ' + (data.error || 'Exchange gagal'), false);
+        }
+      } catch (e) {
+        showStatus('drive-connect-status', 'Network: ' + e.message, false);
+      }
+    }
+
+    async function loadDriveAccounts() {
+      const tok = getToken();
+      if (!tok) { showLogin(); return; }
+      try {
+        const res = await fetch(`${API_BASE}/admin/drive/accounts`, {
+          headers: { 'x-admin-token': tok },
+        });
+        if (res.status === 403) { sessionStorage.removeItem('sidix_admin_token'); showLogin(); return; }
+        const data = await res.json();
+        const list = document.getElementById('drive-accounts-list');
+        const select = document.getElementById('drive-browser-account');
+        if (!data.ok || data.accounts.length === 0) {
+          list.innerHTML = '<div class="empty">Belum ada account terhubung.</div>';
+          select.innerHTML = '<option value="">-- Pilih account --</option>';
+          return;
+        }
+        select.innerHTML = '<option value="">-- Pilih account --</option>' +
+          data.accounts.map(a => `<option value="${a.name}">${a.name} (${a.status})</option>`).join('');
+        list.innerHTML = data.accounts.map(a => `
+          <div style="padding:12px;border:1px solid var(--border);border-radius:8px;margin-bottom:10px;background:var(--bg-input);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+            <div>
+              <div style="font-weight:600;color:var(--gold);">${a.name}</div>
+              <div style="font-size:11px;color:var(--text-dim);margin-top:2px;">
+                Status: <span style="color:${a.status==='connected'?'var(--green)':a.status==='error'?'var(--red)':'var(--text-dim)'};">${a.status}</span>
+                · ${a.email || 'no email'} · ${a.scopes || 'unknown scope'}
+              </div>
+              <div style="font-size:10px;color:var(--text-dim);margin-top:4px;">Created: ${a.created_at ? new Date(a.created_at).toLocaleString() : '-'} · Last refresh: ${a.last_refresh ? new Date(a.last_refresh).toLocaleString() : '-'}</div>
+            </div>
+            <div style="display:flex;gap:6px;">
+              <button onclick="driveRefreshAccount('${a.name}')" style="padding:6px 10px;font-size:11px;">🔄 Refresh</button>
+              <button class="danger" onclick="driveDeleteAccount('${a.name}')" style="padding:6px 10px;font-size:11px;">🗑️ Delete</button>
+            </div>
+          </div>
+        `).join('');
+      } catch (e) {
+        document.getElementById('drive-accounts-list').innerHTML = `<div class="empty">Error: ${e.message}</div>`;
+      }
+    }
+
+    async function driveRefreshAccount(name) {
+      const tok = getToken();
+      if (!tok) { showLogin(); return; }
+      if (!confirm(`Refresh token untuk "${name}"?`)) return;
+      try {
+        const res = await fetch(`${API_BASE}/admin/drive/refresh`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'x-admin-token': tok },
+          body: JSON.stringify({ account: name }),
+        });
+        const data = await res.json();
+        alert(data.ok ? `✅ ${name} refreshed.` : `❌ ${data.error || 'Gagal'}`);
+        loadDriveAccounts();
+      } catch (e) { alert('Network: ' + e.message); }
+    }
+
+    async function driveDeleteAccount(name) {
+      const tok = getToken();
+      if (!tok) { showLogin(); return; }
+      if (!confirm(`Hapus account "${name}"? Token akan di-revoke.`)) return;
+      try {
+        const res = await fetch(`${API_BASE}/admin/drive/account/${encodeURIComponent(name)}`, {
+          method: 'DELETE',
+          headers: { 'x-admin-token': tok },
+        });
+        const data = await res.json();
+        alert(data.ok ? `✅ ${name} dihapus.` : `❌ ${data.error || 'Gagal'}`);
+        loadDriveAccounts();
+      } catch (e) { alert('Network: ' + e.message); }
+    }
+
+    async function driveListFiles() {
+      const tok = getToken();
+      if (!tok) { showLogin(); return; }
+      const account = document.getElementById('drive-browser-account').value;
+      const folderId = document.getElementById('drive-folder-id').value.trim() || 'root';
+      if (!account) { alert('Pilih account dulu.'); return; }
+      try {
+        const res = await fetch(`${API_BASE}/dataset/drive/list`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'x-admin-token': tok },
+          body: JSON.stringify({ folder_id: folderId, account: account, max_files: 50 }),
+        });
+        const data = await res.json();
+        const box = document.getElementById('drive-browser-results');
+        if (!data.ok) { box.innerHTML = `<div class="empty">❌ ${data.fallback_instructions || 'Error'}</div>`; return; }
+        const files = data.data?.files || [];
+        if (files.length === 0) { box.innerHTML = '<div class="empty">Folder kosong atau bukan folder gambar.</div>'; return; }
+        box.innerHTML = `<div style="font-size:12px;margin-bottom:8px;color:var(--text-dim);">${files.length} files · ${data.data?.total_size_mb || 0} MB</div>` +
+          files.map(f => `
+            <div style="padding:8px 10px;border:1px solid var(--border);border-radius:6px;margin-bottom:6px;display:flex;align-items:center;gap:10px;">
+              <span style="font-size:16px;">📄</span>
+              <div style="flex:1;min-width:0;">
+                <div style="font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${f.name}</div>
+                <div style="font-size:10px;color:var(--text-dim);">${f.mimeType} · ${(f.size_bytes/1024/1024).toFixed(2)} MB · ${f.width||'?'}x${f.height||'?'}</div>
+              </div>
+              <a href="${f.web_view_url}" target="_blank" style="font-size:11px;color:var(--blue);text-decoration:none;">View ↗</a>
+            </div>
+          `).join('');
+      } catch (e) { document.getElementById('drive-browser-results').innerHTML = `<div class="empty">Network: ${e.message}</div>`; }
+    }
+
+    async function driveExploreFolder() {
+      const tok = getToken();
+      if (!tok) { showLogin(); return; }
+      const account = document.getElementById('drive-browser-account').value;
+      const folderId = document.getElementById('drive-folder-id').value.trim() || 'root';
+      if (!account) { alert('Pilih account dulu.'); return; }
+      try {
+        const res = await fetch(`${API_BASE}/dataset/drive/explore`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'x-admin-token': tok },
+          body: JSON.stringify({ folder_id: folderId, account: account, max_depth: 3 }),
+        });
+        const data = await res.json();
+        const box = document.getElementById('drive-browser-results');
+        if (!data.ok) { box.innerHTML = `<div class="empty">❌ ${data.fallback_instructions || 'Error'}</div>`; return; }
+        const tree = data.data?.tree || {};
+        box.innerHTML = `<div style="font-size:12px;margin-bottom:8px;color:var(--text-dim);">Tree: ${data.data?.total_folders || 0} folders · ${data.data?.total_images || 0} images</div>
+          <pre style="background:var(--bg);padding:10px;border-radius:6px;font-size:11px;overflow:auto;max-height:400px;">${JSON.stringify(tree, null, 2)}</pre>`;
+      } catch (e) { document.getElementById('drive-browser-results').innerHTML = `<div class="empty">Network: ${e.message}</div>`; }
+    }
+
+    async function driveCollectDataset() {
+      const tok = getToken();
+      if (!tok) { showLogin(); return; }
+      const account = document.getElementById('drive-browser-account').value;
+      const folderId = document.getElementById('drive-folder-id').value.trim() || 'root';
+      if (!account) { alert('Pilih account dulu.'); return; }
+      if (!confirm(`Collect dataset dari folder "${folderId}" (account: ${account})?`)) return;
+      try {
+        const res = await fetch(`${API_BASE}/dataset/drive/batch`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'x-admin-token': tok },
+          body: JSON.stringify({
+            accounts: [{ account: account, folder_id: folderId }],
+            output_path: `dataset/drive_${account}_${Date.now()}.jsonl`,
+          }),
+        });
+        const data = await res.json();
+        alert(data.ok ? `✅ Dataset collected: ${data.data?.total_files || 0} files` : `❌ ${data.fallback_instructions || 'Gagal'}`);
+      } catch (e) { alert('Network: ' + e.message); }
+    }
+
+    function driveOpenGoogleConsole() {
+      window.open('https://console.cloud.google.com/apis/credentials', '_blank');
+    }
   </script>
 </body>
 </html>

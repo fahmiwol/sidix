@@ -57,6 +57,11 @@ from .voyager_protocol import (
     get_generated_tool as _voyager_get_tool,
     delete_generated_tool as _voyager_delete_tool,
     load_generated_tools_at_startup,
+    get_tool_stats as _voyager_get_tool_stats,
+    list_tool_stats as _voyager_list_tool_stats,
+    discover_similar_tools as _voyager_discover,
+    refine_tool as _voyager_refine_tool,
+    _to_agent_skills_format as _voyager_to_skills_format,
 )
 from .agency_kit import (
     AgencyKitRequest as _AgencyKitRequest,
@@ -64,6 +69,10 @@ from .agency_kit import (
     get_job_status,
     list_jobs,
 )
+
+# Raudah Protocol v0.2
+from brain.raudah.core import run_raudah as _raudah_run
+
 from . import rate_limit
 from . import social_radar
 from . import memory_store
@@ -101,6 +110,10 @@ from .maqashid_auto_tune import (
     auto_tune_response,
     get_global_stats,
     AutoTuneResult,
+    evaluate_trace,
+    record_feedback,
+    TraceStep,
+    TraceEvalResult,
 )
 from .debate_ring import (
     DebateResult as DebateResultModel,
@@ -444,6 +457,8 @@ class ChatResponse(BaseModel):
     sanad_verdict: str = ""         # golden | pass | retry | fail
     hafidz_injected: bool = False   # True jika few-shot context di-inject
     hafidz_stored: bool = False     # True jika result disimpan ke Hafidz
+    # ── Output Modality Attachments (Sprint Beta: image / audio / 3D / video) ──
+    attachments: list[dict] = []    # [{type: image|audio|3d|video, url: str, mime_type: str, title: str}]
 
 
 class GenerateRequest(BaseModel):
@@ -1822,7 +1837,10 @@ def create_app() -> "FastAPI":
     # ── POST /app/maqashid/evaluate ───────────────────────────────────────────
     @app.post("/app/maqashid/evaluate")
     async def maqashid_evaluate(request: Request):
-        """Manual evaluation endpoint — evaluate arbitrary text with Maqashid Auto-Tune."""
+        """
+        Manual evaluation endpoint — evaluate arbitrary text with Maqashid Auto-Tune.
+        Phase 2: supports trace-aware evaluation (pass steps for per-step scoring).
+        """
         _enforce_rate(request)
         try:
             body = await request.json()
@@ -1830,20 +1848,73 @@ def create_app() -> "FastAPI":
             raise HTTPException(status_code=400, detail="body JSON tidak valid")
         text = body.get("text", "")
         mode = body.get("mode", "general")
-        if not text:
-            raise HTTPException(status_code=400, detail="text wajib diisi")
+        trace_raw = body.get("trace", [])
+        if not text and not trace_raw:
+            raise HTTPException(status_code=400, detail="text atau trace wajib diisi")
+
         try:
-            result = evaluate_output(text, mode=mode)
-            return {
-                "ok": True,
-                "score": result.score,
-                "passed": result.passed,
-                "violations": result.violations,
-                "suggestions": result.suggestions,
-                "corrected_output": result.corrected_output,
-            }
+            # Phase 2: Trace-aware evaluation jika trace disediakan
+            if trace_raw:
+                steps = []
+                for i, raw in enumerate(trace_raw):
+                    steps.append(TraceStep(
+                        step_number=raw.get("step_number", i + 1),
+                        step_type=raw.get("step_type", "unknown"),
+                        content=raw.get("content", ""),
+                        tool_name=raw.get("tool_name", ""),
+                        tool_result_success=raw.get("tool_result_success", True),
+                        citations=raw.get("citations", []),
+                    ))
+                result = evaluate_trace(steps, mode=mode)
+                return {
+                    "ok": True,
+                    "score": result.overall_score,
+                    "passed": result.passed,
+                    "violations": result.violations,
+                    "suggestions": result.suggestions,
+                    "step_scores": result.step_scores,
+                    "eval_type": "trace_aware",
+                }
+            else:
+                result = evaluate_output(text, mode=mode)
+                return {
+                    "ok": True,
+                    "score": result.score,
+                    "passed": result.passed,
+                    "violations": result.violations,
+                    "suggestions": result.suggestions,
+                    "corrected_output": result.corrected_output,
+                    "eval_type": "heuristic",
+                }
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"evaluation error: {e}")
+
+    # ── POST /app/maqashid/feedback ───────────────────────────────────────────
+    @app.post("/app/maqashid/feedback")
+    async def maqashid_feedback(request: Request):
+        """
+        Phase 2: Record user feedback (thumbs up/down) untuk judge calibration.
+        Body: { "query": "...", "output": "...", "thumbs_up": true, "persona": "AYMAN" }
+        """
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+        except Exception:
+            raise HTTPException(status_code=400, detail="body JSON tidak valid")
+
+        query = body.get("query", "")
+        output = body.get("output", "")
+        thumbs_up = bool(body.get("thumbs_up", True))
+        persona = body.get("persona", "AYMAN")
+
+        if not query or not output:
+            raise HTTPException(status_code=400, detail="query dan output wajib diisi")
+
+        try:
+            result = record_feedback(query=query, output=output, thumbs_up=thumbs_up, persona=persona)
+            return result
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"feedback error: {e}")
 
     # ── GET /app/maqashid/stats ───────────────────────────────────────────────
     @app.get("/app/maqashid/stats")
@@ -1854,6 +1925,48 @@ def create_app() -> "FastAPI":
             return {"ok": True, **get_global_stats()}
         except Exception as e:
             return {"ok": False, "error": str(e)}
+
+    # ════════════════════════════════════════════════════════════════════════
+    # RAUDAH PROTOCOL v0.2 — TaskGraph DAG + /raudah/run
+    # ════════════════════════════════════════════════════════════════════════
+
+    class RaudahRunRequest(BaseModel):
+        task: str
+        max_specialists: int = 10
+
+    @app.post("/raudah/run", tags=["Raudah"])
+    async def raudah_run(req: RaudahRunRequest, request: Request):
+        """
+        Raudah Protocol v0.2: Multi-agent parallel orchestration.
+        Dekomposisi task → IHOS guardrail → specialist parallel execution → aggregation.
+        """
+        _enforce_rate(request)
+        if not req.task.strip():
+            raise HTTPException(status_code=400, detail="task wajib diisi")
+        try:
+            import asyncio
+            result = await _raudah_run(req.task, max_specialist=req.max_specialists)
+            return {
+                "ok": True,
+                "session_id": result.session_id,
+                "task_asal": result.task_asal,
+                "jawaban_final": result.jawaban_final,
+                "durasi_s": result.durasi_s,
+                "ihos_lulus": result.ihos_lulus,
+                "specialists": [
+                    {
+                        "task_id": t.task_id,
+                        "role": t.role,
+                        "status": t.status,
+                        "elapsed_s": t.elapsed_s,
+                        "result": t.result[:300],
+                    }
+                    for t in result.hasil_spesialis
+                ],
+            }
+        except Exception as e:
+            log.warning("[raudah_run] Failed: %s", e)
+            raise HTTPException(status_code=500, detail=f"raudah error: {e}")
 
     # ════════════════════════════════════════════════════════════════════════
     # SPRINT H — Creative Output Polish
@@ -2413,6 +2526,1106 @@ def create_app() -> "FastAPI":
             log.warning("[upload] audio error: %s", e)
             raise HTTPException(status_code=500, detail=f"upload error: {e}")
 
+    # ── POST /upload/audio/transcribe ─────────────────────────────────────────
+    @app.post("/upload/audio/transcribe")
+    async def transcribe_uploaded_audio(request: Request):
+        """Transkripsi file audio yang sudah di-upload via /upload/audio."""
+        _enforce_rate(request)
+        try:
+            form = await request.form()
+            filename = form.get("filename") or form.get("file")
+            if not filename:
+                raise HTTPException(status_code=400, detail="filename wajib diisi")
+            workspace = get_agent_workspace_root()
+            upload_dir = Path(workspace) / "uploads"
+            filepath = upload_dir / filename
+            if not filepath.exists():
+                raise HTTPException(status_code=404, detail="file audio tidak ditemukan, upload dulu via /upload/audio")
+
+            from audio_capability import transcribe_audio
+            result = transcribe_audio(str(filepath), lang=form.get("lang", "id"))
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "transkripsi gagal"))
+            return {
+                "ok": True,
+                "text": result["data"].get("text", ""),
+                "language": result["data"].get("language", "id"),
+                "backend": result["data"].get("backend", "unknown"),
+                "segments": result["data"].get("segments", []),
+                "duration": result["data"].get("duration", 0),
+            }
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[stt] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"stt error: {e}")
+
+    # ── POST /tts ─────────────────────────────────────────────────────────────
+    @app.post("/tts")
+    async def text_to_speech(request: Request):
+        """Sintesis teks ke file audio WAV."""
+        _enforce_rate(request)
+        try:
+            form = await request.form()
+            text = form.get("text", "").strip()
+            if not text:
+                raise HTTPException(status_code=400, detail="text wajib diisi")
+            voice = form.get("voice", "default")
+            lang = form.get("lang", "id")
+
+            workspace = get_agent_workspace_root()
+            upload_dir = Path(workspace) / "uploads"
+            upload_dir.mkdir(parents=True, exist_ok=True)
+            out_name = f"tts_{uuid.uuid4().hex[:8]}.wav"
+            out_path = upload_dir / out_name
+
+            from audio_capability import synthesize_speech
+            result = synthesize_speech(text, voice=voice, lang=lang, out_path=str(out_path))
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "tts gagal"))
+            return {
+                "ok": True,
+                "text": text,
+                "url": f"/workspace/uploads/{out_name}",
+                "path": str(out_path),
+                "backend": result["data"].get("backend", "unknown"),
+            }
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[tts] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"tts error: {e}")
+
+    # ── POST /upload/document ─────────────────────────────────────────────────
+    @app.post("/upload/document")
+    async def upload_document(request: Request):
+        """Upload dokumen (Word/Excel/CSV/JSON/TXT) → parse → return structured data."""
+        _enforce_rate(request)
+        try:
+            form = await request.form()
+            file = form.get("file")
+            if not file:
+                raise HTTPException(status_code=400, detail="file wajib di-upload")
+            content_type = file.content_type or ""
+            workspace = get_agent_workspace_root()
+            upload_dir = Path(workspace) / "uploads"
+            upload_dir.mkdir(parents=True, exist_ok=True)
+
+            # Extract extension from filename or content_type
+            filename = file.filename or "upload"
+            ext = Path(filename).suffix.lower()
+            if not ext:
+                # guess from content_type
+                ct_map = {
+                    "application/vnd.openxmlformats-officedocument.wordprocessingml.document": ".docx",
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": ".xlsx",
+                    "text/csv": ".csv",
+                    "application/json": ".json",
+                    "text/plain": ".txt",
+                }
+                ext = ct_map.get(content_type, ".bin")
+                filename += ext
+
+            filepath = upload_dir / filename
+            content = await file.read()
+            if len(content) > 10 * 1024 * 1024:  # 10MB limit
+                raise HTTPException(status_code=413, detail="file melebihi 10MB")
+            filepath.write_bytes(content)
+            log.info("[upload] document saved: %s (%d bytes)", filename, len(content))
+
+            from document_parser import parse_document
+            parsed = parse_document(str(filepath))
+            return {
+                "ok": True,
+                "filename": filename,
+                "path": str(filepath),
+                "url": f"/workspace/uploads/{filename}",
+                "size": len(content),
+                "parsed": parsed,
+            }
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[upload] document error: %s", e)
+            raise HTTPException(status_code=500, detail=f"upload document error: {e}")
+
+    # ── POST /upload/image/analyze ────────────────────────────────────────────
+    @app.post("/upload/image/analyze")
+    async def analyze_image_endpoint(request: Request):
+        """Analisis gambar via VLM (Ollama vision model)."""
+        _enforce_rate(request)
+        try:
+            form = await request.form()
+            filename = form.get("filename") or form.get("file")
+            prompt = form.get("prompt", "")
+            if not filename:
+                raise HTTPException(status_code=400, detail="filename wajib diisi")
+            workspace = get_agent_workspace_root()
+            upload_dir = Path(workspace) / "uploads"
+            filepath = upload_dir / filename
+            if not filepath.exists():
+                raise HTTPException(status_code=404, detail="file tidak ditemukan, upload dulu via /upload/image")
+
+            from vision_analyzer import analyze_image
+            result = analyze_image(str(filepath), prompt=prompt)
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "analisis gagal"))
+            data = result["data"]
+            return {
+                "ok": True,
+                "description": data.get("description", ""),
+                "model": data.get("model", "unknown"),
+                "backend": data.get("backend", "unknown"),
+                "prompt": data.get("prompt", ""),
+            }
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[image/analyze] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"image analyze error: {e}")
+
+    # ── POST /upload/video/analyze ────────────────────────────────────────────
+    @app.post("/upload/video/analyze")
+    async def analyze_video_endpoint(request: Request):
+        """Analisis video via VLM (extract keyframes → analyze)."""
+        _enforce_rate(request)
+        try:
+            form = await request.form()
+            filename = form.get("filename") or form.get("file")
+            prompt = form.get("prompt", "")
+            if not filename:
+                raise HTTPException(status_code=400, detail="filename wajib diisi")
+            workspace = get_agent_workspace_root()
+            upload_dir = Path(workspace) / "uploads"
+            filepath = upload_dir / filename
+            if not filepath.exists():
+                raise HTTPException(status_code=404, detail="file tidak ditemukan, upload dulu")
+
+            from vision_analyzer import analyze_video
+            result = analyze_video(str(filepath), prompt=prompt)
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "analisis gagal"))
+            data = result["data"]
+            return {
+                "ok": True,
+                "combined_description": data.get("combined_description", ""),
+                "frames_extracted": data.get("frames_extracted", 0),
+                "keyframes_analyzed": data.get("keyframes_analyzed", 0),
+                "model": data.get("model", "unknown"),
+            }
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[video/analyze] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"video analyze error: {e}")
+
+    # ── POST /code/lint ───────────────────────────────────────────────────────
+    @app.post("/code/lint")
+    async def code_lint(request: Request):
+        """Lint code Python (ruff / py_compile)."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+            code = body.get("code", "")
+            if not code:
+                raise HTTPException(status_code=400, detail="code wajib diisi")
+            from coding_agent_enhanced import lint_code
+            result = lint_code(code)
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "lint gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[code/lint] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"lint error: {e}")
+
+    # ── POST /code/debug ──────────────────────────────────────────────────────
+    @app.post("/code/debug")
+    async def code_debug(request: Request):
+        """Debug trace code Python line-by-line."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+            code = body.get("code", "")
+            inputs = body.get("inputs", "")
+            if not code:
+                raise HTTPException(status_code=400, detail="code wajib diisi")
+            from coding_agent_enhanced import debug_trace
+            result = debug_trace(code, inputs)
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "debug gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[code/debug] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"debug error: {e}")
+
+    # ── POST /code/tests ──────────────────────────────────────────────────────
+    @app.post("/code/tests")
+    async def code_tests(request: Request):
+        """Generate unit test stubs dari code."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+            code = body.get("code", "")
+            num = body.get("num_tests", 3)
+            if not code:
+                raise HTTPException(status_code=400, detail="code wajib diisi")
+            from coding_agent_enhanced import generate_tests
+            result = generate_tests(code, num_tests=num)
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "test gen gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[code/tests] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"test gen error: {e}")
+
+    # ── POST /code/review ─────────────────────────────────────────────────────
+    @app.post("/code/review")
+    async def code_review_endpoint(request: Request):
+        """Rule-based code review (security + complexity + style)."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+            code = body.get("code", "")
+            context = body.get("context", "")
+            if not code:
+                raise HTTPException(status_code=400, detail="code wajib diisi")
+            from coding_agent_enhanced import code_review
+            result = code_review(code, context=context)
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "review gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[code/review] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"review error: {e}")
+
+    # ── POST /brand/guidelines ────────────────────────────────────────────────
+    @app.post("/brand/guidelines")
+    async def brand_guidelines_endpoint(request: Request):
+        """Generate brand guidelines komplet."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+            name = body.get("brand_name", "").strip()
+            niche = body.get("niche", "").strip()
+            colors = body.get("base_colors", ["#3B82F6", "#10B981", "#F59E0B"])
+            archetype = body.get("archetype", "everyman")
+            if not name or not niche:
+                raise HTTPException(status_code=400, detail="brand_name dan niche wajib diisi")
+            from brand_guidelines import generate_full_guidelines
+            result = generate_full_guidelines(name, niche, colors, archetype)
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "guidelines gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[brand/guidelines] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"guidelines error: {e}")
+
+    # ── POST /web/fetch ───────────────────────────────────────────────────────
+    @app.post("/web/fetch")
+    async def web_fetch_expanded(request: Request):
+        """Unified web fetch: Reddit, YouTube, GitHub, arXiv, HackerNews."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+            platform = body.get("platform", "").strip().lower()
+            query = body.get("query", "").strip()
+            if not platform or not query:
+                raise HTTPException(status_code=400, detail="platform dan query wajib diisi")
+            from mcp_web_fetch_expanded import fetch_web_unified
+            result = fetch_web_unified(
+                platform=platform,
+                query=query,
+                subreddit=body.get("subreddit", ""),
+                language=body.get("language", ""),
+                owner=body.get("owner", ""),
+                repo=body.get("repo", ""),
+                transcript=body.get("transcript", False),
+                max_results=body.get("max_results", 5),
+            )
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "fetch gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[web/fetch] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"web fetch error: {e}")
+
+    # ── POST /generate/image ──────────────────────────────────────────────────
+    @app.post("/generate/image")
+    async def generate_image_endpoint(request: Request):
+        """Generate image via RunPod media worker (SDXL/Flux)."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+            prompt = body.get("prompt", "").strip()
+            if not prompt:
+                raise HTTPException(status_code=400, detail="prompt wajib diisi")
+            from runpod_connector import generate_image
+            result = generate_image(
+                prompt=prompt,
+                negative_prompt=body.get("negative_prompt", ""),
+                width=body.get("width", 1024),
+                height=body.get("height", 1024),
+                num_inference_steps=body.get("num_inference_steps", 30),
+                guidance_scale=body.get("guidance_scale", 7.5),
+            )
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "image gen gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[generate/image] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"image gen error: {e}")
+
+    # ── POST /generate/3d ─────────────────────────────────────────────────────
+    @app.post("/generate/3d")
+    async def generate_3d_endpoint(request: Request):
+        """Generate 3D mesh via RunPod 3D worker (TripoSR / Hunyuan3D)."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+            prompt = body.get("prompt", "").strip()
+            image_path = body.get("image_path", "")
+            mode = body.get("mode", "triposr")
+            from runpod_connector import generate_3d
+            result = generate_3d(
+                image_path=image_path,
+                prompt=prompt,
+                mode=mode,
+                remove_bg=body.get("remove_bg", True),
+                output_format=body.get("output_format", "glb"),
+            )
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "3D gen gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[generate/3d] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"3D gen error: {e}")
+
+    # ── POST /dataset/scan ────────────────────────────────────────────────────
+    @app.post("/dataset/scan")
+    async def dataset_scan(request: Request):
+        """Scan folder lokal untuk collect metadata gambar (read-only)."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+            path = body.get("path", "").strip()
+            if not path:
+                raise HTTPException(status_code=400, detail="path wajib diisi")
+            from dataset_collector import scan_folder
+            result = scan_folder(path, max_depth=body.get("max_depth", 3))
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "scan gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[dataset/scan] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"dataset scan error: {e}")
+
+    # ── POST /dataset/collect ─────────────────────────────────────────────────
+    @app.post("/dataset/collect")
+    async def dataset_collect(request: Request):
+        """Collect dataset dari multiple sources (Mighan-Web, Mighan-3D, dll)."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+            sources = body.get("sources")
+            tags = body.get("tags")
+            from dataset_collector import collect_dataset, auto_tag_by_folder
+            result = collect_dataset(sources=sources, tags=tags)
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "collect gagal"))
+            data = result["data"]
+            files = auto_tag_by_folder(data.get("files", []))
+            return {
+                "ok": True,
+                "total_files": len(files),
+                "total_size_mb": data.get("total_size_mb", 0),
+                "sources": data.get("sources", []),
+                "files": files[:50],  # limit response size
+            }
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[dataset/collect] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"dataset collect error: {e}")
+
+    # ── GET /dataset/sources ──────────────────────────────────────────────────
+    @app.get("/dataset/sources")
+    async def dataset_sources(request: Request):
+        """List available dataset sources."""
+        _enforce_rate(request)
+        try:
+            from dataset_collector import get_available_sources
+            result = get_available_sources()
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "sources gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[dataset/sources] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"dataset sources error: {e}")
+
+    # ── POST /dataset/web/unsplash ────────────────────────────────────────────
+    @app.post("/dataset/web/unsplash")
+    async def dataset_web_unsplash(request: Request):
+        """Search photos via Unsplash API (free commercial use)."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+            query = body.get("query", "").strip()
+            if not query:
+                raise HTTPException(status_code=400, detail="query wajib diisi")
+            from dataset_web_collector import search_unsplash
+            result = search_unsplash(
+                query=query,
+                per_page=body.get("per_page", 20),
+                orientation=body.get("orientation"),
+            )
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "unsplash gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[dataset/web/unsplash] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"unsplash error: {e}")
+
+    # ── POST /dataset/web/pexels ──────────────────────────────────────────────
+    @app.post("/dataset/web/pexels")
+    async def dataset_web_pexels(request: Request):
+        """Search photos via Pexels API (free commercial use)."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+            query = body.get("query", "").strip()
+            if not query:
+                raise HTTPException(status_code=400, detail="query wajib diisi")
+            from dataset_web_collector import search_pexels
+            result = search_pexels(
+                query=query,
+                per_page=body.get("per_page", 20),
+                orientation=body.get("orientation"),
+                color=body.get("color"),
+            )
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "pexels gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[dataset/web/pexels] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"pexels error: {e}")
+
+    # ── POST /dataset/web/wikimedia ───────────────────────────────────────────
+    @app.post("/dataset/web/wikimedia")
+    async def dataset_web_wikimedia(request: Request):
+        """Search CC-licensed media from Wikimedia Commons."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+            query = body.get("query", "").strip()
+            if not query:
+                raise HTTPException(status_code=400, detail="query wajib diisi")
+            from dataset_web_collector import search_wikimedia
+            result = search_wikimedia(
+                query=query,
+                limit=body.get("limit", 20),
+                license_filter=body.get("license_filter"),
+            )
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "wikimedia gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[dataset/web/wikimedia] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"wikimedia error: {e}")
+
+    # ── POST /dataset/web/wikimedia/file ──────────────────────────────────────
+    @app.post("/dataset/web/wikimedia/file")
+    async def dataset_web_wikimedia_file(request: Request):
+        """Get detailed file info from Wikimedia Commons."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+            title = body.get("title", "").strip()
+            if not title:
+                raise HTTPException(status_code=400, detail="title wajib diisi (e.g. 'File:Example.jpg')")
+            from dataset_web_collector import get_wikimedia_file_info
+            result = get_wikimedia_file_info(title)
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "wikimedia file gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[dataset/web/wikimedia/file] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"wikimedia file error: {e}")
+
+    # ── POST /dataset/web/search ──────────────────────────────────────────────
+    @app.post("/dataset/web/search")
+    async def dataset_web_search(request: Request):
+        """Search across all legal web dataset sources."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+            query = body.get("query", "").strip()
+            if not query:
+                raise HTTPException(status_code=400, detail="query wajib diisi")
+            from dataset_web_collector import search_all
+            result = search_all(
+                query=query,
+                sources=body.get("sources"),
+                per_source=body.get("per_source", 10),
+            )
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "web search gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[dataset/web/search] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"web search error: {e}")
+
+    # ── POST /dataset/dna ─────────────────────────────────────────────────────
+    @app.post("/dataset/dna")
+    async def dataset_dna(request: Request):
+        """Analyze dataset DNA (LoRA suitability, quality, bias)."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+            entries = body.get("entries", [])
+            if not entries:
+                raise HTTPException(status_code=400, detail="entries wajib diisi (list of dict)")
+            from dataset_web_collector import analyze_dataset_dna
+            result = analyze_dataset_dna(entries)
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "dna analysis gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[dataset/dna] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"dna analysis error: {e}")
+
+    # ── GET /dataset/laion ────────────────────────────────────────────────────
+    @app.get("/dataset/laion")
+    async def dataset_laion(request: Request):
+        """Get LAION-5B dataset information and metadata pointers."""
+        _enforce_rate(request)
+        try:
+            from dataset_web_collector import get_laion_info
+            result = get_laion_info()
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "laion info gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[dataset/laion] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"laion info error: {e}")
+
+    # ── POST /dataset/drive/auth ──────────────────────────────────────────────
+    @app.post("/dataset/drive/auth")
+    async def dataset_drive_auth(request: Request):
+        """Generate Google OAuth2 authorization URL for Drive access."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+            from dataset_drive_collector import get_auth_url
+            result = get_auth_url(redirect_uri=body.get("redirect_uri", "http://localhost:8080"))
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "drive auth gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[dataset/drive/auth] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"drive auth error: {e}")
+
+    # ── POST /dataset/drive/exchange ──────────────────────────────────────────
+    @app.post("/dataset/drive/exchange")
+    async def dataset_drive_exchange(request: Request):
+        """Exchange Google OAuth2 code for access + refresh token."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+            code = body.get("code", "").strip()
+            if not code:
+                raise HTTPException(status_code=400, detail="code wajib diisi")
+            from dataset_drive_collector import exchange_auth_code
+            result = exchange_auth_code(
+                code=code,
+                redirect_uri=body.get("redirect_uri", "http://localhost:8080"),
+            )
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "drive exchange gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[dataset/drive/exchange] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"drive exchange error: {e}")
+
+    # ── POST /dataset/drive/list ──────────────────────────────────────────────
+    @app.post("/dataset/drive/list")
+    async def dataset_drive_list(request: Request):
+        """List images from Google Drive folder (agency assets)."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+            folder_id = body.get("folder_id", "").strip() or None
+            from dataset_drive_collector import collect_drive_dataset
+            result = collect_drive_dataset(
+                folder_id=folder_id,
+                max_files=body.get("max_files", 5000),
+                account=body.get("account"),
+            )
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "drive list gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[dataset/drive/list] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"drive list error: {e}")
+
+    # ── GET /dataset/drive/health ─────────────────────────────────────────────
+    @app.get("/dataset/drive/health")
+    async def dataset_drive_health(request: Request):
+        """Check Google Drive API connectivity."""
+        _enforce_rate(request)
+        try:
+            account = request.query_params.get("account")
+            from dataset_drive_collector import drive_health_check
+            result = drive_health_check(account=account)
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "drive health gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[dataset/drive/health] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"drive health error: {e}")
+
+    # ── POST /dataset/drive/explore ───────────────────────────────────────────
+    @app.post("/dataset/drive/explore")
+    async def dataset_drive_explore(request: Request):
+        """Explore Google Drive folder structure recursively."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+            folder_id = body.get("folder_id", "").strip() or None
+            from dataset_drive_collector import explore_drive_structure
+            result = explore_drive_structure(
+                folder_id=folder_id,
+                account=body.get("account"),
+                max_depth=body.get("max_depth", 3),
+            )
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "drive explore gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[dataset/drive/explore] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"drive explore error: {e}")
+
+    # ── POST /dataset/drive/overview ──────────────────────────────────────────
+    @app.post("/dataset/drive/overview")
+    async def dataset_drive_overview(request: Request):
+        """Get overview satu Google Drive account."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+            from dataset_drive_collector import get_account_overview
+            result = get_account_overview(account=body.get("account"))
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "drive overview gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[dataset/drive/overview] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"drive overview error: {e}")
+
+    # ── POST /dataset/drive/batch ─────────────────────────────────────────────
+    @app.post("/dataset/drive/batch")
+    async def dataset_drive_batch(request: Request):
+        """Collect images dari multiple Google Drive accounts sekaligus."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+            accounts = body.get("accounts")
+            from dataset_drive_collector import batch_collect_drive_datasets
+            result = batch_collect_drive_datasets(
+                accounts=accounts,
+                max_files_per_account=body.get("max_files_per_account", 1000),
+            )
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "drive batch gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[dataset/drive/batch] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"drive batch error: {e}")
+
+    # ── GET /dataset/drive/config ─────────────────────────────────────────────
+    @app.get("/dataset/drive/config")
+    async def dataset_drive_config(request: Request):
+        """Get step-by-step instructions untuk setup multiple Google Drive accounts."""
+        _enforce_rate(request)
+        try:
+            from dataset_drive_collector import get_account_config_instructions
+            result = get_account_config_instructions()
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "drive config gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[dataset/drive/config] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"drive config error: {e}")
+
+    # ═══════════════════════════════════════════════════════════════════════════
+    # ELEVENLABS — Guru Trainer Voice
+    # ═══════════════════════════════════════════════════════════════════════════
+
+    # ── POST /tts/elevenlabs ──────────────────────────────────────────────────
+    @app.post("/tts/elevenlabs")
+    async def elevenlabs_tts_endpoint(request: Request):
+        """Generate audio dari text menggunakan ElevenLabs TTS."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+            text = body.get("text", "").strip()
+            if not text:
+                raise HTTPException(status_code=400, detail="text wajib diisi")
+            from elevenlabs_connector import generate_tts
+            result = generate_tts(
+                text=text,
+                voice_id=body.get("voice_id", "21m00Tcm4TlvDq8ikWAM"),
+                model_id=body.get("model_id", "eleven_multilingual_v2"),
+                stability=body.get("stability", 0.5),
+                similarity_boost=body.get("similarity_boost", 0.75),
+                style=body.get("style", 0.0),
+                output_format=body.get("output_format", "mp3_44100_128"),
+            )
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "tts gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[tts/elevenlabs] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"elevenlabs tts error: {e}")
+
+    # ── GET /tts/elevenlabs/voices ────────────────────────────────────────────
+    @app.get("/tts/elevenlabs/voices")
+    async def elevenlabs_voices(request: Request):
+        """List semua voice ElevenLabs."""
+        _enforce_rate(request)
+        try:
+            from elevenlabs_connector import list_voices
+            result = list_voices()
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "voices gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[tts/elevenlabs/voices] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"elevenlabs voices error: {e}")
+
+    # ── POST /tts/elevenlabs/clone ────────────────────────────────────────────
+    @app.post("/tts/elevenlabs/clone")
+    async def elevenlabs_clone(request: Request):
+        """Clone voice dari audio samples."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+            name = body.get("name", "").strip()
+            if not name:
+                raise HTTPException(status_code=400, detail="name wajib diisi")
+            file_paths = body.get("file_paths", [])
+            if not file_paths:
+                raise HTTPException(status_code=400, detail="file_paths wajib diisi")
+            from elevenlabs_connector import clone_voice
+            result = clone_voice(
+                name=name,
+                description=body.get("description", ""),
+                file_paths=file_paths if isinstance(file_paths, list) else [file_paths],
+                labels=body.get("labels"),
+            )
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "clone gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[tts/elevenlabs/clone] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"elevenlabs clone error: {e}")
+
+    # ── GET /tts/elevenlabs/user ──────────────────────────────────────────────
+    @app.get("/tts/elevenlabs/user")
+    async def elevenlabs_user(request: Request):
+        """Check ElevenLabs user quota dan usage."""
+        _enforce_rate(request)
+        try:
+            from elevenlabs_connector import get_user_info
+            result = get_user_info()
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "user info gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[tts/elevenlabs/user] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"elevenlabs user error: {e}")
+
+    # ── POST /tts/elevenlabs/sound ────────────────────────────────────────────
+    @app.post("/tts/elevenlabs/sound")
+    async def elevenlabs_sound(request: Request):
+        """Generate sound effect dari text description."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+            text = body.get("text", "").strip()
+            if not text:
+                raise HTTPException(status_code=400, detail="text wajib diisi")
+            from elevenlabs_connector import generate_sound_effect
+            result = generate_sound_effect(
+                text=text,
+                duration_seconds=body.get("duration_seconds"),
+                prompt_influence=body.get("prompt_influence", 0.3),
+            )
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "sound gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[tts/elevenlabs/sound] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"elevenlabs sound error: {e}")
+
+    # ── GET /tts/elevenlabs/health ────────────────────────────────────────────
+    @app.get("/tts/elevenlabs/health")
+    async def elevenlabs_health(request: Request):
+        """Check ElevenLabs API connectivity."""
+        _enforce_rate(request)
+        try:
+            from elevenlabs_connector import elevenlabs_health_check
+            result = elevenlabs_health_check()
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "health gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[tts/elevenlabs/health] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"elevenlabs health error: {e}")
+
+    # ═══════════════════════════════════════════════════════════════════════════
+    # SIDIX SPARK — Ethical Dataset Curation (Adobe Firefly-inspired)
+    # ═══════════════════════════════════════════════════════════════════════════
+
+    # ── POST /spark/curate ────────────────────────────────────────────────────
+    @app.post("/spark/curate")
+    async def spark_curate(request: Request):
+        """Curate dataset dengan ethical filtering."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+            entries = body.get("entries", [])
+            if not entries:
+                raise HTTPException(status_code=400, detail="entries wajib diisi")
+            from dataset_spark_curation import curate_ethical_dataset
+            result = curate_ethical_dataset(
+                entries=entries,
+                output_path=body.get("output_path", "dataset/spark_curated.jsonl"),
+                curator=body.get("curator", "sidix-spark"),
+            )
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "curate gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[spark/curate] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"spark curate error: {e}")
+
+    # ── POST /spark/validate ──────────────────────────────────────────────────
+    @app.post("/spark/validate")
+    async def spark_validate(request: Request):
+        """Validate license satu entry."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+            entry = body.get("entry", {})
+            if not entry:
+                raise HTTPException(status_code=400, detail="entry wajib diisi")
+            from dataset_spark_curation import validate_license
+            result = validate_license(entry)
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "validate gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[spark/validate] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"spark validate error: {e}")
+
+    # ── POST /spark/bias ──────────────────────────────────────────────────────
+    @app.post("/spark/bias")
+    async def spark_bias(request: Request):
+        """Audit bias pada dataset."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+            entries = body.get("entries", [])
+            if not entries:
+                raise HTTPException(status_code=400, detail="entries wajib diisi")
+            from dataset_spark_curation import audit_bias
+            result = audit_bias(entries)
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "bias gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[spark/bias] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"spark bias error: {e}")
+
+    # ── GET /spark/pinterest ──────────────────────────────────────────────────
+    @app.get("/spark/pinterest")
+    async def spark_pinterest(request: Request):
+        """Show detailed warning tentang risiko scraping Pinterest."""
+        _enforce_rate(request)
+        try:
+            from dataset_spark_curation import get_pinterest_warning
+            result = get_pinterest_warning()
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "warning gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[spark/pinterest] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"spark pinterest error: {e}")
+
+    # ── POST /spark/provenance ────────────────────────────────────────────────
+    @app.post("/spark/provenance")
+    async def spark_provenance(request: Request):
+        """Generate provenance report untuk dataset."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+            credentials = body.get("credentials", [])
+            if not credentials:
+                raise HTTPException(status_code=400, detail="credentials wajib diisi")
+            from dataset_spark_curation import generate_provenance_report
+            result = generate_provenance_report(credentials)
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "provenance gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[spark/provenance] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"spark provenance error: {e}")
+
+    # ═════════════════════════════════════════════════════════════════════════════
+    # ── Output Modality Detector (Beta: auto-detect image / audio / 3D / video)
+    # ═════════════════════════════════════════════════════════════════════════════
+    def _detect_output_modality(question: str) -> list[dict]:
+        """Deteksi intent generate image, audio, 3D, video dari pertanyaan user.
+        Return: list of attachment dicts dengan type + prompt untuk tool.
+        """
+        q = question.lower()
+        attachments = []
+
+        # Image generation signals
+        image_signals = [
+            "bikin gambar", "buat gambar", "generate image", "generate gambar",
+            "desain logo", "desain banner", "buat ilustrasi", "generate logo",
+            "text to image", "text-to-image", "buat poster", "buat thumbnail",
+        ]
+        if any(s in q for s in image_signals):
+            attachments.append({"type": "image", "prompt": question, "tool": "text_to_image"})
+
+        # TTS signals
+        tts_signals = [
+            "baca teks", "text to speech", "text-to-speech", "suara", "voice",
+            "bacakan", "bikin suara", "generate suara", "buat audio", "jadi suara",
+        ]
+        if any(s in q for s in tts_signals):
+            # Extract text setelah keyword
+            text = question
+            for kw in ["baca teks", "text to speech", "bacakan", "bikin suara", "generate suara", "buat audio", "jadi suara"]:
+                if kw in q:
+                    text = question.split(kw, 1)[-1].strip()
+                    break
+            attachments.append({"type": "audio", "text": text, "tool": "synthesize_speech"})
+
+        # 3D signals
+        three_d_signals = [
+            "3d model", "model 3d", "generate 3d", "buat 3d", "mesh", "3d object",
+        ]
+        if any(s in q for s in three_d_signals):
+            attachments.append({"type": "3d", "prompt": question, "tool": "generate_3d_runpod"})
+
+        return attachments
+
+    def _run_modality_tool(attachment: dict) -> dict | None:
+        """Panggil tool modality dan return attachment metadata."""
+        try:
+            from .agent_tools import call_tool, ToolResult
+            if attachment["tool"] == "text_to_image":
+                result = call_tool(
+                    tool_name="text_to_image",
+                    args={"prompt": attachment["prompt"], "model": "flux", "width": 512, "height": 512},
+                    session_id="modality_auto", step=0, allow_restricted=False,
+                )
+                if result.success and result.output:
+                    return {"type": "image", "url": result.output, "mime_type": "image/png", "title": "Generated Image"}
+            elif attachment["tool"] == "synthesize_speech":
+                result = call_tool(
+                    tool_name="synthesize_speech",
+                    args={"text": attachment["text"], "voice": "default", "speed": 1.0},
+                    session_id="modality_auto", step=0, allow_restricted=False,
+                )
+                if result.success and result.output:
+                    return {"type": "audio", "url": result.output, "mime_type": "audio/mp3", "title": "Generated Speech"}
+            elif attachment["tool"] == "generate_3d_runpod":
+                result = call_tool(
+                    tool_name="generate_3d_runpod",
+                    args={"prompt": attachment["prompt"], "format": "glb"},
+                    session_id="modality_auto", step=0, allow_restricted=False,
+                )
+                if result.success and result.output:
+                    return {"type": "3d", "url": result.output, "mime_type": "model/gltf-binary", "title": "Generated 3D Model"}
+        except Exception as e:
+            log.warning("[modality_auto] %s error: %s", attachment.get("tool"), e)
+        return None
+
     # ── POST /agent/chat ──────────────────────────────────────────────────────
     @app.post("/agent/chat", response_model=ChatResponse)
     def agent_chat(req: ChatRequest, request: Request):
@@ -2440,6 +3653,36 @@ def create_app() -> "FastAPI":
             conversation_context = memory_store.get_recent_context(effective_conversation_id)
         except Exception:
             pass
+
+        # ── Multi-modal Input Processing (Beta: image + audio) ────────────────
+        multimodal_context = []
+        if req.image_path and os.path.exists(req.image_path):
+            try:
+                from .vision_analyzer import analyze_image
+                result = analyze_image(image_path=req.image_path, prompt="Deskripsikan gambar ini.")
+                if result.get("ok"):
+                    desc = result.get("data", {}).get("description", "")
+                    multimodal_context.append({
+                        "role": "system",
+                        "content": f"[IMAGE ANALYSIS] User uploaded an image. Description: {desc}",
+                    })
+            except Exception as _img_err:
+                log.debug("[multimodal] image analysis fail: %s", _img_err)
+        if req.audio_path and os.path.exists(req.audio_path):
+            try:
+                from .audio_capability import transcribe_audio
+                result = transcribe_audio(file_path=req.audio_path, lang="auto", model_size="small")
+                if result.get("ok"):
+                    text = result.get("data", {}).get("text", "")
+                    multimodal_context.append({
+                        "role": "system",
+                        "content": f"[AUDIO TRANSCRIPTION] User uploaded audio. Transcription: {text}",
+                    })
+            except Exception as _aud_err:
+                log.debug("[multimodal] audio transcription fail: %s", _aud_err)
+        if multimodal_context:
+            conversation_context = multimodal_context + conversation_context
+        # ─────────────────────────────────────────────────────────────────────
 
         try:
             from .persona import resolve_style_persona
@@ -2486,6 +3729,18 @@ def create_app() -> "FastAPI":
 
         _store_session(session)
         (None if _is_whitelisted(request) else rate_limit.record_daily_use(_daily_client_key(request)))
+
+        # ── Output Modality Auto-Detect (Beta) ──────────────────────────────────
+        attachments = []
+        try:
+            detected = _detect_output_modality(req.question)
+            for d in detected:
+                att = _run_modality_tool(d)
+                if att:
+                    attachments.append(att)
+        except Exception as _mod_err:
+            log.debug("[modality_auto] error: %s", _mod_err)
+        # ─────────────────────────────────────────────────────────────────────
 
         # Persist to memory (best-effort, non-blocking)
         try:
@@ -2535,6 +3790,8 @@ def create_app() -> "FastAPI":
             steps_trace=_build_steps_trace(session.steps),
             planner_used=getattr(session, "planner_used", False),
             planner_savings=getattr(session, "planner_savings", 0.0),
+            # ── Output Modality Attachments (Beta) ──────────────────────────
+            attachments=attachments,
         )
 
     # ── POST /agent/chat_holistic ─────────────────────────────────────────────
@@ -4684,9 +5941,9 @@ def create_app() -> "FastAPI":
 
     @app.post("/agent/vision", tags=["Sensorial"])
     async def vision_endpoint(request: Request):
-        """Receive image upload (base64 / URL). Save + EXIF strip + caption stub.
-        Body: {image_base64?, image_url?, user_id?}
-        VLM real integration target Q3 2026 (Qwen2.5-VL)."""
+        """Receive image upload (base64 / URL). Analyze via VLM (moondream/llava-phi3).
+        Body: {image_base64?, image_url?, user_id?, prompt?}
+        VLM integration: Ollama vision models (local)."""
         try:
             body = await request.json()
         except Exception:
@@ -4694,7 +5951,6 @@ def create_app() -> "FastAPI":
         if not body.get("image_base64") and not body.get("image_url"):
             raise HTTPException(status_code=400, detail="image_base64 atau image_url wajib")
 
-        # Extract user dari Bearer JWT kalau ada
         user_id = ""
         try:
             from . import auth_google
@@ -4704,6 +5960,7 @@ def create_app() -> "FastAPI":
         except Exception:
             pass
 
+        # Save + record
         try:
             from . import sensorial_input
             from dataclasses import asdict
@@ -4712,15 +5969,31 @@ def create_app() -> "FastAPI":
                 image_url=body.get("image_url", ""),
                 user_id=user_id or body.get("user_id", ""),
             )
-            return {"ok": record.processing_status != "failed", "record": asdict(record)}
         except Exception as e:
-            raise HTTPException(status_code=500, detail=f"vision fail: {e}")
+            raise HTTPException(status_code=500, detail=f"vision save fail: {e}")
+
+        # Analyze via VLM
+        try:
+            from .vision_analyzer import analyze_image
+            image_path = record.local_path or ""
+            prompt = body.get("prompt", "Deskripsikan gambar ini dalam Bahasa Indonesia.")
+            if image_path and os.path.exists(image_path):
+                result = analyze_image(image_path=image_path, prompt=prompt)
+                return {
+                    "ok": result.get("ok", False),
+                    "record": asdict(record),
+                    "analysis": result.get("data", {}),
+                    "fallback_instructions": result.get("fallback_instructions", ""),
+                }
+        except Exception as e:
+            log.warning("[vision] VLM analysis fail: %s", e)
+
+        return {"ok": record.processing_status != "failed", "record": asdict(record)}
 
     @app.post("/agent/audio", tags=["Sensorial"])
     async def audio_endpoint(request: Request):
-        """Receive audio upload (base64). STT real integration target Q3 2026
-        (Step-Audio / Qwen3-ASR / Whisper local).
-        Body: {audio_base64, user_id?}"""
+        """Receive audio upload (base64). Transcribe via Whisper (faster-whisper / openai-whisper).
+        Body: {audio_base64, user_id?, lang?}"""
         try:
             body = await request.json()
         except Exception:
@@ -4737,6 +6010,7 @@ def create_app() -> "FastAPI":
         except Exception:
             pass
 
+        # Save + record
         try:
             from . import sensorial_input
             from dataclasses import asdict
@@ -4744,9 +6018,30 @@ def create_app() -> "FastAPI":
                 audio_base64=body.get("audio_base64", ""),
                 user_id=user_id or body.get("user_id", ""),
             )
-            return {"ok": record.processing_status != "failed", "record": asdict(record)}
         except Exception as e:
-            raise HTTPException(status_code=500, detail=f"audio fail: {e}")
+            raise HTTPException(status_code=500, detail=f"audio save fail: {e}")
+
+        # Transcribe via Whisper
+        transcription = ""
+        try:
+            from .audio_capability import transcribe_audio
+            audio_path = record.local_path or ""
+            if audio_path and os.path.exists(audio_path):
+                result = transcribe_audio(
+                    file_path=audio_path,
+                    lang=body.get("lang", "auto"),
+                    model_size="small",
+                )
+                if result.get("ok"):
+                    transcription = result.get("data", {}).get("text", "")
+        except Exception as e:
+            log.warning("[audio] transcription fail: %s", e)
+
+        return {
+            "ok": record.processing_status != "failed",
+            "record": asdict(record),
+            "transcription": transcription,
+        }
 
     @app.post("/agent/voice", tags=["Sensorial"])
     async def voice_endpoint(request: Request):
@@ -5445,6 +6740,86 @@ def create_app() -> "FastAPI":
             return {"ok": True, "removed": removed}
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"whitelist remove fail: {e}")
+
+    # ── Google Drive Admin ─────────────────────────────────────────────────────
+
+    @app.get("/admin/drive/accounts", tags=["Admin"])
+    def admin_drive_accounts(request: Request):
+        """List semua Google Drive accounts + connection status (admin only)."""
+        if not _admin_ok(request):
+            raise HTTPException(status_code=403, detail="Akses ditolak")
+        try:
+            from .drive_admin_manager import list_accounts
+            return list_accounts()
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"drive accounts fail: {e}")
+
+    @app.post("/admin/drive/connect", tags=["Admin"])
+    async def admin_drive_connect(request: Request):
+        """Generate OAuth2 auth URL untuk connect Google Drive account (admin only)."""
+        if not _admin_ok(request):
+            raise HTTPException(status_code=403, detail="Akses ditolak")
+        try:
+            body = await request.json()
+            from .drive_admin_manager import generate_auth_url
+            return generate_auth_url(
+                account_name=body.get("account", "default"),
+                client_id=body.get("client_id"),
+                client_secret=body.get("client_secret"),
+                redirect_uri=body.get("redirect_uri", "https://sidixlab.com/admin/drive/callback"),
+                scope=body.get("scope", "https://www.googleapis.com/auth/drive.readonly"),
+            )
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"drive connect fail: {e}")
+
+    @app.post("/admin/drive/exchange", tags=["Admin"])
+    async def admin_drive_exchange(request: Request):
+        """Exchange OAuth2 code dan store token untuk Drive account (admin only)."""
+        if not _admin_ok(request):
+            raise HTTPException(status_code=403, detail="Akses ditolak")
+        try:
+            body = await request.json()
+            from .drive_admin_manager import exchange_and_store
+            return exchange_and_store(
+                account_name=body.get("account", "default"),
+                code=body.get("code", ""),
+            )
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"drive exchange fail: {e}")
+
+    @app.post("/admin/drive/refresh", tags=["Admin"])
+    async def admin_drive_refresh(request: Request):
+        """Refresh access token untuk Drive account (admin only)."""
+        if not _admin_ok(request):
+            raise HTTPException(status_code=403, detail="Akses ditolak")
+        try:
+            body = await request.json()
+            from .drive_admin_manager import refresh_account_token
+            return refresh_account_token(account_name=body.get("account", "default"))
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"drive refresh fail: {e}")
+
+    @app.delete("/admin/drive/account/{account_name}", tags=["Admin"])
+    def admin_drive_delete_account(account_name: str, request: Request):
+        """Hapus Google Drive account dari token store (admin only)."""
+        if not _admin_ok(request):
+            raise HTTPException(status_code=403, detail="Akses ditolak")
+        try:
+            from .drive_admin_manager import delete_account
+            return delete_account(account_name)
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"drive delete fail: {e}")
+
+    @app.get("/admin/drive/account/{account_name}", tags=["Admin"])
+    def admin_drive_account_detail(account_name: str, request: Request):
+        """Get Drive account detail (tanpa expose secret) (admin only)."""
+        if not _admin_ok(request):
+            raise HTTPException(status_code=403, detail="Akses ditolak")
+        try:
+            from .drive_admin_manager import get_account_token
+            return get_account_token(account_name)
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"drive detail fail: {e}")
 
     # ── Branch Management ──────────────────────────────────────────────────────
 
@@ -9711,6 +11086,90 @@ h1{{color:#0af}}p{{color:#aaa}}a{{color:#0af}}</style></head>
             raise
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"voyager delete error: {e}")
+
+    # ════════════════════════════════════════════════════════════════════════
+    # VOYAGER PROTOCOL — Phase 2: Skill Library Pattern
+    # ════════════════════════════════════════════════════════════════════════
+
+    @app.get("/app/voyager/tools/{tool_name}/stats", tags=["Voyager"])
+    async def voyager_tool_stats(tool_name: str, request: Request):
+        """Get usage statistics for a generated tool."""
+        _enforce_rate(request)
+        try:
+            stats = _voyager_get_tool_stats(tool_name)
+            if stats is None:
+                raise HTTPException(status_code=404, detail="tool not found")
+            return {"ok": True, "stats": stats.model_dump()}
+        except HTTPException:
+            raise
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"voyager stats error: {e}")
+
+    @app.get("/app/voyager/stats", tags=["Voyager"])
+    async def voyager_all_stats(request: Request):
+        """Get usage statistics for ALL generated tools."""
+        _enforce_rate(request)
+        try:
+            stats_list = _voyager_list_tool_stats()
+            return {"ok": True, "tools": [s.model_dump() for s in stats_list], "count": len(stats_list)}
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"voyager all stats error: {e}")
+
+    @app.post("/app/voyager/discover", tags=["Voyager"])
+    async def voyager_discover(req: dict, request: Request):
+        """
+        Discover similar existing tools before creating new.
+        Body: { "intent": "calculate BMI from weight and height" }
+        """
+        _enforce_rate(request)
+        intent = req.get("intent", "").strip()
+        if not intent:
+            raise HTTPException(status_code=400, detail="intent wajib diisi")
+        try:
+            result = _voyager_discover(intent, threshold=0.3)
+            return {
+                "ok": True,
+                "should_create_new": result.should_create_new,
+                "suggestion": result.suggestion,
+                "similar_tools": result.similar_tools,
+            }
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"voyager discover error: {e}")
+
+    @app.post("/app/voyager/tools/{tool_name}/refine", tags=["Voyager"])
+    async def voyager_refine_tool(tool_name: str, request: Request):
+        """
+        Self-refinement: auto-improve a generated tool based on usage data.
+        Only works if tool has < 50% success rate and >= 3 calls.
+        """
+        _enforce_rate(request)
+        try:
+            result = _voyager_refine_tool(tool_name, max_attempts=3)
+            return {
+                "ok": result.success,
+                "tool_name": result.tool_name,
+                "old_success_rate": result.old_success_rate,
+                "security_passed": result.security_passed,
+                "error": result.error,
+            }
+        except HTTPException:
+            raise
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"voyager refine error: {e}")
+
+    @app.get("/app/voyager/tools/{tool_name}/skills-format", tags=["Voyager"])
+    async def voyager_skills_format(tool_name: str, request: Request):
+        """Get tool metadata in Anthropic Agent Skills compatible format."""
+        _enforce_rate(request)
+        try:
+            data = _voyager_to_skills_format(tool_name)
+            if data is None:
+                raise HTTPException(status_code=404, detail="tool not found")
+            return {"ok": True, "skill": data}
+        except HTTPException:
+            raise
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"voyager skills format error: {e}")
 
     # ── Agency OS: Tiranyx pilot client ──────────────────────────────────────
     try:
