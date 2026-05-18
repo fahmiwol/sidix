@@ -387,7 +387,8 @@ class IntentClassifier:
         r'^(halo|hai|hi|hello|assalamu.?alaikum|salam|'
         r'pagi|siang|sore|malam|'
         r'selamat\s+(pagi|siang|sore|malam)|'
-        r'terima\s*kasih|makasih|thanks|thank\s*you)\s*[!?.]*\s*$',
+        r'terima\s*kasih|makasih|thanks|thank\s*you)'
+        r'(?:\s+(sidix|sidix ai|bro|kak))?\s*[!?.]*\s*$',
         re.I,
     )
 

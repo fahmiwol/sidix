@@ -20,6 +20,13 @@ def test_hijau_does_not_match_hi_greeting():
     assert tools == []
 
 
+def test_halo_sidix_is_greeting_not_model_query():
+    intent, tools = IntentClassifier.classify("halo sidix")
+
+    assert intent == "greeting"
+    assert tools == []
+
+
 def test_select_relevant_web_answer_prefers_distance_sentence():
     web_text = """
 Matahari — Wikipedia: Matahari

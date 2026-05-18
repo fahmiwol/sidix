@@ -18723,3 +18723,6 @@ curl -X POST http://localhost:8765/agent/maqashid/tune -d '{"sample_size":30}'
 - **IMPL:** Added `public_hygiene.py` as deterministic shared sanitizer for Auto-Tune/debug/context/source leakage.
 - **TEST:** Added regression tests for response-boundary sanitizer and memory-store sanitization; subset QA passed: `test_omnyx_live_regressions`, `test_memory_store`, `test_conversation_memory`, `test_maqashid_auto_tune`, `test_ui_stream_memory_wiring` = 42 passed.
 - **UPDATE:** Relaxed stream-memory UI test to assert `conversationId` behavior instead of stale exact TypeScript option signature.
+### 2026-05-18
+- **FIX:** Greeting classifier now treats `halo sidix` as greeting fast-path, avoiding unnecessary model/tool route when Ollama is offline.
+- **TEST:** Added regression `test_halo_sidix_is_greeting_not_model_query`; focused QA subset now 43 passed.
