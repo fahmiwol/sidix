@@ -17869,3 +17869,11 @@ curl -X POST http://localhost:8765/agent/maqashid/tune -d '{"sample_size":30}'
   - Fallback logical adapter bila physical adapter belum ada (Self-Train Fase 1 belum selesai).
   - Backward compatibility: semua caller existing tanpa persona tetap jalan.
 - **DECISION:** Tidak memperbaiki semua bug laten existing di `agent_serve.py` (misal endpoint overwrite `/agent/generate` ×2, `system_prompt` vs `system` di path lain) agar scope tetap minimal sesuai task.
+
+
+### 2026-05-18
+- **FIX:** Live `trx`/production incident - `Maqashid Auto-Tune` tidak lagi membocorkan blok review internal (`Auto-Tune Review`, saran perbaikan, delimiter konteks) ke jawaban publik. `auto_tune_response()` sekarang tetap mengevaluasi/statistik internal, tetapi mengembalikan teks user-facing asli kecuali `auto_correct=True`.
+- **FIX:** `OMNYX` public-answer sanitizer ditambah defense-in-depth untuk membuang prefix review internal bila ada legacy path yang masih mengirim format lama.
+- **IMPL:** Fast path identitas produk SIDIX di `omnyx_direction.py` agar pertanyaan seperti "apa itu SIDIX?" dijawab dari canonical self-knowledge, bukan dari snippet web/search title.
+- **TEST:** Live smoke `POST /agent/chat_holistic` pada `ctrl.sidixlab.com`: `hari apa sekarang?`, `siapa presiden indonesia?`, `kalo wakilnya?`, dan `apa itu SIDIX? jawab singkat` semuanya bersih, kontekstual, dan tanpa internal debug leak.
+- **DECISION:** Tidak melakukan `git pull` dari GitHub ke VPS karena VPS aktif berada 23 commit di depan remote branch; prioritas incident adalah patch minimal pada live state tanpa menimpa commit produksi yang belum tersinkron.

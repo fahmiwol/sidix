@@ -327,10 +327,12 @@ def auto_tune_response(
     config: AutoTuneConfig | None = None,
 ) -> str:
     """
-    Evaluasi output dan inject warning/suggestion kalau perlu.
+    Evaluasi output secara internal tanpa membocorkan review ke jawaban publik.
 
-    Returns tuned text (original + prefix/suffix kalau violation).
-    Non-blocking: kalau evaluation error → return original text.
+    Auto-Tune adalah evaluator/guardrail, bukan formatter jawaban user. Kalau
+    auto_correct=False, return teks asli agar UI chat tetap natural. Jika
+    auto_correct=True, apply rewrite ringan tanpa prefix review/debug.
+    Non-blocking: kalau evaluation error -> return original text.
     """
     cfg = config or AutoTuneConfig()
     if not cfg.enabled:
@@ -344,35 +346,17 @@ def auto_tune_response(
 
     _bump_stats(passed=result.passed, corrected=False, score=result.score)
 
-    # Kalau lolos → return as-is
     if result.passed:
         return text
 
-    # Kalau tidak lolos → inject warning prefix + suggestions
-    tuned = text
-    if result.violations or result.suggestions:
-        warning_lines: list[str] = []
-        if result.violations:
-            warning_lines.append("[⚠️ Auto-Tune Review]")
-            for v in result.violations:
-                warning_lines.append(f"  • {v}")
-        if result.suggestions:
-            warning_lines.append("  Saran perbaikan:")
-            for s in result.suggestions:
-                warning_lines.append(f"    → {s}")
-        warning_block = "\n".join(warning_lines)
+    if not (auto_correct or cfg.auto_correct):
+        return text
 
-        # Prepend ke output — jangan hapus konten asli (non-blocking / non-censor)
-        tuned = f"{warning_block}\n\n---\n\n{tuned}"
-
-    if auto_correct or cfg.auto_correct:
-        # Attempt simple rewrite: ganti over-confidence markers
-        tuned = _apply_simple_rewrite(tuned)
+    tuned = _apply_simple_rewrite(text)
+    if tuned != text:
         _AUTO_TUNE_STATS["total_corrected"] += 1
         result.corrected_output = tuned
-
     return tuned
-
 
 def _apply_simple_rewrite(text: str) -> str:
     """Rewrite sederhana: ganti over-confidence marker dengan yang lebih lembut."""

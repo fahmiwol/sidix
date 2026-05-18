@@ -58,6 +58,8 @@ def _sanitize_public_answer(text: str) -> str:
     """Remove internal prompt/context leakage before returning an answer."""
     if not text:
         return text
+    if "Auto-Tune Review" in text and "\n---" in text:
+        text = text.split("\n---", 1)[1].lstrip("- \t\r\n")
     try:
         from .agent_react import _apply_hygiene
         text = _apply_hygiene(text)
@@ -90,6 +92,27 @@ def _current_indonesia_official_response(query: str) -> str:
     if "presiden" in q:
         return "Presiden Indonesia saat ini adalah Prabowo Subianto."
     return ""
+
+
+def _sidix_identity_response(query: str) -> str:
+    """Canonical product identity answer; do not route SIDIX self-queries to web snippets."""
+    q = query.lower()
+    if "sidix" not in q:
+        return ""
+    asks_identity = any(
+        phrase in q
+        for phrase in (
+            "apa itu", "siapa sidix", "jelaskan sidix", "tentang sidix",
+            "what is", "define sidix", "sidix itu", "sidix adalah",
+        )
+    )
+    if not asks_identity:
+        return ""
+    return (
+        "SIDIX adalah AI agent self-hosted yang dibangun sebagai organisme digital: "
+        "punya memori, RAG/sanad, persona, tool-calling, evaluasi diri, dan "
+        "orkestrasi agar bisa belajar, membantu, serta mencipta secara iteratif."
+    )
 
 
 _DAY_NAMES_ID = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"]
@@ -657,6 +680,15 @@ class OmnyxDirector:
             session.sources_used = ["grounding_current_facts"]
             session.total_latency_ms = int((time.monotonic() - t0) * 1000)
             log.info("[omnyx] Current Indonesia office fast-path: %dms", session.total_latency_ms)
+            return session
+
+        sidix_identity = _sidix_identity_response(tool_query)
+        if sidix_identity:
+            session.final_answer = sidix_identity
+            session.confidence = "tinggi"
+            session.sources_used = ["sidix_canonical_identity"]
+            session.total_latency_ms = int((time.monotonic() - t0) * 1000)
+            log.info("[omnyx] SIDIX identity fast-path: %dms", session.total_latency_ms)
             return session
 
         # Sprint B: Pre-query Hafidz memory retrieval
