@@ -810,6 +810,156 @@ def _llm_generate(
 
 # ── FastAPI app ───────────────────────────────────────────────────────────────
 
+def _detect_output_modality_intents(question: str) -> list[dict]:
+    """Detect creative output requests that should produce attachments."""
+    q = (question or "").lower()
+    attachments: list[dict] = []
+
+    image_pattern = (
+        r"(bikin|buat|buatkan|generate|create|gambarkan|gambarin|render|lukiskan|desainkan)"
+        r".*?(gambar|foto|ilustrasi|image|picture|visual|artwork|poster|lukisan|desain|logo|banner|thumbnail)"
+        r"|"
+        r"(gambar|foto|ilustrasi|image|picture|visual|artwork|poster|lukisan|desain|logo|banner|thumbnail)"
+        r".*?(bikin|buat|buatkan|generate|create|gambarkan|gambarin|render|lukiskan|desainkan)"
+    )
+    meta_pattern = r"\b(bisa|mampu|support|punya fitur|fitur)\b.*\b(gambar|image|foto|ilustrasi)\b"
+    try:
+        import re
+        if re.search(image_pattern, q, re.DOTALL) and not re.search(meta_pattern, q, re.DOTALL):
+            attachments.append({"type": "image", "prompt": question, "tool": "text_to_image"})
+    except Exception:
+        image_signals = [
+            "bikin gambar", "buat gambar", "generate image", "generate gambar",
+            "desain logo", "desain banner", "buat ilustrasi", "generate logo",
+            "text to image", "text-to-image", "buat poster", "buat thumbnail",
+        ]
+        if any(s in q for s in image_signals):
+            attachments.append({"type": "image", "prompt": question, "tool": "text_to_image"})
+
+    tts_signals = [
+        "baca teks", "text to speech", "text-to-speech", "suara", "voice",
+        "bacakan", "bikin suara", "generate suara", "buat audio", "jadi suara",
+    ]
+    if any(s in q for s in tts_signals):
+        text = question
+        for kw in ["baca teks", "text to speech", "bacakan", "bikin suara", "generate suara", "buat audio", "jadi suara"]:
+            if kw in q:
+                text = question.split(kw, 1)[-1].strip()
+                break
+        attachments.append({"type": "audio", "text": text, "tool": "synthesize_speech"})
+
+    three_d_signals = [
+        "3d model", "model 3d", "generate 3d", "buat 3d", "mesh", "3d object",
+    ]
+    if any(s in q for s in three_d_signals):
+        attachments.append({"type": "3d", "prompt": question, "tool": "generate_3d_runpod"})
+
+    return attachments
+
+
+def _tool_result_to_attachment(result: Any, *, fallback_prompt: str = "") -> dict | None:
+    """Convert a modality ToolResult into UI attachment metadata."""
+    def _mime_for_url(url: str) -> str:
+        ext = (url.rsplit(".", 1)[-1] if "." in url else "").lower()
+        return {
+            "svg": "image/svg+xml",
+            "jpg": "image/jpeg",
+            "jpeg": "image/jpeg",
+            "webp": "image/webp",
+            "png": "image/png",
+        }.get(ext, "image/png")
+
+    if not getattr(result, "success", False):
+        return None
+    citations = getattr(result, "citations", None) or []
+    for citation in citations:
+        if not isinstance(citation, dict):
+            continue
+        if citation.get("type") == "text_to_image" and citation.get("url"):
+            url = citation.get("url", "")
+            return {
+                "type": "image",
+                "url": url,
+                "mime_type": _mime_for_url(url),
+                "title": "Generated Image",
+                "prompt": citation.get("prompt") or fallback_prompt,
+                "mode": citation.get("mode", ""),
+            }
+
+    output = str(getattr(result, "output", "") or "")
+    try:
+        import re
+        match = re.search(r"!\[[^\]]*\]\(([^)]+)\)", output)
+        if match:
+            url = match.group(1)
+            return {
+                "type": "image",
+                "url": url,
+                "mime_type": _mime_for_url(url),
+                "title": "Generated Image",
+                "prompt": fallback_prompt,
+            }
+    except Exception:
+        pass
+
+    if output.startswith(("/generated/", "http://", "https://")):
+        return {
+            "type": "image",
+            "url": output.strip(),
+            "mime_type": _mime_for_url(output.strip()),
+            "title": "Generated Image",
+            "prompt": fallback_prompt,
+        }
+    return None
+
+
+def _run_output_modality_tool(attachment: dict) -> dict | None:
+    """Run an output modality tool and return attachment metadata for UI."""
+    try:
+        from .agent_tools import call_tool
+        tool = attachment.get("tool")
+        if tool == "text_to_image":
+            result = call_tool(
+                tool_name="text_to_image",
+                args={"prompt": attachment["prompt"], "model": "flux", "width": 512, "height": 512},
+                session_id="modality_auto", step=0, allow_restricted=False,
+            )
+            return _tool_result_to_attachment(result, fallback_prompt=attachment.get("prompt", ""))
+        if tool == "synthesize_speech":
+            result = call_tool(
+                tool_name="synthesize_speech",
+                args={"text": attachment["text"], "voice": "default", "speed": 1.0},
+                session_id="modality_auto", step=0, allow_restricted=False,
+            )
+            if result.success and result.output:
+                return {"type": "audio", "url": result.output, "mime_type": "audio/mp3", "title": "Generated Speech"}
+        if tool == "generate_3d_runpod":
+            result = call_tool(
+                tool_name="generate_3d_runpod",
+                args={"prompt": attachment["prompt"], "format": "glb"},
+                session_id="modality_auto", step=0, allow_restricted=False,
+            )
+            if result.success and result.output:
+                return {"type": "3d", "url": result.output, "mime_type": "model/gltf-binary", "title": "Generated 3D Model"}
+    except Exception as e:
+        log.warning("[modality_auto] %s error: %s", attachment.get("tool"), e)
+    return None
+
+
+def _generated_image_candidates(filename: str) -> list[Path]:
+    """Return candidate file paths for generated image URLs."""
+    from .paths import default_index_dir
+    root = Path(__file__).resolve().parents[3]
+    cwd = Path.cwd()
+    return [
+        root / "data" / "generated" / "images" / filename,
+        cwd / "data" / "generated" / "images" / filename,
+        Path("/opt/sidix") / "data" / "generated" / "images" / filename,
+        default_index_dir() / "generated_images" / filename,
+        default_index_dir().parent / "generated_images" / filename,
+    ]
+
+
 def create_app() -> "FastAPI":
     if not _FASTAPI_OK:
         raise RuntimeError("FastAPI tidak terinstall. Jalankan: pip install fastapi uvicorn")
@@ -3571,72 +3721,11 @@ def create_app() -> "FastAPI":
         """Deteksi intent generate image, audio, 3D, video dari pertanyaan user.
         Return: list of attachment dicts dengan type + prompt untuk tool.
         """
-        q = question.lower()
-        attachments = []
-
-        # Image generation signals
-        image_signals = [
-            "bikin gambar", "buat gambar", "generate image", "generate gambar",
-            "desain logo", "desain banner", "buat ilustrasi", "generate logo",
-            "text to image", "text-to-image", "buat poster", "buat thumbnail",
-        ]
-        if any(s in q for s in image_signals):
-            attachments.append({"type": "image", "prompt": question, "tool": "text_to_image"})
-
-        # TTS signals
-        tts_signals = [
-            "baca teks", "text to speech", "text-to-speech", "suara", "voice",
-            "bacakan", "bikin suara", "generate suara", "buat audio", "jadi suara",
-        ]
-        if any(s in q for s in tts_signals):
-            # Extract text setelah keyword
-            text = question
-            for kw in ["baca teks", "text to speech", "bacakan", "bikin suara", "generate suara", "buat audio", "jadi suara"]:
-                if kw in q:
-                    text = question.split(kw, 1)[-1].strip()
-                    break
-            attachments.append({"type": "audio", "text": text, "tool": "synthesize_speech"})
-
-        # 3D signals
-        three_d_signals = [
-            "3d model", "model 3d", "generate 3d", "buat 3d", "mesh", "3d object",
-        ]
-        if any(s in q for s in three_d_signals):
-            attachments.append({"type": "3d", "prompt": question, "tool": "generate_3d_runpod"})
-
-        return attachments
+        return _detect_output_modality_intents(question)
 
     def _run_modality_tool(attachment: dict) -> dict | None:
         """Panggil tool modality dan return attachment metadata."""
-        try:
-            from .agent_tools import call_tool, ToolResult
-            if attachment["tool"] == "text_to_image":
-                result = call_tool(
-                    tool_name="text_to_image",
-                    args={"prompt": attachment["prompt"], "model": "flux", "width": 512, "height": 512},
-                    session_id="modality_auto", step=0, allow_restricted=False,
-                )
-                if result.success and result.output:
-                    return {"type": "image", "url": result.output, "mime_type": "image/png", "title": "Generated Image"}
-            elif attachment["tool"] == "synthesize_speech":
-                result = call_tool(
-                    tool_name="synthesize_speech",
-                    args={"text": attachment["text"], "voice": "default", "speed": 1.0},
-                    session_id="modality_auto", step=0, allow_restricted=False,
-                )
-                if result.success and result.output:
-                    return {"type": "audio", "url": result.output, "mime_type": "audio/mp3", "title": "Generated Speech"}
-            elif attachment["tool"] == "generate_3d_runpod":
-                result = call_tool(
-                    tool_name="generate_3d_runpod",
-                    args={"prompt": attachment["prompt"], "format": "glb"},
-                    session_id="modality_auto", step=0, allow_restricted=False,
-                )
-                if result.success and result.output:
-                    return {"type": "3d", "url": result.output, "mime_type": "model/gltf-binary", "title": "Generated 3D Model"}
-        except Exception as e:
-            log.warning("[modality_auto] %s error: %s", attachment.get("tool"), e)
-        return None
+        return _run_output_modality_tool(attachment)
 
     # ── POST /agent/chat ──────────────────────────────────────────────────────
     @app.post("/agent/chat", response_model=ChatResponse)
@@ -3897,6 +3986,15 @@ def create_app() -> "FastAPI":
 
         # OMNYX Direction — primary path
         # Sprint See & Hear: if image/audio present, use multimodal input
+        output_attachments: list[dict] = []
+        try:
+            for detected in _detect_output_modality(contextual_question):
+                att = _run_modality_tool(detected)
+                if att:
+                    output_attachments.append(att)
+        except Exception as _mod_err:
+            log.debug("[chat_holistic] modality attachment skipped: %s", _mod_err)
+
         try:
             from .omnyx_direction import OMNYXDirector
             director = OMNYXDirector()
@@ -3932,6 +4030,7 @@ def create_app() -> "FastAPI":
                     answer_type="fakta",
                     user_id=effective_user_id,
                     conversation_id=effective_conversation_id,
+                    attachments=output_attachments,
                 )
 
             result = await director.run(working_question, persona=effective_persona)
@@ -3995,6 +4094,7 @@ def create_app() -> "FastAPI":
                 sanad_verdict=result.get("sanad_verdict", ""),
                 hafidz_injected=result.get("hafidz_injected", False),
                 hafidz_stored=result.get("hafidz_stored", False),
+                attachments=output_attachments,
             )
         except Exception as omnyx_err:
             # Sprint L: log OMNYX exceptions to error registry
@@ -4060,6 +4160,7 @@ def create_app() -> "FastAPI":
                 answer_type=result.answer_type,
                 user_id=effective_user_id,
                 conversation_id=effective_conversation_id,
+                attachments=output_attachments,
             )
         except Exception as fallback_err:
             log.error("[chat_holistic] Fallback also failed: %s", fallback_err)
@@ -4086,6 +4187,10 @@ def create_app() -> "FastAPI":
                     yield f"data: {_json.dumps({'type': 'token', 'text': part})}\n\n"
                     await asyncio.sleep(0.005)
 
+                attachments = list(getattr(chat_response, "attachments", None) or [])
+                for att in attachments:
+                    yield f"data: {_json.dumps({'type': 'attachment', 'attachment': att})}\n\n"
+
                 sources_used = list(getattr(chat_response, "sources_used", None) or [])
                 if not sources_used:
                     sources_used = [
@@ -4102,6 +4207,7 @@ def create_app() -> "FastAPI":
                     "method": getattr(chat_response, "method", "holistic_stream"),
                     "session_id": chat_response.session_id,
                     "conversation_id": chat_response.conversation_id,
+                    "attachments": attachments,
                 }
                 yield f"data: {_json.dumps(done_payload)}\n\n"
             except HTTPException as exc:
@@ -4874,6 +4980,28 @@ def create_app() -> "FastAPI":
             "total": len(list_available_tools()),
         }
 
+    # ── GET /generated/images/{filename} ─ serve image hasil text_to_image ───
+    @app.get("/generated/images/{filename}")
+    def get_generated_image_nested(filename: str):
+        """Serve image file hasil text_to_image tool."""
+        from fastapi.responses import FileResponse
+        from fastapi import HTTPException
+        import re
+        if not re.match(r"^[a-zA-Z0-9_\-]+\.(png|jpg|jpeg|webp|svg)$", filename):
+            raise HTTPException(status_code=400, detail="invalid filename")
+        ext = filename.rsplit(".", 1)[-1].lower()
+        mime_map = {
+            "png": "image/png",
+            "jpg": "image/jpeg",
+            "jpeg": "image/jpeg",
+            "webp": "image/webp",
+            "svg": "image/svg+xml",
+        }
+        for fpath in _generated_image_candidates(filename):
+            if fpath.exists() and fpath.is_file():
+                return FileResponse(fpath, media_type=mime_map.get(ext, "image/png"))
+        raise HTTPException(status_code=404, detail="not found")
+
     # ── GET /generated/{filename} ─ serve image hasil text_to_image ──────────
     @app.get("/generated/{filename}")
     def get_generated_image(filename: str):
@@ -4882,13 +5010,20 @@ def create_app() -> "FastAPI":
         from fastapi import HTTPException
         import re
         # Path traversal guard: hanya alphanumeric + hyphen + underscore + .png/.jpg
-        if not re.match(r"^[a-zA-Z0-9_\-]+\.(png|jpg|jpeg|webp)$", filename):
+        if not re.match(r"^[a-zA-Z0-9_\-]+\.(png|jpg|jpeg|webp|svg)$", filename):
             raise HTTPException(status_code=400, detail="invalid filename")
-        from .paths import default_index_dir
-        fpath = default_index_dir().parent / "generated_images" / filename
-        if not fpath.exists() or not fpath.is_file():
-            raise HTTPException(status_code=404, detail="not found")
-        return FileResponse(fpath, media_type="image/png")
+        ext = filename.rsplit(".", 1)[-1].lower()
+        mime_map = {
+            "png": "image/png",
+            "jpg": "image/jpeg",
+            "jpeg": "image/jpeg",
+            "webp": "image/webp",
+            "svg": "image/svg+xml",
+        }
+        for fpath in _generated_image_candidates(filename):
+            if fpath.exists() and fpath.is_file():
+                return FileResponse(fpath, media_type=mime_map.get(ext, "image/png"))
+        raise HTTPException(status_code=404, detail="not found")
 
     # ── Sprint Pencipta Phase 3+: Multi-modal static file serve ───────────────
     # /generated/audio/{f}.wav · /generated/videos/{f}.mp4 · /generated/3d/{f}.{glb,obj}

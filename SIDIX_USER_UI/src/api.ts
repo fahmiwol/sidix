@@ -168,6 +168,7 @@ export interface ChatHolisticResponse {
   maqashid_score?: number;
   maqashid_passed?: boolean;
   maqashid_violations?: string[];
+  attachments?: SidixAttachment[];
 }
 
 /**
