@@ -2,6 +2,7 @@
 import urllib.request
 import urllib.error
 import json
+import os
 import socket
 import sys
 import io
@@ -12,6 +13,7 @@ ANON_KEY = "sb_publishable_ZGcdlsaf-ghUqKvkZn3HQg_GE1CFUWM"
 BASE_SUPABASE = f"https://{PROJECT_REF}.supabase.co"
 BASE_APP = "https://app.sidixlab.com"
 BASE_CTRL = "https://ctrl.sidixlab.com"
+EXPECTED_IP = os.environ.get("SIDIX_EXPECTED_IP", "187.77.116.139")
 
 OK = "OK"
 FAIL = "FAIL"
@@ -63,7 +65,7 @@ def main():
     for host in ["app.sidixlab.com", "ctrl.sidixlab.com", "mail.sidixlab.com", "sidixlab.com"]:
         try:
             ip = socket.gethostbyname(host)
-            ok = "72.62.125.6" in ip
+            ok = EXPECTED_IP in ip
             results.append(check(host, ok, f"→ {ip}"))
         except Exception as e:
             results.append(check(host, False, str(e)))

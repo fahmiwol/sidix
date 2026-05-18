@@ -18715,3 +18715,6 @@ curl -X POST http://localhost:8765/agent/maqashid/tune -d '{"sample_size":30}'
 - **IMPL:** Fast path identitas produk SIDIX di `omnyx_direction.py` agar pertanyaan seperti "apa itu SIDIX?" dijawab dari canonical self-knowledge, bukan dari snippet web/search title.
 - **TEST:** Live smoke `POST /agent/chat_holistic` pada `ctrl.sidixlab.com`: `hari apa sekarang?`, `siapa presiden indonesia?`, `kalo wakilnya?`, dan `apa itu SIDIX? jawab singkat` semuanya bersih, kontekstual, dan tanpa internal debug leak.
 - **DECISION:** Merge GitHub latest ke VPS dilakukan non-force; konflik `LIVING_LOG.md` di-resolve append-only dengan menjaga versi remote dan menambahkan catatan incident live.
+
+### 2026-05-18
+- **UPDATE:** Deploy guidance dan script verifikasi diarahkan ke VPS aktif `trx` / `187.77.116.139`; target produksi diselaraskan ke `main` agar tidak terus bergantung pada worktree branch sementara.

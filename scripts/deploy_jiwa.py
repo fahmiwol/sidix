@@ -6,7 +6,7 @@ import paramiko, sys, time, io
 
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
 
-HOST = os.environ.get("SIDIX_VPS_HOST", "sidix-vps")
+HOST = os.environ.get("SIDIX_VPS_HOST", "trx")
 USER = os.environ.get("SIDIX_VPS_USER", "root")
 PASS = os.environ.get("SIDIX_VPS_PASSWORD")
 

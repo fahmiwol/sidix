@@ -1,6 +1,6 @@
 # SIDIX Deploy Guidance untuk Agent (Kimi/Claude/GPT/Gemini)
 
-> **Tanggal lock**: 2026-05-01
+> **Tanggal lock**: 2026-05-18
 > **Trigger**: Founder caught Kimi deploy command salah path → LIVE tidak update 5 hari
 
 ---
@@ -10,7 +10,8 @@
 | Item | ❌ Salah | ✅ Benar |
 |---|---|---|
 | VPS root SIDIX | `/var/www/sidix` (TIDAK ADA) | `/opt/sidix` |
-| Branch deploy aktif | `claude/gallant-ellis-7cd14d` (PR-only) | `work/gallant-ellis-7cd14d` (VPS track) |
+| VPS SSH alias | `sidix-vps` / IP lama | `trx` (`187.77.116.139`) |
+| Branch deploy aktif | worktree/branch sementara | `main` |
 | UI build dir | `/opt/sidix/SIDIX_USER_UI` | sama |
 | UI dist asset | `/opt/sidix/SIDIX_USER_UI/dist/assets/` | sama |
 | Service brain | PM2 `sidix-brain` (port 8765) | sama |
@@ -20,7 +21,7 @@
 
 ```bash
 # 1. Pull latest code
-cd /opt/sidix && git pull origin work/gallant-ellis-7cd14d
+cd /opt/sidix && git checkout main && git pull origin main
 
 # 2. Kalau ada UI changes (SIDIX_USER_UI/), rebuild
 cd /opt/sidix/SIDIX_USER_UI && npm install --no-audit --no-fund && npm run build
