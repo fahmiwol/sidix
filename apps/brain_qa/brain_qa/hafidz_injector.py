@@ -35,6 +35,7 @@ import asyncio
 import hashlib
 import json
 import logging
+import os
 import re
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
@@ -109,6 +110,10 @@ def _today_str() -> str:
     return datetime.now(timezone.utc).strftime("%Y-%m-%d")
 
 
+def _reindex_disabled() -> bool:
+    return os.getenv("SIDIX_DISABLE_HAFIDZ_REINDEX", "").strip().lower() in {"1", "true", "yes"}
+
+
 # ── Golden Store ─────────────────────────────────────────────────────────
 
 async def store_golden(
@@ -162,8 +167,9 @@ store_type: golden
     
     log.info("[hafidz] Golden stored: %s (score=%.3f)", note_id, sanad_score)
     
-    # Trigger re-index
-    asyncio.create_task(_trigger_reindex())
+    # Trigger re-index unless explicitly disabled for CI/test runs.
+    if not _reindex_disabled():
+        asyncio.create_task(_trigger_reindex())
     
     return {"stored": True, "path": str(note_path), "note_id": note_id, "store": "golden"}
 
@@ -229,8 +235,9 @@ failure_context: |
     
     log.info("[hafidz] Lesson stored: %s (score=%.3f)", note_id, sanad_score)
     
-    # Trigger re-index
-    asyncio.create_task(_trigger_reindex())
+    # Trigger re-index unless explicitly disabled for CI/test runs.
+    if not _reindex_disabled():
+        asyncio.create_task(_trigger_reindex())
     
     return {"stored": True, "path": str(note_path), "note_id": note_id, "store": "lesson"}
 

@@ -18747,3 +18747,7 @@ curl -X POST http://localhost:8765/agent/maqashid/tune -d '{"sample_size":30}'
 ### 2026-05-18
 - UPDATE: CI core regression suite kini berjalan per file dengan timeout 30 menit agar log GitHub Actions menunjukkan file yang lambat/hang, bukan berhenti di progress chunk pytest.
 - TEST: Menjalankan suite CI per-file lokal -> 195 passed; file paling lambat `test_pattern_integration.py` dan `test_aspiration_tool_integration.py` karena jalur runtime/LLM fallback.
+### 2026-05-18
+- FIX: Menambah guard `SIDIX_DISABLE_HAFIDZ_REINDEX` di `hafidz_injector.py` agar test/CI tidak memicu background `python -m brain_qa index` yang menggantung di runner GitHub.
+- UPDATE: Workflow `brain_qa CI` mengaktifkan `SIDIX_DISABLE_HAFIDZ_REINDEX=1`; production default tetap memicu reindex seperti sebelumnya.
+- TEST: Core regression suite per-file dengan env tersebut -> 195 passed; `test_hafidz_injector.py` turun dari hang menjadi 14 passed dalam ~0.2s lokal.
