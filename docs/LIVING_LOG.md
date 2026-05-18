@@ -18778,3 +18778,8 @@ curl -X POST http://localhost:8765/agent/maqashid/tune -d '{"sample_size":30}'
 ### 2026-05-19
 - FIX: Menyelaraskan jawaban public image intent dengan attachment nyata: bila `attachments` image berhasil dibuat, kalimat lama `belum mengirim file gambar langsung` diganti menjadi respons natural bahwa gambar dilampirkan.
 - TEST: `python -m pytest apps\brain_qa\tests\test_image_attachment_wiring.py apps\brain_qa\tests\test_omnyx_live_regressions.py -q` -> 23 passed, 8 warning FastAPI deprecation.
+### 2026-05-19
+- UPDATE: Deploy VPS `trx` berhasil ke commit `c116047`; `/opt/sidix` fast-forward dari `50208de`, lalu `pm2 restart sidix-brain --update-env`; proses `sidix-brain` online.
+- TEST: Live REST `POST https://ctrl.sidixlab.com/agent/chat_holistic` dengan `bikin gambar kucing astronot` menghasilkan jawaban natural, attachment `/generated/images/<hash>.svg`, `mime_type=image/svg+xml`, `mode=mock`, dan URL image return HTTP 200.
+- TEST: Live stream `POST /agent/chat_holistic_stream` dengan intent gambar mengirim event `attachment` dan payload `attachments` di event `done`, sehingga UI punya jalur untuk render gambar tanpa membaca markdown mentah.
+- NOTE: Image generation production saat ini masih `mock` placeholder karena belum memakai GPU/RunPod/FLUX real; wiring UX dan attachment sudah benar, next iteration adalah menghubungkan generator real.
