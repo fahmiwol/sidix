@@ -18759,3 +18759,7 @@ curl -X POST http://localhost:8765/agent/maqashid/tune -d '{"sample_size":30}'
 - TEST: GitHub Actions `brain_qa CI` pada `main` commit `9f23707` hijau; required core regression suite selesai di runner GitHub.
 - ERROR: Deploy VPS masih blocked: SSH `trx` / `187.77.116.139:22` timeout dari lokal; live `ctrl.sidixlab.com` masih menjalankan versi lama (contoh `makasih ya` masih membalas pesan Ollama offline), sehingga commit terbaru belum aktif di production.
 - DECISION: Repo lokal dan GitHub sudah selaras; langkah berikutnya wajib membuka/menentukan akses SSH VPS baru atau memperbaiki secret deploy GitHub Actions sebelum live validation dapat dilanjutkan.
+### 2026-05-18
+- UPDATE: VPS deploy berhasil dari console Hostinger: `/opt/sidix` fast-forward `c9c87e5 -> 9c92759`, lalu `pm2 restart sidix-brain --update-env`; service `sidix-brain` online.
+- TEST: Live `https://ctrl.sidixlab.com/agent/chat_holistic` validated setelah deploy: `makasih ya`, definisi LLM, jarak Bumi-Matahari, contoh fungsi Python, presiden/wakil follow-up, dan memory warna favorit lolos tanpa `Ollama offline`, `(synthesis kosong)`, atau leak konteks.
+- NOTE: Intent gambar sudah tidak jatuh ke pesan model offline, tetapi masih fallback prompt text; next optimization adalah wiring actual image attachment/generator ke jalur `chat_holistic`.
