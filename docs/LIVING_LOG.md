@@ -18740,3 +18740,7 @@ curl -X POST http://localhost:8765/agent/maqashid/tune -d '{"sample_size":30}'
 - FIX: Menandai `test_generate_test_questions_fallback` dengan `pytest.mark.asyncio` agar tidak gagal di pytest standar.
 - TEST: `python -m pytest apps\brain_qa\tests -q --tb=short` -> 718 passed, 44 warning deprecation.
 - ERROR: Deploy production belum berhasil karena SSH ke VPS baru `187.77.116.139` timeout dari lokal dan GitHub Actions deploy gagal karena secret `SIDIX_VPS_USER/HOST` kosong. Live app masih menjalankan versi lama sampai akses deploy diperbaiki.
+### 2026-05-18
+- FIX: Mengubah GitHub Actions `brain_qa CI` menjadi core regression suite dengan timeout 12 menit agar CI tidak macet pada full runtime-heavy tests, sementara tetap menutup jalur produksi utama: OMNYX live regressions, memory, auto-tune, hygiene, Hafidz, Sanad, pattern, aspiration, dan self-test loop.
+- TEST: `python -m pytest` core regression suite sesuai workflow -> 195 passed, 4 warning FastAPI deprecation.
+- TEST: Full local suite sebelumnya tetap hijau: 718 passed, 44 warning; artefak runtime test di `brain/` dibersihkan dan tidak ikut commit.

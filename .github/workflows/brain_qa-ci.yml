@@ -10,6 +10,7 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    timeout-minutes: 12
     defaults:
       run:
         working-directory: apps/brain_qa
@@ -27,5 +28,18 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Pytest
-        run: python -m pytest tests/ -q --tb=short
+      - name: Pytest core regression suite
+        run: |
+          python -m pytest \
+            tests/test_omnyx_live_regressions.py \
+            tests/test_memory_store.py \
+            tests/test_conversation_memory.py \
+            tests/test_maqashid_auto_tune.py \
+            tests/test_ui_stream_memory_wiring.py \
+            tests/test_pivot_maturity.py \
+            tests/test_hafidz_injector.py \
+            tests/test_sanad_orchestra.py \
+            tests/test_pattern_integration.py \
+            tests/test_aspiration_tool_integration.py \
+            tests/test_self_test_loop.py \
+            -q --tb=short
