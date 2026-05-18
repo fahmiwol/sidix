@@ -12,17 +12,29 @@ import {
   UploadCloud, AlertTriangle, Cpu, Info,
   ChevronDown, Sparkles, Paperclip, Copy, Check, Trash2,
   FolderTree, ShieldCheck, Folder, Lock, LockOpen, MoreHorizontal,
-  LoaderCircle, Zap, BookOpen, ShieldAlert, Key,
+  LoaderCircle, Zap, BookOpen, ShieldAlert, Key, Shield,
   Users, Code2, Palette, Coffee, ExternalLink, User,
+  Terminal, Play, Bug, X,
+  Pin, PinOff, Download, FileDown,
+  BarChart3, List, ListOrdered, Quote, Code,
 } from 'lucide';
 
 import {
-  checkHealth, askStream, askHolisticStream, BRAIN_QA_BASE, listCorpus, uploadDocument, deleteDocument,
+  checkHealth, askStream, askHolistic, askHolisticStream, BRAIN_QA_BASE, listCorpus, uploadDocument, deleteDocument,
   triggerReindex, getReindexStatus, agentGenerate, submitFeedback, forgetAgentSession,
   agentBurst, agentTwoEyed, agentForesight, agentResurrect,
-  BrainQAError, BRAIN_QA_BASE,
+  runCode, debugCode,
+  createArtifact, getArtifact, listArtifacts, pinArtifact, unpinArtifact,
+  exportArtifact, createArtifactVersion, updateArtifact, deleteArtifact,
+  runDebate, getDebatePersonas,
+  createAgencyKit, getAgencyKitJob, listAgencyKitJobs,
+  createVoyagerTool, listVoyagerTools, getVoyagerTool, deleteVoyagerTool,
+  BrainQAError,
   type Persona, type CorpusDocument, type Citation, type HealthResponse,
-  type AskInferenceOpts, type QuotaInfo,
+  type AskInferenceOpts, type QuotaInfo, type SidixMode, type Artifact,
+  type DebateRequest, type DebateResult,
+  type AgencyKitRequest, type AgencyKitJob,
+  type VoyagerToolRequest, type VoyagerToolResult,
 } from './api';
 
 import { initWaitingRoom } from './waiting-room';
@@ -126,12 +138,194 @@ function initIcons() {
       UploadCloud, AlertTriangle, Cpu, Info,
       ChevronDown, Sparkles, Paperclip, Copy, Check, Trash2,
       FolderTree, ShieldCheck, Folder, Lock, LockOpen, MoreHorizontal,
-      LoaderCircle, Zap, BookOpen, ShieldAlert, Key,
+      LoaderCircle, Zap, BookOpen, ShieldAlert, Key, Shield,
       Users, Code2, Palette, Coffee, ExternalLink, User,
+      Terminal, Play, Bug, X,
+      BarChart3, List, ListOrdered, Quote, Code,
     },
   });
 }
 initIcons();
+
+// ════════════════════════════════════════════════════════════════════════
+// ARTIFACT GALLERY SIDEBAR
+// ════════════════════════════════════════════════════════════════════════
+
+const artifactGallery = document.getElementById('artifact-gallery') as HTMLDivElement | null;
+const btnToggleArtifacts = document.getElementById('btn-toggle-artifacts') as HTMLButtonElement | null;
+const btnCloseArtifacts = document.getElementById('btn-close-artifacts') as HTMLButtonElement | null;
+const artifactListEl = document.getElementById('artifact-list') as HTMLDivElement | null;
+const canvasPinBtn = document.getElementById('canvas-pin-btn') as HTMLButtonElement | null;
+const canvasUnpinBtn = document.getElementById('canvas-unpin-btn') as HTMLButtonElement | null;
+const canvasExportFormat = document.getElementById('canvas-export-format') as HTMLSelectElement | null;
+const canvasVersionSelect = document.getElementById('canvas-version-select') as HTMLSelectElement | null;
+
+let artifactGalleryVisible = false;
+let currentArtifactId: string | null = null;
+let artifactVersions: Map<string, Artifact[]> = new Map();
+
+function toggleArtifactGallery(force?: boolean) {
+  artifactGalleryVisible = force !== undefined ? force : !artifactGalleryVisible;
+  if (!artifactGallery) return;
+  if (artifactGalleryVisible) {
+    artifactGallery.classList.remove('hidden');
+    loadArtifactGallery();
+  } else {
+    artifactGallery.classList.add('hidden');
+  }
+  initIcons();
+}
+
+btnToggleArtifacts?.addEventListener('click', () => toggleArtifactGallery());
+btnCloseArtifacts?.addEventListener('click', () => toggleArtifactGallery(false));
+
+async function loadArtifactGallery() {
+  if (!artifactListEl) return;
+  try {
+    const artifacts = await listArtifacts();
+    artifactListEl.innerHTML = '';
+    if (!artifacts.length) {
+      artifactListEl.innerHTML = '<div class="text-xs text-parchment-500 text-center py-8">Belum ada artifact.</div>';
+      return;
+    }
+    for (const a of artifacts) {
+      const el = document.createElement('div');
+      el.className = `rounded-lg border px-3 py-2 cursor-pointer transition-colors ${
+        a.status === 'PINNED'
+          ? 'border-gold-500/40 bg-gold-500/10'
+          : 'border-warm-600/40 bg-warm-800/40 hover:bg-warm-700/50'
+      }`;
+      el.dataset.id = a.id;
+      const iconMap: Record<string, string> = {
+        CODE: 'code-2', DOCUMENT: 'file-text', NOTEBOOK: 'book-open',
+        IMAGE: 'image', WEB_PREVIEW: 'globe', AUDIO: 'audio', VIDEO: 'video', THREED: 'box',
+      };
+      const icon = iconMap[a.type] || 'file';
+      el.innerHTML = `
+        <div class="flex items-center gap-2">
+          <i data-lucide="${icon}" class="w-3.5 h-3.5 text-parchment-400 flex-shrink-0"></i>
+          <span class="text-xs font-medium text-parchment-200 truncate flex-1" title="${a.title}">${a.title}</span>
+          ${a.status === 'PINNED' ? '<i data-lucide="pin" class="w-3 h-3 text-gold-400 flex-shrink-0"></i>' : ''}
+        </div>
+        <div class="text-[10px] text-parchment-500 mt-0.5 truncate">${a.type} · v${a.version ?? 1}</div>
+      `;
+      el.addEventListener('click', () => loadArtifactIntoCanvas(a.id));
+      artifactListEl.appendChild(el);
+    }
+    initIcons();
+  } catch {
+    artifactListEl.innerHTML = '<div class="text-xs text-status-failed text-center py-8">Gagal memuat artifact.</div>';
+  }
+}
+
+async function loadArtifactIntoCanvas(id: string) {
+  try {
+    const a = await getArtifact(id);
+    currentArtifactId = a.id;
+    if (a.type === 'CODE' && canvasCodeInput) {
+      canvasCodeInput.value = a.content;
+      const lang = (a.metadata as any)?.language || 'python';
+      if (canvasLanguage) canvasLanguage.value = lang;
+      currentCode = a.content;
+      if (canvasOutput) canvasOutput.textContent = (a.metadata as any)?.output || '';
+      setCanvasStatus(`Loaded: ${a.title}`, 'idle');
+      updatePinButtons(a.status === 'PINNED');
+      updateVersionDropdown(a.id);
+      toggleCodeCanvas(true);
+    }
+  } catch (e) {
+    console.warn('[artifact] load failed:', e);
+  }
+}
+
+function updatePinButtons(isPinned: boolean) {
+  if (isPinned) {
+    canvasPinBtn?.classList.add('hidden');
+    canvasUnpinBtn?.classList.remove('hidden');
+  } else {
+    canvasPinBtn?.classList.remove('hidden');
+    canvasUnpinBtn?.classList.add('hidden');
+  }
+}
+
+async function updateVersionDropdown(artifactId: string) {
+  if (!canvasVersionSelect) return;
+  canvasVersionSelect.innerHTML = `<option value="" disabled selected>v1</option>`;
+}
+
+canvasPinBtn?.addEventListener('click', async () => {
+  if (!currentArtifactId) {
+    try {
+      const a = await createArtifact({
+        type: 'CODE',
+        title: `Code Canvas — ${canvasLanguage?.value || 'python'}`,
+        content: canvasCodeInput?.value || '',
+        metadata: { language: canvasLanguage?.value || 'python', output: canvasOutput?.textContent || '' },
+      });
+      currentArtifactId = a.id;
+      await pinArtifact(a.id);
+      updatePinButtons(true);
+      loadArtifactGallery();
+    } catch (e) {
+      setCanvasStatus('Pin failed', 'error');
+    }
+    return;
+  }
+  try {
+    await pinArtifact(currentArtifactId);
+    updatePinButtons(true);
+    loadArtifactGallery();
+  } catch (e) {
+    setCanvasStatus('Pin failed', 'error');
+  }
+});
+
+canvasUnpinBtn?.addEventListener('click', async () => {
+  if (!currentArtifactId) return;
+  try {
+    await unpinArtifact(currentArtifactId);
+    updatePinButtons(false);
+    loadArtifactGallery();
+  } catch (e) {
+    setCanvasStatus('Unpin failed', 'error');
+  }
+});
+
+canvasExportFormat?.addEventListener('change', async () => {
+  const format = canvasExportFormat.value;
+  if (!format || !currentArtifactId) {
+    setCanvasStatus('No artifact to export', 'error');
+    return;
+  }
+  try {
+    const result = await exportArtifact(currentArtifactId, format);
+    const blob = new Blob([result.data], { type: format === 'html' ? 'text/html' : format === 'json' ? 'application/json' : 'text/markdown' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `artifact-${currentArtifactId.slice(0, 8)}.${format}`;
+    a.click();
+    URL.revokeObjectURL(url);
+    setCanvasStatus(`Exported as .${format}`, 'success');
+  } catch (e) {
+    setCanvasStatus('Export failed', 'error');
+  } finally {
+    canvasExportFormat.value = '';
+  }
+});
+
+canvasVersionSelect?.addEventListener('change', async () => {
+  if (!currentArtifactId || !canvasVersionSelect.value) return;
+  try {
+    const newArtifact = await createArtifactVersion(currentArtifactId);
+    currentArtifactId = newArtifact.id;
+    updateVersionDropdown(newArtifact.id);
+    setCanvasStatus(`Version ${newArtifact.version} created`, 'success');
+    loadArtifactGallery();
+  } catch (e) {
+    setCanvasStatus('Version failed', 'error');
+  }
+});
 
 // ── Language Detection & i18n ─────────────────────────────────────────────────
 // Detect via browser locale + timezone (no IP call, instant)
@@ -1091,31 +1285,55 @@ chatInput?.addEventListener('keydown', (e) => {
 });
 sendBtn?.addEventListener('click', handleSend);
 
+// Sprint See & Hear (2026-05-01): Image upload for multimodal chat.
+const attachBtn = document.getElementById('attach-btn') as HTMLButtonElement | null;
+let pendingImagePath: string | null = null;
+
+attachBtn?.addEventListener('click', () => {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'image/*';
+  input.onchange = async () => {
+    const file = input.files?.[0];
+    if (!file) return;
+    try {
+      const { uploadImage } = await import('./api');
+      const result = await uploadImage(file);
+      pendingImagePath = result.path;
+      // Visual feedback: show image name in input placeholder
+      chatInput.placeholder = `📎 ${file.name} — ketik pertanyaan…`;
+      chatInput.classList.add('border-gold-500/40');
+    } catch (e) {
+      alert('Gagal upload gambar: ' + (e as Error).message);
+    }
+  };
+  input.click();
+});
+
 // ════════════════════════════════════════════════════════════════════════
 // SIDIX 2.0 SUPERMODEL — 3 Mode Buttons (Burst / Two-Eyes / Foresight)
 // ════════════════════════════════════════════════════════════════════════
 
-const modeBurstBtn     = document.getElementById('mode-burst') as HTMLButtonElement | null;
-const modeTwoEyedBtn   = document.getElementById('mode-twoeyed') as HTMLButtonElement | null;
-const modeForesightBtn = document.getElementById('mode-foresight') as HTMLButtonElement | null;
-const modeResurrectBtn = document.getElementById('mode-resurrect') as HTMLButtonElement | null;
-const modeHolisticBtn  = document.getElementById('mode-holistic') as HTMLButtonElement | null;
+const modeInstantBtn  = document.getElementById('mode-instant') as HTMLButtonElement | null;
+const modeThinkingBtn = document.getElementById('mode-thinking') as HTMLButtonElement | null;
+const modeAgentBtn    = document.getElementById('mode-agent') as HTMLButtonElement | null;
+const modeDeepBtn     = document.getElementById('mode-deep') as HTMLButtonElement | null;
 
 // UX-fix 2026-04-30: Mode buttons jadi sticky toggle state (bukan window.prompt popup).
 // Visi 1000 Bayangan default = Holistic ON. User toggle mode = ganti state, send berikut
 // pakai mode aktif. Empty input + click mode = visual feedback (hint), no popup browser.
-type ChatMode = 'classic' | 'holistic' | 'burst' | 'twoeyed' | 'foresight' | 'resurrect';
-let activeMode: ChatMode = 'holistic'; // default per visi 1000 bayangan
+type ChatMode = 'instant' | 'thinking' | 'agent' | 'deep_research';
+let activeMode: ChatMode = 'agent'; // default: Agent mode (Jurus Seribu Bayangan)
+setActiveMode('agent');
 
 function setActiveMode(mode: ChatMode) {
   activeMode = mode;
   // Visual highlight: gold ring untuk mode aktif
   const allModeBtns: Array<[HTMLButtonElement | null, ChatMode]> = [
-    [modeBurstBtn, 'burst'],
-    [modeTwoEyedBtn, 'twoeyed'],
-    [modeForesightBtn, 'foresight'],
-    [modeResurrectBtn, 'resurrect'],
-    [modeHolisticBtn, 'holistic'],
+    [modeInstantBtn, 'instant'],
+    [modeThinkingBtn, 'thinking'],
+    [modeAgentBtn, 'agent'],
+    [modeDeepBtn, 'deep_research'],
   ];
   for (const [btn, m] of allModeBtns) {
     if (!btn) continue;
@@ -1127,6 +1345,26 @@ function setActiveMode(mode: ChatMode) {
       btn.setAttribute('aria-pressed', 'false');
     }
   }
+}
+
+// ── Auto-mode detection: classifier ringan berbasis keyword ────────────────
+// Mode System 2026-05-07: deteksi intent dari query untuk auto-switch ke 4 mode baru
+// User tetap bisa override dengan klik tombol mode (sticky toggle)
+function detectIntentMode(query: string): ChatMode | null {
+  const q = query.toLowerCase();
+  // Deep Research: laporan komprehensif / riset mendalam
+  if (/(\blaporan\b|\breport\b|\banalisis\s+menyeluruh\b|\bdeep\s+research\b|\briset\s+komprehensif\b|\bdue\s+diligence\b|\bliterature\s+review\b|\btinjauan\s+pustaka\b|\bbenchmark\b|\bkomparatif\s+lengkap\b|\bmeta.?(analysis|review)\b|\bekstensif\b|\bjurnal\b|\bpaper\b|\breferensi\b.*\b(banyak|lengkap)\b|\bsumber\b.*\b(terpercaya|primer)\b)/.test(q)) {
+    return 'deep_research';
+  }
+  // Thinking: coding / problem solving / explanation
+  if (/(\bcode\b|\bcoding\b|\bprogram\b|\bprogramming\b|\bbug\b|\bdebug\b|\bfunction\b|\bscript\b|\bapi\b|\bendpoint\b|\broute\b|\bfrontend\b|\bbackend\b|\bdatabase\b|\bquery\b|\bsql\b|\bpython\b|\bjavascript\b|\btypescript\b|\breact\b|\bnode\.?js\b|\bhtml\b|\bcss\b|\bdeploy\b|\bbuild\b|\berror\b|\bexception\b|\bstacktrace\b|\bfix\b.*\b(code|bug|error)\b|\bbuat\b.*\b(website|app|program|bot)\b|\bjelaskan\b|\bcara\s+kerja\b|\bbagaimana\b|\bkenapa\b|\bmengapa\b|\bapa\s+itu\b|\bdefinisi\b|\bkonsep\b|\brumus\b|\bhitung\b|\bsolve\b)/.test(q)) {
+    return 'thinking';
+  }
+  // Instant: greeting / very short / simple factual
+  if (/^(halo|hai|hi|hello|hey|selamat\s+(pagi|siang|sore|malam)|apa\s+kabar|terima\s+kasih|thanks|makasih|oke|ok|baik|sampai\s+jumpa|dadah|bye)\b/.test(q) || q.length < 25) {
+    return 'instant';
+  }
+  return null; // Tidak ada match kuat → gunakan activeMode yang user pilih
 }
 
 function getCurrentInput(): string | null {
@@ -1154,17 +1392,9 @@ function appendThinkingPlaceholder(label: string): HTMLDivElement {
   return wrap;
 }
 
-// 🌟 Sprint Α: Holistic Mode — Jurus Seribu Bayangan (multi-source paralel + SSE streaming)
-modeHolisticBtn?.addEventListener('click', async () => {
-  const question = getInputOrPrompt(
-    '🌟 Jurus Seribu Bayangan (Holistic)',
-    'Mengerahkan SEMUA resource paralel: web search + knowledge base + semantic embedding + 5 persona research + tools simultan. Sanad cross-verify multi-source. Cognitive synthesizer (neutral) merge jadi 1 jawaban with attribution. Multi-perspective default.',
-  );
-  if (!question) return;
-
-  appendMessage('user', question);
-  if (chatInput) { chatInput.value = ''; chatInput.dispatchEvent(new Event('input')); }
-
+// 🤖 Agent Mode — Jurus Seribu Bayangan (multi-source paralel + SSE streaming)
+// Extracted: doHolistic handles the actual multi-source inference
+async function doHolistic(question: string, mode: SidixMode = 'agent') {
   // Live progress card — show 8 parallel sources visualized real-time
   // Sprint UX-fix 2026-04-30: visi bos = SEMUA paralel sekaligus, bukan sequential
   const progressWrap = document.createElement('div');
@@ -1328,149 +1558,173 @@ modeHolisticBtn?.addEventListener('click', async () => {
   };
 
   try {
-    await askHolisticStream(question, persona, {
-      onStart: (_q, outputType) => {
-        addProgressLine(`Query received${outputType ? ` (output: ${outputType})` : ''}`);
-      },
-      onOrchestratorStart: () => {
-        addProgressLine('Mengerahkan 8 sumber paralel sekaligus...');
-      },
-      onSourceComplete: (source, success, latencyMs) => {
-        // Update chip visual real-time (jurus 1000 bayangan = paralel state visible)
-        updateChip(source, success, latencyMs);
-        // Log audit (low-prominence, di bawah grid)
-        const labels: Record<string, string> = {
-          web: '🌐 web_search (DDG + Wikipedia)',
-          corpus: '📚 corpus BM25',
-          dense: '🧬 dense embedding',
-          persona_fanout: '👥 5 persona Ollama',
-          tools: '🛠 tool registry',
-        };
-        const label = labels[source] || source;
-        addProgressLine(`${label} ${success ? '✓' : '✗'} (${(latencyMs / 1000).toFixed(1)}s)`, success ? 'ok' : 'fail');
-      },
-      onOrchestratorDone: (n, totalMs) => {
-        if (metaEl) {
-          metaEl.classList.remove('hidden');
-          metaEl.textContent = `🌟 ${n} sumber sukses paralel · total ${(totalMs / 1000).toFixed(1)}s · cognitive synthesizer merging...`;
-        }
-        addProgressLine(`Orchestrator done: ${n}/5 sources (${(totalMs / 1000).toFixed(1)}s)`, 'ok');
-      },
-      onSynthesisStart: () => addProgressLine('Cognitive synthesizer merging...'),
-      onToken: (text) => {
-        fullAnswer += text;
-        answerEl.textContent = fullAnswer;
-        if (chatMessages) chatMessages.scrollTop = chatMessages.scrollHeight;
-      },
-      onToolInvoke: (tool, message) => addProgressLine(`🛠 ${tool}: ${message}`),
-      onAttachment: (att) => {
-        addProgressLine(`📎 Attachment received: ${att.type}`, 'ok');
-        renderAttachment(att);
-      },
-      onToolError: (tool, error) => addProgressLine(`Tool ${tool} error: ${error}`, 'fail'),
-      onDone: (meta) => {
-        clearInterval(elapsedTimer);
-        addProgressLine(
-          `Done: confidence=${meta.confidence}, ${meta.nSources} sources, method=${meta.method}, ${(meta.durationMs / 1000).toFixed(1)}s total`,
-          'ok',
+    addProgressLine('Mengerahkan 8 sumber paralel sekaligus...');
+
+    // Try streaming first; fall back to non-streaming (chat_holistic_stream not yet on server)
+    let usedStream = false;
+    try {
+      await askHolisticStream(question, persona, {
+        onStart: (_q, outputType) => {
+          addProgressLine(`Query received${outputType ? ` (output: ${outputType})` : ''}`);
+        },
+        onOrchestratorStart: () => {
+          addProgressLine('Orchestrator starting...');
+        },
+        onSourceComplete: (source, success, latencyMs) => {
+          updateChip(source, success, latencyMs);
+          const labels: Record<string, string> = {
+            web: '🌐 web_search (DDG)',
+            corpus: '📚 corpus BM25',
+            dense: '🧬 dense embedding',
+            persona_fanout: '👥 5 persona Ollama',
+            tools: '🛠 tool registry',
+          };
+          addProgressLine(`${labels[source] || source} ${success ? '✓' : '✗'} (${(latencyMs / 1000).toFixed(1)}s)`, success ? 'ok' : 'fail');
+        },
+        onOrchestratorDone: (n, totalMs) => {
+          if (metaEl) {
+            metaEl.classList.remove('hidden');
+            metaEl.textContent = `🌟 ${n} sumber sukses paralel · total ${(totalMs / 1000).toFixed(1)}s · cognitive synthesizer merging...`;
+          }
+          addProgressLine(`Orchestrator done: ${n}/5 sources (${(totalMs / 1000).toFixed(1)}s)`, 'ok');
+        },
+        onSynthesisStart: () => addProgressLine('Cognitive synthesizer merging...'),
+        onToken: (text) => {
+          fullAnswer += text;
+          answerEl.textContent = fullAnswer;
+          if (chatMessages) chatMessages.scrollTop = chatMessages.scrollHeight;
+        },
+        onToolInvoke: (tool, message) => addProgressLine(`🛠 ${tool}: ${message}`),
+        onAttachment: (att) => { addProgressLine(`📎 ${att.type}`, 'ok'); renderAttachment(att); },
+        onToolError: (tool, error) => addProgressLine(`Tool ${tool} error: ${error}`, 'fail'),
+        onDone: (meta) => {
+          clearInterval(elapsedTimer);
+          sendBtn.disabled = false;
+          if (meta.conversationId) {
+            setCurrentConversationId(meta.conversationId);
+          }
+          addProgressLine(`Done: confidence=${meta.confidence}, ${meta.nSources} sources, ${(meta.durationMs / 1000).toFixed(1)}s`, 'ok');
+          usedStream = true;
+        },
+        onError: (msg) => {
+          // If streaming fails (404 / not implemented), fall through to non-streaming
+          addProgressLine(`Stream tidak tersedia, beralih ke mode sinkron...`);
+        },
+      }, undefined, { conversationId: getCurrentConversationId() || undefined, mode });
+    } catch { /* streaming not available */ }
+
+    // Non-streaming fallback (primary path until chat_holistic_stream is live)
+    if (!usedStream && !fullAnswer) {
+      addProgressLine('Synthesizing via /agent/chat_holistic...');
+      const result = await askHolistic(question, persona, undefined, {
+        image_path: pendingImagePath || undefined,
+        // Sprint J: pass conversation_id so backend injects prior turns into LLM context
+        conversationId: getCurrentConversationId() || undefined,
+        mode,
+      });
+
+      // Sprint J: persist conversation_id from response for next request
+      if (result.conversation_id) {
+        setCurrentConversationId(result.conversation_id);
+      }
+
+      // Map citations → sources for chip display
+      // Fix 2026-05-01: backend returns `citations` (not `sources_used`)
+      const _citations = (result.citations || []) as Array<{source?: string}>;
+      const _sources = _citations.map(c => c.source || '').filter(Boolean);
+      const srcMap: Record<string, string> = {
+        web_search: 'web', corpus: 'corpus', dense_index: 'dense',
+        persona_fanout_5: 'persona_fanout', tools_hint: 'tools',
+        greeting: 'greeting',
+      };
+      const avgMs = Math.floor((result.duration_ms || 2000) / Math.max(_sources.length, 1));
+      for (const src of _sources) {
+        updateChip(srcMap[src] || src, true, avgMs);
+      }
+
+      if (metaEl) {
+        metaEl.classList.remove('hidden');
+        metaEl.textContent = `🌟 ${_sources.length} sumber · ${((result.duration_ms || 0) / 1000).toFixed(1)}s · ${result.method || 'holistic'}`;
+      }
+
+      // UX-fix 2026-05-01: greeting fast-path — hide chip grid (no tool calls = no chips)
+      if (_sources.length === 1 && _sources[0] === 'greeting' && gridEl) {
+        gridEl.classList.add('hidden');
+      }
+
+      fullAnswer = result.answer || '';
+      answerEl.textContent = fullAnswer;
+      if (chatMessages) chatMessages.scrollTop = chatMessages.scrollHeight;
+
+      // Maqashid Auto-Tune shield
+      if (progressBubble) {
+        attachMaqashidShield(
+          progressBubble,
+          result.maqashid_passed,
+          result.maqashid_violations,
+          result.maqashid_score,
         );
-      },
-      onError: (msg) => {
-        clearInterval(elapsedTimer);
-        addProgressLine(`Error: ${msg}`, 'fail');
-      },
-    });
+      }
+
+      clearInterval(elapsedTimer);
+      sendBtn.disabled = false;
+      addProgressLine(
+        `Done: confidence=${result.confidence || '?'}, ${(result.duration_ms || 0) / 1000}s total`,
+        'ok',
+      );
+    }
+    // Code Canvas: auto-detect code blocks from AI response
+    populateCodeCanvas(fullAnswer);
+
+    // Auto-suggest Document Studio / Data Notebook
+    const tableData2 = parseMarkdownTable(fullAnswer);
+    if (tableData2 && progressBubble) {
+      addSuggestionChip(progressBubble, '📊 Buka di Notebook', () => {
+        populateDataNotebook(tableData2);
+        showRightPanel('notebook');
+      });
+    }
+    if (fullAnswer.length > 500 && !fullAnswer.includes('```') && !tableData2 && progressBubble) {
+      addSuggestionChip(progressBubble, '📝 Buka di Studio', () => {
+        populateDocumentStudio(fullAnswer);
+        showRightPanel('studio');
+      });
+    }
   } catch (e) {
     clearInterval(elapsedTimer);
-    addProgressLine(`Exception: ${(e as Error).message}`, 'fail');
+    sendBtn.disabled = false;
+    addProgressLine(`Error: ${(e as Error).message}`, 'fail');
   }
+
+}
+
+// UX-fix 2026-05-01: Mode buttons jadi TOGGLE state.
+// Click empty input → set activeMode + visual highlight (NO popup).
+// Click + textarea ada teks → set mode + auto-submit.
+// handleSend dispatch by activeMode.
+
+modeInstantBtn?.addEventListener('click', () => {
+  setActiveMode('instant');
+  const v = getCurrentInput();
+  if (v) handleSend(); // auto-submit kalau ada teks
 });
 
-modeBurstBtn?.addEventListener('click', async () => {
-  const prompt = getInputOrPrompt(
-    '🌌 Burst Mode',
-    'Generate 6 ide divergen lalu Pareto-pilih 2 terbaik, synthesize jadi 1 jawaban kreatif. Cocok untuk brainstorm, design choices, strategic positioning.',
-  );
-  if (!prompt) return;
-  appendMessage('user', prompt);
-  if (chatInput) { chatInput.value = ''; chatInput.dispatchEvent(new Event('input')); }
-  const thinking = appendThinkingPlaceholder('🌌 Burst — exploring 3 angles...');
-  try {
-    const r = await agentBurst(prompt, { n: 3, topK: 2 });
-    thinking.remove();
-    const winnersList = r.winners.map(w =>
-      `**${w.angle}** (score ${w.score.total.toFixed(2)})`
-    ).join(' · ');
-    const out = `${r.final}\n\n_— Burst pipeline: ${r.n_ok}/${r.n_candidates} candidates, top angles: ${winnersList}_`;
-    appendMessage('ai', out);
-  } catch (e) {
-    thinking.remove();
-    appendMessage('ai', `⚠️ Burst gagal: ${(e as Error).message}`);
-  }
+modeThinkingBtn?.addEventListener('click', () => {
+  setActiveMode('thinking');
+  const v = getCurrentInput();
+  if (v) handleSend();
 });
 
-modeTwoEyedBtn?.addEventListener('click', async () => {
-  const prompt = getInputOrPrompt(
-    '👁 Two-Eyed Seeing',
-    'Analisis dual perspective: scientific (data, mekanisme, falsifiability) + maqashid (etis, hikmah, dampak komunal) → sintesis. Cocok untuk pertanyaan etis/strategis.',
-  );
-  if (!prompt) return;
-  appendMessage('user', prompt);
-  if (chatInput) { chatInput.value = ''; chatInput.dispatchEvent(new Event('input')); }
-  const thinking = appendThinkingPlaceholder('👁 Two-Eyed — running dual analysis...');
-  try {
-    const r = await agentTwoEyed(prompt);
-    thinking.remove();
-    const out = [
-      `### 🔬 Mata Scientific\n${r.scientific_eye.text || '(gagal)'}`,
-      `### 🌿 Mata Maqashid\n${r.maqashid_eye.text || '(gagal)'}`,
-      `### 🤝 Sintesis\n${r.synthesis.text || '(gagal)'}`,
-    ].join('\n\n');
-    appendMessage('ai', out);
-  } catch (e) {
-    thinking.remove();
-    appendMessage('ai', `⚠️ Two-Eyed gagal: ${(e as Error).message}`);
-  }
+modeAgentBtn?.addEventListener('click', () => {
+  setActiveMode('agent');
+  const v = getCurrentInput();
+  if (v) handleSend();
 });
 
-modeForesightBtn?.addEventListener('click', async () => {
-  const topic = getInputOrPrompt(
-    '🔮 Foresight',
-    'Prediksi terstruktur: scan web+corpus → leading/lagging signals → 3 skenario (base/bull/bear) → narasi visioner. Cocok untuk strategi, market trend, technology forecast.',
-  );
-  if (!topic) return;
-  appendMessage('user', topic);
-  if (chatInput) { chatInput.value = ''; chatInput.dispatchEvent(new Event('input')); }
-  const thinking = appendThinkingPlaceholder('🔮 Foresight — scanning signals + projecting scenarios...');
-  try {
-    const r = await agentForesight(topic, { horizon: '1y' });
-    thinking.remove();
-    const parts = [`### 🔮 Foresight: ${r.topic} (horizon ${r.horizon})\n\n${r.final}`];
-    if (r.scenarios) parts.push(`---\n\n### Skenario\n${r.scenarios}`);
-    appendMessage('ai', parts.join('\n\n'));
-  } catch (e) {
-    thinking.remove();
-    appendMessage('ai', `⚠️ Foresight gagal: ${(e as Error).message}`);
-  }
-});
-
-modeResurrectBtn?.addEventListener('click', async () => {
-  const topic = getInputOrPrompt(
-    '🌿 Hidden Knowledge Resurrection',
-    'Surface ide/tokoh/metode yang DULU brilliant tapi sekarang overlooked → 2-3 hidden gem → bridge ke problem kamu. Cocok untuk research, fresh angle, mental model.',
-  );
-  if (!topic) return;
-  appendMessage('user', topic);
-  if (chatInput) { chatInput.value = ''; chatInput.dispatchEvent(new Event('input')); }
-  const thinking = appendThinkingPlaceholder('🌿 Resurrect — digging overlooked gems...');
-  try {
-    const r = await agentResurrect(topic, { nGems: 3 });
-    thinking.remove();
-    appendMessage('ai', r.final);
-  } catch (e) {
-    thinking.remove();
-    appendMessage('ai', `⚠️ Resurrect gagal: ${(e as Error).message}`);
-  }
+modeDeepBtn?.addEventListener('click', () => {
+  setActiveMode('deep_research');
+  const v = getCurrentInput();
+  if (v) handleSend();
 });
 
 // ── Help modal (Bantuan) ─────────────────────────────────────────────────
@@ -1671,7 +1925,7 @@ function appendMessage(
     });
   }
 
-  // Copy button (AI only)
+  // Copy button + Maqashid shield (AI only)
   if (role === 'ai') {
     const copyBtn = document.createElement('button');
     copyBtn.className =
@@ -1689,6 +1943,9 @@ function appendMessage(
       });
     });
     wrap.appendChild(copyBtn);
+
+    // Neutral shield (will be updated if metadata arrives)
+    attachMaqashidShield(bubble);
   }
 
   // Citations (skip text_to_image — sudah di-render sebagai <img> di atas)
@@ -1746,6 +2003,39 @@ function appendError(message: string) {
   initIcons();
 }
 
+// ── Maqashid Auto-Tune Shield ──────────────────────────────────────────────
+
+function attachMaqashidShield(
+  bubble: HTMLElement,
+  passed?: boolean,
+  violations?: string[],
+  score?: number,
+) {
+  // Remove existing shield if any
+  const existing = bubble.querySelector('.maqashid-shield');
+  if (existing) existing.remove();
+
+  const shieldWrap = document.createElement('div');
+  shieldWrap.className = 'maqashid-shield absolute -left-7 top-2';
+
+  let colorClass = 'text-parchment-600';
+  let title = 'Maqashid Auto-Tune: neutral';
+
+  if (passed === true) {
+    colorClass = 'text-emerald-400';
+    title = `Maqashid Auto-Tune: passed (${(score ?? 0).toFixed(2)})`;
+  } else if (passed === false && violations && violations.length > 0) {
+    colorClass = 'text-amber-400';
+    title = `Maqashid Auto-Tune: warning (${(score ?? 0).toFixed(2)})\n• ${violations.join('\n• ')}`;
+  }
+
+  shieldWrap.innerHTML = `<i data-lucide="shield" class="w-4 h-4 ${colorClass}"></i>`;
+  shieldWrap.title = title;
+
+  bubble.appendChild(shieldWrap);
+  initIcons();
+}
+
 function extractEpistemicTag(text: string): { tag: 'FACT' | 'OPINION' | 'UNKNOWN' | 'SPECULATION' | null; stripped: string } {
   const m = text.match(/^\s*\[(FACT|OPINION|UNKNOWN|SPECULATION)\]\s*/);
   if (!m) return { tag: null, stripped: text };
@@ -1756,7 +2046,7 @@ function extractEpistemicTag(text: string): { tag: 'FACT' | 'OPINION' | 'UNKNOWN
 
 async function handleSend() {
   const question = chatInput.value.trim();
-  if (!question) return;
+  if (!question && !pendingImagePath) return;
 
   // ── Onboarding intercept: jawaban interview ────────────────────────────────
   if (isLoggedIn() && !isOnboarded() && onboardingStep > 0) {
@@ -1780,11 +2070,27 @@ async function handleSend() {
     // count ≤ FREE_CHAT_LIMIT: chat gratis, lanjut normal
   }
 
+
   chatInput.value = '';
   chatInput.style.height = 'auto';
   sendBtn.disabled = true;
+  // Sprint See & Hear: reset pending image after send
+  pendingImagePath = null;
+  chatInput.placeholder = 'Tanya SIDIX…';
+  chatInput.classList.remove('border-gold-500/40');
 
   appendMessage('user', question);
+
+  // ── Mode System routing (2026-05-07) ───────────────────────────────────────
+  if (activeMode === 'agent') {
+    await doHolistic(question, 'agent');
+    return;
+  }
+  if (activeMode === 'deep_research') {
+    await doHolistic(question, 'deep_research');
+    return;
+  }
+  // instant & thinking use the classic stream path below (with mode param)
 
   // Thinking indicator — dengan hint khusus kalau minta gambar + REAL-TIME TIMER
   const q_lower = question.toLowerCase();
@@ -1818,8 +2124,8 @@ async function handleSend() {
     // Mode klasik = single-source ReAct; tampilkan label NETRAL + arahkan ke Holistic
     // kalau user mau multi-source paralel (jurus 1000 bayangan).
     if (isImageIntent) return;
-    if (elapsed > 30) labelEl.textContent = 'Berpikir lama — coba klik 🌟 Holistic untuk multi-source paralel';
-    else labelEl.textContent = 'Berpikir... (mode klasik · single-source)';
+    if (elapsed > 30) labelEl.textContent = 'Berpikir lama — coba klik 🤖 Agent untuk multi-source paralel';
+    else labelEl.textContent = `Berpikir... (mode ${activeMode} · ${activeMode === 'instant' ? 'fast' : 'single-source'})`;
   }, 100);
   const stopThinkingTimer = () => clearInterval(thinkingTimerInterval);
 
@@ -1861,6 +2167,7 @@ async function handleSend() {
   const convId = getCurrentConversationId();
   await askStream(question, persona, 5, {
     conversationId: convId ?? undefined,
+    mode: activeMode,
     onMeta: (meta) => {
       if (meta.session_id) setLastSessionId(meta.session_id);
       // Update quota badge dari meta event
@@ -1978,6 +2285,24 @@ async function handleSend() {
         streamBubble.appendChild(citeRow);
         initIcons();
       }
+      // Code Canvas: auto-detect code blocks from AI response
+      populateCodeCanvas(fullText);
+
+      // Auto-suggest Document Studio / Data Notebook
+      const tableData = parseMarkdownTable(fullText);
+      if (tableData && streamBubble) {
+        addSuggestionChip(streamBubble, '📊 Buka di Notebook', () => {
+          populateDataNotebook(tableData);
+          showRightPanel('notebook');
+        });
+      }
+      if (fullText.length > 500 && !fullText.includes('```') && !tableData && streamBubble) {
+        addSuggestionChip(streamBubble, '📝 Buka di Studio', () => {
+          populateDocumentStudio(fullText);
+          showRightPanel('studio');
+        });
+      }
+
       // Latency footer — kasih tau user durasi total (transparency + UX feel)
       const latencySec = (totalMs / 1000).toFixed(1);
       const speedHint = cacheHit
@@ -2009,6 +2334,18 @@ async function handleSend() {
       const extrasHTML = extras.length > 0 ? `<span>·</span>${extras.join('<span>·</span>')}` : '';
       latencyRow.innerHTML = `<span style="font-variant-numeric: tabular-nums;">⏱ ${latencySec}s</span><span>·</span><span>${speedHint}</span>${extrasHTML}`;
       streamBubble.appendChild(latencyRow);
+
+      // Maqashid Auto-Tune shield
+      const _meta = meta as Record<string, unknown> | undefined;
+      if (_meta && (typeof _meta.maqashid_passed === 'boolean')) {
+        attachMaqashidShield(
+          streamBubble,
+          _meta.maqashid_passed as boolean,
+          (_meta.maqashid_violations as string[]) || [],
+          (_meta.maqashid_score as number) || 0,
+        );
+      }
+
       // SIDIX 2.0: hide confidence & feedback untuk agent mode (conversational)
       // Metadata epistemic hanya ditampilkan di strict_mode / research — nanti bisa
       // di-enable via flag dari backend. Untuk sekarang, biarkan conversation bersih.
@@ -2895,7 +3232,8 @@ async function refreshModelTabPanel() {
       }
       if (testMeta) testMeta.classList.add('hidden');
       try {
-        const r = await agentGenerate(prompt, { max_tokens: 256 });
+        const persona = (personaSel?.value ?? 'AYMAN') as Persona;
+        const r = await agentGenerate(prompt, { max_tokens: 256, persona });
         if (testMeta) {
           testMeta.classList.remove('hidden');
           testMeta.textContent = `mode=${r.mode} · model=${r.model} · ${r.duration_ms} ms`;
@@ -2923,5 +3261,829 @@ $('reset-workspace-btn')?.addEventListener('click', () => {
   }
 });
 
+// ════════════════════════════════════════════════════════════════════════
+// RIGHT PANEL SYSTEM — Code Canvas + Document Studio + Data Notebook
+// ════════════════════════════════════════════════════════════════════════
+
+type RightPanel = 'none' | 'code' | 'studio' | 'notebook';
+let activeRightPanel: RightPanel = 'none';
+
+const documentStudio = document.getElementById('document-studio') as HTMLDivElement | null;
+const dataNotebook = document.getElementById('data-notebook') as HTMLDivElement | null;
+
+function showRightPanel(panel: RightPanel) {
+  activeRightPanel = panel;
+  codeCanvas?.classList.add('hidden');
+  documentStudio?.classList.add('hidden');
+  dataNotebook?.classList.add('hidden');
+  if (chatPane) {
+    chatPane.style.width = '100%';
+    chatPane.classList.remove('hidden');
+  }
+  if (panel === 'none') return;
+  const el = panel === 'code' ? codeCanvas : panel === 'studio' ? documentStudio : dataNotebook;
+  if (!el || !chatPane) return;
+  el.classList.remove('hidden');
+  if (window.innerWidth < 768) {
+    chatPane.classList.add('hidden');
+    el.style.width = '100%';
+  } else {
+    chatPane.classList.remove('hidden');
+    chatPane.style.width = '60%';
+    el.style.width = '40%';
+  }
+  initIcons();
+}
+
+function addSuggestionChip(container: HTMLElement, label: string, onClick: () => void) {
+  const chip = document.createElement('button');
+  chip.className = 'mt-2 mr-2 text-[11px] px-2.5 py-1 rounded-md border border-gold-500/30 text-gold-400 hover:bg-gold-500/10 transition-colors inline-flex items-center gap-1';
+  chip.textContent = label;
+  chip.addEventListener('click', onClick);
+  container.appendChild(chip);
+}
+
+// ── Document Studio ──────────────────────────────────────────────────────────
+let tiptapEditor: any = null;
+
+function initTipTapEditor() {
+  const el = document.getElementById('studio-editor');
+  if (!el) return;
+  const win = window as any;
+  let Editor: any, StarterKit: any;
+  if (win.tiptap?.Editor) Editor = win.tiptap.Editor;
+  else if (win.TiptapEditor) Editor = win.TiptapEditor;
+  if (win.TiptapStarterKit?.default) StarterKit = win.TiptapStarterKit.default;
+  else if (win.TiptapStarterKit) StarterKit = win.TiptapStarterKit;
+  else if (win.tiptap?.StarterKit) StarterKit = win.tiptap.StarterKit;
+  if (Editor && StarterKit) {
+    try {
+      tiptapEditor = new Editor({ element: el, extensions: [StarterKit], content: '<p>Mulai menulis di sini...</p>' });
+      return;
+    } catch (e) { console.warn('[SIDIX] TipTap init failed, falling back:', e); }
+  }
+  el.contentEditable = 'true';
+  el.innerHTML = '<p>Mulai menulis di sini...</p>';
+  tiptapEditor = null;
+}
+
+function execStudioCommand(cmd: string) {
+  if (tiptapEditor) {
+    const chain = tiptapEditor.chain().focus();
+    switch (cmd) {
+      case 'bold': chain.toggleBold().run(); break;
+      case 'italic': chain.toggleItalic().run(); break;
+      case 'h1': chain.toggleHeading({ level: 1 }).run(); break;
+      case 'h2': chain.toggleHeading({ level: 2 }).run(); break;
+      case 'h3': chain.toggleHeading({ level: 3 }).run(); break;
+      case 'bulletList': chain.toggleBulletList().run(); break;
+      case 'orderedList': chain.toggleOrderedList().run(); break;
+      case 'blockquote': chain.toggleBlockquote().run(); break;
+      case 'codeBlock': chain.toggleCodeBlock().run(); break;
+    }
+  } else {
+    const el = document.getElementById('studio-editor');
+    if (!el) return;
+    el.focus();
+    switch (cmd) {
+      case 'bold': document.execCommand('bold'); break;
+      case 'italic': document.execCommand('italic'); break;
+      case 'h1': document.execCommand('formatBlock', false, '<h1>'); break;
+      case 'h2': document.execCommand('formatBlock', false, '<h2>'); break;
+      case 'h3': document.execCommand('formatBlock', false, '<h3>'); break;
+      case 'bulletList': document.execCommand('insertUnorderedList'); break;
+      case 'orderedList': document.execCommand('insertOrderedList'); break;
+      case 'blockquote': document.execCommand('formatBlock', false, '<blockquote>'); break;
+      case 'codeBlock': document.execCommand('formatBlock', false, '<pre>'); break;
+    }
+  }
+}
+
+function populateDocumentStudio(text: string) {
+  const html = text.split('\n\n').map(p => `<p>${p.replace(/\n/g, '<br>')}</p>`).join('');
+  if (tiptapEditor) { tiptapEditor.commands.setContent(html); }
+  else { const el = document.getElementById('studio-editor'); if (el) el.innerHTML = html; }
+}
+
+function htmlToMarkdown(html: string): string {
+  const tmp = document.createElement('div');
+  tmp.innerHTML = html;
+  let md = '';
+  tmp.childNodes.forEach(node => {
+    if (node.nodeName === 'P') md += (node.textContent || '') + '\n\n';
+    else if (node.nodeName.match(/^H[1-6]$/)) md += '#'.repeat(parseInt(node.nodeName[1])) + ' ' + (node.textContent || '') + '\n\n';
+    else if (node.nodeName === 'UL') { node.childNodes.forEach(li => { if (li.nodeName === 'LI') md += '- ' + (li.textContent || '') + '\n'; }); md += '\n'; }
+    else if (node.nodeName === 'OL') { let i = 1; node.childNodes.forEach(li => { if (li.nodeName === 'LI') md += `${i++}. ` + (li.textContent || '') + '\n'; }); md += '\n'; }
+    else if (node.nodeName === 'BLOCKQUOTE') md += '> ' + (node.textContent || '').replace(/\n/g, '\n> ') + '\n\n';
+    else if (node.nodeName === 'PRE') md += '```\n' + (node.textContent || '') + '\n```\n\n';
+    else if (node.nodeName === 'DIV') md += (node.textContent || '') + '\n\n';
+  });
+  return md.trim();
+}
+
+function downloadBlob(blob: Blob, filename: string) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+async function handleStudioSave() {
+  const el = document.getElementById('studio-editor');
+  if (!el) return;
+  const title = 'Studio Document ' + new Date().toLocaleString('id-ID');
+  try {
+    const res = await fetch(`${BRAIN_QA_BASE}/app/artifact/create`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ title, type: 'DOCUMENT', content: el.innerHTML }),
+    });
+    if (!res.ok) throw new Error(`${res.status}`);
+    alert('Dokumen disimpan sebagai artifact.');
+  } catch (e) {
+    alert('Gagal menyimpan: ' + (e as Error).message);
+  }
+}
+
+function handleStudioExport(format: 'md' | 'html') {
+  const el = document.getElementById('studio-editor');
+  if (!el) return;
+  let content = '', filename = 'studio-export', mime = 'text/plain';
+  if (format === 'md') { content = htmlToMarkdown(el.innerHTML); filename += '.md'; mime = 'text/markdown'; }
+  else { content = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>Document Studio Export</title></head><body style="font-family:system-ui,sans-serif;max-width:720px;margin:40px auto;line-height:1.6;color:#333;">${el.innerHTML}</body></html>`; filename += '.html'; mime = 'text/html'; }
+  downloadBlob(new Blob([content], { type: mime }), filename);
+}
+
+// ── Data Notebook ────────────────────────────────────────────────────────────
+let currentNotebookData: { headers: string[]; rows: string[][] } | null = null;
+let currentSortCol = -1;
+let currentSortAsc = true;
+
+function parseMarkdownTable(text: string): { headers: string[]; rows: string[][] } | null {
+  const lines = text.split('\n').map(l => l.trim()).filter(l => l.startsWith('|'));
+  if (lines.length < 2) return null;
+  const rows = lines.map(line => line.split('|').map(c => c.trim()).filter(c => c.length > 0));
+  if (rows.length < 2) return null;
+  const headers = rows[0];
+  const dataRows = rows.slice(1).filter(r => !r.every(c => /^[-:]+$/.test(c)));
+  return { headers, rows: dataRows };
+}
+
+function renderTable(data: { headers: string[]; rows: string[][] }, container: HTMLElement) {
+  currentNotebookData = data;
+  const table = document.createElement('table');
+  table.className = 'w-full text-xs text-parchment-200 border-collapse';
+  const thead = document.createElement('thead');
+  thead.innerHTML = `<tr class="border-b border-warm-600/50">${data.headers.map((h, i) => `<th class="text-left px-2 py-2 text-parchment-400 font-semibold cursor-pointer hover:text-gold-400 select-none" data-col="${i}">${h} <span class="sort-indicator text-[9px] opacity-50">⇅</span></th>`).join('')}</tr>`;
+  const tbody = document.createElement('tbody');
+  function renderBody(rows: string[][]) {
+    tbody.innerHTML = rows.map(row => `<tr class="border-b border-warm-600/20 hover:bg-warm-800/40 transition-colors">${row.map(cell => `<td class="px-2 py-1.5">${cell}</td>`).join('')}</tr>`).join('');
+  }
+  renderBody(data.rows);
+  table.appendChild(thead); table.appendChild(tbody);
+  container.innerHTML = ''; container.appendChild(table);
+  thead.querySelectorAll('th').forEach((th, idx) => {
+    th.addEventListener('click', () => {
+      currentSortAsc = currentSortCol === idx ? !currentSortAsc : true;
+      currentSortCol = idx;
+      thead.querySelectorAll('.sort-indicator').forEach((el, i) => { (el as HTMLElement).textContent = i === idx ? (currentSortAsc ? '▲' : '▼') : '⇅'; (el as HTMLElement).style.opacity = i === idx ? '1' : '0.5'; });
+      const sorted = [...data.rows].sort((a, b) => {
+        const av = a[idx] || '', bv = b[idx] || '';
+        const an = parseFloat(av.replace(/[^0-9.-]/g, '')), bn = parseFloat(bv.replace(/[^0-9.-]/g, ''));
+        if (!isNaN(an) && !isNaN(bn) && av !== '' && bv !== '') return currentSortAsc ? an - bn : bn - an;
+        return currentSortAsc ? av.localeCompare(bv) : bv.localeCompare(av);
+      });
+      renderBody(sorted);
+    });
+  });
+}
+
+function renderChart(data: { headers: string[]; rows: string[][] }, type: string, container: HTMLElement) {
+  if (typeof (window as any).echarts === 'undefined') {
+    container.innerHTML = '<div class="text-xs text-parchment-500 text-center py-8">ECharts tidak tersedia.</div>';
+    return;
+  }
+  const echarts = (window as any).echarts;
+  if ((container as any).__chartInstance) { (container as any).__chartInstance.dispose(); }
+  const chart = echarts.init(container, null, { renderer: 'canvas', backgroundColor: 'transparent' });
+  const numericCols: number[] = [];
+  for (let c = 0; c < data.headers.length; c++) {
+    const isNumeric = data.rows.every(r => { const v = (r[c] || '').replace(/[^0-9.-]/g, ''); return v === '' || !isNaN(parseFloat(v)); });
+    if (isNumeric) numericCols.push(c);
+  }
+  const labelCol = numericCols.includes(0) ? -1 : 0;
+  const labels = labelCol >= 0 ? data.rows.map(r => r[labelCol]) : data.rows.map((_, i) => `Row ${i + 1}`);
+  let valueCol = numericCols.find(c => c !== labelCol) ?? 1;
+  if (valueCol >= data.headers.length) valueCol = 1;
+  const seriesData = data.rows.map(r => { const raw = r[valueCol] || '0'; const num = parseFloat(raw.replace(/[^0-9.-]/g, '')); return isNaN(num) ? 0 : num; });
+  const colors = ['#c9985a', '#6EAE7C', '#D4A017', '#C46B6B', '#7A6B58', '#d4c5a9', '#a89b82'];
+  const option: any = {
+    backgroundColor: 'transparent',
+    textStyle: { color: '#d4c5a9' },
+    title: { text: data.headers[valueCol] || 'Chart', left: 'center', textStyle: { color: '#d4c5a9', fontSize: 12 } },
+    tooltip: { trigger: type === 'pie' ? 'item' : 'axis', backgroundColor: 'rgba(20,15,8,0.95)', borderColor: 'rgba(204,152,49,0.3)', textStyle: { color: '#d4c5a9' } },
+    grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
+  };
+  if (type !== 'pie') {
+    option.xAxis = { type: 'category', data: labels, axisLine: { lineStyle: { color: '#7A6B58' } }, axisLabel: { color: '#a89b82' } };
+    option.yAxis = { type: 'value', axisLine: { lineStyle: { color: '#7A6B58' } }, splitLine: { lineStyle: { color: '#2a2018' } }, axisLabel: { color: '#a89b82' } };
+  }
+  option.series = [{
+    type,
+    data: type === 'pie' ? labels.map((l, i) => ({ name: l, value: seriesData[i] })) : seriesData,
+    itemStyle: type === 'pie' ? { color: (params: any) => colors[params.dataIndex % colors.length] } : { color: '#c9985a' },
+  }];
+  if (type === 'pie') option.series[0].radius = '60%';
+  chart.setOption(option);
+  (container as any).__chartInstance = chart;
+}
+
+function populateDataNotebook(data: { headers: string[]; rows: string[][] }) {
+  currentNotebookData = data;
+  const tableContainer = document.getElementById('notebook-table-view');
+  const chartContainer = document.getElementById('notebook-chart-view');
+  if (tableContainer) renderTable(data, tableContainer);
+  if (chartContainer) {
+    const type = (document.getElementById('notebook-chart-type') as HTMLSelectElement)?.value || 'bar';
+    renderChart(data, type, chartContainer);
+  }
+}
+
+function handleNotebookExport(format: 'csv' | 'json') {
+  if (!currentNotebookData) return;
+  let content = '', filename = 'notebook-export', mime = 'text/plain';
+  if (format === 'csv') {
+    const escape = (s: string) => `"${(s || '').replace(/"/g, '""')}"`;
+    content = [currentNotebookData.headers.map(escape).join(','), ...currentNotebookData.rows.map(r => r.map(escape).join(','))].join('\n');
+    filename += '.csv'; mime = 'text/csv';
+  } else {
+    content = JSON.stringify({ headers: currentNotebookData.headers, rows: currentNotebookData.rows }, null, 2);
+    filename += '.json'; mime = 'application/json';
+  }
+  downloadBlob(new Blob([content], { type: mime }), filename);
+}
+
+// ════════════════════════════════════════════════════════════════════════
+// CODE CANVAS MVP
+// ════════════════════════════════════════════════════════════════════════
+
+const chatPane = document.getElementById('chat-pane') as HTMLDivElement | null;
+const codeCanvas = document.getElementById('code-canvas') as HTMLDivElement | null;
+const btnToggleCanvas = document.getElementById('btn-toggle-canvas') as HTMLButtonElement | null;
+const btnCloseCanvas = document.getElementById('btn-close-canvas') as HTMLButtonElement | null;
+const canvasLanguage = document.getElementById('canvas-language') as HTMLSelectElement | null;
+const canvasCodeInput = document.getElementById('canvas-code-input') as HTMLTextAreaElement | null;
+const canvasRunBtn = document.getElementById('canvas-run-btn') as HTMLButtonElement | null;
+const canvasDebugBtn = document.getElementById('canvas-debug-btn') as HTMLButtonElement | null;
+const canvasOutput = document.getElementById('canvas-output') as HTMLPreElement | null;
+const canvasStatus = document.getElementById('canvas-status') as HTMLSpanElement | null;
+
+let codeCanvasVisible = false;
+let currentCode = '';
+let currentOutput = '';
+let currentError = '';
+
+function toggleCodeCanvas(force?: boolean) {
+  codeCanvasVisible = force !== undefined ? force : !codeCanvasVisible;
+  showRightPanel(codeCanvasVisible ? 'code' : 'none');
+}
+
+btnToggleCanvas?.addEventListener('click', () => toggleCodeCanvas());
+btnCloseCanvas?.addEventListener('click', () => toggleCodeCanvas(false));
+
+// Responsive: adjust layout on resize
+window.addEventListener('resize', () => {
+  if (activeRightPanel === 'none' || !chatPane) return;
+  const el = activeRightPanel === 'code' ? codeCanvas : activeRightPanel === 'studio' ? documentStudio : dataNotebook;
+  if (!el) return;
+  if (window.innerWidth < 768) {
+    chatPane.classList.add('hidden');
+    el.style.width = '100%';
+  } else {
+    chatPane.classList.remove('hidden');
+    chatPane.style.width = '60%';
+    el.style.width = '40%';
+  }
+});
+
+function setCanvasStatus(text: string, type: 'idle' | 'running' | 'error' | 'success' = 'idle') {
+  if (!canvasStatus) return;
+  canvasStatus.textContent = text;
+  const colors: Record<string, string> = {
+    idle: '#7A6B58',
+    running: '#D4A017',
+    error: '#C46B6B',
+    success: '#6EAE7C',
+  };
+  canvasStatus.style.color = colors[type] || colors.idle;
+}
+
+async function handleCanvasRun() {
+  if (!canvasCodeInput) return;
+  const code = canvasCodeInput.value;
+  if (!code.trim()) return;
+
+  currentCode = code;
+  currentOutput = '';
+  currentError = '';
+  if (canvasOutput) canvasOutput.textContent = '';
+  canvasDebugBtn?.classList.add('hidden');
+  setCanvasStatus('Running…', 'running');
+  if (canvasRunBtn) canvasRunBtn.disabled = true;
+
+  try {
+    const result = await runCode({ code, language: canvasLanguage?.value || 'python' });
+    currentOutput = result.output || '';
+    currentError = result.error || '';
+    if (canvasOutput) {
+      canvasOutput.textContent = result.output || '(no output)';
+      if (result.error) {
+        canvasOutput.textContent += '\n\n[ERROR]\n' + result.error;
+      }
+    }
+    setCanvasStatus(`${result.duration_ms}ms · ${result.artifact_id.slice(0, 8)}`, result.error ? 'error' : 'success');
+    currentArtifactId = result.artifact_id;
+    updatePinButtons(false);
+    if (result.error) {
+      canvasDebugBtn?.classList.remove('hidden');
+    }
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e);
+    currentError = msg;
+    if (canvasOutput) canvasOutput.textContent = 'Run failed:\n' + msg;
+    setCanvasStatus('Failed', 'error');
+    canvasDebugBtn?.classList.remove('hidden');
+  } finally {
+    if (canvasRunBtn) canvasRunBtn.disabled = false;
+    initIcons();
+  }
+}
+
+canvasRunBtn?.addEventListener('click', handleCanvasRun);
+
+async function handleCanvasDebug() {
+  if (!canvasCodeInput || !currentError) return;
+  setCanvasStatus('Debugging…', 'running');
+  if (canvasDebugBtn) canvasDebugBtn.disabled = true;
+
+  try {
+    const result = await debugCode({ code: canvasCodeInput.value, error: currentError });
+    if (canvasOutput) {
+      const lines: string[] = [];
+      if (result.suggestions.length) {
+        lines.push('Suggestions:');
+        result.suggestions.forEach((s, i) => lines.push(`${i + 1}. ${s}`));
+      }
+      if (result.fixed_code) {
+        lines.push('\nFixed code:');
+        lines.push(result.fixed_code);
+      }
+      canvasOutput.textContent = lines.join('\n') || 'No suggestions.';
+    }
+    // Auto-populate fixed code if available
+    if (result.fixed_code && canvasCodeInput) {
+      canvasCodeInput.value = result.fixed_code;
+      currentCode = result.fixed_code;
+    }
+    setCanvasStatus('Debug done', 'success');
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e);
+    if (canvasOutput) canvasOutput.textContent = 'Debug failed:\n' + msg;
+    setCanvasStatus('Debug failed', 'error');
+  } finally {
+    if (canvasDebugBtn) canvasDebugBtn.disabled = false;
+  }
+}
+
+canvasDebugBtn?.addEventListener('click', handleCanvasDebug);
+
+canvasLanguage?.addEventListener('change', () => {
+  // Simple placeholder update based on language
+  if (!canvasCodeInput) return;
+  const lang = canvasLanguage.value;
+  const placeholders: Record<string, string> = {
+    python: '# Tulis kode Python di sini...',
+    javascript: '// Tulis kode JavaScript di sini...',
+    html: '<!-- Tulis HTML di sini... -->',
+  };
+  canvasCodeInput.placeholder = placeholders[lang] || '# Tulis kode di sini...';
+});
+
+/** Populate canvas with code extracted from AI message text */
+function populateCodeCanvas(text: string) {
+  // Detect ```python, ```javascript, or ```js blocks
+  const match = text.match(/```(?:python|py|javascript|js|html)\n([\s\S]*?)```/);
+  if (!match) return;
+  const extracted = match[1].trim();
+  if (!extracted) return;
+
+  // Detect language
+  const langMatch = text.match(/```(python|py|javascript|js|html)/);
+  let lang = 'python';
+  if (langMatch) {
+    const raw = langMatch[1].toLowerCase();
+    if (raw === 'py') lang = 'python';
+    else if (raw === 'js') lang = 'javascript';
+    else lang = raw;
+  }
+
+  if (canvasCodeInput) canvasCodeInput.value = extracted;
+  if (canvasLanguage) canvasLanguage.value = lang;
+  currentCode = extracted;
+  currentOutput = '';
+  currentError = '';
+  if (canvasOutput) canvasOutput.textContent = '';
+  canvasDebugBtn?.classList.add('hidden');
+  setCanvasStatus('Loaded from AI', 'idle');
+
+  // Auto-open canvas on desktop
+  if (window.innerWidth >= 768) {
+    toggleCodeCanvas(true);
+  }
+}
+
+// Wire new panel toggles
+document.getElementById('btn-toggle-studio')?.addEventListener('click', () => {
+  showRightPanel(activeRightPanel === 'studio' ? 'none' : 'studio');
+  if (activeRightPanel === 'studio' && !tiptapEditor) initTipTapEditor();
+});
+document.getElementById('btn-toggle-notebook')?.addEventListener('click', () => {
+  showRightPanel(activeRightPanel === 'notebook' ? 'none' : 'notebook');
+});
+document.getElementById('btn-close-studio')?.addEventListener('click', () => showRightPanel('none'));
+document.getElementById('btn-close-notebook')?.addEventListener('click', () => showRightPanel('none'));
+
+// Studio toolbar
+document.querySelectorAll<HTMLButtonElement>('.studio-tool').forEach(btn => {
+  btn.addEventListener('click', () => execStudioCommand(btn.dataset.studioCmd || ''));
+});
+
+// Studio save / export
+document.getElementById('btn-studio-save')?.addEventListener('click', handleStudioSave);
+document.getElementById('studio-export-format')?.addEventListener('change', (e) => {
+  const val = (e.target as HTMLSelectElement).value as 'md' | 'html';
+  if (val) { handleStudioExport(val); (e.target as HTMLSelectElement).value = ''; }
+});
+
+// Notebook tabs
+const notebookTabTable = document.getElementById('notebook-tab-table');
+const notebookTabChart = document.getElementById('notebook-tab-chart');
+const notebookTableView = document.getElementById('notebook-table-view');
+const notebookChartView = document.getElementById('notebook-chart-view');
+
+function setNotebookTab(tab: 'table' | 'chart') {
+  if (tab === 'table') {
+    notebookTableView?.classList.remove('hidden');
+    notebookChartView?.classList.add('hidden');
+    notebookTabTable?.classList.add('text-gold-400', 'border-b-2', 'border-gold-400');
+    notebookTabTable?.classList.remove('text-parchment-500');
+    notebookTabChart?.classList.remove('text-gold-400', 'border-b-2', 'border-gold-400');
+    notebookTabChart?.classList.add('text-parchment-500');
+  } else {
+    notebookTableView?.classList.add('hidden');
+    notebookChartView?.classList.remove('hidden');
+    notebookTabChart?.classList.add('text-gold-400', 'border-b-2', 'border-gold-400');
+    notebookTabChart?.classList.remove('text-parchment-500');
+    notebookTabTable?.classList.remove('text-gold-400', 'border-b-2', 'border-gold-400');
+    notebookTabTable?.classList.add('text-parchment-500');
+    if (currentNotebookData && notebookChartView) {
+      const type = (document.getElementById('notebook-chart-type') as HTMLSelectElement)?.value || 'bar';
+      renderChart(currentNotebookData, type, notebookChartView);
+    }
+  }
+}
+
+notebookTabTable?.addEventListener('click', () => setNotebookTab('table'));
+notebookTabChart?.addEventListener('click', () => setNotebookTab('chart'));
+
+// Notebook chart type + export
+document.getElementById('notebook-chart-type')?.addEventListener('change', (e) => {
+  const type = (e.target as HTMLSelectElement).value;
+  if (currentNotebookData && notebookChartView) renderChart(currentNotebookData, type, notebookChartView);
+});
+document.getElementById('notebook-export-format')?.addEventListener('change', (e) => {
+  const val = (e.target as HTMLSelectElement).value as 'csv' | 'json';
+  if (val) { handleNotebookExport(val); (e.target as HTMLSelectElement).value = ''; }
+});
+
 // ── Initial render ────────────────────────────────────────────────────────────
 switchScreen('chat');
+
+// ════════════════════════════════════════════════════════════════════════
+// DEBATE RING REAL — Minimal UI hooks (future expansion)
+// ════════════════════════════════════════════════════════════════════════
+
+async function callDebate(topic: string, personaA: Persona = 'UTZ', personaB: Persona = 'OOMAR'): Promise<DebateResult> {
+  return runDebate({ topic, persona_a: personaA, persona_b: personaB, max_rounds: 3 });
+}
+
+// Expose to window for console debugging / Agency Kit wizard integration
+if (typeof window !== 'undefined') {
+  (window as any).sidixDebate = callDebate;
+  (window as any).sidixDebatePersonas = getDebatePersonas;
+}
+
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// AGENCY KIT 1-CLICK
+// ═══════════════════════════════════════════════════════════════════════════════
+
+const akModal = document.getElementById('agency-kit-modal') as HTMLDivElement | null;
+const akGallery = document.getElementById('agency-kit-gallery') as HTMLDivElement | null;
+let akPollTimer: ReturnType<typeof setInterval> | null = null;
+let currentAgencyKitJobId: string | null = null;
+
+function openAgencyKitModal() {
+  if (!akModal) return;
+  akModal.classList.remove('hidden');
+  document.getElementById('agency-kit-progress')?.classList.add('hidden');
+  document.getElementById('agency-kit-error')?.classList.add('hidden');
+  (document.getElementById('ak-submit') as HTMLButtonElement | null)!.disabled = false;
+  (document.getElementById('ak-submit') as HTMLButtonElement | null)!.textContent = 'Generate 🚀';
+}
+
+function closeAgencyKitModal() {
+  if (!akModal) return;
+  akModal.classList.add('hidden');
+  if (akPollTimer) { clearInterval(akPollTimer); akPollTimer = null; }
+}
+
+function openAgencyKitGallery() {
+  if (!akGallery) return;
+  akGallery.classList.remove('hidden');
+  initIcons();
+}
+
+function closeAgencyKitGallery() {
+  if (!akGallery) return;
+  akGallery.classList.add('hidden');
+}
+
+function updateAgencyKitProgress(label: string, pct: number) {
+  const bar = document.getElementById('ak-progress-bar');
+  const lbl = document.getElementById('ak-progress-label');
+  const pctx = document.getElementById('ak-progress-pct');
+  if (bar) bar.style.width = `${pct}%`;
+  if (lbl) lbl.textContent = label;
+  if (pctx) pctx.textContent = `${pct}%`;
+}
+
+async function submitAgencyKit() {
+  const businessName = (document.getElementById('ak-business-name') as HTMLInputElement | null)?.value.trim();
+  const niche = (document.getElementById('ak-niche') as HTMLInputElement | null)?.value.trim();
+  const target = (document.getElementById('ak-target') as HTMLTextAreaElement | null)?.value.trim();
+  const budget = (document.getElementById('ak-budget') as HTMLInputElement | null)?.value.trim() || '1.5jt';
+  const tone = (document.getElementById('ak-tone') as HTMLInputElement | null)?.value.trim();
+  const color = (document.getElementById('ak-color') as HTMLInputElement | null)?.value.trim();
+  const errorEl = document.getElementById('agency-kit-error');
+
+  if (!businessName || !niche || !target) {
+    if (errorEl) { errorEl.textContent = 'Nama bisnis, niche, dan target audiens wajib diisi.'; errorEl.classList.remove('hidden'); }
+    return;
+  }
+  if (errorEl) errorEl.classList.add('hidden');
+
+  const submitBtn = document.getElementById('ak-submit') as HTMLButtonElement | null;
+  if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Mengirim...'; }
+
+  const req: AgencyKitRequest = {
+    business_name: businessName,
+    niche,
+    target_audience: target,
+    budget,
+    brand_tone: tone || undefined,
+    color_preference: color || undefined,
+  };
+
+  try {
+    const { job_id } = await createAgencyKit(req);
+    currentAgencyKitJobId = job_id;
+    document.getElementById('agency-kit-progress')?.classList.remove('hidden');
+    updateAgencyKitProgress('Layer 1: Brand Builder...', 5);
+
+    if (akPollTimer) clearInterval(akPollTimer);
+    akPollTimer = setInterval(async () => {
+      if (!currentAgencyKitJobId) return;
+      try {
+        const job = await getAgencyKitJob(currentAgencyKitJobId);
+        const layerLabels: Record<number, string> = {
+          5: 'Layer 1: Brand Builder...',
+          15: 'Layer 1: Brand Builder...',
+          30: 'Layer 2: Content Planner...',
+          55: 'Layer 3: Copywriter...',
+          70: 'Layer 4: Campaign Strategist...',
+          85: 'Layer 5: Thumbnail Generator...',
+          100: 'Layer 6: Synthesis...',
+        };
+        const label = layerLabels[job.progress] || `Processing... ${job.progress}%`;
+        updateAgencyKitProgress(label, job.progress);
+
+        if (job.status === 'completed') {
+          if (akPollTimer) { clearInterval(akPollTimer); akPollTimer = null; }
+          closeAgencyKitModal();
+          renderAgencyKitResults(job);
+          openAgencyKitGallery();
+        } else if (job.status === 'failed') {
+          if (akPollTimer) { clearInterval(akPollTimer); akPollTimer = null; }
+          updateAgencyKitProgress('Gagal', 100);
+          if (errorEl) { errorEl.textContent = 'Pipeline gagal. Coba lagi.'; errorEl.classList.remove('hidden'); }
+          if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Generate 🚀'; }
+        }
+      } catch {
+        // keep polling
+      }
+    }, 2000);
+  } catch (e) {
+    if (errorEl) { errorEl.textContent = `Error: ${(e as Error).message}`; errorEl.classList.remove('hidden'); }
+    if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Generate 🚀'; }
+  }
+}
+
+function renderAgencyKitResults(job: AgencyKitJob) {
+  const r = job.results || {};
+  const bk = r.brand_kit || {};
+  const cp = r.copy || {};
+  const camp = r.campaign || {};
+  const vis = r.visuals || {};
+  const cqf = r.cqf || {};
+
+  const setText = (id: string, text: string) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = text || '—';
+  };
+
+  setText('ak-result-subtitle', `${bk.brand_name || r._request?.business_name || ''} — ${r._request?.niche || ''}`);
+  setText('ak-res-brand-name', bk.brand_name || '');
+  setText('ak-res-archetype', bk.archetype || '');
+  setText('ak-res-palette', bk.palette || '');
+  setText('ak-res-typography', bk.typography || '');
+  setText('ak-res-voice', bk.voice_tone || '');
+  setText('ak-res-logo', bk.logo_prompt || '');
+
+  const renderList = (id: string, items: string[], emptyMsg = '—') => {
+    const container = document.getElementById(id);
+    if (!container) return;
+    container.innerHTML = '';
+    if (!items || !items.length) {
+      container.innerHTML = `<p class="text-xs text-parchment-500">${emptyMsg}</p>`;
+      return;
+    }
+    items.forEach((item, i) => {
+      const div = document.createElement('div');
+      div.className = 'text-xs text-parchment-300 bg-warm-800/40 rounded-lg px-3 py-2 border border-warm-600/30';
+      div.textContent = `${i + 1}. ${item}`;
+      container.appendChild(div);
+    });
+  };
+
+  const captions = cp.captions || [];
+  renderList('ak-res-captions', captions);
+  setText('ak-res-caption-count', String(captions.length));
+
+  const threads = cp.threads || [];
+  renderList('ak-res-threads', threads);
+  setText('ak-res-thread-count', String(threads.length));
+
+  const scripts = cp.scripts || [];
+  renderList('ak-res-scripts', scripts);
+  setText('ak-res-script-count', String(scripts.length));
+
+  setText('ak-res-timeline', camp.timeline || '');
+
+  const thumbs = vis.thumbnails || [];
+  renderList('ak-res-thumbnails', thumbs);
+  setText('ak-res-thumb-count', String(thumbs.length));
+
+  const grid = vis.grid_posts || [];
+  const gridContainer = document.getElementById('ak-res-grid');
+  if (gridContainer) {
+    gridContainer.innerHTML = '';
+    grid.forEach((g: string) => {
+      const div = document.createElement('div');
+      div.className = 'aspect-square rounded-lg bg-warm-800/60 border border-warm-600/30 flex items-center justify-center text-[10px] text-parchment-500 text-center p-1';
+      div.textContent = g.length > 40 ? g.slice(0, 40) + '…' : g;
+      gridContainer.appendChild(div);
+    });
+    // Fill remaining to 3x3
+    for (let i = grid.length; i < 9; i++) {
+      const div = document.createElement('div');
+      div.className = 'aspect-square rounded-lg bg-warm-800/30 border border-warm-600/20 flex items-center justify-center text-[10px] text-parchment-600';
+      div.textContent = `${i + 1}`;
+      gridContainer.appendChild(div);
+    }
+  }
+  setText('ak-res-grid-count', String(grid.length));
+
+  setText('ak-cqf-rel', String(cqf.relevance ?? '—'));
+  setText('ak-cqf-qual', String(cqf.quality ?? '—'));
+  setText('ak-cqf-crea', String(cqf.creativity ?? '—'));
+  setText('ak-cqf-brand', String(cqf.brand ?? '—'));
+  setText('ak-cqf-act', String(cqf.actionability ?? '—'));
+  setText('ak-cqf-total', String(cqf.total ?? '—'));
+}
+
+function exportAgencyKitMarkdown() {
+  const r = (currentAgencyKitJobId ? (window as any).__lastAgencyKitResults : null) || {};
+  if (!r || !r.brand_kit) {
+    alert('Belum ada hasil Agency Kit.');
+    return;
+  }
+  const bk = r.brand_kit || {};
+  const cp = r.copy || {};
+  const camp = r.campaign || {};
+  const vis = r.visuals || {};
+  const cqf = r.cqf || {};
+
+  const md = `# Agency Kit — ${bk.brand_name || 'Brand'}
+
+## 🎨 Brand Kit
+- **Nama Brand:** ${bk.brand_name || '-'}
+- **Archetype:** ${bk.archetype || '-'}
+- **Paleta Warna:** ${bk.palette || '-'}
+- **Tipografi:** ${bk.typography || '-'}
+- **Voice & Tone:** ${bk.voice_tone || '-'}
+
+## 🖌️ Logo Prompt
+${bk.logo_prompt || '-'}
+
+## 💬 IG Captions (${(cp.captions || []).length})
+${(cp.captions || []).map((c: string, i: number) => `${i + 1}. ${c}`).join('\n')}
+
+## 🧵 X/Twitter Threads (${(cp.threads || []).length})
+${(cp.threads || []).map((t: string, i: number) => `${i + 1}. ${t}`).join('\n')}
+
+## 🎬 Video Scripts (${(cp.scripts || []).length})
+${(cp.scripts || []).map((s: string, i: number) => `${i + 1}. ${s}`).join('\n')}
+
+## 📅 Campaign Timeline
+${camp.timeline || '-'}
+
+## 🖼️ Thumbnail Prompts (${(vis.thumbnails || []).length})
+${(vis.thumbnails || []).map((t: string, i: number) => `${i + 1}. ${t}`).join('\n')}
+
+## 📱 IG Grid Concepts (${(vis.grid_posts || []).length})
+${(vis.grid_posts || []).map((g: string, i: number) => `${i + 1}. ${g}`).join('\n')}
+
+## 📊 CQF Score
+- Relevance: ${cqf.relevance ?? '-'}
+- Quality: ${cqf.quality ?? '-'}
+- Creativity: ${cqf.creativity ?? '-'}
+- Brand: ${cqf.brand ?? '-'}
+- Actionability: ${cqf.actionability ?? '-'}
+- **Total:** ${cqf.total ?? '-'}
+
+---
+Generated by SIDIX Agency Kit
+`;
+  const blob = new Blob([md], { type: 'text/markdown' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `agency-kit-${bk.brand_name || 'brand'}.md`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// Wire events
+document.getElementById('nav-agency-kit')?.addEventListener('click', openAgencyKitModal);
+document.getElementById('mob-nav-agency')?.addEventListener('click', openAgencyKitModal);
+document.getElementById('ak-cancel')?.addEventListener('click', closeAgencyKitModal);
+document.getElementById('ak-submit')?.addEventListener('click', submitAgencyKit);
+document.getElementById('ak-gallery-close')?.addEventListener('click', closeAgencyKitGallery);
+document.getElementById('ak-export-btn')?.addEventListener('click', exportAgencyKitMarkdown);
+
+// Close modals on backdrop click
+akModal?.addEventListener('click', (e) => {
+  if (e.target === akModal) closeAgencyKitModal();
+});
+akGallery?.addEventListener('click', (e) => {
+  if (e.target === akGallery) closeAgencyKitGallery();
+});
+
+// Hook into renderAgencyKitResults to stash results for export
+const _origRender = renderAgencyKitResults;
+renderAgencyKitResults = function(job: AgencyKitJob) {
+  (window as any).__lastAgencyKitResults = job.results || {};
+  _origRender(job);
+};
+
+// ════════════════════════════════════════════════════════════════════════
+// VOYAGER PROTOCOL — Dynamic Tool Creator (Phase 1)
+// Minimal wiring for future UI expansion.
+// ════════════════════════════════════════════════════════════════════════
+
+/**
+ * Create a new SIDIX tool from natural language intent.
+ * Future UI: add a "Voyager" panel where users describe what they want
+ * and SIDIX writes the tool for them.
+ */
+async function voyagerCreateTool(intent: string, toolName?: string): Promise<VoyagerToolResult> {
+  return createVoyagerTool({ intent, tool_name: toolName });
+}
+
+// Expose to global scope for console experimentation
+(window as any).voyagerCreateTool = voyagerCreateTool;
+(window as any).voyagerListTools = listVoyagerTools;
+(window as any).voyagerGetTool = getVoyagerTool;
+(window as any).voyagerDeleteTool = deleteVoyagerTool;

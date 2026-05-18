@@ -1,4 +1,6 @@
-# SIDIX Capability Map — 2026-04-19
+# SIDIX Capability Map — 2026-05-01
+
+> **UPDATE 2026-05-01:** Persona names updated (UTZ/ABOO/OOMAR/ALEY/AYMAN), tool count refreshed, sprint status synced. Deep architecture audit complete — see `docs/SIDIX_POSITION_ANALYSIS_2026-05-01.md`.
 
 **Tujuan**: Single source of truth tentang apa yang SIDIX PUNYA, apa yang SUDAH DIBUAT tapi belum di-wire, dan apa yang BELUM ADA. Dibuat setelah audit komprehensif sprint panjang supaya sesi berikut tidak perlu ngulang audit.
 
@@ -44,11 +46,11 @@ Detail teknis identitas ini di `CLAUDE.md` section "IDENTITAS SIDIX".
 - **Corpus retrieval (`search_corpus`)** — BM25 (`rank_bm25`) + **sanad-tier rerank** (`sanad_ranking.apply_sanad_weight`): frontmatter `sanad_tier` di markdown (`primer`/`ulama`/`peer_review`/`aggregator`/`unknown`) mempengaruhi urutan hasil setelah skor BM25.
 - **Own model stack** via `brain_qa/local_llm.py` — adapter (LoRA) + base model lokal. No vendor AI API.
 - **ReAct agent loop** via `brain_qa/agent_react.py` — thought→tool→observation sampai terjawab
-- **Persona router** — MIGHAN (kreatif), TOARD (strategy), FACH (riset/ML), HAYFAR (coding), INAN (general)
+- **Persona router** — UTZ (creative/musik/art), ABOO (engineer/coding), OOMAR (strategist/bisnis), ALEY (researcher/science), AYMAN (general/assistant) — prompt-level fanout (DoRA planned Sprint G)
 - **Epistemic labels** `[FACT]/[OPINION]/[SPECULATION]/[UNKNOWN]` wajib
-- **Sanad chain** di note approved
+- **Sanad chain** di note approved — **TAPI belum implementasi di output pipeline** (Sprint A TODO)
 
-### Tools terdaftar di `agent_tools.py` TOOL_REGISTRY (9 aktif + 1 disabled)
+### Tools terdaftar di `agent_tools.py` TOOL_REGISTRY (~14-17 aktif)
 | Tool | Permission | Status |
 |---|---|---|
 | `search_corpus` | open | ✅ aktif (BM25 + sanad-tier weighted rerank) |

@@ -119,6 +119,7 @@ export interface AskInferenceOpts {
   corpus_only?: boolean;
   allow_web_fallback?: boolean;
   simple_mode?: boolean;
+  mode?: SidixMode;
 }
 
 export interface StreamDoneMeta {
@@ -134,6 +135,13 @@ export interface AgentGenerateResponse {
   duration_ms: number;
 }
 
+export interface AutoTuneResult {
+  score: number;
+  passed: boolean;
+  violations: string[];
+  suggestions: string[];
+}
+
 /**
  * Sprint Α: Respons POST /agent/chat_holistic — Jurus Seribu Bayangan.
  * Multi-source orchestrator paralel (web + corpus + dense + persona fanout +
@@ -145,11 +153,21 @@ export interface ChatHolisticResponse {
   confidence: string;
   n_sources: number;
   sources_used: string[];
+  citations: Array<{source: string; title?: string; url?: string}>;
   method: string;
   synthesis_latency_ms: number;
   orchestrator_latency_ms: number;
   orchestrator_errors: string[];
   debug_bundle?: unknown;
+  // Sprint J: conversation memory
+  conversation_id?: string;
+  session_id?: string;
+  // Mode system
+  mode?: string;
+  // Maqashid Auto-Tune
+  maqashid_score?: number;
+  maqashid_passed?: boolean;
+  maqashid_violations?: string[];
 }
 
 /**
@@ -160,17 +178,25 @@ export interface ChatHolisticResponse {
  * @param persona optional persona override (default: brain auto)
  * @param signal optional AbortSignal untuk cancellation
  */
+export type SidixMode = 'instant' | 'thinking' | 'agent' | 'deep_research';
+
 export async function askHolistic(
   question: string,
   persona?: Persona,
   signal?: AbortSignal,
+  opts?: { image_path?: string; audio_path?: string; conversationId?: string; mode?: SidixMode },
 ): Promise<ChatHolisticResponse> {
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
     ..._authHeaders(),
   };
   const body: Record<string, unknown> = { question };
+  if (opts?.mode) body.mode = opts.mode;
   if (persona) body.persona = persona;
+  if (opts?.image_path) body.image_path = opts.image_path;
+  if (opts?.audio_path) body.audio_path = opts.audio_path;
+  // Sprint J: pass conversation_id so backend loads history
+  if (opts?.conversationId) body.conversation_id = opts.conversationId;
 
   const res = await fetch(`${BRAIN_QA_BASE}/agent/chat_holistic`, {
     method: 'POST',
@@ -180,6 +206,22 @@ export async function askHolistic(
   });
   if (!res.ok) {
     throw new Error(`/agent/chat_holistic ${res.status} ${res.statusText}`);
+  }
+  return res.json();
+}
+
+/**
+ * Sprint See & Hear: Upload image to backend → return path for multimodal.
+ */
+export async function uploadImage(file: File): Promise<{ ok: boolean; path: string; url: string }> {
+  const form = new FormData();
+  form.append('file', file);
+  const res = await fetch(`${BRAIN_QA_BASE}/upload/image`, {
+    method: 'POST',
+    body: form,
+  });
+  if (!res.ok) {
+    throw new Error(`upload/image ${res.status} ${res.statusText}`);
   }
   return res.json();
 }
@@ -220,20 +262,26 @@ export async function askHolisticStream(
       method: string;
       outputType?: string;
       attachments?: SidixAttachment[];
+      conversationId?: string;
     }) => void;
     onError: (msg: string) => void;
   },
   signal?: AbortSignal,
+  opts?: { conversationId?: string; mode?: SidixMode },
 ): Promise<void> {
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
     ..._authHeaders(),
   };
+  if (opts?.conversationId) headers['x-conversation-id'] = opts.conversationId;
+  const body: Record<string, unknown> = { question, persona };
+  if (opts?.mode) body.mode = opts.mode;
+  if (opts?.conversationId) body.conversation_id = opts.conversationId;
   try {
     const res = await fetch(`${BRAIN_QA_BASE}/agent/chat_holistic_stream`, {
       method: 'POST',
       headers,
-      body: JSON.stringify({ question, persona }),
+      body: JSON.stringify(body),
       signal,
     });
     if (!res.ok || !res.body) {
@@ -290,6 +338,7 @@ export async function askHolisticStream(
                 method: evt.method || '',
                 outputType: evt.output_type,
                 attachments: evt.attachments || [],
+                conversationId: evt.conversation_id,
               });
               break;
             case 'error':
@@ -376,7 +425,7 @@ export async function checkHealth(): Promise<HealthResponse> {
  */
 export async function agentGenerate(
   prompt: string,
-  opts?: { max_tokens?: number; temperature?: number; system?: string },
+  opts?: { max_tokens?: number; temperature?: number; system?: string; persona?: Persona },
 ): Promise<AgentGenerateResponse> {
   const body: Record<string, unknown> = {
     prompt,
@@ -384,6 +433,7 @@ export async function agentGenerate(
     temperature: opts?.temperature ?? 0.7,
   };
   if (opts?.system != null) body.system = opts.system;
+  if (opts?.persona != null) body.persona = opts.persona;
 
   return request<AgentGenerateResponse>(
     '/agent/generate',
@@ -492,6 +542,48 @@ export async function getReindexStatus(): Promise<ReindexStatus> {
   return request<ReindexStatus>('/corpus/reindex/status');
 }
 
+// ════════════════════════════════════════════════════════════════════════
+// A2A CLIENT — Phase 3: SIDIX as orchestrator (delegate to external agents)
+// ════════════════════════════════════════════════════════════════════════
+
+export interface ExternalAgent {
+  name: string;
+  url: string;
+  skills: string[];
+  agent_card?: Record<string, unknown>;
+  mcp_endpoint?: string;
+  capabilities?: Record<string, unknown>;
+}
+
+export interface DelegationResult {
+  success: boolean;
+  task_id: string;
+  agent_name: string;
+  artifact_text: string;
+  duration_ms: number;
+  error: string;
+}
+
+export async function discoverAgent(url: string): Promise<ExternalAgent> {
+  return request<ExternalAgent>('/a2a/client/discover', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ url }),
+  });
+}
+
+export async function delegateTask(agent_url: string, message: string): Promise<DelegationResult> {
+  return request<DelegationResult>('/a2a/client/delegate', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ agent_url, message }),
+  });
+}
+
+export async function listExternalAgents(): Promise<{ ok: boolean; count: number; agents: ExternalAgent[] }> {
+  return request<{ ok: boolean; count: number; agents: ExternalAgent[] }>('/a2a/client/agents');
+}
+
 /**
  * POST /ask/stream — SSE streaming jawaban token per token.
  * onToken dipanggil per token, onCitation per citation, onDone saat selesai.
@@ -549,6 +641,7 @@ export async function askStream(
         corpus_only: opts?.corpus_only ?? false,
         allow_web_fallback: opts?.allow_web_fallback ?? true,
         simple_mode: opts?.simple_mode ?? false,
+        mode: opts?.mode ?? 'agent',
         conversation_id: opts?.conversationId ?? '',
         user_id: opts?.userId ?? '',
       }),
@@ -668,6 +761,52 @@ export interface ForesightResponse {
   signals_extracted?: string;
 }
 
+// ════════════════════════════════════════════════════════════════════════
+// CODE CANVAS MVP
+// ════════════════════════════════════════════════════════════════════════
+
+export interface CodeRunRequest {
+  code: string;
+  language?: string;
+}
+
+export interface CodeRunResponse {
+  artifact_id: string;
+  output: string;
+  error?: string;
+  duration_ms: number;
+}
+
+export interface CodeDebugRequest {
+  code: string;
+  error: string;
+}
+
+export interface CodeDebugResponse {
+  suggestions: string[];
+  fixed_code?: string;
+}
+
+export async function runCode(req: CodeRunRequest): Promise<CodeRunResponse> {
+  const res = await fetch(`${BRAIN_QA_BASE}/app/code/run`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(req),
+  });
+  if (!res.ok) throw new BrainQAError('server', `code/run ${res.status}`);
+  return res.json();
+}
+
+export async function debugCode(req: CodeDebugRequest): Promise<CodeDebugResponse> {
+  const res = await fetch(`${BRAIN_QA_BASE}/app/code/debug`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(req),
+  });
+  if (!res.ok) throw new BrainQAError('server', `code/debug ${res.status}`);
+  return res.json();
+}
+
 export interface ResurrectResponse {
   topic: string;
   n_gems: number;
@@ -703,6 +842,22 @@ export async function agentResurrect(
  * POST /agent/foresight — Visionary scenario planning (web + corpus + 3 scenarios).
  * Pipeline: scan → extract → project (base/bull/bear) → synthesize.
  */
+export async function evaluateMaqashid(text: string): Promise<AutoTuneResult> {
+  const res = await fetch(`${BRAIN_QA_BASE}/app/maqashid/evaluate`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ..._authHeaders() },
+    body: JSON.stringify({ text }),
+  });
+  if (!res.ok) throw new BrainQAError('server', `evaluateMaqashid ${res.status}`);
+  const data = await res.json();
+  return {
+    score: data.score ?? 0.0,
+    passed: data.passed ?? true,
+    violations: data.violations ?? [],
+    suggestions: data.suggestions ?? [],
+  };
+}
+
 export async function agentForesight(
   topic: string,
   opts?: { horizon?: string; withScenarios?: boolean; returnIntermediate?: boolean },
@@ -719,4 +874,340 @@ export async function agentForesight(
   });
   if (!res.ok) throw new BrainQAError(`Foresight error: ${res.status}`, 'http');
   return res.json();
+}
+
+// ════════════════════════════════════════════════════════════════════════
+// UNIFIED ARTIFACT FRAMEWORK
+// ════════════════════════════════════════════════════════════════════════
+
+export interface Artifact {
+  id: string;
+  type: string;
+  status: string;
+  title: string;
+  content: string;
+  metadata: object;
+  created_at: number;
+  updated_at: number;
+  user_id?: string;
+  conversation_id?: string;
+  version?: number;
+  parent_id?: string;
+}
+
+export interface ArtifactListResponse {
+  artifacts: Artifact[];
+  total: number;
+}
+
+export async function createArtifact(req: {
+  type: string;
+  title: string;
+  content: string;
+  metadata?: object;
+  user_id?: string;
+  conversation_id?: string;
+}): Promise<Artifact> {
+  const res = await fetch(`${BRAIN_QA_BASE}/app/artifact/create`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ..._authHeaders() },
+    body: JSON.stringify(req),
+  });
+  if (!res.ok) throw new BrainQAError('server', `artifact/create ${res.status}`);
+  return res.json();
+}
+
+export async function getArtifact(id: string): Promise<Artifact> {
+  const res = await fetch(`${BRAIN_QA_BASE}/app/artifact/${encodeURIComponent(id)}`, {
+    headers: _authHeaders(),
+  });
+  if (!res.ok) throw new BrainQAError('server', `artifact/get ${res.status}`);
+  return res.json();
+}
+
+export async function listArtifacts(type?: string, status?: string): Promise<Artifact[]> {
+  const params = new URLSearchParams();
+  if (type) params.set('type', type);
+  if (status) params.set('status', status);
+  const res = await fetch(`${BRAIN_QA_BASE}/app/artifact/list?${params.toString()}`, {
+    headers: _authHeaders(),
+  });
+  if (!res.ok) throw new BrainQAError('server', `artifact/list ${res.status}`);
+  const data: ArtifactListResponse = await res.json();
+  return data.artifacts ?? [];
+}
+
+export async function updateArtifact(
+  id: string,
+  req: { title?: string; content?: string; metadata?: object; status?: string },
+): Promise<Artifact> {
+  const res = await fetch(`${BRAIN_QA_BASE}/app/artifact/${encodeURIComponent(id)}/update`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ..._authHeaders() },
+    body: JSON.stringify(req),
+  });
+  if (!res.ok) throw new BrainQAError('server', `artifact/update ${res.status}`);
+  return res.json();
+}
+
+export async function deleteArtifact(id: string): Promise<{ ok: boolean }> {
+  const res = await fetch(`${BRAIN_QA_BASE}/app/artifact/${encodeURIComponent(id)}/delete`, {
+    method: 'POST',
+    headers: _authHeaders(),
+  });
+  if (!res.ok) throw new BrainQAError('server', `artifact/delete ${res.status}`);
+  return res.json();
+}
+
+export async function pinArtifact(id: string): Promise<Artifact> {
+  const res = await fetch(`${BRAIN_QA_BASE}/app/artifact/${encodeURIComponent(id)}/pin`, {
+    method: 'POST',
+    headers: _authHeaders(),
+  });
+  if (!res.ok) throw new BrainQAError('server', `artifact/pin ${res.status}`);
+  return res.json();
+}
+
+export async function unpinArtifact(id: string): Promise<Artifact> {
+  const res = await fetch(`${BRAIN_QA_BASE}/app/artifact/${encodeURIComponent(id)}/unpin`, {
+    method: 'POST',
+    headers: _authHeaders(),
+  });
+  if (!res.ok) throw new BrainQAError('server', `artifact/unpin ${res.status}`);
+  return res.json();
+}
+
+export async function exportArtifact(id: string, format: string): Promise<{ artifact_id: string; format: string; data: string }> {
+  const res = await fetch(
+    `${BRAIN_QA_BASE}/app/artifact/${encodeURIComponent(id)}/export?format=${encodeURIComponent(format)}`,
+    { headers: _authHeaders() },
+  );
+  if (!res.ok) throw new BrainQAError('server', `artifact/export ${res.status}`);
+  return res.json();
+}
+
+export async function createArtifactVersion(id: string): Promise<Artifact> {
+  const res = await fetch(`${BRAIN_QA_BASE}/app/artifact/${encodeURIComponent(id)}/version`, {
+    method: 'POST',
+    headers: _authHeaders(),
+  });
+  if (!res.ok) throw new BrainQAError('server', `artifact/version ${res.status}`);
+  return res.json();
+}
+
+// ════════════════════════════════════════════════════════════════════════
+// AGENCY KIT 1-CLICK
+// ════════════════════════════════════════════════════════════════════════
+
+export interface AgencyKitRequest {
+  business_name: string;
+  niche: string;
+  target_audience: string;
+  budget: string;
+  brand_tone?: string;
+  color_preference?: string;
+}
+
+export interface AgencyKitJob {
+  job_id: string;
+  status: string;
+  progress: number;
+  results: any;
+  created_at: string;
+  completed_at: string | null;
+}
+
+export async function createAgencyKit(req: AgencyKitRequest): Promise<{ job_id: string }> {
+  const res = await fetch(`${BRAIN_QA_BASE}/creative/agency_kit`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ..._authHeaders() },
+    body: JSON.stringify(req),
+  });
+  if (!res.ok) throw new BrainQAError('server', `agency_kit ${res.status}`);
+  const data = await res.json();
+  if (!data.ok) throw new BrainQAError('server', data.detail || data.error || 'agency_kit error');
+  return { job_id: data.job_id };
+}
+
+export async function getAgencyKitJob(job_id: string): Promise<AgencyKitJob> {
+  const res = await fetch(`${BRAIN_QA_BASE}/creative/agency_kit/${encodeURIComponent(job_id)}`, {
+    headers: _authHeaders(),
+  });
+  if (!res.ok) throw new BrainQAError('server', `agency_kit/status ${res.status}`);
+  const data = await res.json();
+  if (!data.ok) throw new BrainQAError('server', data.detail || 'agency_kit status error');
+  return {
+    job_id: data.job_id,
+    status: data.status,
+    progress: data.progress,
+    results: data.results,
+    created_at: data.created_at,
+    completed_at: data.completed_at,
+  };
+}
+
+export async function listAgencyKitJobs(): Promise<{ count: number; jobs: AgencyKitJob[] }> {
+  const res = await fetch(`${BRAIN_QA_BASE}/creative/agency_kit/list`, {
+    headers: _authHeaders(),
+  });
+  if (!res.ok) throw new BrainQAError('server', `agency_kit/list ${res.status}`);
+  const data = await res.json();
+  if (!data.ok) throw new BrainQAError('server', data.detail || 'agency_kit list error');
+  return { count: data.count, jobs: data.jobs };
+}
+
+// ════════════════════════════════════════════════════════════════════════
+// DEBATE RING REAL — Multi-agent consensus API
+// ════════════════════════════════════════════════════════════════════════
+
+export interface DebateRequest {
+  topic: string;
+  persona_a: string;
+  persona_b: string;
+  max_rounds?: number;
+}
+
+export interface DebateRound {
+  round_number: number;
+  speaker: string;
+  text: string;
+  critique_score: number;
+}
+
+export interface DebateResult {
+  topic: string;
+  rounds: DebateRound[];
+  consensus_text: string;
+  winner: string;
+  cqf_score: number;
+  duration_ms: number;
+}
+
+/**
+ * POST /creative/debate — run multi-agent debate consensus.
+ * 3-round debate: Creator → Critic → Creator revises → Neutral synthesis.
+ */
+export async function runDebate(req: DebateRequest): Promise<DebateResult> {
+  const res = await fetch(`${BRAIN_QA_BASE}/creative/debate`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ..._authHeaders() },
+    body: JSON.stringify({
+      topic: req.topic,
+      persona_a: req.persona_a,
+      persona_b: req.persona_b,
+      max_rounds: req.max_rounds ?? 3,
+    }),
+  });
+  if (!res.ok) throw new BrainQAError('server', `debate ${res.status}`);
+  return res.json();
+}
+
+/**
+ * GET /creative/debate/personas — list available debate pairs.
+ */
+export async function getDebatePersonas(): Promise<{ pairs: Array<{ name: string; persona_a: string; persona_b: string }> }> {
+  return request<{ pairs: Array<{ name: string; persona_a: string; persona_b: string }> }>('/creative/debate/personas');
+}
+
+// ════════════════════════════════════════════════════════════════════════
+// VOYAGER PROTOCOL — Dynamic Tool Creator
+// ════════════════════════════════════════════════════════════════════════
+
+export interface VoyagerToolRequest {
+  intent: string;
+  tool_name?: string;
+  description?: string;
+}
+
+export interface VoyagerToolResult {
+  success: boolean;
+  tool_name: string;
+  code: string;
+  error?: string;
+  security_passed: boolean;
+  registered: boolean;
+}
+
+/**
+ * POST /app/voyager/create — create a new tool from natural language intent.
+ */
+export async function createVoyagerTool(req: VoyagerToolRequest): Promise<VoyagerToolResult> {
+  const res = await fetch(`${BRAIN_QA_BASE}/app/voyager/create`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ..._authHeaders() },
+    body: JSON.stringify(req),
+  });
+  if (!res.ok) throw new BrainQAError('server', `voyager/create ${res.status}`);
+  return res.json();
+}
+
+/**
+ * GET /app/voyager/tools — list generated tools.
+ */
+export async function listVoyagerTools(): Promise<{ ok: boolean; tools: Array<Record<string, unknown>>; count: number }> {
+  const res = await fetch(`${BRAIN_QA_BASE}/app/voyager/tools`, {
+    headers: _authHeaders(),
+  });
+  if (!res.ok) throw new BrainQAError('server', `voyager/tools ${res.status}`);
+  return res.json();
+}
+
+/**
+ * GET /app/voyager/tools/{tool_name} — get generated tool code.
+ */
+export async function getVoyagerTool(toolName: string): Promise<{ ok: boolean; tool: Record<string, unknown> }> {
+  const res = await fetch(`${BRAIN_QA_BASE}/app/voyager/tools/${encodeURIComponent(toolName)}`, {
+    headers: _authHeaders(),
+  });
+  if (!res.ok) throw new BrainQAError('server', `voyager/tool ${res.status}`);
+  return res.json();
+}
+
+/**
+ * POST /app/voyager/tools/{tool_name}/delete — delete generated tool.
+ */
+export async function deleteVoyagerTool(toolName: string): Promise<{ ok: boolean; tool_name: string; deleted: boolean }> {
+  const res = await fetch(`${BRAIN_QA_BASE}/app/voyager/tools/${encodeURIComponent(toolName)}/delete`, {
+    method: 'POST',
+    headers: _authHeaders(),
+  });
+  if (!res.ok) throw new BrainQAError('server', `voyager/delete ${res.status}`);
+  return res.json();
+}
+
+// ════════════════════════════════════════════════════════════════════════
+// SELF-TRAIN FASE 1 — Training Data Curation
+// ════════════════════════════════════════════════════════════════════════
+
+export interface TrainingStats {
+  total_corpus_docs: number;
+  total_approved: number;
+  total_premium: number;
+  total_rejected: number;
+  pairs_this_week: number;
+}
+
+/**
+ * GET /training/stats — dashboard stats untuk curation pipeline.
+ */
+export async function getTrainingStats(): Promise<TrainingStats> {
+  return request<TrainingStats>('/training/stats');
+}
+
+/**
+ * POST /training/curate — trigger manual curation (admin only).
+ */
+export async function triggerCuration(threshold?: number, limit?: number): Promise<any> {
+  return request('/training/curate', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ threshold: threshold ?? 0.70, limit: limit ?? 500 }),
+  });
+}
+
+/**
+ * GET /training/data/latest — get latest training data file info.
+ */
+export async function getLatestTrainingData(): Promise<{ path: string; pairs: number; size_bytes: number }> {
+  return request<{ path: string; pairs: number; size_bytes: number }>('/training/data/latest');
 }

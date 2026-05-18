@@ -1,0 +1,79 @@
+# SIDIX — Docker Compose (VPS deployment)
+#
+# Quick start:
+#   cp .env.sample .env        # isi variabel
+#   docker compose up -d       # start semua service
+#   docker compose logs -f     # lihat log
+#
+# Services:
+#   brain_qa  — SIDIX backend API (port 8765)
+#   sidix_ui  — Frontend UI (built, served via nginx, port 3000)
+#   caddy     — Reverse proxy + SSL otomatis (port 80/443)
+
+version: "3.9"
+
+services:
+
+  # ── Backend: SIDIX Inference Engine ─────────────────────────
+  brain_qa:
+    build:
+      context: .
+      dockerfile: Dockerfile.brain_qa
+    restart: unless-stopped
+    environment:
+      - SIDIX_USE_MOCK_LLM=${SIDIX_USE_MOCK_LLM:-1}
+      - BRAIN_QA_RATE_LIMIT_RPM=${BRAIN_QA_RATE_LIMIT_RPM:-60}
+      - BRAIN_QA_ADMIN_TOKEN=${BRAIN_QA_ADMIN_TOKEN:-}
+      - BRAIN_QA_DAILY_QUOTA=${BRAIN_QA_DAILY_QUOTA:-0}
+      - PYTHONUNBUFFERED=1
+    volumes:
+      - brain_data:/app/apps/brain_qa/.data
+      # Mount model jika sudah didownload:
+      # - ./apps/brain_qa/models:/app/apps/brain_qa/models:ro
+    ports:
+      - "8765:8765"    # expose internal (Caddy yang forward ke luar)
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8765/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # ── Frontend: SIDIX UI ────────────────────────────────────────
+  sidix_ui:
+    build:
+      context: ./SIDIX_USER_UI
+      dockerfile: Dockerfile.ui
+      args:
+        - VITE_BRAIN_QA_URL=${VITE_BRAIN_QA_URL:-https://your-domain.com/api}
+    restart: unless-stopped
+    ports:
+      - "3000:80"
+    depends_on:
+      brain_qa:
+        condition: service_healthy
+
+  # ── Caddy: Reverse Proxy + Auto SSL ──────────────────────────
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - brain_qa
+      - sidix_ui
+    environment:
+      - DOMAIN=${DOMAIN:-localhost}
+
+volumes:
+  brain_data:
+    driver: local
+  caddy_data:
+    driver: local
+  caddy_config:
+    driver: local

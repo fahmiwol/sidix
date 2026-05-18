@@ -1,0 +1,70 @@
+name: Deploy Frontend + Board (chatbos)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'SIDIX_BOARD/**'
+      - 'SIDIX_LANDING/**'
+      - 'SIDIX_USER_UI/**'
+      - 'apps/brain_qa/brain_qa/agent_serve.py'
+      - 'apps/brain_qa/brain_qa/conversation_synthesizer.py'
+      - 'apps/brain_qa/brain_qa/dev_task_queue.py'
+      - 'apps/brain_qa/brain_qa/autonomous_developer.py'
+      - 'apps/brain_qa/brain_qa/claude_sessions.py'
+      - 'deploy-scripts/**'
+  workflow_dispatch:  # manual trigger via UI
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SIDIX_VPS_SSH_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          echo "${{ secrets.SIDIX_VPS_HOST_KEY }}" >> ~/.ssh/known_hosts
+          chmod 644 ~/.ssh/known_hosts
+
+      - name: Verify SSH connectivity
+        run: |
+          ssh -o ConnectTimeout=10 \
+              ${{ secrets.SIDIX_VPS_USER }}@${{ secrets.SIDIX_VPS_HOST }} \
+              "echo SSH OK from \$(hostname); uname -a"
+
+      - name: Deploy SIDIX (pull + frontend + board + brain restart)
+        run: |
+          ssh ${{ secrets.SIDIX_VPS_USER }}@${{ secrets.SIDIX_VPS_HOST }} bash -s << 'REMOTE_EOF'
+            set -e
+            cd /opt/sidix
+
+            echo "═══ 1. Pull latest ═══"
+            git fetch origin main
+            git reset --hard origin/main
+            HEAD_SHA=$(git rev-parse --short HEAD)
+            echo "HEAD: $HEAD_SHA"
+
+            echo "═══ 2. Verify SIDIX_BOARD/ ═══"
+            ls -la SIDIX_BOARD/index.html
+
+            echo "═══ 3. Restart sidix-brain (new endpoints Sprint 40/41/42/43) ═══"
+            pm2 restart sidix-brain --update-env || echo "warn: sidix-brain restart issue"
+            sleep 3
+
+            echo "═══ 4. Run deploy-frontend.sh (landing + board sync) ═══"
+            bash deploy-scripts/deploy-frontend.sh
+
+            echo "═══ 5. Verify endpoints ═══"
+            curl -sS --max-time 10 http://localhost:8765/health | head -c 200
+            echo ""
+            curl -sI https://ctrl.sidixlab.com/chatbos/ | head -3 || echo "chatbos nginx config might be missing"
+
+            echo ""
+            echo "✅ Deploy complete. HEAD=$HEAD_SHA"
+          REMOTE_EOF
+
+      - name: Cleanup
+        if: always()
+        run: rm -f ~/.ssh/id_ed25519

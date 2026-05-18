@@ -1,0 +1,41 @@
+{
+  "name": "Mighan-brain-1",
+  "version": "0.1.0",
+  "description": "Brain pack (pemikiran, riset dasar, portofolio, glossary) untuk jadi landasan RAG + memory.",
+  "created_at": "2026-04-15",
+  "data_roots": {
+    "public_markdown_root": "brain/public",
+    "datasets_root": "brain/datasets"
+  },
+  "privacy": {
+    "private_root_hint": "brain/private (ignored by git)",
+    "do_not_commit": [
+      "brain/private/**"
+    ]
+  },
+  "ingest": {
+    "include_globs": [
+      "**/*.md",
+      "**/*.markdown",
+      "**/*.txt"
+    ],
+    "exclude_globs": [
+      "**/.git/**",
+      "**/node_modules/**",
+      "**/.venv/**",
+      "**/__pycache__/**",
+      "**/*.key",
+      "**/*.pem",
+      "**/*.p12",
+      "**/*.pfx",
+      "**/.env",
+      "**/.env.*"
+    ],
+    "max_file_mb": 25
+  },
+  "datasets": {
+    "memory_cards_jsonl": "brain/datasets/memory_cards.jsonl",
+    "qa_pairs_jsonl": "brain/datasets/qa_pairs.jsonl"
+  }
+}
+

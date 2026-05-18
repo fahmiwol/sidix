@@ -1,0 +1,47 @@
+# SIDIX — Caddyfile
+# Ganti "sidixlab.com" dengan domain kamu
+# SSL otomatis via Let's Encrypt
+
+sidixlab.com {
+    # Frontend UI
+    handle /* {
+        reverse_proxy sidix_ui:80
+    }
+
+    # Backend API (proxy dengan prefix /api)
+    handle /api/* {
+        uri strip_prefix /api
+        reverse_proxy brain_qa:8765
+    }
+
+    # Atau kalau mau API di subdomain terpisah:
+    # Uncomment dan comment blok di atas
+    # Tambah juga: api.sidixlab.com { reverse_proxy brain_qa:8765 }
+
+    # Security headers
+    header {
+        X-Frame-Options DENY
+        X-Content-Type-Options nosniff
+        Referrer-Policy strict-origin-when-cross-origin
+    }
+
+    # Rate limiting (opsional, butuh Caddy modul rate_limit)
+    # rate_limit {
+    #     zone sidix {
+    #         match path /api/*
+    #         key {remote_host}
+    #         events 60
+    #         window 1m
+    #     }
+    # }
+
+    log {
+        output file /var/log/caddy/access.log
+    }
+}
+
+# Untuk development lokal (tanpa domain):
+# localhost {
+#     handle /* { reverse_proxy sidix_ui:80 }
+#     handle /api/* { uri strip_prefix /api; reverse_proxy brain_qa:8765 }
+# }

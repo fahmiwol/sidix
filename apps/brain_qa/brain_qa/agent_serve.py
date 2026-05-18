@@ -23,6 +23,7 @@ Swap ke real model:
 
 from __future__ import annotations
 
+import asyncio
 import json
 import logging
 import os
@@ -48,11 +49,77 @@ except ImportError:
 from .agent_react import run_react, format_trace, AgentSession
 from .agent_tools import list_available_tools, call_tool, get_agent_workspace_root
 from .local_llm import adapter_fingerprint, adapter_weights_exist, find_adapter_dir, generate_sidix
+from .voyager_protocol import (
+    VoyagerToolRequest,
+    VoyagerToolResult,
+    create_tool as _voyager_create_tool,
+    list_generated_tools as _voyager_list_tools,
+    get_generated_tool as _voyager_get_tool,
+    delete_generated_tool as _voyager_delete_tool,
+    load_generated_tools_at_startup,
+    get_tool_stats as _voyager_get_tool_stats,
+    list_tool_stats as _voyager_list_tool_stats,
+    discover_similar_tools as _voyager_discover,
+    refine_tool as _voyager_refine_tool,
+    _to_agent_skills_format as _voyager_to_skills_format,
+)
+from .agency_kit import (
+    AgencyKitRequest as _AgencyKitRequest,
+    create_agency_kit_job,
+    get_job_status,
+    list_jobs,
+)
+
+# Raudah Protocol v0.2
+from brain.raudah.core import run_raudah as _raudah_run
+
 from . import rate_limit
 from . import social_radar
 from . import memory_store
+from . import a2a_server
+from . import a2a_client
 from .sensor_hub import probe_all
 from .council import run_council
+from .mode_router import resolve_mode, SidixMode, ModeRouter
+from .app_code_canvas import (
+    CodeRunRequest,
+    CodeRunResponse,
+    CodeDebugRequest,
+    CodeDebugResponse,
+    run_code,
+    debug_code,
+    get_artifact,
+    list_artifacts,
+)
+from .app_framework import (
+    ArtifactCreateRequest,
+    ArtifactUpdateRequest,
+    ArtifactExportRequest,
+    create_artifact as _fw_create_artifact,
+    get_artifact as _fw_get_artifact,
+    update_artifact as _fw_update_artifact,
+    delete_artifact as _fw_delete_artifact,
+    pin_artifact as _fw_pin_artifact,
+    unpin_artifact as _fw_unpin_artifact,
+    list_artifacts as _fw_list_artifacts,
+    export_artifact as _fw_export_artifact,
+    create_version as _fw_create_version,
+)
+from .maqashid_auto_tune import (
+    evaluate_output,
+    auto_tune_response,
+    get_global_stats,
+    AutoTuneResult,
+    evaluate_trace,
+    record_feedback,
+    TraceStep,
+    TraceEvalResult,
+)
+from .debate_ring import (
+    DebateResult as DebateResultModel,
+    run_debate,
+    get_debate_personas,
+)
 
 _PROCESS_STARTED = time.time()
 _ALLOWED_PERSONAS = {"AYMAN", "ABOO", "OOMAR", "ALEY", "UTZ"}
@@ -135,6 +202,18 @@ def _simple_corpus_context(question: str, *, max_chars: int = 500) -> str:
 def _client_ip(request: Request) -> str:
     c = request.client
     return c.host if c else "unknown"
+
+
+def _auto_tune_enabled(request: Request, req_flag: bool = True) -> bool:
+    """
+    Cek apakah Maqashid Auto-Tune aktif.
+    Priority: env SIDIX_AUTO_TUNE > request flag.
+    Default: enabled (SIDIX_AUTO_TUNE=1 atau tidak di-set).
+    """
+    env_val = os.environ.get("SIDIX_AUTO_TUNE", "1").strip()
+    if env_val == "0":
+        return False
+    return req_flag
 
 
 def _is_whitelisted(request: Request) -> bool:
@@ -303,6 +382,7 @@ def _log_user_activity(
 
 class ChatRequest(BaseModel):
     question: str
+    mode: str = "agent"       # Mode System: instant|thinking|agent|deep_research
     persona: str = "UTZ"
     persona_style: str = ""   # Task 22: "pembimbing"|"faktual"|"kreatif"|"akademik"|"rencana"|"singkat"
     output_lang: str = "auto" # Task 26: "auto"|"id"|"en"|"ar"
@@ -323,12 +403,17 @@ class ChatRequest(BaseModel):
         le=24,
         description="Override langkah ReAct maks; None = otomatis (6, atau 12 bila intent implement/app/game).",
     )
+    # Sprint See & Hear (2026-05-01): multimodal input paths
+    image_path: str = ""       # Path ke uploaded image (setelah /upload/image)
+    audio_path: str = ""       # Path ke uploaded audio (setelah /upload/audio)
+    auto_tune: bool = True     # Maqashid Auto-Tune middleware (default ON)
 
 
 class ChatResponse(BaseModel):
     session_id: str
     answer: str
     persona: str
+    mode: str = "agent"            # Mode System: instant|thinking|agent|deep_research
     steps: int
     citations: list[dict]
     duration_ms: int
@@ -342,6 +427,8 @@ class ChatResponse(BaseModel):
     yaqin_level: str = ""          # ilm | ain | haqq
     maqashid_score: float = 0.0    # weighted maqashid 5-axis [0.0–1.0]
     maqashid_passes: bool = True
+    maqashid_passed: bool = True   # alias untuk API konsisten
+    maqashid_violations: list[str] = []
     maqashid_profile_status: str = ""   # pass | warn | block (mode gate)
     maqashid_profile_reasons: str = ""
     audience_register: str = ""    # burhan | jadal | khitabah
@@ -365,6 +452,13 @@ class ChatResponse(BaseModel):
     steps_trace: list[dict] = []    # [{step, thought, action, args_summary, observation_preview, is_final}]
     planner_used: bool = False      # True jika parallel_planner aktif pada sesi ini
     planner_savings: float = 0.0    # estimated savings dari parallel execution (0.0–1.0)
+    # ── Sprint A+B: Sanad Orchestra + Hafidz Injection ─────────────────────────
+    sanad_score: float = 0.0        # consensus score [0.0–1.0]
+    sanad_verdict: str = ""         # golden | pass | retry | fail
+    hafidz_injected: bool = False   # True jika few-shot context di-inject
+    hafidz_stored: bool = False     # True jika result disimpan ke Hafidz
+    # ── Output Modality Attachments (Sprint Beta: image / audio / 3D / video) ──
+    attachments: list[dict] = []    # [{type: image|audio|3d|video, url: str, mime_type: str, title: str}]
 
 
 class GenerateRequest(BaseModel):
@@ -389,6 +483,7 @@ class GenerateResponse(BaseModel):
     model: str
     mode: str  # "mock" | "local_lora" | "api"
     duration_ms: int
+    persona: str = ""
 
 
 class FeedbackRequest(BaseModel):
@@ -427,6 +522,7 @@ class AskRequest(BaseModel):
     strict_mode: bool = False  # OPT-IN: RAG-first, full filter, formal citations
     conversation_id: str = ""  # Thread id untuk memory persistence
     user_id: str = "anon"
+    mode: str = "agent"        # Mode System: instant|thinking|agent|deep_research
 
 
 class ImageGenRequest(BaseModel):
@@ -542,6 +638,7 @@ class AgentGenerateRequest(BaseModel):
     persona: str = "UTZ"
     max_tokens: int = 600
     temperature: float = 0.7
+    auto_tune: bool = True
 
 
 class AgentGenerateResponse(BaseModel):
@@ -549,6 +646,43 @@ class AgentGenerateResponse(BaseModel):
     text: str
     mode: str  # "ollama" | "local_lora" | "mock"
     persona: str
+
+
+# ── Voyager Protocol models ───────────────────────────────────────────────────
+class VoyagerCreateRequest(BaseModel):
+    intent: str
+    tool_name: str | None = None
+    description: str | None = None
+
+
+class VoyagerCreateResponse(BaseModel):
+    success: bool
+    tool_name: str
+    code: str
+    error: str = ""
+    security_passed: bool
+    registered: bool
+
+
+class DebateRequest(BaseModel):
+    """Debate Ring REAL — multi-agent consensus request."""
+    topic: str
+    persona_a: str = "UTZ"
+    persona_b: str = "OOMAR"
+    max_rounds: int = 3
+
+
+# ── A2A Phase 3 Client models ────────────────────────────────────────────────
+
+class A2ADiscoverRequest(BaseModel):
+    """Request to discover an external A2A agent at a given URL."""
+    url: str
+
+
+class A2ADelegateRequest(BaseModel):
+    """Request to delegate a task to an external A2A agent."""
+    agent_url: str = ""
+    message: str
 
 
 class WisdomRequest(BaseModel):
@@ -627,6 +761,7 @@ def _llm_generate(
     temperature: float = 0.7,
     context_snippets: list[str] | None = None,
     preferred_model: str | None = None,
+    persona: str | None = None,
 ) -> tuple[str, str]:
     """
     Returns (generated_text, mode).
@@ -645,6 +780,7 @@ def _llm_generate(
             temperature=temperature,
             context_snippets=context_snippets,
             preferred_model=preferred_model,
+            persona=persona,
         )
         if result.text:
             return result.text, result.mode
@@ -701,6 +837,15 @@ def create_app() -> "FastAPI":
     # Try load embedding model di startup. Kalau gagal (sentence-transformers
     # not installed), semantic_cache stay dormant — Vol 20b graceful disable.
     @app.on_event("startup")
+    async def _bootstrap_voyager_tools():
+        """Load previously generated tools from Voyager Protocol into registry."""
+        try:
+            load_generated_tools_at_startup()
+            log.info("[startup] voyager tools loaded")
+        except Exception as e:
+            log.info("[startup] voyager tools load skipped: %s", e)
+
+    @app.on_event("startup")
     async def _bootstrap_semantic_cache():
         try:
             from .embedding_loader import load_embed_fn, get_active_model_info
@@ -753,8 +898,11 @@ def create_app() -> "FastAPI":
             tadabbur_auto,                # noqa: F401  vol 19 — auto-trigger Tadabbur
             response_cache,               # noqa: F401  vol 19 — LRU cache
             codeact_integration,          # noqa: F401  vol 19 — hook CodeAct ke /ask
+            error_registry,               # noqa: F401  Sprint L — error tracking
+            foresight_radar,              # noqa: F401  Sprint L — RSS + weak signal
+            self_modifier,                # noqa: F401  Sprint L — self-improvement proposals
         )
-        _startup_logger.info("[startup] cognitive modules eager-loaded (vol 5-19)")
+        _startup_logger.info("[startup] cognitive modules eager-loaded (vol 5-19 + Sprint L)")
     except Exception as e:
         _startup_logger.warning("[startup] cognitive eager-load skipped: %s", e)
 
@@ -971,6 +1119,1241 @@ def create_app() -> "FastAPI":
             "senses": probe_all()
         }
 
+    # ── Code Canvas MVP ────────────────────────────────────────────────────────
+    @app.post("/app/code/run")
+    async def code_run(req: CodeRunRequest):
+        """Run code in sandbox and store artifact."""
+        try:
+            result = run_code(code=req.code, language=req.language)
+            return result.model_dump()
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"code run error: {e}")
+
+    @app.post("/app/code/debug")
+    async def code_debug(req: CodeDebugRequest):
+        """Debug code error using local LLM (self-hosted)."""
+        try:
+            result = debug_code(code=req.code, error=req.error)
+            return result.model_dump()
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"code debug error: {e}")
+
+    @app.get("/app/code/history")
+    async def code_history():
+        """List all code artifacts."""
+        artifacts = list_artifacts()
+        return {"artifacts": [a.model_dump() for a in artifacts]}
+
+    @app.get("/app/code/history/{artifact_id}")
+    async def code_history_item(artifact_id: str):
+        """Get a specific code artifact."""
+        artifact = get_artifact(artifact_id)
+        if not artifact:
+            raise HTTPException(status_code=404, detail="artifact not found")
+        return artifact.model_dump()
+
+    # ── Unified Artifact Framework ────────────────────────────────────────────
+    @app.post("/app/artifact/create")
+    async def artifact_create(req: ArtifactCreateRequest):
+        """Buat artifact baru via unified framework."""
+        try:
+            artifact = _fw_create_artifact(req)
+            return artifact.model_dump()
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"artifact create error: {e}")
+
+    @app.get("/app/artifact/list")
+    async def artifact_list(
+        user_id: str = "",
+        type: str = "",
+        status: str = "",
+    ):
+        """List artifacts dengan filter."""
+        artifacts = _fw_list_artifacts(
+            user_id=user_id,
+            artifact_type=type,
+            status=status,
+        )
+        return {
+            "artifacts": [a.model_dump() for a in artifacts],
+            "total": len(artifacts),
+        }
+
+    @app.get("/app/artifact/{artifact_id}")
+    async def artifact_get(artifact_id: str):
+        """Ambil artifact berdasarkan ID."""
+        artifact = _fw_get_artifact(artifact_id)
+        if not artifact:
+            raise HTTPException(status_code=404, detail="artifact not found")
+        return artifact.model_dump()
+
+    @app.post("/app/artifact/{artifact_id}/update")
+    async def artifact_update(artifact_id: str, req: ArtifactUpdateRequest):
+        """Update artifact."""
+        artifact = _fw_update_artifact(artifact_id, req)
+        if not artifact:
+            raise HTTPException(status_code=404, detail="artifact not found")
+        return artifact.model_dump()
+
+    @app.post("/app/artifact/{artifact_id}/delete")
+    async def artifact_delete(artifact_id: str):
+        """Soft delete artifact."""
+        ok = _fw_delete_artifact(artifact_id)
+        if not ok:
+            raise HTTPException(status_code=404, detail="artifact not found")
+        return {"ok": True, "artifact_id": artifact_id}
+
+    @app.post("/app/artifact/{artifact_id}/pin")
+    async def artifact_pin(artifact_id: str):
+        """Pin artifact."""
+        artifact = _fw_pin_artifact(artifact_id)
+        if not artifact:
+            raise HTTPException(status_code=404, detail="artifact not found")
+        return artifact.model_dump()
+
+    @app.post("/app/artifact/{artifact_id}/unpin")
+    async def artifact_unpin(artifact_id: str):
+        """Unpin artifact."""
+        artifact = _fw_unpin_artifact(artifact_id)
+        if not artifact:
+            raise HTTPException(status_code=404, detail="artifact not found")
+        return artifact.model_dump()
+
+    @app.get("/app/artifact/{artifact_id}/export")
+    async def artifact_export(artifact_id: str, format: str = "md"):
+        """Export artifact ke md/json/html."""
+        try:
+            data = _fw_export_artifact(artifact_id, format)
+            return {
+                "artifact_id": artifact_id,
+                "format": format,
+                "data": data,
+            }
+        except ValueError as e:
+            raise HTTPException(status_code=404, detail=str(e))
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"export error: {e}")
+
+    @app.post("/app/artifact/{artifact_id}/version")
+    async def artifact_version(artifact_id: str):
+        """Buat version baru dari artifact."""
+        artifact = _fw_create_version(artifact_id)
+        if not artifact:
+            raise HTTPException(status_code=404, detail="artifact not found")
+        return artifact.model_dump()
+
+    # ── A2A AgentCard (Phase 1 — 2026-05-07) ───────────────────────────────────
+    # Google A2A protocol: Agent Card published at well-known path for discovery.
+    @app.get("/.well-known/agent-card.json")
+    async def agent_card(request: Request):
+        """A2A Agent Card — discoverable by external agents."""
+        _enforce_rate(request)
+        from .mcp_server_wrap import list_tools as _mcp_list_tools
+        mcp_tools = _mcp_list_tools()
+        return {
+            "name": "SIDIX Core",
+            "description": "Self-hosted RAG-first AI assistant with epistemic integrity, 5 personas, and Islamic ethical AI framework. Supports multi-source research, code execution, image generation, and deep recursive research.",
+            "url": "https://ctrl.sidixlab.com",
+            "version": "2.1.0",
+            "capabilities": {
+                "streaming": True,
+                "pushNotifications": False,
+                "statePersistence": True,
+            },
+            "authentication": {
+                "schemes": ["bearer"],
+                "credentials": "API key via x-api-key header or Bearer JWT",
+            },
+            "defaultInputModes": ["text"],
+            "defaultOutputModes": ["text", "image", "code"],
+            "skills": [
+                {
+                    "id": "rag_query",
+                    "name": "RAG Query",
+                    "description": "Search SIDIX knowledge corpus (3237+ docs) with BM25 + sanad-tier rerank. Returns citations with chain of sources.",
+                    "tags": ["knowledge", "search", "citation"],
+                    "examples": ["Apa itu IHOS framework?", "Siapa presiden Indonesia saat ini?"],
+                },
+                {
+                    "id": "deep_research",
+                    "name": "Deep Research",
+                    "description": "Recursive multi-source research: corpus → web → follow-up → synthesis report. Generates comprehensive markdown report with citations.",
+                    "tags": ["research", "report", "recursive"],
+                    "examples": ["Analisis komprehensif AI di Indonesia 2026", "Laporan due diligence startup X"],
+                },
+                {
+                    "id": "code_execution",
+                    "name": "Code Execution",
+                    "description": "Execute Python code in isolated subprocess sandbox. Safe eval with forbidden pattern scanner.",
+                    "tags": ["code", "python", "sandbox"],
+                    "examples": ["Hitung rumus kompleks", "Parse dan transform data CSV"],
+                },
+                {
+                    "id": "image_generation",
+                    "name": "Image Generation",
+                    "description": "Generate images from text prompt via FLUX.1-schnell (local). Graceful fallback to mock SVG.",
+                    "tags": ["image", "creative", "flux"],
+                    "examples": ["Generate logo minimalist untuk kopi brand", "Buat ilustrasi pemandangan gunung"],
+                },
+                {
+                    "id": "web_search",
+                    "name": "Web Search",
+                    "description": "Multi-engine web search via DuckDuckGo HTML (own parser, no API vendor). Standing-alone.",
+                    "tags": ["web", "search", "real-time"],
+                    "examples": ["Berita teknologi terbaru", "Cari referensi jurnal AI"],
+                },
+                {
+                    "id": "mode_chat",
+                    "name": "Mode Chat",
+                    "description": "4-mode chat system: Instant (<2s), Thinking (5-30s), Agent (multi-source parallel), Deep Research (recursive report).",
+                    "tags": ["chat", "modes", "conversation"],
+                    "examples": ["Halo, apa kabar?", "Jelaskan konsep quantum computing", "Riset mendalam tentang energi terbarukan"],
+                },
+            ],
+            "mcpEndpoint": "https://ctrl.sidixlab.com/mcp",
+            "mcpToolsCount": len(mcp_tools),
+        }
+
+    # ── MCP HTTP Transport (Phase B — 2026-05-07) ──────────────────────────────
+    # JSON-RPC 2.0 over HTTP for Model Context Protocol.
+    # Methods: tools/list, tools/call
+    from pydantic import BaseModel as _BaseModel
+
+    class MCPRequest(_BaseModel):
+        jsonrpc: str = "2.0"
+        id: str | int | None = None
+        method: str
+        params: dict = {}
+
+    @app.post("/mcp")
+    async def mcp_http(request: Request):
+        """MCP HTTP endpoint — JSON-RPC 2.0 dispatch."""
+        _enforce_rate(request)
+        from . import mcp_server_wrap as _mcp
+
+        body = await request.json()
+        method = body.get("method", "")
+        params = body.get("params", {})
+        req_id = body.get("id")
+
+        if method == "tools/list":
+            category = params.get("category", "")
+            tools = _mcp.list_tools(category=category)
+            return {
+                "jsonrpc": "2.0",
+                "id": req_id,
+                "result": {"tools": tools},
+            }
+
+        if method == "tools/call":
+            tool_name = params.get("name", "")
+            tool_args = params.get("arguments", {})
+            admin_ok = request.headers.get("x-admin-token", "") == os.environ.get("SIDIX_ADMIN_TOKEN", "")
+            allow_restricted = params.get("allow_restricted", False)
+
+            result = _mcp.execute_tool(
+                tool_name,
+                tool_args,
+                session_id=f"mcp_http_{uuid.uuid4().hex[:8]}",
+                step=1,
+                admin_ok=admin_ok,
+                allow_restricted=allow_restricted,
+            )
+            return {
+                "jsonrpc": "2.0",
+                "id": req_id,
+                "result": {
+                    "content": [
+                        {"type": "text", "text": result.get("output", "")},
+                    ],
+                    "isError": not result.get("success", False),
+                    "metadata": {
+                        "error": result.get("error", ""),
+                        "citations": result.get("citations", []),
+                    },
+                },
+            }
+
+        if method == "server/info":
+            manifest = _mcp.export_manifest()
+            return {
+                "jsonrpc": "2.0",
+                "id": req_id,
+                "result": manifest,
+            }
+
+        return {
+            "jsonrpc": "2.0",
+            "id": req_id,
+            "error": {"code": -32601, "message": f"Method '{method}' not found"},
+        }
+
+    # ── A2A Task endpoints (Phase 2 — 2026-05-07) ──────────────────────────────
+    # Google A2A protocol: accept tasks from external agents.
+    @app.post("/a2a/tasks/send")
+    async def a2a_tasks_send(request: Request):
+        """A2A sync task send — create task and wait for completion."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+        except Exception:
+            raise HTTPException(status_code=400, detail="body JSON tidak valid")
+        import asyncio
+        return await asyncio.to_thread(a2a_server.tasks_send, body)
+
+    @app.get("/a2a/tasks/{task_id}")
+    async def a2a_tasks_get(task_id: str, request: Request):
+        """A2A task state lookup."""
+        _enforce_rate(request)
+        return a2a_server.tasks_get(task_id)
+
+    @app.post("/a2a/tasks/sendSubscribe")
+    async def a2a_tasks_send_subscribe(request: Request):
+        """A2A streaming task send — SSE events until completion."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+        except Exception:
+            raise HTTPException(status_code=400, detail="body JSON tidak valid")
+        from fastapi.responses import StreamingResponse as _SR
+        return _SR(a2a_server.tasks_send_subscribe(body), media_type="text/event-stream")
+
+    @app.post("/a2a/tasks/cancel")
+    async def a2a_tasks_cancel(request: Request):
+        """A2A task cancellation."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+        except Exception:
+            raise HTTPException(status_code=400, detail="body JSON tidak valid")
+        task_id = body.get("taskId", body.get("id", ""))
+        if not task_id:
+            raise HTTPException(status_code=400, detail="taskId or id required")
+        return a2a_server.tasks_cancel(task_id)
+
+    # ── A2A Client endpoints (Phase 3 — 2026-05-07) ────────────────────────────
+    # SIDIX as orchestrator: discover, delegate, and poll external A2A agents.
+    @app.post("/a2a/client/discover")
+    async def a2a_client_discover(req: A2ADiscoverRequest, request: Request):
+        """Discover an external A2A agent at the given URL."""
+        _enforce_rate(request)
+        if not req.url.strip():
+            raise HTTPException(status_code=400, detail="url wajib diisi")
+        agent = a2a_client.discover_agent(req.url.strip())
+        if agent is None:
+            raise HTTPException(status_code=502, detail="gagal discover agent — periksa URL atau konektivitas")
+        return agent.model_dump()
+
+    @app.post("/a2a/client/delegate")
+    async def a2a_client_delegate(req: A2ADelegateRequest, request: Request):
+        """Delegate a task to an external A2A agent."""
+        _enforce_rate(request)
+        if not req.message.strip():
+            raise HTTPException(status_code=400, detail="message wajib diisi")
+
+        agent_url = req.agent_url.strip()
+        # Auto-select best agent if URL not provided
+        if not agent_url:
+            agents = a2a_client.list_known_agents()
+            if not agents:
+                raise HTTPException(
+                    status_code=400,
+                    detail="agent_url kosong dan tidak ada agent di registry. Gunakan /a2a/client/discover dulu.",
+                )
+            best = a2a_client.find_best_agent_for_task(req.message, agents)
+            if best is None:
+                raise HTTPException(status_code=404, detail="tidak ditemukan agent yang cocok di registry")
+            agent_url = best.url
+
+        result = a2a_client.send_task(agent_url, req.message)
+        return result.model_dump()
+
+    @app.get("/a2a/client/agents")
+    async def a2a_client_agents(request: Request):
+        """List known external agents from in-memory registry."""
+        _enforce_rate(request)
+        agents = a2a_client.list_known_agents()
+        return {
+            "ok": True,
+            "count": len(agents),
+            "agents": [a.model_dump() for a in agents],
+        }
+
+    # ── Sprint A+B: Sanad Orchestra + Hafidz Injection endpoints ───────────────
+    @app.get("/agent/sanad/stats")
+    async def sanad_stats(request: Request):
+        """Sanad Orchestra validation statistics."""
+        _enforce_rate(request)
+        try:
+            from .sanad_orchestra import SanadOrchestra
+            orchestra = SanadOrchestra()
+            return {"ok": True, "stats": orchestra.get_stats()}
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    @app.get("/agent/hafidz/stats")
+    async def hafidz_stats(request: Request):
+        """Hafidz Memory Store statistics."""
+        _enforce_rate(request)
+        try:
+            from .hafidz_injector import HafidzInjector
+            injector = HafidzInjector()
+            return {"ok": True, "stats": injector.get_stats()}
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    @app.post("/agent/validate")
+    async def agent_validate(request: Request):
+        """Manual validation endpoint — validate any answer with Sanad Orchestra."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+            answer = body.get("answer", "")
+            query = body.get("query", "")
+            complexity = body.get("complexity", "analytical")
+            
+            from .sanad_orchestra import validate_answer
+            result = await validate_answer(
+                answer=answer,
+                query=query,
+                sources={},
+                persona=body.get("persona", "UTZ"),
+                complexity=complexity,
+            )
+            
+            return {
+                "ok": True,
+                "consensus_score": result.consensus_score,
+                "verdict": result.verdict,
+                "n_claims": len(result.claims),
+                "metadata": result.metadata,
+            }
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    # ── Sprint C: Pattern Extractor endpoints ─────────────────────────────────
+    @app.get("/agent/patterns/stats")
+    async def patterns_stats(request: Request):
+        """Pattern Extractor statistics."""
+        _enforce_rate(request)
+        try:
+            from .pattern_extractor import stats
+            return {"ok": True, "stats": stats()}
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    @app.get("/agent/patterns/search")
+    async def patterns_search(request: Request):
+        """Search patterns by query."""
+        _enforce_rate(request)
+        try:
+            from .pattern_extractor import search_patterns
+            query = request.query_params.get("q", "")
+            top_k = int(request.query_params.get("top_k", "5"))
+            results = search_patterns(query, top_k=top_k)
+            return {"ok": True, "query": query, "patterns": results}
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    @app.post("/agent/patterns/extract")
+    async def patterns_extract(request: Request):
+        """Manual pattern extraction from text."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+            from .pattern_extractor import extract_pattern_from_text, save_pattern
+            pattern = extract_pattern_from_text(
+                body.get("text", ""),
+                source_example=body.get("source_example", ""),
+                derived_from=body.get("derived_from", "manual"),
+            )
+            if pattern:
+                save_pattern(pattern)
+                return {"ok": True, "pattern": pattern.__dict__}
+            return {"ok": False, "error": "No pattern extracted"}
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    # ── Sprint D: Aspiration Detector + Tool Synthesizer endpoints ────────────
+    @app.post("/agent/aspiration/detect")
+    async def aspiration_detect(request: Request):
+        """Detect aspiration from user text."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+            text = body.get("text", "")
+            from .aspiration_detector import detect_aspiration_keywords, analyze_aspiration
+            is_asp, matched = detect_aspiration_keywords(text)
+            if is_asp:
+                aspiration = analyze_aspiration(text, derived_from="api")
+                if aspiration:
+                    return {"ok": True, "is_aspiration": True, "matched": matched, "aspiration": aspiration.__dict__}
+            return {"ok": True, "is_aspiration": False, "matched": matched}
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    @app.post("/agent/tools/synthesize")
+    async def tools_synthesize(request: Request):
+        """Synthesize a new tool from task description."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+            task = body.get("task", "")
+            if not task:
+                return {"ok": False, "error": "task required"}
+            from .tool_synthesizer import synthesize_skill
+            spec = synthesize_skill(task, derived_from="api", auto_test=True)
+            if spec:
+                return {
+                    "ok": True,
+                    "skill_id": spec.id,
+                    "name": spec.name,
+                    "status": spec.status,
+                    "code": spec.code[:500] if spec.code else "",
+                    "test_passes": spec.test_passes,
+                    "test_runs": spec.test_runs,
+                }
+            return {"ok": False, "error": "synthesis failed"}
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    @app.get("/agent/skills/stats")
+    async def skills_stats(request: Request):
+        """Statistics for synthesized skills."""
+        _enforce_rate(request)
+        try:
+            from .tool_synthesizer import stats
+            return {"ok": True, "stats": stats()}
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    @app.get("/agent/skills/list")
+    async def skills_list(request: Request):
+        """List synthesized skills."""
+        _enforce_rate(request)
+        try:
+            from .tool_synthesizer import list_skills
+            status = request.query_params.get("status", "")
+            skills = list_skills(status=status)
+            return {"ok": True, "skills": skills}
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    # ── Sprint E: Pencipta Mode endpoints ─────────────────────────────────────
+    @app.get("/agent/pencipta/status")
+    async def pencipta_status(request: Request):
+        """Pencipta Mode trigger status."""
+        _enforce_rate(request)
+        try:
+            from .pencipta_mode import check_all_triggers
+            trigger = check_all_triggers()
+            return {
+                "ok": True,
+                "triggered": trigger.all_met(),
+                "score": trigger.score(),
+                "self_learn": trigger.self_learn,
+                "self_improve": trigger.self_improve,
+                "self_motivate": trigger.self_motivate,
+            }
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    @app.post("/agent/pencipta/trigger")
+    async def pencipta_trigger(request: Request):
+        """Manually trigger Pencipta Mode."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+            from .pencipta_mode import run_pencipta
+            import asyncio
+            output = await asyncio.to_thread(
+                run_pencipta,
+                force=True,
+                output_type=body.get("output_type", ""),
+                domain=body.get("domain", ""),
+            )
+            if output:
+                return {
+                    "ok": True,
+                    "output": {
+                        "id": output.id,
+                        "type": output.output_type,
+                        "title": output.title,
+                        "domain": output.domain,
+                        "content": output.content[:500],
+                        "sanad_score": output.sanad_score,
+                        "status": output.status,
+                    }
+                }
+            return {"ok": False, "error": "Generation failed or triggers not met"}
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    @app.get("/agent/pencipta/outputs")
+    async def pencipta_outputs(request: Request):
+        """List Pencipta Mode outputs."""
+        _enforce_rate(request)
+        try:
+            from .pencipta_mode import list_outputs
+            limit = int(request.query_params.get("limit", "50"))
+            outputs = list_outputs(limit=limit)
+            return {"ok": True, "outputs": outputs}
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    @app.get("/agent/pencipta/stats")
+    async def pencipta_stats(request: Request):
+        """Pencipta Mode statistics."""
+        _enforce_rate(request)
+        try:
+            from .pencipta_mode import stats
+            return {"ok": True, "stats": stats()}
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    # ════════════════════════════════════════════════════════════════════════
+    # SPRINT F — Self-Test Loop (Cold Start Maturity)
+    # ════════════════════════════════════════════════════════════════════════
+
+    @app.post("/agent/selftest/run")
+    async def selftest_run(request: Request):
+        """Run self-test batch: generate questions → OMNYX pipeline → score → Hafidz store."""
+        _enforce_rate(request)
+        _bump_metric("agent_selftest_run")
+        try:
+            body = await request.json()
+        except Exception:
+            body = {}
+        n = max(1, min(int(body.get("n", 3)), 10))  # clamp 1-10
+        domains = body.get("domains")
+        persona = (body.get("persona") or "AYMAN").strip().upper()
+        if persona not in _ALLOWED_PERSONAS:
+            persona = "AYMAN"
+
+        try:
+            from .self_test_loop import run_batch_self_test
+            results = await run_batch_self_test(n=n, domains=domains, persona=persona)
+            return {
+                "ok": True,
+                "n": len(results),
+                "results": [
+                    {
+                        "test_id": r.test_id,
+                        "question": r.question,
+                        "sanad_score": r.sanad_score,
+                        "sanad_verdict": r.sanad_verdict,
+                        "composite_score": r.composite_score,
+                        "stored_to": r.stored_to,
+                        "duration_ms": r.duration_ms,
+                        "complexity": r.complexity,
+                    }
+                    for r in results
+                ],
+            }
+        except Exception as e:
+            log.warning("[selftest] Run failed: %s", e)
+            return {"ok": False, "error": str(e)}
+
+    @app.get("/agent/selftest/stats")
+    async def selftest_stats(request: Request):
+        """Self-Test Loop aggregate statistics."""
+        _enforce_rate(request)
+        try:
+            from .self_test_loop import get_self_test_stats
+            return {"ok": True, "stats": get_self_test_stats()}
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    @app.get("/agent/selftest/history")
+    async def selftest_history(request: Request):
+        """Recent self-test results."""
+        _enforce_rate(request)
+        try:
+            from .self_test_loop import get_self_test_history
+            limit = max(1, min(int(request.query_params.get("limit", "20")), 100))
+            return {"ok": True, "history": get_self_test_history(limit=limit)}
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    # ════════════════════════════════════════════════════════════════════════
+    # SPRINT G — Maqashid Auto-Tune
+    # ════════════════════════════════════════════════════════════════════════
+
+    @app.post("/agent/maqashid/tune")
+    async def maqashid_tune(request: Request):
+        """Run Maqashid Auto-Tune dari self-test data."""
+        _enforce_rate(request)
+        _bump_metric("agent_maqashid_tune")
+        try:
+            body = await request.json()
+        except Exception:
+            body = {}
+        sample_size = max(10, min(int(body.get("sample_size", 50)), 200))
+
+        try:
+            from .maqashid_auto_tune import run_auto_tune
+            profile = run_auto_tune(sample_size=sample_size)
+            return {
+                "ok": True,
+                "weights": profile.weights,
+                "tuned_at": profile.tuned_at,
+                "sample_size": profile.sample_size,
+                "fail_rates": profile.fail_rates,
+            }
+        except Exception as e:
+            log.warning("[maqashid_tune] Failed: %s", e)
+            return {"ok": False, "error": str(e)}
+
+    @app.get("/agent/maqashid/tuned")
+    async def maqashid_tuned(request: Request):
+        """Get current tuned Maqashid profile."""
+        _enforce_rate(request)
+        try:
+            from .maqashid_auto_tune import load_tuned_profile, DEFAULT_WEIGHTS
+            weights = load_tuned_profile()
+            return {
+                "ok": True,
+                "active": weights is not None,
+                "weights": weights or DEFAULT_WEIGHTS,
+            }
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    @app.post("/agent/maqashid/reset")
+    async def maqashid_reset(request: Request):
+        """Reset Maqashid profile ke default."""
+        _enforce_rate(request)
+        try:
+            from .maqashid_auto_tune import reset_to_default
+            profile = reset_to_default()
+            return {
+                "ok": True,
+                "weights": profile.weights,
+                "message": "Profile reset to default",
+            }
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    # ── POST /app/maqashid/evaluate ───────────────────────────────────────────
+    @app.post("/app/maqashid/evaluate")
+    async def maqashid_evaluate(request: Request):
+        """
+        Manual evaluation endpoint — evaluate arbitrary text with Maqashid Auto-Tune.
+        Phase 2: supports trace-aware evaluation (pass steps for per-step scoring).
+        """
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+        except Exception:
+            raise HTTPException(status_code=400, detail="body JSON tidak valid")
+        text = body.get("text", "")
+        mode = body.get("mode", "general")
+        trace_raw = body.get("trace", [])
+        if not text and not trace_raw:
+            raise HTTPException(status_code=400, detail="text atau trace wajib diisi")
+
+        try:
+            # Phase 2: Trace-aware evaluation jika trace disediakan
+            if trace_raw:
+                steps = []
+                for i, raw in enumerate(trace_raw):
+                    steps.append(TraceStep(
+                        step_number=raw.get("step_number", i + 1),
+                        step_type=raw.get("step_type", "unknown"),
+                        content=raw.get("content", ""),
+                        tool_name=raw.get("tool_name", ""),
+                        tool_result_success=raw.get("tool_result_success", True),
+                        citations=raw.get("citations", []),
+                    ))
+                result = evaluate_trace(steps, mode=mode)
+                return {
+                    "ok": True,
+                    "score": result.overall_score,
+                    "passed": result.passed,
+                    "violations": result.violations,
+                    "suggestions": result.suggestions,
+                    "step_scores": result.step_scores,
+                    "eval_type": "trace_aware",
+                }
+            else:
+                result = evaluate_output(text, mode=mode)
+                return {
+                    "ok": True,
+                    "score": result.score,
+                    "passed": result.passed,
+                    "violations": result.violations,
+                    "suggestions": result.suggestions,
+                    "corrected_output": result.corrected_output,
+                    "eval_type": "heuristic",
+                }
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"evaluation error: {e}")
+
+    # ── POST /app/maqashid/feedback ───────────────────────────────────────────
+    @app.post("/app/maqashid/feedback")
+    async def maqashid_feedback(request: Request):
+        """
+        Phase 2: Record user feedback (thumbs up/down) untuk judge calibration.
+        Body: { "query": "...", "output": "...", "thumbs_up": true, "persona": "AYMAN" }
+        """
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+        except Exception:
+            raise HTTPException(status_code=400, detail="body JSON tidak valid")
+
+        query = body.get("query", "")
+        output = body.get("output", "")
+        thumbs_up = bool(body.get("thumbs_up", True))
+        persona = body.get("persona", "AYMAN")
+
+        if not query or not output:
+            raise HTTPException(status_code=400, detail="query dan output wajib diisi")
+
+        try:
+            result = record_feedback(query=query, output=output, thumbs_up=thumbs_up, persona=persona)
+            return result
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"feedback error: {e}")
+
+    # ── GET /app/maqashid/stats ───────────────────────────────────────────────
+    @app.get("/app/maqashid/stats")
+    async def maqashid_stats(request: Request):
+        """Global auto-tune statistics."""
+        _enforce_rate(request)
+        try:
+            return {"ok": True, **get_global_stats()}
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    # ════════════════════════════════════════════════════════════════════════
+    # RAUDAH PROTOCOL v0.2 — TaskGraph DAG + /raudah/run
+    # ════════════════════════════════════════════════════════════════════════
+
+    class RaudahRunRequest(BaseModel):
+        task: str
+        max_specialists: int = 10
+
+    @app.post("/raudah/run", tags=["Raudah"])
+    async def raudah_run(req: RaudahRunRequest, request: Request):
+        """
+        Raudah Protocol v0.2: Multi-agent parallel orchestration.
+        Dekomposisi task → IHOS guardrail → specialist parallel execution → aggregation.
+        """
+        _enforce_rate(request)
+        if not req.task.strip():
+            raise HTTPException(status_code=400, detail="task wajib diisi")
+        try:
+            import asyncio
+            result = await _raudah_run(req.task, max_specialist=req.max_specialists)
+            return {
+                "ok": True,
+                "session_id": result.session_id,
+                "task_asal": result.task_asal,
+                "jawaban_final": result.jawaban_final,
+                "durasi_s": result.durasi_s,
+                "ihos_lulus": result.ihos_lulus,
+                "specialists": [
+                    {
+                        "task_id": t.task_id,
+                        "role": t.role,
+                        "status": t.status,
+                        "elapsed_s": t.elapsed_s,
+                        "result": t.result[:300],
+                    }
+                    for t in result.hasil_spesialis
+                ],
+            }
+        except Exception as e:
+            log.warning("[raudah_run] Failed: %s", e)
+            raise HTTPException(status_code=500, detail=f"raudah error: {e}")
+
+    # ════════════════════════════════════════════════════════════════════════
+    # SPRINT H — Creative Output Polish
+    # ════════════════════════════════════════════════════════════════════════
+
+    @app.post("/agent/pencipta/polish")
+    async def pencipta_polish(request: Request):
+        """Polish existing creative content via iteration loop."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+        except Exception:
+            body = {}
+        content = body.get("content", "")
+        if not content:
+            return {"ok": False, "error": "content wajib diisi"}
+
+        max_iter = max(1, min(int(body.get("max_iterations", 2)), 5))
+
+        try:
+            from .creative_polish import iterate_polish
+            results = iterate_polish(content, max_iterations=max_iter)
+            return {
+                "ok": True,
+                "iterations": len(results),
+                "final_content": results[-1].output_content if results else content,
+                "improvements": [
+                    {
+                        "iteration": r.iteration,
+                        "composite_before": r.scores_before.composite,
+                        "composite_after": r.scores_after.composite,
+                        "improvement": r.improvement,
+                        "converged": r.converged,
+                    }
+                    for r in results
+                ],
+            }
+        except Exception as e:
+            log.warning("[pencipta_polish] Failed: %s", e)
+            return {"ok": False, "error": str(e)}
+
+    @app.get("/agent/pencipta/quality")
+    async def pencipta_quality(request: Request):
+        """Evaluate quality of creative content (single-pass)."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+        except Exception:
+            body = {}
+        content = body.get("content", "")
+        if not content:
+            return {"ok": False, "error": "content wajib diisi"}
+
+        try:
+            from .creative_polish import evaluate_quality
+            score = evaluate_quality(content)
+            return {
+                "ok": True,
+                "scores": {
+                    "originality": score.originality,
+                    "clarity": score.clarity,
+                    "usefulness": score.usefulness,
+                    "maqashid": score.maqashid,
+                    "composite": score.composite,
+                },
+                "feedback": score.feedback,
+            }
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    @app.get("/agent/pencipta/polish_stats")
+    async def pencipta_polish_stats(request: Request):
+        """Creative polish aggregate statistics."""
+        _enforce_rate(request)
+        try:
+            from .creative_polish import get_polish_stats
+            return {"ok": True, "stats": get_polish_stats()}
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    # ── Sprint I: DoRA Persona Adapter ────────────────────────────────────
+    @app.get("/agent/persona/config/{persona}")
+    async def get_persona_config_endpoint(persona: str, request: Request):
+        """Get generation config for a persona."""
+        _enforce_rate(request)
+        try:
+            from .persona_adapter import get_persona_config
+            cfg = get_persona_config(persona)
+            return {
+                "ok": True,
+                "persona": cfg.persona,
+                "system_prompt": cfg.system_prompt,
+                "temperature": cfg.temperature,
+                "top_p": cfg.top_p,
+                "max_tokens": cfg.max_tokens,
+                "description": cfg.description,
+            }
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    @app.post("/agent/persona/config/{persona}")
+    async def set_persona_config_endpoint(persona: str, request: Request):
+        """Save generation config for a persona."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+        except Exception:
+            return {"ok": False, "error": "body JSON tidak valid"}
+
+        from .persona_adapter import PersonaConfig, save_persona_config
+        cfg = PersonaConfig(
+            persona=persona.upper(),
+            system_prompt=body.get("system_prompt", ""),
+            temperature=body.get("temperature", 0.7),
+            top_p=body.get("top_p", 0.9),
+            max_tokens=body.get("max_tokens", 600),
+            description=body.get("description", ""),
+        )
+        save_persona_config(cfg)
+        return {"ok": True, "persona": persona.upper()}
+
+    @app.post("/agent/persona/reset/{persona}")
+    async def reset_persona_config_endpoint(persona: str, request: Request):
+        """Reset persona config to default."""
+        _enforce_rate(request)
+        try:
+            from .persona_adapter import reset_persona_config
+            reset_persona_config(persona)
+            return {"ok": True, "persona": persona.upper(), "reset": True}
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    @app.post("/agent/persona/generate")
+    async def persona_generate(request: Request):
+        """Generate text with persona-specific config."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+        except Exception:
+            return {"ok": False, "error": "body JSON tidak valid"}
+
+        prompt = body.get("prompt", "")
+        persona = body.get("persona", "AYMAN")
+        if not prompt:
+            return {"ok": False, "error": "prompt wajib diisi"}
+
+        try:
+            from .persona_adapter import generate_with_persona
+            result = generate_with_persona(prompt, persona=persona)
+            return {"ok": True, "text": result, "persona": persona.upper()}
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    @app.post("/agent/persona/harvest/{persona}")
+    async def persona_harvest(persona: str, request: Request):
+        """Harvest persona-specific golden examples from Hafidz."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+        except Exception:
+            body = {}
+        limit = body.get("limit", 50)
+
+        try:
+            from .persona_adapter import harvest_persona_data
+            examples = harvest_persona_data(persona, limit=limit)
+            return {"ok": True, "count": len(examples), "examples": examples}
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    @app.post("/agent/persona/build_training/{persona}")
+    async def persona_build_training(persona: str, request: Request):
+        """Build training data JSONL for future DoRA."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+        except Exception:
+            body = {}
+        limit = body.get("limit", 100)
+
+        try:
+            from .persona_adapter import build_training_data
+            path = build_training_data(persona, limit=limit)
+            return {"ok": True, "path": str(path), "persona": persona.upper()}
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    @app.get("/agent/persona/stats")
+    async def persona_stats(request: Request):
+        """Aggregate persona adapter statistics."""
+        _enforce_rate(request)
+        try:
+            from .persona_adapter import get_adapter_stats
+            return {"ok": True, "stats": get_adapter_stats()}
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    # ── Sprint K: Multi-Agent Spawning ────────────────────────────────────
+    @app.post("/agent/spawn")
+    async def agent_spawn(request: Request):
+        """Spawn multi-agent session untuk task kompleks.
+
+        Body: {"goal": "...", "strategy": "auto", "max_agents": 5,
+               "timeout": 120, "allow_restricted": false}
+        """
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+        except Exception:
+            body = {}
+
+        goal = body.get("goal", "")
+        if not goal:
+            return {"ok": False, "error": "goal wajib diisi"}
+
+        strategy = body.get("strategy", "auto")
+        max_agents = body.get("max_agents", 5)
+        timeout = body.get("timeout", 120)
+        allow_restricted = body.get("allow_restricted", False)
+
+        try:
+            from .spawning.supervisor import SpawnSupervisor
+            supervisor = SpawnSupervisor(default_timeout=timeout)
+            result = supervisor.run(
+                goal=goal,
+                strategy=strategy,
+                max_agents=max_agents,
+                timeout=timeout,
+                allow_restricted=allow_restricted,
+            )
+            return {
+                "ok": True,
+                "task_id": result.task_id,
+                "status": result.status,
+                "synthesized_answer": result.synthesized_answer,
+                "layers": [
+                    {
+                        "layer": lr.layer,
+                        "agents": len(lr.agents),
+                        "all_passed": lr.all_passed,
+                        "duration_ms": lr.duration_ms,
+                    }
+                    for lr in result.layers
+                ],
+                "total_duration_ms": result.total_duration_ms,
+            }
+        except PermissionError as e:
+            return {"ok": False, "error": str(e), "requires_restricted": True}
+        except Exception as e:
+            log.warning("[spawn] Failed: %s", e)
+            return {"ok": False, "error": str(e)}
+
+    @app.get("/agent/spawn/strategies")
+    async def spawn_strategies(request: Request):
+        """List available spawn strategies."""
+        _enforce_rate(request)
+        try:
+            from .spawning.supervisor import SpawnSupervisor
+            return {"ok": True, "strategies": SpawnSupervisor.get_available_strategies()}
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    @app.get("/agent/spawn/stats")
+    async def spawn_stats(request: Request):
+        """Aggregate spawn statistics."""
+        _enforce_rate(request)
+        try:
+            from .spawning.shared_context import SharedContext
+            sessions = SharedContext.list_sessions()
+            return {"ok": True, "total_sessions": len(sessions), "sessions": sessions}
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    # ── SPRINT L — Self-Modifying + Foresight Radar ──────────────────────────
+
+    @app.post("/admin/sprint-l/run-radar", tags=["Sprint L"])
+    async def sprint_l_run_radar(request: Request):
+        """Sprint L2: Jalankan 1 siklus Foresight Radar — fetch RSS + detect weak signals."""
+        _enforce_rate(request)
+        from .error_registry import log_error, ErrorType
+        try:
+            from .foresight_radar import run_radar_cycle
+            # Attempt LLM for draft generation
+            try:
+                from .ollama_llm import ollama_generate
+                llm_fn = lambda p: ollama_generate(p, max_tokens=600)
+            except Exception:
+                llm_fn = None
+            result = run_radar_cycle(llm_fn=llm_fn)
+            return {"ok": True, **result}
+        except Exception as e:
+            log_error(ErrorType.UNKNOWN, f"foresight radar failed: {e}")
+            return {"ok": False, "error": str(e)}
+
+    @app.get("/admin/sprint-l/radar-signals", tags=["Sprint L"])
+    async def sprint_l_radar_signals(request: Request, n: int = 20):
+        """Sprint L2: Ambil sinyal radar terbaru."""
+        _enforce_rate(request)
+        try:
+            from .foresight_radar import get_recent_signals
+            return {"ok": True, "signals": get_recent_signals(n=n)}
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    @app.get("/admin/sprint-l/radar-drafts", tags=["Sprint L"])
+    async def sprint_l_radar_drafts(request: Request):
+        """Sprint L2: Ambil draft research notes dari radar yang belum di-review."""
+        _enforce_rate(request)
+        try:
+            from .foresight_radar import get_pending_drafts
+            return {"ok": True, "drafts": get_pending_drafts()}
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    @app.post("/admin/sprint-l/analyze-errors", tags=["Sprint L"])
+    async def sprint_l_analyze_errors(request: Request):
+        """Sprint L1: LLM analisis pola error → proposal perbaikan."""
+        _enforce_rate(request)
+        try:
+            from .error_registry import analyze_patterns
+            try:
+                from .ollama_llm import ollama_generate
+                llm_fn = lambda p: ollama_generate(p, max_tokens=800)
+            except Exception:
+                llm_fn = None
+            result = analyze_patterns(llm_fn=llm_fn)
+            return {"ok": True, **result}
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    @app.get("/admin/sprint-l/error-stats", tags=["Sprint L"])
+    async def sprint_l_error_stats(request: Request):
+        """Sprint L1: Error registry statistics."""
+        _enforce_rate(request)
+        try:
+            from .error_registry import get_error_stats
+            return {"ok": True, **get_error_stats()}
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    @app.post("/admin/sprint-l/generate-proposal", tags=["Sprint L"])
+    async def sprint_l_generate_proposal(request: Request):
+        """Sprint L1: Generate self-improvement proposal dari diagnostics holistic."""
+        _enforce_rate(request)
+        try:
+            from .self_modifier import generate_improvement_proposal
+            try:
+                from .ollama_llm import ollama_generate
+                llm_fn = lambda p: ollama_generate(p, max_tokens=1000)
+            except Exception:
+                llm_fn = None
+            result = generate_improvement_proposal(llm_fn=llm_fn)
+            return {"ok": True, **result}
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    @app.get("/admin/sprint-l/proposals", tags=["Sprint L"])
+    async def sprint_l_get_proposals(request: Request):
+        """Sprint L1: Lihat pending self-improvement proposals."""
+        _enforce_rate(request)
+        try:
+            from .self_modifier import get_pending_proposals, get_proposal_stats
+            return {
+                "ok": True,
+                "stats": get_proposal_stats(),
+                "pending": get_pending_proposals(),
+            }
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    @app.post("/admin/sprint-l/review-proposal/{proposal_id}", tags=["Sprint L"])
+    async def sprint_l_review_proposal(proposal_id: str, request: Request):
+        """Sprint L1: Review (approve/reject) self-improvement proposal."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+        except Exception:
+            body = {}
+        approved = bool(body.get("approved", False))
+        notes = str(body.get("notes", ""))
+        try:
+            from .self_modifier import mark_proposal_reviewed
+            found = mark_proposal_reviewed(proposal_id, approved=approved, notes=notes)
+            return {"ok": found, "proposal_id": proposal_id, "approved": approved}
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
     # Sprint 14g: CouncilRequest moved to module top-level (line ~456) for
     # Pydantic 2.13 schema gen compat — broke /openapi.json before fix.
     @app.post("/agent/council")
@@ -1063,6 +2446,1186 @@ def create_app() -> "FastAPI":
             "finished": session.finished,
         }
 
+    # ── POST /upload/image ────────────────────────────────────────────────────
+    # Sprint See & Hear (2026-05-01): file upload for multimodal chat input.
+    @app.post("/upload/image")
+    async def upload_image(request: Request):
+        """Upload image file → save to workspace → return path for multimodal."""
+        _enforce_rate(request)
+        try:
+            from multipart import parse_form_data
+            from starlette.requests import Request as StarletteRequest
+            # Parse multipart form
+            form = await request.form()
+            file = form.get("file")
+            if not file:
+                raise HTTPException(status_code=400, detail="file wajib di-upload")
+            # Validate: image only
+            content_type = file.content_type or ""
+            if not content_type.startswith("image/"):
+                raise HTTPException(status_code=400, detail="hanya file image yang diterima")
+            # Save to workspace
+            workspace = get_agent_workspace_root()
+            upload_dir = Path(workspace) / "uploads"
+            upload_dir.mkdir(parents=True, exist_ok=True)
+            ext = content_type.split("/")[-1].replace("jpeg", "jpg")
+            filename = f"img_{uuid.uuid4().hex[:8]}.{ext}"
+            filepath = upload_dir / filename
+            content = await file.read()
+            if len(content) > 5 * 1024 * 1024:  # 5MB limit
+                raise HTTPException(status_code=413, detail="file melebihi 5MB")
+            filepath.write_bytes(content)
+            log.info("[upload] image saved: %s (%d bytes)", filename, len(content))
+            return {
+                "ok": True,
+                "filename": filename,
+                "path": str(filepath),
+                "url": f"/workspace/uploads/{filename}",
+                "size": len(content),
+            }
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[upload] image error: %s", e)
+            raise HTTPException(status_code=500, detail=f"upload error: {e}")
+
+    # ── POST /upload/audio ────────────────────────────────────────────────────
+    @app.post("/upload/audio")
+    async def upload_audio(request: Request):
+        """Upload audio file → save to workspace → return path for STT."""
+        _enforce_rate(request)
+        try:
+            form = await request.form()
+            file = form.get("file")
+            if not file:
+                raise HTTPException(status_code=400, detail="file wajib di-upload")
+            content_type = file.content_type or ""
+            if not content_type.startswith("audio/"):
+                raise HTTPException(status_code=400, detail="hanya file audio yang diterima")
+            workspace = get_agent_workspace_root()
+            upload_dir = Path(workspace) / "uploads"
+            upload_dir.mkdir(parents=True, exist_ok=True)
+            ext = content_type.split("/")[-1].replace("mpeg", "mp3")
+            filename = f"audio_{uuid.uuid4().hex[:8]}.{ext}"
+            filepath = upload_dir / filename
+            content = await file.read()
+            if len(content) > 10 * 1024 * 1024:  # 10MB limit
+                raise HTTPException(status_code=413, detail="file melebihi 10MB")
+            filepath.write_bytes(content)
+            log.info("[upload] audio saved: %s (%d bytes)", filename, len(content))
+            return {
+                "ok": True,
+                "filename": filename,
+                "path": str(filepath),
+                "url": f"/workspace/uploads/{filename}",
+                "size": len(content),
+            }
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[upload] audio error: %s", e)
+            raise HTTPException(status_code=500, detail=f"upload error: {e}")
+
+    # ── POST /upload/audio/transcribe ─────────────────────────────────────────
+    @app.post("/upload/audio/transcribe")
+    async def transcribe_uploaded_audio(request: Request):
+        """Transkripsi file audio yang sudah di-upload via /upload/audio."""
+        _enforce_rate(request)
+        try:
+            form = await request.form()
+            filename = form.get("filename") or form.get("file")
+            if not filename:
+                raise HTTPException(status_code=400, detail="filename wajib diisi")
+            workspace = get_agent_workspace_root()
+            upload_dir = Path(workspace) / "uploads"
+            filepath = upload_dir / filename
+            if not filepath.exists():
+                raise HTTPException(status_code=404, detail="file audio tidak ditemukan, upload dulu via /upload/audio")
+
+            from audio_capability import transcribe_audio
+            result = transcribe_audio(str(filepath), lang=form.get("lang", "id"))
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "transkripsi gagal"))
+            return {
+                "ok": True,
+                "text": result["data"].get("text", ""),
+                "language": result["data"].get("language", "id"),
+                "backend": result["data"].get("backend", "unknown"),
+                "segments": result["data"].get("segments", []),
+                "duration": result["data"].get("duration", 0),
+            }
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[stt] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"stt error: {e}")
+
+    # ── POST /tts ─────────────────────────────────────────────────────────────
+    @app.post("/tts")
+    async def text_to_speech(request: Request):
+        """Sintesis teks ke file audio WAV."""
+        _enforce_rate(request)
+        try:
+            form = await request.form()
+            text = form.get("text", "").strip()
+            if not text:
+                raise HTTPException(status_code=400, detail="text wajib diisi")
+            voice = form.get("voice", "default")
+            lang = form.get("lang", "id")
+
+            workspace = get_agent_workspace_root()
+            upload_dir = Path(workspace) / "uploads"
+            upload_dir.mkdir(parents=True, exist_ok=True)
+            out_name = f"tts_{uuid.uuid4().hex[:8]}.wav"
+            out_path = upload_dir / out_name
+
+            from audio_capability import synthesize_speech
+            result = synthesize_speech(text, voice=voice, lang=lang, out_path=str(out_path))
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "tts gagal"))
+            return {
+                "ok": True,
+                "text": text,
+                "url": f"/workspace/uploads/{out_name}",
+                "path": str(out_path),
+                "backend": result["data"].get("backend", "unknown"),
+            }
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[tts] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"tts error: {e}")
+
+    # ── POST /upload/document ─────────────────────────────────────────────────
+    @app.post("/upload/document")
+    async def upload_document(request: Request):
+        """Upload dokumen (Word/Excel/CSV/JSON/TXT) → parse → return structured data."""
+        _enforce_rate(request)
+        try:
+            form = await request.form()
+            file = form.get("file")
+            if not file:
+                raise HTTPException(status_code=400, detail="file wajib di-upload")
+            content_type = file.content_type or ""
+            workspace = get_agent_workspace_root()
+            upload_dir = Path(workspace) / "uploads"
+            upload_dir.mkdir(parents=True, exist_ok=True)
+
+            # Extract extension from filename or content_type
+            filename = file.filename or "upload"
+            ext = Path(filename).suffix.lower()
+            if not ext:
+                # guess from content_type
+                ct_map = {
+                    "application/vnd.openxmlformats-officedocument.wordprocessingml.document": ".docx",
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": ".xlsx",
+                    "text/csv": ".csv",
+                    "application/json": ".json",
+                    "text/plain": ".txt",
+                }
+                ext = ct_map.get(content_type, ".bin")
+                filename += ext
+
+            filepath = upload_dir / filename
+            content = await file.read()
+            if len(content) > 10 * 1024 * 1024:  # 10MB limit
+                raise HTTPException(status_code=413, detail="file melebihi 10MB")
+            filepath.write_bytes(content)
+            log.info("[upload] document saved: %s (%d bytes)", filename, len(content))
+
+            from document_parser import parse_document
+            parsed = parse_document(str(filepath))
+            return {
+                "ok": True,
+                "filename": filename,
+                "path": str(filepath),
+                "url": f"/workspace/uploads/{filename}",
+                "size": len(content),
+                "parsed": parsed,
+            }
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[upload] document error: %s", e)
+            raise HTTPException(status_code=500, detail=f"upload document error: {e}")
+
+    # ── POST /upload/image/analyze ────────────────────────────────────────────
+    @app.post("/upload/image/analyze")
+    async def analyze_image_endpoint(request: Request):
+        """Analisis gambar via VLM (Ollama vision model)."""
+        _enforce_rate(request)
+        try:
+            form = await request.form()
+            filename = form.get("filename") or form.get("file")
+            prompt = form.get("prompt", "")
+            if not filename:
+                raise HTTPException(status_code=400, detail="filename wajib diisi")
+            workspace = get_agent_workspace_root()
+            upload_dir = Path(workspace) / "uploads"
+            filepath = upload_dir / filename
+            if not filepath.exists():
+                raise HTTPException(status_code=404, detail="file tidak ditemukan, upload dulu via /upload/image")
+
+            from vision_analyzer import analyze_image
+            result = analyze_image(str(filepath), prompt=prompt)
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "analisis gagal"))
+            data = result["data"]
+            return {
+                "ok": True,
+                "description": data.get("description", ""),
+                "model": data.get("model", "unknown"),
+                "backend": data.get("backend", "unknown"),
+                "prompt": data.get("prompt", ""),
+            }
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[image/analyze] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"image analyze error: {e}")
+
+    # ── POST /upload/video/analyze ────────────────────────────────────────────
+    @app.post("/upload/video/analyze")
+    async def analyze_video_endpoint(request: Request):
+        """Analisis video via VLM (extract keyframes → analyze)."""
+        _enforce_rate(request)
+        try:
+            form = await request.form()
+            filename = form.get("filename") or form.get("file")
+            prompt = form.get("prompt", "")
+            if not filename:
+                raise HTTPException(status_code=400, detail="filename wajib diisi")
+            workspace = get_agent_workspace_root()
+            upload_dir = Path(workspace) / "uploads"
+            filepath = upload_dir / filename
+            if not filepath.exists():
+                raise HTTPException(status_code=404, detail="file tidak ditemukan, upload dulu")
+
+            from vision_analyzer import analyze_video
+            result = analyze_video(str(filepath), prompt=prompt)
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "analisis gagal"))
+            data = result["data"]
+            return {
+                "ok": True,
+                "combined_description": data.get("combined_description", ""),
+                "frames_extracted": data.get("frames_extracted", 0),
+                "keyframes_analyzed": data.get("keyframes_analyzed", 0),
+                "model": data.get("model", "unknown"),
+            }
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[video/analyze] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"video analyze error: {e}")
+
+    # ── POST /code/lint ───────────────────────────────────────────────────────
+    @app.post("/code/lint")
+    async def code_lint(request: Request):
+        """Lint code Python (ruff / py_compile)."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+            code = body.get("code", "")
+            if not code:
+                raise HTTPException(status_code=400, detail="code wajib diisi")
+            from coding_agent_enhanced import lint_code
+            result = lint_code(code)
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "lint gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[code/lint] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"lint error: {e}")
+
+    # ── POST /code/debug ──────────────────────────────────────────────────────
+    @app.post("/code/debug")
+    async def code_debug(request: Request):
+        """Debug trace code Python line-by-line."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+            code = body.get("code", "")
+            inputs = body.get("inputs", "")
+            if not code:
+                raise HTTPException(status_code=400, detail="code wajib diisi")
+            from coding_agent_enhanced import debug_trace
+            result = debug_trace(code, inputs)
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "debug gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[code/debug] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"debug error: {e}")
+
+    # ── POST /code/tests ──────────────────────────────────────────────────────
+    @app.post("/code/tests")
+    async def code_tests(request: Request):
+        """Generate unit test stubs dari code."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+            code = body.get("code", "")
+            num = body.get("num_tests", 3)
+            if not code:
+                raise HTTPException(status_code=400, detail="code wajib diisi")
+            from coding_agent_enhanced import generate_tests
+            result = generate_tests(code, num_tests=num)
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "test gen gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[code/tests] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"test gen error: {e}")
+
+    # ── POST /code/review ─────────────────────────────────────────────────────
+    @app.post("/code/review")
+    async def code_review_endpoint(request: Request):
+        """Rule-based code review (security + complexity + style)."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+            code = body.get("code", "")
+            context = body.get("context", "")
+            if not code:
+                raise HTTPException(status_code=400, detail="code wajib diisi")
+            from coding_agent_enhanced import code_review
+            result = code_review(code, context=context)
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "review gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[code/review] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"review error: {e}")
+
+    # ── POST /brand/guidelines ────────────────────────────────────────────────
+    @app.post("/brand/guidelines")
+    async def brand_guidelines_endpoint(request: Request):
+        """Generate brand guidelines komplet."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+            name = body.get("brand_name", "").strip()
+            niche = body.get("niche", "").strip()
+            colors = body.get("base_colors", ["#3B82F6", "#10B981", "#F59E0B"])
+            archetype = body.get("archetype", "everyman")
+            if not name or not niche:
+                raise HTTPException(status_code=400, detail="brand_name dan niche wajib diisi")
+            from brand_guidelines import generate_full_guidelines
+            result = generate_full_guidelines(name, niche, colors, archetype)
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "guidelines gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[brand/guidelines] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"guidelines error: {e}")
+
+    # ── POST /web/fetch ───────────────────────────────────────────────────────
+    @app.post("/web/fetch")
+    async def web_fetch_expanded(request: Request):
+        """Unified web fetch: Reddit, YouTube, GitHub, arXiv, HackerNews."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+            platform = body.get("platform", "").strip().lower()
+            query = body.get("query", "").strip()
+            if not platform or not query:
+                raise HTTPException(status_code=400, detail="platform dan query wajib diisi")
+            from mcp_web_fetch_expanded import fetch_web_unified
+            result = fetch_web_unified(
+                platform=platform,
+                query=query,
+                subreddit=body.get("subreddit", ""),
+                language=body.get("language", ""),
+                owner=body.get("owner", ""),
+                repo=body.get("repo", ""),
+                transcript=body.get("transcript", False),
+                max_results=body.get("max_results", 5),
+            )
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "fetch gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[web/fetch] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"web fetch error: {e}")
+
+    # ── POST /generate/image ──────────────────────────────────────────────────
+    @app.post("/generate/image")
+    async def generate_image_endpoint(request: Request):
+        """Generate image via RunPod media worker (SDXL/Flux)."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+            prompt = body.get("prompt", "").strip()
+            if not prompt:
+                raise HTTPException(status_code=400, detail="prompt wajib diisi")
+            from runpod_connector import generate_image
+            result = generate_image(
+                prompt=prompt,
+                negative_prompt=body.get("negative_prompt", ""),
+                width=body.get("width", 1024),
+                height=body.get("height", 1024),
+                num_inference_steps=body.get("num_inference_steps", 30),
+                guidance_scale=body.get("guidance_scale", 7.5),
+            )
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "image gen gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[generate/image] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"image gen error: {e}")
+
+    # ── POST /generate/3d ─────────────────────────────────────────────────────
+    @app.post("/generate/3d")
+    async def generate_3d_endpoint(request: Request):
+        """Generate 3D mesh via RunPod 3D worker (TripoSR / Hunyuan3D)."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+            prompt = body.get("prompt", "").strip()
+            image_path = body.get("image_path", "")
+            mode = body.get("mode", "triposr")
+            from runpod_connector import generate_3d
+            result = generate_3d(
+                image_path=image_path,
+                prompt=prompt,
+                mode=mode,
+                remove_bg=body.get("remove_bg", True),
+                output_format=body.get("output_format", "glb"),
+            )
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "3D gen gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[generate/3d] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"3D gen error: {e}")
+
+    # ── POST /dataset/scan ────────────────────────────────────────────────────
+    @app.post("/dataset/scan")
+    async def dataset_scan(request: Request):
+        """Scan folder lokal untuk collect metadata gambar (read-only)."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+            path = body.get("path", "").strip()
+            if not path:
+                raise HTTPException(status_code=400, detail="path wajib diisi")
+            from dataset_collector import scan_folder
+            result = scan_folder(path, max_depth=body.get("max_depth", 3))
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "scan gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[dataset/scan] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"dataset scan error: {e}")
+
+    # ── POST /dataset/collect ─────────────────────────────────────────────────
+    @app.post("/dataset/collect")
+    async def dataset_collect(request: Request):
+        """Collect dataset dari multiple sources (Mighan-Web, Mighan-3D, dll)."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+            sources = body.get("sources")
+            tags = body.get("tags")
+            from dataset_collector import collect_dataset, auto_tag_by_folder
+            result = collect_dataset(sources=sources, tags=tags)
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "collect gagal"))
+            data = result["data"]
+            files = auto_tag_by_folder(data.get("files", []))
+            return {
+                "ok": True,
+                "total_files": len(files),
+                "total_size_mb": data.get("total_size_mb", 0),
+                "sources": data.get("sources", []),
+                "files": files[:50],  # limit response size
+            }
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[dataset/collect] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"dataset collect error: {e}")
+
+    # ── GET /dataset/sources ──────────────────────────────────────────────────
+    @app.get("/dataset/sources")
+    async def dataset_sources(request: Request):
+        """List available dataset sources."""
+        _enforce_rate(request)
+        try:
+            from dataset_collector import get_available_sources
+            result = get_available_sources()
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "sources gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[dataset/sources] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"dataset sources error: {e}")
+
+    # ── POST /dataset/web/unsplash ────────────────────────────────────────────
+    @app.post("/dataset/web/unsplash")
+    async def dataset_web_unsplash(request: Request):
+        """Search photos via Unsplash API (free commercial use)."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+            query = body.get("query", "").strip()
+            if not query:
+                raise HTTPException(status_code=400, detail="query wajib diisi")
+            from dataset_web_collector import search_unsplash
+            result = search_unsplash(
+                query=query,
+                per_page=body.get("per_page", 20),
+                orientation=body.get("orientation"),
+            )
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "unsplash gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[dataset/web/unsplash] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"unsplash error: {e}")
+
+    # ── POST /dataset/web/pexels ──────────────────────────────────────────────
+    @app.post("/dataset/web/pexels")
+    async def dataset_web_pexels(request: Request):
+        """Search photos via Pexels API (free commercial use)."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+            query = body.get("query", "").strip()
+            if not query:
+                raise HTTPException(status_code=400, detail="query wajib diisi")
+            from dataset_web_collector import search_pexels
+            result = search_pexels(
+                query=query,
+                per_page=body.get("per_page", 20),
+                orientation=body.get("orientation"),
+                color=body.get("color"),
+            )
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "pexels gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[dataset/web/pexels] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"pexels error: {e}")
+
+    # ── POST /dataset/web/wikimedia ───────────────────────────────────────────
+    @app.post("/dataset/web/wikimedia")
+    async def dataset_web_wikimedia(request: Request):
+        """Search CC-licensed media from Wikimedia Commons."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+            query = body.get("query", "").strip()
+            if not query:
+                raise HTTPException(status_code=400, detail="query wajib diisi")
+            from dataset_web_collector import search_wikimedia
+            result = search_wikimedia(
+                query=query,
+                limit=body.get("limit", 20),
+                license_filter=body.get("license_filter"),
+            )
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "wikimedia gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[dataset/web/wikimedia] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"wikimedia error: {e}")
+
+    # ── POST /dataset/web/wikimedia/file ──────────────────────────────────────
+    @app.post("/dataset/web/wikimedia/file")
+    async def dataset_web_wikimedia_file(request: Request):
+        """Get detailed file info from Wikimedia Commons."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+            title = body.get("title", "").strip()
+            if not title:
+                raise HTTPException(status_code=400, detail="title wajib diisi (e.g. 'File:Example.jpg')")
+            from dataset_web_collector import get_wikimedia_file_info
+            result = get_wikimedia_file_info(title)
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "wikimedia file gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[dataset/web/wikimedia/file] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"wikimedia file error: {e}")
+
+    # ── POST /dataset/web/search ──────────────────────────────────────────────
+    @app.post("/dataset/web/search")
+    async def dataset_web_search(request: Request):
+        """Search across all legal web dataset sources."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+            query = body.get("query", "").strip()
+            if not query:
+                raise HTTPException(status_code=400, detail="query wajib diisi")
+            from dataset_web_collector import search_all
+            result = search_all(
+                query=query,
+                sources=body.get("sources"),
+                per_source=body.get("per_source", 10),
+            )
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "web search gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[dataset/web/search] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"web search error: {e}")
+
+    # ── POST /dataset/dna ─────────────────────────────────────────────────────
+    @app.post("/dataset/dna")
+    async def dataset_dna(request: Request):
+        """Analyze dataset DNA (LoRA suitability, quality, bias)."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+            entries = body.get("entries", [])
+            if not entries:
+                raise HTTPException(status_code=400, detail="entries wajib diisi (list of dict)")
+            from dataset_web_collector import analyze_dataset_dna
+            result = analyze_dataset_dna(entries)
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "dna analysis gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[dataset/dna] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"dna analysis error: {e}")
+
+    # ── GET /dataset/laion ────────────────────────────────────────────────────
+    @app.get("/dataset/laion")
+    async def dataset_laion(request: Request):
+        """Get LAION-5B dataset information and metadata pointers."""
+        _enforce_rate(request)
+        try:
+            from dataset_web_collector import get_laion_info
+            result = get_laion_info()
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "laion info gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[dataset/laion] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"laion info error: {e}")
+
+    # ── POST /dataset/drive/auth ──────────────────────────────────────────────
+    @app.post("/dataset/drive/auth")
+    async def dataset_drive_auth(request: Request):
+        """Generate Google OAuth2 authorization URL for Drive access."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+            from dataset_drive_collector import get_auth_url
+            result = get_auth_url(redirect_uri=body.get("redirect_uri", "http://localhost:8080"))
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "drive auth gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[dataset/drive/auth] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"drive auth error: {e}")
+
+    # ── POST /dataset/drive/exchange ──────────────────────────────────────────
+    @app.post("/dataset/drive/exchange")
+    async def dataset_drive_exchange(request: Request):
+        """Exchange Google OAuth2 code for access + refresh token."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+            code = body.get("code", "").strip()
+            if not code:
+                raise HTTPException(status_code=400, detail="code wajib diisi")
+            from dataset_drive_collector import exchange_auth_code
+            result = exchange_auth_code(
+                code=code,
+                redirect_uri=body.get("redirect_uri", "http://localhost:8080"),
+            )
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "drive exchange gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[dataset/drive/exchange] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"drive exchange error: {e}")
+
+    # ── POST /dataset/drive/list ──────────────────────────────────────────────
+    @app.post("/dataset/drive/list")
+    async def dataset_drive_list(request: Request):
+        """List images from Google Drive folder (agency assets)."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+            folder_id = body.get("folder_id", "").strip() or None
+            from dataset_drive_collector import collect_drive_dataset
+            result = collect_drive_dataset(
+                folder_id=folder_id,
+                max_files=body.get("max_files", 5000),
+                account=body.get("account"),
+            )
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "drive list gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[dataset/drive/list] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"drive list error: {e}")
+
+    # ── GET /dataset/drive/health ─────────────────────────────────────────────
+    @app.get("/dataset/drive/health")
+    async def dataset_drive_health(request: Request):
+        """Check Google Drive API connectivity."""
+        _enforce_rate(request)
+        try:
+            account = request.query_params.get("account")
+            from dataset_drive_collector import drive_health_check
+            result = drive_health_check(account=account)
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "drive health gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[dataset/drive/health] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"drive health error: {e}")
+
+    # ── POST /dataset/drive/explore ───────────────────────────────────────────
+    @app.post("/dataset/drive/explore")
+    async def dataset_drive_explore(request: Request):
+        """Explore Google Drive folder structure recursively."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+            folder_id = body.get("folder_id", "").strip() or None
+            from dataset_drive_collector import explore_drive_structure
+            result = explore_drive_structure(
+                folder_id=folder_id,
+                account=body.get("account"),
+                max_depth=body.get("max_depth", 3),
+            )
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "drive explore gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[dataset/drive/explore] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"drive explore error: {e}")
+
+    # ── POST /dataset/drive/overview ──────────────────────────────────────────
+    @app.post("/dataset/drive/overview")
+    async def dataset_drive_overview(request: Request):
+        """Get overview satu Google Drive account."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+            from dataset_drive_collector import get_account_overview
+            result = get_account_overview(account=body.get("account"))
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "drive overview gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[dataset/drive/overview] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"drive overview error: {e}")
+
+    # ── POST /dataset/drive/batch ─────────────────────────────────────────────
+    @app.post("/dataset/drive/batch")
+    async def dataset_drive_batch(request: Request):
+        """Collect images dari multiple Google Drive accounts sekaligus."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+            accounts = body.get("accounts")
+            from dataset_drive_collector import batch_collect_drive_datasets
+            result = batch_collect_drive_datasets(
+                accounts=accounts,
+                max_files_per_account=body.get("max_files_per_account", 1000),
+            )
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "drive batch gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[dataset/drive/batch] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"drive batch error: {e}")
+
+    # ── GET /dataset/drive/config ─────────────────────────────────────────────
+    @app.get("/dataset/drive/config")
+    async def dataset_drive_config(request: Request):
+        """Get step-by-step instructions untuk setup multiple Google Drive accounts."""
+        _enforce_rate(request)
+        try:
+            from dataset_drive_collector import get_account_config_instructions
+            result = get_account_config_instructions()
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "drive config gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[dataset/drive/config] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"drive config error: {e}")
+
+    # ═══════════════════════════════════════════════════════════════════════════
+    # ELEVENLABS — Guru Trainer Voice
+    # ═══════════════════════════════════════════════════════════════════════════
+
+    # ── POST /tts/elevenlabs ──────────────────────────────────────────────────
+    @app.post("/tts/elevenlabs")
+    async def elevenlabs_tts_endpoint(request: Request):
+        """Generate audio dari text menggunakan ElevenLabs TTS."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+            text = body.get("text", "").strip()
+            if not text:
+                raise HTTPException(status_code=400, detail="text wajib diisi")
+            from elevenlabs_connector import generate_tts
+            result = generate_tts(
+                text=text,
+                voice_id=body.get("voice_id", "21m00Tcm4TlvDq8ikWAM"),
+                model_id=body.get("model_id", "eleven_multilingual_v2"),
+                stability=body.get("stability", 0.5),
+                similarity_boost=body.get("similarity_boost", 0.75),
+                style=body.get("style", 0.0),
+                output_format=body.get("output_format", "mp3_44100_128"),
+            )
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "tts gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[tts/elevenlabs] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"elevenlabs tts error: {e}")
+
+    # ── GET /tts/elevenlabs/voices ────────────────────────────────────────────
+    @app.get("/tts/elevenlabs/voices")
+    async def elevenlabs_voices(request: Request):
+        """List semua voice ElevenLabs."""
+        _enforce_rate(request)
+        try:
+            from elevenlabs_connector import list_voices
+            result = list_voices()
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "voices gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[tts/elevenlabs/voices] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"elevenlabs voices error: {e}")
+
+    # ── POST /tts/elevenlabs/clone ────────────────────────────────────────────
+    @app.post("/tts/elevenlabs/clone")
+    async def elevenlabs_clone(request: Request):
+        """Clone voice dari audio samples."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+            name = body.get("name", "").strip()
+            if not name:
+                raise HTTPException(status_code=400, detail="name wajib diisi")
+            file_paths = body.get("file_paths", [])
+            if not file_paths:
+                raise HTTPException(status_code=400, detail="file_paths wajib diisi")
+            from elevenlabs_connector import clone_voice
+            result = clone_voice(
+                name=name,
+                description=body.get("description", ""),
+                file_paths=file_paths if isinstance(file_paths, list) else [file_paths],
+                labels=body.get("labels"),
+            )
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "clone gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[tts/elevenlabs/clone] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"elevenlabs clone error: {e}")
+
+    # ── GET /tts/elevenlabs/user ──────────────────────────────────────────────
+    @app.get("/tts/elevenlabs/user")
+    async def elevenlabs_user(request: Request):
+        """Check ElevenLabs user quota dan usage."""
+        _enforce_rate(request)
+        try:
+            from elevenlabs_connector import get_user_info
+            result = get_user_info()
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "user info gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[tts/elevenlabs/user] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"elevenlabs user error: {e}")
+
+    # ── POST /tts/elevenlabs/sound ────────────────────────────────────────────
+    @app.post("/tts/elevenlabs/sound")
+    async def elevenlabs_sound(request: Request):
+        """Generate sound effect dari text description."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+            text = body.get("text", "").strip()
+            if not text:
+                raise HTTPException(status_code=400, detail="text wajib diisi")
+            from elevenlabs_connector import generate_sound_effect
+            result = generate_sound_effect(
+                text=text,
+                duration_seconds=body.get("duration_seconds"),
+                prompt_influence=body.get("prompt_influence", 0.3),
+            )
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "sound gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[tts/elevenlabs/sound] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"elevenlabs sound error: {e}")
+
+    # ── GET /tts/elevenlabs/health ────────────────────────────────────────────
+    @app.get("/tts/elevenlabs/health")
+    async def elevenlabs_health(request: Request):
+        """Check ElevenLabs API connectivity."""
+        _enforce_rate(request)
+        try:
+            from elevenlabs_connector import elevenlabs_health_check
+            result = elevenlabs_health_check()
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "health gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[tts/elevenlabs/health] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"elevenlabs health error: {e}")
+
+    # ═══════════════════════════════════════════════════════════════════════════
+    # SIDIX SPARK — Ethical Dataset Curation (Adobe Firefly-inspired)
+    # ═══════════════════════════════════════════════════════════════════════════
+
+    # ── POST /spark/curate ────────────────────────────────────────────────────
+    @app.post("/spark/curate")
+    async def spark_curate(request: Request):
+        """Curate dataset dengan ethical filtering."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+            entries = body.get("entries", [])
+            if not entries:
+                raise HTTPException(status_code=400, detail="entries wajib diisi")
+            from dataset_spark_curation import curate_ethical_dataset
+            result = curate_ethical_dataset(
+                entries=entries,
+                output_path=body.get("output_path", "dataset/spark_curated.jsonl"),
+                curator=body.get("curator", "sidix-spark"),
+            )
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "curate gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[spark/curate] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"spark curate error: {e}")
+
+    # ── POST /spark/validate ──────────────────────────────────────────────────
+    @app.post("/spark/validate")
+    async def spark_validate(request: Request):
+        """Validate license satu entry."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+            entry = body.get("entry", {})
+            if not entry:
+                raise HTTPException(status_code=400, detail="entry wajib diisi")
+            from dataset_spark_curation import validate_license
+            result = validate_license(entry)
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "validate gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[spark/validate] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"spark validate error: {e}")
+
+    # ── POST /spark/bias ──────────────────────────────────────────────────────
+    @app.post("/spark/bias")
+    async def spark_bias(request: Request):
+        """Audit bias pada dataset."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+            entries = body.get("entries", [])
+            if not entries:
+                raise HTTPException(status_code=400, detail="entries wajib diisi")
+            from dataset_spark_curation import audit_bias
+            result = audit_bias(entries)
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "bias gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[spark/bias] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"spark bias error: {e}")
+
+    # ── GET /spark/pinterest ──────────────────────────────────────────────────
+    @app.get("/spark/pinterest")
+    async def spark_pinterest(request: Request):
+        """Show detailed warning tentang risiko scraping Pinterest."""
+        _enforce_rate(request)
+        try:
+            from dataset_spark_curation import get_pinterest_warning
+            result = get_pinterest_warning()
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "warning gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[spark/pinterest] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"spark pinterest error: {e}")
+
+    # ── POST /spark/provenance ────────────────────────────────────────────────
+    @app.post("/spark/provenance")
+    async def spark_provenance(request: Request):
+        """Generate provenance report untuk dataset."""
+        _enforce_rate(request)
+        try:
+            body = await request.json()
+            credentials = body.get("credentials", [])
+            if not credentials:
+                raise HTTPException(status_code=400, detail="credentials wajib diisi")
+            from dataset_spark_curation import generate_provenance_report
+            result = generate_provenance_report(credentials)
+            if not result.get("ok"):
+                raise HTTPException(status_code=500, detail=result.get("fallback_instructions", "provenance gagal"))
+            return {"ok": True, **result["data"]}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.warning("[spark/provenance] error: %s", e)
+            raise HTTPException(status_code=500, detail=f"spark provenance error: {e}")
+
+    # ═════════════════════════════════════════════════════════════════════════════
+    # ── Output Modality Detector (Beta: auto-detect image / audio / 3D / video)
+    # ═════════════════════════════════════════════════════════════════════════════
+    def _detect_output_modality(question: str) -> list[dict]:
+        """Deteksi intent generate image, audio, 3D, video dari pertanyaan user.
+        Return: list of attachment dicts dengan type + prompt untuk tool.
+        """
+        q = question.lower()
+        attachments = []
+
+        # Image generation signals
+        image_signals = [
+            "bikin gambar", "buat gambar", "generate image", "generate gambar",
+            "desain logo", "desain banner", "buat ilustrasi", "generate logo",
+            "text to image", "text-to-image", "buat poster", "buat thumbnail",
+        ]
+        if any(s in q for s in image_signals):
+            attachments.append({"type": "image", "prompt": question, "tool": "text_to_image"})
+
+        # TTS signals
+        tts_signals = [
+            "baca teks", "text to speech", "text-to-speech", "suara", "voice",
+            "bacakan", "bikin suara", "generate suara", "buat audio", "jadi suara",
+        ]
+        if any(s in q for s in tts_signals):
+            # Extract text setelah keyword
+            text = question
+            for kw in ["baca teks", "text to speech", "bacakan", "bikin suara", "generate suara", "buat audio", "jadi suara"]:
+                if kw in q:
+                    text = question.split(kw, 1)[-1].strip()
+                    break
+            attachments.append({"type": "audio", "text": text, "tool": "synthesize_speech"})
+
+        # 3D signals
+        three_d_signals = [
+            "3d model", "model 3d", "generate 3d", "buat 3d", "mesh", "3d object",
+        ]
+        if any(s in q for s in three_d_signals):
+            attachments.append({"type": "3d", "prompt": question, "tool": "generate_3d_runpod"})
+
+        return attachments
+
+    def _run_modality_tool(attachment: dict) -> dict | None:
+        """Panggil tool modality dan return attachment metadata."""
+        try:
+            from .agent_tools import call_tool, ToolResult
+            if attachment["tool"] == "text_to_image":
+                result = call_tool(
+                    tool_name="text_to_image",
+                    args={"prompt": attachment["prompt"], "model": "flux", "width": 512, "height": 512},
+                    session_id="modality_auto", step=0, allow_restricted=False,
+                )
+                if result.success and result.output:
+                    return {"type": "image", "url": result.output, "mime_type": "image/png", "title": "Generated Image"}
+            elif attachment["tool"] == "synthesize_speech":
+                result = call_tool(
+                    tool_name="synthesize_speech",
+                    args={"text": attachment["text"], "voice": "default", "speed": 1.0},
+                    session_id="modality_auto", step=0, allow_restricted=False,
+                )
+                if result.success and result.output:
+                    return {"type": "audio", "url": result.output, "mime_type": "audio/mp3", "title": "Generated Speech"}
+            elif attachment["tool"] == "generate_3d_runpod":
+                result = call_tool(
+                    tool_name="generate_3d_runpod",
+                    args={"prompt": attachment["prompt"], "format": "glb"},
+                    session_id="modality_auto", step=0, allow_restricted=False,
+                )
+                if result.success and result.output:
+                    return {"type": "3d", "url": result.output, "mime_type": "model/gltf-binary", "title": "Generated 3D Model"}
+        except Exception as e:
+            log.warning("[modality_auto] %s error: %s", attachment.get("tool"), e)
+        return None
+
     # ── POST /agent/chat ──────────────────────────────────────────────────────
     @app.post("/agent/chat", response_model=ChatResponse)
     def agent_chat(req: ChatRequest, request: Request):
@@ -1090,6 +3653,36 @@ def create_app() -> "FastAPI":
             conversation_context = memory_store.get_recent_context(effective_conversation_id)
         except Exception:
             pass
+
+        # ── Multi-modal Input Processing (Beta: image + audio) ────────────────
+        multimodal_context = []
+        if req.image_path and os.path.exists(req.image_path):
+            try:
+                from .vision_analyzer import analyze_image
+                result = analyze_image(image_path=req.image_path, prompt="Deskripsikan gambar ini.")
+                if result.get("ok"):
+                    desc = result.get("data", {}).get("description", "")
+                    multimodal_context.append({
+                        "role": "system",
+                        "content": f"[IMAGE ANALYSIS] User uploaded an image. Description: {desc}",
+                    })
+            except Exception as _img_err:
+                log.debug("[multimodal] image analysis fail: %s", _img_err)
+        if req.audio_path and os.path.exists(req.audio_path):
+            try:
+                from .audio_capability import transcribe_audio
+                result = transcribe_audio(file_path=req.audio_path, lang="auto", model_size="small")
+                if result.get("ok"):
+                    text = result.get("data", {}).get("text", "")
+                    multimodal_context.append({
+                        "role": "system",
+                        "content": f"[AUDIO TRANSCRIPTION] User uploaded audio. Transcription: {text}",
+                    })
+            except Exception as _aud_err:
+                log.debug("[multimodal] audio transcription fail: %s", _aud_err)
+        if multimodal_context:
+            conversation_context = multimodal_context + conversation_context
+        # ─────────────────────────────────────────────────────────────────────
 
         try:
             from .persona import resolve_style_persona
@@ -1121,8 +3714,33 @@ def create_app() -> "FastAPI":
 
         duration_ms = int((time.time() - t0) * 1000)
 
+        # ── Maqashid Auto-Tune Middleware ─────────────────────────────────────
+        _at_enabled = _auto_tune_enabled(request, req.auto_tune)
+        _at_result = None
+        if _at_enabled:
+            try:
+                tuned = auto_tune_response(session.final_answer or "", mode="general", auto_correct=False)
+                if tuned != session.final_answer:
+                    session.final_answer = tuned
+                    _at_result = evaluate_output(tuned, mode="general")
+            except Exception as _at_err:
+                log.debug("[auto_tune] /agent/chat fail-open: %s", _at_err)
+        # ─────────────────────────────────────────────────────────────────────
+
         _store_session(session)
         (None if _is_whitelisted(request) else rate_limit.record_daily_use(_daily_client_key(request)))
+
+        # ── Output Modality Auto-Detect (Beta) ──────────────────────────────────
+        attachments = []
+        try:
+            detected = _detect_output_modality(req.question)
+            for d in detected:
+                att = _run_modality_tool(d)
+                if att:
+                    attachments.append(att)
+        except Exception as _mod_err:
+            log.debug("[modality_auto] error: %s", _mod_err)
+        # ─────────────────────────────────────────────────────────────────────
 
         # Persist to memory (best-effort, non-blocking)
         try:
@@ -1134,6 +3752,7 @@ def create_app() -> "FastAPI":
             session_id=session.session_id,
             answer=session.final_answer,
             persona=session.persona,
+            mode="agent",
             steps=len(session.steps),
             citations=session.citations,
             duration_ms=duration_ms,
@@ -1147,6 +3766,8 @@ def create_app() -> "FastAPI":
             yaqin_level=getattr(session, "yaqin_level", ""),
             maqashid_score=getattr(session, "maqashid_score", 0.0),
             maqashid_passes=getattr(session, "maqashid_passes", True),
+            maqashid_passed=_at_result.passed if _at_result else getattr(session, "maqashid_passes", True),
+            maqashid_violations=_at_result.violations if _at_result else [],
             maqashid_profile_status=getattr(session, "maqashid_profile_status", ""),
             maqashid_profile_reasons=getattr(session, "maqashid_profile_reasons", ""),
             audience_register=getattr(session, "audience_register", ""),
@@ -1169,7 +3790,316 @@ def create_app() -> "FastAPI":
             steps_trace=_build_steps_trace(session.steps),
             planner_used=getattr(session, "planner_used", False),
             planner_savings=getattr(session, "planner_savings", 0.0),
+            # ── Output Modality Attachments (Beta) ──────────────────────────
+            attachments=attachments,
         )
+
+    # ── POST /agent/chat_holistic ─────────────────────────────────────────────
+    # Sprint Mojeek (2026-04-30): Holistic mode dengan OMNYX Direction.
+    # Primary path: OMNYX tool-calling (corpus → web → persona → synthesis).
+    # Legacy fallback: parallel multi-source fanout.
+    @app.post("/agent/chat_holistic", response_model=ChatResponse)
+    async def agent_chat_holistic(req: ChatRequest, request: Request):
+        _enforce_rate(request)
+        _bump_metric("agent_chat_holistic")
+        if not req.question.strip():
+            raise HTTPException(status_code=400, detail="question tidak boleh kosong")
+
+        t0 = time.time()
+
+        # ── Mode System (2026-05-07) ────────────────────────────────────────────
+        # Detect mode dari query + override, strip slash commands
+        detected_mode, mode_config = resolve_mode(req.question, req.mode)
+        working_question = ModeRouter.strip_override(req.question)
+        log.info("[mode] detected=%s question=%s", detected_mode.value, working_question[:60])
+
+        # INSTANT mode: fast path, no tools, direct LLM
+        if detected_mode == SidixMode.INSTANT:
+            try:
+                from .local_llm import generate_sidix
+                instant_text, _ = generate_sidix(
+                    prompt=working_question,
+                    system="Kamu SIDIX. Jawab singkat, tepat, dan ramah.",
+                    max_tokens=mode_config["max_tokens"],
+                    temperature=mode_config["temperature"],
+                    persona=effective_persona,
+                )
+                duration_ms = int((time.time() - t0) * 1000)
+                _ans = instant_text
+                if _auto_tune_enabled(request, req.auto_tune):
+                    try:
+                        _ans = auto_tune_response(_ans, mode="general", auto_correct=False)
+                    except Exception:
+                        pass
+                return ChatResponse(
+                    session_id=f"instant_{uuid.uuid4().hex[:8]}",
+                    answer=_ans,
+                    persona="AYMAN",
+                    steps=0,
+                    citations=[],
+                    duration_ms=duration_ms,
+                    finished=True,
+                    error="",
+                    confidence="tinggi",
+                    confidence_score=0.9,
+                    answer_type="fakta",
+                    user_id=req.user_id or "anon",
+                    conversation_id=req.conversation_id or "",
+                    mode=detected_mode.value,
+                )
+            except Exception as instant_err:
+                log.warning("[mode] instant fallback: %s", instant_err)
+                # fallback ke AGENT path
+
+        effective_persona = (req.persona or "UTZ").strip().upper()
+        if effective_mode_persona := mode_config.get("persona"):
+            if effective_mode_persona == "auto":
+                effective_persona = ModeRouter.detect_persona(working_question)
+            elif effective_mode_persona in _ALLOWED_PERSONAS:
+                effective_persona = effective_mode_persona
+        if effective_persona not in _ALLOWED_PERSONAS:
+            effective_persona = "UTZ"
+
+        # Sprint J: conversation memory — load history before calling OMNYX
+        effective_user_id = (req.user_id or "").strip() or request.headers.get("x-user-id", "anon").strip()
+        effective_conversation_id = (req.conversation_id or "").strip() or request.headers.get("x-conversation-id", "").strip()
+        if not effective_conversation_id:
+            effective_conversation_id = memory_store.create_conversation(
+                user_id=effective_user_id,
+                title=req.question[:60],
+                persona=effective_persona,
+            )
+        conversation_context: list[dict] = []
+        try:
+            conversation_context = memory_store.get_recent_context(effective_conversation_id)
+        except Exception:
+            pass
+        # Sprint J: match agent_react flow: reformulate short follow-ups
+        # before injecting conversation context for memory-aware OMNYX.
+        # FIX 2026-05-07: preserve strip_override result, don't overwrite with raw req.question
+        contextual_question = working_question
+        if conversation_context:
+            from .agent_react import _inject_conversation_context, _reformulate_with_context
+            contextual_question = _reformulate_with_context(working_question, conversation_context)
+            working_question = _inject_conversation_context(contextual_question, conversation_context)
+
+        # OMNYX Direction — primary path
+        # Sprint See & Hear: if image/audio present, use multimodal input
+        try:
+            from .omnyx_direction import OMNYXDirector
+            director = OMNYXDirector()
+
+            # If multimodal input present, use multimodal path
+            if req.image_path or req.audio_path:
+                from .multimodal_input import process_multimodal
+                mm_result = process_multimodal(
+                    text=req.question,
+                    image_path=req.image_path,
+                    audio_path=req.audio_path,
+                    persona=effective_persona,
+                )
+                duration_ms = int((time.time() - t0) * 1000)
+                _mm_ans = mm_result.get("answer", "")
+                if _auto_tune_enabled(request, req.auto_tune):
+                    try:
+                        _mm_ans = auto_tune_response(_mm_ans, mode="general", auto_correct=False)
+                    except Exception:
+                        pass
+                return ChatResponse(
+                    session_id=f"holistic_mm_{uuid.uuid4().hex[:8]}",
+                    answer=_mm_ans,
+                    persona=effective_persona,
+                    mode=detected_mode.value,
+                    steps=1,
+                    citations=[],
+                    duration_ms=duration_ms,
+                    finished=True,
+                    error="",
+                    confidence="sedang",
+                    confidence_score=0.5,
+                    answer_type="fakta",
+                    user_id=effective_user_id,
+                    conversation_id=effective_conversation_id,
+                )
+
+            result = await director.run(working_question, persona=effective_persona)
+            duration_ms = int((time.time() - t0) * 1000)
+
+            try:
+                from .agent_react import _apply_hygiene
+                result["answer"] = _apply_hygiene(str(result.get("answer", "")))
+            except Exception:
+                pass
+
+            if _auto_tune_enabled(request, req.auto_tune):
+                try:
+                    result["answer"] = auto_tune_response(result.get("answer", ""), mode="general", auto_correct=False)
+                except Exception:
+                    pass
+
+            # Sprint J: persist user message + assistant answer to memory
+            try:
+                memory_store.add_message(effective_conversation_id, "user", req.question, persona=effective_persona)
+                memory_store.add_message(
+                    effective_conversation_id, "assistant",
+                    result.get("answer", ""), persona=effective_persona,
+                    confidence_score=0.7 if result.get("confidence") == "tinggi" else 0.5,
+                )
+            except Exception as mem_err:
+                log.debug("[chat_holistic] memory save skipped: %s", mem_err)
+
+            # Sprint L: confidence auto-trigger — sanad_score < 0.4 (scale 0-1) → log error
+            sanad_score_val = float(result.get("sanad_score") or 0.0)
+            if sanad_score_val < 0.4 and sanad_score_val > 0.0:
+                try:
+                    from .error_registry import log_error, ErrorType
+                    log_error(
+                        ErrorType.LOW_CONFIDENCE,
+                        f"sanad_score={sanad_score_val:.1f} untuk query: {req.question[:80]}",
+                        context={"persona": effective_persona, "sanad_score": sanad_score_val},
+                        root_cause="insufficient_corpus_or_web_coverage",
+                        session_id=effective_conversation_id,
+                    )
+                except Exception:
+                    pass
+
+            return ChatResponse(
+                session_id=f"holistic_{uuid.uuid4().hex[:8]}",
+                answer=result.get("answer", ""),
+                persona=effective_persona,
+                mode=detected_mode.value,
+                steps=result.get("n_turns", 1),
+                citations=[{"source": s} for s in result.get("sources_used", [])],
+                duration_ms=duration_ms,
+                finished=True,
+                error="",
+                confidence=result.get("confidence", "sedang"),
+                confidence_score=0.7 if result.get("confidence") == "tinggi" else 0.5,
+                answer_type="fakta",
+                user_id=effective_user_id,
+                conversation_id=effective_conversation_id,
+                # Sprint A+B: expose Sanad + Hafidz metrics
+                sanad_score=result.get("sanad_score", 0.0),
+                sanad_verdict=result.get("sanad_verdict", ""),
+                hafidz_injected=result.get("hafidz_injected", False),
+                hafidz_stored=result.get("hafidz_stored", False),
+            )
+        except Exception as omnyx_err:
+            # Sprint L: log OMNYX exceptions to error registry
+            try:
+                from .error_registry import log_error, ErrorType
+                log_error(
+                    ErrorType.OMNYX_EXCEPTION,
+                    str(omnyx_err)[:200],
+                    context={"persona": effective_persona, "question_len": len(req.question)},
+                    session_id=effective_conversation_id,
+                )
+            except Exception:
+                pass
+            omnyx_err_str = str(omnyx_err)
+            log.warning("[chat_holistic] OMNYX fail: %s", omnyx_err)
+
+        # Legacy fallback: parallel multi-source (corpus + web + persona)
+        try:
+            from .multi_source_orchestrator import MultiSourceOrchestrator
+            orchestrator = MultiSourceOrchestrator()
+            bundle = await orchestrator.gather_all(
+                contextual_question,
+                enable_web=True,
+                enable_corpus=True,
+                enable_persona_fanout=True,
+            )
+            from .cognitive_synthesizer import CognitiveSynthesizer
+            synth = CognitiveSynthesizer()
+            result = await synth.synthesize(bundle)
+            try:
+                from .agent_react import _apply_hygiene
+                result.answer = _apply_hygiene(result.answer)
+            except Exception:
+                pass
+
+            if _auto_tune_enabled(request, req.auto_tune):
+                try:
+                    result.answer = auto_tune_response(result.answer, mode="general", auto_correct=False)
+                except Exception:
+                    pass
+
+            duration_ms = int((time.time() - t0) * 1000)
+
+            # Sprint J: persist to memory
+            try:
+                memory_store.add_message(effective_conversation_id, "user", req.question, persona=effective_persona)
+                memory_store.add_message(effective_conversation_id, "assistant", result.answer, persona=effective_persona)
+            except Exception:
+                pass
+
+            return ChatResponse(
+                session_id=f"holistic_legacy_{uuid.uuid4().hex[:8]}",
+                answer=result.answer,
+                persona=effective_persona,
+                mode=detected_mode.value,
+                steps=1,
+                citations=result.citations,
+                duration_ms=duration_ms,
+                finished=True,
+                error="",
+                confidence=result.confidence,
+                confidence_score=result.confidence_score,
+                answer_type=result.answer_type,
+                user_id=effective_user_id,
+                conversation_id=effective_conversation_id,
+            )
+        except Exception as fallback_err:
+            log.error("[chat_holistic] Fallback also failed: %s", fallback_err)
+            raise HTTPException(status_code=500, detail=f"OMNYX error: {omnyx_err_str}; fallback: {fallback_err}")
+
+    @app.post("/agent/chat_holistic_stream")
+    async def agent_chat_holistic_stream(req: ChatRequest, request: Request):
+        """SSE wrapper for the canonical OMNYX holistic path used by the UI."""
+        from fastapi.responses import StreamingResponse as _SR
+        import asyncio
+        import json as _json
+        import re as _re
+
+        async def generate():
+            try:
+                yield f"data: {_json.dumps({'type': 'start', 'query': req.question})}\n\n"
+                yield f"data: {_json.dumps({'type': 'orchestrator_start'})}\n\n"
+
+                chat_response = await agent_chat_holistic(req, request)
+                answer = (chat_response.answer or "").strip()
+                yield f"data: {_json.dumps({'type': 'synthesis_start'})}\n\n"
+
+                for part in _re.findall(r'\S+\s*', answer):
+                    yield f"data: {_json.dumps({'type': 'token', 'text': part})}\n\n"
+                    await asyncio.sleep(0.005)
+
+                sources_used = list(getattr(chat_response, "sources_used", None) or [])
+                if not sources_used:
+                    sources_used = [
+                        c.get("source", "")
+                        for c in (getattr(chat_response, "citations", None) or [])
+                        if isinstance(c, dict) and c.get("source")
+                    ]
+                done_payload = {
+                    "type": "done",
+                    "duration_ms": chat_response.duration_ms,
+                    "confidence": chat_response.confidence,
+                    "n_sources": getattr(chat_response, "n_sources", 0) or len(sources_used),
+                    "sources_used": sources_used,
+                    "method": getattr(chat_response, "method", "holistic_stream"),
+                    "session_id": chat_response.session_id,
+                    "conversation_id": chat_response.conversation_id,
+                }
+                yield f"data: {_json.dumps(done_payload)}\n\n"
+            except HTTPException as exc:
+                payload = {"type": "error", "message": str(exc.detail), "status_code": exc.status_code}
+                yield f"data: {_json.dumps(payload)}\n\n"
+            except Exception as exc:
+                payload = {"type": "error", "message": str(exc)}
+                yield f"data: {_json.dumps(payload)}\n\n"
+
+        return _SR(generate(), media_type="text/event-stream")
 
     # ── GET /dashboard ─ public visi coverage dashboard (HTML) ────────────────
     @app.get("/dashboard")
@@ -1323,311 +4253,6 @@ def create_app() -> "FastAPI":
     # Yields events real-time: source-discovered → source-completed →
     # synthesis-streaming. Frontend typewriter render. First byte ~2 detik
     # vs 60-120s freeze tanpa streaming.
-    @app.post("/agent/chat_holistic_stream")
-    async def agent_chat_holistic_stream(req: ChatRequest, request: Request):
-        _enforce_rate(request)
-        _enforce_daily(request)
-        _bump_metric("agent_chat_holistic_stream")
-
-        if not req.question.strip():
-            raise HTTPException(status_code=400, detail="question tidak boleh kosong")
-
-        try:
-            from .multi_source_orchestrator import MultiSourceOrchestrator
-            from .cognitive_synthesizer import CognitiveSynthesizer
-            from .output_type_detector import detect_output_type, OutputType
-        except Exception as e:
-            raise HTTPException(status_code=500, detail=f"holistic_unavailable: {e}")
-
-        async def _event_generator():
-            """Yield SSE events for real-time UX."""
-            import time as _time
-            import asyncio as _asyncio
-            _t0 = _time.monotonic()
-
-            # Sprint 5 Phase 2: detect output type early
-            output_detection = detect_output_type(req.question)
-
-            # Initial event: query received + output type hint
-            yield f"data: {json.dumps({'type': 'start', 'query': req.question[:100], 'output_type': output_detection.output_type.value, 'output_confidence': output_detection.confidence})}\n\n"
-
-            orchestrator = MultiSourceOrchestrator()
-            # UX-fix 2026-04-30: max_tokens 600→350 (CPU synthesis 54s→~30s untuk simple query)
-            synthesizer = CognitiveSynthesizer(max_tokens=350, temperature=0.65)
-
-            # Phase 1: gather paralel (single async call, no per-source streaming yet)
-            yield f"data: {json.dumps({'type': 'orchestrator_start', 'message': 'Mengerahkan jurus seribu bayangan...'})}\n\n"
-
-            bundle = await orchestrator.gather_all(req.question)
-
-            # Emit per-source completion events
-            for src_name in ("web", "corpus", "dense", "persona_fanout", "tools"):
-                src_result = getattr(bundle, src_name, None)
-                if src_result:
-                    yield f"data: {json.dumps({'type': 'source_complete', 'source': src_name, 'success': src_result.success, 'latency_ms': src_result.latency_ms})}\n\n"
-
-            yield f"data: {json.dumps({'type': 'orchestrator_done', 'n_successful': len(bundle.successful_sources()), 'total_latency_ms': bundle.total_latency_ms})}\n\n"
-
-            # Phase 2: synthesize
-            yield f"data: {json.dumps({'type': 'synthesis_start', 'message': 'Cognitive synthesizer merging...'})}\n\n"
-
-            synthesis = await synthesizer.synthesize(bundle)
-
-            # Yield answer in chunks (simulate streaming since underlying LLM call is sync)
-            answer = synthesis.answer or ""
-            chunk_size = 80
-            for i in range(0, len(answer), chunk_size):
-                chunk = answer[i:i + chunk_size]
-                yield f"data: {json.dumps({'type': 'token', 'text': chunk})}\n\n"
-
-            # Sprint 5 Phase 3: multi-modal tool invocation (image / audio / video / 3d / structured)
-            attachments = []
-            out_type = output_detection.output_type.value
-
-            if out_type == "image_prompt":
-                yield f"data: {json.dumps({'type': 'tool_invoke', 'tool': 'image_gen', 'message': 'Generating image...'})}\n\n"
-                try:
-                    from .agent_tools import _tool_text_to_image
-                    img_result = await _asyncio.to_thread(
-                        _tool_text_to_image,
-                        {"prompt": req.question, "width": 1024, "height": 1024, "steps": 4},
-                    )
-                    if img_result.success and img_result.citations:
-                        cit = img_result.citations[0]
-                        attachment = {
-                            "type": "image",
-                            "url": cit.get("url", ""),
-                            "prompt": cit.get("prompt", req.question),
-                            "mode": cit.get("mode", "unknown"),
-                        }
-                        attachments.append(attachment)
-                        yield f"data: {json.dumps({'type': 'attachment', 'attachment': attachment})}\n\n"
-                    else:
-                        yield f"data: {json.dumps({'type': 'tool_error', 'tool': 'image_gen', 'error': img_result.error or 'unknown'})}\n\n"
-                except Exception as e:
-                    yield f"data: {json.dumps({'type': 'tool_error', 'tool': 'image_gen', 'error': str(e)[:100]})}\n\n"
-
-            elif out_type == "audio_tts":
-                yield f"data: {json.dumps({'type': 'tool_invoke', 'tool': 'tts', 'message': 'Synthesizing speech...'})}\n\n"
-                try:
-                    from .agent_tools import _tool_text_to_speech
-                    tts_text = (synthesis.answer or req.question)[:500]
-                    tts_result = await _asyncio.to_thread(
-                        _tool_text_to_speech,
-                        {"text": tts_text, "lang": "id"},
-                    )
-                    if tts_result.success:
-                        import re as _re
-                        out_path = ""
-                        for line in (tts_result.output or "").split("\n"):
-                            m = _re.search(r"`([^`]+)`", line)
-                            if m:
-                                out_path = m.group(1)
-                                break
-                        attachment = {
-                            "type": "audio",
-                            "url": f"/generated/audio/{out_path.split('/')[-1]}" if out_path else "",
-                            "text": tts_text[:200],
-                            "mode": "tts",
-                        }
-                        attachments.append(attachment)
-                        yield f"data: {json.dumps({'type': 'attachment', 'attachment': attachment})}\n\n"
-                    else:
-                        yield f"data: {json.dumps({'type': 'tool_error', 'tool': 'tts', 'error': tts_result.error or 'unknown'})}\n\n"
-                except Exception as e:
-                    yield f"data: {json.dumps({'type': 'tool_error', 'tool': 'tts', 'error': str(e)[:100]})}\n\n"
-
-            elif out_type in ("video_storyboard", "3d_prompt", "structured"):
-                # Text-only output (Phase 3) — wrap synthesis.answer dengan type metadata
-                attachment = {
-                    "type": out_type.replace("_prompt", "").replace("_storyboard", "_storyboard"),
-                    "url": "",
-                    "text": synthesis.answer or "",
-                    "mode": "text_only_phase3",
-                }
-                # Normalize types
-                if out_type == "3d_prompt":
-                    attachment["type"] = "3d_prompt"
-                elif out_type == "video_storyboard":
-                    attachment["type"] = "video_storyboard"
-                elif out_type == "structured":
-                    attachment["type"] = "structured"
-                attachments.append(attachment)
-                yield f"data: {json.dumps({'type': 'attachment', 'attachment': attachment})}\n\n"
-
-            elapsed_ms = int((_time.monotonic() - _t0) * 1000)
-
-            yield f"data: {json.dumps({'type': 'done', 'duration_ms': elapsed_ms, 'confidence': synthesis.confidence, 'n_sources': synthesis.n_sources, 'sources_used': synthesis.sources_used, 'method': synthesis.method, 'output_type': output_detection.output_type.value, 'attachments': attachments})}\n\n"
-
-        from fastapi.responses import StreamingResponse as _SR
-        return _SR(
-            _event_generator(),
-            media_type="text/event-stream",
-            headers={"Cache-Control": "no-cache", "Connection": "keep-alive", "X-Accel-Buffering": "no"},
-        )
-
-    # ── POST /agent/chat_holistic ──────────────────────────────────────────────
-    # Sprint Α (Jurus Seribu Bayangan) — visi bos 2026-04-30: REPLACE pattern
-    # "routing otomatis pilih 1 sumber" dengan multi-source paralel default.
-    # Mengerahkan SEMUA resource SIDIX simultan: web + corpus + dense_index +
-    # persona_fanout 5 + tool_registry → sanad verify → cognitive_synthesizer.
-    @app.post("/agent/chat_holistic")
-    async def agent_chat_holistic(req: ChatRequest, request: Request):
-        _enforce_rate(request)
-        _enforce_daily(request)
-        _bump_metric("agent_chat_holistic")
-
-        if not req.question.strip():
-            raise HTTPException(status_code=400, detail="question tidak boleh kosong")
-
-        try:
-            from .multi_source_orchestrator import MultiSourceOrchestrator
-            from .cognitive_synthesizer import CognitiveSynthesizer
-            from .output_type_detector import detect_output_type, OutputType
-        except Exception as e:
-            raise HTTPException(status_code=500, detail=f"holistic_unavailable: {e}")
-
-        import time as _time
-        _t0 = _time.monotonic()
-
-        # Sprint 5: Adaptive Output detection (Pencipta visi)
-        output_detection = detect_output_type(req.question)
-
-        orchestrator = MultiSourceOrchestrator()
-        # UX-fix 2026-04-30: max_tokens 600→350 (CPU synthesis speed)
-        synthesizer = CognitiveSynthesizer(max_tokens=350, temperature=0.65)
-
-        # Phase 1: gather paralel
-        bundle = await orchestrator.gather_all(req.question)
-
-        # Phase 2: synthesize
-        debug_flag = bool(request.query_params.get("debug"))
-        synthesis = await synthesizer.synthesize(bundle, debug=debug_flag)
-
-        # Sprint 5 Phase 3: Adaptive Output - multi-modal tool invocation (Pencipta)
-        # Branch per output_type: IMAGE / AUDIO_TTS / VIDEO_STORYBOARD / 3D / STRUCTURED
-        attachments: list[dict] = []
-        out_type = output_detection.output_type.value
-
-        if out_type == "image_prompt":
-            try:
-                import asyncio as _asyncio
-                from .agent_tools import _tool_text_to_image
-                img_result = await _asyncio.to_thread(
-                    _tool_text_to_image,
-                    {"prompt": req.question, "width": 1024, "height": 1024, "steps": 4},
-                )
-                if img_result.success and img_result.citations:
-                    cit = img_result.citations[0]
-                    attachments.append({
-                        "type": "image",
-                        "url": cit.get("url", ""),
-                        "prompt": cit.get("prompt", req.question),
-                        "mode": cit.get("mode", "unknown"),
-                    })
-            except Exception as _err:
-                log.warning(f"[chat_holistic] image_gen fail: {_err}")
-
-        elif out_type == "audio_tts":
-            try:
-                import asyncio as _asyncio
-                from .agent_tools import _tool_text_to_speech
-                # Synthesize SIDIX answer (synthesis.answer) sebagai audio
-                tts_text = (synthesis.answer or req.question)[:500]  # cap 500 char
-                tts_result = await _asyncio.to_thread(
-                    _tool_text_to_speech,
-                    {"text": tts_text, "lang": "id"},
-                )
-                if tts_result.success:
-                    # Parse output untuk extract path (markdown lines)
-                    out_path = ""
-                    for line in (tts_result.output or "").split("\n"):
-                        if "out_path" in line.lower() or "Output:" in line:
-                            # extract backtick path
-                            import re as _re
-                            m = _re.search(r"`([^`]+)`", line)
-                            if m:
-                                out_path = m.group(1)
-                                break
-                    attachments.append({
-                        "type": "audio",
-                        "url": f"/generated/audio/{out_path.split('/')[-1]}" if out_path else "",
-                        "text": tts_text,
-                        "mode": "tts",
-                    })
-            except Exception as _err:
-                log.warning(f"[chat_holistic] tts fail: {_err}")
-
-        elif out_type == "video_storyboard":
-            # Phase 3 Pencipta: text-only multi-scene storyboard (no actual video gen yet)
-            # Synthesizer sudah generate scene-by-scene format via adaptive_output_hint.
-            # Frontend render sebagai structured display.
-            attachments.append({
-                "type": "video_storyboard",
-                "url": "",  # placeholder — actual video gen Phase 4
-                "text": synthesis.answer or "",
-                "mode": "text_only_storyboard",
-            })
-
-        elif out_type == "3d_prompt":
-            # Phase 3 Pencipta: text-only 3D mesh/material spec (no actual mesh gen yet)
-            # Future: wire ke Mighan-3D pipeline (Tiranyx ekosistem).
-            attachments.append({
-                "type": "3d_prompt",
-                "url": "",  # placeholder — actual 3D gen Phase 4 (Mighan-3D bridge)
-                "text": synthesis.answer or "",
-                "mode": "text_only_spec",
-            })
-
-        elif out_type == "structured":
-            # Synthesizer already format markdown table/list per adaptive hint.
-            # No additional tool, just flag for frontend render style.
-            attachments.append({
-                "type": "structured",
-                "url": "",
-                "text": synthesis.answer or "",
-                "mode": "markdown_table",
-            })
-
-        elapsed_ms = int((_time.monotonic() - _t0) * 1000)
-
-        # Sprint Creative 100%: persona deliverable validator (auto-quality gate)
-        persona_compliance = None
-        if req.persona and synthesis.answer:
-            try:
-                from .persona_deliverable_validator import validate_persona_output
-                pd_score = validate_persona_output(req.persona.upper(), synthesis.answer)
-                persona_compliance = {
-                    "persona": pd_score.persona,
-                    "compliant": pd_score.compliant,
-                    "score": pd_score.score,
-                    "rules_passed": pd_score.rules_passed,
-                    "rules_failed": pd_score.rules_failed,
-                }
-            except Exception as _val_err:
-                log.debug(f"[chat_holistic] persona validator skip: {_val_err}")
-
-        return {
-            "answer": synthesis.answer,
-            "duration_ms": elapsed_ms,
-            "confidence": synthesis.confidence,
-            "n_sources": synthesis.n_sources,
-            "sources_used": synthesis.sources_used,
-            "method": synthesis.method,
-            "synthesis_latency_ms": synthesis.latency_ms,
-            "orchestrator_latency_ms": bundle.total_latency_ms,
-            "orchestrator_errors": bundle.errors,
-            "debug_bundle": synthesis.debug_bundle if debug_flag else None,
-            # Sprint 5: Adaptive Output hint untuk frontend
-            "output_type": output_detection.output_type.value,
-            "output_confidence": output_detection.confidence,
-            "output_reason": output_detection.reason,
-            "suggested_tools": output_detection.suggested_tools,
-            # Sprint 5 Phase 2: actual tool output attachments
-            "attachments": attachments,
-            # Sprint Creative 100%: persona deliverable compliance score
-            "persona_compliance": persona_compliance,
-        }
 
     # ── POST /agent/generate ──────────────────────────────────────────────────
     # Jiwa Sprint: pure general chat tanpa ReAct loop / tool / corpus overhead.
@@ -1675,7 +4300,13 @@ def create_app() -> "FastAPI":
                     temperature=req.temperature,
                 )
                 if mode == "ollama":
-                    return AgentGenerateResponse(text=text, mode="ollama", persona=p)
+                    _gen_text = text
+                    if _auto_tune_enabled(request, req.auto_tune):
+                        try:
+                            _gen_text = auto_tune_response(_gen_text, mode="general", auto_correct=False)
+                        except Exception:
+                            pass
+                    return AgentGenerateResponse(text=_gen_text, mode="ollama", persona=p)
         except Exception:
             pass
 
@@ -1687,9 +4318,16 @@ def create_app() -> "FastAPI":
                 system=_system,
                 max_tokens=req.max_tokens,
                 temperature=req.temperature,
+                persona=p,
             )
             if mode == "local_lora":
-                return AgentGenerateResponse(text=text, mode="local_lora", persona=p)
+                _gen_text = text
+                if _auto_tune_enabled(request, req.auto_tune):
+                    try:
+                        _gen_text = auto_tune_response(_gen_text, mode="general", auto_correct=False)
+                    except Exception:
+                        pass
+                return AgentGenerateResponse(text=_gen_text, mode="local_lora", persona=p)
         except Exception:
             pass
 
@@ -1754,6 +4392,7 @@ def create_app() -> "FastAPI":
                     system=_system,
                     max_tokens=req.max_tokens,
                     temperature=req.temperature,
+                    persona=p,
                 )
                 if mode == "local_lora":
                     yield f"data: {json.dumps({'type': 'token', 'text': text})}\n\n"
@@ -1995,6 +4634,53 @@ def create_app() -> "FastAPI":
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"kitabah failed: {e}")
 
+    # ── POST /creative/debate — Debate Ring REAL ─────────────────────────────
+    @app.post("/creative/debate", tags=["Supermodel"])
+    def creative_debate(req: DebateRequest, request: Request):
+        """
+        Debate Ring REAL — multi-agent consensus via Qwen LLM.
+        3-round debate: Creator → Critic → Creator revises → Neutral synthesis.
+        """
+        _enforce_rate(request)
+        _enforce_daily(request)
+        _bump_metric("creative_debate")
+        if not (req.topic or "").strip():
+            raise HTTPException(status_code=400, detail="topic kosong")
+
+        t0 = time.time()
+        try:
+            result = run_debate(
+                topic=req.topic,
+                persona_a=req.persona_a,
+                persona_b=req.persona_b,
+                max_rounds=max(1, min(req.max_rounds, 5)),
+            )
+        except Exception as e:
+            log.warning("[debate] failed: %s", e)
+            raise HTTPException(status_code=500, detail=f"debate failed: {e}")
+
+        _log_user_activity(
+            request,
+            action="creative/debate",
+            question=req.topic,
+            answer=result.consensus_text[:160],
+            mode="debate",
+            latency_ms=int((time.time() - t0) * 1000),
+        )
+        return {
+            "topic": result.topic,
+            "rounds": [r.model_dump() for r in result.rounds],
+            "consensus_text": result.consensus_text,
+            "winner": result.winner,
+            "cqf_score": result.cqf_score,
+            "duration_ms": result.duration_ms,
+        }
+
+    @app.get("/creative/debate/personas", tags=["Supermodel"])
+    def creative_debate_personas():
+        """List available debate persona pairs."""
+        return {"pairs": get_debate_personas()}
+
     # ── POST /agent/rasa — Sprint 21: 🎭 RASA Aesthetic/Quality Scorer ───────
     @app.post("/agent/rasa", tags=["Supermodel"])
     def agent_rasa(req: RasaRequest, request: Request):
@@ -2145,12 +4831,17 @@ def create_app() -> "FastAPI":
         if not req.prompt.strip():
             raise HTTPException(status_code=400, detail="prompt tidak boleh kosong")
 
+        p = (req.persona or "UTZ").strip().upper() or "UTZ"
+        if p not in _ALLOWED_PERSONAS:
+            p = "UTZ"
+
         t0 = time.time()
         text, mode = _llm_generate(
             prompt=req.prompt,
             system=req.system,
             max_tokens=req.max_tokens,
             temperature=req.temperature,
+            persona=p,
         )
         duration_ms = int((time.time() - t0) * 1000)
         (None if _is_whitelisted(request) else rate_limit.record_daily_use(_daily_client_key(request)))
@@ -2160,6 +4851,7 @@ def create_app() -> "FastAPI":
             model="Qwen2.5-7B-Instruct-LoRA" if mode != "mock" else "mock",
             mode=mode,
             duration_ms=duration_ms,
+            persona=p,
         )
 
     # ── GET /agent/tools ──────────────────────────────────────────────────────
@@ -3249,9 +5941,9 @@ def create_app() -> "FastAPI":
 
     @app.post("/agent/vision", tags=["Sensorial"])
     async def vision_endpoint(request: Request):
-        """Receive image upload (base64 / URL). Save + EXIF strip + caption stub.
-        Body: {image_base64?, image_url?, user_id?}
-        VLM real integration target Q3 2026 (Qwen2.5-VL)."""
+        """Receive image upload (base64 / URL). Analyze via VLM (moondream/llava-phi3).
+        Body: {image_base64?, image_url?, user_id?, prompt?}
+        VLM integration: Ollama vision models (local)."""
         try:
             body = await request.json()
         except Exception:
@@ -3259,7 +5951,6 @@ def create_app() -> "FastAPI":
         if not body.get("image_base64") and not body.get("image_url"):
             raise HTTPException(status_code=400, detail="image_base64 atau image_url wajib")
 
-        # Extract user dari Bearer JWT kalau ada
         user_id = ""
         try:
             from . import auth_google
@@ -3269,6 +5960,7 @@ def create_app() -> "FastAPI":
         except Exception:
             pass
 
+        # Save + record
         try:
             from . import sensorial_input
             from dataclasses import asdict
@@ -3277,15 +5969,31 @@ def create_app() -> "FastAPI":
                 image_url=body.get("image_url", ""),
                 user_id=user_id or body.get("user_id", ""),
             )
-            return {"ok": record.processing_status != "failed", "record": asdict(record)}
         except Exception as e:
-            raise HTTPException(status_code=500, detail=f"vision fail: {e}")
+            raise HTTPException(status_code=500, detail=f"vision save fail: {e}")
+
+        # Analyze via VLM
+        try:
+            from .vision_analyzer import analyze_image
+            image_path = record.local_path or ""
+            prompt = body.get("prompt", "Deskripsikan gambar ini dalam Bahasa Indonesia.")
+            if image_path and os.path.exists(image_path):
+                result = analyze_image(image_path=image_path, prompt=prompt)
+                return {
+                    "ok": result.get("ok", False),
+                    "record": asdict(record),
+                    "analysis": result.get("data", {}),
+                    "fallback_instructions": result.get("fallback_instructions", ""),
+                }
+        except Exception as e:
+            log.warning("[vision] VLM analysis fail: %s", e)
+
+        return {"ok": record.processing_status != "failed", "record": asdict(record)}
 
     @app.post("/agent/audio", tags=["Sensorial"])
     async def audio_endpoint(request: Request):
-        """Receive audio upload (base64). STT real integration target Q3 2026
-        (Step-Audio / Qwen3-ASR / Whisper local).
-        Body: {audio_base64, user_id?}"""
+        """Receive audio upload (base64). Transcribe via Whisper (faster-whisper / openai-whisper).
+        Body: {audio_base64, user_id?, lang?}"""
         try:
             body = await request.json()
         except Exception:
@@ -3302,6 +6010,7 @@ def create_app() -> "FastAPI":
         except Exception:
             pass
 
+        # Save + record
         try:
             from . import sensorial_input
             from dataclasses import asdict
@@ -3309,9 +6018,30 @@ def create_app() -> "FastAPI":
                 audio_base64=body.get("audio_base64", ""),
                 user_id=user_id or body.get("user_id", ""),
             )
-            return {"ok": record.processing_status != "failed", "record": asdict(record)}
         except Exception as e:
-            raise HTTPException(status_code=500, detail=f"audio fail: {e}")
+            raise HTTPException(status_code=500, detail=f"audio save fail: {e}")
+
+        # Transcribe via Whisper
+        transcription = ""
+        try:
+            from .audio_capability import transcribe_audio
+            audio_path = record.local_path or ""
+            if audio_path and os.path.exists(audio_path):
+                result = transcribe_audio(
+                    file_path=audio_path,
+                    lang=body.get("lang", "auto"),
+                    model_size="small",
+                )
+                if result.get("ok"):
+                    transcription = result.get("data", {}).get("text", "")
+        except Exception as e:
+            log.warning("[audio] transcription fail: %s", e)
+
+        return {
+            "ok": record.processing_status != "failed",
+            "record": asdict(record),
+            "transcription": transcription,
+        }
 
     @app.post("/agent/voice", tags=["Sensorial"])
     async def voice_endpoint(request: Request):
@@ -4010,6 +6740,86 @@ def create_app() -> "FastAPI":
             return {"ok": True, "removed": removed}
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"whitelist remove fail: {e}")
+
+    # ── Google Drive Admin ─────────────────────────────────────────────────────
+
+    @app.get("/admin/drive/accounts", tags=["Admin"])
+    def admin_drive_accounts(request: Request):
+        """List semua Google Drive accounts + connection status (admin only)."""
+        if not _admin_ok(request):
+            raise HTTPException(status_code=403, detail="Akses ditolak")
+        try:
+            from .drive_admin_manager import list_accounts
+            return list_accounts()
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"drive accounts fail: {e}")
+
+    @app.post("/admin/drive/connect", tags=["Admin"])
+    async def admin_drive_connect(request: Request):
+        """Generate OAuth2 auth URL untuk connect Google Drive account (admin only)."""
+        if not _admin_ok(request):
+            raise HTTPException(status_code=403, detail="Akses ditolak")
+        try:
+            body = await request.json()
+            from .drive_admin_manager import generate_auth_url
+            return generate_auth_url(
+                account_name=body.get("account", "default"),
+                client_id=body.get("client_id"),
+                client_secret=body.get("client_secret"),
+                redirect_uri=body.get("redirect_uri", "https://sidixlab.com/admin/drive/callback"),
+                scope=body.get("scope", "https://www.googleapis.com/auth/drive.readonly"),
+            )
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"drive connect fail: {e}")
+
+    @app.post("/admin/drive/exchange", tags=["Admin"])
+    async def admin_drive_exchange(request: Request):
+        """Exchange OAuth2 code dan store token untuk Drive account (admin only)."""
+        if not _admin_ok(request):
+            raise HTTPException(status_code=403, detail="Akses ditolak")
+        try:
+            body = await request.json()
+            from .drive_admin_manager import exchange_and_store
+            return exchange_and_store(
+                account_name=body.get("account", "default"),
+                code=body.get("code", ""),
+            )
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"drive exchange fail: {e}")
+
+    @app.post("/admin/drive/refresh", tags=["Admin"])
+    async def admin_drive_refresh(request: Request):
+        """Refresh access token untuk Drive account (admin only)."""
+        if not _admin_ok(request):
+            raise HTTPException(status_code=403, detail="Akses ditolak")
+        try:
+            body = await request.json()
+            from .drive_admin_manager import refresh_account_token
+            return refresh_account_token(account_name=body.get("account", "default"))
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"drive refresh fail: {e}")
+
+    @app.delete("/admin/drive/account/{account_name}", tags=["Admin"])
+    def admin_drive_delete_account(account_name: str, request: Request):
+        """Hapus Google Drive account dari token store (admin only)."""
+        if not _admin_ok(request):
+            raise HTTPException(status_code=403, detail="Akses ditolak")
+        try:
+            from .drive_admin_manager import delete_account
+            return delete_account(account_name)
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"drive delete fail: {e}")
+
+    @app.get("/admin/drive/account/{account_name}", tags=["Admin"])
+    def admin_drive_account_detail(account_name: str, request: Request):
+        """Get Drive account detail (tanpa expose secret) (admin only)."""
+        if not _admin_ok(request):
+            raise HTTPException(status_code=403, detail="Akses ditolak")
+        try:
+            from .drive_admin_manager import get_account_token
+            return get_account_token(account_name)
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"drive detail fail: {e}")
 
     # ── Branch Management ──────────────────────────────────────────────────────
 
@@ -4931,6 +7741,9 @@ def create_app() -> "FastAPI":
                             "_sanad_contributors": _sanad_result.contributing_branches,
                             "_sanad_total_duration_ms": _sanad_result.total_duration_ms,
                             "_sanad_render_duration_ms": _sanad_ms,
+                            "relevan_score": round(_sanad_result.relevan_score, 2),
+                            "sanad_tier": _sanad_result.sanad_tier,
+                            "iteration_count": _sanad_result.iteration_count,
                             "_citations": _sanad_result.citations[:10],
                         }
                         yield f"data: {_json.dumps(_sanad_meta)}\n\n"
@@ -4945,6 +7758,9 @@ def create_app() -> "FastAPI":
                             "conversation_id": effective_conversation_id,
                             "confidence": "tinggi",
                             "_sanad_active": True,
+                            "relevan_score": round(_sanad_result.relevan_score, 2),
+                            "sanad_tier": _sanad_result.sanad_tier,
+                            "iteration_count": _sanad_result.iteration_count,
                             "citations": _sanad_result.citations[:10],
                         }
                         yield f"data: {_json.dumps(_sanad_done)}\n\n"
@@ -5683,11 +8499,76 @@ def create_app() -> "FastAPI":
 
     @app.get("/training/stats")
     def training_stats():
-        """Statistik training pairs yang sudah digenerate dari corpus."""
+        """Dashboard stats untuk Self-Train Fase 1 curation pipeline."""
         try:
-            from .corpus_to_training import get_training_stats
-            stats = get_training_stats()
-            return {"ok": True, "stats": stats}
+            from .curator_agent import get_curation_stats, get_training_data_info, load_corpus_docs
+            stats = get_curation_stats()
+            latest = get_training_data_info()
+            corpus_docs = load_corpus_docs(limit=5000)
+
+            total_approved = stats.get("approved", 0)
+            total_rejected = stats.get("rejected", 0)
+            total_premium = stats.get("premium_pairs", 0)
+            last_curation = stats.get("last_run", "")
+            pairs_this_week = latest.get("pairs", 0) if latest.get("ok") else 0
+            premium_this_week = sum(
+                1 for _ in (
+                    Path(latest.get("path", "")).parent.glob("corpus_pairs_premium.jsonl")
+                )
+            ) if latest.get("ok") else 0
+
+            return {
+                "total_corpus_docs": len(corpus_docs),
+                "total_approved": total_approved,
+                "total_premium": total_premium,
+                "total_rejected": total_rejected,
+                "last_curation": last_curation.split("T")[0] if last_curation else "",
+                "pairs_this_week": pairs_this_week,
+                "premium_this_week": premium_this_week,
+            }
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=str(e))
+
+    @app.post("/training/curate")
+    async def training_curate(request: Request):
+        """Trigger manual curation pipeline. Body: {threshold: 0.70, limit: 500}"""
+        if not _admin_ok(request):
+            raise HTTPException(status_code=403, detail="Admin access required")
+        try:
+            body = await request.json()
+        except Exception:
+            body = {}
+        threshold = float(body.get("threshold", 0.70))
+        limit = int(body.get("limit", 500))
+        try:
+            from .curator_agent import run_curation
+            import asyncio
+            loop = asyncio.get_event_loop()
+            result = await loop.run_in_executor(
+                None,
+                lambda: run_curation(min_score=threshold, max_pairs=limit),
+            )
+            return {
+                "approved": result.get("approved", 0),
+                "rejected": result.get("rejected", 0),
+                "premium": result.get("premium_pairs", 0),
+            }
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=str(e))
+
+    @app.get("/training/data/latest")
+    def training_data_latest():
+        """Get latest training data file info."""
+        try:
+            from .curator_agent import get_training_data_info
+            info = get_training_data_info()
+            if not info.get("ok"):
+                return {"ok": False, "error": info.get("error", "unknown")}
+            return {
+                "path": info.get("path", ""),
+                "pairs": info.get("pairs", 0),
+                "size_bytes": info.get("size_bytes", 0),
+            }
         except Exception as e:
             raise HTTPException(status_code=500, detail=str(e))
 
@@ -7712,45 +10593,74 @@ h1{{color:#0af}}p{{color:#aaa}}a{{color:#0af}}</style></head>
         except Exception as e:
             return {"ok": False, "error": str(e)}
 
-    # ── Sprint 5: Creative Agency Kit endpoint ───────────────────────────────
+    # ── Sprint 5: Creative Agency Kit endpoint (async background job) ────────
     @app.post("/creative/agency_kit", tags=["Creative"])
-    def creative_agency_kit(body: dict[str, Any] = {}):
+    def creative_agency_kit(req: _AgencyKitRequest):
         """
-        Build Agency Kit lengkap dalam 1 panggilan.
+        Agency Kit 1-Click — create background job, return job_id immediately.
 
         Body:
           business_name   (str, wajib) — nama bisnis/brand
-          niche           (str, wajib) — bidang usaha (kuliner, fashion, jasa, dll)
-          target_audience (str)        — deskripsi audiens target
-          budget          (str)        — budget iklan (contoh: '1.5jt', '500rb', default '1.5jt')
+          niche           (str, wajib) — bidang usaha
+          target_audience (str, wajib) — deskripsi audiens target
+          budget          (str)        — budget iklan (default '1.5jt')
+          brand_tone      (str, opt)   — tone brand
+          color_preference (str, opt)  — preferensi warna
 
-        Returns:
-          {ok, brand_kit, captions, content_plan, campaign, ads, thumbnails,
-           cqf_composite, cqf_tier, elapsed_s, warnings}
+        Returns: {ok, job_id}
         """
         try:
-            from .agency_kit import build_agency_kit
-            business_name = str((body or {}).get("business_name", "")).strip()
-            niche = str((body or {}).get("niche", "")).strip()
-            target_audience = str((body or {}).get("target_audience", "")).strip()
-            budget = str((body or {}).get("budget", "1.5jt")).strip() or "1.5jt"
-
+            business_name = (req.business_name or "").strip()
+            niche = (req.niche or "").strip()
+            target_audience = (req.target_audience or "").strip()
             if not business_name:
                 raise HTTPException(status_code=400, detail="business_name wajib diisi")
             if not niche:
                 raise HTTPException(status_code=400, detail="niche wajib diisi")
+            if not target_audience:
+                req.target_audience = "audiens Indonesia umum"
 
-            result = build_agency_kit(
-                business_name=business_name,
-                niche=niche,
-                target_audience=target_audience or "audiens Indonesia umum",
-                budget=budget,
-            )
-            return result
+            job_id = create_agency_kit_job(req)
+            return {"ok": True, "job_id": job_id}
         except HTTPException:
             raise
         except Exception as e:
-            return {"ok": False, "error": str(e)}
+            raise HTTPException(status_code=500, detail=str(e))
+
+    @app.get("/creative/agency_kit/{job_id}", tags=["Creative"])
+    def creative_agency_kit_status(job_id: str):
+        """Get job status + partial/completed results."""
+        job = get_job_status(job_id)
+        if not job:
+            raise HTTPException(status_code=404, detail="job_id tidak ditemukan")
+        return {
+            "ok": True,
+            "job_id": job.job_id,
+            "status": job.status,
+            "progress": job.progress,
+            "results": job.results,
+            "created_at": job.created_at,
+            "completed_at": job.completed_at,
+        }
+
+    @app.get("/creative/agency_kit/list", tags=["Creative"])
+    def creative_agency_kit_list():
+        """List all agency kit jobs (max 50, oldest pruned automatically)."""
+        jobs = list_jobs()
+        return {
+            "ok": True,
+            "count": len(jobs),
+            "jobs": [
+                {
+                    "job_id": j.job_id,
+                    "status": j.status,
+                    "progress": j.progress,
+                    "created_at": j.created_at,
+                    "completed_at": j.completed_at,
+                }
+                for j in jobs
+            ],
+        }
 
     # ── Sprint 6: Prompt Optimizer endpoints ────────────────────────────────
     @app.post("/creative/prompt_optimize/all", tags=["Creative"])
@@ -8106,6 +11016,160 @@ h1{{color:#0af}}p{{color:#aaa}}a{{color:#0af}}</style></head>
                 status_code=500,
                 detail=f"synthesis error: {e}",
             )
+
+    # ════════════════════════════════════════════════════════════════════════
+    # VOYAGER PROTOCOL — Dynamic Tool Creator (Phase 1)
+    # ════════════════════════════════════════════════════════════════════════
+
+    @app.post("/app/voyager/create", tags=["Voyager"])
+    async def voyager_create(req: VoyagerCreateRequest, request: Request):
+        """
+        Create a new tool from natural language intent.
+        Body: { "intent": "Buat tool yang menghitung BMI...", "tool_name": "bmi_calculator" }
+        """
+        _enforce_rate(request)
+        if not req.intent.strip():
+            raise HTTPException(status_code=400, detail="intent wajib diisi")
+        try:
+            result = _voyager_create_tool(
+                VoyagerToolRequest(
+                    intent=req.intent,
+                    tool_name=req.tool_name,
+                    description=req.description,
+                )
+            )
+            return VoyagerCreateResponse(
+                success=result.success,
+                tool_name=result.tool_name,
+                code=result.code,
+                error=result.error,
+                security_passed=result.security_passed,
+                registered=result.registered,
+            )
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"voyager create error: {e}")
+
+    @app.get("/app/voyager/tools", tags=["Voyager"])
+    async def voyager_list_tools(request: Request):
+        """List all generated tools with metadata."""
+        _enforce_rate(request)
+        try:
+            tools = _voyager_list_tools()
+            return {"ok": True, "tools": tools, "count": len(tools)}
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"voyager list error: {e}")
+
+    @app.get("/app/voyager/tools/{tool_name}", tags=["Voyager"])
+    async def voyager_get_tool(tool_name: str, request: Request):
+        """Get a generated tool's metadata + code."""
+        _enforce_rate(request)
+        try:
+            info = _voyager_get_tool(tool_name)
+            if info is None:
+                raise HTTPException(status_code=404, detail="tool not found")
+            return {"ok": True, "tool": info}
+        except HTTPException:
+            raise
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"voyager get error: {e}")
+
+    @app.post("/app/voyager/tools/{tool_name}/delete", tags=["Voyager"])
+    async def voyager_delete_tool(tool_name: str, request: Request):
+        """Delete a generated tool."""
+        _enforce_rate(request)
+        try:
+            ok = _voyager_delete_tool(tool_name)
+            if not ok:
+                raise HTTPException(status_code=404, detail="tool not found")
+            return {"ok": True, "tool_name": tool_name, "deleted": True}
+        except HTTPException:
+            raise
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"voyager delete error: {e}")
+
+    # ════════════════════════════════════════════════════════════════════════
+    # VOYAGER PROTOCOL — Phase 2: Skill Library Pattern
+    # ════════════════════════════════════════════════════════════════════════
+
+    @app.get("/app/voyager/tools/{tool_name}/stats", tags=["Voyager"])
+    async def voyager_tool_stats(tool_name: str, request: Request):
+        """Get usage statistics for a generated tool."""
+        _enforce_rate(request)
+        try:
+            stats = _voyager_get_tool_stats(tool_name)
+            if stats is None:
+                raise HTTPException(status_code=404, detail="tool not found")
+            return {"ok": True, "stats": stats.model_dump()}
+        except HTTPException:
+            raise
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"voyager stats error: {e}")
+
+    @app.get("/app/voyager/stats", tags=["Voyager"])
+    async def voyager_all_stats(request: Request):
+        """Get usage statistics for ALL generated tools."""
+        _enforce_rate(request)
+        try:
+            stats_list = _voyager_list_tool_stats()
+            return {"ok": True, "tools": [s.model_dump() for s in stats_list], "count": len(stats_list)}
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"voyager all stats error: {e}")
+
+    @app.post("/app/voyager/discover", tags=["Voyager"])
+    async def voyager_discover(req: dict, request: Request):
+        """
+        Discover similar existing tools before creating new.
+        Body: { "intent": "calculate BMI from weight and height" }
+        """
+        _enforce_rate(request)
+        intent = req.get("intent", "").strip()
+        if not intent:
+            raise HTTPException(status_code=400, detail="intent wajib diisi")
+        try:
+            result = _voyager_discover(intent, threshold=0.3)
+            return {
+                "ok": True,
+                "should_create_new": result.should_create_new,
+                "suggestion": result.suggestion,
+                "similar_tools": result.similar_tools,
+            }
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"voyager discover error: {e}")
+
+    @app.post("/app/voyager/tools/{tool_name}/refine", tags=["Voyager"])
+    async def voyager_refine_tool(tool_name: str, request: Request):
+        """
+        Self-refinement: auto-improve a generated tool based on usage data.
+        Only works if tool has < 50% success rate and >= 3 calls.
+        """
+        _enforce_rate(request)
+        try:
+            result = _voyager_refine_tool(tool_name, max_attempts=3)
+            return {
+                "ok": result.success,
+                "tool_name": result.tool_name,
+                "old_success_rate": result.old_success_rate,
+                "security_passed": result.security_passed,
+                "error": result.error,
+            }
+        except HTTPException:
+            raise
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"voyager refine error: {e}")
+
+    @app.get("/app/voyager/tools/{tool_name}/skills-format", tags=["Voyager"])
+    async def voyager_skills_format(tool_name: str, request: Request):
+        """Get tool metadata in Anthropic Agent Skills compatible format."""
+        _enforce_rate(request)
+        try:
+            data = _voyager_to_skills_format(tool_name)
+            if data is None:
+                raise HTTPException(status_code=404, detail="tool not found")
+            return {"ok": True, "skill": data}
+        except HTTPException:
+            raise
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"voyager skills format error: {e}")
 
     # ── Agency OS: Tiranyx pilot client ──────────────────────────────────────
     try:

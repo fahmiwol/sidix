@@ -1,0 +1,90 @@
+# SIDIX coding checklist — python
+
+- **roadmap.sh slug**: `python`
+- **source**: `https://roadmap.sh/api/v1-official-roadmap/python`
+- **generated_at_utc**: `2026-04-17`
+
+## Checklist (topic/subtopic labels)
+
+- [ ] Learn the Basics
+- [ ] Basic Syntax
+- [ ] Variables and Data Types
+- [ ] Conditionals
+- [ ] Type Casting
+- [ ] Exceptions
+- [ ] Functions, Builtin Functions
+- [ ] Lists
+- [ ] Tuples
+- [ ] Sets
+- [ ] Dictionaries
+- [ ] Loops
+- [ ] Arrays and Linked Lists
+- [ ] Heaps, Stacks and Queues
+- [ ] HashMaps
+- [ ] Binary Search Tree
+- [ ] Recursion
+- [ ] Sorting Algorithms
+- [ ] Modules
+- [ ] Data Structures & Algorithms
+- [ ] Builtin
+- [ ] Custom
+- [ ] Lambdas
+- [ ] Decorators
+- [ ] Iterators
+- [ ] Regular Expressions
+- [ ] Object Oriented Programming
+- [ ] Classes
+- [ ] Inheritance
+- [ ] Methods
+- [ ] Package Managers
+- [ ] PyPI
+- [ ] Pip
+- [ ] Conda
+- [ ] Poetry
+- [ ] List Comprehensions
+- [ ] Generator Expressions
+- [ ] Paradigms
+- [ ] Context Manager
+- [ ] Learn a Framework
+- [ ] Pyramid
+- [ ] Plotly Dash
+- [ ] gevent
+- [ ] aiohttp
+- [ ] Tornado
+- [ ] Sanic
+- [ ] Fast API
+- [ ] Django
+- [ ] Flask
+- [ ] Concurrency
+- [ ] GIL
+- [ ] Threading
+- [ ] Multiprocessing
+- [ ] Asynchrony
+- [ ] uv
+- [ ] pyproject.toml
+- [ ] Pipenv
+- [ ] virtualenv
+- [ ] pyenv
+- [ ] Static Typing
+- [ ] Pydantic
+- [ ] mypy
+- [ ] pyright
+- [ ] pyre
+- [ ] Code Formatting
+- [ ] ruff
+- [ ] black
+- [ ] yapf
+- [ ] Sphinx
+- [ ] Common Packages
+- [ ] Testing
+- [ ] doctest
+- [ ] pytest
+- [ ] unittest / pyUnit
+- [ ] typing
+- [ ] tox
+- [ ] Working with Strings
+- [ ] File Handling
+- [ ] pdm
+- [ ] Encapsulation
+- [ ] Variable Scope
+- [ ] glob

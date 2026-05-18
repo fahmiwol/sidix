@@ -33,7 +33,7 @@ MEMORY_DB_PATH = os.getenv(
     "SIDIX_MEMORY_DB",
     str(default_data_dir() / "sidix_memory.db"),
 )
-_MAX_CONTEXT_TURNS = int(os.getenv("SIDIX_MEMORY_CONTEXT_TURNS", "6"))
+_MAX_CONTEXT_TURNS = int(os.getenv("SIDIX_MEMORY_CONTEXT_TURNS", "12"))
 _MAX_CONVERSATION_AGE_DAYS = int(os.getenv("SIDIX_MEMORY_CONV_AGE_DAYS", "30"))
 
 _local = threading.local()

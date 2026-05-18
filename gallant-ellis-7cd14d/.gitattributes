@@ -1,0 +1,21 @@
+# SIDIX — Git line ending normalization
+# Ensures consistent line endings across Windows/Linux/Mac
+
+* text=auto eol=lf
+
+# Explicitly Windows-only files
+*.bat text eol=crlf
+*.ps1 text eol=crlf
+
+# Binary files — no conversion
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.zip binary
+*.tar.gz binary
+*.safetensors binary
+*.bin binary
+*.gguf binary

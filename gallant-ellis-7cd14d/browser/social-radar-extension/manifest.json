@@ -1,0 +1,26 @@
+﻿{
+  "manifest_version": 3,
+  "name": "SIDIX Social Radar",
+  "version": "0.2.0",
+  "description": "Extension Social Radar untuk menangkap sinyal publik lintas platform dan mengirimkan metadata ke SIDIX backend.",
+  "action": {
+    "default_title": "Social Radar",
+    "default_popup": "popup.html"
+  },
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "permissions": ["storage", "activeTab", "tabs", "scripting"],
+  "host_permissions": [
+    "https://www.instagram.com/*",
+    "https://www.threads.net/*",
+    "https://x.com/*",
+    "https://twitter.com/*",
+    "https://www.youtube.com/*",
+    "https://www.facebook.com/*",
+    "http://localhost/*",
+    "https://ctrl.sidixlab.com/*",
+    "https://brain.sidixlab.com/*"
+  ]
+}

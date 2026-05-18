@@ -1,0 +1,132 @@
+@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* SIDIX Brand Colors (Kimi scaffolding parity) */
+    --indigo: #6C5CFF;
+    --cyan: #00D2FF;
+    --amber: #FFB34D;
+    --pink: #FF6EC7;
+    --green: #22C55E;
+    --deep-navy: #080F1A;
+    --dark-blue: #151A2E;
+    --surface: #1E2340;
+    --card: #2A2F4F;
+    --text-primary: #E6E9F7;
+    --text-secondary: #8B92B4;
+    --text-muted: #5A6080;
+    --border-subtle: rgba(255, 255, 255, 0.06);
+    --border-active: rgba(108, 92, 255, 0.35);
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: "Space Grotesk", system-ui, sans-serif;
+    background: var(--deep-navy);
+    color: var(--text-primary);
+    overflow: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+}
+
+@layer utilities {
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.08) transparent;
+  }
+  .scrollbar-thin::-webkit-scrollbar { width: 5px; }
+  .scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
+  .scrollbar-thin::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.08); border-radius: 10px; }
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.15); }
+}
+
+/* Animations */
+@keyframes rotate { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+@keyframes slideUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes progressFill { from { width: 0%; } }
+@keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+@keyframes pulse-glow { 0%, 100% { box-shadow: 0 0 8px rgba(108, 92, 255, 0.2); } 50% { box-shadow: 0 0 16px rgba(108, 92, 255, 0.4); } }
+
+.animate-progress-fill { animation: progressFill 0.8s ease-out forwards; }
+.animate-float { animation: float 3s ease-in-out infinite; }
+.animate-pulse-glow { animation: pulse-glow 2s ease-in-out infinite; }
+
+/* PRO Card Shimmer (SIDIX PRO promo) */
+.pro-card-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+.pro-card-shimmer::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0%,
+    rgba(99, 102, 241, 0.6) 15%,
+    rgba(139, 92, 246, 0.6) 30%,
+    rgba(236, 72, 153, 0.6) 45%,
+    transparent 60%
+  );
+  animation: rotate 3s linear infinite;
+}
+.pro-card-shimmer::after {
+  content: "";
+  position: absolute;
+  inset: 2px;
+  background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 50%, #EC4899 100%);
+  border-radius: 22px;
+}
+
+/* Surfaces */
+.input-surface {
+  background: var(--surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 16px;
+  transition: all 0.2s ease;
+}
+.input-surface:focus-within {
+  border-color: var(--border-active);
+  box-shadow: 0 0 0 3px rgba(108, 92, 255, 0.1);
+}
+
+/* Chip */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 100px;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+.chip-default {
+  background: var(--card);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+}
+.chip-default:hover {
+  border-color: var(--border-active);
+  color: var(--text-primary);
+}
+
+/* Mascot placeholder (until SDXL render available) */
+.mascot-placeholder {
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at 50% 40%, #7C5CFF 0%, #00D2FF 40%, transparent 70%);
+  border-radius: 50%;
+  filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.35));
+  position: relative;
+}

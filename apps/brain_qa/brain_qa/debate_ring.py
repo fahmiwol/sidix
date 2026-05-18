@@ -1,302 +1,331 @@
 """
-debate_ring.py — SIDIX Multi-Agent Debate (Sprint 5)
+debate_ring.py — SIDIX Debate Ring REAL
+Multi-agent consensus via Qwen LLM (self-hosted only).
 
-Protokol: Creator ↔ Critic berdebat output kreatif, konsensus via CQF ≥ threshold.
+Flow (3 rounds):
+  Round 1: Creator (Persona A) presents initial proposal
+  Round 2: Critic (Persona B) critiques + suggests improvements
+  Round 3: Creator revises based on critique + Critic final review
+  Consensus: Neutral synthesizer merges best elements from both
 
-3 pair wajib Sprint 5:
-  1. copywriter   ↔ campaign_strategist  (copy vs strategi)
-  2. brand_builder ↔ design_critic       (identitas vs estetika)
-  3. script_hook   ↔ audience_lens       (hook vs relevansi audiens)
-
-Flow per round:
-  Critic → evaluasi prototype → approve (CQF ≥ threshold) atau critique
-  Creator → terima critique → revisi
-  Max 3 round. Jika tidak konsensus → return last + warning.
-
-LLM call: pakai local_llm.generate_sidix() kalau tersedia, fallback ke
-          multi_llm_router jika tidak, fallback heuristik jika semua mati.
+All inference via generate_sidix() — NEVER external APIs.
 """
 
 from __future__ import annotations
 
 import logging
 import time
-from dataclasses import dataclass, field, asdict
-from typing import Callable
+from typing import Any
 
-from .creative_quality import quality_gate, CQF_WEIGHTS, DELIVERY_THRESHOLD
+from pydantic import BaseModel
 
-logger = logging.getLogger("sidix.debate_ring")
+try:
+    from .local_llm import generate_sidix
+except ImportError:  # pragma: no cover
+    def generate_sidix(prompt: str, system: str, *, max_tokens: int = 256, temperature: float = 0.7) -> tuple[str, str]:
+        return "[mock]", "mock"
 
-# ── LLM helper — graceful fallback ───────────────────────────────────────────
-def _llm_call(prompt: str, max_tokens: int = 512) -> str:
-    """Try local_llm → multi_llm_router → heuristic fallback."""
-    # 1. Coba local_llm (Qwen + LoRA)
-    try:
-        from .local_llm import generate_sidix
-        return generate_sidix(prompt, max_new_tokens=max_tokens)
-    except Exception:
-        pass
+try:
+    from .creative_quality import heuristic_score
+except ImportError:  # pragma: no cover
+    heuristic_score = None
 
-    # 2. Coba multi_llm_router
-    try:
-        from .multi_llm_router import route_generate
-        result = route_generate(prompt, max_tokens=max_tokens)
-        # route_generate returns LLMResult object, extract text
-        return result.text if hasattr(result, "text") else str(result)
-    except Exception:
-        pass
+try:
+    from .cot_system_prompts import PERSONA_DESCRIPTIONS
+except ImportError:  # pragma: no cover
+    PERSONA_DESCRIPTIONS = {}
 
-    # 3. Fallback heuristik: return prompt digest sebagai placeholder
-    logger.warning("debate_ring: semua LLM unavailable, pakai heuristic fallback")
-    words = prompt.split()[:30]
-    return f"[Heuristic revision]: {' '.join(words)}... — diperbaiki berdasarkan kritik."
+log = logging.getLogger(__name__)
 
+_ALLOWED_PERSONAS = {"AYMAN", "ABOO", "OOMAR", "ALEY", "UTZ"}
 
-# ── Critic prompt builder ─────────────────────────────────────────────────────
-_CRITIC_PROMPTS = {
-    "campaign_strategist": (
-        "Kamu adalah Campaign Strategist SIDIX. Evaluasi copy berikut dari perspektif strategi:\n"
-        "1. Apakah pesan selaras dengan AARRR funnel?\n"
-        "2. Apakah ada CTA yang jelas?\n"
-        "3. Apakah tone sesuai target audiens?\n"
-        "Beri skor 1-10. Jika skor < 7, berikan 2-3 poin perbaikan konkret.\n\n"
-        "COPY:\n{prototype}\n\nKONTEKS:\n{context}\n\n"
-        "Jawab format: SKOR:[1-10] | APPROVE:[ya/tidak] | KRITIK:[poin perbaikan atau 'approved']"
-    ),
-    "design_critic": (
-        "Kamu adalah Design Critic SIDIX. Evaluasi brand kit ini dari perspektif desain:\n"
-        "1. Apakah voice tone konsisten?\n"
-        "2. Apakah archetype selaras dengan target pasar?\n"
-        "3. Apakah ada inkonsistensi identitas?\n"
-        "Beri skor 1-10. Jika skor < 7, berikan 2-3 poin perbaikan.\n\n"
-        "BRAND KIT:\n{prototype}\n\nKONTEKS:\n{context}\n\n"
-        "Jawab format: SKOR:[1-10] | APPROVE:[ya/tidak] | KRITIK:[poin perbaikan atau 'approved']"
-    ),
-    "audience_lens": (
-        "Kamu adalah Audience Analyst SIDIX. Evaluasi script/hook ini dari perspektif audiens:\n"
-        "1. Apakah hook relevan untuk audiens Indonesia?\n"
-        "2. Apakah bahasa natural (bukan terjemahan)?\n"
-        "3. Apakah opening 3 detik menarik perhatian?\n"
-        "Beri skor 1-10. Jika skor < 7, berikan 2-3 poin perbaikan.\n\n"
-        "SCRIPT:\n{prototype}\n\nKONTEKS:\n{context}\n\n"
-        "Jawab format: SKOR:[1-10] | APPROVE:[ya/tidak] | KRITIK:[poin perbaikan atau 'approved']"
-    ),
-}
-
-_CREATOR_PROMPTS = {
-    "copywriter": (
-        "Kamu adalah Copywriter SIDIX. Revisi copy ini berdasarkan kritik:\n\n"
-        "COPY SEBELUMNYA:\n{prototype}\n\n"
-        "KRITIK DITERIMA:\n{critique}\n\n"
-        "Tulis ulang copy yang lebih kuat. Pertahankan formula asli, perbaiki kelemahan."
-    ),
-    "brand_builder": (
-        "Kamu adalah Brand Builder SIDIX. Revisi brand kit ini berdasarkan kritik:\n\n"
-        "BRAND KIT SEBELUMNYA:\n{prototype}\n\n"
-        "KRITIK DITERIMA:\n{critique}\n\n"
-        "Perkuat konsistensi identitas brand. Selaraskan voice, archetype, dan tone."
-    ),
-    "script_hook": (
-        "Kamu adalah Script Writer SIDIX. Revisi hook ini berdasarkan kritik:\n\n"
-        "HOOK SEBELUMNYA:\n{prototype}\n\n"
-        "KRITIK DITERIMA:\n{critique}\n\n"
-        "Tulis ulang hook yang lebih kuat untuk audiens Indonesia. Natural, tidak robotic."
-    ),
-}
+_DEFAULT_DEBATE_PAIRS: list[dict[str, str]] = [
+    {"name": "Copywriter \u2194 Strategist", "persona_a": "UTZ", "persona_b": "OOMAR"},
+    {"name": "Brand Builder \u2194 Designer", "persona_a": "UTZ", "persona_b": "ABOO"},
+    {"name": "Script Writer \u2194 Hook Finder", "persona_a": "UTZ", "persona_b": "ALEY"},
+    {"name": "General AYMAN \u2194 OOMAR", "persona_a": "AYMAN", "persona_b": "OOMAR"},
+    {"name": "Technical ABOO \u2194 Research ALEY", "persona_a": "ABOO", "persona_b": "ALEY"},
+]
 
 
-# ── Data models ────────────────────────────────────────────────────────────────
-@dataclass
-class DebateRound:
-    round_num: int
-    critic_agent: str
-    creator_agent: str
-    critique: str
-    revised_prototype: str
+# ── Models ────────────────────────────────────────────────────────────────────
+
+class DebateRole(BaseModel):
+    name: str
+    persona: str
+    system_prompt: str
+    stance: str  # "creator" | "critic" | "synthesizer"
+
+
+class DebateRound(BaseModel):
+    round_number: int
+    speaker: str
+    text: str
+    critique_score: float = 0.0
+
+
+class DebateResult(BaseModel):
+    topic: str
+    rounds: list[DebateRound]
+    consensus_text: str
+    winner: str
     cqf_score: float
-    approved: bool
+    duration_ms: int
 
 
-@dataclass
-class DebateResult:
-    pair_id: str
-    final_prototype: str
-    consensus: bool
-    rounds_taken: int
-    final_cqf: float
-    transcript: list[dict] = field(default_factory=list)
-    elapsed_s: float = 0.0
+# ── CQF Scoring (minimal heuristic fallback) ──────────────────────────────────
+
+def _heuristic_cqf(text: str, brief: str = "") -> dict[str, Any]:
+    """
+    Minimal heuristic CQF scorer — fail-safe tanpa LLM.
+    Relevance: keyword density
+    Quality: length proxy + sentence count
+    Creativity: vocabulary diversity
+    Brand: default neutral
+    Actionability: CTA presence
+    """
+    out = str(text or "").strip()
+    br = str(brief or "").strip()
+    out_len = len(out)
+
+    # Relevance: shared word overlap
+    br_words = set(w.lower() for w in br.split() if len(w) > 3)
+    out_words = set(w.lower() for w in out.split() if len(w) > 3)
+    overlap = len(br_words & out_words) / max(1, len(br_words))
+    relevance = 5.0 + 4.0 * overlap
+
+    # Quality: length proxy + sentence count
+    sentences = [s for s in out.split(".") if s.strip()]
+    quality = 6.0 + min(3.0, out_len / 200) + min(1.0, len(sentences) / 5)
+
+    # Creativity: unique word ratio
+    all_words = out.split()
+    unique_ratio = len(set(all_words)) / max(1, len(all_words))
+    creativity = 6.0 + (3.0 if unique_ratio > 0.6 else 1.5)
+
+    # Brand alignment: neutral default
+    brand = 7.0
+
+    # Actionability: CTA markers
+    cta_markers = ["coba", "mulai", "daftar", "hubungi", "klik", "download", "gunakan", "install", "bergabung"]
+    has_cta = any(m in out.lower() for m in cta_markers)
+    actionability = 8.0 if has_cta else 6.0
+
+    def clamp(x: float) -> float:
+        return max(1.0, min(10.0, x))
+
+    relevance = clamp(relevance)
+    quality = clamp(quality)
+    creativity = clamp(creativity)
+    brand = clamp(brand)
+    actionability = clamp(actionability)
+
+    total = (
+        relevance * 0.25
+        + quality * 0.25
+        + creativity * 0.20
+        + brand * 0.15
+        + actionability * 0.15
+    )
+
+    return {
+        "relevance": round(relevance, 1),
+        "quality": round(quality, 1),
+        "creativity": round(creativity, 1),
+        "brand": round(brand, 1),
+        "actionability": round(actionability, 1),
+        "total": round(total, 2),
+    }
 
 
-# ── Core debate logic ──────────────────────────────────────────────────────────
-def _parse_critic_response(response: str) -> tuple[float, bool, str]:
-    """Parse 'SKOR:X | APPROVE:ya/tidak | KRITIK:...' → (score, approved, critique)."""
-    import re
-    score = 5.0
-    approved = False
-    critique = response
+def _score_cqf(text: str, brief: str = "") -> dict[str, Any]:
+    """Route ke creative_quality heuristic kalau tersedia, else fallback."""
+    if heuristic_score is not None:
+        try:
+            score = heuristic_score(text, brief, domain="generic")
+            return {
+                "relevance": round(score.relevance, 1),
+                "quality": round(score.quality, 1),
+                "creativity": round(score.creativity, 1),
+                "brand": round(score.brand_alignment, 1),
+                "actionability": round(score.actionability, 1),
+                "total": round(score.total, 2),
+            }
+        except Exception as e:
+            log.debug("[debate_ring] creative_quality heuristic failed: %s", e)
+    return _heuristic_cqf(text, brief)
 
-    m_score = re.search(r"SKOR:\s*(\d+(?:\.\d+)?)", response, re.IGNORECASE)
-    if m_score:
-        score = min(10.0, float(m_score.group(1)))
 
-    m_approve = re.search(r"APPROVE:\s*(ya|tidak|yes|no)", response, re.IGNORECASE)
-    if m_approve:
-        approved = m_approve.group(1).lower() in ("ya", "yes")
+# ── Persona helpers ───────────────────────────────────────────────────────────
 
-    m_critique = re.search(r"KRITIK:\s*(.+)", response, re.IGNORECASE | re.DOTALL)
-    if m_critique:
-        critique = m_critique.group(1).strip()
+def _get_persona_system(persona: str) -> str:
+    p = persona.strip().upper()
+    if p not in _ALLOWED_PERSONAS:
+        p = "UTZ"
+    desc = PERSONA_DESCRIPTIONS.get(p, "")
+    base = (
+        "Kamu adalah SIDIX — Sistem Intelijen Digital Indonesia eXtended. "
+        "Berpikir jujur, bersumber, dan verifikasi."
+    )
+    if desc:
+        return f"{base}\n\n{desc}"
+    return base
 
-    # fallback: jika score ≥ 7 → auto approve
-    if score >= 7.0:
-        approved = True
 
-    return score, approved, critique
+def _call_sidix(prompt: str, system: str, max_tokens: int = 512, temperature: float = 0.7) -> str:
+    """Wrapper generate_sidix dengan timeout guard via fail-open."""
+    try:
+        text, mode = generate_sidix(
+            prompt=prompt,
+            system=system,
+            max_tokens=max_tokens,
+            temperature=temperature,
+        )
+        if mode == "mock" and text.startswith("[SIDIX]"):
+            # Adapter/model tidak tersedia — return placeholder agar tidak crash
+            log.warning("[debate_ring] generate_sidix mock mode: %s", text[:80])
+        return str(text or "").strip()
+    except Exception as e:
+        log.warning("[debate_ring] generate_sidix error: %s", e)
+        return ""
 
+
+# ── Core Debate Flow ──────────────────────────────────────────────────────────
 
 def run_debate(
-    *,
-    pair_id: str,
-    creator_agent: str,
-    critic_agent: str,
-    prototype: str,
-    context: str = "",
-    domain: str = "content",
+    topic: str,
+    persona_a: str,
+    persona_b: str,
     max_rounds: int = 3,
-    threshold: float = DELIVERY_THRESHOLD,
 ) -> DebateResult:
     """
-    Jalankan debate antara creator ↔ critic.
+    Run multi-agent debate consensus.
 
-    pair_id contoh: 'copywriter_vs_strategist'
+    Args:
+        topic: Debate topic / brief
+        persona_a: Creator persona (e.g. "UTZ")
+        persona_b: Critic persona (e.g. "OOMAR")
+        max_rounds: Cap rounds (default 3)
+
+    Returns:
+        DebateResult with consensus_text, rounds, and CQF score.
     """
-    start = time.time()
-    transcript: list[dict] = []
-    current = prototype
-    consensus = False
-    rounds_taken = 0
+    t0 = time.time()
+    pa = persona_a.strip().upper()
+    pb = persona_b.strip().upper()
+    if pa not in _ALLOWED_PERSONAS:
+        pa = "UTZ"
+    if pb not in _ALLOWED_PERSONAS:
+        pb = "OOMAR"
 
-    # Ambil prompt templates
-    critic_tmpl = _CRITIC_PROMPTS.get(
-        critic_agent,
-        "Evaluasi output berikut:\n{prototype}\nKONTEKS:{context}\n"
-        "SKOR:[1-10] | APPROVE:[ya/tidak] | KRITIK:[catatan]"
+    sys_a = _get_persona_system(pa)
+    sys_b = _get_persona_system(pb)
+    sys_neutral = (
+        "Kamu adalah SIDIX Synthesizer — netral, objektif, dan kritis. "
+        "Tugasmu: gabungkan elemen terbaik dari dua perspektif menjadi satu output final "
+        "yang koheren, actionable, dan berkualitas tinggi. "
+        "Hindari repetisi, pilih inti terbaik dari masing-masing sisi, dan polish menjadi satu kesatuan."
     )
-    creator_tmpl = _CREATOR_PROMPTS.get(
-        creator_agent,
-        "Revisi output berikut berdasarkan kritik:\n{prototype}\nKRITIK:{critique}\n"
-        "Tulis ulang yang lebih baik."
+
+    rounds: list[DebateRound] = []
+    best_text_so_far = ""
+
+    # ── Round 1: Creator presents proposal ──────────────────────────────────
+    prompt_r1 = (
+        f"Topik/Brief: {topic}\n\n"
+        f"Kamu adalah {pa} (Creator). Buatlah proposal awal yang kreatif, "
+        f"konkret, dan actionable untuk topik di atas. "
+        f"Langsung ke inti — jangan ulang brief secara mentah."
     )
+    text_r1 = _call_sidix(prompt_r1, sys_a)
+    best_text_so_far = text_r1 or best_text_so_far
+    rounds.append(DebateRound(round_number=1, speaker=pa, text=text_r1, critique_score=0.0))
 
-    for round_num in range(1, max_rounds + 1):
-        rounds_taken = round_num
-        logger.info("[DebateRing] Round %d — %s critiques %s", round_num, critic_agent, creator_agent)
+    # ── Round 2: Critic critiques ───────────────────────────────────────────
+    prompt_r2 = (
+        f"Topik/Brief: {topic}\n\n"
+        f"Proposal dari {pa}:\n{text_r1}\n\n"
+        f"Kamu adalah {pb} (Critic). Berikan kritik konstruktif yang spesifik: "
+        f"1) Apa kelemahan proposal ini? 2) Apa yang bisa diperbaiki? 3) Apa alternatif/saran konkretmu? "
+        f"Gunakan format: [KEKUATAN] / [KELEMAHAN] / [SARAN]."
+    )
+    text_r2 = _call_sidix(prompt_r2, sys_b)
+    best_text_so_far = text_r2 or best_text_so_far
+    rounds.append(DebateRound(round_number=2, speaker=pb, text=text_r2, critique_score=0.0))
 
-        # ── Critic evaluates ──────────────────────────────────────────────────
-        critic_prompt = critic_tmpl.format(prototype=current[:600], context=context[:200])
-        critic_response = _llm_call(critic_prompt, max_tokens=256)
-        score, approved, critique = _parse_critic_response(critic_response)
+    # ── Round 3: Creator revises ────────────────────────────────────────────
+    prompt_r3 = (
+        f"Topik/Brief: {topic}\n\n"
+        f"Proposal awalmu:\n{text_r1}\n\n"
+        f"Kritik dari {pb}:\n{text_r2}\n\n"
+        f"Kamu adalah {pa} (Creator). Revisi proposal awalmu berdasarkan kritik di atas. "
+        f"Gabungkan yang terbaik dari ide asli + saran kritik. Outputkan proposal revisi final."
+    )
+    text_r3 = _call_sidix(prompt_r3, sys_a)
+    best_text_so_far = text_r3 or best_text_so_far
+    rounds.append(DebateRound(round_number=3, speaker=pa, text=text_r3, critique_score=0.0))
 
-        # Also run CQF heuristic untuk double-check
-        gate = quality_gate(current, brief=context or pair_id, domain=domain, use_llm=False)
-        cqf_score = gate["total"]
-        if cqf_score >= threshold:
-            approved = True
+    # ── Consensus: Neutral synthesizer ──────────────────────────────────────
+    prompt_consensus = (
+        f"Topik/Brief: {topic}\n\n"
+        f"Proposal Revisi ({pa}):\n{text_r3}\n\n"
+        f"Kritik & Saran ({pb}):\n{text_r2}\n\n"
+        f"Gabungkan elemen terbaik dari kedua sisi menjadi satu output final yang: "
+        f"koheren, tidak repetitif, actionable, dan siap digunakan. "
+        f"Jangan sebutkan nama persona — output netral."
+    )
+    consensus = _call_sidix(prompt_consensus, sys_neutral)
+    final_text = consensus or best_text_so_far
 
-        transcript.append({
-            "round": round_num,
-            "speaker": critic_agent,
-            "action": "critique",
-            "llm_score": round(score, 2),
-            "cqf_score": round(cqf_score, 2),
-            "approved": approved,
-            "critique_preview": critique[:200],
-        })
+    # ── CQF Score ───────────────────────────────────────────────────────────
+    cqf = _score_cqf(final_text, brief=topic)
+    cqf_total = float(cqf.get("total", 7.0))
 
-        if approved:
-            logger.info("[DebateRing] Konsensus tercapai round %d, cqf=%.2f", round_num, cqf_score)
-            consensus = True
-            break
+    # ── Winner heuristic ────────────────────────────────────────────────────
+    score_a = _score_cqf(text_r3, brief=topic).get("total", 0.0)
+    score_b = _score_cqf(text_r2, brief=topic).get("total", 0.0)
+    winner = pa if score_a >= score_b else pb
 
-        if round_num == max_rounds:
-            logger.warning("[DebateRing] Max round tercapai tanpa konsensus, cqf=%.2f", cqf_score)
-            break
-
-        # ── Creator revises ───────────────────────────────────────────────────
-        creator_prompt = creator_tmpl.format(prototype=current[:600], critique=critique[:300])
-        revised = _llm_call(creator_prompt, max_tokens=512)
-
-        # pastikan hasil revisi tidak kosong
-        if len(revised.strip()) > 20:
-            current = revised
-
-        transcript.append({
-            "round": round_num,
-            "speaker": creator_agent,
-            "action": "revision",
-            "revised_preview": current[:200],
-        })
-
-    final_gate = quality_gate(current, brief=context or pair_id, domain=domain, use_llm=False)
+    duration_ms = int((time.time() - t0) * 1000)
 
     return DebateResult(
-        pair_id=pair_id,
-        final_prototype=current,
-        consensus=consensus,
-        rounds_taken=rounds_taken,
-        final_cqf=final_gate["total"],
-        transcript=transcript,
-        elapsed_s=round(time.time() - start, 2),
+        topic=topic,
+        rounds=rounds,
+        consensus_text=final_text,
+        winner=winner,
+        cqf_score=cqf_total,
+        duration_ms=duration_ms,
     )
 
 
-# ── 3 Standard Debate Pairs ───────────────────────────────────────────────────
-def debate_copy_vs_strategy(copy_text: str, context: str = "") -> DebateResult:
-    """Pair 1: Copywriter ↔ Campaign Strategist."""
-    return run_debate(
-        pair_id="copywriter_vs_strategist",
-        creator_agent="copywriter",
-        critic_agent="campaign_strategist",
-        prototype=copy_text,
-        context=context,
-        domain="content",
-    )
+# ── Agency Kit Integration ────────────────────────────────────────────────────
+
+def debate_layer_output(
+    layer_name: str,
+    output_text: str,
+    persona_a: str,
+    persona_b: str,
+) -> str:
+    """
+    Run mini-debate on a layer output (Agency Kit pipeline).
+    Returns improved text.
+
+    Args:
+        layer_name: Name of the Agency Kit layer (e.g. "concept", "copy", "design")
+        output_text: Current layer output
+        persona_a: Creator persona
+        persona_b: Critic persona
+
+    Returns:
+        Improved text after debate consensus.
+    """
+    topic = f"Layer: {layer_name}\n\nOutput:\n{output_text}"
+    result = run_debate(topic, persona_a, persona_b, max_rounds=3)
+    return result.consensus_text or output_text
 
 
-def debate_brand_vs_design(brand_text: str, context: str = "") -> DebateResult:
-    """Pair 2: Brand Builder ↔ Design Critic."""
-    return run_debate(
-        pair_id="brand_vs_design",
-        creator_agent="brand_builder",
-        critic_agent="design_critic",
-        prototype=brand_text,
-        context=context,
-        domain="design",
-    )
+# ── Persona listing ───────────────────────────────────────────────────────────
 
-
-def debate_hook_vs_audience(hook_text: str, context: str = "") -> DebateResult:
-    """Pair 3: Script Hook ↔ Audience Lens."""
-    return run_debate(
-        pair_id="hook_vs_audience",
-        creator_agent="script_hook",
-        critic_agent="audience_lens",
-        prototype=hook_text,
-        context=context,
-        domain="content",
-    )
-
-
-def run_debate_as_dict(result: DebateResult) -> dict:
-    """Serialize DebateResult ke dict untuk API response."""
-    return {
-        "pair_id": result.pair_id,
-        "consensus": result.consensus,
-        "rounds_taken": result.rounds_taken,
-        "final_cqf": result.final_cqf,
-        "final_prototype": result.final_prototype,
-        "elapsed_s": result.elapsed_s,
-        "transcript": result.transcript,
-    }
+def get_debate_personas() -> list[dict[str, str]]:
+    """Return available debate pairs."""
+    return list(_DEFAULT_DEBATE_PAIRS)

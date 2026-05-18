@@ -238,3 +238,17 @@
   border-radius: 9999px;
   transition: width 0.5s ease;
 }
+
+/* ── Mode buttons toggle state (UX-fix 2026-05-01) ──────────────────────────── */
+.mode-btn {
+  transition: all 0.2s ease;
+}
+.mode-btn.mode-active {
+  border-color: var(--color-gold-500) !important;
+  background: rgba(212, 160, 23, 0.18) !important;
+  color: var(--color-gold-300) !important;
+  box-shadow: 0 0 0 1px rgba(212, 160, 23, 0.3), 0 2px 8px rgba(212, 160, 23, 0.12);
+}
+.mode-btn.mode-active:hover {
+  background: rgba(212, 160, 23, 0.25) !important;
+}

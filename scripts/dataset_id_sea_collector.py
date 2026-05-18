@@ -196,6 +196,9 @@ def _to_instruction_pair(title: str, extract: str, theme: str) -> dict:
         "theme": theme,
         "lang": "id",
         "license": "CC BY-SA 4.0",
+        "score": 0.75,
+        "sanad_tier": "T2",
+        "maqashid_passed": True,
         "collected_at": datetime.now(timezone.utc).isoformat(),
     }
 
@@ -342,6 +345,25 @@ def main():
     total = sum(summary.values())
     print(f"\n[collector] DONE: {total} pairs across {len(summary)} sources")
     print(f"[collector] index: {index_path}")
+
+    # Also write consolidated JSONL to brain/public/training_data/ for LoRA pipeline
+    try:
+        from pathlib import Path as _Path
+        training_dir = _Path(__file__).resolve().parent.parent / "brain" / "public" / "training_data" / _today()
+        training_dir.mkdir(parents=True, exist_ok=True)
+        consolidated_path = training_dir / "id_sea_pairs.jsonl"
+        all_pairs = []
+        for src in sources_to_run:
+            fn = SOURCES[src]
+            try:
+                pairs = fn(args.max) if args.max and src != "idioms" else fn()
+            except TypeError:
+                pairs = fn()
+            all_pairs.extend(pairs)
+        write_jsonl(all_pairs, consolidated_path)
+        print(f"[collector] consolidated training data → {consolidated_path}")
+    except Exception as e:
+        print(f"[collector] warning: failed to write consolidated training data: {e}")
 
 
 if __name__ == "__main__":

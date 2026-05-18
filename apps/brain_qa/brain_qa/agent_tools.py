@@ -2790,6 +2790,86 @@ def _tool_analyze_audio(args: dict) -> ToolResult:
     )
 
 
+# ── A2A Phase 3: delegate_to_agent ───────────────────────────────────────────
+
+def _tool_delegate_to_agent(args: dict) -> ToolResult:
+    """
+    Delegate a task to an external A2A-compatible agent.
+    RESTRICTED (butuh allow_restricted=true).
+    Params: message (str, wajib), agent_url (str, opsional — auto-discover dari registry kalau tidak diisi).
+    """
+    message = str(args.get("message", "")).strip()
+    agent_url = str(args.get("agent_url", "")).strip()
+
+    if not message:
+        return ToolResult(success=False, output="", error="message wajib diisi")
+
+    try:
+        from . import a2a_client
+    except Exception as e:
+        return ToolResult(success=False, output="", error=f"a2a_client gagal dimuat: {e}")
+
+    # Auto-discover best agent if URL not provided
+    if not agent_url:
+        agents = a2a_client.list_known_agents()
+        if not agents:
+            return ToolResult(
+                success=False,
+                output="",
+                error=(
+                    "Tidak ada agent_url dan registry external agent kosong. "
+                    "Gunakan discover_agent(url) dulu atau berikan agent_url."
+                ),
+            )
+        best = a2a_client.find_best_agent_for_task(message, agents)
+        if best is None:
+            return ToolResult(
+                success=False,
+                output="",
+                error="Tidak ditemukan agent yang cocok di registry untuk task ini.",
+            )
+        agent_url = best.url
+
+    # Discover agent card if not already in registry (best-effort)
+    known = {a.url for a in a2a_client.list_known_agents()}
+    if agent_url not in known:
+        discovered = a2a_client.discover_agent(agent_url)
+        if discovered is None:
+            return ToolResult(
+                success=False,
+                output="",
+                error=f"Gagal discover agent di {agent_url}. Periksa URL atau konektivitas.",
+            )
+
+    result = a2a_client.send_task(agent_url, message)
+
+    if result.success:
+        lines = [
+            f"# Delegation Result — {result.agent_name or 'External Agent'}",
+            f"- Task ID: {result.task_id}",
+            f"- Duration: {result.duration_ms} ms",
+            "",
+            "## Artifact",
+            result.artifact_text or "(kosong)",
+        ]
+        return ToolResult(
+            success=True,
+            output="\n".join(lines),
+            citations=[{
+                "type": "a2a_delegation",
+                "agent_url": agent_url,
+                "task_id": result.task_id,
+                "agent_name": result.agent_name,
+            }],
+        )
+
+    return ToolResult(
+        success=False,
+        output="",
+        error=f"Delegation gagal: {result.error}",
+    )
+
+
 # ── Registry ──────────────────────────────────────────────────────────────────
 
 # ── code_analyze — static AST analysis ───────────────────────────────────────
@@ -3105,6 +3185,1023 @@ def _tool_graph_search(args: dict) -> ToolResult:
     return ToolResult(success=True, output=output, citations=citations)
 
 
+def _tool_deep_research(args: dict) -> ToolResult:
+    """
+    Recursive multi-source deep research: corpus → web → follow-up → synthesis report.
+    Mode DEEP_RESEARCH implementation.
+
+    Params:
+      query (str, wajib) — topik/pertanyaan riset
+      max_iterations (int, default 3) — max recursive search rounds
+      max_depth (int, default 2) — max depth per sub-query chain
+    """
+    query = str(args.get("query", "")).strip()
+    if not query:
+        return ToolResult(success=False, output="", error="query wajib diisi")
+
+    max_iterations = max(1, min(int(args.get("max_iterations", 3)), 10))
+    max_depth = max(1, min(int(args.get("max_depth", 2)), 5))
+
+    try:
+        from .deep_research import deep_research_tool
+        result = deep_research_tool({
+            "query": query,
+            "max_iterations": max_iterations,
+            "max_depth": max_depth,
+        })
+        if not result.get("success"):
+            return ToolResult(success=False, output="", error=result.get("error", "Deep research failed"))
+
+        output = result.get("output", "")
+        metadata = result.get("metadata", {})
+        meta_line = f"\n\n---\n**Meta:** {metadata.get('n_findings', 0)} findings, {metadata.get('iterations', 0)} iterasi, {metadata.get('duration_ms', 0)/1000:.1f}s"
+        return ToolResult(
+            success=True,
+            output=output + meta_line,
+            citations=result.get("citations", []),
+        )
+    except Exception as e:
+        return ToolResult(success=False, output="", error=f"Deep research error: {e}")
+
+
+def _tool_transcribe_audio(args: dict) -> ToolResult:
+    """Transkripsi file audio ke teks (ASR)."""
+    path = args.get("path", "").strip()
+    lang = args.get("lang", "id").strip()
+    if not path:
+        return ToolResult(success=False, output="", error="path wajib diisi (relatif workspace/uploads)")
+    try:
+        from .audio_capability import transcribe_audio
+        result = transcribe_audio(path, lang=lang)
+        if result.get("ok"):
+            data = result["data"]
+            text = data.get("text", "")
+            backend = data.get("backend", "unknown")
+            return ToolResult(
+                success=True,
+                output=f"[Transkripsi — {backend}]\n{text}",
+                citations=result.get("citations", []),
+            )
+        return ToolResult(success=False, output="", error=result.get("fallback_instructions", "ASR gagal"))
+    except Exception as exc:  # noqa: BLE001
+        return ToolResult(success=False, output="", error=f"transcribe_audio error: {exc}")
+
+
+def _tool_synthesize_speech(args: dict) -> ToolResult:
+    """Sintesis teks ke file audio (TTS)."""
+    text = args.get("text", "").strip()
+    voice = args.get("voice", "default").strip()
+    lang = args.get("lang", "id").strip()
+    if not text:
+        return ToolResult(success=False, output="", error="text wajib diisi")
+    try:
+        from .audio_capability import synthesize_speech
+        out_path = args.get("out_path", "tts_out.wav")
+        result = synthesize_speech(text, voice=voice, lang=lang, out_path=out_path)
+        if result.get("ok"):
+            data = result["data"]
+            backend = data.get("backend", "unknown")
+            out = data.get("out_path", out_path)
+            return ToolResult(
+                success=True,
+                output=f"[TTS — {backend}] Audio disimpan ke: {out}",
+                citations=result.get("citations", []),
+            )
+        return ToolResult(success=False, output="", error=result.get("fallback_instructions", "TTS gagal"))
+    except Exception as exc:  # noqa: BLE001
+        return ToolResult(success=False, output="", error=f"synthesize_speech error: {exc}")
+
+
+def _tool_parse_document(args: dict) -> ToolResult:
+    """Parse dokumen Word/Excel/CSV/JSON/TXT menjadi teks/structured data."""
+    path = args.get("path", "").strip()
+    if not path:
+        return ToolResult(success=False, output="", error="path wajib diisi (relatif workspace)")
+    try:
+        from .document_parser import parse_document
+        result = parse_document(path)
+        if result.get("ok"):
+            data = result["data"]
+            backend = data.get("backend", "unknown")
+            text = data.get("text", "")
+            rows = data.get("rows", [])
+            if text:
+                preview = text[:800] + ("..." if len(text) > 800 else "")
+                return ToolResult(
+                    success=True,
+                    output=f"[Document Parser — {backend}]\n{preview}",
+                    citations=result.get("citations", []),
+                )
+            if rows:
+                preview = "\n".join(str(r) for r in rows[:10])
+                return ToolResult(
+                    success=True,
+                    output=f"[Document Parser — {backend}]\n{preview}",
+                    citations=result.get("citations", []),
+                )
+            return ToolResult(
+                success=True,
+                output=f"[Document Parser — {backend}] Dokumen berhasil diparse.",
+                citations=result.get("citations", []),
+            )
+        return ToolResult(success=False, output="", error=result.get("fallback_instructions", "Parse gagal"))
+    except Exception as exc:  # noqa: BLE001
+        return ToolResult(success=False, output="", error=f"parse_document error: {exc}")
+
+
+def _tool_analyze_image(args: dict) -> ToolResult:
+    """Analisis gambar via VLM Ollama."""
+    path = args.get("path", "").strip()
+    prompt = args.get("prompt", "").strip()
+    if not path:
+        return ToolResult(success=False, output="", error="path wajib diisi (relatif workspace/uploads)")
+    try:
+        from .vision_analyzer import analyze_image
+        result = analyze_image(path, prompt=prompt)
+        if result.get("ok"):
+            data = result["data"]
+            desc = data.get("description", "")
+            model = data.get("model", "unknown")
+            return ToolResult(
+                success=True,
+                output=f"[Vision — {model}]\n{desc}",
+                citations=result.get("citations", []),
+            )
+        return ToolResult(success=False, output="", error=result.get("fallback_instructions", "Vision gagal"))
+    except Exception as exc:  # noqa: BLE001
+        return ToolResult(success=False, output="", error=f"analyze_image error: {exc}")
+
+
+def _tool_analyze_video(args: dict) -> ToolResult:
+    """Analisis video via VLM Ollama (keyframes)."""
+    path = args.get("path", "").strip()
+    prompt = args.get("prompt", "").strip()
+    if not path:
+        return ToolResult(success=False, output="", error="path wajib diisi")
+    try:
+        from .vision_analyzer import analyze_video
+        result = analyze_video(path, prompt=prompt)
+        if result.get("ok"):
+            data = result["data"]
+            desc = data.get("combined_description", "")
+            model = data.get("model", "unknown")
+            return ToolResult(
+                success=True,
+                output=f"[Vision Video — {model}]\n{desc}",
+                citations=result.get("citations", []),
+            )
+        return ToolResult(success=False, output="", error=result.get("fallback_instructions", "Video analysis gagal"))
+    except Exception as exc:  # noqa: BLE001
+        return ToolResult(success=False, output="", error=f"analyze_video error: {exc}")
+
+
+def _tool_code_lint(args: dict) -> ToolResult:
+    """Lint code Python (ruff / py_compile)."""
+    code = args.get("code", "").strip()
+    if not code:
+        return ToolResult(success=False, output="", error="code wajib diisi")
+    try:
+        from .coding_agent_enhanced import lint_code
+        result = lint_code(code)
+        if result.get("ok"):
+            data = result["data"]
+            issues = data.get("issues", [])
+            passed = data.get("passed", False)
+            backend = data.get("backend", "unknown")
+            out = f"[Lint — {backend}] {'PASS' if passed else 'FAIL'} ({len(issues)} issues)\n"
+            for i in issues[:10]:
+                out += f"  L{i.get('line', 0)}: [{i.get('severity', '?')}] {i.get('message', '')}\n"
+            return ToolResult(success=True, output=out)
+        return ToolResult(success=False, output="", error=result.get("fallback_instructions", "Lint gagal"))
+    except Exception as exc:  # noqa: BLE001
+        return ToolResult(success=False, output="", error=f"lint error: {exc}")
+
+
+def _tool_code_debug(args: dict) -> ToolResult:
+    """Debug trace code Python line-by-line."""
+    code = args.get("code", "").strip()
+    inputs = args.get("inputs", "")
+    if not code:
+        return ToolResult(success=False, output="", error="code wajib diisi")
+    try:
+        from .coding_agent_enhanced import debug_trace
+        result = debug_trace(code, inputs)
+        if result.get("ok"):
+            data = result["data"]
+            out = f"[Debug — trace]\nstdout:\n{data.get('stdout', '')[:1000]}\nstderr:\n{data.get('stderr', '')[:500]}"
+            return ToolResult(success=True, output=out)
+        return ToolResult(success=False, output="", error=result.get("fallback_instructions", "Debug gagal"))
+    except Exception as exc:  # noqa: BLE001
+        return ToolResult(success=False, output="", error=f"debug error: {exc}")
+
+
+def _tool_code_tests(args: dict) -> ToolResult:
+    """Generate unit test stubs dari code."""
+    code = args.get("code", "").strip()
+    num = int(args.get("num_tests", 3))
+    if not code:
+        return ToolResult(success=False, output="", error="code wajib diisi")
+    try:
+        from .coding_agent_enhanced import generate_tests
+        result = generate_tests(code, num_tests=num)
+        if result.get("ok"):
+            data = result["data"]
+            return ToolResult(
+                success=True,
+                output=f"[Test Gen — {data.get('backend', 'ast')}]\n{data.get('test_code', '')}",
+            )
+        return ToolResult(success=False, output="", error=result.get("fallback_instructions", "Test gen gagal"))
+    except Exception as exc:  # noqa: BLE001
+        return ToolResult(success=False, output="", error=f"test gen error: {exc}")
+
+
+def _tool_code_review(args: dict) -> ToolResult:
+    """Rule-based code review (security + complexity + style)."""
+    code = args.get("code", "").strip()
+    context = args.get("context", "")
+    if not code:
+        return ToolResult(success=False, output="", error="code wajib diisi")
+    try:
+        from .coding_agent_enhanced import code_review
+        result = code_review(code, context=context)
+        if result.get("ok"):
+            data = result["data"]
+            issues = data.get("issues", [])
+            passed = data.get("passed", False)
+            out = f"[Code Review] {'PASS' if passed else 'ISSUES FOUND'} ({len(issues)} issues)\n"
+            for i in issues[:15]:
+                out += f"  L{i.get('line', 0)} [{i.get('severity', '?')}] {i.get('message', '')}\n"
+            return ToolResult(success=True, output=out)
+        return ToolResult(success=False, output="", error=result.get("fallback_instructions", "Review gagal"))
+    except Exception as exc:  # noqa: BLE001
+        return ToolResult(success=False, output="", error=f"review error: {exc}")
+
+
+def _tool_brand_guidelines(args: dict) -> ToolResult:
+    """Generate brand guidelines komplet."""
+    name = args.get("brand_name", "").strip()
+    niche = args.get("niche", "").strip()
+    colors = args.get("base_colors", ["#3B82F6", "#10B981", "#F59E0B"])
+    archetype = args.get("archetype", "everyman")
+    if not name or not niche:
+        return ToolResult(success=False, output="", error="brand_name dan niche wajib diisi")
+    try:
+        from .brand_guidelines import generate_full_guidelines
+        result = generate_full_guidelines(name, niche, colors, archetype)
+        if result.get("ok"):
+            data = result["data"]
+            out = (
+                f"[Brand Guidelines — {name}]\n"
+                f"Archetype: {data.get('archetype', '')}\n"
+                f"Colors: {json.dumps(data.get('color_system', {}).get('colors', {}), indent=2)[:500]}\n"
+                f"Typography: {json.dumps(data.get('typography', {}).get('scale', {}), indent=2)[:300]}\n"
+                f"Voice: {data.get('voice_tone', {}).get('voice', '')}"
+            )
+            return ToolResult(success=True, output=out)
+        return ToolResult(success=False, output="", error=result.get("fallback_instructions", "Guidelines gagal"))
+    except Exception as exc:  # noqa: BLE001
+        return ToolResult(success=False, output="", error=f"brand guidelines error: {exc}")
+
+
+def _tool_web_fetch_expanded(args: dict) -> ToolResult:
+    """Unified web fetch: Reddit, YouTube, GitHub, arXiv, HackerNews."""
+    platform = args.get("platform", "").strip().lower()
+    query = args.get("query", "").strip()
+    if not platform or not query:
+        return ToolResult(success=False, output="", error="platform dan query wajib diisi")
+    try:
+        from .mcp_web_fetch_expanded import fetch_web_unified
+        result = fetch_web_unified(
+            platform=platform,
+            query=query,
+            subreddit=args.get("subreddit", ""),
+            language=args.get("language", ""),
+            owner=args.get("owner", ""),
+            repo=args.get("repo", ""),
+            transcript=args.get("transcript", False),
+            max_results=int(args.get("max_results", 5)),
+        )
+        if result.get("ok"):
+            data = result["data"]
+            results = data.get("results", [])
+            out = f"[Web Fetch — {platform}] {data.get('count', len(results))} results\n"
+            for r in results[:5]:
+                out += f"- {r.get('title', r.get('name', ''))}: {r.get('url', '')}\n"
+            return ToolResult(success=True, output=out, citations=result.get("citations", []))
+        return ToolResult(success=False, output="", error=result.get("fallback_instructions", "Fetch gagal"))
+    except Exception as exc:  # noqa: BLE001
+        return ToolResult(success=False, output="", error=f"web fetch error: {exc}")
+
+
+def _tool_generate_image_runpod(args: dict) -> ToolResult:
+    """Generate image via RunPod GPU worker (SDXL/Flux)."""
+    prompt = args.get("prompt", "").strip()
+    if not prompt:
+        return ToolResult(success=False, output="", error="prompt wajib diisi")
+    try:
+        from .runpod_connector import generate_image
+        result = generate_image(
+            prompt=prompt,
+            negative_prompt=args.get("negative_prompt", ""),
+            width=int(args.get("width", 1024)),
+            height=int(args.get("height", 1024)),
+        )
+        if result.get("ok"):
+            data = result["data"]
+            return ToolResult(
+                success=True,
+                output=f"[Image Gen — {data.get('backend', '')}]\nImage URL: {data.get('image_url', '')}\nPrompt: {prompt}",
+            )
+        return ToolResult(success=False, output="", error=result.get("fallback_instructions", "Image gen gagal"))
+    except Exception as exc:  # noqa: BLE001
+        return ToolResult(success=False, output="", error=f"image gen error: {exc}")
+
+
+def _tool_generate_3d_runpod(args: dict) -> ToolResult:
+    """Generate 3D mesh via RunPod GPU worker (TripoSR)."""
+    prompt = args.get("prompt", "").strip()
+    image_path = args.get("image_path", "").strip()
+    if not prompt and not image_path:
+        return ToolResult(success=False, output="", error="prompt atau image_path wajib diisi")
+    try:
+        from .runpod_connector import generate_3d
+        result = generate_3d(
+            image_path=image_path,
+            prompt=prompt,
+            mode=args.get("mode", "triposr"),
+            output_format=args.get("output_format", "glb"),
+        )
+        if result.get("ok"):
+            data = result["data"]
+            return ToolResult(
+                success=True,
+                output=f"[3D Gen — {data.get('backend', '')}]\nMesh: {data.get('mesh_url', '')}\nVertices: {data.get('vertices', 0)} | Faces: {data.get('faces', 0)}",
+            )
+        return ToolResult(success=False, output="", error=result.get("fallback_instructions", "3D gen gagal"))
+    except Exception as exc:  # noqa: BLE001
+        return ToolResult(success=False, output="", error=f"3D gen error: {exc}")
+
+
+def _tool_scan_dataset(args: dict) -> ToolResult:
+    """Scan folder lokal untuk collect metadata gambar (read-only)."""
+    path = args.get("path", "").strip()
+    if not path:
+        return ToolResult(success=False, output="", error="path wajib diisi")
+    try:
+        from .dataset_collector import scan_folder
+        result = scan_folder(path)
+        if result.get("ok"):
+            data = result["data"]
+            files = data.get("files", [])
+            out = f"[Dataset Scan] {len(files)} files, {data.get('total_size_mb', 0)} MB\n"
+            for f in files[:10]:
+                out += f"- {f['filename']} ({f['width']}x{f['height']}, {f['size_bytes']} bytes)\n"
+            if len(files) > 10:
+                out += f"... dan {len(files) - 10} file lainnya"
+            return ToolResult(success=True, output=out)
+        return ToolResult(success=False, output="", error=result.get("fallback_instructions", "Scan gagal"))
+    except Exception as exc:  # noqa: BLE001
+        return ToolResult(success=False, output="", error=f"scan error: {exc}")
+
+
+def _tool_collect_dataset(args: dict) -> ToolResult:
+    """Collect dataset dari Mighan-Web / Mighan-3D assets."""
+    try:
+        from .dataset_collector import collect_dataset, auto_tag_by_folder
+        result = collect_dataset(
+            sources=args.get("sources"),
+            tags=args.get("tags"),
+        )
+        if result.get("ok"):
+            data = result["data"]
+            files = auto_tag_by_folder(data.get("files", []))
+            out = f"[Dataset Collect] {len(files)} files dari {len(data.get('sources', []))} sources\n"
+            for s in data.get("sources", []):
+                out += f"- {s['source']}: {s['count']} files ({s['size_mb']} MB)\n"
+            return ToolResult(success=True, output=out)
+        return ToolResult(success=False, output="", error=result.get("fallback_instructions", "Collect gagal"))
+    except Exception as exc:  # noqa: BLE001
+        return ToolResult(success=False, output="", error=f"collect error: {exc}")
+
+
+def _tool_search_unsplash(args: dict) -> ToolResult:
+    """Search photos via Unsplash API (free commercial use)."""
+    query = args.get("query", "").strip()
+    if not query:
+        return ToolResult(success=False, output="", error="query wajib diisi")
+    try:
+        from .dataset_web_collector import search_unsplash
+        result = search_unsplash(
+            query=query,
+            per_page=int(args.get("per_page", 20)),
+            orientation=args.get("orientation"),
+        )
+        if result.get("ok"):
+            data = result["data"]
+            photos = data.get("photos", [])
+            out = f"[Unsplash] {len(photos)} hasil untuk '{query}' (total: {data.get('total', 0)})\n"
+            out += f"License: {data.get('license_note', '')}\n"
+            for p in photos[:10]:
+                out += f"- {p['id']}: {p['width']}x{p['height']} by {p.get('author', '?')}\n"
+                out += f"  {p.get('description', '')[:80]}...\n"
+                out += f"  URL: {p.get('image_url', '')}\n"
+            return ToolResult(success=True, output=out)
+        return ToolResult(success=False, output="", error=result.get("fallback_instructions", "Unsplash gagal"))
+    except Exception as exc:
+        return ToolResult(success=False, output="", error=f"Unsplash error: {exc}")
+
+
+def _tool_search_pexels(args: dict) -> ToolResult:
+    """Search photos via Pexels API (free commercial use)."""
+    query = args.get("query", "").strip()
+    if not query:
+        return ToolResult(success=False, output="", error="query wajib diisi")
+    try:
+        from .dataset_web_collector import search_pexels
+        result = search_pexels(
+            query=query,
+            per_page=int(args.get("per_page", 20)),
+            orientation=args.get("orientation"),
+            color=args.get("color"),
+        )
+        if result.get("ok"):
+            data = result["data"]
+            photos = data.get("photos", [])
+            out = f"[Pexels] {len(photos)} hasil untuk '{query}' (total: {data.get('total', 0)})\n"
+            out += f"License: {data.get('license_note', '')}\n"
+            for p in photos[:10]:
+                out += f"- {p['id']}: {p['width']}x{p['height']} by {p.get('author', '?')}\n"
+                out += f"  {p.get('description', '')[:80]}...\n"
+            return ToolResult(success=True, output=out)
+        return ToolResult(success=False, output="", error=result.get("fallback_instructions", "Pexels gagal"))
+    except Exception as exc:
+        return ToolResult(success=False, output="", error=f"Pexels error: {exc}")
+
+
+def _tool_search_wikimedia(args: dict) -> ToolResult:
+    """Search CC-licensed media from Wikimedia Commons."""
+    query = args.get("query", "").strip()
+    if not query:
+        return ToolResult(success=False, output="", error="query wajib diisi")
+    try:
+        from .dataset_web_collector import search_wikimedia
+        result = search_wikimedia(
+            query=query,
+            limit=int(args.get("limit", 20)),
+            license_filter=args.get("license_filter"),
+        )
+        if result.get("ok"):
+            data = result["data"]
+            files = data.get("files", [])
+            out = f"[Wikimedia Commons] {len(files)} hasil untuk '{query}' (total: {data.get('total', 0)})\n"
+            out += f"License: {data.get('license_note', '')}\n"
+            for f in files[:10]:
+                out += f"- {f['title']}: {f.get('description', '')[:80]}...\n"
+                out += f"  Page: {f.get('source_url', '')}\n"
+            return ToolResult(success=True, output=out)
+        return ToolResult(success=False, output="", error=result.get("fallback_instructions", "Wikimedia gagal"))
+    except Exception as exc:
+        return ToolResult(success=False, output="", error=f"Wikimedia error: {exc}")
+
+
+def _tool_search_dataset_web(args: dict) -> ToolResult:
+    """Search across all legal web dataset sources (Unsplash + Pexels + Wikimedia)."""
+    query = args.get("query", "").strip()
+    if not query:
+        return ToolResult(success=False, output="", error="query wajib diisi")
+    try:
+        from .dataset_web_collector import search_all
+        result = search_all(
+            query=query,
+            sources=args.get("sources"),
+            per_source=int(args.get("per_source", 10)),
+        )
+        if result.get("ok"):
+            data = result["data"]
+            out = f"[Web Dataset Search] '{query}' — {data.get('total_items', 0)} items\n"
+            out += f"Sources: {', '.join(data.get('sources', []))}\n"
+            out += f"{data.get('legal_summary', '')}\n"
+            for src, r in data.get("results", {}).items():
+                if r.get("ok"):
+                    d = r["data"]
+                    count = len(d.get("photos", [])) + len(d.get("files", []))
+                    out += f"- {src}: {count} items\n"
+            return ToolResult(success=True, output=out)
+        return ToolResult(success=False, output="", error=result.get("fallback_instructions", "Search gagal"))
+    except Exception as exc:
+        return ToolResult(success=False, output="", error=f"Web search error: {exc}")
+
+
+def _tool_analyze_dataset_dna(args: dict) -> ToolResult:
+    """Analyze dataset DNA (resolution, caption coverage, diversity, LoRA suitability)."""
+    entries = args.get("entries", [])
+    if not entries:
+        return ToolResult(success=False, output="", error="entries wajib diisi (list of dict)")
+    try:
+        from .dataset_web_collector import analyze_dataset_dna
+        result = analyze_dataset_dna(entries)
+        if result.get("ok"):
+            data = result["data"]
+            out = "[Dataset DNA Analysis]\n"
+            out += f"Total entries: {data.get('total_entries', 0)}\n"
+            out += f"Quality (>=1024px): {data.get('quality_score', {}).get('high_res_percentage', 0)}%\n"
+            out += f"Caption coverage: {data.get('caption_coverage', {}).get('percentage', 0)}%\n"
+            out += f"Author diversity: {data.get('diversity_score', {}).get('diversity_percentage', 0)}%\n"
+            out += f"LoRA suitable: {'YES' if data.get('lora_suitability', {}).get('recommended') else 'NO'}\n"
+            flags = data.get("bias_risk_flags", [])
+            if flags and flags[0] != "None detected":
+                out += "Risk flags:\n"
+                for f in flags:
+                    out += f"  ⚠️ {f}\n"
+            return ToolResult(success=True, output=out)
+        return ToolResult(success=False, output="", error=result.get("fallback_instructions", "DNA analysis gagal"))
+    except Exception as exc:
+        return ToolResult(success=False, output="", error=f"DNA analysis error: {exc}")
+
+
+def _tool_get_laion_info(args: dict) -> ToolResult:
+    """Get LAION-5B dataset information and metadata pointers."""
+    try:
+        from .dataset_web_collector import get_laion_info
+        result = get_laion_info()
+        if result.get("ok"):
+            data = result["data"]
+            out = f"[LAION-5B] {data.get('description', '')}\n"
+            out += f"License: {data.get('license', '')}\n"
+            out += "Subsets:\n"
+            for s in data.get("subsets", []):
+                out += f"  - {s['name']}: {s.get('size', '?')} — {s.get('use_case', '')}\n"
+            out += "Caveats:\n"
+            for c in data.get("caveats", []):
+                out += f"  ⚠️ {c}\n"
+            out += f"Download: {data.get('download', {}).get('metadata', '')}\n"
+            return ToolResult(success=True, output=out)
+        return ToolResult(success=False, output="", error=result.get("fallback_instructions", "LAION info gagal"))
+    except Exception as exc:
+        return ToolResult(success=False, output="", error=f"LAION info error: {exc}")
+
+
+def _tool_drive_auth_url(args: dict) -> ToolResult:
+    """Generate Google OAuth2 authorization URL untuk akses Google Drive."""
+    try:
+        from .dataset_drive_collector import get_auth_url
+        result = get_auth_url(redirect_uri=args.get("redirect_uri", "http://localhost:8080"))
+        if result.get("ok"):
+            data = result["data"]
+            out = "[Google Drive Auth]\n"
+            out += f"URL: {data.get('auth_url')}\n\n"
+            out += data.get("instructions", "")
+            return ToolResult(success=True, output=out)
+        return ToolResult(success=False, output="", error=result.get("fallback_instructions", "Auth URL gagal"))
+    except Exception as exc:
+        return ToolResult(success=False, output="", error=f"Drive auth error: {exc}")
+
+
+def _tool_drive_exchange_code(args: dict) -> ToolResult:
+    """Exchange Google OAuth2 authorization code untuk access token + refresh token."""
+    code = args.get("code", "").strip()
+    if not code:
+        return ToolResult(success=False, output="", error="code wajib diisi (dari URL redirect setelah authorize)")
+    try:
+        from .dataset_drive_collector import exchange_auth_code
+        result = exchange_auth_code(
+            code=code,
+            redirect_uri=args.get("redirect_uri", "http://localhost:8080"),
+        )
+        if result.get("ok"):
+            data = result["data"]
+            out = "[Google Drive Token]\n"
+            out += f"Access Token: {data.get('access_token', '')[:30]}...\n"
+            out += f"Refresh Token: {data.get('refresh_token', '')[:30]}...\n"
+            out += f"Expires in: {data.get('expires_in')} detik\n\n"
+            out += data.get("instructions", "")
+            return ToolResult(success=True, output=out)
+        return ToolResult(success=False, output="", error=result.get("fallback_instructions", "Exchange gagal"))
+    except Exception as exc:
+        return ToolResult(success=False, output="", error=f"Drive exchange error: {exc}")
+
+
+def _tool_drive_list_images(args: dict) -> ToolResult:
+    """List gambar dari Google Drive folder. Butuh GOOGLE_DRIVE_ACCESS_TOKEN."""
+    folder_id = args.get("folder_id", "").strip() or None
+    account = args.get("account", "").strip() or None
+    try:
+        from .dataset_drive_collector import collect_drive_dataset
+        result = collect_drive_dataset(
+            folder_id=folder_id,
+            max_files=int(args.get("max_files", 5000)),
+            account=account,
+        )
+        if result.get("ok"):
+            data = result["data"]
+            files = data.get("files", [])
+            acc_label = f" [{account}]" if account else ""
+            out = f"[Google Drive Dataset{acc_label}] {len(files)} gambar\n"
+            out += f"Folder: {data.get('folder_id')}\n"
+            out += f"Total size: {data.get('total_size_mb', 0)} MB\n"
+            out += f"License: {data.get('license_note', '')}\n\n"
+            for f in files[:15]:
+                dim = f"{f.get('width')}x{f.get('height')}" if f.get('width') else "?"
+                out += f"- {f['name']} ({dim}, {f.get('size_bytes', 0)} bytes)\n"
+                out += f"  Tags: {', '.join(f.get('tags', []))}\n"
+                out += f"  URL: {f.get('web_view_url', '')}\n"
+            if len(files) > 15:
+                out += f"... dan {len(files) - 15} gambar lainnya\n"
+            return ToolResult(success=True, output=out)
+        return ToolResult(success=False, output="", error=result.get("fallback_instructions", "Drive list gagal"))
+    except Exception as exc:
+        return ToolResult(success=False, output="", error=f"Drive list error: {exc}")
+
+
+def _tool_drive_health(args: dict) -> ToolResult:
+    """Check Google Drive API connectivity dan token validity."""
+    account = args.get("account", "").strip() or None
+    try:
+        from .dataset_drive_collector import drive_health_check
+        result = drive_health_check(account=account)
+        if result.get("ok"):
+            data = result["data"]
+            acc_label = f" [{account}]" if account else ""
+            out = f"[Google Drive Health{acc_label}]\n"
+            out += f"Connected: {'YES' if data.get('connected') else 'NO'}\n"
+            out += f"User: {data.get('user_name', '?')} ({data.get('user_email', '?')})\n"
+            out += f"Storage used: {data.get('used_storage', '?')} / {data.get('total_storage', '?')}\n"
+            return ToolResult(success=True, output=out)
+        return ToolResult(success=False, output="", error=result.get("fallback_instructions", "Health check gagal"))
+    except Exception as exc:
+        return ToolResult(success=False, output="", error=f"Drive health error: {exc}")
+
+
+def _tool_drive_explore(args: dict) -> ToolResult:
+    """Explore Google Drive folder structure recursively (folder tree + image count)."""
+    folder_id = args.get("folder_id", "").strip() or None
+    account = args.get("account", "").strip() or None
+    try:
+        from .dataset_drive_collector import explore_drive_structure
+        result = explore_drive_structure(
+            folder_id=folder_id,
+            account=account,
+            max_depth=int(args.get("max_depth", 3)),
+        )
+        if result.get("ok"):
+            data = result["data"]
+            acc_label = f" [{account}]" if account else ""
+            out = f"[Drive Explorer{acc_label}]\n"
+            out += _format_drive_tree(data, prefix="")
+            return ToolResult(success=True, output=out)
+        return ToolResult(success=False, output="", error=result.get("fallback_instructions", "Explore gagal"))
+    except Exception as exc:
+        return ToolResult(success=False, output="", error=f"Drive explore error: {exc}")
+
+
+def _format_drive_tree(node: dict, prefix: str = "") -> str:
+    """Helper untuk format folder tree."""
+    name = node.get("name", "?")
+    count = node.get("image_count", 0)
+    subfolders = node.get("folders", [])
+    out = f"{prefix}{name}/ ({count} images)\n"
+    for i, child in enumerate(subfolders):
+        is_last = i == len(subfolders) - 1
+        child_prefix = prefix + ("└── " if is_last else "├── ")
+        out += _format_drive_tree(child, prefix=child_prefix)
+    return out
+
+
+def _tool_drive_overview(args: dict) -> ToolResult:
+    """Get overview satu Google Drive account (user, storage, total images, top folders)."""
+    account = args.get("account", "").strip() or None
+    try:
+        from .dataset_drive_collector import get_account_overview
+        result = get_account_overview(account=account)
+        if result.get("ok"):
+            data = result["data"]
+            acc_label = f" [{account}]" if account else ""
+            out = f"[Drive Overview{acc_label}]\n"
+            out += f"User: {data.get('user_name', '?')} ({data.get('user_email', '?')})\n"
+            out += f"Storage: {data.get('used_storage', '?')} / {data.get('total_storage', '?')}\n"
+            out += f"Total images: {data.get('total_images', 0)}\n"
+            out += "Top folders:\n"
+            for f in data.get("top_folders", [])[:10]:
+                out += f"  📁 {f['name']}: {f['image_count']} images\n"
+            return ToolResult(success=True, output=out)
+        return ToolResult(success=False, output="", error=result.get("fallback_instructions", "Overview gagal"))
+    except Exception as exc:
+        return ToolResult(success=False, output="", error=f"Drive overview error: {exc}")
+
+
+def _tool_drive_batch_collect(args: dict) -> ToolResult:
+    """Collect images dari multiple Google Drive accounts sekaligus."""
+    accounts = args.get("accounts")
+    if isinstance(accounts, str):
+        accounts = [a.strip() for a in accounts.split(",") if a.strip()]
+    try:
+        from .dataset_drive_collector import batch_collect_drive_datasets
+        result = batch_collect_drive_datasets(
+            accounts=accounts,
+            max_files_per_account=int(args.get("max_files_per_account", 1000)),
+        )
+        if result.get("ok"):
+            data = result["data"]
+            out = "[Drive Batch Collect]\n"
+            out += f"Accounts: {', '.join(data.get('accounts', []))}\n"
+            out += f"Total images: {data.get('total_images_across_accounts', 0)}\n\n"
+            for acc, r in data.get("results", {}).items():
+                if r.get("ok"):
+                    overview = r["data"].get("overview", {})
+                    collection = r["data"].get("collection", {})
+                    out += f"✅ {acc}: {collection.get('total_files', 0)} images\n"
+                else:
+                    out += f"❌ {acc}: {r.get('fallback_instructions', '?')}\n"
+            return ToolResult(success=True, output=out)
+        return ToolResult(success=False, output="", error=result.get("fallback_instructions", "Batch collect gagal"))
+    except Exception as exc:
+        return ToolResult(success=False, output="", error=f"Batch collect error: {exc}")
+
+
+def _tool_drive_config(args: dict) -> ToolResult:
+    """Get step-by-step instructions untuk setup multiple Google Drive accounts."""
+    try:
+        from .dataset_drive_collector import get_account_config_instructions
+        result = get_account_config_instructions()
+        if result.get("ok"):
+            data = result["data"]
+            out = f"[{data.get('title')}]\n\n"
+            out += f"Accounts: {', '.join(data.get('accounts', []))}\n\n"
+            for step in data.get("steps", []):
+                out += f"Step {step['step']}: {step['title']}\n"
+                out += f"  {step.get('instructions', '')}\n\n"
+            out += "Env vars template:\n"
+            for k, v in data.get("env_vars_template", {}).items():
+                out += f"  {k}={v}\n"
+            return ToolResult(success=True, output=out)
+        return ToolResult(success=False, output="", error="Config gagal")
+    except Exception as exc:
+        return ToolResult(success=False, output="", error=f"Config error: {exc}")
+
+
+def _tool_elevenlabs_tts(args: dict) -> ToolResult:
+    """Generate audio dari text menggunakan ElevenLabs TTS (Guru Trainer voice)."""
+    text = args.get("text", "").strip()
+    if not text:
+        return ToolResult(success=False, output="", error="text wajib diisi")
+    try:
+        from .elevenlabs_connector import generate_tts
+        result = generate_tts(
+            text=text,
+            voice_id=args.get("voice_id", "21m00Tcm4TlvDq8ikWAM"),
+            model_id=args.get("model_id", "eleven_multilingual_v2"),
+            stability=float(args.get("stability", 0.5)),
+            similarity_boost=float(args.get("similarity_boost", 0.75)),
+            style=float(args.get("style", 0.0)),
+            output_format=args.get("output_format", "mp3_44100_128"),
+        )
+        if result.get("ok"):
+            data = result["data"]
+            out = "[ElevenLabs TTS — Guru Trainer Voice]\n"
+            out += f"Voice: {data.get('voice_id')}\n"
+            out += f"Text length: {data.get('text_length')} chars\n"
+            out += f"Model: {data.get('model')}\n"
+            out += f"Output: {data.get('output_path')}\n"
+            out += f"Size: {data.get('size_bytes')} bytes\n"
+            return ToolResult(success=True, output=out)
+        return ToolResult(success=False, output="", error=result.get("fallback_instructions", "TTS gagal"))
+    except Exception as exc:
+        return ToolResult(success=False, output="", error=f"TTS error: {exc}")
+
+
+def _tool_elevenlabs_voices(args: dict) -> ToolResult:
+    """List semua voice ElevenLabs (premade + custom + community)."""
+    try:
+        from .elevenlabs_connector import list_voices
+        result = list_voices()
+        if result.get("ok"):
+            data = result["data"]
+            out = f"[ElevenLabs Voices] {data.get('total_voices')} total\n\n"
+            out += "Recommended for Guru Trainer:\n"
+            for v in data.get("recommended_for_guru", []):
+                out += f"  🎙️ {v['name']} ({v['voice_id']})\n"
+                out += f"     {v.get('description', '')[:60]}...\n"
+            out += "\nBy category:\n"
+            for cat, voices in data.get("by_category", {}).items():
+                out += f"  {cat}: {len(voices)} voices\n"
+            return ToolResult(success=True, output=out)
+        return ToolResult(success=False, output="", error=result.get("fallback_instructions", "List voices gagal"))
+    except Exception as exc:
+        return ToolResult(success=False, output="", error=f"List voices error: {exc}")
+
+
+def _tool_elevenlabs_clone(args: dict) -> ToolResult:
+    """Clone voice guru dari audio samples."""
+    name = args.get("name", "").strip()
+    if not name:
+        return ToolResult(success=False, output="", error="name wajib diisi (nama voice guru)")
+    file_paths = args.get("file_paths", [])
+    if not file_paths:
+        return ToolResult(success=False, output="", error="file_paths wajib diisi (minimal 1 audio file)")
+    try:
+        from .elevenlabs_connector import clone_voice
+        result = clone_voice(
+            name=name,
+            description=args.get("description", ""),
+            file_paths=file_paths if isinstance(file_paths, list) else [file_paths],
+            labels=args.get("labels"),
+        )
+        if result.get("ok"):
+            data = result["data"]
+            out = "[ElevenLabs Voice Clone — Guru Trainer]\n"
+            out += f"Voice ID: {data.get('voice_id')}\n"
+            out += f"Name: {data.get('name')}\n"
+            out += f"Files: {data.get('files_uploaded')}\n"
+            out += f"{data.get('note', '')}\n"
+            return ToolResult(success=True, output=out)
+        return ToolResult(success=False, output="", error=result.get("fallback_instructions", "Clone gagal"))
+    except Exception as exc:
+        return ToolResult(success=False, output="", error=f"Clone error: {exc}")
+
+
+def _tool_elevenlabs_user(args: dict) -> ToolResult:
+    """Check ElevenLabs user quota dan usage."""
+    try:
+        from .elevenlabs_connector import get_user_info
+        result = get_user_info()
+        if result.get("ok"):
+            data = result["data"]
+            out = "[ElevenLabs User Info]\n"
+            out += f"Tier: {data.get('tier')}\n"
+            out += f"Usage: {data.get('character_count')} / {data.get('character_limit')} chars ({data.get('character_usage_percentage')}%)\n"
+            out += f"Voice limit: {data.get('voice_limit')}\n"
+            return ToolResult(success=True, output=out)
+        return ToolResult(success=False, output="", error=result.get("fallback_instructions", "User info gagal"))
+    except Exception as exc:
+        return ToolResult(success=False, output="", error=f"User info error: {exc}")
+
+
+def _tool_elevenlabs_sound(args: dict) -> ToolResult:
+    """Generate sound effect dari text description."""
+    text = args.get("text", "").strip()
+    if not text:
+        return ToolResult(success=False, output="", error="text wajib diisi (deskripsi sound effect)")
+    try:
+        from .elevenlabs_connector import generate_sound_effect
+        result = generate_sound_effect(
+            text=text,
+            duration_seconds=args.get("duration_seconds"),
+            prompt_influence=float(args.get("prompt_influence", 0.3)),
+        )
+        if result.get("ok"):
+            data = result["data"]
+            out = "[ElevenLabs Sound Effect]\n"
+            out += f"Description: {data.get('description')}\n"
+            out += f"Output: {data.get('output_path')}\n"
+            return ToolResult(success=True, output=out)
+        return ToolResult(success=False, output="", error=result.get("fallback_instructions", "Sound effect gagal"))
+    except Exception as exc:
+        return ToolResult(success=False, output="", error=f"Sound effect error: {exc}")
+
+
+def _tool_elevenlabs_health(args: dict) -> ToolResult:
+    """Check ElevenLabs API connectivity dan quota."""
+    try:
+        from .elevenlabs_connector import elevenlabs_health_check
+        result = elevenlabs_health_check()
+        if result.get("ok"):
+            data = result["data"]
+            out = "[ElevenLabs Health]\n"
+            out += f"Connected: {'YES' if data.get('connected') else 'NO'}\n"
+            out += f"API Key valid: {'YES' if data.get('api_key_valid') else 'NO'}\n"
+            out += f"Voices available: {data.get('voices_available', 0)}\n"
+            return ToolResult(success=True, output=out)
+        return ToolResult(success=False, output="", error=result.get("fallback_instructions", "Health check gagal"))
+    except Exception as exc:
+        return ToolResult(success=False, output="", error=f"Health check error: {exc}")
+
+
+def _tool_spark_curate(args: dict) -> ToolResult:
+    """Curate dataset dengan ethical filtering (Adobe Firefly approach). Hanya licensed content."""
+    entries = args.get("entries", [])
+    if not entries:
+        return ToolResult(success=False, output="", error="entries wajib diisi (list of dict)")
+    try:
+        from .dataset_spark_curation import curate_ethical_dataset
+        result = curate_ethical_dataset(
+            entries=entries,
+            output_path=args.get("output_path", "dataset/spark_curated.jsonl"),
+            curator=args.get("curator", "sidix-spark"),
+        )
+        if result.get("ok"):
+            data = result["data"]
+            out = "[SIDIX Spark — Ethical Dataset Curation]\n"
+            out += f"Input: {data.get('total_input')} | Accepted: {data.get('accepted')} | Rejected: {data.get('rejected')}\n"
+            out += f"Acceptance rate: {data.get('acceptance_rate')}%\n"
+            out += f"License dist: {data.get('license_distribution')}\n"
+            out += f"Output: {data.get('output_path')}\n"
+            bias = data.get("bias_audit", {})
+            out += f"Bias score: {bias.get('overall_bias_score', '?')}/100\n"
+            flags = bias.get("bias_flags", [])
+            if flags and flags[0] != "None detected":
+                out += "Bias flags:\n"
+                for f in flags:
+                    out += f"  ⚠️ {f}\n"
+            return ToolResult(success=True, output=out)
+        return ToolResult(success=False, output="", error=result.get("fallback_instructions", "Curation gagal"))
+    except Exception as exc:
+        return ToolResult(success=False, output="", error=f"Curation error: {exc}")
+
+
+def _tool_spark_validate(args: dict) -> ToolResult:
+    """Validate license satu entry (whitelist/blacklist check)."""
+    entry = args.get("entry", {})
+    if not entry:
+        return ToolResult(success=False, output="", error="entry wajib diisi (dict)")
+    try:
+        from .dataset_spark_curation import validate_license
+        result = validate_license(entry)
+        if result.get("ok"):
+            data = result["data"]
+            out = f"[Spark License Validator]\n"
+            out += f"Valid: {'YES' if data.get('is_valid') else 'NO'}\n"
+            out += f"License: {data.get('license_type')}\n"
+            out += f"Risk: {data.get('risk_level')}\n"
+            out += f"Action: {data.get('action')}\n"
+            out += f"Note: {data.get('notes')}\n"
+            return ToolResult(success=True, output=out)
+        return ToolResult(success=False, output="", error=result.get("fallback_instructions", "Validate gagal"))
+    except Exception as exc:
+        return ToolResult(success=False, output="", error=f"Validate error: {exc}")
+
+
+def _tool_spark_bias(args: dict) -> ToolResult:
+    """Audit bias pada dataset (gender, western, professional)."""
+    entries = args.get("entries", [])
+    if not entries:
+        return ToolResult(success=False, output="", error="entries wajib diisi")
+    try:
+        from .dataset_spark_curation import audit_bias
+        result = audit_bias(entries)
+        if result.get("ok"):
+            data = result["data"]
+            out = "[Spark Bias Audit]\n"
+            out += f"Total: {data.get('total_entries')}\n"
+            out += f"Gender balance: {data.get('gender_balance_score')}/100\n"
+            out += f"Western: {data.get('western_content_percentage')}%\n"
+            out += f"Professional: {data.get('professional_content_percentage')}%\n"
+            out += f"Overall bias: {data.get('overall_bias_score')}/100\n"
+            flags = data.get("bias_flags", [])
+            if flags and flags[0] != "None detected":
+                out += "Flags:\n"
+                for f in flags:
+                    out += f"  ⚠️ {f}\n"
+            return ToolResult(success=True, output=out)
+        return ToolResult(success=False, output="", error=result.get("fallback_instructions", "Audit gagal"))
+    except Exception as exc:
+        return ToolResult(success=False, output="", error=f"Audit error: {exc}")
+
+
+def _tool_spark_pinterest_warn(args: dict) -> ToolResult:
+    """Show detailed warning tentang risiko scraping Pinterest."""
+    try:
+        from .dataset_spark_curation import get_pinterest_warning
+        result = get_pinterest_warning()
+        if result.get("ok"):
+            data = result["data"]
+            out = f"[⚠️ {data.get('source')} — {data.get('status')}]\n"
+            out += f"Risk: {data.get('risk_level')}\n\n"
+            out += "Alasan ditolak:\n"
+            for r in data.get("reasons", []):
+                out += f"  • {r}\n"
+            out += "\nAlternatives yang legal:\n"
+            for a in data.get("alternatives", []):
+                out += f"  ✅ {a}\n"
+            return ToolResult(success=True, output=out)
+        return ToolResult(success=False, output="", error="Warning gagal")
+    except Exception as exc:
+        return ToolResult(success=False, output="", error=f"Warning error: {exc}")
+
+
+def _tool_spark_provenance(args: dict) -> ToolResult:
+    """Generate provenance report untuk dataset (compliance audit)."""
+    credentials = args.get("credentials", [])
+    if not credentials:
+        return ToolResult(success=False, output="", error="credentials wajib diisi (list of manifest dict)")
+    try:
+        from .dataset_spark_curation import generate_provenance_report
+        result = generate_provenance_report(credentials)
+        if result.get("ok"):
+            data = result["data"]
+            out = "[Spark Provenance Report]\n"
+            out += f"Assets: {data.get('total_assets')}\n"
+            out += f"Sources: {data.get('sources')}\n"
+            out += f"Licenses: {data.get('licenses')}\n"
+            out += f"Standard: {data.get('compliance_standard')}\n"
+            out += "Requirements met:\n"
+            for r in data.get("requirements", []):
+                out += f"  ✓ {r}\n"
+            return ToolResult(success=True, output=out)
+        return ToolResult(success=False, output="", error=result.get("fallback_instructions", "Report gagal"))
+    except Exception as exc:
+        return ToolResult(success=False, output="", error=f"Report error: {exc}")
+
+
 TOOL_REGISTRY: dict[str, ToolSpec] = {
     "search_corpus": ToolSpec(
         name="search_corpus",
@@ -3321,6 +4418,408 @@ TOOL_REGISTRY: dict[str, ToolSpec] = {
         params=["path", "pages"],
         permission="open",
         fn=_tool_pdf_extract,
+    ),
+    "transcribe_audio": ToolSpec(
+        name="transcribe_audio",
+        description=(
+            "Transkripsi file audio ke teks (ASR). Prioritas: faster-whisper → openai-whisper. "
+            "Gunakan setelah user upload audio via /upload/audio. "
+            "Params: path (wajib, relatif workspace/uploads), lang (opsional, default 'id')."
+        ),
+        params=["path", "lang"],
+        permission="open",
+        fn=_tool_transcribe_audio,
+    ),
+    "synthesize_speech": ToolSpec(
+        name="synthesize_speech",
+        description=(
+            "Sintesis teks ke file audio WAV (TTS). Prioritas: Coqui-TTS → pyttsx3. "
+            "Gunakan untuk membuat SIDIX 'berbicara'. "
+            "Params: text (wajib), voice (opsional, default 'default'), lang (opsional, default 'id'), out_path (opsional)."
+        ),
+        params=["text", "voice", "lang", "out_path"],
+        permission="open",
+        fn=_tool_synthesize_speech,
+    ),
+    "parse_document": ToolSpec(
+        name="parse_document",
+        description=(
+            "Parse dokumen Word/Excel/CSV/JSON/TXT menjadi teks atau structured data. "
+            "Auto-detect format berdasarkan ekstensi. "
+            "Params: path (wajib, relatif workspace). Supported: .docx .xlsx .csv .json .txt .md .py .yaml .jsonl"
+        ),
+        params=["path"],
+        permission="open",
+        fn=_tool_parse_document,
+    ),
+    "analyze_image": ToolSpec(
+        name="analyze_image",
+        description=(
+            "Analisis gambar via VLM Ollama (moondream/llava). Deskripsi objek, warna, teks, mood. "
+            "Params: path (wajib, relatif workspace/uploads), prompt (opsional)."
+        ),
+        params=["path", "prompt"],
+        permission="open",
+        fn=_tool_analyze_image,
+    ),
+    "analyze_video": ToolSpec(
+        name="analyze_video",
+        description=(
+            "Analisis video via VLM Ollama (extract keyframes). Deskripsi adegan, aksi, objek. "
+            "Params: path (wajib, relatif workspace/uploads), prompt (opsional)."
+        ),
+        params=["path", "prompt"],
+        permission="open",
+        fn=_tool_analyze_video,
+    ),
+    "code_lint": ToolSpec(
+        name="code_lint",
+        description=(
+            "Lint code Python (ruff/py_compile). Deteksi syntax error, style issues. "
+            "Params: code (wajib, Python source string)."
+        ),
+        params=["code"],
+        permission="open",
+        fn=_tool_code_lint,
+    ),
+    "code_debug": ToolSpec(
+        name="code_debug",
+        description=(
+            "Debug trace code Python line-by-line. Lihat eksekusi per baris. "
+            "Params: code (wajib), inputs (opsional, stdin string)."
+        ),
+        params=["code", "inputs"],
+        permission="open",
+        fn=_tool_code_debug,
+    ),
+    "code_tests": ToolSpec(
+        name="code_tests",
+        description=(
+            "Generate unit test stubs dari code Python (AST-based). "
+            "Params: code (wajib), num_tests (opsional, default 3)."
+        ),
+        params=["code", "num_tests"],
+        permission="open",
+        fn=_tool_code_tests,
+    ),
+    "code_review": ToolSpec(
+        name="code_review",
+        description=(
+            "Rule-based code review: security patterns, complexity, style. "
+            "Params: code (wajib), context (opsional)."
+        ),
+        params=["code", "context"],
+        permission="open",
+        fn=_tool_code_review,
+    ),
+    "brand_guidelines": ToolSpec(
+        name="brand_guidelines",
+        description=(
+            "Generate brand guidelines komplet: color system, typography, spacing, voice & tone. "
+            "Params: brand_name (wajib), niche (wajib), base_colors (opsional, list hex), archetype (opsional)."
+        ),
+        params=["brand_name", "niche", "base_colors", "archetype"],
+        permission="open",
+        fn=_tool_brand_guidelines,
+    ),
+    "web_fetch_expanded": ToolSpec(
+        name="web_fetch_expanded",
+        description=(
+            "Unified web fetch: Reddit, YouTube, GitHub, arXiv, HackerNews. No API key. "
+            "Params: platform (wajib: reddit/youtube/github/arxiv/hackernews), query (wajib), "
+            "subreddit (opsional), language (opsional), max_results (opsional, default 5)."
+        ),
+        params=["platform", "query", "subreddit", "language", "max_results"],
+        permission="open",
+        fn=_tool_web_fetch_expanded,
+    ),
+    "generate_image_runpod": ToolSpec(
+        name="generate_image_runpod",
+        description=(
+            "Generate image via RunPod GPU worker (SDXL/Flux). Butuh RUNPOD_API_KEY env var. "
+            "Params: prompt (wajib), negative_prompt (opsional), width/height (opsional, default 1024)."
+        ),
+        params=["prompt", "negative_prompt", "width", "height"],
+        permission="open",
+        fn=_tool_generate_image_runpod,
+    ),
+    "generate_3d_runpod": ToolSpec(
+        name="generate_3d_runpod",
+        description=(
+            "Generate 3D mesh via RunPod GPU worker (TripoSR/Hunyuan3D). Butuh RUNPOD_API_KEY. "
+            "Params: prompt atau image_path (salah satu wajib), mode (opsional, default triposr), output_format (opsional, default glb)."
+        ),
+        params=["prompt", "image_path", "mode", "output_format"],
+        permission="open",
+        fn=_tool_generate_3d_runpod,
+    ),
+    "scan_dataset": ToolSpec(
+        name="scan_dataset",
+        description=(
+            "Scan folder lokal untuk collect metadata gambar (read-only, tidak edit file). "
+            "Params: path (wajib)."
+        ),
+        params=["path"],
+        permission="open",
+        fn=_tool_scan_dataset,
+    ),
+    "collect_dataset": ToolSpec(
+        name="collect_dataset",
+        description=(
+            "Collect dataset dari Mighan-Web / Mighan-3D assets. Auto-tag berdasarkan folder. "
+            "Params: sources (opsional, list path), tags (opsional, list string)."
+        ),
+        params=["sources", "tags"],
+        permission="open",
+        fn=_tool_collect_dataset,
+    ),
+    "search_unsplash": ToolSpec(
+        name="search_unsplash",
+        description=(
+            "Cari foto gratis dari Unsplash API (free commercial use). Butuh UNSPLASH_ACCESS_KEY env var. "
+            "Params: query (wajib), per_page (opsional, default 20), orientation (opsional: landscape/portrait/square)."
+        ),
+        params=["query", "per_page", "orientation"],
+        permission="open",
+        fn=_tool_search_unsplash,
+    ),
+    "search_pexels": ToolSpec(
+        name="search_pexels",
+        description=(
+            "Cari foto gratis dari Pexels API (free commercial use). Butuh PEXELS_API_KEY env var. "
+            "Params: query (wajib), per_page (opsional, default 20), orientation (opsional), color (opsional)."
+        ),
+        params=["query", "per_page", "orientation", "color"],
+        permission="open",
+        fn=_tool_search_pexels,
+    ),
+    "search_wikimedia": ToolSpec(
+        name="search_wikimedia",
+        description=(
+            "Cari media CC-licensed dari Wikimedia Commons (no API key needed). "
+            "Params: query (wajib), limit (opsional, default 20), license_filter (opsional)."
+        ),
+        params=["query", "limit", "license_filter"],
+        permission="open",
+        fn=_tool_search_wikimedia,
+    ),
+    "search_dataset_web": ToolSpec(
+        name="search_dataset_web",
+        description=(
+            "Cari dataset gambar dari semua sumber legal web (Unsplash + Pexels + Wikimedia). "
+            "Params: query (wajib), sources (opsional, list: unsplash/pexels/wikimedia), per_source (opsional, default 10)."
+        ),
+        params=["query", "sources", "per_source"],
+        permission="open",
+        fn=_tool_search_dataset_web,
+    ),
+    "analyze_dataset_dna": ToolSpec(
+        name="analyze_dataset_dna",
+        description=(
+            "Analisis DNA dataset (karakteristik, kualitas, bias, LoRA suitability). "
+            "Params: entries (wajib, list of dict dengan width/height/description/author/source/license)."
+        ),
+        params=["entries"],
+        permission="open",
+        fn=_tool_analyze_dataset_dna,
+    ),
+    "get_laion_info": ToolSpec(
+        name="get_laion_info",
+        description=(
+            "Info dataset LAION-5B (5.85B image-text pairs) + download pointers + bias caveats. No params."
+        ),
+        params=[],
+        permission="open",
+        fn=_tool_get_laion_info,
+    ),
+    "drive_auth_url": ToolSpec(
+        name="drive_auth_url",
+        description=(
+            "Generate Google OAuth2 authorization URL untuk akses Google Drive. "
+            "Butuh GOOGLE_DRIVE_CLIENT_ID di env var. Params: redirect_uri (opsional, default http://localhost:8080)."
+        ),
+        params=["redirect_uri"],
+        permission="open",
+        fn=_tool_drive_auth_url,
+    ),
+    "drive_exchange_code": ToolSpec(
+        name="drive_exchange_code",
+        description=(
+            "Exchange Google OAuth2 authorization code untuk access token + refresh token. "
+            "Params: code (wajib, dari URL redirect), redirect_uri (opsional)."
+        ),
+        params=["code", "redirect_uri"],
+        permission="open",
+        fn=_tool_drive_exchange_code,
+    ),
+    "drive_list_images": ToolSpec(
+        name="drive_list_images",
+        description=(
+            "List gambar dari Google Drive folder (agency assets). Butuh GOOGLE_DRIVE_ACCESS_TOKEN. "
+            "Auto-tag berdasarkan folder path. Params: folder_id (opsional), max_files (opsional, default 5000), "
+            "account (opsional: fahmiwol/tiranyx/operationalnyx/nirmananyx)."
+        ),
+        params=["folder_id", "max_files", "account"],
+        permission="open",
+        fn=_tool_drive_list_images,
+    ),
+    "drive_health": ToolSpec(
+        name="drive_health",
+        description=(
+            "Check Google Drive API connectivity dan token validity. "
+            "Params: account (opsional: fahmiwol/tiranyx/operationalnyx/nirmananyx)."
+        ),
+        params=["account"],
+        permission="open",
+        fn=_tool_drive_health,
+    ),
+    "drive_explore": ToolSpec(
+        name="drive_explore",
+        description=(
+            "Explore Google Drive folder structure recursively (folder tree + image count). "
+            "Params: folder_id (opsional), account (opsional), max_depth (opsional, default 3)."
+        ),
+        params=["folder_id", "account", "max_depth"],
+        permission="open",
+        fn=_tool_drive_explore,
+    ),
+    "drive_overview": ToolSpec(
+        name="drive_overview",
+        description=(
+            "Get overview satu Google Drive account (user, storage, total images, top folders). "
+            "Params: account (opsional: fahmiwol/tiranyx/operationalnyx/nirmananyx)."
+        ),
+        params=["account"],
+        permission="open",
+        fn=_tool_drive_overview,
+    ),
+    "drive_batch_collect": ToolSpec(
+        name="drive_batch_collect",
+        description=(
+            "Collect images dari multiple Google Drive accounts sekaligus. "
+            "Params: accounts (wajib, comma-separated: fahmiwol,tiranyx,operationalnyx,nirmananyx), "
+            "max_files_per_account (opsional, default 1000)."
+        ),
+        params=["accounts", "max_files_per_account"],
+        permission="open",
+        fn=_tool_drive_batch_collect,
+    ),
+    "drive_config": ToolSpec(
+        name="drive_config",
+        description=(
+            "Get step-by-step instructions untuk setup 4 Google Drive accounts. No params."
+        ),
+        params=[],
+        permission="open",
+        fn=_tool_drive_config,
+    ),
+    "elevenlabs_tts": ToolSpec(
+        name="elevenlabs_tts",
+        description=(
+            "Generate audio dari text menggunakan ElevenLabs TTS (Guru Trainer voice). "
+            "Butuh ELEVENLABS_API_KEY. Params: text (wajib), voice_id (opsional, default Rachel), "
+            "model_id (opsional, default eleven_multilingual_v2), stability/similarity_boost/style (opsional)."
+        ),
+        params=["text", "voice_id", "model_id", "stability", "similarity_boost", "style"],
+        permission="open",
+        fn=_tool_elevenlabs_tts,
+    ),
+    "elevenlabs_voices": ToolSpec(
+        name="elevenlabs_voices",
+        description=(
+            "List semua voice ElevenLabs (premade + custom + community). "
+            "Recommended voices untuk Guru Trainer ditampilkan pertama. No params."
+        ),
+        params=[],
+        permission="open",
+        fn=_tool_elevenlabs_voices,
+    ),
+    "elevenlabs_clone": ToolSpec(
+        name="elevenlabs_clone",
+        description=(
+            "Clone voice guru dari audio samples (MP3/WAV, ~30 detik per file, clear voice). "
+            "Params: name (wajib), file_paths (wajib, list), description (opsional), labels (opsional)."
+        ),
+        params=["name", "file_paths", "description", "labels"],
+        permission="open",
+        fn=_tool_elevenlabs_clone,
+    ),
+    "elevenlabs_user": ToolSpec(
+        name="elevenlabs_user",
+        description=(
+            "Check ElevenLabs user quota dan usage (character count, tier, voice limit). No params."
+        ),
+        params=[],
+        permission="open",
+        fn=_tool_elevenlabs_user,
+    ),
+    "elevenlabs_sound": ToolSpec(
+        name="elevenlabs_sound",
+        description=(
+            "Generate sound effect dari text description. "
+            "Params: text (wajib, e.g. 'rain falling on tin roof'), duration_seconds (opsional), prompt_influence (opsional)."
+        ),
+        params=["text", "duration_seconds", "prompt_influence"],
+        permission="open",
+        fn=_tool_elevenlabs_sound,
+    ),
+    "elevenlabs_health": ToolSpec(
+        name="elevenlabs_health",
+        description=(
+            "Check ElevenLabs API connectivity dan quota. No params."
+        ),
+        params=[],
+        permission="open",
+        fn=_tool_elevenlabs_health,
+    ),
+    "spark_curate": ToolSpec(
+        name="spark_curate",
+        description=(
+            "Curate dataset dengan ethical filtering (Adobe Firefly approach). Hanya licensed content yang diterima. "
+            "Params: entries (wajib, list of dict), output_path (opsional), curator (opsional)."
+        ),
+        params=["entries", "output_path", "curator"],
+        permission="open",
+        fn=_tool_spark_curate,
+    ),
+    "spark_validate": ToolSpec(
+        name="spark_validate",
+        description=(
+            "Validate license satu entry (whitelist/blacklist check). "
+            "Params: entry (wajib, dict dengan source dan license)."
+        ),
+        params=["entry"],
+        permission="open",
+        fn=_tool_spark_validate,
+    ),
+    "spark_bias": ToolSpec(
+        name="spark_bias",
+        description=(
+            "Audit bias pada dataset (gender, western, professional). "
+            "Params: entries (wajib, list of dict)."
+        ),
+        params=["entries"],
+        permission="open",
+        fn=_tool_spark_bias,
+    ),
+    "spark_pinterest_warn": ToolSpec(
+        name="spark_pinterest_warn",
+        description=(
+            "Show detailed warning tentang risiko scraping Pinterest. No params."
+        ),
+        params=[],
+        permission="open",
+        fn=_tool_spark_pinterest_warn,
+    ),
+    "spark_provenance": ToolSpec(
+        name="spark_provenance",
+        description=(
+            "Generate provenance report untuk dataset (compliance audit). "
+            "Params: credentials (wajib, list of manifest dict dari spark_curate)."
+        ),
+        params=["credentials"],
+        permission="open",
+        fn=_tool_spark_provenance,
     ),
     "concept_graph": ToolSpec(
         name="concept_graph",
@@ -3557,6 +5056,18 @@ TOOL_REGISTRY: dict[str, ToolSpec] = {
         permission="open",
         fn=_tool_graph_search,
     ),
+    "deep_research": ToolSpec(
+        name="deep_research",
+        description=(
+            "Recursive multi-source deep research: corpus → web → follow-up → synthesis report. "
+            "Mode DEEP_RESEARCH implementation. Generate laporan komprehensif dengan citations. "
+            "Params: query (str wajib), max_iterations (int default 3), max_depth (int default 2). "
+            "Return: markdown report + findings + citations."
+        ),
+        params=["query", "max_iterations", "max_depth"],
+        permission="open",
+        fn=_tool_deep_research,
+    ),
     # ── Coding Agent Phase 2: shell / test / git ─────────────────────────────
     "shell_run": ToolSpec(
         name="shell_run",
@@ -3654,6 +5165,18 @@ TOOL_REGISTRY: dict[str, ToolSpec] = {
         permission="open",
         fn=_tool_analyze_audio,
     ),
+    "delegate_to_agent": ToolSpec(
+        name="delegate_to_agent",
+        description=(
+            "Delegate a task to an external A2A-compatible agent. "
+            "Use this when SIDIX lacks the specific capability and another agent can handle it. "
+            "Params: message (str, wajib — task description), "
+            "agent_url (str, opsional — URL external agent; auto-discover dari registry kalau tidak diisi)."
+        ),
+        params=["message", "agent_url"],
+        permission="restricted",
+        fn=_tool_delegate_to_agent,
+    ),
 }
 
 
@@ -3670,6 +5193,7 @@ def call_tool(
     """
     Entry point utama untuk memanggil tool.
     Permission gate + audit log terpusat di sini.
+    Supports both static tools and dynamically generated tools (Voyager Protocol).
     """
     spec = TOOL_REGISTRY.get(tool_name)
 
@@ -3725,15 +5249,31 @@ def call_tool(
 
 
 def list_available_tools(permission_filter: str | None = None) -> list[dict]:
-    """Return daftar tool yang tersedia (untuk prompt agent)."""
+    """Return daftar tool yang tersedia (untuk prompt agent).
+    Includes metadata for Voyager-generated tools.
+    """
     out = []
+    # Lazy import to avoid circular dependency at module load
+    try:
+        from .voyager_protocol import _load_metadata
+        voyager_meta = _load_metadata()
+    except Exception:
+        voyager_meta = {}
+
     for name, spec in TOOL_REGISTRY.items():
         if permission_filter and spec.permission != permission_filter:
             continue
-        out.append({
+        entry: dict = {
             "name": name,
             "description": spec.description,
             "params": spec.params,
             "permission": spec.permission,
-        })
+        }
+        # Attach Voyager metadata if this is a generated tool
+        if name in voyager_meta:
+            meta = voyager_meta[name]
+            entry["is_generated"] = meta.get("is_generated", True)
+            entry["created_by"] = meta.get("created_by", "voyager_protocol")
+            entry["created_at"] = meta.get("created_at", "")
+        out.append(entry)
     return out

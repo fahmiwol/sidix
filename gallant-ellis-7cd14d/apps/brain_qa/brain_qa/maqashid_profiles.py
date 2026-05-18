@@ -1,0 +1,353 @@
+"""
+maqashid_profiles.py — Maqashid Filter v2 (Mode-Based, IHOS-Aligned)
+
+SIDIX v0.6 — menggantikan pendekatan keyword-blacklist dengan mode kontekstual.
+Dirancang agar TIDAK memblokir creative output (copywriting, branding, marketing, ads).
+
+Terinspirasi dari analisis arsitektur IHOS (Islamic Holistic Ontological System):
+  Maqashid al-Syariah = objective function, BUKAN content police.
+
+Mode yang tersedia:
+  CREATIVE  — Branding, ads, design, marketing, copywriting
+  ACADEMIC  — Research, fiqh, ilmu eksakta (label sanad wajib)
+  IJTIHAD   — Eksplorasi, hipotesis, brainstorming (tag [EXPLORATORY])
+  GENERAL   — Chat biasa, daily tasks
+
+Keputusan (2026-04-23):
+  - Maqashid jadi SCORE MULTIPLIER di Creative mode, bukan pemblokir
+  - Hard-block hanya untuk dangerous_intents (harm nyata, bukan content type)
+  - Backward compatible: caller lama yang tidak pass mode → fallback ke GENERAL
+
+Refs:
+  - docs/CREATIVE_AGENT_TAXONOMY.md
+  - brain/public/research_notes/183_maqashid_profiles_mode_based.md
+"""
+
+from __future__ import annotations
+
+from dataclasses import dataclass
+from enum import Enum
+from typing import Optional
+
+
+# ── Mode Enum ──────────────────────────────────────────────────────────────────
+
+class MaqashidMode(Enum):
+    CREATIVE  = "creative"   # branding, ads, design, marketing
+    ACADEMIC  = "academic"   # research, fiqh, ilmu eksakta
+    IJTIHAD   = "ijtihad"    # eksplorasi, hipotesis, brainstorming
+    GENERAL   = "general"    # chat biasa
+
+
+class MaqashidAction(Enum):
+    BLOCK   = "block"    # hard stop, jelaskan kenapa
+    WARN    = "warn"     # output jalan + disclaimer
+    BOOST   = "boost"    # highlight / encourage
+    NEUTRAL = "neutral"  # tidak ada intervensi
+
+
+# ── Rule per Mode ──────────────────────────────────────────────────────────────
+
+@dataclass
+class MaqashidRule:
+    """5-sumbu Maqashid al-Syariah → action per mode."""
+    life:     MaqashidAction = MaqashidAction.NEUTRAL
+    intellect: MaqashidAction = MaqashidAction.NEUTRAL
+    faith:    MaqashidAction = MaqashidAction.NEUTRAL
+    lineage:  MaqashidAction = MaqashidAction.NEUTRAL
+    wealth:   MaqashidAction = MaqashidAction.NEUTRAL
+
+
+PROFILES: dict[MaqashidMode, MaqashidRule] = {
+    MaqashidMode.CREATIVE: MaqashidRule(
+        life=MaqashidAction.WARN,       # boleh dark humor/satire, jangan promosi self-harm
+        intellect=MaqashidAction.BOOST, # kreativitas = intellect maksimal
+        faith=MaqashidAction.NEUTRAL,   # iklan sneaker tidak perlu sebut Islam
+        lineage=MaqashidAction.WARN,    # satire sosial boleh, jangan hina keluarga spesifik
+        wealth=MaqashidAction.BOOST,    # marketing = optimize value creation
+    ),
+    MaqashidMode.ACADEMIC: MaqashidRule(
+        life=MaqashidAction.BLOCK,
+        intellect=MaqashidAction.BLOCK,
+        faith=MaqashidAction.BLOCK,
+        lineage=MaqashidAction.BLOCK,
+        wealth=MaqashidAction.BLOCK,
+    ),
+    MaqashidMode.IJTIHAD: MaqashidRule(
+        life=MaqashidAction.WARN,
+        intellect=MaqashidAction.BOOST,
+        faith=MaqashidAction.WARN,
+        lineage=MaqashidAction.NEUTRAL,
+        wealth=MaqashidAction.NEUTRAL,
+    ),
+    MaqashidMode.GENERAL: MaqashidRule(
+        life=MaqashidAction.WARN,
+        intellect=MaqashidAction.NEUTRAL,
+        faith=MaqashidAction.NEUTRAL,
+        lineage=MaqashidAction.NEUTRAL,
+        wealth=MaqashidAction.NEUTRAL,
+    ),
+}
+
+
+# ── Dangerous Intents (hard-block di SEMUA mode) ───────────────────────────────
+
+_DANGEROUS_INTENTS: dict[str, list[str]] = {
+    "life": [
+        "cara bunuh diri", "cara melukai diri", "racun untuk manusia",
+        "cara membuat bom untuk bunuh", "self-harm guide",
+    ],
+    "faith": [
+        "cara menghina nabi", "cara merusak mushaf",
+        "taktik penistaan agama",
+    ],
+}
+
+
+# ── Persona → Mode Mapping ─────────────────────────────────────────────────────
+
+_PERSONA_MODE_MAP: dict[str, MaqashidMode] = {
+    # Nama persona baru — selaras dengan PIVOT 2026-04-25 Liberation Sprint:
+    #   AYMAN  = general/chat hangat   → GENERAL  (bukan IJTIHAD lagi)
+    #   ABOO   = engineer/technical    → ACADEMIC
+    #   OOMAR  = strategist/bisnis     → GENERAL  (bukan IJTIHAD — strategi pakai data, bukan eksplorasi spekulatif)
+    #   ALEY   = researcher/akademik   → ACADEMIC (bukan GENERAL — peneliti perlu sanad)
+    #   UTZ    = creative/visual       → CREATIVE
+    "AYMAN":  MaqashidMode.GENERAL,
+    "ABOO":   MaqashidMode.ACADEMIC,
+    "OOMAR":  MaqashidMode.GENERAL,
+    "ALEY":   MaqashidMode.ACADEMIC,
+    "UTZ":    MaqashidMode.CREATIVE,
+    # Alias nama lama (backward compat — deprecated, pakai nama baru)
+    "MIGHAN": MaqashidMode.GENERAL,
+    "TOARD":  MaqashidMode.ACADEMIC,
+    "FACH":   MaqashidMode.GENERAL,
+    "HAYFAR": MaqashidMode.ACADEMIC,
+    "INAN":   MaqashidMode.CREATIVE,
+    # fallback
+    "DEFAULT": MaqashidMode.GENERAL,
+}
+
+
+# ── Casual / Sensitive Topic Detection ────────────────────────────────────────
+# Pivot 2026-04-25 (Liberation Sprint): label epistemik & disclaimer JANGAN
+# di-tempel ke output untuk topik casual (greeting, coding, brainstorm umum).
+# Hanya topik sensitif (fiqh/medis/data/berita/statistik) yang dapat tag.
+
+_CASUAL_GREETING_RE = __import__("re").compile(
+    r"^\s*(halo+w*|hai+|hi+|hey+|hello+|p+\s*$|test+|coba|ping|"
+    r"selamat\s+(pagi|siang|sore|malam)|assalamu'?alaikum|"
+    r"apa\s*kabar|gimana\s*kabarnya|good\s+(morning|afternoon|evening|night))"
+    r"[\s!\.\?]*$",
+    __import__("re").IGNORECASE,
+)
+
+_SENSITIVE_TOPIC_TERMS = {
+    # Fiqh / syariah
+    "fiqh", "syariah", "halal", "haram", "fatwa", "ijtihad", "mazhab", "ibadah",
+    "shalat", "puasa", "zakat", "haji", "umroh", "nikah", "talak", "warisan",
+    "muamalah", "ribawi", "riba",
+    # Medis
+    "obat", "dosis", "diagnosis", "penyakit", "gejala", "vaksin", "operasi",
+    "kanker", "diabetes", "hipertensi", "anti-biotik", "antibiotik",
+    # Klaim data / statistik / berita
+    "statistik", "persentase", "berita", "menurut data", "menurut riset",
+    "menurut studi", "menurut penelitian", "menurut penelitia",
+}
+
+
+def is_casual_query(query: str) -> bool:
+    """True kalau query casual (greeting/sapaan singkat tanpa substansi sensitif)."""
+    if not query:
+        return True
+    q = query.strip()
+    if len(q) < 3:
+        return True
+    if _CASUAL_GREETING_RE.match(q):
+        return True
+    # Query sangat pendek tanpa sensitive term → casual
+    lower = q.lower()
+    if any(term in lower for term in _SENSITIVE_TOPIC_TERMS):
+        return False
+    if len(q.split()) <= 4 and "?" not in q:
+        return True
+    return False
+
+
+def is_sensitive_topic(query: str, output: str = "") -> bool:
+    """True kalau query atau output mengandung term topik sensitif (fiqh/medis/data)."""
+    blob = (query + " " + output).lower()
+    return any(term in blob for term in _SENSITIVE_TOPIC_TERMS)
+
+
+def get_mode_by_persona(persona_name: str) -> MaqashidMode:
+    """Map nama persona ke mode Maqashid yang sesuai."""
+    return _PERSONA_MODE_MAP.get(
+        (persona_name or "").upper(),
+        MaqashidMode.GENERAL,
+    )
+
+
+# ── Main Evaluator ────────────────────────────────────────────────────────────
+
+def evaluate_maqashid(
+    user_query: str,
+    generated_output: str,
+    mode: Optional[MaqashidMode] = None,
+    persona_name: str = "UTZ",
+) -> dict:
+    """
+    Evaluasi output berdasarkan mode persona.
+
+    Args:
+        user_query:       teks query asli dari user
+        generated_output: output yang sudah di-generate SIDIX
+        mode:             override mode; kalau None → resolve dari persona_name
+        persona_name:     dipakai kalau mode tidak di-pass
+
+    Returns dict:
+        {
+          "status":        "pass" | "warn" | "block",
+          "mode":          str,
+          "reasons":       list[str],
+          "tagged_output": str,        # output (mungkin dengan disclaimer/tag ditambah)
+        }
+    """
+    if mode is None:
+        mode = get_mode_by_persona(persona_name)
+
+    query_lower = (user_query or "").lower()
+    output_lower = (generated_output or "").lower()
+
+    # ── 1. Dangerous intent check (hard-block, semua mode) ────────────────────
+    for category, phrases in _DANGEROUS_INTENTS.items():
+        for phrase in phrases:
+            if phrase in query_lower:
+                return {
+                    "status": "block",
+                    "mode": mode.value,
+                    "reasons": [f"Kandungan berbahaya [{category}]: '{phrase}'"],
+                    "tagged_output": (
+                        "[BLOCKED] Maaf, SIDIX tidak bisa membantu permintaan ini karena "
+                        "berpotensi membahayakan keselamatan jiwa atau kehormatan agama."
+                    ),
+                }
+
+    # ── 2. Mode-specific handling ─────────────────────────────────────────────
+    if mode == MaqashidMode.CREATIVE:
+        # Di mode Creative: block hanya kalau output benar-benar mengandung
+        # self-harm eksplisit TANPA konteks bantuan
+        if "bunuh diri" in output_lower or "self harm" in output_lower:
+            if "berhenti" not in output_lower and "bantuan" not in output_lower:
+                return {
+                    "status": "warn",
+                    "mode": mode.value,
+                    "reasons": ["Output creative mengandung tema self-harm tanpa konteks bantuan"],
+                    "tagged_output": (
+                        generated_output
+                        + "\n\n[CATATAN SIDIX: Jika kamu atau orang di sekitarmu butuh bantuan, "
+                        "hubungi 119 ext 8.]\n"
+                    ),
+                }
+
+        # Tambah boost tag kalau relevan
+        tags: list[str] = []
+        profile = PROFILES[MaqashidMode.CREATIVE]
+        if profile.intellect == MaqashidAction.BOOST:
+            tags.append("Intellect-Optimized")
+        if profile.wealth == MaqashidAction.BOOST:
+            tags.append("Value-Creation Mode")
+
+        tagged = generated_output
+        if tags:
+            tagged += f"\n\n[{' | '.join(tags)}]"
+
+        return {
+            "status": "pass",
+            "mode": mode.value,
+            "reasons": [],
+            "tagged_output": tagged,
+        }
+
+    elif mode == MaqashidMode.ACADEMIC:
+        # Pivot 2026-04-25: epistemik label CONTEXTUAL — wajib hanya untuk
+        # topik sensitif. Casual greeting / coding di mode academic pun
+        # tidak butuh sanad missing warning.
+        if is_casual_query(user_query) or not is_sensitive_topic(user_query, generated_output):
+            return {
+                "status": "pass",
+                "mode": mode.value,
+                "reasons": [],
+                "tagged_output": generated_output,
+            }
+        has_label = any(
+            label in generated_output
+            for label in ["[FACT]", "[FAKTA]", "[OPINION]", "[OPINI]",
+                          "[SPECULATION]", "[SPEKULASI]", "[UNKNOWN]"]
+        )
+        if not has_label:
+            # Sigma-3B (UX fix): JANGAN inject "[⚠️ SANAD MISSING]" ke output user.
+            # Itu confusing — user lihat "warning" padahal jawaban factual valid.
+            # Status warn tetap diset untuk logging/metric, tapi output passthrough.
+            return {
+                "status": "warn",
+                "mode": mode.value,
+                "reasons": ["Output akademik tanpa label epistemik (logged, not user-visible)"],
+                "tagged_output": generated_output,
+            }
+        return {
+            "status": "pass",
+            "mode": mode.value,
+            "reasons": [],
+            "tagged_output": generated_output,
+        }
+
+    elif mode == MaqashidMode.IJTIHAD:
+        # Pivot 2026-04-25: [EXPLORATORY] tag HANYA untuk topik sensitif
+        # (fiqh/syariah/medis), bukan blanket per response.
+        if is_casual_query(user_query) or not is_sensitive_topic(user_query, generated_output):
+            return {
+                "status": "pass",
+                "mode": mode.value,
+                "reasons": [],
+                "tagged_output": generated_output,
+            }
+        tagged = generated_output
+        if "[EXPLORATORY]" not in generated_output and "[FATWA]" not in generated_output:
+            tagged += "\n\n[EXPLORATORY — ini adalah eksplorasi ijtihad, bukan fatwa]"
+        return {
+            "status": "pass",
+            "mode": mode.value,
+            "reasons": [],
+            "tagged_output": tagged,
+        }
+
+    # GENERAL + fallback
+    return {
+        "status": "pass",
+        "mode": mode.value,
+        "reasons": [],
+        "tagged_output": generated_output,
+    }
+
+
+def maqashid_score_from_content(text: str) -> float:
+    """
+    Hitung skor Maqashid 0.0-1.0 dari konten teks.
+    Dipakai oleh curator_agent + muhasabah_loop.
+
+    5 sumbu × 0.20 maks = 1.0
+    """
+    lower = text.lower()
+    _AXIS_KEYWORDS: dict[str, list[str]] = {
+        "life":     ["kesehatan", "keselamatan", "jiwa", "kehidupan", "selamat", "hidup"],
+        "intellect":["ilmu", "belajar", "riset", "analisis", "pengetahuan", "logika"],
+        "faith":    ["iman", "ibadah", "quran", "sunnah", "tauhid", "ikhlas"],
+        "lineage":  ["keluarga", "anak", "generasi", "masyarakat", "sosial", "pendidikan"],
+        "wealth":   ["ekonomi", "bisnis", "kerja", "produktivitas", "halal", "usaha"],
+    }
+    score = 0.0
+    for keywords in _AXIS_KEYWORDS.values():
+        if any(k in lower for k in keywords):
+            score += 0.20
+    return round(score, 4)

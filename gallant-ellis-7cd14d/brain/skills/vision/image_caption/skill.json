@@ -1,0 +1,17 @@
+{
+  "id": "vision_caption",
+  "name": "Image Captioning (Vision)",
+  "category": "vision",
+  "source_module": "apps.vision.caption",
+  "callable": "caption_image",
+  "description": "Generate natural language description of an image. Useful untuk auto-tagging gambar di corpus + alt-text accessibility.",
+  "input_schema": {"image": "bytes|url|path"},
+  "output_schema": {"caption": "str", "confidence": "float"},
+  "lesson_topic": "image captioning model (BLIP/CLIP) untuk gambar Indonesia",
+  "training_topics": [
+    "BLIP architecture",
+    "CLIP joint embedding",
+    "image encoder transformer",
+    "caption evaluation metrics (BLEU, CIDEr)"
+  ]
+}

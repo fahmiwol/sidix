@@ -1,0 +1,20 @@
+[run]
+source = apps/brain_qa/brain_qa
+omit =
+    apps/brain_qa/.venv/*
+    apps/brain_qa/brain_qa/__main__.py
+    **/test_*.py
+    **/_test*.py
+
+[report]
+fail_under = 40
+show_missing = true
+exclude_lines =
+    pragma: no cover
+    def __repr__
+    raise NotImplementedError
+    if __name__ == .__main__.:
+    pass
+
+[html]
+directory = htmlcov

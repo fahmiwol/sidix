@@ -133,6 +133,8 @@ class AgentSession:
     # ── Jiwa Sprint 4: Parallel Planner observability ────────────────────────────
     planner_used: bool = False        # True jika parallel_planner aktif sesi ini
     planner_savings: float = 0.0      # estimated savings dari parallel execution (0.0–1.0)
+    # ── Maqashid Auto-Tune Middleware ─────────────────────────────────────────────
+    auto_tune_result: Any = None      # AutoTuneResult | None
 
 
 # ── Rule-based "LLM" (offline planner) ───────────────────────────────────────
@@ -1218,6 +1220,7 @@ def _compose_final_answer(
             system=_combined_system,
             max_tokens=512 if not simple_mode else 200,
             temperature=0.7,
+            persona=persona,
         )
         if mode == "local_lora":
             import logging as _log
@@ -1593,6 +1596,9 @@ _HYGIENE_LEAK_MARKERS = [
     "[PERTANYAAN USER]",
     "[PERTANYAAN SAAT INI]",
     "[KONTEKS PERCAKAPAN SEBELUMNYA]",
+    "[AKHIR KONTEKS]",
+    "=== KONTEKS DARI SUMBER PARALEL ===",
+    "=== JAWABAN SINTESIS ===",
 ]
 
 
@@ -1898,6 +1904,7 @@ def _inject_conversation_context(question: str, context: list[dict]) -> str:
 _FOLLOWUP_RE = _re_hygiene.compile(
     r"^\s*(?:"
     r"(itu|tersebut|yang\s+(tadi|itu|barusan))\b"
+    r"|((kalo|kalau)\s+)?(wakil(nya)?|wakil\s+presiden(nya)?|menteri(nya)?|gubernur(nya)?)\s*[?!.]*$"
     r"|(lebih\s+(singkat|ringkas|panjang|detail|pendek|formal|santai))"
     r"|(terjemah(kan|in)?\s+(ke\s+)?(bahasa\s+)?(inggris|indonesia|arab|jawa|english|arabic))"
     r"|(coba\s+(yang\s+)?(lebih\s+)?(lain|beda|pendek|panjang|formal|sedikit|singkat|ringkas))"
@@ -1950,6 +1957,12 @@ def _reformulate_with_context(question: str, context: list[dict]) -> str:
 
     if not last_user:
         return question
+
+    q_lower = question.lower().strip()
+    context_text = f"{last_user}\n{last_assistant or ''}".lower()
+    if _re_hygiene.search(r"\bwakil(nya)?\b|wakil\s+presiden", q_lower):
+        if "presiden" in context_text and "indonesia" in context_text:
+            return "Siapa wakil presiden Indonesia saat ini?"
 
     # Tag question dengan referensi konteks
     ref = f"[FOLLOW-UP atas pertanyaan: '{last_user[:150]}']"
@@ -2576,6 +2589,18 @@ def run_react(
                 pass  # Self-learning non-blocking
             # ─────────────────────────────────────────────────────────────────
 
+            # ── Maqashid Auto-Tune Middleware (fail-open) ─────────────────────
+            try:
+                from .maqashid_auto_tune import auto_tune_response
+                tuned = auto_tune_response(final_answer, mode="general", auto_correct=False)
+                if tuned != final_answer:
+                    from .maqashid_auto_tune import evaluate_output
+                    session.auto_tune_result = evaluate_output(tuned, mode="general")
+                final_answer = tuned
+            except Exception:
+                pass
+            # ───────────────────────────────────────────────────────────────────
+
             session.final_answer = final_answer
             answer_dedup.set_cached_answer(persona, working_question, final_answer)
             session.finished = True
@@ -2694,6 +2719,17 @@ def run_react(
             final_answer, _csc_warnings = _cognitive_self_check(final_answer, citations, working_question, persona)
             if _csc_warnings:
                 session.csc_warnings = ",".join(_csc_warnings)[:300]
+        # ── Maqashid Auto-Tune Middleware (max-steps branch, fail-open) ──
+        try:
+            from .maqashid_auto_tune import auto_tune_response
+            tuned = auto_tune_response(final_answer, mode="general", auto_correct=False)
+            if tuned != final_answer:
+                from .maqashid_auto_tune import evaluate_output
+                session.auto_tune_result = evaluate_output(tuned, mode="general")
+            final_answer = tuned
+        except Exception:
+            pass
+        # ───────────────────────────────────────────────────────────────────
         final_answer = _apply_hygiene(final_answer)
         session.final_answer = final_answer
         # ─────────────────────────────────────────────────────────────────────

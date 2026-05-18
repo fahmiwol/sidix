@@ -1,0 +1,62 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: check-merge-conflict
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.24.0
+    hooks:
+      - id: gitleaks
+        args: ["protect", "--verbose", "--redact"]
+
+---
+# Pre-commit hooks untuk SIDIX/Mighan project
+# Install: pip install pre-commit && pre-commit install
+# Jalankan manual: pre-commit run --all-files
+
+repos:
+  # ── Hooks umum ──────────────────────────────────────────────────────────────
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: trailing-whitespace
+        name: Hapus trailing whitespace
+        args: [--markdown-linebreak-ext=md]
+
+      - id: end-of-file-fixer
+        name: Pastikan file diakhiri newline
+
+      - id: check-yaml
+        name: Validasi sintaks YAML
+
+      - id: check-json
+        name: Validasi sintaks JSON
+
+      - id: check-merge-conflict
+        name: Cek marker merge conflict
+
+      - id: debug-statements
+        name: Cek debug statement Python (pdb, breakpoint, dll)
+
+      - id: check-added-large-files
+        name: Tolak file besar (>1MB)
+        args: [--maxkb=1024]
+
+      - id: check-case-conflict
+        name: Cek konflik nama file case-insensitive
+
+  # ── Ruff — linter + formatter ─────────────────────────────────────────────
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.4.7
+    hooks:
+      - id: ruff
+        name: Ruff linter
+        args: [--fix, --exit-non-zero-on-fix]
+        types_or: [python, pyi, jupyter]
+
+      - id: ruff-format
+        name: Ruff formatter
+        types_or: [python, pyi, jupyter]

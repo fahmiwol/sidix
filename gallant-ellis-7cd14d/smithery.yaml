@@ -1,0 +1,82 @@
+# Smithery MCP Server Registration
+# https://smithery.ai — marketplace for MCP servers
+# Allows Claude Desktop, Cursor, Kimi, Codex, and any MCP-compatible client
+# to install SIDIX Socio Bot MCP in one click.
+
+name: sidix-socio-mcp
+displayName: SIDIX Socio Bot
+version: "1.1.0"
+description: |
+  SIDIX Socio Bot — Social Intelligence & AI Knowledge Plugin
+
+  13 tools via Model Context Protocol:
+
+  Core (4):
+    • sidix_query    — tanya SIDIX backend (RAG + generative AI)
+    • sidix_capture  — simpan knowledge baru ke corpus SIDIX
+    • sidix_learn_session — rekam ringkasan sesi kerja
+    • sidix_status   — cek health SIDIX backend
+
+  Social Intelligence (9):
+    • scan_instagram_profile   — ER + sentiment + tier dari profil IG publik
+    • scan_threads_profile     — analisis Threads
+    • scan_youtube_channel     — engagement rate YouTube
+    • scan_twitter_profile     — analisis X/Twitter
+    • analyze_social           — analisis mendalam dari URL apapun
+    • compare_social_accounts  — banding 2+ akun lintas platform
+    • social_post_threads      — auto-post ke Threads
+    • wa_send                  — kirim WhatsApp via WA Bridge
+    • wa_receive               — baca inbox WA terbaru
+
+license: MIT
+homepage: https://sidixlab.com
+repository: https://github.com/fahmiwol/sidix
+icon: https://sidixlab.com/sidix-logo.svg
+author:
+  name: Tiranyx × Mighan Lab
+  email: contact@sidixlab.com
+  url: https://sidixlab.com
+
+categories:
+  - knowledge
+  - social-media
+  - productivity
+  - research
+
+tags:
+  - sidix
+  - social-radar
+  - instagram
+  - whatsapp
+  - rag
+  - mcp
+  - indonesia
+
+# How Smithery should run this MCP server
+startCommand:
+  type: stdio
+  command: node
+  args:
+    - "{{installDir}}/apps/sidix-mcp/src/index.js"
+  env:
+    SIDIX_URL:
+      description: "SIDIX backend URL (default: http://localhost:8765)"
+      default: "http://localhost:8765"
+    SIDIX_CORPUS:
+      description: "Path ke corpus SIDIX (default: auto-detect)"
+      default: ""
+    SIDIX_IG_EXTENSION_BRIDGE_URL:
+      description: "URL Extension Bridge untuk Social Radar Chrome Extension"
+      default: "http://localhost:7788"
+    SIDIX_WA_BRIDGE_URL:
+      description: "URL WA Bridge untuk WhatsApp integration"
+      default: "http://localhost:7789"
+
+# Prerequisites
+requirements:
+  - name: Node.js
+    version: ">=18.0.0"
+    check: "node --version"
+  - name: SIDIX Backend
+    optional: true
+    description: "SIDIX backend harus jalan di SIDIX_URL. Jalankan: python -m brain_qa serve"

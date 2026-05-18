@@ -39,6 +39,18 @@ class SynthesisResult:
     latency_ms: int
     method: str  # "llm_synthesis" / "single_source_passthrough" / "fallback"
     debug_bundle: Optional[dict] = None
+    # Compat fields untuk agent_serve.py ChatResponse
+    citations: list = None  # type: ignore[assignment]
+    confidence_score: float = 0.5
+    answer_type: str = "fakta"
+
+    def __post_init__(self) -> None:
+        if self.citations is None:
+            self.citations = [{"source": s} for s in self.sources_used]
+        if self.confidence_score == 0.5:
+            self.confidence_score = {"tinggi": 0.85, "sedang": 0.6, "rendah": 0.35}.get(
+                self.confidence, 0.5
+            )
 
 
 def _format_persona_perspectives(persona_data: dict) -> str:
@@ -135,18 +147,29 @@ def _build_synthesis_prompt(query: str, bundle: SourceBundle) -> tuple[str, str]
 
     context_blob = "\n\n---\n\n".join(blocks) if blocks else "(tidak ada konteks tambahan)"
 
+    import datetime as _dt
+    _today = _dt.date.today().strftime("%Y-%m-%d")
+    _year = _dt.date.today().year
+
     system = (
-        "Kamu SIDIX — AI agent yang sintesis multi-source dengan integritas tinggi.\n\n"
-        "TUGAS: kamu menerima konteks dari MULTIPLE sumber paralel (web search, corpus lokal, "
-        "semantic index, dan 5 persona ahli yang ngasih sudut pandang berbeda). Tugas kamu:\n\n"
-        "1. SINTESIS — gabung insight terbaik dari semua sumber jadi 1 jawaban utuh.\n"
-        "2. ATRIBUSI — kalau ada fact spesifik, sebutkan dari sumber mana (mis. 'menurut web', "
-        "'dari corpus', 'sudut UTZ').\n"
-        "3. RESOLUSI KONFLIK — kalau ada konflik antar sumber, sebutkan eksplisit "
-        "(mis. 'web bilang X, tapi corpus bilang Y — yang lebih akurat: X karena lebih recent').\n"
-        "4. RESPONS NATURAL — jangan bullet list semua sumber. Tulis paragraf yang flow.\n"
-        "5. JANGAN HALU — kalau semua sumber kosong/lemah, bilang 'belum punya info cukup'.\n\n"
-        "Output: jawaban langsung dalam Bahasa Indonesia, helpful, akurat, distinctive."
+        f"Kamu SIDIX — AI agent yang sintesis multi-source dengan integritas tinggi.\n\n"
+        f"FAKTA GROUNDING PRIORITAS TERTINGGI (override semua sumber lain jika bertentangan):\n"
+        f"- Tanggal hari ini: {_today} (tahun {_year})\n"
+        f"- Presiden Indonesia saat ini: Prabowo Subianto (dilantik Oktober 2024, bukan Jokowi)\n"
+        f"- Ibu kota Indonesia: sedang transisi ke Nusantara/IKN; Jakarta masih pusat pemerintahan\n"
+        f"- IHOS = Islamic Holistic Ontological System — framework rekayasa knowledge SIDIX yang\n"
+        f"  mengadopsi prinsip holisme, ontologi berlapis, dan integritas sanad (chain of citation).\n"
+        f"  IHOS adalah engineering framework, bukan label agama ekslusif.\n\n"
+        f"TUGAS: kamu menerima konteks dari MULTIPLE sumber paralel (web search, corpus lokal, "
+        f"semantic index, dan 5 persona ahli yang ngasih sudut pandang berbeda). Tugas kamu:\n\n"
+        f"1. SINTESIS — gabung insight terbaik dari semua sumber jadi 1 jawaban utuh.\n"
+        f"2. ATRIBUSI — kalau ada fact spesifik, sebutkan dari sumber mana (mis. 'menurut web', "
+        f"'dari corpus', 'sudut UTZ').\n"
+        f"3. RESOLUSI KONFLIK — kalau ada konflik antar sumber, FAKTA GROUNDING di atas menang.\n"
+        f"   Contoh: kalau corpus bilang 'Jokowi presiden', koreksi ke Prabowo.\n"
+        f"4. RESPONS NATURAL — jangan bullet list semua sumber. Tulis paragraf yang flow.\n"
+        f"5. JANGAN HALU — kalau semua sumber kosong/lemah, bilang 'belum punya info cukup'.\n\n"
+        f"Output: jawaban langsung dalam Bahasa Indonesia, helpful, akurat, distinctive."
     )
 
     user = (
@@ -278,4 +301,33 @@ class CognitiveSynthesizer:
         return "Maaf, semua sumber bermasalah saat ini. Silakan coba lagi."
 
 
-__all__ = ["CognitiveSynthesizer", "SynthesisResult"]
+def _strip_yaml_frontmatter(text: str) -> str:
+    """Strip YAML frontmatter (---\\n...\\n---) dari awal teks."""
+    import re as _re
+    return _re.sub(r"^---\n.*?\n---\n?", "", text, flags=_re.DOTALL).strip()
+
+
+def _try_corpus_passthrough(bundle: SourceBundle) -> Optional[str]:
+    """Try to return corpus result directly if it's high-quality (primer tier).
+    
+    Returns the corpus text if primer-tier, None otherwise.
+    """
+    if not bundle.corpus or not bundle.corpus.success or not bundle.corpus.data:
+        return None
+    
+    data = bundle.corpus.data
+    raw_text = ""
+    if isinstance(data, dict):
+        raw_text = data.get("raw_text", data.get("output", ""))
+    else:
+        raw_text = str(data)
+    
+    # Check for primer tier marker
+    if "sanad_tier: primer" in raw_text.lower():
+        clean = _strip_yaml_frontmatter(raw_text)
+        return clean.strip() + "\n\n(Sumber: corpus SIDIX, sanad tier: primer)"
+    
+    return None
+
+
+__all__ = ["CognitiveSynthesizer", "SynthesisResult", "_strip_yaml_frontmatter", "_try_corpus_passthrough"]

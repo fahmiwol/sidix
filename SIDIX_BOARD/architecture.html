@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SIDIX Architecture — Alur Data Input ke Output</title>
+<style>
+  :root {
+    --bg: #0d1117;
+    --card: #161b22;
+    --border: #30363d;
+    --text: #c9d1d9;
+    --text-dim: #8b949e;
+    --accent: #58a6ff;
+    --accent-glow: rgba(88,166,255,0.3);
+    --persona-utz: #f85149;
+    --persona-aboo: #3fb950;
+    --persona-oomar: #d29922;
+    --persona-aley: #a371f7;
+    --persona-ayman: #58a6ff;
+    --sanad: #ff7b72;
+    --input: #79c0ff;
+    --output: #56d364;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    line-height: 1.6;
+    padding: 2rem 1rem;
+  }
+  h1 {
+    text-align: center;
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(90deg, var(--accent), #a371f7);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .subtitle {
+    text-align: center;
+    color: var(--text-dim);
+    font-size: 0.9rem;
+    margin-bottom: 2rem;
+  }
+  .diagram {
+    max-width: 900px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  .layer {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
+    background: var(--card);
+    position: relative;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .layer:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px var(--accent-glow);
+  }
+  .layer-title {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-dim);
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .layer-body {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    align-items: center;
+    justify-content: center;
+  }
+  .node {
+    padding: 0.6rem 1rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    border: 1px solid var(--border);
+    background: rgba(255,255,255,0.03);
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+  }
+  .node:hover {
+    border-color: var(--accent);
+    background: rgba(88,166,255,0.08);
+  }
+  .node.input { border-color: var(--input); color: var(--input); }
+  .node.otak { border-color: var(--accent); color: var(--accent); font-weight: 600; }
+  .node.persona { border-color: var(--persona-ayman); color: var(--persona-ayman); }
+  .node.persona.utz { border-color: var(--persona-utz); color: var(--persona-utz); }
+  .node.persona.aboo { border-color: var(--persona-aboo); color: var(--persona-aboo); }
+  .node.persona.oomar { border-color: var(--persona-oomar); color: var(--persona-oomar); }
+  .node.persona.aley { border-color: var(--persona-aley); color: var(--persona-aley); }
+  .node.jurs { border-color: #8b949e; color: var(--text); }
+  .node.sanad { border-color: var(--sanad); color: var(--sanad); font-weight: 600; }
+  .node.output { border-color: var(--output); color: var(--output); }
+
+  .arrow {
+    text-align: center;
+    font-size: 1.5rem;
+    color: var(--text-dim);
+    line-height: 1;
+  }
+  .arrow-bidirectional {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    margin: 0.25rem 0;
+  }
+
+  .sanad-core {
+    border: 2px solid var(--sanad);
+    background: rgba(255,123,114,0.05);
+  }
+
+  .score-badge {
+    display: inline-block;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    background: var(--sanad);
+    color: #fff;
+    margin-left: 0.5rem;
+  }
+
+  .loop-indicator {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 0.75rem;
+    color: var(--sanad);
+    border: 1px dashed var(--sanad);
+    padding: 0.3rem 0.6rem;
+    border-radius: 6px;
+  }
+
+  .legend {
+    max-width: 900px;
+    margin: 2rem auto 0;
+    padding: 1rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--card);
+  }
+  .legend h3 { font-size: 0.9rem; margin-bottom: 0.75rem; color: var(--text-dim); }
+  .legend-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 0.5rem;
+    font-size: 0.8rem;
+  }
+  .legend-item { display: flex; align-items: center; gap: 0.5rem; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; }
+
+  @media (max-width: 600px) {
+    .layer-body { flex-direction: column; align-items: stretch; }
+    .node { text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<h1>🏗️ SIDIX Architecture</h1>
+<p class="subtitle">Alur Data — Input → Output (Organisme Digital)</p>
+
+<div class="diagram">
+
+  <!-- INPUT -->
+  <div class="layer">
+    <div class="layer-title">🎯 INPUT — Mata & Telinga</div>
+    <div class="layer-body">
+      <div class="node input">Teks</div>
+      <div class="node input">Gambar</div>
+      <div class="node input">Audio</div>
+      <div class="node input">File</div>
+      <div class="node input">URL</div>
+    </div>
+  </div>
+
+  <div class="arrow">▼</div>
+
+  <!-- OTAK -->
+  <div class="layer">
+    <div class="layer-title">🧠 OTAK — Intent + Persona + Mode</div>
+    <div class="layer-body">
+      <div class="node otak">Intent Classifier</div>
+      <div class="node otak">Persona Selector</div>
+      <div class="node otak">Mode Detector</div>
+    </div>
+  </div>
+
+  <div class="arrow-bidirectional">◄──── Persona-weighted lens ────►</div>
+
+  <!-- PERSONA + JURS 1000 -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+    <div class="layer">
+      <div class="layer-title">🎭 Other Persona — Lensa Berpikir</div>
+      <div class="layer-body" style="flex-direction:column;align-items:stretch;">
+        <div class="node persona utz">UTZ — Kreatif (aku, nih, seru)</div>
+        <div class="node persona aboo">ABOO — Teknis (gue, engineering)</div>
+        <div class="node persona oomar">OOMAR — Strategis (saya, bisnis)</div>
+        <div class="node persona aley">ALEY — Akademik (saya, rujukan)</div>
+        <div class="node persona">AYMAN — Ramah (halo, general)</div>
+      </div>
+    </div>
+
+    <div class="layer">
+      <div class="layer-title">🌪️ Jurs 1000 Bayangan — Paralel</div>
+      <div class="layer-body" style="flex-direction:column;align-items:stretch;">
+        <div class="node jurs">🧠 Corpus (BM25 + Sanad)</div>
+        <div class="node jurs">🕸️ Dense Index (Semantic)</div>
+        <div class="node jurs">🌍 Web (DDG + Wikipedia)</div>
+        <div class="node jurs">🛠️ Tools (Registry)</div>
+        <div class="node jurs">🎭 Persona Fanout (3-5)</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="arrow">▼</div>
+
+  <!-- SANAD ORKESTRA -->
+  <div class="layer sanad-core">
+    <div class="loop-indicator">Score &lt; 9.5 → Loop ↑</div>
+    <div class="layer-title">❤️ SANAD ORKESTRA — Jantung</div>
+    <div class="layer-body">
+      <div class="node sanad">Sintesis</div>
+      <div class="node sanad">Validate</div>
+      <div class="node sanad">Relevan Score <span class="score-badge">9.5++</span></div>
+    </div>
+  </div>
+
+  <div class="arrow">▼</div>
+
+  <!-- OUTPUT -->
+  <div class="layer">
+    <div class="layer-title">✨ OUTPUT — Tangan & Kaki</div>
+    <div class="layer-body">
+      <div class="node output">Teks + Sanad</div>
+      <div class="node output">Gambar (FLUX)</div>
+      <div class="node output">Audio (Piper)</div>
+      <div class="node output">File (CSV/PDF)</div>
+      <div class="node output">URL (Dashboard)</div>
+    </div>
+  </div>
+
+  <div class="arrow">▼</div>
+
+  <!-- SELF-CRITIQUE -->
+  <div class="layer">
+    <div class="layer-title">🧠 OTAK+ — Self-Critique & Evaluasi</div>
+    <div class="layer-body">
+      <div class="node otak">Halu Detection</div>
+      <div class="node otak">Persona Drift</div>
+      <div class="node otak">Coverage Gap</div>
+      <div class="node otak">Relevan Audit</div>
+    </div>
+  </div>
+
+  <div class="arrow">▼</div>
+
+  <!-- INNOVATION -->
+  <div class="layer">
+    <div class="layer-title">💡 INOVASI → 🔁 ITERASI</div>
+    <div class="layer-body">
+      <div class="node otak">Metode Baru</div>
+      <div class="node otak">Script Baru</div>
+      <div class="node otak">Versi Baru</div>
+      <div class="node otak">Teknologi Baru</div>
+    </div>
+  </div>
+
+  <div class="arrow">▼</div>
+
+  <!-- PENCIPTA -->
+  <div class="layer">
+    <div class="layer-title">🎨 "PENCIPTA" — Artifact & Temuan</div>
+    <div class="layer-body">
+      <div class="node output">Design</div>
+      <div class="node output">Artifact</div>
+      <div class="node output">Temuan</div>
+    </div>
+  </div>
+
+  <div class="arrow">▼</div>
+
+  <!-- HAFIDZ + FEEDBACK LOOP -->
+  <div class="layer">
+    <div class="layer-title">📚 HAFIDZ — Ledger Immutable → Corpus → Loop ↑</div>
+    <div class="layer-body">
+      <div class="node sanad">Provenance</div>
+      <div class="node sanad">Sanad Chain</div>
+      <div class="node sanad">Timestamp</div>
+      <div class="node sanad">Inject Back</div>
+    </div>
+  </div>
+
+  <!-- OUTER LOOP -->
+  <div class="arrow-bidirectional" style="margin-top:1rem;font-size:1rem;color:var(--sanad);">
+    🔄 Self Learn → Self Improve → Self Innovate → Compound Forever
+  </div>
+
+</div>
+
+<div class="legend">
+  <h3>📋 Keterangan</h3>
+  <div class="legend-grid">
+    <div class="legend-item"><div class="dot" style="background:var(--input)"></div> Input = Sensory Layer</div>
+    <div class="legend-item"><div class="dot" style="background:var(--accent)"></div> Otak = Routing & Intent</div>
+    <div class="legend-item"><div class="dot" style="background:var(--persona-ayman)"></div> Persona = Lensa Berpikir</div>
+    <div class="legend-item"><div class="dot" style="background:#8b949e"></div> Jurs 1000 = Paralel Multi-Source</div>
+    <div class="legend-item"><div class="dot" style="background:var(--sanad)"></div> Sanad = Synthesis + Validation</div>
+    <div class="legend-item"><div class="dot" style="background:var(--output)"></div> Output = Creation Artifact</div>
+  </div>
+  <p style="margin-top:0.75rem;font-size:0.75rem;color:var(--text-dim);">
+    Double arrow antara Otak ↔ Persona dan Otak ↔ Jurs 1000 = <strong>interaktif loop</strong>, bukan one-way.
+    Sanad Orkestra score &lt; 9.5 = <strong>loop balik</strong> ke Jurs 1000 Bayangan (max 2 iterasi).
+  </p>
+</div>
+
+</body>
+</html>

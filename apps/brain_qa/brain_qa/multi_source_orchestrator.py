@@ -128,11 +128,65 @@ async def _safe_call(source_name: str, coro, timeout: float) -> SourceResult:
 # ── Source adapter wrappers ─────────────────────────────────────────────
 # Wrap existing sync code jadi async via asyncio.to_thread.
 
-async def _src_web_search(query: str) -> dict:
-    """Wrap web_search tool (DuckDuckGo + Wikipedia fallback)."""
-    from .agent_tools import _tool_web_search
-    result = await asyncio.to_thread(_tool_web_search, {"query": query, "max_results": 5})
-    return {"output": result.get("output", "")[:2000], "raw": result}
+async def _src_web_search(query: str, deep_fetch: bool = True) -> dict:
+    """Primary web search: Mojeek → Lite Browser deep fetch → Wikipedia fallback.
+
+    Sprint Mojeek (2026-04-30): Replace broken SearxNG/Brave with Mojeek
+    (independent search engine, no VPS IP blocking). Lite Browser (Playwright
+    + trafilatura) fetches actual page content for richer context.
+
+    Pipeline:
+      1. Mojeek search (snippets + URLs)
+      2. If deep_fetch=True: fetch top-2 result pages via headless browser
+      3. Wikipedia fast-lookup as fallback enrichment
+
+    Returns: dict with {citations, snippets, page_texts, engine}
+    """
+    # ── 1. Mojeek search ──────────────────────────────────────────────────
+    from .mojeek_search import mojeek_search_async, to_citations
+    hits = await mojeek_search_async(query, max_results=5)
+    citations = to_citations(hits)
+    snippets = [f"{h.title} — {h.snippet}" for h in hits[:3]]
+
+    page_texts: list[str] = []
+
+    # ── 2. Lite Browser deep fetch ────────────────────────────────────────
+    if deep_fetch and hits:
+        urls = [h.url for h in hits[:2] if h.url]
+        if urls:
+            try:
+                from .lite_browser import fetch_urls
+                fetches = await fetch_urls(urls, max_concurrent=2, timeout=15)
+                for f in fetches:
+                    if f.success and f.text:
+                        page_texts.append(
+                            f"---\nJudul: {f.title}\nURL: {f.url}\n\n{f.text[:3000]}\n---"
+                        )
+            except Exception as e:
+                log.debug("[web_search] lite_browser deep_fetch failed: %s", e)
+
+    # ── 3. Wikipedia enrichment ───────────────────────────────────────────
+    wiki_snippets: list[str] = []
+    try:
+        from .wiki_lookup import wiki_lookup_fast
+        wiki_results = wiki_lookup_fast(query, max_articles=1)
+        for w in wiki_results:
+            wiki_snippets.append(f"Wikipedia: {w.title} — {w.extract[:500]}")
+            citations.append({
+                "type": "wiki", "url": w.url, "title": w.title,
+                "engine": "wikipedia", "snippet": w.extract[:300],
+            })
+    except Exception:
+        pass
+
+    all_text = "\n\n".join(snippets + wiki_snippets + page_texts)
+    return {
+        "output": all_text[:3500],
+        "citations": citations,
+        "snippets": snippets,
+        "page_texts": page_texts,
+        "engine": "mojeek+lite_browser",
+    }
 
 
 async def _src_corpus_search(query: str) -> dict:
@@ -186,7 +240,13 @@ async def _src_persona_fanout(query: str, personas: tuple = PERSONAS) -> dict:
         return {"results": {}, "note": "ollama_unavailable"}
 
     async def _one_persona(p: str) -> tuple[str, str]:
-        desc = PERSONA_DESCRIPTIONS.get(p.upper(), "")
+        # Sprint I wire: prefer persona_adapter config over hardcoded descriptions
+        try:
+            from .persona_adapter import get_persona_config
+            cfg = get_persona_config(p)
+            desc = cfg.system_prompt or PERSONA_DESCRIPTIONS.get(p.upper(), "")
+        except Exception:
+            desc = PERSONA_DESCRIPTIONS.get(p.upper(), "")
         system = (
             f"{desc}\n\n"
             f"Berikan SUDUT PANDANG SINGKAT (max 80 kata) dari perspektif {p} "

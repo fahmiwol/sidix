@@ -1,0 +1,115 @@
+# SIDIX coding checklist — sql
+
+- **roadmap.sh slug**: `sql`
+- **source**: `https://roadmap.sh/api/v1-official-roadmap/sql`
+- **generated_at_utc**: `2026-04-17`
+
+## Checklist (topic/subtopic labels)
+
+- [ ] What are Relational Databases?
+- [ ] RDBMS Benefits and Limitations
+- [ ] Learn the Basics
+- [ ] SQL vs NoSQL Databases
+- [ ] Basic SQL Syntax
+- [ ] SQL Keywords
+- [ ] Data Types
+- [ ] Operators
+- [ ] SELECT
+- [ ] INSERT
+- [ ] UPDATE
+- [ ] DELETE
+- [ ] Data Definition Language (DDL)
+- [ ] Truncate Table
+- [ ] Alter Table
+- [ ] Create Table
+- [ ] Drop Table
+- [ ] Data Manipulation Language (DML)
+- [ ] Select
+- [ ] FROM
+- [ ] WHERE
+- [ ] ORDER BY
+- [ ] GROUP BY
+- [ ] HAVING
+- [ ] JOINs
+- [ ] Aggregate Queries
+- [ ] SUM
+- [ ] COUNT
+- [ ] AVG
+- [ ] MIN
+- [ ] MAX
+- [ ] Data Constraints
+- [ ] Primary Key
+- [ ] Foreign Key
+- [ ] Unique
+- [ ] NOT NULL
+- [ ] CHECK
+- [ ] JOIN Queries
+- [ ] INNER JOIN
+- [ ] LEFT JOIN
+- [ ] RIGHT JOIN
+- [ ] FULL OUTER JOIN
+- [ ] Self Join
+- [ ] Cross Join
+- [ ] Subqueries
+- [ ] Scalar
+- [ ] Column
+- [ ] Row
+- [ ] Table
+- [ ] Nested Subqueries
+- [ ] Correlated Subqueries
+- [ ] Advanced Functions
+- [ ] FLOOR
+- [ ] ABS
+- [ ] MOD
+- [ ] ROUND
+- [ ] CEILING
+- [ ] CONCAT
+- [ ] LENGTH
+- [ ] SUBSTRING
+- [ ] REPLACE
+- [ ] UPPER
+- [ ] LOWER
+- [ ] CASE
+- [ ] NULLIF
+- [ ] COALESCE
+- [ ] DATE
+- [ ] TIME
+- [ ] TIMESTAMP
+- [ ] DATEPART
+- [ ] DATEADD
+- [ ] Views
+- [ ] Creating Views
+- [ ] Modifying Views
+- [ ] Dropping Views
+- [ ] Indexes
+- [ ] Managing Indexes
+- [ ] Query Optimization
+- [ ] Transactions
+- [ ] BEGIN
+- [ ] COMMIT
+- [ ] ROLLBACK
+- [ ] SAVEPOINT
+- [ ] ACID
+- [ ] Transaction Isolation Levels
+- [ ] Data Integrity & Security
+- [ ] Data Integrity Constraints
+- [ ] GRANT and Revoke
+- [ ] DB Security Best Practices
+- [ ] Stored Procedures & Functions
+- [ ] Performance Optimization
+- [ ] Using Indexes
+- [ ] Optimizing Joins
+- [ ] Reducing Subqueries
+- [ ] Selective Projection
+- [ ] Query Analysis Techniques
+- [ ] Advanced SQL
+- [ ] Recursive Queries
+- [ ] Pivot / Unpivot Operations
+- [ ] Window Functions
+- [ ] Common Table Expressions
+- [ ] Dynamic SQL
+- [ ] Row_number
+- [ ] rank
+- [ ] dense_rank
+- [ ] lead
+- [ ] lag

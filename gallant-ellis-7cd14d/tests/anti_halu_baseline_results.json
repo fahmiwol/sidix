@@ -1,0 +1,60 @@
+{
+  "timestamp": "2026-04-29T21:33-22:10 UTC (run 1)",
+  "endpoint": "https://ctrl.sidixlab.com/agent/chat",
+  "total": 20,
+  "passed": 8,
+  "pass_rate_pct": 40,
+  "note": "Baseline reconstructed from Monitor events (first run). Test process restarted on VPS after first run; first-run JSON file did not persist due to suspected concurrent run + log overwrite. Per-Q data from Monitor stream is authoritative — verbatim PASS/FAIL/answer-truncation captured as events fired.",
+  "by_category": {
+    "current_events": {"pass": 0, "total": 5, "avg_ms": 137884},
+    "factual":        {"pass": 3, "total": 5, "avg_ms":  44751},
+    "coding":         {"pass": 3, "total": 5, "avg_ms": 102158},
+    "sidix_identity": {"pass": 1, "total": 3, "avg_ms":  30421},
+    "creative":       {"pass": 2, "total": 2, "avg_ms":  18780}
+  },
+  "results": [
+    {"id": 1,  "cat": "current_events", "passed": false, "ms": 138456, "fail_class": "refuse_no_websearch",   "expected": "prabowo",                          "answer_excerpt": "Setelah saya cek dari sumber-sumber terpercaya, tampaknya informasi tentang presiden Indonesia saat ini 2026 belum tersedia..."},
+    {"id": 2,  "cat": "current_events", "passed": false, "ms": 119459, "fail_class": "validator_bug_likely",  "expected": "[nusantara, ikn, jakarta]",        "answer_excerpt": "*Pertanyaan tentang ibu kota Indonesia, Jakarta:* Ibu kota Indonesia adalah Jakarta...", "note": "Answer contains 'Jakarta' — should have passed substring match. Investigate validator or answer encoding."},
+    {"id": 3,  "cat": "current_events", "passed": false, "ms": 145107, "fail_class": "refuse_no_websearch",   "expected": "[sam altman, altman]",             "answer_excerpt": "Tidak ada informasi terbaru tentang CEO OpenAI saat ini yang tercatat dalam korpus saya..."},
+    {"id": 4,  "cat": "current_events", "passed": false, "ms": 130311, "fail_class": "refuse_no_websearch",   "expected": "2026",                             "answer_excerpt": "Maaf, saya tidak memiliki akses ke data terkini..."},
+    {"id": 5,  "cat": "current_events", "passed": false, "ms": 156090, "fail_class": "refuse_known_fact",     "expected": "[argentina, messi]",               "answer_excerpt": "Maaf, saya tidak memiliki informasi terkini tentang juara Piala Dunia FIFA 2022...", "note": "FIFA 2022 = stable historical fact, should be in training data. Brain over-corrected ke 'tidak tahu' bahkan untuk fact stable."},
+    {"id": 6,  "cat": "factual",        "passed": true,  "ms":  20322, "fail_class": null,                    "expected": "[bahasa pemrograman, ...]",         "answer_excerpt": "(Python definition pass)"},
+    {"id": 7,  "cat": "factual",        "passed": true,  "ms":   1881, "fail_class": null,                    "expected": "hypertext transfer protocol",      "answer_excerpt": "(HTTP — cached, fast)"},
+    {"id": 8,  "cat": "factual",        "passed": false, "ms":  85769, "fail_class": "brain_pipeline_error",  "expected": "[299, 300.000.000, 3 x 10]",       "answer_excerpt": "Maaf, terjadi sedikit masalah teknis dalam memuat data..."},
+    {"id": 9,  "cat": "factual",        "passed": true,  "ms":   2074, "fail_class": null,                    "expected": "[rantai, transmisi, perawi, silsilah]", "answer_excerpt": "(sanad definition — cached, fast)"},
+    {"id": 10, "cat": "factual",        "passed": false, "ms": 113715, "fail_class": "validator_bug_likely",  "expected": "[π, pi, r², r2, r kuadrat, phi]",   "answer_excerpt": "Rumus luas lingkaran adalah \\(\\pi r^2\\) di mana \\(\\pi\\) adalah konstanta Pi (3.14159...) dan \\(r\\) adalah jari-jari", "note": "Answer contains 'Pi (3.14159...)' — substring 'pi' present. Validator should have passed."},
+    {"id": 11, "cat": "coding",         "passed": true,  "ms":  68660, "fail_class": null,                    "expected": "[def, fib, return]",               "answer_excerpt": "(fibonacci function pass)"},
+    {"id": 12, "cat": "coding",         "passed": false, "ms": 154098, "fail_class": "brain_pipeline_error",  "expected": "[const, reassign, ...]",            "answer_excerpt": "Maaf, terjadi sedikit kendala teknis. Bisa Anda mencoba lagi?"},
+    {"id": 13, "cat": "coding",         "passed": true,  "ms":  82568, "fail_class": null,                    "expected": "[[::-1], reversed]",                "answer_excerpt": "(reverse string [::-1])"},
+    {"id": 14, "cat": "coding",         "passed": true,  "ms":  72716, "fail_class": null,                    "expected": "[low-rank, adapter]",               "answer_excerpt": "(LoRA = Low-Rank)"},
+    {"id": 15, "cat": "coding",         "passed": false, "ms": 132751, "fail_class": "CRITICAL_HALU",         "expected": "[reasoning, act, tool, observation]","answer_excerpt": "Pak, jadi ReAct (Recursive Action Tree) adalah pattern yang dipakai dalam AI agent untuk struktur tindakan dan respons s...", "note": "BRAIN HALU FACT: ReAct = 'Recursive Action Tree' — SALAH. Correct: ReAct = Reasoning + Acting (Yao et al. 2022). Plus answer contains 'Action' (lowercase has 'act') — substring match should pass validator."},
+    {"id": 16, "cat": "sidix_identity", "passed": true,  "ms":   2070, "fail_class": null,                    "expected": "[sidix, ai, agent]",                "answer_excerpt": "(Halo SIDIX — cached)"},
+    {"id": 17, "cat": "sidix_identity", "passed": false, "ms":  91174, "fail_class": "CRITICAL_HALU_BRAND",   "expected": "lambda: 4+ of (utz/aboo/oomar/aley/ayman)", "answer_excerpt": "Sidix terdiri dari lima persona unik:\\n\\n1. **Aboudi** - Sang Pelopor: Berani mengambil risiko, suka eksperimen...", "note": "BRAIN HALU PERSONA SENDIRI: bilang 'Aboudi' bukan UTZ/ABOO/OOMAR/ALEY/AYMAN. Brand identity tidak konsisten. Persona corpus harusnya jelas tapi brain ngarang."},
+    {"id": 18, "cat": "sidix_identity", "passed": false, "ms":  98018, "fail_class": "CRITICAL_HALU_BRAND",   "expected": "[islamic, holistic, ontolog]",      "answer_excerpt": "IHOS dalam Sidix bisa diartikan sebagai \\\"Inisiatif Holistik Operasional Strategis\\\"...", "note": "BRAIN HALU TERM SENDIRI: IHOS = 'Inisiatif Holistik Operasional Strategis' SALAH. Correct (per CLAUDE.md): Islamic Holistic Ontological System. Brain INVENT definition for SIDIX-specific term."},
+    {"id": 19, "cat": "creative",       "passed": true,  "ms":  19729, "fail_class": null,                    "expected": "lambda: len > 50",                  "answer_excerpt": "(IG caption pass — len > 50)"},
+    {"id": 20, "cat": "creative",       "passed": true,  "ms":  17832, "fail_class": null,                    "expected": "lambda: len > 20",                  "answer_excerpt": "(Tiranyx tagline pass — len > 20)"}
+  ],
+  "fail_class_summary": {
+    "refuse_no_websearch":     [1, 3, 4],
+    "refuse_known_fact":       [5],
+    "brain_pipeline_error":    [8, 12],
+    "CRITICAL_HALU":           [15],
+    "CRITICAL_HALU_BRAND":     [17, 18],
+    "validator_bug_likely":    [2, 10]
+  },
+  "key_insights": [
+    "Σ-1A urgent: brain refuse-to-web_search untuk 4/5 current events (admit not-know is honest tapi tidak retrieve known facts).",
+    "Σ-1B urgent: 3 CRITICAL HALU cases — ReAct definition wrong (Q15), persona Aboudi (Q17), IHOS expansion wrong (Q18). Brain hallucinate brand-critical terms padahal ada di corpus.",
+    "Latency: cached <2s, fresh ~80-150s. Σ-2 latency optimization needed parallel.",
+    "Pipeline errors (Q8, Q12) — brain return generic 'masalah teknis' tanpa context, root cause perlu cek brain logs.",
+    "Validator perlu fix minor: substring match seharusnya catch Q2/Q10 (kemungkinan ada bug di pipeline yg tidak return full answer string atau encoding issue).",
+    "Creative + cached factual = SOLID baseline. Issue terpusat di current events + SIDIX-specific knowledge retrieval."
+  ],
+  "next_actions": [
+    "Σ-1B: build sanad_verifier.py dengan multi-source cross-check + force web_search untuk current events",
+    "Σ-1A: wire persona_research_fanout ke /agent/chat",
+    "Σ-1D: bypass cache untuk current events (regex detect)",
+    "Σ-1E: AKU dedup — root-cause Aboudi/IHOS halu kemungkinan di AKU/corpus stale",
+    "Validator follow-up: investigasi Q2/Q10 — apakah answer.lower() benar memuat substring atau ada encoding bug"
+  ]
+}

@@ -476,7 +476,7 @@ async def _ask_vertex(client: httpx.AsyncClient, question: str, system: str) -> 
                               available=False, error="VERTEX_API_KEY not set")
     try:
         # Agent Platform endpoint (key in URL or header)
-        model = os.environ.get("VERTEX_MODEL", "gemini-2.0-flash")
+        model = os.environ.get("VERTEX_MODEL", "gemini-1.5-flash")
         # Try AI Platform endpoint with API key
         url = f"https://aiplatform.googleapis.com/v1/publishers/google/models/{model}:generateContent"
         r = await client.post(

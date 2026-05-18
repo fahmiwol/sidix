@@ -1,0 +1,3739 @@
+"""
+agent_tools.py — SIDIX Tool Registry + Permission Gate
+
+Prinsip (dari 09_architectural_principles.md):
+- Tools OFF by default (whitelist, bukan blacklist)
+- Audit log tiap tool call (siapa, kapan, args, hasil, approved?)
+- Setiap tool punya: nama, deskripsi, params, permission_level
+
+Permission levels:
+  "open"      — boleh dipanggil tanpa approval
+  "restricted" — butuh flag allow_restricted=True
+  "disabled"  — tidak boleh dipanggil sama sekali
+"""
+
+from __future__ import annotations
+
+import hashlib
+import json
+import os
+import re
+import sys
+import urllib.parse
+import urllib.request
+from dataclasses import dataclass, asdict, field
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import Any, Callable
+
+from .paths import default_index_dir
+from .query import answer_query_and_citations
+
+
+# ── Audit log path ────────────────────────────────────────────────────────────
+def _audit_log_path() -> Path:
+    p = default_index_dir() / "agent_audit.jsonl"
+    p.parent.mkdir(parents=True, exist_ok=True)
+    return p
+
+
+def _log_tool_call(
+    *,
+    tool_name: str,
+    args: dict,
+    result_summary: str,
+    approved: bool,
+    session_id: str,
+    step: int,
+) -> None:
+    """Append satu baris audit log (append-only, tamper-evident via hash chain)."""
+    entry = {
+        "ts": datetime.now(timezone.utc).isoformat(),
+        "session_id": session_id,
+        "step": step,
+        "tool": tool_name,
+        "args": args,
+        "result_summary": result_summary[:200],
+        "approved": approved,
+    }
+    # Hash chain: hash entry + previous hash
+    raw = json.dumps(entry, ensure_ascii=False, sort_keys=True)
+    entry["entry_hash"] = hashlib.sha256(raw.encode()).hexdigest()[:16]
+
+    log_path = _audit_log_path()
+    with open(log_path, "a", encoding="utf-8") as f:
+        f.write(json.dumps(entry, ensure_ascii=False) + "\n")
+
+
+# ── Tool definitions ──────────────────────────────────────────────────────────
+
+@dataclass
+class ToolResult:
+    success: bool
+    output: str          # teks yang dibaca agent (masuk ke Observation)
+    citations: list[dict] = field(default_factory=list)
+    error: str = ""
+
+
+@dataclass
+class ToolSpec:
+    name: str
+    description: str      # agent baca ini untuk pilih tool
+    params: list[str]     # nama parameter yang dibutuhkan
+    permission: str       # "open" | "restricted" | "disabled"
+    fn: Callable          # fungsi implementasi
+
+
+def _tool_generate_copy(args: dict) -> ToolResult:
+    try:
+        from .copywriter import generate_copy
+
+        result = generate_copy(
+            topic=str(args.get("topic", "")).strip(),
+            channel=str(args.get("channel", "instagram")).strip() or "instagram",
+            formula=str(args.get("formula", "AIDA")).strip().upper(),  # type: ignore[arg-type]
+            audience=str(args.get("audience", "audiens Indonesia")).strip(),
+            cta=str(args.get("cta", "Komentar 'MAU' kalau ingin templatenya.")).strip(),
+            tone=str(args.get("tone", "friendly")).strip(),
+            variant_count=int(args.get("variant_count", 3)),
+            min_score=float(args.get("min_score", 7.0)),
+        )
+    except Exception as e:
+        return ToolResult(success=False, output="", error=f"generate_copy gagal: {e}")
+
+    if not result.get("ok"):
+        return ToolResult(success=False, output="", error=str(result.get("error", "unknown")))
+
+    best = result.get("best_text", "")
+    variants = result.get("variants", [])
+    lines = [
+        "# Copywriter (Sprint 4 P0)",
+        f"- Formula: {result.get('best_formula')}",
+        f"- Channel: {result.get('channel')}",
+        f"- Score CQF: {result.get('score_total')}",
+        "",
+        "## Best Variant",
+        best,
+        "",
+        "## Variants",
+    ]
+    for i, item in enumerate(variants[:3], start=1):
+        lines.append(f"{i}. [{item.get('formula')}] {item.get('text')}")
+
+    return ToolResult(
+        success=True,
+        output="\n".join(lines),
+        citations=[{
+            "type": "generate_copy",
+            "formula": result.get("best_formula"),
+            "cqf_total": result.get("score_total"),
+        }],
+    )
+
+
+def _tool_generate_content_plan(args: dict) -> ToolResult:
+    try:
+        from .content_planner import generate_content_plan
+
+        result = generate_content_plan(
+            niche=str(args.get("niche", "")).strip(),
+            target_audience=str(args.get("target_audience", "")).strip(),
+            duration_days=int(args.get("duration_days", 30)),
+            channel=str(args.get("channel", "instagram")).strip() or "instagram",
+            cadence_per_week=int(args.get("cadence_per_week", 5)),
+            objective=str(args.get("objective", "awareness")).strip() or "awareness",
+        )
+    except Exception as e:
+        return ToolResult(success=False, output="", error=f"generate_content_plan gagal: {e}")
+
+    if not result.get("ok"):
+        return ToolResult(success=False, output="", error=str(result.get("error", "unknown")))
+
+    plan = result.get("plan", [])
+    lines = [
+        "# Content Plan (Sprint 4 P0)",
+        f"- Niche: {result.get('niche')}",
+        f"- Channel: {result.get('channel')}",
+        f"- Durasi: {result.get('duration_days')} hari",
+        f"- Total Slot: {result.get('posts_target')}",
+        f"- Score CQF: {result.get('cqf', {}).get('total')}",
+        "",
+        "## Preview",
+    ]
+    for item in plan[:8]:
+        lines.append(
+            f"- Day {item.get('day')} ({item.get('date_iso')}): {item.get('content_type')} | "
+            f"{item.get('topic')} | CTA: {item.get('cta')}"
+        )
+
+    return ToolResult(
+        success=True,
+        output="\n".join(lines),
+        citations=[{
+            "type": "generate_content_plan",
+            "slots": len(plan),
+            "cqf_total": result.get("cqf", {}).get("total"),
+        }],
+    )
+
+
+def _tool_generate_brand_kit(args: dict) -> ToolResult:
+    try:
+        from .brand_builder import generate_brand_kit
+
+        result = generate_brand_kit(
+            business_name=str(args.get("business_name", "")).strip(),
+            niche=str(args.get("niche", "")).strip(),
+            target_audience=str(args.get("target_audience", "")).strip(),
+            vibe=str(args.get("vibe", "modern, warm, trustworthy")).strip(),
+            archetype=str(args.get("archetype", "")).strip() or None,
+        )
+    except Exception as e:
+        return ToolResult(success=False, output="", error=f"generate_brand_kit gagal: {e}")
+
+    if not result.get("ok"):
+        return ToolResult(success=False, output="", error=str(result.get("error", "unknown")))
+
+    circle = result.get("golden_circle", {})
+    lines = [
+        "# Brand Kit (Sprint 4 P0)",
+        f"- Brand: {result.get('business_name')}",
+        f"- Niche: {result.get('niche')}",
+        f"- Archetype: {result.get('archetype')}",
+        f"- Tone: {result.get('tone_of_voice')}",
+        f"- Palette: {', '.join(result.get('palette', []))}",
+        "",
+        f"Onlyness: {result.get('onlyness_statement')}",
+        "",
+        "## Golden Circle",
+        f"- Why: {circle.get('why', '')}",
+        f"- How: {circle.get('how', '')}",
+        f"- What: {circle.get('what', '')}",
+        "",
+        "## Logo Prompts",
+    ]
+    for prompt in result.get("logo_prompts", []):
+        lines.append(f"- {prompt}")
+
+    return ToolResult(
+        success=True,
+        output="\n".join(lines),
+        citations=[{
+            "type": "generate_brand_kit",
+            "archetype": result.get("archetype"),
+            "cqf_total": result.get("cqf", {}).get("total"),
+        }],
+    )
+
+
+def _tool_generate_thumbnail(args: dict) -> ToolResult:
+    try:
+        from .thumbnail_generator import generate_thumbnail
+
+        plan = generate_thumbnail(
+            title=str(args.get("title", "")).strip(),
+            style=str(args.get("style", "bold")).strip(),
+            platform=str(args.get("platform", "youtube")).strip(),
+            brand_hint=str(args.get("brand_hint", "")).strip(),
+        )
+    except Exception as e:
+        return ToolResult(success=False, output="", error=f"generate_thumbnail gagal: {e}")
+
+    if not plan.get("ok"):
+        return ToolResult(success=False, output="", error=str(plan.get("error", "unknown")))
+
+    do_render = bool(args.get("render", False))
+    render_result: ToolResult | None = None
+    if do_render:
+        render_result = _tool_text_to_image(
+            {
+                "prompt": plan.get("enhanced_prompt", ""),
+                "width": int(plan.get("width", 1024)),
+                "height": int(plan.get("height", 576)),
+                "steps": int(args.get("steps", 22)),
+            }
+        )
+
+    lines = [
+        "# Thumbnail Plan (Sprint 4 P0)",
+        f"- Title: {plan.get('title')}",
+        f"- Platform: {plan.get('platform')}",
+        f"- Overlay: {plan.get('overlay_text')}",
+        f"- Score CQF: {plan.get('cqf', {}).get('total')}",
+        "",
+        f"Prompt: {plan.get('enhanced_prompt')}",
+        f"Negative: {plan.get('negative_prompt')}",
+    ]
+    if render_result and render_result.success:
+        lines.extend(["", "## Render", render_result.output])
+    elif render_result and not render_result.success:
+        lines.extend(["", f"Render gagal: {render_result.error}"])
+
+    return ToolResult(
+        success=True,
+        output="\n".join(lines),
+        citations=[{
+            "type": "generate_thumbnail",
+            "cqf_total": plan.get("cqf", {}).get("total"),
+            "rendered": bool(render_result and render_result.success),
+        }],
+    )
+
+
+def _tool_plan_campaign(args: dict) -> ToolResult:
+    try:
+        from .campaign_strategist import plan_campaign
+
+        result = plan_campaign(
+            product=str(args.get("product", "")).strip(),
+            audience=str(args.get("audience", "")).strip(),
+            goal=str(args.get("goal", "conversion")).strip(),
+            budget_idr=int(args.get("budget_idr", 1500000)),
+            duration_days=int(args.get("duration_days", 30)),
+            platform_focus=str(args.get("platform_focus", "instagram")).strip(),
+        )
+    except Exception as e:
+        return ToolResult(success=False, output="", error=f"plan_campaign gagal: {e}")
+
+    if not result.get("ok"):
+        return ToolResult(success=False, output="", error=str(result.get("error", "unknown")))
+
+    lines = [
+        "# Campaign Strategy (Sprint 4 P0)",
+        f"- Product: {result.get('product')}",
+        f"- Audience: {result.get('audience')}",
+        f"- Goal: {result.get('goal')}",
+        f"- Budget: Rp {result.get('budget_idr'):,}".replace(",", "."),
+        f"- Durasi: {result.get('duration_days')} hari",
+        "",
+        "## Funnel",
+    ]
+    for item in result.get("funnel", []):
+        lines.append(
+            f"- {item.get('stage')}: {item.get('objective')} | KPI: {item.get('kpi')} | Action: {item.get('action')}"
+        )
+
+    return ToolResult(
+        success=True,
+        output="\n".join(lines),
+        citations=[{
+            "type": "plan_campaign",
+            "cqf_total": result.get("cqf", {}).get("total"),
+        }],
+    )
+
+
+def _tool_generate_ads(args: dict) -> ToolResult:
+    try:
+        from .ads_generator import generate_ads
+
+        result = generate_ads(
+            product=str(args.get("product", "")).strip(),
+            audience=str(args.get("audience", "")).strip(),
+            platform=str(args.get("platform", "facebook")).strip(),
+            objective=str(args.get("objective", "conversion")).strip(),
+            n_variants=int(args.get("n_variants", 3)),
+        )
+    except Exception as e:
+        return ToolResult(success=False, output="", error=f"generate_ads gagal: {e}")
+
+    if not result.get("ok"):
+        return ToolResult(success=False, output="", error=str(result.get("error", "unknown")))
+
+    best = result.get("best_variant", {})
+    lines = [
+        "# Ads Generator (Sprint 4 P0)",
+        f"- Product: {result.get('product')}",
+        f"- Audience: {result.get('audience')}",
+        f"- Platform: {result.get('platform')}",
+        f"- Objective: {result.get('objective')}",
+        f"- Score CQF: {result.get('cqf', {}).get('total')}",
+        "",
+        "## Best Variant",
+        f"- Headline: {best.get('headline')}",
+        f"- Description: {best.get('description')}",
+        f"- CTA: {best.get('cta')}",
+        f"- Image Prompt: {best.get('image_prompt')}",
+    ]
+
+    return ToolResult(
+        success=True,
+        output="\n".join(lines),
+        citations=[{
+            "type": "generate_ads",
+            "platform": result.get("platform"),
+            "cqf_total": result.get("cqf", {}).get("total"),
+        }],
+    )
+
+
+def _tool_muhasabah_refine(args: dict) -> ToolResult:
+    brief = str(args.get("brief", "")).strip()
+    initial = str(args.get("initial_output", "")).strip()
+    domain = str(args.get("domain", "content")).strip() or "content"
+    if not brief:
+        return ToolResult(success=False, output="", error="brief wajib diisi")
+    if not initial:
+        return ToolResult(success=False, output="", error="initial_output wajib diisi")
+
+    try:
+        from .muhasabah_loop import run_muhasabah_loop
+    except Exception as e:
+        return ToolResult(success=False, output="", error=f"muhasabah module gagal dimuat: {e}")
+
+    def _generate(_: str) -> str:
+        return initial
+
+    def _refine(current: str, hints: list[str]) -> str:
+        hint_text = "; ".join(hints[:3]) if hints else "improve clarity"
+        return f"{current}\n\nPerbaikan: {hint_text}."
+
+    result = run_muhasabah_loop(
+        brief=brief,
+        domain=domain,
+        generate_fn=_generate,
+        refine_fn=_refine,
+        max_rounds=int(args.get("max_rounds", 3)),
+        min_score=float(args.get("min_score", 7.0)),
+    )
+    if not result.get("ok"):
+        return ToolResult(success=False, output="", error=str(result.get("error", "unknown")))
+
+    lines = [
+        "# Muhasabah Loop",
+        f"- Passed: {result.get('passed')}",
+        f"- Final Score: {result.get('final_score')}",
+        f"- State: {result.get('loop_state')}",
+        "",
+        "## Final Output",
+        str(result.get("final_text", "")),
+    ]
+    return ToolResult(
+        success=True,
+        output="\n".join(lines),
+        citations=[{
+            "type": "muhasabah_refine",
+            "passed": result.get("passed"),
+            "final_score": result.get("final_score"),
+            "rounds": len(result.get("history", [])),
+        }],
+    )
+
+
+# ── Implementasi tools ────────────────────────────────────────────────────────
+
+def _tool_search_corpus(args: dict) -> ToolResult:
+    """BM25 search ke corpus brain_qa. Returns top-k chunks + citations.
+    _corpus_filter: list[str] — hanya kembalikan dokumen yang path-nya mengandung salah satu tag.
+    """
+    query = args.get("query", "").strip()
+    k = int(args.get("k", 5))
+    persona = args.get("persona", "INAN")
+    corpus_filter: list[str] = args.get("_corpus_filter", [])
+
+    if not query:
+        return ToolResult(success=False, output="", error="query wajib diisi")
+
+    try:
+        # Fetch lebih banyak bila ada filter (agar setelah filter tetap ada hasil)
+        fetch_k = k * 3 if corpus_filter else k
+        answer, citations = answer_query_and_citations(
+            question=query,
+            index_dir_override=None,
+            k=fetch_k,
+            max_snippet_chars=400,
+            persona=persona,
+            persona_reason="agent_tool_call",
+        )
+        # Apply corpus_filter: pertahankan hanya citation yang source_path mengandung salah satu tag
+        if corpus_filter:
+            filtered = [
+                c for c in citations
+                if any(tag.lower() in c.get("source_path", "").lower() for tag in corpus_filter)
+            ]
+            if filtered:
+                citations = filtered[:k]
+                # Rebuild answer summary dari filtered citations
+                snippets = "\n\n".join(
+                    f"[{c.get('n','?')}] {c.get('source_title','?')}: {c.get('snippet','')}"
+                    for c in citations
+                )
+                answer = snippets
+        summary = answer[:1400]
+        return ToolResult(success=True, output=summary, citations=citations[:k])
+    except Exception as e:
+        return ToolResult(success=False, output="", error=str(e))
+
+
+def _tool_read_chunk(args: dict) -> ToolResult:
+    """Baca isi chunk tertentu berdasarkan chunk_id dari corpus index."""
+    chunk_id = args.get("chunk_id", "").strip()
+    if not chunk_id:
+        return ToolResult(success=False, output="", error="chunk_id wajib diisi")
+
+    chunks_path = default_index_dir() / "chunks.jsonl"
+    if not chunks_path.exists():
+        return ToolResult(success=False, output="", error="Index belum dibuat. Jalankan: python -m brain_qa index")
+
+    for line in chunks_path.read_text(encoding="utf-8").splitlines():
+        if not line.strip():
+            continue
+        obj = json.loads(line)
+        if obj.get("chunk_id") == chunk_id:
+            text = obj.get("text", "")
+            return ToolResult(
+                success=True,
+                output=f"[{chunk_id}] {obj.get('source_title','?')}\n\n{text[:800]}",
+                citations=[{
+                    "n": "1",
+                    "chunk_id": chunk_id,
+                    "source_path": obj.get("source_path", ""),
+                    "source_title": obj.get("source_title", ""),
+                    "sanad_tier": str(obj.get("sanad_tier", "unknown")),
+                }],
+            )
+
+    return ToolResult(success=False, output="", error=f"chunk_id '{chunk_id}' tidak ditemukan")
+
+
+def _tool_list_sources(args: dict) -> ToolResult:
+    """List semua dokumen sumber yang ada di corpus (judul + path)."""
+    chunks_path = default_index_dir() / "chunks.jsonl"
+    if not chunks_path.exists():
+        return ToolResult(success=False, output="", error="Index belum dibuat")
+
+    seen: dict[str, str] = {}  # source_path → source_title
+    for line in chunks_path.read_text(encoding="utf-8").splitlines():
+        if not line.strip():
+            continue
+        obj = json.loads(line)
+        sp = obj.get("source_path", "")
+        st = obj.get("source_title", sp)
+        if sp and sp not in seen:
+            seen[sp] = st
+
+    if not seen:
+        return ToolResult(success=True, output="Corpus kosong.")
+
+    lines = [f"Sumber tersedia ({len(seen)} dokumen):"]
+    for sp, st in sorted(seen.items()):
+        lines.append(f"- {st} → {sp}")
+
+    return ToolResult(success=True, output="\n".join(lines))
+
+
+# Wikipedia saja (allowlist) — tidak fetch URL sembarang
+_WIKI_HTML_RE = re.compile(r"<[^>]+>")
+_WIKI_SEARCH_CACHE: dict[str, str] = {}
+_WIKI_CACHE_MAX = 256
+
+
+def _strip_wiki_snippet(html: str) -> str:
+    t = _WIKI_HTML_RE.sub("", html or "")
+    return " ".join(t.split())[:400]
+
+
+def _tool_search_web_wikipedia(args: dict) -> ToolResult:
+    """
+    Pencarian terkontrol ke Wikipedia (id/en) via API resmi.
+    Hanya host *.wikipedia.org — memenuhi checklist allowlist + kutipan.
+    """
+    query = (args.get("query") or "").strip()
+    lang = (args.get("lang") or "id").strip().lower()
+    if lang not in ("id", "en"):
+        lang = "id"
+    if not query:
+        return ToolResult(success=False, output="", error="query wajib diisi")
+
+    cache_key = f"{lang}:{query[:500].lower()}"
+    if cache_key in _WIKI_SEARCH_CACHE:
+        cached = _WIKI_SEARCH_CACHE[cache_key]
+        return ToolResult(
+            success=True,
+            output=cached,
+            citations=[{"type": "wikipedia", "query": query, "lang": lang, "cached": True}],
+        )
+
+    host = f"{lang}.wikipedia.org"
+    params = urllib.parse.urlencode(
+        {
+            "action": "query",
+            "list": "search",
+            "srsearch": query,
+            "format": "json",
+            "srlimit": "5",
+            "origin": "*",
+        }
+    )
+    url = f"https://{host}/w/api.php?{params}"
+    req = urllib.request.Request(
+        url,
+        headers={
+            "User-Agent": "mighan-brain_qa/1.0 (SIDIX agent; Wikipedia API read-only)",
+            "Accept": "application/json",
+        },
+        method="GET",
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=14) as resp:
+            raw = resp.read().decode("utf-8", errors="replace")
+        data = json.loads(raw)
+    except Exception as e:
+        return ToolResult(success=False, output="", error=f"Wikipedia API gagal: {e}")
+
+    searches = (data.get("query") or {}).get("search") or []
+    if not searches:
+        out = (
+            f"[web:wikipedia] Tidak ada hasil untuk '{query}' ({lang}). "
+            "Coba kata kunci lain atau periksa ejaan."
+        )
+        _wiki_store_cache(cache_key, out)
+        return ToolResult(
+            success=True,
+            output=out,
+            citations=[{"type": "wikipedia", "query": query, "lang": lang, "hits": 0}],
+        )
+
+    lines = [
+        f"[web:wikipedia:{lang}] Kutipan ringkas hasil pencarian (allowlist: {host}):",
+        "",
+    ]
+    cites: list[dict] = []
+    for i, hit in enumerate(searches[:5], start=1):
+        title = hit.get("title", "")
+        snippet = _strip_wiki_snippet(hit.get("snippet", ""))
+        enc = urllib.parse.quote(title.replace(" ", "_"))
+        page_url = f"https://{host}/wiki/{enc}"
+        lines.append(f"**{i}. {title}**")
+        lines.append(f"- URL: {page_url}")
+        if snippet:
+            lines.append(f"- Kutipan: {snippet}")
+        lines.append("")
+        cites.append({
+            "type": "wikipedia",
+            "n": str(i),
+            "title": title,
+            "url": page_url,
+            "snippet": snippet[:300],
+            "lang": lang,
+        })
+
+    out = "\n".join(lines).strip()
+    _wiki_store_cache(cache_key, out)
+    return ToolResult(success=True, output=out, citations=cites)
+
+
+def _wiki_store_cache(key: str, value: str) -> None:
+    if len(_WIKI_SEARCH_CACHE) >= _WIKI_CACHE_MAX:
+        # buang kunci terlama (urutan insertion dict py3.7+)
+        try:
+            first = next(iter(_WIKI_SEARCH_CACHE))
+            del _WIKI_SEARCH_CACHE[first]
+        except StopIteration:
+            pass
+    _WIKI_SEARCH_CACHE[key] = value
+
+
+def _tool_calculator(args: dict) -> ToolResult:
+    """Evaluasi ekspresi matematika sederhana (safe eval)."""
+    expr = args.get("expression", "").strip()
+    if not expr:
+        return ToolResult(success=False, output="", error="expression wajib diisi")
+
+    # Safe subset — hanya angka, operator, kurung, spasi
+    import re
+    if not re.match(r'^[\d\s\+\-\*\/\(\)\.\,\%]+$', expr):
+        return ToolResult(success=False, output="", error="Ekspresi tidak aman atau tidak didukung")
+
+    try:
+        result = eval(expr, {"__builtins__": {}})  # noqa: S307
+        return ToolResult(success=True, output=f"{expr} = {result}")
+    except Exception as e:
+        return ToolResult(success=False, output="", error=f"Gagal evaluasi: {e}")
+
+
+def _repo_root() -> Path:
+    # apps/brain_qa/brain_qa/agent_tools.py -> repo root is 3 levels up
+    return Path(__file__).resolve().parents[3]
+
+
+# ── Agent workspace (sandbox) ────────────────────────────────────────────────
+_WORKSPACE_ALLOWED_SUFFIXES = frozenset({
+    ".md", ".py", ".txt", ".json", ".yaml", ".yml", ".toml",
+    ".html", ".htm", ".css", ".js", ".mjs", ".cjs", ".ts", ".tsx", ".jsx",
+})
+_WORKSPACE_MAX_READ_BYTES = 256 * 1024
+_WORKSPACE_MAX_WRITE_BYTES = 512 * 1024
+_WORKSPACE_MAX_LIST = 300
+
+
+def _agent_workspace_root() -> Path:
+    env = os.environ.get("BRAIN_QA_AGENT_WORKSPACE", "").strip()
+    if env:
+        root = Path(env).expanduser().resolve()
+    else:
+        root = (_repo_root() / "apps" / "brain_qa" / "agent_workspace").resolve()
+    root.mkdir(parents=True, exist_ok=True)
+    return root
+
+
+def get_agent_workspace_root() -> Path:
+    """Path absolut sandbox agen (untuk /health, operator, uji)."""
+    return _agent_workspace_root()
+
+
+def _workspace_safe_path(rel: str) -> Path | None:
+    rel = (rel or "").strip().replace("\\", "/").lstrip("/")
+    parts = [p for p in rel.split("/") if p]
+    if any(p == ".." for p in parts):
+        return None
+    root = _agent_workspace_root()
+    candidate = (root / rel).resolve()
+    try:
+        candidate.relative_to(root)
+    except ValueError:
+        return None
+    return candidate
+
+
+def _workspace_suffix_ok(path: Path) -> bool:
+    return path.suffix.lower() in _WORKSPACE_ALLOWED_SUFFIXES
+
+
+def _tool_workspace_list(args: dict) -> ToolResult:
+    """Daftar isi folder sandbox agen (relatif ke agent_workspace)."""
+    rel = (args.get("path") or "").strip()
+    max_entries = int(args.get("max_entries") or _WORKSPACE_MAX_LIST)
+    max_entries = max(1, min(_WORKSPACE_MAX_LIST, max_entries))
+
+    root = _agent_workspace_root()
+    if rel:
+        p = _workspace_safe_path(rel)
+        if p is None:
+            return ToolResult(success=False, output="", error="path tidak valid atau di luar workspace")
+        if not p.exists():
+            return ToolResult(success=False, output="", error="path tidak ada")
+    else:
+        p = root
+
+    lines = [
+        f"Sandbox root: {root}",
+        f"Listing: {rel or '.'}",
+        "",
+    ]
+    if p.is_file():
+        if not _workspace_suffix_ok(p):
+            return ToolResult(success=False, output="", error=f"ekstensi tidak diizinkan: {p.suffix}")
+        try:
+            rel_s = str(p.relative_to(root))
+        except ValueError:
+            rel_s = p.name
+        lines.append(f"(file) {rel_s}")
+        return ToolResult(success=True, output="\n".join(lines))
+
+    count = 0
+    for child in sorted(p.iterdir(), key=lambda x: (not x.is_dir(), x.name.lower())):
+        if count >= max_entries:
+            lines.append(f"... truncated (>{max_entries} entries)")
+            break
+        kind = "dir" if child.is_dir() else "file"
+        try:
+            rel_s = str(child.relative_to(root))
+        except ValueError:
+            continue
+        lines.append(f"- [{kind}] {rel_s}")
+        count += 1
+    if count == 0:
+        lines.append("(kosong)")
+    return ToolResult(success=True, output="\n".join(lines))
+
+
+def _tool_workspace_read(args: dict) -> ToolResult:
+    """Baca satu file teks di sandbox (path relatif)."""
+    rel = (args.get("path") or "").strip()
+    if not rel:
+        return ToolResult(success=False, output="", error="path wajib (relatif ke agent_workspace)")
+
+    p = _workspace_safe_path(rel)
+    if p is None or not p.is_file():
+        return ToolResult(success=False, output="", error="file tidak ditemukan atau path tidak valid")
+    if not _workspace_suffix_ok(p):
+        return ToolResult(success=False, output="", error=f"ekstensi tidak diizinkan: {p.suffix}")
+
+    try:
+        raw = p.read_bytes()
+    except OSError as e:
+        return ToolResult(success=False, output="", error=str(e))
+    if len(raw) > _WORKSPACE_MAX_READ_BYTES:
+        return ToolResult(
+            success=False,
+            output="",
+            error=f"file terlalu besar (>{_WORKSPACE_MAX_READ_BYTES} bytes)",
+        )
+    try:
+        text = raw.decode("utf-8")
+    except UnicodeDecodeError:
+        text = raw.decode("utf-8", errors="replace")
+
+    cap = 100_000
+    if len(text) > cap:
+        text = text[:cap] + "\n\n... [truncated]"
+
+    return ToolResult(success=True, output=f"File: {rel}\n\n{text}")
+
+
+def _tool_workspace_write(args: dict) -> ToolResult:
+    """Tulis/overwrite satu file teks di sandbox. RESTRICTED (butuh allow_restricted)."""
+    rel = (args.get("path") or "").strip()
+    content = args.get("content")
+    if not rel:
+        return ToolResult(success=False, output="", error="path wajib")
+    if content is None or not isinstance(content, str):
+        return ToolResult(success=False, output="", error="content wajib (string)")
+
+    p = _workspace_safe_path(rel)
+    if p is None:
+        return ToolResult(success=False, output="", error="path tidak valid atau di luar workspace")
+    if not _workspace_suffix_ok(p):
+        return ToolResult(success=False, output="", error=f"ekstensi tidak diizinkan: {p.suffix}")
+
+    encoded = content.encode("utf-8")
+    if len(encoded) > _WORKSPACE_MAX_WRITE_BYTES:
+        return ToolResult(
+            success=False,
+            output="",
+            error=f"konten terlalu besar (>{_WORKSPACE_MAX_WRITE_BYTES} bytes)",
+        )
+
+    p.parent.mkdir(parents=True, exist_ok=True)
+    tmp = p.with_suffix(p.suffix + ".tmp")
+    try:
+        tmp.write_bytes(encoded)
+        tmp.replace(p)
+    except OSError as e:
+        if tmp.exists():
+            try:
+                tmp.unlink()
+            except OSError:
+                pass
+        return ToolResult(success=False, output="", error=str(e))
+
+    return ToolResult(
+        success=True,
+        output=f"OK: wrote {len(encoded)} bytes to {rel}",
+        citations=[{"type": "agent_workspace", "path": rel}],
+    )
+
+
+# ── Patch / Diff Application ─────────────────────────────────────────────────
+
+def _parse_unified_diff(patch_text: str) -> list[dict]:
+    """
+    Parse unified diff text menjadi list of hunks.
+    Each hunk: {old_start, old_count, new_start, new_count, lines:[(tag, text)]}
+    tag: ' ' context, '-' old, '+' new, '\\' no-newline
+    """
+    hunks: list[dict] = []
+    current_hunk: dict | None = None
+    lines = patch_text.splitlines(keepends=False)
+
+    i = 0
+    while i < len(lines):
+        line = lines[i]
+        # Hunk header: @@ -old_start,old_count +new_start,new_count @@
+        if line.startswith("@@"):
+            m = re.match(r"@@ -(\d+)(?:,(\d+))? \+(\d+)(?:,(\d+))? @@", line)
+            if m:
+                old_start = int(m.group(1))
+                old_count = int(m.group(2)) if m.group(2) else 1
+                new_start = int(m.group(3))
+                new_count = int(m.group(4)) if m.group(4) else 1
+                current_hunk = {
+                    "old_start": old_start,
+                    "old_count": old_count,
+                    "new_start": new_start,
+                    "new_count": new_count,
+                    "lines": [],
+                }
+                hunks.append(current_hunk)
+            i += 1
+            continue
+
+        if current_hunk is not None:
+            if line.startswith("-"):
+                current_hunk["lines"].append(("-", line[1:]))
+            elif line.startswith("+"):
+                current_hunk["lines"].append(("+", line[1:]))
+            elif line.startswith(" "):
+                current_hunk["lines"].append((" ", line[1:]))
+            elif line.startswith("\\"):
+                current_hunk["lines"].append(("\\", ""))
+            else:
+                # Empty line in diff = context line
+                current_hunk["lines"].append((" ", ""))
+        i += 1
+
+    return hunks
+
+
+def _apply_hunk(original_lines: list[str], hunk: dict) -> list[str]:
+    """
+    Apply single hunk to original_lines.
+    Returns new list of lines.
+    Raises ValueError jika context tidak match.
+    """
+    old_start = hunk["old_start"]
+    old_count = hunk["old_count"]
+    lines = hunk["lines"]
+
+    # old_start is 1-based
+    idx = old_start - 1
+    if idx < 0:
+        idx = 0
+
+    # Validate context: extract old lines from patch and compare with original
+    old_lines_from_patch = [text for tag, text in lines if tag == "-"]
+    context_before = []
+    context_after = []
+
+    # Simple approach: find the block in original that matches context
+    # For robustness, we use a sliding window around idx
+    best_match = -1
+    best_score = -1
+
+    search_start = max(0, idx - 5)
+    search_end = min(len(original_lines), idx + old_count + 5)
+
+    for start in range(search_start, search_end - old_count + 1):
+        candidate = original_lines[start:start + old_count]
+        score = sum(1 for a, b in zip(candidate, old_lines_from_patch) if a == b)
+        if score > best_score:
+            best_score = score
+            best_match = start
+
+    if best_match == -1 or best_score < max(1, len(old_lines_from_patch) // 2):
+        raise ValueError(
+            f"Cannot find matching context for hunk at line {old_start}. "
+            f"Expected {old_count} lines starting near line {old_start}."
+        )
+
+    idx = best_match
+
+    # Build new lines
+    result = original_lines[:idx]
+    old_consumed = 0
+
+    for tag, text in lines:
+        if tag == " ":
+            # Context line — verify match
+            if idx + old_consumed < len(original_lines):
+                if original_lines[idx + old_consumed] != text:
+                    pass  # tolerate minor mismatch
+                old_consumed += 1
+            result.append(text)
+        elif tag == "-":
+            # Remove line — consume from original
+            old_consumed += 1
+        elif tag == "+":
+            # Add line
+            result.append(text)
+        elif tag == "\\":
+            pass  # no newline at end of file marker
+
+    # Append remaining lines after the consumed block
+    result.extend(original_lines[idx + old_consumed:])
+    return result
+
+
+def _apply_unified_diff(original_lines: list[str], patch_text: str) -> tuple[list[str], dict]:
+    """
+    Apply unified diff to original lines.
+    Returns (new_lines, stats).
+    stats = {"added": N, "removed": N, "changed": N}
+    Raises ValueError jika patch tidak bisa di-apply.
+    """
+    hunks = _parse_unified_diff(patch_text)
+    if not hunks:
+        raise ValueError("No valid hunks found in patch")
+
+    current = list(original_lines)
+    total_added = 0
+    total_removed = 0
+
+    for hunk in hunks:
+        added = sum(1 for tag, _ in hunk["lines"] if tag == "+")
+        removed = sum(1 for tag, _ in hunk["lines"] if tag == "-")
+        total_added += added
+        total_removed += removed
+        current = _apply_hunk(current, hunk)
+
+    stats = {
+        "added": total_added,
+        "removed": total_removed,
+        "changed": min(total_added, total_removed),
+    }
+    return current, stats
+
+
+def _tool_workspace_patch(args: dict) -> ToolResult:
+    """
+    Apply unified diff/patch ke file existing di sandbox.
+    RESTRICTED (butuh allow_restricted).
+    Params: path (wajib), patch (wajib, unified diff format).
+    """
+    rel = (args.get("path") or "").strip()
+    patch_text = args.get("patch")
+    if not rel:
+        return ToolResult(success=False, output="", error="path wajib")
+    if patch_text is None or not isinstance(patch_text, str):
+        return ToolResult(success=False, output="", error="patch wajib (string unified diff)")
+
+    p = _workspace_safe_path(rel)
+    if p is None:
+        return ToolResult(success=False, output="", error="path tidak valid atau di luar workspace")
+    if not _workspace_suffix_ok(p):
+        return ToolResult(success=False, output="", error=f"ekstensi tidak diizinkan: {p.suffix}")
+
+    # File harus sudah ada
+    if not p.is_file():
+        return ToolResult(success=False, output="", error=f"file tidak ditemukan: {rel}")
+
+    # Read original
+    try:
+        original_text = p.read_text(encoding="utf-8")
+    except OSError as e:
+        return ToolResult(success=False, output="", error=str(e))
+
+    original_lines = original_text.splitlines(keepends=False)
+
+    # Validate patch sebelum apply
+    try:
+        preview_lines, preview_stats = _apply_unified_diff(original_lines, patch_text)
+    except ValueError as e:
+        return ToolResult(
+            success=False,
+            output="",
+            error=f"Patch validation failed: {e}",
+        )
+
+    # Backup file asli
+    bak = p.with_suffix(p.suffix + ".bak")
+    try:
+        bak.write_text(original_text, encoding="utf-8")
+    except OSError:
+        pass  # backup gagal = non-fatal
+
+    # Apply patch
+    new_text = "\n".join(preview_lines)
+    # Preserve trailing newline jika original punya
+    if original_text.endswith("\n") and not new_text.endswith("\n"):
+        new_text += "\n"
+
+    encoded = new_text.encode("utf-8")
+    if len(encoded) > _WORKSPACE_MAX_WRITE_BYTES:
+        return ToolResult(
+            success=False,
+            output="",
+            error=f"hasil patch terlalu besar (>{_WORKSPACE_MAX_WRITE_BYTES} bytes)",
+        )
+
+    tmp = p.with_suffix(p.suffix + ".tmp")
+    try:
+        tmp.write_bytes(encoded)
+        tmp.replace(p)
+    except OSError as e:
+        if tmp.exists():
+            try:
+                tmp.unlink()
+            except OSError:
+                pass
+        # Restore backup kalau ada
+        if bak.exists():
+            try:
+                bak.replace(p)
+            except OSError:
+                pass
+        return ToolResult(success=False, output="", error=f"Apply patch failed: {e}")
+
+    return ToolResult(
+        success=True,
+        output=(
+            f"OK: patched {rel}\n"
+            f"  +{preview_stats['added']} lines added\n"
+            f"  -{preview_stats['removed']} lines removed\n"
+            f"  ~{preview_stats['changed']} lines changed\n"
+            f"Backup: {bak.name}"
+        ),
+        citations=[{"type": "agent_workspace", "path": rel}],
+    )
+
+
+def _roadmap_snapshot_dir() -> Path:
+    return _repo_root() / "brain" / "public" / "curriculum" / "roadmap_sh"
+
+
+def _roadmap_checklists_dir() -> Path:
+    return _roadmap_snapshot_dir() / "checklists"
+
+
+def _roadmap_progress_path() -> Path:
+    p = default_index_dir() / "roadmap_progress.json"
+    p.parent.mkdir(parents=True, exist_ok=True)
+    return p
+
+
+def _load_progress() -> dict[str, list[str]]:
+    p = _roadmap_progress_path()
+    if not p.exists():
+        return {}
+    try:
+        obj = json.loads(p.read_text(encoding="utf-8"))
+    except Exception:
+        return {}
+    if not isinstance(obj, dict):
+        return {}
+    out: dict[str, list[str]] = {}
+    for k, v in obj.items():
+        if isinstance(k, str) and isinstance(v, list) and all(isinstance(x, str) for x in v):
+            out[k] = v
+    return out
+
+
+def _save_progress(progress: dict[str, list[str]]) -> None:
+    p = _roadmap_progress_path()
+    p.write_text(json.dumps(progress, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
+
+def _read_checklist_items(slug: str) -> list[str]:
+    safe = re.sub(r"[^a-z0-9-]+", "", (slug or "").strip().lower())
+    if not safe:
+        return []
+    path = _roadmap_checklists_dir() / f"{safe}.md"
+    if not path.exists():
+        return []
+    items: list[str] = []
+    for line in path.read_text(encoding="utf-8").splitlines():
+        m = re.match(r"^\s*-\s*\[\s*\]\s+(.*)\s*$", line)
+        if not m:
+            continue
+        label = " ".join(m.group(1).split()).strip()
+        if label:
+            items.append(label)
+    return items
+
+
+def _tool_roadmap_list(args: dict) -> ToolResult:
+    """List roadmap slugs available locally (downloaded snapshot)."""
+    d = _roadmap_checklists_dir()
+    if not d.exists():
+        return ToolResult(
+            success=False,
+            output="",
+            error="Folder snapshot roadmap tidak ditemukan. Jalankan: python scripts/download_roadmap_sh_official_roadmaps.py",
+        )
+
+    slugs = sorted(p.stem for p in d.glob("*.md"))
+    if not slugs:
+        return ToolResult(success=False, output="", error="Tidak ada checklist roadmap (folder kosong).")
+
+    lines = ["Roadmaps tersedia (snapshot lokal):"]
+    for s in slugs:
+        lines.append(f"- {s}")
+    lines.append("")
+    lines.append("Gunakan tool `roadmap_next_items` untuk mengambil item belajar berikutnya.")
+    return ToolResult(success=True, output="\n".join(lines))
+
+
+def _tool_roadmap_next_items(args: dict) -> ToolResult:
+    """
+    Ambil N item checklist berikutnya berdasarkan progress lokal.
+    Params: slug (wajib), n (default 10)
+    """
+    slug = (args.get("slug") or "").strip().lower()
+    n = int(args.get("n") or 10)
+    if not slug:
+        return ToolResult(success=False, output="", error="slug wajib diisi (mis. 'python')")
+    if n < 1:
+        n = 1
+    if n > 50:
+        n = 50
+
+    items = _read_checklist_items(slug)
+    if not items:
+        return ToolResult(
+            success=False,
+            output="",
+            error=f"Checklist untuk slug '{slug}' tidak ditemukan. Coba `roadmap_list`.",
+        )
+
+    progress = _load_progress()
+    done = set(progress.get(slug, []))
+    next_items = [x for x in items if x not in done][:n]
+
+    lines = [
+        f"Roadmap: {slug}",
+        f"Progress: {len(done)}/{len(items)} selesai",
+        "",
+        "Item berikutnya:",
+    ]
+    for it in next_items:
+        lines.append(f"- {it}")
+    if not next_items:
+        lines.append("(semua item sudah ditandai selesai)")
+
+    lines.append("")
+    lines.append("Untuk menandai selesai: `roadmap_mark_done` (slug + items).")
+    lines.append("Untuk referensi cepat per item: `roadmap_item_references` (slug + item).")
+    return ToolResult(success=True, output="\n".join(lines))
+
+
+def _tool_roadmap_mark_done(args: dict) -> ToolResult:
+    """
+    Tandai item sebagai selesai di progress lokal.
+    Params: slug (wajib), items (list[str] atau str dipisah newline)
+    """
+    slug = (args.get("slug") or "").strip().lower()
+    raw_items = args.get("items")
+    if not slug:
+        return ToolResult(success=False, output="", error="slug wajib diisi")
+
+    items: list[str]
+    if isinstance(raw_items, list):
+        items = [str(x).strip() for x in raw_items if str(x).strip()]
+    elif isinstance(raw_items, str):
+        items = [x.strip() for x in raw_items.splitlines() if x.strip()]
+    else:
+        return ToolResult(success=False, output="", error="items wajib list[str] atau string newline-separated")
+
+    known = set(_read_checklist_items(slug))
+    if not known:
+        return ToolResult(success=False, output="", error=f"Checklist '{slug}' tidak ditemukan.")
+
+    progress = _load_progress()
+    done = set(progress.get(slug, []))
+
+    added: list[str] = []
+    skipped_unknown: list[str] = []
+    for it in items:
+        it_norm = " ".join(it.split()).strip()
+        if it_norm not in known:
+            skipped_unknown.append(it_norm)
+            continue
+        if it_norm in done:
+            continue
+        done.add(it_norm)
+        added.append(it_norm)
+
+    progress[slug] = sorted(done)
+    _save_progress(progress)
+
+    lines = [
+        f"Marked done: {slug}",
+        f"Added: {len(added)}",
+        f"Now: {len(done)}/{len(known)}",
+    ]
+    if added:
+        lines.append("")
+        lines.append("Ditambahkan:")
+        for a in added[:50]:
+            lines.append(f"- {a}")
+    if skipped_unknown:
+        lines.append("")
+        lines.append("Tidak dikenal (tidak ada di checklist):")
+        for s in skipped_unknown[:20]:
+            lines.append(f"- {s}")
+    return ToolResult(success=True, output="\n".join(lines))
+
+
+def _tool_roadmap_item_references(args: dict) -> ToolResult:
+    """
+    Keluarkan referensi “aman” (URL publik) untuk 1 item roadmap.
+    Params: slug (wajib), item (wajib), lang (opsional: python|js|ts|go|java|cpp)
+    """
+    slug = (args.get("slug") or "").strip().lower()
+    item = (args.get("item") or "").strip()
+    lang = (args.get("lang") or "").strip().lower()
+    if not slug:
+        return ToolResult(success=False, output="", error="slug wajib diisi")
+    if not item:
+        return ToolResult(success=False, output="", error="item wajib diisi")
+
+    item_q = urllib.parse.quote_plus(item)
+    refs: list[tuple[str, str]] = [
+        ("Roadmap page", f"https://roadmap.sh/{slug}"),
+        ("Roadmap search (site)", f"https://roadmap.sh/search?q={item_q}"),
+        ("GitHub repo search", f"https://github.com/search?q={item_q}&type=repositories"),
+        ("GitHub code search (TheAlgorithms/Python)", f"https://github.com/search?q=repo%3ATheAlgorithms%2FPython+{item_q}&type=code"),
+    ]
+    if lang:
+        refs.insert(
+            2,
+            (
+                "GitHub repo search (language)",
+                f"https://github.com/search?q={item_q}+language%3A{urllib.parse.quote_plus(lang)}&type=repositories",
+            ),
+        )
+
+    lines = [f"Referensi untuk: {slug} -> {item}", ""]
+    for label, url in refs:
+        lines.append(f"- {label}: {url}")
+
+    return ToolResult(
+        success=True,
+        output="\n".join(lines),
+        citations=[{"type": "reference_links", "slug": slug, "item": item}],
+    )
+
+
+def _tool_orchestration_plan(args: dict) -> ToolResult:
+    """
+    Bangun OrchestrationPlan deterministik: archetype, bobot satelit inspiratif,
+    urutan fase, dan JSON ringkas. Params: question (wajib), persona (opsional).
+    """
+    q = (args.get("question") or "").strip()
+    if not q:
+        return ToolResult(success=False, output="", error="question wajib")
+    persona = (args.get("persona") or "INAN").strip().upper() or "INAN"
+    from .orchestration import build_orchestration_plan, format_plan_text
+
+    plan = build_orchestration_plan(q, request_persona=persona)
+    return ToolResult(
+        success=True,
+        output=format_plan_text(plan),
+        citations=[{"type": "orchestration_plan", "router_persona": plan.router_persona}],
+    )
+
+
+def _tool_disabled(args: dict) -> ToolResult:
+    return ToolResult(success=False, output="", error="Tool ini disabled oleh permission gate")
+
+
+# ── Sprint 5 Tools ─────────────────────────────────────────────────────────────
+
+def _tool_curator_run(args: dict) -> ToolResult:
+    """Jalankan self-train curation pipeline dari corpus."""
+    min_score = float(args.get("min_score", 0.45))
+    dry_run = bool(args.get("dry_run", False))
+
+    try:
+        from .curator_agent import run_curation
+        result = run_curation(min_score=min_score, dry_run=dry_run)
+    except Exception as e:
+        return ToolResult(success=False, output="", error=f"curator_run gagal: {e}")
+
+    if not result.get("ok"):
+        return ToolResult(success=False, output="", error=str(result.get("error", "unknown")))
+
+    lines = [
+        "# Curator Agent — Self-Train Curation",
+        f"- Scanned: {result.get('scanned')} dokumen",
+        f"- Scored (pass threshold): {result.get('scored')}",
+        f"- Exported pairs: {result.get('exported')}",
+        f"- Output file: {result.get('output_file') or '(dry-run, tidak disimpan)'}",
+        f"- Elapsed: {result.get('elapsed_s')}s",
+    ]
+    warnings = result.get("warnings", [])
+    if warnings:
+        lines.append("\n## Warnings")
+        for w in warnings[:5]:
+            lines.append(f"- {w}")
+
+    return ToolResult(
+        success=True,
+        output="\n".join(lines),
+        citations=[{
+            "type": "curator_run",
+            "exported": result.get("exported"),
+            "dry_run": dry_run,
+        }],
+    )
+
+
+def _tool_debate_ring(args: dict) -> ToolResult:
+    """Jalankan multi-agent debate Creator ↔ Critic."""
+    pair_type = str(args.get("pair_type", "copy_vs_strategy")).strip()
+    content = str(args.get("content", "")).strip()
+    context = str(args.get("context", "")).strip()
+
+    if not content:
+        return ToolResult(success=False, output="", error="content wajib diisi")
+
+    try:
+        from .debate_ring import (
+            debate_copy_vs_strategy,
+            debate_brand_vs_design,
+            debate_hook_vs_audience,
+            run_debate_as_dict,
+        )
+
+        pair_map = {
+            "copy_vs_strategy": debate_copy_vs_strategy,
+            "brand_vs_design": debate_brand_vs_design,
+            "hook_vs_audience": debate_hook_vs_audience,
+        }
+
+        fn = pair_map.get(pair_type)
+        if fn is None:
+            return ToolResult(
+                success=False, output="",
+                error=f"pair_type '{pair_type}' tidak valid. Pilih: {list(pair_map.keys())}",
+            )
+
+        result = fn(content, context)
+        d = run_debate_as_dict(result)
+
+    except Exception as e:
+        return ToolResult(success=False, output="", error=f"debate_ring gagal: {e}")
+
+    lines = [
+        f"# Debate Ring — {d['pair_id']}",
+        f"- Konsensus: {'Ya' if d['consensus'] else 'Tidak (max round tercapai)'}",
+        f"- Rounds: {d['rounds_taken']}",
+        f"- Final CQF: {d['final_cqf']}",
+        f"- Elapsed: {d['elapsed_s']}s",
+        "",
+        "## Final Output",
+        d["final_prototype"],
+    ]
+
+    return ToolResult(
+        success=True,
+        output="\n".join(lines),
+        citations=[{
+            "type": "debate_ring",
+            "pair_id": d["pair_id"],
+            "consensus": d["consensus"],
+            "final_cqf": d["final_cqf"],
+        }],
+    )
+
+
+def _tool_agency_kit(args: dict) -> ToolResult:
+    """Build Agency Kit lengkap dalam 1 panggilan."""
+    business_name = str(args.get("business_name", "")).strip()
+    niche = str(args.get("niche", "")).strip()
+    target_audience = str(args.get("target_audience", "")).strip()
+    budget = str(args.get("budget", "1.5jt")).strip() or "1.5jt"
+
+    if not business_name:
+        return ToolResult(success=False, output="", error="business_name wajib diisi")
+    if not niche:
+        return ToolResult(success=False, output="", error="niche wajib diisi")
+
+    try:
+        from .agency_kit import build_agency_kit
+        result = build_agency_kit(
+            business_name=business_name,
+            niche=niche,
+            target_audience=target_audience or "audiens Indonesia umum",
+            budget=budget,
+        )
+    except Exception as e:
+        return ToolResult(success=False, output="", error=f"agency_kit gagal: {e}")
+
+    if not result.get("ok"):
+        return ToolResult(success=False, output="", error=str(result.get("error", "unknown")))
+
+    lines = [
+        "# Agency Kit — 1-Click Brand Package",
+        f"- Bisnis: {result.get('business_name')}",
+        f"- Niche: {result.get('niche')}",
+        f"- Target: {result.get('target_audience')}",
+        f"- Budget: Rp {result.get('budget_idr', 0):,}".replace(",", "."),
+        f"- CQF Composite: {result.get('cqf_composite')} ({result.get('cqf_tier')})",
+        f"- Captions: {result.get('caption_count')} caption",
+        f"- Content Plan: {result.get('content_plan_slots')} slots",
+        f"- Elapsed: {result.get('elapsed_s')}s",
+        "",
+        "## Summary",
+        result.get("summary", ""),
+    ]
+    warnings = result.get("warnings", [])
+    if warnings:
+        lines.append("\n## Warnings")
+        for w in warnings[:5]:
+            lines.append(f"- {w}")
+
+    return ToolResult(
+        success=True,
+        output="\n".join(lines),
+        citations=[{
+            "type": "agency_kit",
+            "business_name": business_name,
+            "cqf_composite": result.get("cqf_composite"),
+            "caption_count": result.get("caption_count"),
+        }],
+    )
+
+
+def _tool_llm_judge(args: dict) -> ToolResult:
+    """Evaluasi kualitas konten menggunakan LLM-as-Judge."""
+    content = str(args.get("content", "")).strip()
+    brief = str(args.get("brief", "")).strip()
+    domain = str(args.get("domain", "content")).strip() or "content"
+
+    if not content:
+        return ToolResult(success=False, output="", error="content wajib diisi")
+
+    try:
+        from .llm_judge import judge_content
+        result = judge_content(content=content, brief=brief, domain=domain)
+    except Exception as e:
+        return ToolResult(success=False, output="", error=f"llm_judge gagal: {e}")
+
+    if not result.get("ok"):
+        return ToolResult(success=False, output="", error=str(result.get("error", "unknown")))
+
+    scores = result.get("scores", {})
+    lines = [
+        "# LLM Judge — Content Evaluation",
+        f"- Domain: {result.get('domain')}",
+        f"- Mode: {result.get('mode')} (llm / heuristic)",
+        f"- Total Score: {result.get('total')} → Tier: {result.get('tier')}",
+        f"- Elapsed: {result.get('elapsed_s')}s",
+        "",
+        "## Scores per Criterion",
+    ]
+    for criterion, score in scores.items():
+        lines.append(f"- {criterion}: {score:.1f}/10")
+
+    if result.get("rationale"):
+        lines.extend(["", "## Rationale", result["rationale"]])
+    if result.get("recommendation"):
+        lines.extend(["", "## Recommendation", result["recommendation"]])
+
+    return ToolResult(
+        success=True,
+        output="\n".join(lines),
+        citations=[{
+            "type": "llm_judge",
+            "domain": result.get("domain"),
+            "total": result.get("total"),
+            "tier": result.get("tier"),
+        }],
+    )
+
+
+def _tool_prompt_optimizer(args: dict) -> ToolResult:
+    """Optimalkan prompt template agent berdasarkan accepted outputs (L1 Self-Evolution)."""
+    agent = str(args.get("agent", "")).strip()
+    domain = str(args.get("domain", "content")).strip() or "content"
+    force = bool(args.get("force", False))
+    dry_run = bool(args.get("dry_run", False))
+
+    if not agent:
+        return ToolResult(success=False, output="", error="agent wajib diisi (copywriter/brand_builder/campaign_strategist/...)")
+
+    try:
+        from .prompt_optimizer import optimize_prompt
+        result = optimize_prompt(agent=agent, domain=domain, force=force, dry_run=dry_run)
+    except Exception as e:
+        return ToolResult(success=False, output="", error=f"prompt_optimizer gagal: {e}")
+
+    lines = [
+        "# Prompt Optimizer — Hasil",
+        f"- Agent: {result.agent}",
+        f"- Version: v{result.version}",
+        f"- Baseline Score: {result.baseline_score:.2f}",
+        f"- Optimized Score: {result.optimized_score:.2f}",
+        f"- Improvement: {result.improvement:+.2f}",
+        f"- Accepted: {'✅ Ya' if result.accepted else '❌ Tidak (rollback ke versi lama)'}",
+        f"- Demos Used: {result.demos_used}",
+        f"- Status: {result.notes}",
+        f"- Elapsed: {result.elapsed_s}s",
+    ]
+    return ToolResult(
+        success=result.ok,
+        output="\n".join(lines),
+        citations=[{
+            "type": "prompt_optimizer",
+            "agent": result.agent,
+            "version": result.version,
+            "improvement": result.improvement,
+            "accepted": result.accepted,
+        }],
+    )
+
+
+# ── web_fetch — own stack, fetch HTML publik, strip ke markdown/plain ─────────
+_WEB_FETCH_MAX_BYTES = 800_000  # ~800 KB HTML mentah
+_WEB_FETCH_TEXT_LIMIT = 6000    # karakter teks yang dikembalikan ke agent
+
+
+def _tool_web_fetch(args: dict) -> ToolResult:
+    """
+    Fetch URL publik → teks bersih (BeautifulSoup + strip script/style).
+    Standing-alone: pakai httpx + bs4 sendiri, BUKAN API vendor search/fetch.
+    Params: url (wajib, http/https saja), max_chars (opsional, default 6000).
+    """
+    url = str(args.get("url", "")).strip()
+    if not url:
+        return ToolResult(success=False, output="", error="url wajib diisi")
+    if not (url.startswith("http://") or url.startswith("https://")):
+        return ToolResult(success=False, output="", error="url harus http:// atau https://")
+
+    max_chars = int(args.get("max_chars", _WEB_FETCH_TEXT_LIMIT))
+    max_chars = max(500, min(max_chars, 20000))
+
+    try:
+        import httpx
+        from bs4 import BeautifulSoup
+    except ImportError as e:
+        return ToolResult(success=False, output="", error=f"dependency tidak terpasang: {e}")
+
+    try:
+        with httpx.Client(
+            follow_redirects=True,
+            timeout=20.0,
+            headers={"User-Agent": "SIDIX-Agent/1.0 (mighan-brain-qa; standing-alone)"},
+        ) as client:
+            r = client.get(url)
+            r.raise_for_status()
+            raw = r.content[:_WEB_FETCH_MAX_BYTES]
+    except Exception as e:
+        return ToolResult(success=False, output="", error=f"gagal fetch: {type(e).__name__}: {e}")
+
+    try:
+        soup = BeautifulSoup(raw, "html.parser")
+        title = soup.title.string.strip() if soup.title and soup.title.string else "Untitled"
+        for tag in soup(["script", "style", "noscript", "nav", "footer", "aside"]):
+            tag.decompose()
+        text = soup.get_text("\n")
+        text = re.sub(r"\n{3,}", "\n\n", text)
+        text = re.sub(r"[ \t]+", " ", text).strip()
+    except Exception as e:
+        return ToolResult(success=False, output="", error=f"parse gagal: {e}")
+
+    truncated = len(text) > max_chars
+    body = text[:max_chars] + ("\n\n…(dipotong)" if truncated else "")
+    out = f"# {title}\nURL: {url}\n\n{body}"
+    return ToolResult(
+        success=True,
+        output=out,
+        citations=[{"type": "web_fetch", "url": url, "title": title}],
+    )
+
+
+# ── Σ-1H: browser_fetch — structured article extraction (richer than web_fetch) ──
+def _tool_browser_fetch(args: dict) -> ToolResult:
+    """
+    Σ-1H: Fetch URL publik dengan structured extraction — lebih kaya dari web_fetch.
+    Ekstrak: title, main article text (prioritas <article>/<main>), meta description,
+    OG data, JSON-LD, published date. Cocok untuk berita/blog/artikel.
+    Standing-alone: httpx + bs4, no headless browser needed.
+    Params: url (wajib), max_chars (default 8000), include_meta (bool, default true).
+    """
+    url = str(args.get("url", "")).strip()
+    if not url or not url.startswith(("http://", "https://")):
+        return ToolResult(success=False, output="", error="url wajib http/https")
+
+    max_chars = max(500, min(int(args.get("max_chars", 8000)), 20000))
+    include_meta = str(args.get("include_meta", "true")).lower() != "false"
+
+    try:
+        import httpx
+        from bs4 import BeautifulSoup
+    except ImportError as e:
+        return ToolResult(success=False, output="", error=f"dependency: {e}")
+
+    try:
+        with httpx.Client(
+            follow_redirects=True, timeout=20.0,
+            headers={"User-Agent": "SIDIX-Agent/1.0 (mighan-browser-fetch)"},
+        ) as client:
+            r = client.get(url)
+            r.raise_for_status()
+            raw = r.content[:500_000]
+    except Exception as e:
+        return ToolResult(success=False, output="", error=f"fetch gagal: {e}")
+
+    try:
+        soup = BeautifulSoup(raw, "html.parser")
+
+        # Title
+        title = (soup.title.string or "").strip() if soup.title else ""
+        og_title = soup.find("meta", property="og:title")
+        if og_title and og_title.get("content"):
+            title = og_title["content"].strip() or title
+
+        # Meta description
+        meta_desc = ""
+        if include_meta:
+            _md = soup.find("meta", attrs={"name": "description"})
+            og_desc = soup.find("meta", property="og:description")
+            meta_desc = (og_desc or _md or {}).get("content", "") or ""  # type: ignore[union-attr]
+
+        # Published date (try common patterns)
+        pub_date = ""
+        for _dt_attr in [
+            ("meta", {"property": "article:published_time"}),
+            ("meta", {"name": "date"}),
+            ("time", {}),
+        ]:
+            tag = soup.find(_dt_attr[0], _dt_attr[1])
+            if tag:
+                pub_date = (tag.get("content") or tag.get("datetime") or tag.get_text("")).strip()[:30]
+                if pub_date:
+                    break
+
+        # Main content — prioritize semantic containers
+        for tag in soup(["script", "style", "noscript", "nav", "footer", "aside", "header", "form"]):
+            tag.decompose()
+
+        article_text = ""
+        for selector in ("article", "main", "[role='main']", ".article-body",
+                         ".post-content", ".entry-content", "#content", ".content"):
+            container = soup.select_one(selector)
+            if container:
+                article_text = container.get_text("\n").strip()
+                break
+        if not article_text:
+            article_text = soup.body.get_text("\n").strip() if soup.body else soup.get_text("\n")
+
+        article_text = re.sub(r"\n{3,}", "\n\n", article_text)
+        article_text = re.sub(r"[ \t]+", " ", article_text).strip()
+        truncated = len(article_text) > max_chars
+        article_text = article_text[:max_chars] + ("\n…(dipotong)" if truncated else "")
+
+        # Compose output
+        parts = [f"# {title or 'Untitled'}", f"URL: {url}"]
+        if pub_date:
+            parts.append(f"Tanggal: {pub_date}")
+        if meta_desc and include_meta:
+            parts.append(f"Ringkasan: {meta_desc[:300]}")
+        parts += ["", article_text]
+        out = "\n".join(parts)
+    except Exception as e:
+        return ToolResult(success=False, output="", error=f"parse gagal: {e}")
+
+    return ToolResult(
+        success=True, output=out,
+        citations=[{"type": "browser_fetch", "url": url, "title": title}],
+    )
+
+
+# ── Σ-1H: social_search — Reddit + YouTube RSS (no API key required) ─────────
+def _tool_social_search(args: dict) -> ToolResult:
+    """
+    Σ-1H: Cari di platform sosial (Reddit + YouTube RSS). No API key.
+    - Reddit: public JSON API (search.json) — diskusi komunitas + opini
+    - YouTube: RSS search — video title + channel + views
+    Standing-alone: urllib only, no vendor API.
+    Params: query (wajib), platform (default 'reddit', options: 'reddit'|'youtube'|'all'),
+            max_results (default 5, max 10).
+    """
+    query = str(args.get("query", "")).strip()
+    if not query:
+        return ToolResult(success=False, output="", error="query wajib diisi")
+    platform = str(args.get("platform", "reddit")).lower()
+    max_results = max(1, min(int(args.get("max_results", 5)), 10))
+
+    import urllib.request
+    import urllib.parse
+    import urllib.error
+    import json as _json
+    import xml.etree.ElementTree as ET
+
+    results_text: list[str] = []
+    citations: list[dict] = []
+
+    # ── Reddit search (public JSON, no auth) ─────────────────────────────────
+    if platform in ("reddit", "all"):
+        try:
+            q_enc = urllib.parse.quote(query)
+            reddit_url = (
+                f"https://www.reddit.com/search.json?q={q_enc}"
+                f"&limit={max_results}&sort=relevance&type=link"
+            )
+            req = urllib.request.Request(
+                reddit_url,
+                headers={"User-Agent": "SIDIX-Agent/1.0 (mighan-social-search)"},
+            )
+            with urllib.request.urlopen(req, timeout=15) as resp:
+                data = _json.loads(resp.read().decode())
+
+            posts = data.get("data", {}).get("children", [])
+            if posts:
+                results_text.append(f"## Reddit: '{query}'\n")
+                for i, post in enumerate(posts[:max_results], 1):
+                    p = post.get("data", {})
+                    sub = p.get("subreddit", "?")
+                    ptitle = p.get("title", "")[:120]
+                    score = p.get("score", 0)
+                    permalink = "https://reddit.com" + p.get("permalink", "")
+                    selftext = (p.get("selftext", "") or "")[:200]
+                    results_text.append(
+                        f"{i}. **r/{sub}** — {ptitle}\n"
+                        f"   Score: {score} | {permalink}\n"
+                        + (f"   {selftext}\n" if selftext else "")
+                    )
+                    citations.append({"type": "reddit", "url": permalink, "title": ptitle})
+        except Exception as e:
+            results_text.append(f"Reddit search error: {e}")
+
+    # ── YouTube RSS search (public, no auth) ─────────────────────────────────
+    if platform in ("youtube", "all"):
+        try:
+            q_enc = urllib.parse.quote(query)
+            yt_url = (
+                f"https://www.youtube.com/feeds/videos.xml?search={q_enc}"
+            )
+            req_yt = urllib.request.Request(
+                yt_url,
+                headers={"User-Agent": "SIDIX-Agent/1.0 (mighan-social-search)"},
+            )
+            with urllib.request.urlopen(req_yt, timeout=15) as resp_yt:
+                xml_data = resp_yt.read().decode("utf-8", errors="replace")
+
+            root = ET.fromstring(xml_data)
+            ns = {"atom": "http://www.w3.org/2005/Atom"}
+            entries = root.findall("atom:entry", ns)[:max_results]
+            if entries:
+                results_text.append(f"\n## YouTube: '{query}'\n")
+                for i, entry in enumerate(entries, 1):
+                    yt_title = (entry.findtext("atom:title", "", ns) or "").strip()
+                    yt_link_el = entry.find("atom:link", ns)
+                    yt_link = yt_link_el.get("href", "") if yt_link_el is not None else ""
+                    yt_pub = (entry.findtext("atom:published", "", ns) or "")[:10]
+                    results_text.append(
+                        f"{i}. **{yt_title}**\n"
+                        f"   {yt_link}\n"
+                        + (f"   Published: {yt_pub}\n" if yt_pub else "")
+                    )
+                    citations.append({"type": "youtube", "url": yt_link, "title": yt_title})
+        except Exception as e:
+            results_text.append(f"\nYouTube RSS error: {e}")
+
+    if not results_text:
+        return ToolResult(success=False, output="", error="semua platform tidak ada hasil")
+
+    return ToolResult(
+        success=True,
+        output="\n".join(results_text),
+        citations=citations,
+    )
+
+
+# ── code_sandbox — Python subprocess own-stack, timeout + output cap ───────────
+_CODE_SANDBOX_TIMEOUT = 30     # detik (ditingkatkan dari 10 → 30 untuk analisis data)
+_CODE_SANDBOX_MAX_OUTPUT = 8000  # karakter stdout+stderr
+
+
+def _tool_code_sandbox(args: dict) -> ToolResult:
+    """
+    Jalankan snippet Python di subprocess terisolasi.
+    Standing-alone: pakai subprocess + tempfile sendiri, no external service.
+    Safety: timeout 30s, cwd sementara, stdin kosong, output dipotong.
+    Params: code (str, wajib Python), timeout (int opsional, max 60).
+    Return: stdout + stderr.
+    """
+    import subprocess
+    import sys
+    import tempfile
+
+    code = str(args.get("code", ""))
+    if not code.strip():
+        return ToolResult(success=False, output="", error="code wajib diisi")
+    if len(code) > 50000:
+        return ToolResult(success=False, output="", error="code terlalu panjang (max 50KB)")
+
+    timeout = int(args.get("timeout", _CODE_SANDBOX_TIMEOUT))
+    timeout = max(5, min(timeout, 60))  # clamp 5–60 detik
+
+    # Heuristik keamanan (bukan sandbox penuh — user internal)
+    # Biarkan os.path, os.getcwd, os.environ — yang diblokir hanya command exec
+    forbidden = ["os.system(", "subprocess.run(", "subprocess.Popen(",
+                 "socket.socket(", "__import__('subprocess')", "eval(compile("]
+    for pat in forbidden:
+        if pat in code:
+            return ToolResult(
+                success=False, output="",
+                error=f"pola terlarang: {pat}. Gunakan code_sandbox hanya untuk komputasi.",
+            )
+
+    try:
+        with tempfile.TemporaryDirectory(prefix="sidix_sbx_") as tmp:
+            script_path = Path(tmp) / "main.py"
+            script_path.write_text(code, encoding="utf-8")
+            proc = subprocess.run(
+                [sys.executable, "-I", "-B", str(script_path)],
+                cwd=tmp,
+                input="",
+                capture_output=True,
+                text=True,
+                timeout=timeout,
+                env={"PATH": os.environ.get("PATH", ""), "LANG": "C.UTF-8",
+                     "PYTHONDONTWRITEBYTECODE": "1"},
+            )
+    except subprocess.TimeoutExpired:
+        return ToolResult(
+            success=False, output="",
+            error=f"code sandbox timeout ({timeout}s). Hindari loop tak berujung / IO lambat.",
+        )
+    except Exception as e:
+        return ToolResult(success=False, output="", error=f"sandbox gagal: {type(e).__name__}: {e}")
+
+    stdout = (proc.stdout or "")[:_CODE_SANDBOX_MAX_OUTPUT]
+    stderr = (proc.stderr or "")[:_CODE_SANDBOX_MAX_OUTPUT // 2]
+    combined = []
+    if stdout:
+        combined.append(f"STDOUT:\n{stdout}")
+    if stderr:
+        combined.append(f"STDERR:\n{stderr}")
+    combined.append(f"(exit code: {proc.returncode})")
+    return ToolResult(
+        success=(proc.returncode == 0),
+        output="\n\n".join(combined) if combined else "(tidak ada output)",
+        citations=[{"type": "code_sandbox", "exit_code": proc.returncode}],
+    )
+
+
+# ── Shell Execution (Coding Agent Phase 2) ───────────────────────────────────
+
+_SHELL_TIMEOUT = 60
+_SHELL_MAX_OUTPUT = 16_000
+
+
+def _tool_shell_run(args: dict) -> ToolResult:
+    """
+    Jalankan shell command dengan security scanner.
+    RESTRICTED (butuh allow_restricted=true).
+    Params: command (wajib), cwd (opsional, relatif ke agent_workspace).
+    """
+    import subprocess
+
+    command = str(args.get("command", "")).strip()
+    if not command:
+        return ToolResult(success=False, output="", error="command wajib diisi")
+
+    # Security scan
+    try:
+        from .code_security import scan_command
+        scan = scan_command(command)
+        if scan.blocked:
+            return ToolResult(success=False, output="", error=f"Security block: {scan.reason}")
+        if scan.hitl_required:
+            return ToolResult(
+                success=False,
+                output="",
+                error=(
+                    f"Approval required: {scan.reason}\n"
+                    f"Command: {scan.sanitized_command}\n"
+                    "Set allow_restricted=true DAN konfirmasi manual untuk menjalankan."
+                ),
+            )
+    except Exception as e:
+        return ToolResult(success=False, output="", error=f"Security scan failed: {e}")
+
+    # Resolve CWD
+    cwd = _agent_workspace_root()
+    rel_cwd = (args.get("cwd") or "").strip()
+    if rel_cwd:
+        p = _workspace_safe_path(rel_cwd)
+        if p is not None and p.exists():
+            cwd = p if p.is_dir() else p.parent
+
+    try:
+        proc = subprocess.run(
+            command,
+            shell=True,
+            cwd=str(cwd),
+            capture_output=True,
+            text=True,
+            timeout=_SHELL_TIMEOUT,
+            env={"PATH": os.environ.get("PATH", ""), "LANG": "C.UTF-8"},
+        )
+    except subprocess.TimeoutExpired:
+        return ToolResult(
+            success=False,
+            output="",
+            error=f"Shell timeout ({_SHELL_TIMEOUT}s). Command terlalu lama.",
+        )
+    except Exception as e:
+        return ToolResult(success=False, output="", error=f"Shell error: {type(e).__name__}: {e}")
+
+    stdout = (proc.stdout or "")[:_SHELL_MAX_OUTPUT]
+    stderr = (proc.stderr or "")[:_SHELL_MAX_OUTPUT // 2]
+    combined = []
+    if stdout:
+        combined.append(f"STDOUT:\n{stdout}")
+    if stderr:
+        combined.append(f"STDERR:\n{stderr}")
+    combined.append(f"(exit code: {proc.returncode})")
+    return ToolResult(
+        success=(proc.returncode == 0),
+        output="\n\n".join(combined) if combined else "(tidak ada output)",
+        citations=[{"type": "shell_run", "command": command[:200], "exit_code": proc.returncode}],
+    )
+
+
+def _tool_test_run(args: dict) -> ToolResult:
+    """
+    Jalankan test suite (auto-detect framework).
+    Params: path (opsional, folder/file test), framework (opsional: pytest/unittest/jest/vitest/cargo/go).
+    """
+    import subprocess
+
+    path = (args.get("path") or "").strip()
+    framework = (args.get("framework") or "").strip().lower()
+
+    # Resolve CWD
+    cwd = _agent_workspace_root()
+    if path:
+        p = _workspace_safe_path(path)
+        if p is not None and p.exists():
+            cwd = p if p.is_dir() else p.parent
+        else:
+            test_p = cwd / path
+            if test_p.exists():
+                cwd = test_p if test_p.is_dir() else test_p.parent
+
+    # Auto-detect framework
+    if not framework:
+        if (cwd / "pytest.ini").exists() or (cwd / "pyproject.toml").exists() or list(cwd.glob("test_*.py")) or list(cwd.glob("*_test.py")):
+            framework = "pytest"
+        elif (cwd / "package.json").exists():
+            framework = "jest"
+        elif (cwd / "Cargo.toml").exists():
+            framework = "cargo"
+        elif (cwd / "go.mod").exists():
+            framework = "go"
+        elif list(cwd.glob("test*.py")):
+            framework = "unittest"
+        else:
+            framework = "pytest"
+
+    # Build command
+    if framework == "pytest":
+        cmd = f"python -m pytest {path or '.'} -v --tb=short"
+    elif framework == "unittest":
+        cmd = f"python -m unittest discover -s {path or '.'} -v"
+    elif framework == "jest":
+        cmd = f"npx jest {path or ''} --verbose"
+    elif framework == "vitest":
+        cmd = f"npx vitest run {path or ''}"
+    elif framework == "cargo":
+        cmd = "cargo test"
+    elif framework == "go":
+        cmd = f"go test {path or './...'} -v"
+    else:
+        return ToolResult(success=False, output="", error=f"Framework '{framework}' tidak didukung. Pilih: pytest/unittest/jest/vitest/cargo/go")
+
+    try:
+        proc = subprocess.run(
+            cmd,
+            shell=True,
+            cwd=str(cwd),
+            capture_output=True,
+            text=True,
+            timeout=_SHELL_TIMEOUT,
+            env={"PATH": os.environ.get("PATH", ""), "LANG": "C.UTF-8"},
+        )
+    except subprocess.TimeoutExpired:
+        return ToolResult(success=False, output="", error=f"Test timeout ({_SHELL_TIMEOUT}s)")
+    except Exception as e:
+        return ToolResult(success=False, output="", error=f"Test error: {type(e).__name__}: {e}")
+
+    stdout = (proc.stdout or "")[:_SHELL_MAX_OUTPUT]
+    stderr = (proc.stderr or "")[:_SHELL_MAX_OUTPUT // 2]
+
+    # Parse summary
+    summary = f"Framework: {framework}\nExit code: {proc.returncode}\n"
+    if framework == "pytest":
+        passed = stdout.count(" passed") + stdout.count(" PASSED")
+        failed = stdout.count(" failed") + stdout.count(" FAILED")
+        summary += f"Tests passed: {passed}\nTests failed: {failed}\n"
+    elif framework in ("jest", "vitest"):
+        passed = stdout.count("PASS") + stdout.count("OK")
+        failed = stdout.count("FAIL") + stdout.count("FAILED")
+        summary += f"Tests passed: {passed}\nTests failed: {failed}\n"
+
+    combined = [summary]
+    if stdout:
+        combined.append(f"STDOUT:\n{stdout}")
+    if stderr:
+        combined.append(f"STDERR:\n{stderr}")
+
+    return ToolResult(
+        success=(proc.returncode == 0),
+        output="\n\n".join(combined),
+        citations=[{"type": "test_run", "framework": framework, "exit_code": proc.returncode}],
+    )
+
+
+# ── Git Tools (read-only + helper) ───────────────────────────────────────────
+
+
+def _tool_git_status(args: dict) -> ToolResult:
+    """Lihat git status. Params: path (opsional, relatif ke workspace)."""
+    import subprocess
+
+    cwd = _agent_workspace_root()
+    path = (args.get("path") or "").strip()
+    if path:
+        p = _workspace_safe_path(path)
+        if p is not None and p.exists():
+            cwd = p if p.is_dir() else p.parent
+
+    try:
+        proc = subprocess.run(
+            ["git", "status", "-sb"],
+            cwd=str(cwd),
+            capture_output=True,
+            text=True,
+            timeout=15,
+        )
+    except Exception as e:
+        return ToolResult(success=False, output="", error=f"git status error: {e}")
+
+    out = proc.stdout or ""
+    err = proc.stderr or ""
+    if "not a git repository" in err.lower():
+        return ToolResult(success=False, output="", error="Bukan git repository. Jalankan 'git init' dulu.")
+    return ToolResult(success=True, output=out or "(clean)")
+
+
+def _tool_git_diff(args: dict) -> ToolResult:
+    """Lihat git diff. Params: path (opsional), staged (bool, default False)."""
+    import subprocess
+
+    cwd = _agent_workspace_root()
+    path = (args.get("path") or "").strip()
+    staged = bool(args.get("staged", False))
+
+    if path:
+        p = _workspace_safe_path(path)
+        if p is not None and p.exists():
+            cwd = p if p.is_dir() else p.parent
+
+    cmd = ["git", "diff", "--stat"]
+    if staged:
+        cmd.insert(2, "--staged")
+
+    try:
+        proc = subprocess.run(cmd, cwd=str(cwd), capture_output=True, text=True, timeout=15)
+    except Exception as e:
+        return ToolResult(success=False, output="", error=f"git diff error: {e}")
+
+    out = proc.stdout or ""
+    err = proc.stderr or ""
+    if "not a git repository" in err.lower():
+        return ToolResult(success=False, output="", error="Bukan git repository.")
+
+    # Kalau stat pendek, tambahkan diff lengkap
+    if len(out) < 500 and not args.get("stat_only"):
+        cmd_full = ["git", "diff"]
+        if staged:
+            cmd_full.insert(2, "--staged")
+        try:
+            proc_full = subprocess.run(cmd_full, cwd=str(cwd), capture_output=True, text=True, timeout=15)
+            out = proc_full.stdout or ""
+        except Exception:
+            pass
+
+    # Cap output
+    if len(out) > 8000:
+        out = out[:8000] + "\n... [truncated]"
+    return ToolResult(success=True, output=out or "(no changes)")
+
+
+def _tool_git_log(args: dict) -> ToolResult:
+    """Lihat git log. Params: path (opsional), n (int, default 10)."""
+    import subprocess
+
+    cwd = _agent_workspace_root()
+    path = (args.get("path") or "").strip()
+    n = int(args.get("n", 10))
+    n = max(1, min(50, n))
+
+    if path:
+        p = _workspace_safe_path(path)
+        if p is not None and p.exists():
+            cwd = p if p.is_dir() else p.parent
+
+    try:
+        proc = subprocess.run(
+            ["git", "log", f"--max-count={n}", "--oneline", "--decorate"],
+            cwd=str(cwd),
+            capture_output=True,
+            text=True,
+            timeout=15,
+        )
+    except Exception as e:
+        return ToolResult(success=False, output="", error=f"git log error: {e}")
+
+    out = proc.stdout or ""
+    err = proc.stderr or ""
+    if "not a git repository" in err.lower():
+        return ToolResult(success=False, output="", error="Bukan git repository.")
+    return ToolResult(success=True, output=out or "(no commits)")
+
+
+def _tool_git_commit_helper(args: dict) -> ToolResult:
+    """
+    Generate commit message dari git diff menggunakan LLM.
+    Params: path (opsional), style (opsional: conventional/semantic/simple, default conventional).
+    """
+    from .ollama_llm import ollama_generate
+
+    cwd = _agent_workspace_root()
+    path = (args.get("path") or "").strip()
+    style = (args.get("style") or "conventional").strip().lower()
+
+    if path:
+        p = _workspace_safe_path(path)
+        if p is not None and p.exists():
+            cwd = p if p.is_dir() else p.parent
+
+    # Ambil diff staged + unstaged
+    import subprocess
+    try:
+        proc = subprocess.run(["git", "diff", "--staged"], cwd=str(cwd), capture_output=True, text=True, timeout=15)
+        staged = proc.stdout or ""
+        proc2 = subprocess.run(["git", "diff"], cwd=str(cwd), capture_output=True, text=True, timeout=15)
+        unstaged = proc2.stdout or ""
+    except Exception as e:
+        return ToolResult(success=False, output="", error=f"git diff error: {e}")
+
+    diff_text = staged + "\n" + unstaged
+    if not diff_text.strip():
+        return ToolResult(success=False, output="", error="Tidak ada perubahan untuk dicommit.")
+
+    # Truncate diff untuk prompt
+    diff_truncated = diff_text[:4000]
+
+    style_hint = {
+        "conventional": "Format: type(scope): description (feat/fix/docs/refactor/test/chore)",
+        "semantic": "Format: type: description (gunakan emoji + type)",
+        "simple": "Format: deskripsi singkat perubahan",
+    }.get(style, "Format: type(scope): description")
+
+    prompt = f"""Berikut adalah git diff dari project. Buatkan commit message yang jelas dan informatif.
+
+{style_hint}
+
+Diff:
+{diff_truncated}
+
+Commit message (hanya 1 baris, maks 72 karakter):"""
+
+    try:
+        text, mode = ollama_generate(prompt=prompt, max_tokens=64, temperature=0.3)
+        if mode == "mock_error":
+            return ToolResult(success=False, output="", error="LLM tidak tersedia untuk generate commit message.")
+        msg = text.strip().split("\n")[0][:72]
+        return ToolResult(success=True, output=f"Suggested commit message:\n{msg}")
+    except Exception as e:
+        return ToolResult(success=False, output="", error=f"Generate commit message failed: {e}")
+
+
+# ── web_search — own wrapper DuckDuckGo HTML (no API, no vendor) ──────────────
+_WEB_SEARCH_MAX_RESULTS = 8
+
+
+def _ddg_search(query: str, max_results: int, timeout: float = 12.0) -> list[dict]:
+    """DuckDuckGo HTML — primary engine."""
+    import httpx
+    from bs4 import BeautifulSoup
+    with httpx.Client(
+        follow_redirects=True, timeout=timeout,
+        headers={"User-Agent": "Mozilla/5.0 (compatible; SIDIX-Agent/2.0)"},
+    ) as client:
+        r = client.post(
+            "https://html.duckduckgo.com/html/",
+            data={"q": query, "kl": "id-id"},
+        )
+        r.raise_for_status()
+    soup = BeautifulSoup(r.text, "html.parser")
+    results: list[dict] = []
+    for node in soup.select("div.result, div.web-result")[: max_results * 2]:
+        a = node.select_one("a.result__a, h2 a")
+        snippet_el = node.select_one(".result__snippet, .result__body")
+        if not a:
+            continue
+        title = a.get_text(" ", strip=True)
+        href = a.get("href", "").strip()
+        snippet = snippet_el.get_text(" ", strip=True) if snippet_el else ""
+        if href.startswith("//duckduckgo.com/l/") or "duckduckgo.com/l/?uddg=" in href:
+            import urllib.parse as _up
+            qs = _up.parse_qs(_up.urlparse(href if href.startswith("http") else "https:" + href).query)
+            if "uddg" in qs:
+                href = qs["uddg"][0]
+        if title and href.startswith("http"):
+            results.append({"title": title, "url": href, "snippet": snippet[:280], "engine": "ddg"})
+        if len(results) >= max_results:
+            break
+    return results
+
+
+def _ddg_lite_search(query: str, max_results: int, timeout: float = 10.0) -> list[dict]:
+    """DuckDuckGo Lite — fallback ringan."""
+    import httpx
+    from bs4 import BeautifulSoup
+    with httpx.Client(
+        follow_redirects=True, timeout=timeout,
+        headers={"User-Agent": "Mozilla/5.0 (compatible; SIDIX-Agent/2.0)"},
+    ) as client:
+        r = client.get(
+            "https://lite.duckduckgo.com/lite/",
+            params={"q": query},
+        )
+        r.raise_for_status()
+    soup = BeautifulSoup(r.text, "html.parser")
+    results: list[dict] = []
+    # DDG Lite: results di rows alternasi <a class="result-link">
+    for a in soup.select("a.result-link")[:max_results]:
+        title = a.get_text(" ", strip=True)
+        href = a.get("href", "").strip()
+        if title and href.startswith("http"):
+            results.append({"title": title, "url": href, "snippet": "", "engine": "ddg_lite"})
+    return results
+
+
+_WIKI_NOISE_WORDS = {
+    "siapa", "siapakah", "apa", "apakah", "kapan", "dimana", "di", "mana",
+    "bagaimana", "kenapa", "mengapa", "yang", "adalah",
+    "sekarang", "saat", "ini", "hari", "kini", "terbaru", "terkini",
+    "who", "what", "when", "where", "how", "why", "is", "are",
+    "the", "a", "an", "now", "today", "current", "currently", "latest",
+}
+
+
+def _simplify_for_wiki(query: str) -> str:
+    """Sprint 28b: strip interrogatives/time-modifiers/years untuk OpenSearch.
+
+    Wikipedia OpenSearch match TITLES, bukan full-text. Query polluted
+    seperti 'siapa Presiden Indonesia sekarang 2026' return 0 results,
+    sedangkan 'Presiden Indonesia' return 3 hits relevan.
+    """
+    import re as _re
+    tokens = _re.findall(r"\b[\w\-]+\b", (query or "").strip())
+    # Drop noise words (case-insensitive) dan year tokens (4-digit 19xx-21xx)
+    keep = []
+    for t in tokens:
+        tl = t.lower()
+        if tl in _WIKI_NOISE_WORDS:
+            continue
+        if _re.match(r"^(?:19|20|21)\d{2}$", t):
+            continue
+        keep.append(t)
+    return " ".join(keep) if keep else (query or "").strip()
+
+
+def _wikipedia_search(query: str, max_results: int, timeout: float = 10.0) -> list[dict]:
+    """Wikipedia API — fallback factual paling reliable.
+
+    Pakai opensearch endpoint (Wikipedia public, no auth, very stable).
+    Sprint 28b: simplify query first (Wikipedia matches titles, not free text).
+    """
+    import httpx
+    out: list[dict] = []
+    simplified = _simplify_for_wiki(query)
+    # Coba ID dan EN
+    for lang in ("id", "en"):
+        try:
+            with httpx.Client(timeout=timeout) as client:
+                r = client.get(
+                    f"https://{lang}.wikipedia.org/w/api.php",
+                    params={
+                        "action": "opensearch",
+                        "search": simplified,
+                        "limit": max_results,
+                        "namespace": 0,
+                        "format": "json",
+                    },
+                    headers={"User-Agent": "SIDIX-Agent/2.0 (https://sidixlab.com)"},
+                )
+                r.raise_for_status()
+                data = r.json()
+                # opensearch returns: [query, [titles], [descriptions], [urls]]
+                if isinstance(data, list) and len(data) >= 4:
+                    titles = data[1] or []
+                    descs = data[2] or []
+                    urls = data[3] or []
+                    for i, title in enumerate(titles):
+                        if i >= max_results:
+                            break
+                        out.append({
+                            "title": f"{title} - Wikipedia ({lang})",
+                            "url": urls[i] if i < len(urls) else "",
+                            "snippet": (descs[i] if i < len(descs) else "")[:280],
+                            "engine": f"wiki_{lang}",
+                        })
+                if out:
+                    break
+        except Exception:
+            continue
+    return out
+
+
+def _tool_web_search(args: dict) -> ToolResult:
+    """
+    Multi-engine web search untuk SIDIX 2.0 Supermodel reliability:
+
+      Primary  : DuckDuckGo HTML  (12s timeout)
+      Fallback : DuckDuckGo Lite  (10s timeout)
+      Last     : Wikipedia API    (10s timeout, factual fallback)
+
+    Standing-alone: tidak pakai Google/Bing/SerpAPI. Public endpoints saja.
+    Tujuan multi-engine: ConnectTimeout di salah satu engine tidak bikin
+    seluruh query gagal — fallback otomatis ke engine berikutnya.
+
+    Params: query (str, wajib), max_results (int, default 8, max 15).
+    """
+    query = str(args.get("query", "")).strip()
+    if not query:
+        return ToolResult(success=False, output="", error="query wajib diisi")
+    max_results = int(args.get("max_results", _WEB_SEARCH_MAX_RESULTS))
+    max_results = max(1, min(max_results, 15))
+
+    try:
+        import httpx  # noqa: F401
+        from bs4 import BeautifulSoup  # noqa: F401
+    except ImportError as e:
+        return ToolResult(success=False, output="", error=f"dependency tidak terpasang: {e}")
+
+    results: list[dict] = []
+    errors: list[str] = []
+
+    # 1. DuckDuckGo HTML (primary)
+    try:
+        results = _ddg_search(query, max_results, timeout=12.0)
+    except Exception as e:
+        errors.append(f"ddg: {type(e).__name__}")
+
+    # 2. DuckDuckGo Lite (fallback)
+    if not results:
+        try:
+            results = _ddg_lite_search(query, max_results, timeout=10.0)
+        except Exception as e:
+            errors.append(f"ddg_lite: {type(e).__name__}")
+
+    # 3. Wikipedia (last resort, sangat reliable untuk factual)
+    if not results:
+        try:
+            results = _wikipedia_search(query, max_results, timeout=10.0)
+        except Exception as e:
+            errors.append(f"wiki: {type(e).__name__}")
+
+    if not results:
+        err_summary = " | ".join(errors) if errors else "no results"
+        return ToolResult(success=False, output="", error=f"semua engine gagal: {err_summary}")
+
+    engine_used = results[0].get("engine", "?")
+    lines = [f"# Hasil pencarian: {query}  _(engine: {engine_used})_", ""]
+    for i, r in enumerate(results, 1):
+        lines.append(f"{i}. **{r['title']}**")
+        lines.append(f"   {r['url']}")
+        if r.get("snippet"):
+            lines.append(f"   {r['snippet']}")
+        lines.append("")
+    citations = [
+        {"type": "web_search", "url": r["url"], "title": r["title"]}
+        for r in results
+    ]
+    return ToolResult(success=True, output="\n".join(lines), citations=citations)
+
+
+# ── pdf_extract — own stack, extract teks dari PDF file path ───────────────────
+_PDF_MAX_PAGES = 50
+_PDF_MAX_CHARS = 15000
+
+
+def _tool_pdf_extract(args: dict) -> ToolResult:
+    """
+    Ekstrak teks dari file PDF di path lokal (sudah ada di workspace).
+    Standing-alone: pakai pdfplumber (pure Python, MIT license), no cloud OCR.
+    Params: path (str, wajib, harus di workspace root), pages (str, opsional "1-5" atau "3").
+    """
+    path_str = str(args.get("path", "")).strip()
+    if not path_str:
+        return ToolResult(success=False, output="", error="path wajib diisi")
+
+    try:
+        import pdfplumber
+    except ImportError:
+        return ToolResult(
+            success=False, output="",
+            error="dependency pdfplumber belum terpasang di server. Jalankan: pip install pdfplumber",
+        )
+
+    ws_root = get_agent_workspace_root()
+    try:
+        pdf_path = (ws_root / path_str).resolve()
+        if not str(pdf_path).startswith(str(ws_root.resolve())):
+            return ToolResult(success=False, output="", error="path di luar workspace tidak diizinkan")
+        if not pdf_path.exists():
+            return ToolResult(success=False, output="", error=f"file tidak ada: {path_str}")
+        if pdf_path.suffix.lower() != ".pdf":
+            return ToolResult(success=False, output="", error="file harus .pdf")
+    except Exception as e:
+        return ToolResult(success=False, output="", error=f"path tidak valid: {e}")
+
+    # Parse page range
+    pages_spec = str(args.get("pages", "")).strip()
+    page_set: set[int] | None = None
+    if pages_spec:
+        try:
+            page_set = set()
+            for part in pages_spec.split(","):
+                part = part.strip()
+                if "-" in part:
+                    a, b = part.split("-", 1)
+                    for i in range(int(a), int(b) + 1):
+                        page_set.add(i - 1)
+                else:
+                    page_set.add(int(part) - 1)
+        except Exception:
+            return ToolResult(success=False, output="", error=f"format pages tidak valid: '{pages_spec}'")
+
+    try:
+        out_lines: list[str] = []
+        total = 0
+        with pdfplumber.open(pdf_path) as pdf:
+            n_pages = len(pdf.pages)
+            for idx, page in enumerate(pdf.pages):
+                if idx >= _PDF_MAX_PAGES:
+                    out_lines.append(f"\n…(dipotong pada halaman {_PDF_MAX_PAGES})")
+                    break
+                if page_set is not None and idx not in page_set:
+                    continue
+                text = page.extract_text() or ""
+                out_lines.append(f"--- Halaman {idx + 1} ---")
+                out_lines.append(text.strip())
+                total += len(text)
+                if total > _PDF_MAX_CHARS:
+                    out_lines.append(f"\n…(dipotong di ~{_PDF_MAX_CHARS} karakter)")
+                    break
+    except Exception as e:
+        return ToolResult(success=False, output="", error=f"gagal parse PDF: {type(e).__name__}: {e}")
+
+    out = "\n\n".join(out_lines)[: _PDF_MAX_CHARS + 500]
+    return ToolResult(
+        success=True,
+        output=f"# PDF: {path_str} ({n_pages} halaman)\n\n{out}",
+        citations=[{"type": "pdf_extract", "path": path_str, "pages": n_pages}],
+    )
+
+
+# ── concept_graph — knowledge graph traversal over CONCEPT_LEXICON ─────────────
+_CONCEPT_GRAPH_MAX_HOP = 2
+_CONCEPT_GRAPH_MAX_RELATED = 8
+
+
+def _tool_concept_graph(args: dict) -> ToolResult:
+    """
+    Traversal knowledge graph SIDIX (CONCEPT_LEXICON + co-occurrence dari research notes).
+    Differensiator epistemologis: bisa multi-hop reasoning antar konsep IHOS/Maqasid/
+    Sanad/dll. — bukan cuma BM25 polos.
+
+    Params:
+      concept (str, opsional) — nama konsep atau alias (case-insensitive). Kalau None,
+        return top-mentioned concepts + graph stats.
+      depth (int, default 1, max 2) — berapa hop traversal.
+      max_related (int, default 5, max 8) — batas tetangga per konsep.
+
+    Output: markdown dengan konsep target, related (per hop), sumber notes, status impl.
+    """
+    try:
+        from .brain_synthesizer import build_knowledge_graph, _ALIAS_TO_CONCEPT, CONCEPT_LEXICON
+    except Exception as e:
+        return ToolResult(success=False, output="", error=f"synthesizer tidak tersedia: {e}")
+
+    concept_raw = str(args.get("concept", "")).strip()
+    depth = max(1, min(int(args.get("depth", 1)), _CONCEPT_GRAPH_MAX_HOP))
+    max_related = max(1, min(int(args.get("max_related", 5)), _CONCEPT_GRAPH_MAX_RELATED))
+
+    try:
+        graph = build_knowledge_graph()
+    except Exception as e:
+        return ToolResult(success=False, output="", error=f"gagal build graph: {e}")
+
+    nodes = graph.get("nodes", {})
+
+    # Mode A: no concept → summary graph
+    if not concept_raw:
+        total_nodes = graph.get("node_count", 0)
+        total_edges = graph.get("edge_count", 0)
+        implemented = sum(1 for n in nodes.values() if n["impl_status"] == "implemented")
+        missing = sum(1 for n in nodes.values() if n["impl_status"] == "missing")
+        top_mentioned = sorted(nodes.values(), key=lambda n: -n.get("mention_count", 0))[:10]
+        lines = [
+            f"# SIDIX Knowledge Graph",
+            f"- Total konsep: {total_nodes}",
+            f"- Total edge (co-occurrence): {total_edges}",
+            f"- Implemented: {implemented} · Missing: {missing}",
+            "",
+            "## Top 10 konsep paling disebut",
+        ]
+        for n in top_mentioned:
+            status_emoji = {"implemented": "✅", "missing": "❌", "partial": "⚠️"}.get(n["impl_status"], "?")
+            lines.append(f"- {status_emoji} **{n['concept']}** — {n['mention_count']} mention, {len(n['source_notes'])} sumber")
+        return ToolResult(
+            success=True,
+            output="\n".join(lines),
+            citations=[{"type": "concept_graph", "mode": "summary", "total_nodes": total_nodes}],
+        )
+
+    # Mode B: concept query — resolve alias
+    canonical = _ALIAS_TO_CONCEPT.get(concept_raw.lower())
+    if canonical is None:
+        # Coba fuzzy — startswith
+        candidates = [c for c in CONCEPT_LEXICON.keys() if c.lower().startswith(concept_raw.lower())]
+        if candidates:
+            canonical = candidates[0]
+    if canonical is None or canonical not in nodes:
+        available = sorted(CONCEPT_LEXICON.keys())[:20]
+        return ToolResult(
+            success=False, output="",
+            error=f"Konsep '{concept_raw}' tidak ditemukan. Contoh tersedia: {', '.join(available)} ...",
+        )
+
+    # BFS multi-hop
+    visited: set[str] = set()
+    layers: list[list[str]] = [[canonical]]
+    visited.add(canonical)
+    for _ in range(depth):
+        next_layer: list[str] = []
+        for c in layers[-1]:
+            node = nodes.get(c, {})
+            for related in node.get("related", [])[:max_related]:
+                if related not in visited:
+                    visited.add(related)
+                    next_layer.append(related)
+        if not next_layer:
+            break
+        layers.append(next_layer)
+
+    # Build markdown
+    root = nodes[canonical]
+    lines = [f"# Konsep: {canonical}"]
+    status_emoji = {"implemented": "✅", "missing": "❌", "partial": "⚠️"}.get(root["impl_status"], "?")
+    lines.append(f"- Status implementasi: {status_emoji} {root['impl_status']}")
+    lines.append(f"- Mention: {root['mention_count']} di {len(root['source_notes'])} sumber")
+    if root["impl_files"]:
+        lines.append(f"- File impl: {', '.join(root['impl_files'][:3])}")
+    if root["source_notes"]:
+        sources = [Path(p).name for p in root["source_notes"][:5]]
+        lines.append(f"- Notes: {', '.join(sources)}")
+
+    citations = [{
+        "type": "concept_graph", "concept": canonical,
+        "sources": root["source_notes"][:5],
+    }]
+
+    # Hops
+    for i, layer in enumerate(layers[1:], start=1):
+        if not layer:
+            break
+        lines.append(f"\n## Hop {i} (related)")
+        for c in layer[:max_related * 2]:
+            node = nodes.get(c, {})
+            emoji = {"implemented": "✅", "missing": "❌", "partial": "⚠️"}.get(node.get("impl_status"), "?")
+            mention = node.get("mention_count", 0)
+            lines.append(f"- {emoji} **{c}** ({mention} mention)")
+            citations.append({"type": "concept_graph_hop", "concept": c, "depth": i})
+
+    return ToolResult(success=True, output="\n".join(lines), citations=citations)
+
+
+# ── Text-to-image tool (via FLUX.1 local pipeline) ───────────────────────────
+def _tool_text_to_image(args: dict) -> ToolResult:
+    """Generate gambar via FLUX.1 (local) atau mock fallback jika model belum tersedia."""
+    prompt = str(args.get("prompt", "")).strip()
+    if not prompt:
+        return ToolResult(success=False, output="", error="prompt kosong")
+    width = max(512, min(int(args.get("width", 1024)), 1536))
+    height = max(512, min(int(args.get("height", 1024)), 1536))
+    steps = max(1, min(int(args.get("steps", 4)), 50))
+    seed_raw = args.get("seed")
+    seed = int(seed_raw) if seed_raw is not None else None
+    try:
+        sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
+        from apps.image_gen.flux_pipeline import generate_image
+        result = generate_image(prompt=prompt, width=width, height=height, steps=steps, seed=seed)
+        path = result["path"]
+        mode = result["mode"]
+        fname = Path(path).name
+        image_url = f"/generated/images/{fname}"
+        suffix = " *(mock placeholder — install diffusers+torch untuk FLUX.1 nyata)*" if mode == "mock" else f" *(FLUX.1 · {result['model']})*"
+        return ToolResult(
+            success=True,
+            output=f"![Generated image]({image_url})\n\n*Prompt: {prompt}*{suffix}",
+            citations=[{"type": "text_to_image", "url": image_url, "prompt": prompt, "mode": mode}],
+        )
+    except Exception as e:
+        return ToolResult(success=False, output="", error=f"image_gen gagal: {e}")
+
+
+# ── Audio Tools (Jiwa Sprint Phase 4) ────────────────────────────────────────
+
+def _tool_text_to_speech(args: dict) -> ToolResult:
+    """TTS: teks → file audio (Coqui-TTS / pyttsx3). Params: text, voice, lang, out_path."""
+    text = str(args.get("text", "")).strip()
+    if not text:
+        return ToolResult(success=False, output="", error="text wajib diisi")
+    voice = str(args.get("voice", "default")).strip()
+    lang = str(args.get("lang", "id")).strip()
+    out_path = str(args.get("out_path", "tts_out.wav")).strip()
+
+    try:
+        from .audio_capability import synthesize_speech
+        result = synthesize_speech(text=text, voice=voice, lang=lang, out_path=out_path)
+    except Exception as e:
+        return ToolResult(success=False, output="", error=f"TTS error: {e}")
+
+    if not result.get("ok"):
+        return ToolResult(
+            success=False,
+            output="",
+            error=result.get("fallback_instructions", "TTS gagal"),
+        )
+
+    data = result.get("data", {})
+    lines = [
+        "# Text-to-Speech",
+        f"- Backend: {data.get('backend', 'unknown')}",
+        f"- Output: `{data.get('out_path', out_path)}`",
+        f"- Text length: {data.get('text_len', len(text))} chars",
+    ]
+    note = data.get("note", "")
+    if note:
+        lines.append(f"- Note: {note}")
+    return ToolResult(
+        success=True,
+        output="\n".join(lines),
+        citations=[{"type": "text_to_speech", "backend": data.get("backend", ""), "path": data.get("out_path", "")}],
+    )
+
+
+def _tool_speech_to_text(args: dict) -> ToolResult:
+    """ASR: audio → teks (faster-whisper / openai-whisper). Params: path, lang."""
+    path = str(args.get("path", "")).strip()
+    if not path:
+        return ToolResult(success=False, output="", error="path file audio wajib diisi")
+    lang = str(args.get("lang", "id")).strip()
+
+    try:
+        from .audio_capability import transcribe_audio
+        result = transcribe_audio(path=path, lang=lang)
+    except Exception as e:
+        return ToolResult(success=False, output="", error=f"ASR error: {e}")
+
+    if not result.get("ok"):
+        return ToolResult(
+            success=False,
+            output="",
+            error=result.get("fallback_instructions", "ASR gagal"),
+        )
+
+    data = result.get("data", {})
+    segments = data.get("segments", [])
+    lines = [
+        "# Speech-to-Text",
+        f"- Backend: {data.get('backend', 'unknown')}",
+        f"- Language: {data.get('language', lang)}",
+        f"- Duration: {data.get('duration', 'N/A')}s" if "duration" in data else "",
+        "",
+        "## Transcription",
+        data.get("text", ""),
+    ]
+    if segments:
+        lines.append("\n## Segments")
+        for seg in segments[:10]:
+            start = seg.get("start", "")
+            end = seg.get("end", "")
+            text_seg = seg.get("text", "")
+            lines.append(f"[{start}-{end}] {text_seg}")
+    return ToolResult(
+        success=True,
+        output="\n".join(l for l in lines if l),
+        citations=[{"type": "speech_to_text", "backend": data.get("backend", ""), "path": path}],
+    )
+
+
+def _tool_analyze_audio(args: dict) -> ToolResult:
+    """MIR: analisis audio (pitch, tempo, spectral, RMS). Params: path."""
+    path = str(args.get("path", "")).strip()
+    if not path:
+        return ToolResult(success=False, output="", error="path file audio wajib diisi")
+
+    try:
+        from .audio_capability import analyze_audio
+        result = analyze_audio(path=path)
+    except Exception as e:
+        return ToolResult(success=False, output="", error=f"MIR error: {e}")
+
+    if not result.get("ok"):
+        return ToolResult(
+            success=False,
+            output="",
+            error=result.get("fallback_instructions", "MIR gagal"),
+        )
+
+    data = result.get("data", {})
+    lines = [
+        "# Audio Analysis (MIR)",
+        f"- Backend: {data.get('backend', 'unknown')}",
+        f"- Sample rate: {data.get('sample_rate', 'N/A')} Hz",
+        f"- Duration: {data.get('duration_sec', 'N/A')} s",
+        f"- Tempo: {data.get('tempo_bpm', 'N/A')} BPM",
+        f"- Beats: {data.get('n_beats', 'N/A')}",
+        f"- Spectral centroid: {data.get('spectral_centroid_mean', 'N/A')}",
+        f"- RMS energy: {data.get('rms_mean', 'N/A')}",
+        f"- Zero-crossing rate: {data.get('zcr_mean', 'N/A')}",
+    ]
+    return ToolResult(
+        success=True,
+        output="\n".join(l for l in lines if l),
+        citations=[{"type": "analyze_audio", "backend": data.get("backend", ""), "path": path}],
+    )
+
+
+# ── Registry ──────────────────────────────────────────────────────────────────
+
+# ── code_analyze — static AST analysis ───────────────────────────────────────
+
+def _tool_code_analyze(args: dict) -> ToolResult:
+    """Analisis statik kode Python via AST (fungsi, kelas, import, kompleksitas)."""
+    code = str(args.get("code", "")).strip()
+    if not code:
+        return ToolResult(success=False, output="", error="code wajib diisi")
+    if len(code) > 200_000:
+        return ToolResult(success=False, output="", error="code terlalu panjang (max 200KB)")
+
+    filename = str(args.get("filename", "<string>")).strip() or "<string>"
+    verbose = bool(args.get("verbose", False))
+
+    try:
+        from .code_intelligence import analyze_code, format_analysis_text
+        analysis = analyze_code(code, filename=filename)
+        text = format_analysis_text(analysis, verbose=verbose)
+        return ToolResult(
+            success=analysis.syntax_ok,
+            output=text,
+            error=analysis.syntax_error if not analysis.syntax_ok else "",
+            citations=[{"type": "code_analyze", "filename": filename,
+                        "line_count": analysis.line_count,
+                        "fn_count": len(analysis.functions),
+                        "class_count": len(analysis.classes)}],
+        )
+    except Exception as e:
+        return ToolResult(success=False, output="", error=f"code_analyze gagal: {e}")
+
+
+def _tool_code_validate(args: dict) -> ToolResult:
+    """Validasi syntax + security scan untuk Python/JS/TS/SQL/HTML."""
+    code = str(args.get("code", "")).strip()
+    lang = str(args.get("lang", "python")).strip().lower()
+    if not code:
+        return ToolResult(success=False, output="", error="code wajib diisi")
+    try:
+        sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
+        from brain.tools.code_validator import validate_code
+        result = validate_code(code, lang)
+        lines_out: list[str] = [f"## Code Validation — {lang.upper()}\n"]
+        if result.get("valid") is True:
+            lines_out.append("**Status: VALID** — tidak ada syntax error")
+        elif result.get("valid") is False:
+            lines_out.append("**Status: INVALID** — ada error:")
+            for err in result.get("errors", []):
+                ln = f"baris {err['line']}: " if err.get("line") else ""
+                lines_out.append(f"- {ln}{err.get('msg', err)}")
+        else:
+            lines_out.append("**Status: SKIP** — validator tidak tersedia untuk bahasa ini")
+        if result.get("warnings"):
+            lines_out.append("\n**Warnings:**")
+            for w in result["warnings"]:
+                lines_out.append(f"- {w}")
+        if result.get("security"):
+            lines_out.append("\n**Security Scan — ada pola berbahaya:**")
+            for s in result["security"]:
+                lines_out.append(f"- [{s['severity'].upper()}] `{s['pattern']}` — {s['msg']}")
+        return ToolResult(
+            success=result.get("valid") is not False,
+            output="\n".join(lines_out),
+            citations=[{"type": "code_validate", "lang": lang, "valid": result.get("valid"),
+                        "errors": len(result.get("errors", [])), "security_flags": len(result.get("security", []))}],
+        )
+    except Exception as e:
+        return ToolResult(success=False, output="", error=f"code_validate gagal: {e}")
+
+
+def _tool_project_map(args: dict) -> ToolResult:
+    """Tampilkan struktur folder sebagai tree (default: workspace root)."""
+    from .code_intelligence import get_project_map
+
+    path_str = str(args.get("path", "")).strip()
+    depth = int(args.get("depth", 3))
+    depth = max(1, min(depth, 5))
+
+    if path_str:
+        root = Path(path_str)
+        if not root.is_absolute():
+            # Coba: workspace-relative → repo-relative → cwd-relative
+            candidates = [
+                _agent_workspace_root() / path_str,
+                _repo_root() / path_str,
+                Path.cwd() / path_str,
+            ]
+            root = next((c for c in candidates if c.exists()), candidates[0])
+    else:
+        root = _agent_workspace_root()
+
+    try:
+        tree = get_project_map(root, max_depth=depth, max_files=150)
+        return ToolResult(
+            success=True,
+            output=f"# Project Map: {root}\n\n```\n{tree}\n```",
+            citations=[{"type": "project_map", "root": str(root), "depth": depth}],
+        )
+    except Exception as e:
+        return ToolResult(success=False, output="", error=f"project_map gagal: {e}")
+
+
+def _tool_self_inspect(args: dict) -> ToolResult:
+    """Introspeksi diri: list tool registry dan/atau modul brain_qa."""
+    target = str(args.get("target", "all")).strip().lower()
+
+    lines: list[str] = ["# SIDIX Self-Inspect\n"]
+
+    if target in ("tools", "all"):
+        tools = list_available_tools()
+        lines.append(f"## Tool Registry ({len(tools)} tools)\n")
+        for t in tools:
+            perm_mark = "" if t["permission"] == "open" else f" [{t['permission']}]"
+            params_str = ", ".join(t["params"]) if t["params"] else "(no params)"
+            lines.append(f"### {t['name']}{perm_mark}")
+            desc_short = t["description"][:120].replace("\n", " ")
+            lines.append(f"  Params: {params_str}")
+            lines.append(f"  {desc_short}")
+            lines.append("")
+
+    if target in ("modules", "all"):
+        try:
+            from .code_intelligence import get_self_modules
+            modules = get_self_modules()
+            lines.append(f"\n## Modul brain_qa ({len(modules)} modul)\n")
+            for m in modules:
+                lines.append(f"- {m['name']}  ({m['size_lines']} baris)")
+        except Exception as e:
+            lines.append(f"\n[WARN] gagal load modul list: {e}")
+
+    return ToolResult(
+        success=True,
+        output="\n".join(lines),
+        citations=[{"type": "self_inspect", "target": target}],
+    )
+
+
+def _tool_scaffold_project(args: dict) -> ToolResult:
+    """Generate scaffold folder + file boilerplate untuk project baru."""
+    project_name = str(args.get("project_name", "")).strip()
+    template = str(args.get("template", "fastapi")).strip().lower()
+    if not project_name:
+        return ToolResult(success=False, output="", error="project_name wajib diisi")
+    try:
+        sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
+        from brain.tools.scaffold_generator import scaffold, list_templates
+        result = scaffold(project_name, template)
+        lines_out: list[str] = [
+            f"# Scaffold: {project_name} ({template})\n",
+            f"**{len(result.files)} file akan dibuat:**\n",
+        ]
+        for f in result.files:
+            desc = f" — {f.description}" if f.description else ""
+            lines_out.append(f"- `{f.path}`{desc}")
+        if result.setup_commands:
+            lines_out.append("\n**Setup commands:**")
+            for cmd in result.setup_commands:
+                lines_out.append(f"```\n{cmd}\n```")
+        if result.notes:
+            lines_out.append("\n**Notes:**")
+            for note in result.notes:
+                lines_out.append(f"- {note}")
+        lines_out.append(f"\n*Template tersedia: {', '.join(list_templates())}*")
+        return ToolResult(
+            success=True,
+            output="\n".join(lines_out),
+            citations=[{"type": "scaffold", "template": template, "project": project_name,
+                        "file_count": len(result.files), "files": [f.path for f in result.files]}],
+        )
+    except ValueError as e:
+        return ToolResult(success=False, output="", error=str(e))
+    except Exception as e:
+        return ToolResult(success=False, output="", error=f"scaffold gagal: {e}")
+
+
+def _tool_social_radar(args: dict) -> ToolResult:
+    """
+    Analisis tren dan sentimen sosial media untuk query tertentu.
+    Menggunakan web_search (DuckDuckGo) + sentiment rule-based + keyword extraction.
+    Standing-alone: tidak butuh API Twitter/Instagram berbayar.
+    Params: query (str, wajib), max_results (int, default 8).
+    """
+    query = str(args.get("query", "")).strip()
+    if not query:
+        return ToolResult(success=False, output="", error="query wajib diisi")
+
+    max_results = int(args.get("max_results", 8))
+    max_results = max(1, min(max_results, 15))
+
+    # Lazy import modul social_radar
+    try:
+        from .tools.social_radar import analyze_social_signals, format_report
+    except ImportError as e:
+        return ToolResult(
+            success=False, output="",
+            error=f"Modul social_radar tidak tersedia: {e}",
+        )
+
+    # Search web dengan query yang diperluas ke sosmed
+    search_query = f"{query} site:twitter.com OR site:instagram.com OR site:tiktok.com OR trending"
+    search_args = {"query": search_query, "max_results": max_results}
+    search_result = _tool_web_search(search_args)
+
+    # Parse output string dari _tool_web_search menjadi list dict
+    raw_results: list[dict] = []
+    if search_result.success and search_result.output:
+        for line in search_result.output.split("\n"):
+            line = line.strip()
+            if not line:
+                continue
+            # Format output web_search: "N. Title — snippet\n   URL: ..."
+            # Tangkap apapun sebagai title untuk sentiment analysis
+            raw_results.append({"title": line, "snippet": "", "url": ""})
+
+    # Jika ada citations dari web_search, gunakan itu sebagai raw_results yang lebih terstruktur
+    if search_result.citations:
+        structured: list[dict] = []
+        for cit in search_result.citations:
+            if isinstance(cit, dict) and cit.get("title"):
+                structured.append({
+                    "title": str(cit.get("title", "")),
+                    "snippet": str(cit.get("snippet", "")),
+                    "url": str(cit.get("url", "")),
+                })
+        if structured:
+            raw_results = structured
+
+    # Fallback graceful jika search gagal
+    if not raw_results and not search_result.success:
+        # Tetap lanjut dengan data kosong, jangan crash
+        raw_results = []
+
+    try:
+        signal = analyze_social_signals(query, raw_results)
+        report = format_report(signal)
+    except Exception as e:
+        return ToolResult(
+            success=False, output="",
+            error=f"Analisis social_radar gagal: {e}",
+        )
+
+    return ToolResult(
+        success=True,
+        output=report,
+        citations=[{
+            "type": "social_radar",
+            "query": query,
+            "sentiment": signal.sentiment,
+            "sentiment_score": signal.sentiment_score,
+            "volume": signal.estimated_volume,
+            "platforms": signal.platform_hints,
+            "keywords": signal.trending_keywords[:5],
+        }],
+    )
+
+
+def _tool_graph_search(args: dict) -> ToolResult:
+    """
+    Cari konsep terkait via GraphRAG + rank hasil dengan sanad chain.
+
+    Graph dibangun dari co-occurrence konsep di research notes (heading + bold text).
+    Hasil di-rank berdasarkan sanad score (cross-reference + note maturity + epistemic label).
+
+    Params:
+      query (str, wajib) — topik atau konsep yang dicari
+      top_k (int, default 5) — jumlah konsep terkait yang dikembalikan
+    """
+    query = str(args.get("query", "")).strip()
+    if not query:
+        return ToolResult(success=False, output="", error="query wajib diisi")
+    top_k = max(1, min(int(args.get("top_k", 5)), 20))
+
+    try:
+        from .graph_rag import load_or_build_graph, find_related_concepts, format_sanad_chain
+        from pathlib import Path as _Path
+    except ImportError as e:
+        return ToolResult(success=False, output="", error=f"graph_rag tidak tersedia: {e}")
+
+    corpus_dir = _Path(__file__).parent.parent.parent.parent / "brain" / "public" / "research_notes"
+
+    try:
+        graph = load_or_build_graph(corpus_dir)
+    except Exception as e:
+        return ToolResult(success=False, output="", error=f"gagal load graph: {e}")
+
+    related = find_related_concepts(query, graph, top_k=top_k)
+
+    if not related:
+        return ToolResult(
+            success=True,
+            output=f"[UNKNOWN] Tidak ditemukan konsep terkait '{query}' di graph corpus.",
+        )
+
+    result_dicts = [
+        {
+            "concept": c.concept,
+            "sources": c.source_notes,
+            "frequency": c.frequency,
+        }
+        for c in related
+    ]
+
+    output = format_sanad_chain(result_dicts)
+    citations = [
+        {
+            "type": "graph_search",
+            "concept": c.concept,
+            "frequency": c.frequency,
+            "source_count": len(c.source_notes),
+        }
+        for c in related
+    ]
+    return ToolResult(success=True, output=output, citations=citations)
+
+
+TOOL_REGISTRY: dict[str, ToolSpec] = {
+    "search_corpus": ToolSpec(
+        name="search_corpus",
+        description=(
+            "Cari informasi di knowledge corpus SIDIX menggunakan BM25. "
+            "Gunakan ini untuk: pertanyaan faktual, referensi dokumen, riset topik. "
+            "Params: query (str, wajib), k (int, default 5), persona (str, default INAN)."
+        ),
+        params=["query", "k", "persona"],
+        permission="open",
+        fn=_tool_search_corpus,
+    ),
+    "read_chunk": ToolSpec(
+        name="read_chunk",
+        description=(
+            "Baca isi lengkap satu chunk dari corpus berdasarkan chunk_id. "
+            "Gunakan setelah search_corpus untuk baca konten penuh suatu sumber. "
+            "Params: chunk_id (str, wajib)."
+        ),
+        params=["chunk_id"],
+        permission="open",
+        fn=_tool_read_chunk,
+    ),
+    "list_sources": ToolSpec(
+        name="list_sources",
+        description=(
+            "Tampilkan semua dokumen sumber yang tersedia di corpus. "
+            "Gunakan untuk orientasi sebelum search. Tidak butuh params."
+        ),
+        params=[],
+        permission="open",
+        fn=_tool_list_sources,
+    ),
+    "calculator": ToolSpec(
+        name="calculator",
+        description=(
+            "Hitung ekspresi matematika sederhana. "
+            "Params: expression (str, contoh: '100 * 0.03 + 50')."
+        ),
+        params=["expression"],
+        permission="open",
+        fn=_tool_calculator,
+    ),
+    "search_web_wikipedia": ToolSpec(
+        name="search_web_wikipedia",
+        description=(
+            "Jika corpus tidak cukup: cari ringkasan di Wikipedia (API resmi, host id/en saja). "
+            "Params: query (str, wajib), lang (str, 'id' atau 'en', default 'id')."
+        ),
+        params=["query", "lang"],
+        permission="open",
+        fn=_tool_search_web_wikipedia,
+    ),
+    "orchestration_plan": ToolSpec(
+        name="orchestration_plan",
+        description=(
+            "Bangun rencana orkestrasi agen (archetype + bobot satelit + urutan fase) dari teks pertanyaan. "
+            "Deterministik; cocok untuk meta-tanya orkestrasi / multi-agent. "
+            "Params: question (wajib), persona (opsional, default INAN)."
+        ),
+        params=["question", "persona"],
+        permission="open",
+        fn=_tool_orchestration_plan,
+    ),
+    "workspace_list": ToolSpec(
+        name="workspace_list",
+        description=(
+            "List isi folder sandbox agen (path relatif ke agent_workspace). "
+            "Gunakan untuk mode implementasi: lihat file yang sudah ada sebelum menulis. "
+            "Params: path (opsional, default akar), max_entries (opsional)."
+        ),
+        params=["path", "max_entries"],
+        permission="open",
+        fn=_tool_workspace_list,
+    ),
+    "workspace_read": ToolSpec(
+        name="workspace_read",
+        description=(
+            "Baca satu file teks di sandbox agen (path relatif). Ekstensi terbatas (.py, .md, ...). "
+            "Params: path (wajib)."
+        ),
+        params=["path"],
+        permission="open",
+        fn=_tool_workspace_read,
+    ),
+    "workspace_write": ToolSpec(
+        name="workspace_write",
+        description=(
+            "Tulis/overwrite file teks di sandbox agen. Hanya di bawah agent_workspace; "
+            "RESTRICTED — klien harus set allow_restricted=true. Params: path (wajib), content (wajib)."
+        ),
+        params=["path", "content"],
+        permission="restricted",
+        fn=_tool_workspace_write,
+    ),
+    "workspace_patch": ToolSpec(
+        name="workspace_patch",
+        description=(
+            "Apply unified diff/patch ke file existing di sandbox agen. "
+            "Lebih aman dari workspace_write untuk edit sebagian kecil file (refactor, fix bug, tambah fungsi). "
+            "RESTRICTED — klien harus set allow_restricted=true. "
+            "Params: path (wajib, relatif), patch (wajib, unified diff format)."
+        ),
+        params=["path", "patch"],
+        permission="restricted",
+        fn=_tool_workspace_patch,
+    ),
+    "roadmap_list": ToolSpec(
+        name="roadmap_list",
+        description=(
+            "List roadmap.sh slugs yang tersedia di snapshot lokal repo. "
+            "Gunakan untuk mulai sesi belajar mandiri berbasis roadmap. Tidak butuh params."
+        ),
+        params=[],
+        permission="open",
+        fn=_tool_roadmap_list,
+    ),
+    "roadmap_next_items": ToolSpec(
+        name="roadmap_next_items",
+        description=(
+            "Ambil item checklist berikutnya dari roadmap tertentu (berdasarkan progress lokal). "
+            "Params: slug (wajib), n (int, default 10)."
+        ),
+        params=["slug", "n"],
+        permission="open",
+        fn=_tool_roadmap_next_items,
+    ),
+    "roadmap_mark_done": ToolSpec(
+        name="roadmap_mark_done",
+        description=(
+            "Tandai item checklist roadmap sebagai selesai (disimpan di index_dir/roadmap_progress.json). "
+            "Params: slug (wajib), items (list[str] atau string newline-separated)."
+        ),
+        params=["slug", "items"],
+        permission="open",
+        fn=_tool_roadmap_mark_done,
+    ),
+    "roadmap_item_references": ToolSpec(
+        name="roadmap_item_references",
+        description=(
+            "Buat daftar referensi URL publik untuk satu item roadmap. "
+            "Gunakan untuk SIDIX belajar sendiri: roadmap page + GitHub search + TheAlgorithms code search. "
+            "Params: slug (wajib), item (wajib), lang (opsional)."
+        ),
+        params=["slug", "item", "lang"],
+        permission="open",
+        fn=_tool_roadmap_item_references,
+    ),
+    "web_fetch": ToolSpec(
+        name="web_fetch",
+        description=(
+            "Fetch halaman web publik (HTTP/HTTPS) → teks bersih (HTML di-strip). "
+            "Gunakan jika corpus + Wikipedia kurang, untuk baca dokumentasi/artikel. "
+            "Params: url (str, wajib, http/https), max_chars (int, default 6000)."
+        ),
+        params=["url", "max_chars"],
+        permission="open",
+        fn=_tool_web_fetch,
+    ),
+    "browser_fetch": ToolSpec(
+        name="browser_fetch",
+        description=(
+            "Sigma-1H: Fetch URL dengan structured extraction — lebih kaya dari web_fetch. "
+            "Ekstrak: title, main article text (prioritas <article>/<main>), meta description, "
+            "OG data, tanggal publish. Cocok untuk artikel berita, blog, dokumentasi panjang. "
+            "Params: url (wajib), max_chars (default 8000), include_meta (bool, default true)."
+        ),
+        params=["url", "max_chars", "include_meta"],
+        permission="open",
+        fn=_tool_browser_fetch,
+    ),
+    "social_search": ToolSpec(
+        name="social_search",
+        description=(
+            "Sigma-1H: Cari di platform sosial — Reddit (diskusi/opini komunitas) + YouTube (video). "
+            "No API key. Standing-alone: urllib only. "
+            "Params: query (wajib), platform ('reddit'|'youtube'|'all', default 'reddit'), "
+            "max_results (default 5)."
+        ),
+        params=["query", "platform", "max_results"],
+        permission="open",
+        fn=_tool_social_search,
+    ),
+    "code_sandbox": ToolSpec(
+        name="code_sandbox",
+        description=(
+            "Jalankan snippet Python (komputasi murni, no IO sistem) di subprocess terisolasi. "
+            "Cocok untuk: hitung, transformasi data, simulasi, parse teks. Timeout 10 detik. "
+            "Params: code (str, Python source). Return: stdout + stderr."
+        ),
+        params=["code"],
+        permission="open",
+        fn=_tool_code_sandbox,
+    ),
+    "web_search": ToolSpec(
+        name="web_search",
+        description=(
+            "Cari web umum via DuckDuckGo HTML (own parser, no API vendor). "
+            "Gunakan untuk pencarian luas, baru, atau yang tidak tercakup corpus/Wikipedia. "
+            "Params: query (str, wajib), max_results (int, default 8, max 15). "
+            "Return: daftar judul + URL + snippet."
+        ),
+        params=["query", "max_results"],
+        permission="open",
+        fn=_tool_web_search,
+    ),
+    "pdf_extract": ToolSpec(
+        name="pdf_extract",
+        description=(
+            "Ekstrak teks dari PDF file di workspace (pdfplumber own-stack). "
+            "Cocok setelah user upload PDF untuk dianalisis. "
+            "Params: path (wajib, relatif workspace root), pages (opsional, '1-5' atau '3,7')."
+        ),
+        params=["path", "pages"],
+        permission="open",
+        fn=_tool_pdf_extract,
+    ),
+    "concept_graph": ToolSpec(
+        name="concept_graph",
+        description=(
+            "Traversal knowledge graph SIDIX (IHOS/Sanad/Maqasid/dll.) — multi-hop reasoning "
+            "lintas konsep berdasar CONCEPT_LEXICON + co-occurrence di research notes. "
+            "Gunakan untuk: relasi antar konsep, status implementasi, sumber note terkait. "
+            "Params: concept (str opsional — nama/alias), depth (int 1-2, default 1), "
+            "max_related (int 1-8, default 5). Kosong = summary graph."
+        ),
+        params=["concept", "depth", "max_related"],
+        permission="open",
+        fn=_tool_concept_graph,
+    ),
+    "text_to_image": ToolSpec(
+        name="text_to_image",
+        description=(
+            "Generate gambar dari prompt teks via FLUX.1-schnell (local, no GPU needed for mock). "
+            "Graceful degradation: FLUX.1 → mock SVG placeholder. "
+            "Params: prompt (str wajib), steps (int 1-50 default 4), width/height (int 512-1536 default 1024), seed (int opsional)."
+        ),
+        params=["prompt", "steps", "width", "height", "seed"],
+        permission="open",
+        fn=_tool_text_to_image,
+    ),
+    "generate_copy": ToolSpec(
+        name="generate_copy",
+        description=(
+            "Generate copy/caption kreatif siap pakai (3 varian) dengan formula AIDA/PAS/FAB "
+            "dan quality gate CQF. Params: topic (wajib), channel, formula, audience, cta, tone."
+        ),
+        params=["topic", "channel", "formula", "audience", "cta", "tone", "variant_count", "min_score"],
+        permission="open",
+        fn=_tool_generate_copy,
+    ),
+    "generate_content_plan": ToolSpec(
+        name="generate_content_plan",
+        description=(
+            "Generate kalender konten (JSON) sesuai niche + channel + durasi. "
+            "Params: niche (wajib), target_audience, duration_days, channel, cadence_per_week, objective."
+        ),
+        params=["niche", "target_audience", "duration_days", "channel", "cadence_per_week", "objective"],
+        permission="open",
+        fn=_tool_generate_content_plan,
+    ),
+    "generate_brand_kit": ToolSpec(
+        name="generate_brand_kit",
+        description=(
+            "Generate brand kit: archetype, palette, tone, onlyness, golden circle, logo prompts. "
+            "Params: business_name (wajib), niche (wajib), target_audience, vibe, archetype."
+        ),
+        params=["business_name", "niche", "target_audience", "vibe", "archetype"],
+        permission="open",
+        fn=_tool_generate_brand_kit,
+    ),
+    "generate_thumbnail": ToolSpec(
+        name="generate_thumbnail",
+        description=(
+            "Generate rencana thumbnail (prompt + overlay + visual notes), opsional render image. "
+            "Params: title (wajib), style, platform, brand_hint, render(bool), steps."
+        ),
+        params=["title", "style", "platform", "brand_hint", "render", "steps"],
+        permission="open",
+        fn=_tool_generate_thumbnail,
+    ),
+    "plan_campaign": ToolSpec(
+        name="plan_campaign",
+        description=(
+            "Buat strategi campaign AARRR lengkap timeline + KPI. "
+            "Params: product (wajib), audience (wajib), goal, budget_idr, duration_days, platform_focus."
+        ),
+        params=["product", "audience", "goal", "budget_idr", "duration_days", "platform_focus"],
+        permission="open",
+        fn=_tool_plan_campaign,
+    ),
+    "generate_ads": ToolSpec(
+        name="generate_ads",
+        description=(
+            "Generate 3-5 varian ad copy + image prompt untuk FB/Google/TikTok dengan CQF ranking. "
+            "Params: product (wajib), audience (wajib), platform, objective, n_variants."
+        ),
+        params=["product", "audience", "platform", "objective", "n_variants"],
+        permission="open",
+        fn=_tool_generate_ads,
+    ),
+    "muhasabah_refine": ToolSpec(
+        name="muhasabah_refine",
+        description=(
+            "Jalankan loop Niyah-Amal-Muhasabah untuk refine output sampai score CQF minimum. "
+            "Params: brief, initial_output, domain, max_rounds, min_score."
+        ),
+        params=["brief", "initial_output", "domain", "max_rounds", "min_score"],
+        permission="open",
+        fn=_tool_muhasabah_refine,
+    ),
+    "code_analyze": ToolSpec(
+        name="code_analyze",
+        description=(
+            "Analisis kode Python secara statik (AST): list fungsi, kelas, import, kompleksitas. "
+            "TIDAK menjalankan kode — aman dan cepat. "
+            "Params: code (str Python wajib), filename (str opsional), verbose (bool opsional)."
+        ),
+        params=["code", "filename", "verbose"],
+        permission="open",
+        fn=_tool_code_analyze,
+    ),
+    "code_validate": ToolSpec(
+        name="code_validate",
+        description=(
+            "Validasi syntax kode + security scan. Bahasa: python (AST), javascript (node), typescript (tsc), sql (quote balance), html (tag balance). "
+            "Params: code (str wajib), lang (str: python|javascript|typescript|sql|html, default python)."
+        ),
+        params=["code", "lang"],
+        permission="open",
+        fn=_tool_code_validate,
+    ),
+    "scaffold_project": ToolSpec(
+        name="scaffold_project",
+        description=(
+            "Generate scaffold struktur folder + file boilerplate untuk project baru. "
+            "Templates: fastapi (Python FastAPI), react_ts (React+TypeScript+Tailwind), landing (static HTML). "
+            "Params: project_name (str wajib), template (str: fastapi|react_ts|landing, default fastapi)."
+        ),
+        params=["project_name", "template"],
+        permission="open",
+        fn=_tool_scaffold_project,
+    ),
+    "project_map": ToolSpec(
+        name="project_map",
+        description=(
+            "Tampilkan struktur folder proyek sebagai tree (seperti `tree` command). "
+            "Gunakan untuk orientasi sebelum baca/tulis file. "
+            "Params: path (str opsional, default workspace root), depth (int 1-5, default 3)."
+        ),
+        params=["path", "depth"],
+        permission="open",
+        fn=_tool_project_map,
+    ),
+    "self_inspect": ToolSpec(
+        name="self_inspect",
+        description=(
+            "Introspeksi diri SIDIX: list semua tool yang tersedia + list modul brain_qa. "
+            "Gunakan untuk meta-reasoning: 'tool apa yang ada?', 'modul apa yang SIDIX punya?'. "
+            "Params: target (str: 'tools'|'modules'|'all', default 'all')."
+        ),
+        params=["target"],
+        permission="open",
+        fn=_tool_self_inspect,
+    ),
+    # ── Sprint 5 Tools ─────────────────────────────────────────────────────────
+    "curator_run": ToolSpec(
+        name="curator_run",
+        description=(
+            "Jalankan curation pipeline untuk export JSONL training pairs dari corpus. "
+            "Scoring: relevance×sanad×maqashid×dedupe. "
+            "Params: min_score (float, default 0.45), dry_run (bool, default false)."
+        ),
+        params=["min_score", "dry_run"],
+        permission="open",
+        fn=_tool_curator_run,
+    ),
+    "debate_ring": ToolSpec(
+        name="debate_ring",
+        description=(
+            "Jalankan multi-agent debate antara Creator dan Critic untuk memperbaiki konten. "
+            "Pair tersedia: copy_vs_strategy, brand_vs_design, hook_vs_audience. "
+            "Params: pair_type (str), content (str, wajib), context (str opsional)."
+        ),
+        params=["pair_type", "content", "context"],
+        permission="open",
+        fn=_tool_debate_ring,
+    ),
+    "agency_kit": ToolSpec(
+        name="agency_kit",
+        description=(
+            "Build Agency Kit lengkap dalam 1 panggilan: brand kit + 10 captions + "
+            "30-day plan + campaign + ads + thumbnails. "
+            "Params: business_name (str, wajib), niche (str, wajib), "
+            "target_audience (str, opsional), budget (str opsional, default '1.5jt')."
+        ),
+        params=["business_name", "niche", "target_audience", "budget"],
+        permission="open",
+        fn=_tool_agency_kit,
+    ),
+    "llm_judge": ToolSpec(
+        name="llm_judge",
+        description=(
+            "Evaluasi kualitas konten menggunakan LLM-as-Judge. Lebih eksplisit dan "
+            "dapat-diaudit daripada CQF heuristic saja. "
+            "Params: content (str, wajib), brief (str opsional), "
+            "domain (str: content|brand|campaign|design, default 'content')."
+        ),
+        params=["content", "brief", "domain"],
+        permission="open",
+        fn=_tool_llm_judge,
+    ),
+    "prompt_optimizer": ToolSpec(
+        name="prompt_optimizer",
+        description=(
+            "Optimalkan prompt template agent secara otomatis berdasarkan accepted outputs "
+            "(Self-Evolution Level 1). Analisis pola output terbaik → ekstrak few-shot demos "
+            "→ inject ke template → evaluasi improvement. "
+            "Parameter: agent (str: copywriter/brand_builder/campaign_strategist/content_planner/ads_generator), "
+            "domain (str: content|brand|campaign, default content), "
+            "force (bool, override min-sample check), dry_run (bool, simulasi tanpa simpan)."
+        ),
+        params=["agent", "domain", "force", "dry_run"],
+        permission="restricted",
+        fn=_tool_prompt_optimizer,
+    ),
+    "social_radar": ToolSpec(
+        name="social_radar",
+        description=(
+            "Analisis tren dan sentimen sosial media untuk query tertentu. "
+            "Menggunakan web_search public (DuckDuckGo) + sentiment rule-based + keyword extraction. "
+            "Tidak butuh API berbayar Twitter/Instagram. Cocok untuk: riset tren, analisis sentimen "
+            "brand, monitoring topik, persiapan konten sosmed. "
+            "Params: query (str, wajib), max_results (int, default 8)."
+        ),
+        params=["query", "max_results"],
+        permission="open",
+        fn=_tool_social_radar,
+    ),
+    "graph_search": ToolSpec(
+        name="graph_search",
+        description=(
+            "Cari konsep terkait via GraphRAG — graph co-occurrence konsep dari 196+ research notes SIDIX. "
+            "Hasil di-rank berdasarkan sanad chain: cross-reference antar note + maturity score + "
+            "epistemic label (FACT/OPINION/SPECULATION/UNKNOWN). "
+            "Differensiator utama SIDIX: jawaban punya chain of sources yang bisa diverifikasi. "
+            "Params: query (str, wajib), top_k (int, default 5, max 20)."
+        ),
+        params=["query", "top_k"],
+        permission="open",
+        fn=_tool_graph_search,
+    ),
+    # ── Coding Agent Phase 2: shell / test / git ─────────────────────────────
+    "shell_run": ToolSpec(
+        name="shell_run",
+        description=(
+            "Jalankan shell command di agent_workspace (sandbox). "
+            "RESTRICTED — butuh allow_restricted=true. "
+            "Security scanner aktif: command destruktif / credential-leaking diblokir. "
+            "Params: command (str, wajib), cwd (str, opsional — relatif ke workspace)."
+        ),
+        params=["command", "cwd"],
+        permission="restricted",
+        fn=_tool_shell_run,
+    ),
+    "test_run": ToolSpec(
+        name="test_run",
+        description=(
+            "Jalankan test suite di project (auto-detect: pytest/unittest/jest/vitest/cargo/go test). "
+            "Berguna untuk verifikasi kode sebelum commit. "
+            "Params: path (str, opsional), framework (str, opsional)."
+        ),
+        params=["path", "framework"],
+        permission="open",
+        fn=_tool_test_run,
+    ),
+    "git_status": ToolSpec(
+        name="git_status",
+        description=(
+            "Lihat git status di workspace — file mana yang berubah, staged, untracked. "
+            "Read-only, aman digunakan tanpa allow_restricted. "
+            "Params: path (str, opsional)."
+        ),
+        params=["path"],
+        permission="open",
+        fn=_tool_git_status,
+    ),
+    "git_diff": ToolSpec(
+        name="git_diff",
+        description=(
+            "Lihat git diff di workspace — perubahan yang belum di-commit. "
+            "Params: path (str, opsional), staged (bool, default False), stat_only (bool, default False)."
+        ),
+        params=["path", "staged", "stat_only"],
+        permission="open",
+        fn=_tool_git_diff,
+    ),
+    "git_log": ToolSpec(
+        name="git_log",
+        description=(
+            "Lihat git log (commit history). "
+            "Params: path (str, opsional), n (int, default 10, max 50)."
+        ),
+        params=["path", "n"],
+        permission="open",
+        fn=_tool_git_log,
+    ),
+    "git_commit_helper": ToolSpec(
+        name="git_commit_helper",
+        description=(
+            "Generate commit message yang tepat dari git diff menggunakan LLM lokal. "
+            "Membantu developer buat commit message berkualitas secara otomatis. "
+            "Params: path (str, opsional), style (str: conventional/semantic/simple, default conventional)."
+        ),
+        params=["path", "style"],
+        permission="open",
+        fn=_tool_git_commit_helper,
+    ),
+    # ── Audio Tools (Jiwa Sprint Phase 4) ────────────────────────────────────
+    "text_to_speech": ToolSpec(
+        name="text_to_speech",
+        description=(
+            "Sintesis teks menjadi file audio (TTS). Prioritas: Coqui-TTS XTTS v2 → pyttsx3 fallback. "
+            "Params: text (str, wajib), voice (str, default 'default'), lang (str, default 'id'), out_path (str, default 'tts_out.wav')."
+        ),
+        params=["text", "voice", "lang", "out_path"],
+        permission="open",
+        fn=_tool_text_to_speech,
+    ),
+    "speech_to_text": ToolSpec(
+        name="speech_to_text",
+        description=(
+            "Transkripsi audio menjadi teks (ASR). Prioritas: faster-whisper → openai-whisper. "
+            "Params: path (str, wajib — path file audio), lang (str, default 'id')."
+        ),
+        params=["path", "lang"],
+        permission="open",
+        fn=_tool_speech_to_text,
+    ),
+    "analyze_audio": ToolSpec(
+        name="analyze_audio",
+        description=(
+            "Analisis fitur audio (MIR): tempo, pitch, spectral centroid, RMS, zero-crossing rate. "
+            "Butuh librosa. Params: path (str, wajib — path file audio)."
+        ),
+        params=["path"],
+        permission="open",
+        fn=_tool_analyze_audio,
+    ),
+}
+
+
+# ── Permission Gate ───────────────────────────────────────────────────────────
+
+def call_tool(
+    *,
+    tool_name: str,
+    args: dict,
+    session_id: str,
+    step: int,
+    allow_restricted: bool = False,
+) -> ToolResult:
+    """
+    Entry point utama untuk memanggil tool.
+    Permission gate + audit log terpusat di sini.
+    """
+    spec = TOOL_REGISTRY.get(tool_name)
+
+    # Tool tidak dikenal
+    if spec is None:
+        _log_tool_call(
+            tool_name=tool_name, args=args,
+            result_summary="REJECTED: tool tidak dikenal",
+            approved=False, session_id=session_id, step=step,
+        )
+        return ToolResult(
+            success=False, output="",
+            error=f"Tool '{tool_name}' tidak ada di registry. Tools tersedia: {list(TOOL_REGISTRY.keys())}",
+        )
+
+    # Permission check
+    if spec.permission == "disabled":
+        _log_tool_call(
+            tool_name=tool_name, args=args,
+            result_summary="REJECTED: tool disabled",
+            approved=False, session_id=session_id, step=step,
+        )
+        return ToolResult(success=False, output="", error=f"Tool '{tool_name}' dinonaktifkan")
+
+    if spec.permission == "restricted" and not allow_restricted:
+        _log_tool_call(
+            tool_name=tool_name, args=args,
+            result_summary="REJECTED: restricted, butuh allow_restricted=True",
+            approved=False, session_id=session_id, step=step,
+        )
+        return ToolResult(
+            success=False, output="",
+            error=f"Tool '{tool_name}' adalah restricted tool. Butuh izin eksplisit.",
+        )
+
+    # Execute
+    try:
+        result = spec.fn(args)
+    except Exception as e:
+        result = ToolResult(success=False, output="", error=f"Exception: {e}")
+
+    # Audit log
+    _log_tool_call(
+        tool_name=tool_name,
+        args=args,
+        result_summary=result.output[:200] if result.success else f"ERROR: {result.error}",
+        approved=True,
+        session_id=session_id,
+        step=step,
+    )
+
+    return result
+
+
+def list_available_tools(permission_filter: str | None = None) -> list[dict]:
+    """Return daftar tool yang tersedia (untuk prompt agent)."""
+    out = []
+    for name, spec in TOOL_REGISTRY.items():
+        if permission_filter and spec.permission != permission_filter:
+            continue
+        out.append({
+            "name": name,
+            "description": spec.description,
+            "params": spec.params,
+            "permission": spec.permission,
+        })
+    return out

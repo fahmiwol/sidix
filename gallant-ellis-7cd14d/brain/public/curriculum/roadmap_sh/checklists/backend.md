@@ -1,0 +1,161 @@
+# SIDIX coding checklist — backend
+
+- **roadmap.sh slug**: `backend`
+- **source**: `https://roadmap.sh/api/v1-official-roadmap/backend`
+- **generated_at_utc**: `2026-04-17`
+
+## Checklist (topic/subtopic labels)
+
+- [ ] Open API Specs
+- [ ] Search Engines
+- [ ] Learn about APIs
+- [ ] Introduction
+- [ ] Rust
+- [ ] PHP
+- [ ] Go
+- [ ] JavaScript
+- [ ] Java
+- [ ] Python
+- [ ] C#
+- [ ] Ruby
+- [ ] Pick a Backend Language
+- [ ] Git
+- [ ] Version Control Systems
+- [ ] GitHub
+- [ ] GitLab
+- [ ] Repo Hosting Services
+- [ ] PostgreSQL
+- [ ] MS SQL
+- [ ] MySQL
+- [ ] Oracle
+- [ ] MariaDB
+- [ ] Relational Databases
+- [ ] NoSQL Databases
+- [ ] ORMs
+- [ ] Normalization
+- [ ] ACID
+- [ ] Failure Modes
+- [ ] Transactions
+- [ ] Profiling Performance
+- [ ] N+1 Problem
+- [ ] More about Databases
+- [ ] Database Indexes
+- [ ] Sharding Strategies
+- [ ] Data Replication
+- [ ] CAP Theorem
+- [ ] Scaling Databases
+- [ ] JSON APIs
+- [ ] SOAP
+- [ ] gRPC
+- [ ] REST
+- [ ] GraphQL
+- [ ] HTTP Caching
+- [ ] Caching
+- [ ] Web Security
+- [ ] Integration Testing
+- [ ] Functional Testing
+- [ ] Unit Testing
+- [ ] Testing
+- [ ] CI / CD
+- [ ] Monolith
+- [ ] Service Mesh
+- [ ] SOA
+- [ ] Twelve Factor Apps
+- [ ] Architectural Patterns
+- [ ] RabbitMQ
+- [ ] Kafka
+- [ ] Message Brokers
+- [ ] LXC
+- [ ] WebSockets
+- [ ] Server Sent Events
+- [ ] Nginx
+- [ ] Caddy
+- [ ] Apache
+- [ ] MS IIS
+- [ ] Learn about Web Servers
+- [ ] Building For Scale
+- [ ] Redis
+- [ ] Memcached
+- [ ] MongoDB
+- [ ] CouchDB
+- [ ] Neo4j
+- [ ] Graceful Degradation
+- [ ] Throttling
+- [ ] Backpressure
+- [ ] Loadshifting
+- [ ] Circuit Breaker
+- [ ] Instrumentation
+- [ ] Monitoring
+- [ ] Telemetry
+- [ ] MD5
+- [ ] SHA
+- [ ] scrypt
+- [ ] bcrypt
+- [ ] HTTPS
+- [ ] OWASP Risks
+- [ ] SSL/TLS
+- [ ] CORS
+- [ ] Server Security
+- [ ] CSP
+- [ ] How does the internet work?
+- [ ] What is HTTP?
+- [ ] What is Domain Name?
+- [ ] What is hosting?
+- [ ] DNS and how it works?
+- [ ] Browsers and how they work?
+- [ ] Authentication
+- [ ] JWT
+- [ ] Basic Authentication
+- [ ] Token Authentication
+- [ ] OAuth
+- [ ] Cookie Based Auth
+- [ ] OpenID
+- [ ] SAML
+- [ ] Elasticsearch
+- [ ] Solr
+- [ ] Real-Time Data
+- [ ] Long / Short Polling
+- [ ] DynamoDB
+- [ ] Firebase
+- [ ] RethinkDB
+- [ ] SQLite
+- [ ] Influx DB
+- [ ] TimescaleDB
+- [ ] Cassandra
+- [ ] AWS Neptune
+- [ ] Observability
+- [ ] Frontend Basics
+- [ ] HTML
+- [ ] CSS
+- [ ] Microservices
+- [ ] Serverless
+- [ ] ClickHouse
+- [ ] ScyllaDB
+- [ ] DGraph
+- [ ] Migrations
+- [ ] Claude Code
+- [ ] Copilot
+- [ ] Cursor
+- [ ] Antigravity
+- [ ] How LLMs work
+- [ ] AI vs Traditional Coding
+- [ ] Code Reviews
+- [ ] Documentation Generation
+- [ ] Learn the Basics
+- [ ] AI Assisted Coding
+- [ ] Prompting Techniques
+- [ ] Gemini
+- [ ] OpenAI
+- [ ] Anthropic
+- [ ] Refactoring
+- [ ] Applications
+- [ ] Streaming
+- [ ] Structured Outputs
+- [ ] Function Calling
+- [ ] Integration Patterns
+- [ ] RAGs
+- [ ] Vectors
+- [ ] Embeddings
+- [ ] MCP
+- [ ] Skills
+- [ ] Agents

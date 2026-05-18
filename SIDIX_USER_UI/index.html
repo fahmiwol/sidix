@@ -85,6 +85,8 @@
         white-space: nowrap;
       }
       .contrib-pill:hover { background: rgba(122,107,88,0.18); color: #c9985a; border-color: rgba(204,152,49,0.4); }
+      /* UX-fix 2026-05-01: override contrib-pill display:flex when hidden class applied */
+      .contrib-pill.hidden { display: none !important; }
 
       /* ── Smooth scroll chat ───────────── */
       #chat-messages { scroll-behavior: smooth; }
@@ -136,7 +138,22 @@
 
       /* ── Input focus iOS fix ───────────── */
       textarea:focus { -webkit-user-select: text; }
+
+      /* ── Maqashid Auto-Tune shield ─────── */
+      .maqashid-shield {
+        cursor: help;
+        opacity: 0.7;
+        transition: opacity 0.15s;
+      }
+      .maqashid-shield:hover {
+        opacity: 1;
+      }
     </style>
+    <!-- TipTap Rich Text Editor -->
+    <script src="https://cdn.jsdelivr.net/npm/@tiptap/core@2.0.0/dist/index.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tiptap/starter-kit@2.0.0/dist/index.umd.min.js"></script>
+    <!-- ECharts Data Visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
   </head>
 
   <body class="h-screen overflow-hidden flex relative bg-warm-950">
@@ -171,6 +188,12 @@
           title="Knowledge Base">
           <i data-lucide="library" class="w-5 h-5"></i>
         </button>
+        <button id="nav-agency-kit"
+          class="nav-item w-10 h-10 rounded-xl flex items-center justify-center text-parchment-400
+                 hover:bg-warm-700 hover:text-parchment-100 transition-all duration-150"
+          title="Agency Kit">
+          <span class="text-lg">🏢</span>
+        </button>
       </nav>
 
       <!-- Bottom -->
@@ -198,7 +221,9 @@
       <!-- ──────────────────────────────────────────────────
            SCREEN: Chat
       ────────────────────────────────────────────────── -->
-      <section id="screen-chat" class="flex-1 flex flex-col h-full">
+      <section id="screen-chat" class="flex-1 flex h-full overflow-hidden">
+        <!-- Chat Pane -->
+        <div id="chat-pane" class="flex-1 flex flex-col h-full transition-all duration-300" style="width:100%">
 
         <!-- ── Chat Header ── -->
         <header class="glass-header flex items-center justify-between px-4 md:px-6 z-10 flex-shrink-0"
@@ -226,17 +251,17 @@
             <!-- Separator (desktop) -->
             <div class="hidden md:block w-px h-5 bg-warm-600/50"></div>
 
-            <!-- About SIDIX → sidixlab.com -->
-            <button id="btn-about-sidix" class="contrib-pill hidden md:flex" title="Baca tentang SIDIX">
+            <!-- UX-fix 2026-05-01: Header buttons hidden default. Power user akses via gear menu kanan.
+                 Tujuan: kurangi cognitive load awal user. About/Tutorial/Feedback masih functional via #btn-about-sidix click handler. -->
+            <button id="btn-about-sidix" class="contrib-pill hidden" title="Baca tentang SIDIX">
               <i data-lucide="info" class="w-3 h-3"></i>
               <span id="label-about">Tentang SIDIX</span>
             </button>
-            <!-- Tutorial / Bantuan: penjelasan persona, mode supermodel, checkbox -->
-            <button id="btn-tutorial" class="contrib-pill hidden md:flex" title="Tutorial: persona, mode Burst/Two-Eyed/Foresight/Resurrect, opsi chat">
+            <button id="btn-tutorial" class="contrib-pill hidden" title="Tutorial mode + persona">
               <i data-lucide="graduation-cap" class="w-3 h-3"></i>
               <span>Tutorial</span>
             </button>
-            <button id="btn-feedback" class="contrib-pill hidden md:flex" title="Lapor bug, kritik & saran">
+            <button id="btn-feedback" class="contrib-pill hidden" title="Kirim feedback">
               <i data-lucide="message-square-warning" class="w-3 h-3"></i>
               <span>Feedback</span>
             </button>
@@ -260,18 +285,19 @@
 
           <!-- RIGHT: Persona + extras (desktop) -->
           <div class="flex items-center gap-2 flex-shrink-0">
-            <label for="persona-selector" class="hidden md:block text-[10px] text-parchment-500 uppercase tracking-widest font-semibold">Persona</label>
+            <label for="persona-selector" class="hidden md:block text-[10px] text-parchment-500 uppercase tracking-widest font-semibold">Suara</label>
             <div class="relative">
               <select id="persona-selector"
                 class="bg-warm-800 border border-warm-600 text-parchment-200 rounded-lg px-2 py-1 md:px-3 md:py-1.5
-                       text-[11px] font-semibold uppercase tracking-wider appearance-none pr-6
+                       text-[11px] font-semibold tracking-wider appearance-none pr-6
                        focus:outline-none focus:ring-1 focus:ring-gold-500/50
-                       hover:border-gold-400/40 transition-colors cursor-pointer max-w-[100px] md:max-w-none">
-                <option value="AYMAN">AYMAN</option>
-                <option value="ABOO">ABOO</option>
-                <option value="OOMAR">OOMAR</option>
-                <option value="ALEY">ALEY</option>
-                <option value="UTZ">UTZ</option>
+                       hover:border-gold-400/40 transition-colors cursor-pointer max-w-[120px] md:max-w-none"
+                title="Pilih gaya jawaban SIDIX">
+                <option value="AYMAN">💬 Ramah</option>
+                <option value="UTZ">🎨 Kreatif</option>
+                <option value="ABOO">🔧 Teknis</option>
+                <option value="OOMAR">🎯 Strategis</option>
+                <option value="ALEY">📚 Akademik</option>
               </select>
               <i data-lucide="chevron-down" class="absolute right-1.5 top-1/2 -translate-y-1/2 w-3 h-3 text-parchment-400 pointer-events-none"></i>
             </div>
@@ -286,6 +312,36 @@
               class="w-8 h-8 rounded-lg glass flex items-center justify-center text-parchment-400
                      hover:text-parchment-100 transition-colors">
               <i data-lucide="more-horizontal" class="w-4 h-4"></i>
+            </button>
+
+            <!-- Artifact Gallery toggle -->
+            <button id="btn-toggle-artifacts"
+              class="hidden md:flex w-8 h-8 rounded-lg glass items-center justify-center text-parchment-400
+                     hover:text-gold-400 hover:border-gold-500/30 transition-colors"
+              title="Artifact Gallery">
+              <i data-lucide="folder-tree" class="w-4 h-4"></i>
+            </button>
+
+            <!-- Code Canvas toggle -->
+            <button id="btn-toggle-canvas"
+              class="hidden md:flex w-8 h-8 rounded-lg glass items-center justify-center text-parchment-400
+                     hover:text-gold-400 hover:border-gold-500/30 transition-colors"
+              title="Code Canvas">
+              <i data-lucide="code-2" class="w-4 h-4"></i>
+            </button>
+            <!-- Document Studio toggle -->
+            <button id="btn-toggle-studio"
+              class="hidden md:flex w-8 h-8 rounded-lg glass items-center justify-center text-parchment-400
+                     hover:text-gold-400 hover:border-gold-500/30 transition-colors"
+              title="Document Studio">
+              <i data-lucide="file-text" class="w-4 h-4"></i>
+            </button>
+            <!-- Data Notebook toggle -->
+            <button id="btn-toggle-notebook"
+              class="hidden md:flex w-8 h-8 rounded-lg glass items-center justify-center text-parchment-400
+                     hover:text-gold-400 hover:border-gold-500/30 transition-colors"
+              title="Data Notebook">
+              <i data-lucide="bar-chart-3" class="w-4 h-4"></i>
             </button>
           </div>
         </header>
@@ -380,71 +436,70 @@
               </div>
             </div>
 
-            <!-- Supermodel mode buttons (SIDIX 2.0 differentiator) -->
+            <!-- Mode buttons — SIDIX 4-Mode System (2026-05-07).
+                 Click = set activeMode + visual highlight gold. Tidak ada window.prompt popup. -->
             <div class="flex flex-wrap justify-center gap-2 mt-2.5">
-              <button id="mode-burst"
-                class="text-[11px] px-3 py-1 rounded-full border border-warm-600/40
+              <button id="mode-instant" aria-pressed="false"
+                class="mode-btn text-[11px] px-3 py-1 rounded-full border border-warm-600/40
                        bg-warm-700/30 text-parchment-300 hover:bg-warm-600/50
                        hover:border-gold-500/40 hover:text-gold-400 transition-all
                        cursor-pointer select-none flex items-center gap-1"
-                title="Burst Mode — generate 6 ide divergen, Pareto-pilih 2 terbaik, synthesize jadi 1 jawaban kreatif">
-                <span>🌌</span><span>Burst</span>
+                title="Instant — Jawaban cepat <2 detik, tanpa tools. Cocok untuk fakta sederhana & greeting.">
+                <span>⚡</span><span>Instant</span>
               </button>
-              <button id="mode-twoeyed"
-                class="text-[11px] px-3 py-1 rounded-full border border-warm-600/40
+              <button id="mode-thinking" aria-pressed="false"
+                class="mode-btn text-[11px] px-3 py-1 rounded-full border border-warm-600/40
                        bg-warm-700/30 text-parchment-300 hover:bg-warm-600/50
                        hover:border-gold-500/40 hover:text-gold-400 transition-all
                        cursor-pointer select-none flex items-center gap-1"
-                title="Two-Eyed Seeing — analisis dual perspective: scientific + maqashid + sintesis">
-                <span>👁</span><span>Two Eyes</span>
+                title="Thinking — Analisis & coding, 5-30 detik. Auto-detect persona. Tools selektif.">
+                <span>🧠</span><span>Thinking</span>
               </button>
-              <button id="mode-foresight"
-                class="text-[11px] px-3 py-1 rounded-full border border-warm-600/40
+              <button id="mode-agent" aria-pressed="true"
+                class="mode-btn mode-active text-[11px] px-3 py-1 rounded-full border border-gold-500/60
+                       bg-gold-500/15 text-gold-300 transition-all
+                       cursor-pointer select-none flex items-center gap-1"
+                title="Agent — Jurus Seribu Bayangan. Multi-source paralel (web + corpus + dense + 5 persona + tools). Default SIDIX.">
+                <span>🤖</span><span>Agent</span>
+              </button>
+              <button id="mode-deep" aria-pressed="false"
+                class="mode-btn text-[11px] px-3 py-1 rounded-full border border-warm-600/40
                        bg-warm-700/30 text-parchment-300 hover:bg-warm-600/50
                        hover:border-gold-500/40 hover:text-gold-400 transition-all
                        cursor-pointer select-none flex items-center gap-1"
-                title="Foresight — prediksi terstruktur: scan web+corpus → 3 skenario (base/bull/bear) → narasi visioner">
-                <span>🔮</span><span>Foresight</span>
-              </button>
-              <button id="mode-resurrect"
-                class="text-[11px] px-3 py-1 rounded-full border border-warm-600/40
-                       bg-warm-700/30 text-parchment-300 hover:bg-warm-600/50
-                       hover:border-gold-500/40 hover:text-gold-400 transition-all
-                       cursor-pointer select-none flex items-center gap-1"
-                title="Resurrect — surface ide/tokoh/metode yang dulu brilliant tapi sekarang dilupakan tren (Noether method)">
-                <span>🌿</span><span>Resurrect</span>
-              </button>
-              <button id="mode-holistic"
-                class="text-[11px] px-3 py-1 rounded-full border border-gold-500/60
-                       bg-gradient-to-r from-amber-700/30 to-amber-600/30 text-gold-300
-                       hover:from-amber-600/40 hover:to-amber-500/40 hover:text-gold-200
-                       transition-all cursor-pointer select-none flex items-center gap-1
-                       shadow-sm shadow-gold-500/20"
-                title="Jurus Seribu Bayangan — mengerahkan SEMUA resource paralel (web + corpus + dense + 5 persona + tools) → sanad cross-verify → cognitive synthesizer. Multi-perspective default. Live progress streaming.">
-                <span>🌟</span><span>Holistic</span>
+                title="Deep Research — Riset komprehensif 2-10 menit. Recursive search, report lengkap.">
+                <span>🔬</span><span>Deep</span>
               </button>
             </div>
 
-            <!-- Options row (hidden on mobile for space) — dengan tooltip help -->
-            <div class="hidden md:flex flex-wrap justify-center gap-x-5 gap-y-1 mt-2 text-[11px] text-parchment-400 select-none">
-              <label class="inline-flex items-center gap-1.5 cursor-pointer hover:text-parchment-200"
-                     title="Hanya cari di knowledge base SIDIX (corpus). Web search dimatikan. Cocok untuk topik yang sudah ada di dokumen lokal.">
-                <input type="checkbox" id="opt-corpus-only" class="rounded border-warm-500" />
-                <span>Korpus saja</span>
-              </label>
-              <label class="inline-flex items-center gap-1.5 cursor-pointer hover:text-parchment-200"
-                     title="SIDIX boleh fetch data live dari web (DuckDuckGo, Wikipedia) untuk pertanyaan factual / current events. Default: ON.">
-                <input type="checkbox" id="opt-allow-web" checked class="rounded border-warm-500" />
-                <span>Fallback web</span>
-              </label>
-              <label class="inline-flex items-center gap-1.5 cursor-pointer hover:text-parchment-200"
-                     title="Response lebih pendek (200 token max). Cocok kalau butuh jawaban cepat. Default: OFF (response normal 600-1200 tokens).">
-                <input type="checkbox" id="opt-simple" class="rounded border-warm-500" />
-                <span>Mode ringkas</span>
-              </label>
+            <!-- Pengaturan lanjut (hidden default — power user pengaturan) -->
+            <div class="hidden md:flex flex-wrap justify-center gap-x-5 gap-y-1 mt-2 text-[11px] text-parchment-500 select-none">
+              <details class="inline-block">
+                <summary class="cursor-pointer hover:text-gold-400 list-none flex items-center gap-1.5">
+                  <i data-lucide="settings-2" class="w-3 h-3"></i>
+                  <span>Pengaturan lanjut</span>
+                </summary>
+                <div class="absolute mt-2 p-3 rounded-lg border border-warm-600/40 bg-warm-800/95 shadow-xl flex flex-col gap-2 z-10">
+                  <label class="inline-flex items-center gap-1.5 cursor-pointer hover:text-parchment-200"
+                         title="Hanya cari di knowledge base SIDIX (corpus). Web OFF.">
+                    <input type="checkbox" id="opt-corpus-only" class="rounded border-warm-500" />
+                    <span>Pengetahuan SIDIX saja (no web)</span>
+                  </label>
+                  <label class="inline-flex items-center gap-1.5 cursor-pointer hover:text-parchment-200"
+                         title="Fetch data live dari web. Default: ON.">
+                    <input type="checkbox" id="opt-allow-web" checked class="rounded border-warm-500" />
+                    <span>Cari web (live)</span>
+                  </label>
+                  <label class="inline-flex items-center gap-1.5 cursor-pointer hover:text-parchment-200"
+                         title="Response 200 token max. Default: OFF.">
+                    <input type="checkbox" id="opt-simple" class="rounded border-warm-500" />
+                    <span>Jawaban singkat</span>
+                  </label>
+                </div>
+              </details>
               <button type="button" id="btn-help-modes"
                       class="inline-flex items-center gap-1.5 hover:text-gold-400 cursor-pointer"
-                      title="Penjelasan persona, mode Supermodel, dan opsi chat">
+                      title="Penjelasan mode + persona">
                 <i data-lucide="circle-help" class="w-3 h-3"></i>
                 <span>Bantuan</span>
               </button>
@@ -456,6 +511,216 @@
             </p>
           </div>
         </footer>
+        </div>
+
+        <!-- ════════════════════════════════════════════════════
+             ARTIFACT GALLERY PANEL
+        ════════════════════════════════════════════════════ -->
+        <div id="artifact-gallery"
+          class="hidden flex-shrink-0 h-full border-l border-warm-600/30 bg-warm-900/60 backdrop-blur-sm flex flex-col"
+          style="width:260px">
+          <!-- Gallery Header -->
+          <div class="glass-header flex items-center justify-between px-4 py-3 flex-shrink-0">
+            <div class="flex items-center gap-2">
+              <i data-lucide="folder-tree" class="w-4 h-4 text-gold-400"></i>
+              <span class="text-sm font-semibold text-parchment-200">Artifacts</span>
+            </div>
+            <button id="btn-close-artifacts" class="w-6 h-6 rounded-md flex items-center justify-center text-parchment-500 hover:text-parchment-200 transition-colors">
+              <i data-lucide="x" class="w-4 h-4"></i>
+            </button>
+          </div>
+          <!-- Gallery List -->
+          <div id="artifact-list" class="flex-1 overflow-y-auto px-3 py-2 space-y-2">
+            <div class="text-xs text-parchment-500 text-center py-8">Memuat…</div>
+          </div>
+        </div>
+
+        <!-- ════════════════════════════════════════════════════
+             CODE CANVAS PANEL
+        ════════════════════════════════════════════════════ -->
+        <div id="code-canvas"
+          class="hidden flex-shrink-0 h-full border-l border-warm-600/30 bg-warm-900/60 backdrop-blur-sm flex flex-col"
+          style="width:40%">
+          <!-- Canvas Header -->
+          <div class="glass-header flex items-center justify-between px-4 py-3 flex-shrink-0">
+            <div class="flex items-center gap-2">
+              <i data-lucide="code-2" class="w-4 h-4 text-gold-400"></i>
+              <span class="text-sm font-semibold text-parchment-200">Code Canvas</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <select id="canvas-language"
+                class="bg-warm-800 border border-warm-600 text-parchment-200 rounded-lg px-2 py-1 text-[11px] font-semibold appearance-none pr-5 focus:outline-none focus:ring-1 focus:ring-gold-500/50 cursor-pointer">
+                <option value="python">Python</option>
+                <option value="javascript">JavaScript</option>
+                <option value="html">HTML</option>
+              </select>
+              <button id="canvas-pin-btn"
+                class="w-6 h-6 rounded-md flex items-center justify-center text-parchment-500 hover:text-gold-400 transition-colors"
+                title="Pin artifact">
+                <i data-lucide="pin" class="w-3.5 h-3.5"></i>
+              </button>
+              <button id="canvas-unpin-btn"
+                class="hidden w-6 h-6 rounded-md flex items-center justify-center text-gold-400 hover:text-parchment-200 transition-colors"
+                title="Unpin artifact">
+                <i data-lucide="pin-off" class="w-3.5 h-3.5"></i>
+              </button>
+              <select id="canvas-export-format"
+                class="bg-warm-800 border border-warm-600 text-parchment-200 rounded-lg px-2 py-1 text-[11px] font-semibold appearance-none pr-5 focus:outline-none focus:ring-1 focus:ring-gold-500/50 cursor-pointer"
+                title="Export format">
+                <option value="" disabled selected>Export</option>
+                <option value="md">Markdown</option>
+                <option value="json">JSON</option>
+                <option value="html">HTML</option>
+              </select>
+              <select id="canvas-version-select"
+                class="bg-warm-800 border border-warm-600 text-parchment-200 rounded-lg px-2 py-1 text-[11px] font-semibold appearance-none pr-5 focus:outline-none focus:ring-1 focus:ring-gold-500/50 cursor-pointer max-w-[100px]"
+                title="Version history">
+                <option value="" disabled selected>v1</option>
+              </select>
+              <button id="btn-close-canvas" class="w-6 h-6 rounded-md flex items-center justify-center text-parchment-500 hover:text-parchment-200 transition-colors">
+                <i data-lucide="x" class="w-4 h-4"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Code Input -->
+          <div class="flex-1 flex flex-col min-h-0">
+            <div class="flex-1 min-h-0 p-3">
+              <textarea id="canvas-code-input"
+                class="w-full h-full bg-warm-950 border border-warm-600/50 rounded-xl p-3 text-xs font-mono text-parchment-200
+                       placeholder:text-parchment-600 focus:outline-none focus:border-gold-500/40 resize-none"
+                placeholder="# Tulis kode di sini..."></textarea>
+            </div>
+
+            <!-- Toolbar -->
+            <div class="flex items-center gap-2 px-3 pb-2 flex-shrink-0">
+              <button id="canvas-run-btn"
+                class="btn-gold px-3 py-1.5 text-xs font-semibold rounded-lg flex items-center gap-1.5">
+                <i data-lucide="play" class="w-3.5 h-3.5"></i>
+                <span>Run</span>
+              </button>
+              <button id="canvas-debug-btn"
+                class="hidden px-3 py-1.5 text-xs font-semibold rounded-lg border border-warm-600
+                       text-parchment-300 hover:border-gold-500/40 hover:text-gold-400 transition-colors flex items-center gap-1.5">
+                <i data-lucide="bug" class="w-3.5 h-3.5"></i>
+                <span>Debug</span>
+              </button>
+              <span id="canvas-status" class="ml-auto text-[10px] text-parchment-500"></span>
+            </div>
+
+            <!-- Output Panel -->
+            <div class="flex-1 min-h-0 border-t border-warm-600/30 flex flex-col">
+              <div class="px-3 py-1.5 text-[10px] font-semibold text-parchment-500 uppercase tracking-wider flex items-center gap-1.5">
+                <i data-lucide="terminal" class="w-3 h-3"></i>
+                Output
+              </div>
+              <div class="flex-1 min-h-0 overflow-y-auto px-3 pb-3">
+                <pre id="canvas-output"
+                  class="text-[11px] font-mono text-parchment-300 whitespace-pre-wrap break-words"></pre>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ════════════════════════════════════════════════════
+             DOCUMENT STUDIO PANEL
+        ════════════════════════════════════════════════════ -->
+        <div id="document-studio"
+          class="hidden flex-shrink-0 h-full border-l border-warm-600/30 bg-warm-900/60 backdrop-blur-sm flex flex-col"
+          style="width:40%">
+          <!-- Studio Header -->
+          <div class="glass-header flex items-center justify-between px-4 py-3 flex-shrink-0">
+            <div class="flex items-center gap-2">
+              <i data-lucide="file-text" class="w-4 h-4 text-gold-400"></i>
+              <span class="text-sm font-semibold text-parchment-200">Document Studio</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <button id="btn-studio-save"
+                class="px-2 py-1 rounded-lg text-[11px] font-semibold border border-warm-600
+                       text-parchment-300 hover:border-gold-500/40 hover:text-gold-400 transition-colors">
+                Save
+              </button>
+              <select id="studio-export-format"
+                class="bg-warm-800 border border-warm-600 text-parchment-200 rounded-lg px-2 py-1 text-[11px] font-semibold appearance-none pr-5 focus:outline-none focus:ring-1 focus:ring-gold-500/50 cursor-pointer">
+                <option value="" disabled selected>Export</option>
+                <option value="md">Markdown</option>
+                <option value="html">HTML</option>
+              </select>
+              <button id="btn-close-studio" class="w-6 h-6 rounded-md flex items-center justify-center text-parchment-500 hover:text-parchment-200 transition-colors">
+                <i data-lucide="x" class="w-4 h-4"></i>
+              </button>
+            </div>
+          </div>
+          <!-- Toolbar -->
+          <div class="flex items-center gap-1 px-3 py-2 flex-shrink-0 border-b border-warm-600/30 flex-wrap">
+            <button data-studio-cmd="bold" class="studio-tool w-7 h-7 rounded-md flex items-center justify-center text-parchment-400 hover:bg-warm-700 hover:text-parchment-100 transition-colors text-xs font-bold" title="Bold">B</button>
+            <button data-studio-cmd="italic" class="studio-tool w-7 h-7 rounded-md flex items-center justify-center text-parchment-400 hover:bg-warm-700 hover:text-parchment-100 transition-colors text-xs italic" title="Italic">I</button>
+            <div class="w-px h-4 bg-warm-600/40 mx-1"></div>
+            <button data-studio-cmd="h1" class="studio-tool w-7 h-7 rounded-md flex items-center justify-center text-parchment-400 hover:bg-warm-700 hover:text-parchment-100 transition-colors text-[10px] font-bold" title="Heading 1">H1</button>
+            <button data-studio-cmd="h2" class="studio-tool w-7 h-7 rounded-md flex items-center justify-center text-parchment-400 hover:bg-warm-700 hover:text-parchment-100 transition-colors text-[10px] font-bold" title="Heading 2">H2</button>
+            <button data-studio-cmd="h3" class="studio-tool w-7 h-7 rounded-md flex items-center justify-center text-parchment-400 hover:bg-warm-700 hover:text-parchment-100 transition-colors text-[10px] font-bold" title="Heading 3">H3</button>
+            <div class="w-px h-4 bg-warm-600/40 mx-1"></div>
+            <button data-studio-cmd="bulletList" class="studio-tool w-7 h-7 rounded-md flex items-center justify-center text-parchment-400 hover:bg-warm-700 hover:text-parchment-100 transition-colors" title="Bullet List">
+              <i data-lucide="list" class="w-3.5 h-3.5"></i>
+            </button>
+            <button data-studio-cmd="orderedList" class="studio-tool w-7 h-7 rounded-md flex items-center justify-center text-parchment-400 hover:bg-warm-700 hover:text-parchment-100 transition-colors" title="Numbered List">
+              <i data-lucide="list-ordered" class="w-3.5 h-3.5"></i>
+            </button>
+            <button data-studio-cmd="blockquote" class="studio-tool w-7 h-7 rounded-md flex items-center justify-center text-parchment-400 hover:bg-warm-700 hover:text-parchment-100 transition-colors" title="Blockquote">
+              <i data-lucide="quote" class="w-3.5 h-3.5"></i>
+            </button>
+            <button data-studio-cmd="codeBlock" class="studio-tool w-7 h-7 rounded-md flex items-center justify-center text-parchment-400 hover:bg-warm-700 hover:text-parchment-100 transition-colors" title="Code Block">
+              <i data-lucide="code" class="w-3.5 h-3.5"></i>
+            </button>
+          </div>
+          <!-- Editor -->
+          <div class="flex-1 min-h-0 p-3 overflow-y-auto">
+            <div id="studio-editor" class="w-full h-full bg-warm-950 border border-warm-600/50 rounded-xl p-4 text-sm text-parchment-200 focus:outline-none focus:border-gold-500/40 prose prose-invert prose-sm max-w-none overflow-y-auto"></div>
+          </div>
+        </div>
+
+        <!-- ════════════════════════════════════════════════════
+             DATA NOTEBOOK PANEL
+        ════════════════════════════════════════════════════ -->
+        <div id="data-notebook"
+          class="hidden flex-shrink-0 h-full border-l border-warm-600/30 bg-warm-900/60 backdrop-blur-sm flex flex-col"
+          style="width:40%">
+          <!-- Notebook Header -->
+          <div class="glass-header flex items-center justify-between px-4 py-3 flex-shrink-0">
+            <div class="flex items-center gap-2">
+              <i data-lucide="bar-chart-3" class="w-4 h-4 text-gold-400"></i>
+              <span class="text-sm font-semibold text-parchment-200">Data Notebook</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <select id="notebook-chart-type"
+                class="bg-warm-800 border border-warm-600 text-parchment-200 rounded-lg px-2 py-1 text-[11px] font-semibold appearance-none pr-5 focus:outline-none focus:ring-1 focus:ring-gold-500/50 cursor-pointer">
+                <option value="bar">Bar</option>
+                <option value="line">Line</option>
+                <option value="pie">Pie</option>
+                <option value="scatter">Scatter</option>
+              </select>
+              <select id="notebook-export-format"
+                class="bg-warm-800 border border-warm-600 text-parchment-200 rounded-lg px-2 py-1 text-[11px] font-semibold appearance-none pr-5 focus:outline-none focus:ring-1 focus:ring-gold-500/50 cursor-pointer">
+                <option value="" disabled selected>Export</option>
+                <option value="csv">CSV</option>
+                <option value="json">JSON</option>
+              </select>
+              <button id="btn-close-notebook" class="w-6 h-6 rounded-md flex items-center justify-center text-parchment-500 hover:text-parchment-200 transition-colors">
+                <i data-lucide="x" class="w-4 h-4"></i>
+              </button>
+            </div>
+          </div>
+          <!-- View Tabs -->
+          <div class="flex items-center gap-0 px-4 border-b border-warm-600/30 flex-shrink-0">
+            <button id="notebook-tab-table" class="notebook-tab px-3 py-2 text-[11px] font-semibold text-gold-400 border-b-2 border-gold-400 transition-colors">Table</button>
+            <button id="notebook-tab-chart" class="notebook-tab px-3 py-2 text-[11px] font-semibold text-parchment-500 hover:text-parchment-300 transition-colors">Chart</button>
+          </div>
+          <!-- Content -->
+          <div class="flex-1 min-h-0 overflow-y-auto p-3">
+            <div id="notebook-table-view" class="w-full h-full"></div>
+            <div id="notebook-chart-view" class="w-full h-full hidden"></div>
+          </div>
+        </div>
       </section>
 
       <!-- ──────────────────────────────────────────────────
@@ -656,6 +921,13 @@
           <span class="text-[10px] font-medium" id="mob-label-about">Tentang</span>
         </button>
 
+        <button id="mob-nav-agency"
+          class="flex flex-col items-center gap-0.5 px-4 py-1.5 rounded-xl transition-all text-parchment-500 hover:text-parchment-300"
+          aria-label="Agency Kit">
+          <span class="text-lg">🏢</span>
+          <span class="text-[10px] font-medium" id="mob-label-agency">Agency</span>
+        </button>
+
         <button id="mob-nav-settings"
           class="flex flex-col items-center gap-0.5 px-4 py-1.5 rounded-xl transition-all text-parchment-500 hover:text-parchment-300"
           aria-label="Pengaturan">
@@ -817,6 +1089,168 @@
           <button id="admin-pin-cancel" class="flex-1 px-4 py-2.5 rounded-xl text-sm text-parchment-400
                   hover:bg-warm-700 transition-all border border-warm-600">Batal</button>
           <button id="admin-pin-confirm" class="flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold btn-gold">Login</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════════════════
+         AGENCY KIT WIZARD MODAL
+    ════════════════════════════════════════════════════ -->
+    <div id="agency-kit-modal" class="hidden fixed inset-0 z-[150] contrib-modal-backdrop">
+      <div class="about-modal-card max-w-lg">
+        <div class="w-10 h-1 rounded-full bg-warm-600 mx-auto mb-5"></div>
+        <div class="text-center mb-5">
+          <h2 class="font-display text-xl font-bold glow-gold">🏢 Agency Kit 1-Click</h2>
+          <p class="text-xs text-parchment-400 mt-1">Generate brand kit + konten + campaign dalam 1 klik</p>
+        </div>
+        <div class="space-y-3 text-sm">
+          <div>
+            <label class="block text-[11px] text-parchment-400 mb-1 uppercase tracking-wider">Nama Bisnis / Brand</label>
+            <input id="ak-business-name" type="text" placeholder="Contoh: Kopi Sejati"
+              class="w-full bg-warm-800 border border-warm-600 rounded-lg px-3 py-2 text-sm text-parchment-100 placeholder:text-parchment-600 focus:outline-none focus:border-gold-500/40" />
+          </div>
+          <div>
+            <label class="block text-[11px] text-parchment-400 mb-1 uppercase tracking-wider">Niche / Bidang</label>
+            <input id="ak-niche" type="text" placeholder="Contoh: Kuliner, Fashion, Jasa..."
+              class="w-full bg-warm-800 border border-warm-600 rounded-lg px-3 py-2 text-sm text-parchment-100 placeholder:text-parchment-600 focus:outline-none focus:border-gold-500/40" />
+          </div>
+          <div>
+            <label class="block text-[11px] text-parchment-400 mb-1 uppercase tracking-wider">Target Audiens</label>
+            <textarea id="ak-target" rows="2" placeholder="Contoh: Milenial urban, usia 25-35, pecinta kopi..."
+              class="w-full bg-warm-800 border border-warm-600 rounded-lg px-3 py-2 text-sm text-parchment-100 placeholder:text-parchment-600 focus:outline-none focus:border-gold-500/40 resize-none"></textarea>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-[11px] text-parchment-400 mb-1 uppercase tracking-wider">Budget</label>
+              <input id="ak-budget" type="text" value="1.5jt" placeholder="1.5jt"
+                class="w-full bg-warm-800 border border-warm-600 rounded-lg px-3 py-2 text-sm text-parchment-100 placeholder:text-parchment-600 focus:outline-none focus:border-gold-500/40" />
+            </div>
+            <div>
+              <label class="block text-[11px] text-parchment-400 mb-1 uppercase tracking-wider">Brand Tone</label>
+              <input id="ak-tone" type="text" placeholder="friendly, profesional..."
+                class="w-full bg-warm-800 border border-warm-600 rounded-lg px-3 py-2 text-sm text-parchment-100 placeholder:text-parchment-600 focus:outline-none focus:border-gold-500/40" />
+            </div>
+          </div>
+          <div>
+            <label class="block text-[11px] text-parchment-400 mb-1 uppercase tracking-wider">Preferensi Warna</label>
+            <input id="ak-color" type="text" placeholder="Contoh: earth tone, monochrome, bold..."
+              class="w-full bg-warm-800 border border-warm-600 rounded-lg px-3 py-2 text-sm text-parchment-100 placeholder:text-parchment-600 focus:outline-none focus:border-gold-500/40" />
+          </div>
+        </div>
+        <div id="agency-kit-progress" class="hidden mt-5">
+          <div class="flex items-center justify-between text-[11px] text-parchment-400 mb-1">
+            <span id="ak-progress-label">Memulai...</span>
+            <span id="ak-progress-pct">0%</span>
+          </div>
+          <div class="w-full h-2 bg-warm-700 rounded-full overflow-hidden">
+            <div id="ak-progress-bar" class="h-full bg-gold-500 transition-all duration-500" style="width:0%"></div>
+          </div>
+        </div>
+        <div id="agency-kit-error" class="hidden mt-3 text-xs text-status-failed text-center"></div>
+        <div class="flex gap-3 mt-6">
+          <button id="ak-cancel" class="flex-1 px-4 py-2.5 rounded-xl text-sm text-parchment-400 hover:bg-warm-700 transition-all border border-warm-600">Batal</button>
+          <button id="ak-submit" class="flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold btn-gold">Generate 🚀</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════════════════
+         AGENCY KIT RESULT GALLERY
+    ════════════════════════════════════════════════════ -->
+    <div id="agency-kit-gallery" class="hidden fixed inset-0 z-[160] flex items-end sm:items-center justify-center" style="background:rgba(0,0,0,0.88);backdrop-filter:blur(8px)">
+      <div class="w-full max-w-3xl mx-4 mb-0 sm:mb-0 rounded-t-3xl sm:rounded-3xl overflow-hidden flex flex-col max-h-[92vh]" style="background:#1a1208;border:1px solid rgba(204,152,49,0.25)">
+        <div class="w-10 h-1 rounded-full bg-warm-600 mx-auto mt-3 sm:hidden"></div>
+        <div class="px-6 pt-5 pb-3 flex items-center justify-between flex-shrink-0">
+          <div>
+            <h2 class="font-display text-lg font-bold glow-gold">🏢 Agency Kit Result</h2>
+            <p class="text-[11px] text-parchment-400 mt-0.5" id="ak-result-subtitle">—</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button id="ak-export-btn" class="px-3 py-1.5 rounded-lg text-[11px] font-semibold border border-warm-600 text-parchment-300 hover:border-gold-500/40 hover:text-gold-400 transition-colors flex items-center gap-1.5">
+              <i data-lucide="download" class="w-3.5 h-3.5"></i> Export MD
+            </button>
+            <button id="ak-gallery-close" class="w-8 h-8 rounded-lg flex items-center justify-center text-parchment-500 hover:text-parchment-200 transition-colors">
+              <i data-lucide="x" class="w-4 h-4"></i>
+            </button>
+          </div>
+        </div>
+        <div id="ak-gallery-content" class="flex-1 overflow-y-auto px-6 pb-6 space-y-4 text-sm">
+          <!-- Brand Kit Card -->
+          <div class="academic-card p-4">
+            <h3 class="text-gold-400 font-semibold text-xs uppercase tracking-wider mb-2">🎨 Brand Kit</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+              <div><span class="text-parchment-500">Nama:</span> <span id="ak-res-brand-name" class="text-parchment-200">—</span></div>
+              <div><span class="text-parchment-500">Archetype:</span> <span id="ak-res-archetype" class="text-parchment-200">—</span></div>
+              <div><span class="text-parchment-500">Paleta:</span> <span id="ak-res-palette" class="text-parchment-200">—</span></div>
+              <div><span class="text-parchment-500">Tipografi:</span> <span id="ak-res-typography" class="text-parchment-200">—</span></div>
+              <div class="sm:col-span-2"><span class="text-parchment-500">Voice & Tone:</span> <span id="ak-res-voice" class="text-parchment-200">—</span></div>
+            </div>
+          </div>
+          <!-- Logo Prompt -->
+          <div class="academic-card p-4">
+            <h3 class="text-gold-400 font-semibold text-xs uppercase tracking-wider mb-2">🖌️ Logo Prompt</h3>
+            <p id="ak-res-logo" class="text-xs text-parchment-300 leading-relaxed">—</p>
+          </div>
+          <!-- Captions -->
+          <div class="academic-card p-4">
+            <h3 class="text-gold-400 font-semibold text-xs uppercase tracking-wider mb-2">💬 IG Captions (<span id="ak-res-caption-count">0</span>)</h3>
+            <div id="ak-res-captions" class="space-y-2"></div>
+          </div>
+          <!-- Threads -->
+          <div class="academic-card p-4">
+            <h3 class="text-gold-400 font-semibold text-xs uppercase tracking-wider mb-2">🧵 X/Twitter Threads (<span id="ak-res-thread-count">0</span>)</h3>
+            <div id="ak-res-threads" class="space-y-2"></div>
+          </div>
+          <!-- Scripts -->
+          <div class="academic-card p-4">
+            <h3 class="text-gold-400 font-semibold text-xs uppercase tracking-wider mb-2">🎬 Video Scripts (<span id="ak-res-script-count">0</span>)</h3>
+            <div id="ak-res-scripts" class="space-y-2"></div>
+          </div>
+          <!-- Campaign Timeline -->
+          <div class="academic-card p-4">
+            <h3 class="text-gold-400 font-semibold text-xs uppercase tracking-wider mb-2">📅 Campaign Timeline</h3>
+            <div id="ak-res-timeline" class="text-xs text-parchment-300 leading-relaxed whitespace-pre-wrap">—</div>
+          </div>
+          <!-- Thumbnails -->
+          <div class="academic-card p-4">
+            <h3 class="text-gold-400 font-semibold text-xs uppercase tracking-wider mb-2">🖼️ Thumbnail Prompts (<span id="ak-res-thumb-count">0</span>)</h3>
+            <div id="ak-res-thumbnails" class="space-y-2"></div>
+          </div>
+          <!-- IG Grid -->
+          <div class="academic-card p-4">
+            <h3 class="text-gold-400 font-semibold text-xs uppercase tracking-wider mb-2">📱 IG Grid Preview (<span id="ak-res-grid-count">0</span>)</h3>
+            <div id="ak-res-grid" class="grid grid-cols-3 gap-2"></div>
+          </div>
+          <!-- CQF Score -->
+          <div class="academic-card p-4">
+            <h3 class="text-gold-400 font-semibold text-xs uppercase tracking-wider mb-2">📊 CQF Score</h3>
+            <div class="grid grid-cols-3 gap-2 text-center text-xs">
+              <div class="rounded-lg p-2" style="background:rgba(255,255,255,0.04)">
+                <p class="text-parchment-500">Relevance</p>
+                <p id="ak-cqf-rel" class="text-parchment-200 font-semibold">—</p>
+              </div>
+              <div class="rounded-lg p-2" style="background:rgba(255,255,255,0.04)">
+                <p class="text-parchment-500">Quality</p>
+                <p id="ak-cqf-qual" class="text-parchment-200 font-semibold">—</p>
+              </div>
+              <div class="rounded-lg p-2" style="background:rgba(255,255,255,0.04)">
+                <p class="text-parchment-500">Creativity</p>
+                <p id="ak-cqf-crea" class="text-parchment-200 font-semibold">—</p>
+              </div>
+              <div class="rounded-lg p-2" style="background:rgba(255,255,255,0.04)">
+                <p class="text-parchment-500">Brand</p>
+                <p id="ak-cqf-brand" class="text-parchment-200 font-semibold">—</p>
+              </div>
+              <div class="rounded-lg p-2" style="background:rgba(255,255,255,0.04)">
+                <p class="text-parchment-500">Actionability</p>
+                <p id="ak-cqf-act" class="text-parchment-200 font-semibold">—</p>
+              </div>
+              <div class="rounded-lg p-2" style="background:rgba(204,152,49,0.12);border:1px solid rgba(204,152,49,0.25)">
+                <p class="text-gold-400">Total</p>
+                <p id="ak-cqf-total" class="text-gold-300 font-bold">—</p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
