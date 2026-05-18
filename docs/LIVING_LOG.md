@@ -18729,3 +18729,8 @@ curl -X POST http://localhost:8765/agent/maqashid/tune -d '{"sample_size":30}'
 ### 2026-05-18
 - **FIX:** Personal-memory fast path now distinguishes new memory statements from recall questions by inspecting the current question only, not the injected history block.
 - **TEST:** Live continuity verified: `siapa presiden indonesia sekarang?` -> Prabowo, follow-up `Kalo wakilnya?` -> Gibran, same `conversation_id`; local focused QA now 44 passed.
+### 2026-05-18
+- TEST: Menambahkan regresi OMNYX untuk UX live dasar: `makasih ya`, definisi LLM, jarak Bumi-Matahari, contoh fungsi Python tambah dua angka, dan intent gambar agar tidak jatuh ke `(synthesis kosong)` atau pesan model offline.
+- FIX: Menambah fast-path deterministic di `omnyx_direction.py` untuk greeting terima kasih dengan partikel, definisi LLM, common fact Bumi-Matahari, snippet Python sederhana, dan intent text-to-image tanpa mengarang URL gambar.
+- TEST: `python -m pytest apps\brain_qa\tests\test_omnyx_live_regressions.py apps\brain_qa\tests\test_memory_store.py apps\brain_qa\tests\test_conversation_memory.py apps\brain_qa\tests\test_maqashid_auto_tune.py apps\brain_qa\tests\test_ui_stream_memory_wiring.py -q` -> 49 passed, 4 warning FastAPI deprecation.
+- NOTE: Verifikasi lokal OMNYX direct memastikan sumber fast-path: greeting, concept_fast_path, grounding_common_fact, coding_fast_path, image_intent.

@@ -2,9 +2,13 @@ from brain_qa.omnyx_direction import (
     IntentClassifier,
     _current_datetime_response,
     _current_indonesia_official_response,
+    _earth_sun_distance_response,
+    _image_intent_response,
+    _llm_definition_response,
     _sanitize_public_answer,
     _personal_memory_response,
     _select_relevant_web_answer,
+    _simple_python_addition_response,
 )
 from datetime import datetime, timezone
 from brain_qa.agent_react import _apply_hygiene, _reformulate_with_context
@@ -25,6 +29,44 @@ def test_halo_sidix_is_greeting_not_model_query():
 
     assert intent == "greeting"
     assert tools == []
+
+
+def test_makasih_ya_is_greeting_not_empty_synthesis():
+    intent, tools = IntentClassifier.classify("makasih ya")
+
+    assert intent == "greeting"
+    assert tools == []
+
+
+def test_llm_definition_fast_path_is_about_llm_not_chatgpt():
+    answer = _llm_definition_response("apa itu LLM? jawab singkat")
+
+    assert "Large Language Model" in answer
+    assert "model AI bahasa" in answer
+    assert "ChatGPT" not in answer
+
+
+def test_earth_sun_distance_fast_path_is_clean_and_short():
+    answer = _earth_sun_distance_response("berapa jarak bumi ke matahari? jawab singkat")
+
+    assert answer == "Jarak rata-rata Bumi ke Matahari sekitar 149,6 juta km (1 AU)."
+    assert "Ã" not in answer
+
+
+def test_simple_python_addition_fast_path_avoids_offline_model_message():
+    answer = _simple_python_addition_response("bikin contoh fungsi python tambah dua angka")
+
+    assert "def tambah" in answer
+    assert "return a + b" in answer
+    assert "Ollama offline" not in answer
+
+
+def test_image_intent_fast_path_avoids_offline_model_message():
+    answer = _image_intent_response("bikin gambar kucing astronot")
+
+    assert "kucing astronot" in answer.lower()
+    assert "Ollama offline" not in answer
+    assert "install" not in answer.lower()
 
 
 def test_select_relevant_web_answer_prefers_distance_sentence():
