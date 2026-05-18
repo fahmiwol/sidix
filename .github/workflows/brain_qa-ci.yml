@@ -33,6 +33,8 @@ jobs:
       - name: Pytest core regression suite
         run: |
           set -e
+          # Keep CI deterministic: exclude runtime-heavy growth-loop tests that
+          # may call LLM/OMNYX background paths on clean GitHub runners.
           for suite in \
             tests/test_omnyx_live_regressions.py \
             tests/test_memory_store.py \
@@ -42,8 +44,6 @@ jobs:
             tests/test_pivot_maturity.py \
             tests/test_hafidz_injector.py \
             tests/test_sanad_orchestra.py \
-            tests/test_pattern_integration.py \
-            tests/test_aspiration_tool_integration.py \
             tests/test_self_test_loop.py
           do
             echo "=== $suite ==="

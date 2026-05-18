@@ -18751,3 +18751,7 @@ curl -X POST http://localhost:8765/agent/maqashid/tune -d '{"sample_size":30}'
 - FIX: Menambah guard `SIDIX_DISABLE_HAFIDZ_REINDEX` di `hafidz_injector.py` agar test/CI tidak memicu background `python -m brain_qa index` yang menggantung di runner GitHub.
 - UPDATE: Workflow `brain_qa CI` mengaktifkan `SIDIX_DISABLE_HAFIDZ_REINDEX=1`; production default tetap memicu reindex seperti sebelumnya.
 - TEST: Core regression suite per-file dengan env tersebut -> 195 passed; `test_hafidz_injector.py` turun dari hang menjadi 14 passed dalam ~0.2s lokal.
+### 2026-05-18
+- UPDATE: Mengeluarkan `test_pattern_integration.py` dan `test_aspiration_tool_integration.py` dari default GitHub CI karena keduanya runtime-heavy/growth-loop dan dapat memanggil LLM/OMNYX pada runner bersih; tetap diverifikasi lokal saat perubahan terkait.
+- TEST: Suite CI deterministik lokal dengan `SIDIX_DISABLE_HAFIDZ_REINDEX=1` -> 171 passed, 4 warning FastAPI deprecation.
+- NOTE: Growth-loop tests sebelumnya sudah diverifikasi lokal: `test_pattern_integration.py` + `test_aspiration_tool_integration.py` lolos dalam suite per-file, tetapi tidak cocok sebagai required CI gate tanpa runtime model khusus.
