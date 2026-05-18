@@ -3,6 +3,7 @@ from pathlib import Path
 from fastapi.testclient import TestClient
 
 from brain_qa.agent_serve import (
+    _answer_with_output_attachments,
     _detect_output_modality_intents,
     _tool_result_to_attachment,
     create_app,
@@ -49,6 +50,20 @@ def test_text_to_image_tool_result_becomes_clean_attachment():
         "prompt": "bikin gambar kucing astronot",
         "mode": "mock",
     }
+
+
+def test_image_attachment_answer_replaces_stale_no_file_copy():
+    answer = (
+        'Siap. Prompt gambar yang siap dipakai: "kucing astronot". '
+        "Jalur chat ini belum mengirim file gambar langsung; saya tidak akan mengarang URL gambar."
+    )
+
+    fixed = _answer_with_output_attachments(
+        answer,
+        [{"type": "image", "url": "/generated/images/abc.svg", "prompt": "bikin gambar kucing astronot"}],
+    )
+
+    assert fixed == 'Siap, saya buatkan gambar untuk: "bikin gambar kucing astronot". Lampiran gambar ada di bawah.'
 
 
 def test_generated_images_route_serves_flux_mock_svg():

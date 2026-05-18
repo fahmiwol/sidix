@@ -960,6 +960,27 @@ def _generated_image_candidates(filename: str) -> list[Path]:
     ]
 
 
+def _answer_with_output_attachments(answer: str, attachments: list[dict]) -> str:
+    """Keep public answer aligned with actual generated attachments."""
+    if not attachments:
+        return answer
+    has_image = any(att.get("type") == "image" and att.get("url") for att in attachments)
+    if not has_image:
+        return answer
+    lower = (answer or "").lower()
+    stale_phrases = [
+        "belum mengirim file gambar langsung",
+        "tidak akan mengarang url gambar",
+        "prompt gambar yang siap dipakai",
+    ]
+    if any(p in lower for p in stale_phrases):
+        prompt = next((str(att.get("prompt", "")).strip() for att in attachments if att.get("type") == "image"), "")
+        if prompt:
+            return f"Siap, saya buatkan gambar untuk: \"{prompt}\". Lampiran gambar ada di bawah."
+        return "Siap, saya buatkan gambar. Lampiran gambar ada di bawah."
+    return answer
+
+
 def create_app() -> "FastAPI":
     if not _FASTAPI_OK:
         raise RuntimeError("FastAPI tidak terinstall. Jalankan: pip install fastapi uvicorn")
@@ -4015,6 +4036,7 @@ def create_app() -> "FastAPI":
                         _mm_ans = auto_tune_response(_mm_ans, mode="general", auto_correct=False)
                     except Exception:
                         pass
+                _mm_ans = _answer_with_output_attachments(_mm_ans, output_attachments)
                 return ChatResponse(
                     session_id=f"holistic_mm_{uuid.uuid4().hex[:8]}",
                     answer=_mm_ans,
@@ -4047,6 +4069,7 @@ def create_app() -> "FastAPI":
                     result["answer"] = auto_tune_response(result.get("answer", ""), mode="general", auto_correct=False)
                 except Exception:
                     pass
+            result["answer"] = _answer_with_output_attachments(result.get("answer", ""), output_attachments)
 
             # Sprint J: persist user message + assistant answer to memory
             try:
@@ -4135,6 +4158,7 @@ def create_app() -> "FastAPI":
                     result.answer = auto_tune_response(result.answer, mode="general", auto_correct=False)
                 except Exception:
                     pass
+            result.answer = _answer_with_output_attachments(result.answer, output_attachments)
 
             duration_ms = int((time.time() - t0) * 1000)
 

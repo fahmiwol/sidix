@@ -18775,3 +18775,6 @@ curl -X POST http://localhost:8765/agent/maqashid/tune -d '{"sample_size":30}'
 - TEST: `python -m pytest apps\brain_qa\tests\test_image_attachment_wiring.py apps\brain_qa\tests\test_omnyx_live_regressions.py -q` -> 22 passed, 8 warning FastAPI deprecation.
 - TEST: `npm --prefix SIDIX_USER_UI run build` -> sukses; warning Vite hanya soal dynamic import chunking existing.
 - NOTE: Validasi runtime mock lokal dengan `SIDIX_IMAGE_MOCK=1` berhasil membuat attachment `/generated/images/<hash>.svg` dan file ditemukan oleh kandidat static serve; file test manual dibersihkan agar tidak ikut commit.
+### 2026-05-19
+- FIX: Menyelaraskan jawaban public image intent dengan attachment nyata: bila `attachments` image berhasil dibuat, kalimat lama `belum mengirim file gambar langsung` diganti menjadi respons natural bahwa gambar dilampirkan.
+- TEST: `python -m pytest apps\brain_qa\tests\test_image_attachment_wiring.py apps\brain_qa\tests\test_omnyx_live_regressions.py -q` -> 23 passed, 8 warning FastAPI deprecation.
