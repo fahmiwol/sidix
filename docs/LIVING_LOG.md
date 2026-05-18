@@ -18755,3 +18755,7 @@ curl -X POST http://localhost:8765/agent/maqashid/tune -d '{"sample_size":30}'
 - UPDATE: Mengeluarkan `test_pattern_integration.py` dan `test_aspiration_tool_integration.py` dari default GitHub CI karena keduanya runtime-heavy/growth-loop dan dapat memanggil LLM/OMNYX pada runner bersih; tetap diverifikasi lokal saat perubahan terkait.
 - TEST: Suite CI deterministik lokal dengan `SIDIX_DISABLE_HAFIDZ_REINDEX=1` -> 171 passed, 4 warning FastAPI deprecation.
 - NOTE: Growth-loop tests sebelumnya sudah diverifikasi lokal: `test_pattern_integration.py` + `test_aspiration_tool_integration.py` lolos dalam suite per-file, tetapi tidak cocok sebagai required CI gate tanpa runtime model khusus.
+### 2026-05-18
+- TEST: GitHub Actions `brain_qa CI` pada `main` commit `9f23707` hijau; required core regression suite selesai di runner GitHub.
+- ERROR: Deploy VPS masih blocked: SSH `trx` / `187.77.116.139:22` timeout dari lokal; live `ctrl.sidixlab.com` masih menjalankan versi lama (contoh `makasih ya` masih membalas pesan Ollama offline), sehingga commit terbaru belum aktif di production.
+- DECISION: Repo lokal dan GitHub sudah selaras; langkah berikutnya wajib membuka/menentukan akses SSH VPS baru atau memperbaiki secret deploy GitHub Actions sebelum live validation dapat dilanjutkan.
