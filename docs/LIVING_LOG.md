@@ -18744,3 +18744,6 @@ curl -X POST http://localhost:8765/agent/maqashid/tune -d '{"sample_size":30}'
 - FIX: Mengubah GitHub Actions `brain_qa CI` menjadi core regression suite dengan timeout 12 menit agar CI tidak macet pada full runtime-heavy tests, sementara tetap menutup jalur produksi utama: OMNYX live regressions, memory, auto-tune, hygiene, Hafidz, Sanad, pattern, aspiration, dan self-test loop.
 - TEST: `python -m pytest` core regression suite sesuai workflow -> 195 passed, 4 warning FastAPI deprecation.
 - TEST: Full local suite sebelumnya tetap hijau: 718 passed, 44 warning; artefak runtime test di `brain/` dibersihkan dan tidak ikut commit.
+### 2026-05-18
+- UPDATE: CI core regression suite kini berjalan per file dengan timeout 30 menit agar log GitHub Actions menunjukkan file yang lambat/hang, bukan berhenti di progress chunk pytest.
+- TEST: Menjalankan suite CI per-file lokal -> 195 passed; file paling lambat `test_pattern_integration.py` dan `test_aspiration_tool_integration.py` karena jalur runtime/LLM fallback.

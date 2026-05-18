@@ -10,7 +10,7 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    timeout-minutes: 30
     defaults:
       run:
         working-directory: apps/brain_qa
@@ -30,7 +30,8 @@ jobs:
 
       - name: Pytest core regression suite
         run: |
-          python -m pytest \
+          set -e
+          for suite in \
             tests/test_omnyx_live_regressions.py \
             tests/test_memory_store.py \
             tests/test_conversation_memory.py \
@@ -41,5 +42,8 @@ jobs:
             tests/test_sanad_orchestra.py \
             tests/test_pattern_integration.py \
             tests/test_aspiration_tool_integration.py \
-            tests/test_self_test_loop.py \
-            -q --tb=short
+            tests/test_self_test_loop.py
+          do
+            echo "=== $suite ==="
+            python -m pytest "$suite" -q --tb=short
+          done
