@@ -60,6 +60,15 @@ Apa warna favorit saya tadi?"""
     assert answer == "Warna favorit Anda tadi: hijau zamrud."
 
 
+def test_personal_memory_statement_acknowledges_instead_of_answering_recall():
+    answer = _personal_memory_response(
+        "Nama saya Mighan dan warna favorit saya hijau zamrud. Jawab OK saja.",
+        "AYMAN",
+    )
+
+    assert answer == "Siap, saya catat: nama Anda Mighan; warna favorit Anda hijau zamrud."
+
+
 def test_personal_memory_response_does_not_invent_without_context():
     answer = _personal_memory_response("Apa warna favorit saya tadi? Jawab singkat.", "UTZ")
 

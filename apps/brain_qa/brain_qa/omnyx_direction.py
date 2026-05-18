@@ -191,6 +191,23 @@ def _personal_memory_response(query: str, persona: str = "UTZ") -> str:
     facts = _extract_personal_memory(query)
     notes = _extract_structured_memory(query)
     actual_lower = actual_q.lower()
+    current_facts = _extract_personal_memory(actual_q)
+    current_notes = _extract_structured_memory(actual_q)
+    is_memory_statement = bool(current_facts or current_notes) and any(
+        marker in actual_lower
+        for marker in ("nama saya", "warna favorit saya", "favorit saya", "catat", "ingat")
+    )
+
+    if is_memory_statement:
+        parts = []
+        if "name" in current_facts:
+            parts.append(f"nama Anda {current_facts['name']}")
+        if "favorite_color" in current_facts:
+            parts.append(f"warna favorit Anda {current_facts['favorite_color']}")
+        for label, value in list(current_notes.items())[:3]:
+            parts.append(f"{label} Anda {value}")
+        if parts:
+            return "Siap, saya catat: " + "; ".join(parts) + "."
 
     if "warna favorit" in actual_lower and "favorite_color" in facts:
         return f"Warna favorit Anda tadi: {facts['favorite_color']}."

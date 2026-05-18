@@ -18726,3 +18726,6 @@ curl -X POST http://localhost:8765/agent/maqashid/tune -d '{"sample_size":30}'
 ### 2026-05-18
 - **FIX:** Greeting classifier now treats `halo sidix` as greeting fast-path, avoiding unnecessary model/tool route when Ollama is offline.
 - **TEST:** Added regression `test_halo_sidix_is_greeting_not_model_query`; focused QA subset now 43 passed.
+### 2026-05-18
+- **FIX:** Personal-memory fast path now distinguishes new memory statements from recall questions by inspecting the current question only, not the injected history block.
+- **TEST:** Live continuity verified: `siapa presiden indonesia sekarang?` -> Prabowo, follow-up `Kalo wakilnya?` -> Gibran, same `conversation_id`; local focused QA now 44 passed.
