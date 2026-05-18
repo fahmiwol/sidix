@@ -32,6 +32,31 @@ def test_create_and_get_conversation():
     assert conv["title"] == "Hello"
 
 
+def test_assistant_context_is_sanitized_before_memory_reuse():
+    conv_id = memory_store.create_conversation(user_id="qa")
+    memory_store.add_message(conv_id, "user", "siapa presiden indonesia?")
+    memory_store.add_message(
+        conv_id,
+        "assistant",
+        """Presiden Indonesia saat ini adalah Prabowo Subianto.
+
+---
+
+**ATRIBUSI**
+- Web Search: internal source dump
+
+[AKHIR KONTEKS]
+[PERTANYAAN SAAT INI]
+kalo wakilnya?""",
+    )
+
+    context = memory_store.get_recent_context(conv_id)
+
+    assert context[-1]["content"] == "Presiden Indonesia saat ini adalah Prabowo Subianto."
+    assert "ATRIBUSI" not in context[-1]["content"]
+    assert "[AKHIR KONTEKS]" not in context[-1]["content"]
+
+
 def test_list_conversations():
     memory_store.create_conversation(user_id="u2", title="A")
     memory_store.create_conversation(user_id="u2", title="B")

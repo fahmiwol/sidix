@@ -42,6 +42,10 @@ try:
     from fastapi import FastAPI, HTTPException, Request
     from fastapi.middleware.cors import CORSMiddleware
     from pydantic import BaseModel, Field
+    try:
+        from pydantic import field_validator as _field_validator
+    except ImportError:  # Pydantic v1 fallback
+        from pydantic import validator as _field_validator
     _FASTAPI_OK = True
 except ImportError:
     _FASTAPI_OK = False
@@ -459,6 +463,14 @@ class ChatResponse(BaseModel):
     hafidz_stored: bool = False     # True jika result disimpan ke Hafidz
     # ── Output Modality Attachments (Sprint Beta: image / audio / 3D / video) ──
     attachments: list[dict] = []    # [{type: image|audio|3d|video, url: str, mime_type: str, title: str}]
+
+    @_field_validator("answer")
+    def _sanitize_answer(cls, value: str) -> str:
+        try:
+            from .public_hygiene import sanitize_public_answer
+            return sanitize_public_answer(value)
+        except Exception:
+            return value
 
 
 class GenerateRequest(BaseModel):

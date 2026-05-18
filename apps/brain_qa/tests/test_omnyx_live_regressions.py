@@ -8,6 +8,7 @@ from brain_qa.omnyx_direction import (
 )
 from datetime import datetime, timezone
 from brain_qa.agent_react import _apply_hygiene, _reformulate_with_context
+from brain_qa.agent_serve import ChatResponse
 
 
 def test_hijau_does_not_match_hi_greeting():
@@ -137,3 +138,33 @@ kalo wakilnya?
     assert answer == "Presiden Indonesia saat ini adalah Prabowo Subianto."
     assert "[AKHIR KONTEKS]" not in hygienic
     assert "[PERTANYAAN SAAT INI]" not in hygienic
+
+
+def test_chat_response_sanitizes_answer_as_last_public_guard():
+    response = ChatResponse(
+        session_id="qa",
+        answer="""[Auto-Tune Review]
+  - Klaim faktual tanpa atribusi sumber
+  Saran perbaikan:
+    -> Cantumkan sumber
+
+---
+
+Wakil Presiden Indonesia saat ini adalah Gibran Rakabuming Raka.
+
+===
+KONTEKS DARI SUMBER PARALEL
+[CORPUS SEARCH]
+raw internal chunk""",
+        persona="AYMAN",
+        mode="agent",
+        steps=1,
+        citations=[],
+        duration_ms=1,
+        finished=True,
+    )
+
+    assert response.answer == "Wakil Presiden Indonesia saat ini adalah Gibran Rakabuming Raka."
+    assert "Auto-Tune Review" not in response.answer
+    assert "Saran perbaikan" not in response.answer
+    assert "KONTEKS DARI SUMBER PARALEL" not in response.answer

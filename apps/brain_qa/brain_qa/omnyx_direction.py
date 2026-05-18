@@ -56,27 +56,8 @@ def _actual_question(query: str) -> str:
 
 def _sanitize_public_answer(text: str) -> str:
     """Remove internal prompt/context leakage before returning an answer."""
-    if not text:
-        return text
-    if "Auto-Tune Review" in text and "\n---" in text:
-        text = text.split("\n---", 1)[1].lstrip("- \t\r\n")
-    try:
-        from .agent_react import _apply_hygiene
-        text = _apply_hygiene(text)
-    except Exception:
-        pass
-
-    markers = ["\n---", "**ATRIBUSI**", "**RESPONS NATURAL**", "[AKHIR KONTEKS]", "Konteks Memori"]
-    cut_positions = [text.find(marker) for marker in markers if text.find(marker) > 0]
-    if cut_positions:
-        candidate = text[:min(cut_positions)].strip()
-        if len(candidate) >= 20:
-            text = candidate
-
-    text = re.sub(r"(?im)^\s*\*\*(ATRIBUSI|RESPONS NATURAL)\*\*\s*$", "", text)
-    text = re.sub(r"(?im)^\s*-\s*(Web Search|Corpus|Semantic Index|Persona)\s*:.*$", "", text)
-    text = re.sub(r"\n{3,}", "\n\n", text)
-    return text.strip()
+    from .public_hygiene import sanitize_public_answer
+    return sanitize_public_answer(text)
 
 
 def _current_indonesia_official_response(query: str) -> str:

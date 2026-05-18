@@ -200,6 +200,12 @@ def add_message(
     confidence_score: Optional[float] = None,
 ) -> int:
     now = _now()
+    if role == "assistant":
+        try:
+            from .public_hygiene import sanitize_public_answer
+            content = sanitize_public_answer(content)
+        except Exception:
+            pass
     with _transaction() as conn:
         cur = conn.execute(
             """

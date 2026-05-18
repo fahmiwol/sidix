@@ -18718,3 +18718,8 @@ curl -X POST http://localhost:8765/agent/maqashid/tune -d '{"sample_size":30}'
 
 ### 2026-05-18
 - **UPDATE:** Deploy guidance dan script verifikasi diarahkan ke VPS aktif `trx` / `187.77.116.139`; target produksi diselaraskan ke `main` agar tidak terus bergantung pada worktree branch sementara.
+### 2026-05-18
+- **FIX:** Public answer hygiene globalized: `ChatResponse` now sanitizes `answer` at response boundary, and assistant messages are sanitized before reuse in conversation memory.
+- **IMPL:** Added `public_hygiene.py` as deterministic shared sanitizer for Auto-Tune/debug/context/source leakage.
+- **TEST:** Added regression tests for response-boundary sanitizer and memory-store sanitization; subset QA passed: `test_omnyx_live_regressions`, `test_memory_store`, `test_conversation_memory`, `test_maqashid_auto_tune`, `test_ui_stream_memory_wiring` = 42 passed.
+- **UPDATE:** Relaxed stream-memory UI test to assert `conversationId` behavior instead of stale exact TypeScript option signature.

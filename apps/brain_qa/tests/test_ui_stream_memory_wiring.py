@@ -9,7 +9,7 @@ MAIN_TS = ROOT / "SIDIX_USER_UI" / "src" / "main.ts"
 def test_holistic_stream_sends_conversation_id_to_backend():
     api = API_TS.read_text(encoding="utf-8")
 
-    assert "opts?: { conversationId?: string }" in api
+    assert "conversationId?: string" in api
     assert "if (opts?.conversationId) body.conversation_id = opts.conversationId;" in api
     assert "if (opts?.conversationId) headers['x-conversation-id'] = opts.conversationId;" in api
     assert "body: JSON.stringify(body)" in api
