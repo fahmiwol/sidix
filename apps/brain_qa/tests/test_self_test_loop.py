@@ -11,6 +11,7 @@ import asyncio
 import json
 import sys
 from pathlib import Path
+import pytest
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
@@ -34,6 +35,7 @@ def test_fallback_questions():
     print("OK test_fallback_questions")
 
 
+@pytest.mark.asyncio
 async def test_generate_test_questions_fallback():
     # Kalau LLM tidak available, harus return fallback
     qs = await generate_test_questions(n=2, domains=["factual_indonesia"])

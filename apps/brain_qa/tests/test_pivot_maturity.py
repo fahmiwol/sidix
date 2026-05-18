@@ -38,7 +38,8 @@ class TestResponseHygiene:
     def test_dedupe_sanad_missing(self):
         text = "[⚠️ SANAD MISSING]\n[⚠️ SANAD MISSING]\ncontent"
         out = _apply_hygiene(text)
-        assert out.count("[⚠️ SANAD MISSING]") == 1
+        assert "SANAD MISSING" not in out
+        assert out == "content"
 
     def test_dedupe_exploratory(self):
         text = "body\n\n[EXPLORATORY — ini adalah eksplorasi ijtihad, bukan fatwa]\n[EXPLORATORY — ini adalah eksplorasi ijtihad, bukan fatwa]"

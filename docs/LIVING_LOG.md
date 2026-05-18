@@ -18734,3 +18734,9 @@ curl -X POST http://localhost:8765/agent/maqashid/tune -d '{"sample_size":30}'
 - FIX: Menambah fast-path deterministic di `omnyx_direction.py` untuk greeting terima kasih dengan partikel, definisi LLM, common fact Bumi-Matahari, snippet Python sederhana, dan intent text-to-image tanpa mengarang URL gambar.
 - TEST: `python -m pytest apps\brain_qa\tests\test_omnyx_live_regressions.py apps\brain_qa\tests\test_memory_store.py apps\brain_qa\tests\test_conversation_memory.py apps\brain_qa\tests\test_maqashid_auto_tune.py apps\brain_qa\tests\test_ui_stream_memory_wiring.py -q` -> 49 passed, 4 warning FastAPI deprecation.
 - NOTE: Verifikasi lokal OMNYX direct memastikan sumber fast-path: greeting, concept_fast_path, grounding_common_fact, coding_fast_path, image_intent.
+### 2026-05-18
+- FIX: Menambah `pytest-asyncio` ke `apps/brain_qa/requirements.txt` agar test async di GitHub Actions berjalan seperti lokal.
+- FIX: Menyelaraskan test hygiene `test_pivot_maturity.py` dengan kebijakan publik terbaru: label `SANAD MISSING` legacy disanitasi penuh dari jawaban user.
+- FIX: Menandai `test_generate_test_questions_fallback` dengan `pytest.mark.asyncio` agar tidak gagal di pytest standar.
+- TEST: `python -m pytest apps\brain_qa\tests -q --tb=short` -> 718 passed, 44 warning deprecation.
+- ERROR: Deploy production belum berhasil karena SSH ke VPS baru `187.77.116.139` timeout dari lokal dan GitHub Actions deploy gagal karena secret `SIDIX_VPS_USER/HOST` kosong. Live app masih menjalankan versi lama sampai akses deploy diperbaiki.
