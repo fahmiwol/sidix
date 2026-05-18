@@ -116,3 +116,10 @@ patch_websearch.py
 test_websearch.py
 .playwright-mcp/
 apps/brain_qa/brain/
+
+# Local/prunable agent worktree snapshots
+gallant-ellis-7cd14d/
+epic-cray-3e451f/
+pedantic-banach-c8232d/
+serene-murdock-dbcb1f/
+
