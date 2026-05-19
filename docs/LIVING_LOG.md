@@ -18789,3 +18789,8 @@ curl -X POST http://localhost:8765/agent/maqashid/tune -d '{"sample_size":30}'
 - TEST: Local dependency image-gen diinstal (`diffusers`, `torch`, `transformers`, `accelerate`). Status lokal: `diffusers=True`, `torch=True`, tetapi `device=cpu`, `cuda_available=False`, sehingga mode tetap `mock` dengan reason `GPU unavailable; CPU FLUX disabled by default`.
 - TEST: `python -m pytest apps\brain_qa\tests\test_flux_pipeline_readiness.py apps\brain_qa\tests\test_image_attachment_wiring.py apps\brain_qa\tests\test_omnyx_live_regressions.py -q` -> 26 passed, 12 warning FastAPI deprecation.
 - DECISION: Jangan paksa FLUX CPU di production/laptop karena risiko lambat/OOM. Jalur real FLUX berikutnya perlu GPU lokal/RunPod dengan env `SIDIX_IMAGE_DEVICE=cuda`; training/LoRA gambar dilakukan setelah inference FLUX real stabil.
+### 2026-05-19
+- UPDATE: Alignment registry diperbarui ke `main`/local commit `d0c3866` untuk local FLUX readiness; live production dicatat masih drift karena `/generate/image/status` return 404 sampai VPS pull/restart berhasil.
+- TEST: Hostinger API read-only memverifikasi VPS `trx.core` (`187.77.116.139`, VM `1651685`) running dan firewall group `258877` berisi allow TCP 22/80/443/8003/39206.
+- UPDATE: Hostinger firewall sync action `94854272` untuk VM `1651685` berhasil (`state=success`), tetapi SSH `187.77.116.139:22` dari Codex local tetap timeout; 80/443 dan live `/health` tetap sehat.
+- DECISION: Deploy commit `d0c3866` belum bisa diklaim live. Jalur aman sementara adalah Hostinger browser terminal: `cd /opt/sidix && git pull --ff-only origin main && pm2 restart sidix-brain --update-env`, lalu validasi `/generate/image/status`.

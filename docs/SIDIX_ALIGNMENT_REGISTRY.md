@@ -1,6 +1,6 @@
 # SIDIX Alignment Registry
 
-Last verified: 2026-05-18
+Last verified: 2026-05-19
 
 Purpose: single source of truth for keeping SIDIX local repo, GitHub, VPS backend, live apps, and Hugging Face artifacts aligned. This file must not contain secrets.
 
@@ -8,7 +8,7 @@ Purpose: single source of truth for keeping SIDIX local repo, GitHub, VPS backen
 
 - GitHub: https://github.com/fahmiwol/sidix
 - Canonical branch: `main`
-- Current GitHub `main`: `1eaf6875512dd6f876c755aa7222737e89d07e36`
+- Current GitHub `main`: `d0c38667f7ceeee856b01df53944b8897ac3b1ec`
 - CI status: `brain_qa CI` green for latest `main`
 - Rule: code and docs land in `main`; temporary worktrees are not production truth until merged.
 
@@ -16,7 +16,7 @@ Purpose: single source of truth for keeping SIDIX local repo, GitHub, VPS backen
 
 - Path: `C:\SIDIX-AI`
 - Branch: `main`
-- Current local HEAD: `1eaf6875512dd6f876c755aa7222737e89d07e36`
+- Current local HEAD: `d0c38667f7ceeee856b01df53944b8897ac3b1ec`
 - Alignment: local `main` equals GitHub `main` at verification time.
 
 ## Production VPS / Backend
@@ -27,9 +27,9 @@ Purpose: single source of truth for keeping SIDIX local repo, GitHub, VPS backen
 - Production branch target: `main`
 - Process manager: `pm2`
 - Primary backend process: `sidix-brain`
-- Last confirmed production deploy from server console: fast-forward to `9c92759`, then `pm2 restart sidix-brain --update-env`.
-- Current drift: GitHub is ahead by `1eaf687`, a documentation-only Living Log commit after production validation. Production-relevant code is aligned with the deployed `9c92759` state.
-- SSH note: direct SSH audit from Codex local timed out on `187.77.116.139:22`; Hostinger console access is currently the reliable deploy path.
+- Last confirmed production deploy from server console / SSH: fast-forward to `c116047` for image attachment wiring, then `pm2 restart sidix-brain --update-env`.
+- Current drift: GitHub/local are at `d0c3866` with local FLUX readiness endpoint (`/generate/image/status`) and safer CPU fallback. Live backend still returns 404 for that endpoint, so VPS has not yet deployed this commit.
+- SSH note: direct SSH audit from Codex local currently times out on `187.77.116.139:22`. Hostinger API confirms `trx.core` VM `1651685` is running, firewall group `258877` includes TCP 22/80/443/8003/39206 from any, and a firewall sync action on 2026-05-19 succeeded; port 22 still times out from Codex local. Hostinger browser terminal is currently the reliable deploy path.
 
 Production deploy command:
 
@@ -77,7 +77,8 @@ Validated live UX checks after deploy:
 
 Known live gaps:
 
-- Image intent no longer falls to offline-model error, but still returns a text prompt/fallback instead of an actual generated image attachment.
+- Image intent now returns a real attachment URL in mock mode (`/generated/images/<hash>.svg`) through `/agent/chat_holistic` and `/agent/chat_holistic_stream`; real FLUX output still waits for GPU-backed inference.
+- `/generate/image/status` exists in GitHub/local `d0c3866` but is not live yet because VPS deploy is blocked by SSH access.
 - Health output is slightly ambiguous: top-level `model_ready=true`, while nested `sidix_local_engine.ready=false`. Treat this as observability drift to fix, not proof that live chat is broken.
 
 ## Hugging Face
@@ -118,4 +119,3 @@ Verification gap:
 4. Hugging Face model repos are artifact mirrors, not the code source of truth.
 5. Dataset or Space names are not canonical until created, verified, and recorded in this registry.
 6. Any production drift, deploy, rollback, test result, or model artifact change must be appended to `docs/LIVING_LOG.md`.
-
