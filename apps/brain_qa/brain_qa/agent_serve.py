@@ -550,6 +550,8 @@ class ImageGenResponse(BaseModel):
     url: str
     mode: str
     model: str
+    reason: str = ""
+    device: str = ""
 
 
 class TTSRequest(BaseModel):
@@ -10899,6 +10901,18 @@ h1{{color:#0af}}p{{color:#aaa}}a{{color:#0af}}</style></head>
             return {"ok": False, "error": str(e)}
 
     # ── Sprint 8b: Image Generation endpoint ────────────────────────────────
+    @app.get("/generate/image/status", tags=["Generate"])
+    async def generate_image_status():
+        """Report local FLUX readiness without loading model weights."""
+        try:
+            import sys
+            from pathlib import Path
+            sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
+            from apps.image_gen.flux_pipeline import get_status
+            return get_status()
+        except Exception as e:
+            return {"ok": False, "mode": "mock", "ready": False, "reason": str(e)}
+
     @app.post("/generate/image", response_model=ImageGenResponse, tags=["Generate"])
     async def generate_image_endpoint(req: ImageGenRequest):
         """Generate gambar via FLUX.1 (local) atau mock fallback."""
@@ -10920,6 +10934,8 @@ h1{{color:#0af}}p{{color:#aaa}}a{{color:#0af}}</style></head>
                 url=f"/generated/images/{fname}",
                 mode=result["mode"],
                 model=result["model"],
+                reason=result.get("reason", ""),
+                device=result.get("device", ""),
             )
         except Exception as e:
             raise HTTPException(status_code=500, detail=str(e))
