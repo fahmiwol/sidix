@@ -31,6 +31,7 @@ from pathlib import Path
 from typing import Optional
 
 import requests
+import time
 
 # Load .env dari direktori brain_qa (satu level di atas package ini)
 try:
@@ -223,11 +224,23 @@ def ollama_generate(
     }
 
     try:
-        r = requests.post(
-            f"{OLLAMA_URL}/api/chat",
-            json=payload,
-            timeout=OLLAMA_TIMEOUT,
-        )
+        # F-193d retry: transient ConnectionError (mis. ollama sedang load model
+        # utk request lain) sempat dikembalikan SEBAGAI jawaban ("Ollama offline")
+        # padahal servernya hidup — retry singkat sebelum menyerah.
+        r = None
+        for _attempt in range(3):
+            try:
+                r = requests.post(
+                    f"{OLLAMA_URL}/api/chat",
+                    json=payload,
+                    timeout=OLLAMA_TIMEOUT,
+                )
+                break
+            except requests.exceptions.ConnectionError:
+                if _attempt == 2:
+                    raise
+                log.warning("Ollama ConnectionError — retry %d/2", _attempt + 1)
+                time.sleep(1.5 * (_attempt + 1))
         r.raise_for_status()
         data = r.json()
         text = data.get("message", {}).get("content", "").strip()

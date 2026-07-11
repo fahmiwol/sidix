@@ -75,12 +75,54 @@ def _current_indonesia_official_response(query: str) -> str:
     return ""
 
 
+# F-193d (2026-07-12): canonical facts — CLAUDE.md ("5 Persona LOCKED") +
+# cognitive_synthesizer grounding block (definisi IHOS).
+_SIDIX_PERSONAS_TXT = (
+    "5 persona SIDIX:\n"
+    "1. **UTZ** — creative/visual\n"
+    "2. **ABOO** — engineer/technical\n"
+    "3. **OOMAR** — strategist/bisnis\n"
+    "4. **ALEY** — researcher/akademik\n"
+    "5. **AYMAN** — general/chat hangat"
+)
+_SIDIX_IHOS_TXT = (
+    "IHOS = Islamic Holistic Ontological System — framework rekayasa knowledge "
+    "SIDIX yang mengadopsi prinsip holisme, ontologi berlapis, dan integritas "
+    "sanad (chain of citation). IHOS adalah engineering framework, bukan label "
+    "agama eksklusif."
+)
+_SIDIX_INTRO_TXT = (
+    "SIDIX adalah AI agent self-hosted yang dibangun sebagai organisme digital: "
+    "punya memori, RAG/sanad, persona, tool-calling, evaluasi diri, dan "
+    "orkestrasi agar bisa belajar, membantu, serta mencipta secara iteratif."
+)
+
+
 def _sidix_identity_response(query: str) -> str:
-    """Canonical product identity answer; do not route SIDIX self-queries to web snippets."""
+    """Canonical product identity answer; do not route SIDIX self-queries to web snippets.
+
+    F-193d: baseline jujur menemukan "Halo SIDIX, siapa kamu?" lolos ke corpus
+    dan dijawab "Halocidin" (peptida) — frasa self-question ("siapa kamu") kini
+    dikenali TANPA syarat kata "sidix"; cabang IHOS & persona ditambah supaya
+    pertanyaan spesifik tidak dijawab intro generik.
+    """
     q = query.lower()
-    if "sidix" not in q:
+
+    # self-questions are identity even without the word "sidix"
+    asks_self = any(t in q for t in (
+        "siapa kamu", "kamu siapa", "siapa anda", "anda siapa", "kamu ini siapa",
+        "kenalkan dirimu", "perkenalkan dirimu", "who are you",
+    ))
+
+    if not asks_self and "sidix" not in q and "ihos" not in q:
         return ""
-    asks_identity = any(
+
+    if "ihos" in q:
+        return _SIDIX_IHOS_TXT
+    if "persona" in q and ("sidix" in q or "sebutkan" in q or asks_self):
+        return _SIDIX_PERSONAS_TXT
+
+    asks_identity = asks_self or any(
         phrase in q
         for phrase in (
             "apa itu", "siapa sidix", "jelaskan sidix", "tentang sidix",
@@ -89,11 +131,9 @@ def _sidix_identity_response(query: str) -> str:
     )
     if not asks_identity:
         return ""
-    return (
-        "SIDIX adalah AI agent self-hosted yang dibangun sebagai organisme digital: "
-        "punya memori, RAG/sanad, persona, tool-calling, evaluasi diri, dan "
-        "orkestrasi agar bisa belajar, membantu, serta mencipta secara iteratif."
-    )
+    if asks_self:
+        return "Aku **SIDIX** — " + _SIDIX_INTRO_TXT[13:] + "\n\n" + _SIDIX_PERSONAS_TXT
+    return _SIDIX_INTRO_TXT
 
 
 def _llm_definition_response(query: str) -> str:
