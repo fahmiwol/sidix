@@ -16,6 +16,83 @@ from .memory import retrieve_relevant_cards, format_memory_context
 from .sanad_ranking import apply_sanad_weight, normalize_sanad_tier
 
 
+
+# RESCUE-SPRINT 2026-07-01: RAG Relevance Gate helpers
+# Filters retrieved corpus chunks whose answer body is semantically
+# unrelated to the query, preventing hallucinated omnyx_synthesis chunks
+# (e.g. D'Academy answer stored for '7 dikali 8') from grounding synthesis.
+import os as _rag_os
+import re as _rag_re
+_RAG_THRESHOLD = float(_rag_os.getenv('SIDIX_RAG_RELEVANCE_THRESHOLD', '0.12'))  # RESCUE-SPRINT 2026-07-01
+
+
+def _rag_body(text: str) -> str:
+    """Extract ONLY the answer body from an omnyx_synthesis chunk.
+
+    Structure of these chunks:
+        --- YAML frontmatter ---
+        # <question title>
+        ## Jawaban <actual answer text here>
+        ## Sumber ...
+
+    We extract what comes after '## Jawaban' and before the next '##' heading.
+    This prevents the question-title echo from inflating cosine scores.
+    Falls back to full de-frontmatted text if the pattern is absent.
+    """
+    # Strip YAML frontmatter
+    stripped = _rag_re.sub(r'^---.*?---', '', text, flags=_rag_re.DOTALL).strip()
+    # Find '## Jawaban <content>' — content may be on same line or next
+    m = _rag_re.search(
+        r'##\s+Jawaban\s+(.+?)(?=\n##|\Z)',
+        stripped,
+        flags=_rag_re.IGNORECASE | _rag_re.DOTALL,
+    )
+    if m:
+        return m.group(1).strip()
+    # Second pattern: '## Jawaban (FAILED)\n\n<body>' in Hafidz lesson files
+    m2 = _rag_re.search(
+        r'##\s+Jawaban\s*\([^)]*\)\s*\n+\s*(.+?)(?=\n##|\Z)',
+        stripped,
+        flags=_rag_re.IGNORECASE | _rag_re.DOTALL,
+    )
+    if m2:
+        return m2.group(1).strip()
+    # Fallback: strip first two headings (title + ## heading) and return body
+    body = _rag_re.sub(r'^#+\s+[^\n]+\n?', '', stripped, flags=_rag_re.MULTILINE, count=2).strip()
+    return body
+
+
+def _rag_cosine(q_toks: list, d_toks: list) -> float:
+    """TF cosine similarity; uses numpy if available, Jaccard fallback."""
+    if not q_toks or not d_toks:
+        return 0.0
+    try:
+        import numpy as np
+        from collections import Counter
+        vocab = list(set(q_toks) | set(d_toks))
+        vidx = {t: i for i, t in enumerate(vocab)}
+        n = len(vocab)
+        qv = np.zeros(n, dtype=float)
+        dv = np.zeros(n, dtype=float)
+        for t, c in Counter(q_toks).items():
+            qv[vidx[t]] = c
+        for t, c in Counter(d_toks).items():
+            dv[vidx[t]] = c
+        denom = np.linalg.norm(qv) * np.linalg.norm(dv)
+        return float(np.dot(qv, dv) / denom) if denom > 1e-9 else 0.0
+    except ImportError:
+        qs, ds = set(q_toks), set(d_toks)
+        u = len(qs | ds)
+        return len(qs & ds) / u if u else 0.0
+
+
+def _rag_is_failed_lesson(text: str) -> bool:
+    """True for Hafidz-stored FAILED lesson chunks (must never ground answers)."""
+    low = text.lower()
+    return (('store_type: lesson' in low) or ('store_type:lesson' in low)) and (
+        'jawaban (failed)' in low or 'failure_context:' in low
+    )
+
 @dataclass(frozen=True)
 class Citation:
     source_path: str
@@ -380,6 +457,50 @@ def answer_query_and_citations(
                 sanad_tier=c.sanad_tier,
             )
         )
+
+    # RESCUE-SPRINT 2026-07-01: Relevance gate.
+    # Filter citations whose answer body has low cosine similarity to the query
+    # OR which are Hafidz FAILED lesson chunks.
+    # Uses full chunk text (looked up by chunk_id) for accurate body extraction.
+    # If ALL citations are filtered -> return ('', []) so the caller falls through
+    # to web search or the model's own parametric knowledge.
+    # Threshold: SIDIX_RAG_RELEVANCE_THRESHOLD env var (default 0.35).
+    try:
+        import logging as _rgl
+        _rlog = _rgl.getLogger(__name__)
+        _relevant: list[Citation] = []
+        _filtered_count = 0
+        for _cit in citations:
+            # Hard exclude: Hafidz FAILED lesson chunks
+            if _rag_is_failed_lesson(_cit.snippet):
+                _rlog.info('[rag_gate] EXCLUDED failed_lesson: %.60s', _cit.source_title)
+                _filtered_count += 1
+                continue
+            # Look up full chunk text by chunk_id for accurate body extraction
+            _full_text = _cit.snippet
+            try:
+                _chunk_obj = next(c for c in chunks if c.chunk_id == _cit.chunk_id)
+                _full_text = _chunk_obj.text
+            except StopIteration:
+                pass
+            _body = _rag_body(_full_text)
+            _body_toks = tokenize(_body)
+            _sim = _rag_cosine(q_tokens, _body_toks)
+            if _sim >= _RAG_THRESHOLD:
+                _relevant.append(_cit)
+            else:
+                _rlog.info(
+                    '[rag_gate] FILTERED sim=%.3f title=%.60s', _sim, _cit.source_title)
+                _filtered_count += 1
+        if not _relevant and citations:
+            _rlog.info(
+                '[rag_gate] ALL_FILTERED q=%.60r thr=%.2f', question, _RAG_THRESHOLD)
+            return '', []  # no corpus grounding — model uses own knowledge
+        citations = _relevant if _relevant else citations
+    except Exception as _gate_err:
+        import logging as _rgl2
+        _rgl2.getLogger(__name__).warning(
+            '[rag_gate] error=%s passthrough', _gate_err)
 
     # Memory injection — inject kartu relevan sebelum answer
     memory_cards = retrieve_relevant_cards(question, top_n=3)

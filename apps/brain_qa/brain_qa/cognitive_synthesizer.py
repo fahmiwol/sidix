@@ -77,7 +77,12 @@ def _format_corpus_block(corpus_data: dict) -> str:
     if not corpus_data:
         return ""
     if "output" in corpus_data:
-        return f"[CORPUS SEARCH]\n{str(corpus_data['output'])[:1200]}"
+        # RESCUE-SPRINT 2026-07-01: empty output = gate filtered all docs;
+        # return '' so LLM is not confused by an empty [CORPUS SEARCH] block
+        _out = corpus_data["output"]
+        if not _out or not str(_out).strip():
+            return ""
+        return f"[CORPUS SEARCH]\n{str(_out)[:1200]}"
     if corpus_data.get("results"):
         items = corpus_data["results"][:3]
         return "[CORPUS SEARCH]\n" + "\n".join(

@@ -413,6 +413,24 @@ async def retrieve_lesson_warnings(
         
         failure = meta.get("failure_context", "Unknown failure")
         
+        # RESCUE-SPRINT 2026-07-01: lesson relevance gate
+        # Lessons whose ANSWER BODY is off-topic (e.g. D Academy for a math
+        # query) must NOT be injected -- the small LLM may copy the bad answer.
+        try:
+            from .query import _rag_cosine, _rag_body, tokenize as _rag_tok
+            import os as _hi_os
+            _hi_thr = float(_hi_os.getenv("SIDIX_HAFIDZ_LESSON_THRESHOLD", "0.12"))
+            _lesson_answer = parsed.get("answer", "")
+            _lesson_body = _rag_body(_lesson_answer) if _lesson_answer else ""
+            _q_toks = _rag_tok(query)
+            _b_toks = _rag_tok(_lesson_body)
+            _sim = _rag_cosine(_q_toks, _b_toks)
+            # Filter if: (a) answer body off-topic, OR (b) no extractable body
+            if not _lesson_body or _sim < _hi_thr:
+                log.info("[hafidz] LESSON_FILTERED sim=%.3f body_len=%d q=%.40r", _sim, len(_lesson_body), query)
+                continue
+        except Exception as _gate_e:
+            log.debug("[hafidz] lesson_gate error: %s", _gate_e)
         lessons.append(HafidzLesson(
             query=parsed.get("query", ""),
             answer=parsed.get("answer", ""),

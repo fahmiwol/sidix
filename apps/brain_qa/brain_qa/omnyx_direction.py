@@ -540,6 +540,17 @@ class IntentClassifier:
             log.info("[omnyx] Intent detected (greeting fast-path): greeting → no tools")
             return "greeting", []
 
+        # RESCUE-SPRINT 2026-07-01: Pre-check high-priority intents
+        # that would be shadowed by substring matches in the general loop.
+        # berapa must fire before apa (factual_what) since apa in berapa.
+        # kali/bagi/tambah/kurang must fire as calculation before factual_what.
+        for _priority_intent in ("factual_how_many", "calculation"):
+            _pkw = cls.PATTERNS.get(_priority_intent, [])
+            if any((" " + kw + " ") in (" " + q_lower + " ") for kw in _pkw):
+                _ptools = cls.TOOL_MAP.get(_priority_intent, ["corpus_search", "web_search"])
+                log.info("[omnyx] Intent detected (priority): %s → %s", _priority_intent, _ptools)
+                return _priority_intent, _ptools
+
         # Rule-based matching
         for intent, keywords in cls.PATTERNS.items():
             if intent in ("greeting", "personal_memory"):
@@ -636,6 +647,21 @@ class ToolExecutor:
     async def _exec_calculator(self, args: dict) -> dict:
         import math
         expr = args.get("expression", "")
+        # RESCUE-SPRINT 2026-07-01: when called from TOOL_MAP turn-1 path,
+        # args has {"query": ...} not {"expression": ...}.
+        # Extract expression inline (ToolExecutor has no _extract_expression).
+        if not expr or expr == "0":
+            query_hint = args.get("query", "")
+            if query_hint:
+                import re as _calc_re
+                _qn = query_hint.lower()
+                _qn = _calc_re.sub(r'\bdikali\b|\bkali\b|\bdikalikan\b', '*', _qn)
+                _qn = _calc_re.sub(r'\bdibagi\b|\bbagi\b', '/', _qn)
+                _qn = _calc_re.sub(r'\bditambah\b|\btambah\b|\bplus\b', '+', _qn)
+                _qn = _calc_re.sub(r'\bdikurang\b|\bkurang\b|\bminus\b', '-', _qn)
+                _m = _calc_re.search(r'(\d+\.?\d*)\s*([\+\-\*\/\^])\s*(\d+\.?\d*)', _qn)
+                if _m:
+                    expr = _m.group(1) + ' ' + _m.group(2) + ' ' + _m.group(3)
         # Safe eval with limited namespace
         safe_ns = {
             "abs": abs, "round": round, "max": max, "min": min,
@@ -834,6 +860,30 @@ class OmnyxDirector:
             # Auto-store to knowledge base
             await self._auto_store(session)
             return session
+
+        # RESCUE-SPRINT 2026-07-01: Calculator fast-path
+        # If calculator returned a valid numeric result (not error/expression-only),
+        # and no corpus primer found, return the calculator result directly.
+        # This prevents the 1.5B model from hallucinating on pure math queries.
+        for _r in turn1.tool_results:
+            if _r.tool_name == "calculator" and _r.success and isinstance(_r.output, dict):
+                _calc_result = _r.output.get("result")
+                _calc_expr = _r.output.get("expression", "")
+                if _calc_result is not None and "error" not in _r.output:
+                    log.info("[omnyx] Calculator fast-path: %s = %s", _calc_expr, _calc_result)
+                    # Format as natural Indonesian math answer
+                    if _calc_expr and str(_calc_expr) != "0":
+                        session.final_answer = (
+                            "Hasilnya adalah **" + str(_calc_result) + "**.\n\n"
+                            + "(Kalkulasi: " + str(_calc_expr) + " = " + str(_calc_result) + ")"
+                        )
+                    else:
+
+                        session.final_answer = f"{_calc_result}"
+                    session.confidence = "tinggi"
+                    session.sources_used = ["calculator"]
+                    session.total_latency_ms = int((time.monotonic() - t0) * 1000)
+                    return session
 
         # Turn 2: Determine if more tools needed (complexity-aware)
         # Sprint Speed Demon: skip extra turns for simple queries
@@ -1104,18 +1154,23 @@ class OmnyxDirector:
     def _extract_expression(self, query: str) -> str:
         """Extract mathematical expression from query."""
         import re
-        # Simple extraction: find numbers and operators
+        # RESCUE-SPRINT 2026-07-01: normalise Indonesian math keywords first
+        q_norm = query.lower()
+        q_norm = re.sub(r'\bdikali\b|\bkali\b|\bdikalikan\b', '*', q_norm)
+        q_norm = re.sub(r'\bdibagi\b|\bbagi\b', '/', q_norm)
+        q_norm = re.sub(r'\bditambah\b|\btambah\b|\bplus\b', '+', q_norm)
+        q_norm = re.sub(r'\bdikurang\b|\bkurang\b|\bminus\b', '-', q_norm)
         patterns = [
             r'(\d+\.?\d*)\s*([\+\-\*\/\^])\s*(\d+\.?\d*)',
             r'akar\s+dari\s+(\d+\.?\d*)',
             r'pangkat\s+(\d+)\s+dari\s+(\d+\.?\d*)',
         ]
         for p in patterns:
-            m = re.search(p, query, re.I)
+            m = re.search(p, q_norm, re.I)
             if m:
-                if "akar" in query.lower():
+                if "akar" in q_norm:
                     return f"math.sqrt({m.group(1)})"
-                if "pangkat" in query.lower():
+                if "pangkat" in q_norm:
                     return f"pow({m.group(2)}, {m.group(1)})"
                 return f"{m.group(1)} {m.group(2)} {m.group(3)}"
         return "0"

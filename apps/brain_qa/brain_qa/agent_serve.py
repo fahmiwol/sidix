@@ -4097,6 +4097,15 @@ def create_app() -> "FastAPI":
                 except Exception:
                     pass
 
+            # RESCUE 2026-07-01: honest confidence + transparency caveat when grounding is weak.
+            # Do NOT hard-refuse (conversational queries also score low sanad); just kill false "tinggi".
+            if 0.0 < sanad_score_val < 0.4:
+                result["confidence"] = "rendah"
+                _ans = result.get("answer", "")
+                if _ans and not _ans.startswith("⚠"):
+                    _cav = "⚠️ Catatan: aku belum menemukan sumber yang cukup kuat untuk ini, jadi jawaban berikut mungkin kurang akurat — mohon verifikasi."
+                    result["answer"] = _cav + chr(10) + chr(10) + _ans
+
             return ChatResponse(
                 session_id=f"holistic_{uuid.uuid4().hex[:8]}",
                 answer=result.get("answer", ""),

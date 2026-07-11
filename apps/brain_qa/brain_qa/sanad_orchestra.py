@@ -238,12 +238,12 @@ async def verify_claim(
 ) -> Claim:
     """Verify a single claim against all available sources."""
     # Corpus verification
-    corpus_result = sources.get("corpus")
+    corpus_result = sources.get("corpus_search") or sources.get("corpus")  # RESCUE-SPRINT 2026-07-01
     if corpus_result:
         await _verify_claim_corpus(claim, query)
     
     # Web verification
-    web_result = sources.get("web")
+    web_result = sources.get("web_search") or sources.get("web")  # RESCUE-SPRINT 2026-07-01
     if web_result:
         await _verify_claim_web(claim, query)
     
@@ -270,7 +270,7 @@ async def verify_claim(
 def calculate_consensus(claims: list[Claim]) -> float:
     """Calculate overall consensus score from claims."""
     if not claims:
-        return 0.5  # neutral if no claims extracted
+        return 0.3  # RESCUE-SPRINT 2026-07-01: no claims = unknown, not neutral
     
     total_weight = 0.0
     total_score = 0.0
