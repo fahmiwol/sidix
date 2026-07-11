@@ -475,6 +475,10 @@ class IntentClassifier:
 
     # Heuristic patterns for quick classification
     PATTERNS = {
+        # F-19x (2026-07-11): Quran verse intent -> migancore OS quran_kb fast-path.
+        # NB "ayat" alone is ambiguous (pasal X ayat Y = legal) — fast-path skips when
+        # "pasal" present; "juz"/"qs" are unambiguous.
+        "quran_verse": ["ayat", "surat", "surah", "quran", "al-quran", "alquran", "qs", "juz", "firman allah", "tadabbur"],
         "personal_memory": ["nama saya", "warna favorit saya", "favorit saya", "ingat", "catat"],
         "greeting": ["halo", "hai", "hi", "hello", "assalamu", "salam", "pagi", "siang", "sore", "malam", "terima kasih", "makasih"],
         # Sprint J: follow-up short questions (wakilnya, menterinya, dll) → factual_who (simple, fast)
@@ -491,6 +495,7 @@ class IntentClassifier:
     }
 
     TOOL_MAP = {
+        "quran_verse": ["corpus_search", "dense_search"],
         "personal_memory": [],
         "factual_who": ["corpus_search", "web_search"],
         "factual_when": ["corpus_search", "web_search"],
@@ -507,6 +512,7 @@ class IntentClassifier:
     # Sprint Speed Demon (2026-05-01): complexity-based routing
     # Maps intent → (complexity, n_persona, synthesis_model)
     COMPLEXITY_MAP = {
+        "quran_verse":        ("simple", 0, "qwen2.5:1.5b"),
         "personal_memory":    ("simple", 0, "qwen2.5:1.5b"),
         "greeting":           ("simple", 0, "qwen2.5:1.5b"),
         "factual_who":        ("simple", 0, "qwen2.5:1.5b"),
@@ -544,7 +550,7 @@ class IntentClassifier:
         # that would be shadowed by substring matches in the general loop.
         # berapa must fire before apa (factual_what) since apa in berapa.
         # kali/bagi/tambah/kurang must fire as calculation before factual_what.
-        for _priority_intent in ("factual_how_many", "calculation"):
+        for _priority_intent in ("quran_verse", "factual_how_many", "calculation"):
             _pkw = cls.PATTERNS.get(_priority_intent, [])
             if any((" " + kw + " ") in (" " + q_lower + " ") for kw in _pkw):
                 _ptools = cls.TOOL_MAP.get(_priority_intent, ["corpus_search", "web_search"])
@@ -553,7 +559,7 @@ class IntentClassifier:
 
         # Rule-based matching
         for intent, keywords in cls.PATTERNS.items():
-            if intent in ("greeting", "personal_memory"):
+            if intent in ("greeting", "personal_memory", "quran_verse"):
                 continue
             if any(kw in q_lower for kw in keywords):
                 tools = cls.TOOL_MAP.get(intent, ["corpus_search", "web_search"])
@@ -708,6 +714,23 @@ class OmnyxDirector:
         *,
         debug: bool = False,
     ) -> OmnyxSession:
+        """F-19x wrapper: run the pipeline, then enforce the Quran verse-verbatim
+        output gate on the final answer (HARD INVARIANT — ayat never model-generated).
+        Gate scope: answers that contain Arabic runs AND claim Quranic context."""
+        session = await self._process_inner(query, persona=persona, debug=debug)
+        try:
+            await _enforce_quran_verbatim(session)
+        except Exception as _exc:
+            log.warning("[omnyx] verbatim gate errored: %s", _exc)
+        return session
+
+    async def _process_inner(
+        self,
+        query: str,
+        persona: str = "UTZ",
+        *,
+        debug: bool = False,
+    ) -> OmnyxSession:
         """Process user query through OMNYX tool-calling loop.
 
         Sprint Speed Demon (2026-05-01): complexity-aware routing.
@@ -752,6 +775,66 @@ class OmnyxDirector:
             session.total_latency_ms = int((time.monotonic() - t0) * 1000)
             log.info("[omnyx] Personal memory fast-path: %dms", session.total_latency_ms)
             return session
+
+        # F-19x (2026-07-11): QURAN VERSE fast-path — SIDIX as SaaS client of the
+        # MiganCore OS layer (doc 71: contract-only, one-way). HARD INVARIANT:
+        # ayat text is NEVER model-generated — verses arrive VERBATIM from the OS
+        # quran_kb (QPC Uthmani canonical, dense-cosine relevance gate >= 0.6).
+        # "pasal ... ayat" is Indonesian LEGAL phrasing, not a Quran query.
+        if intent == "quran_verse" and "pasal" not in tool_query.lower():
+            try:
+                from . import migancore_os as _mos
+                if _mos.os_available():
+                    _verses, _honest = [], None
+                    _ref = _mos.parse_quran_ref(tool_query)
+                    if _ref:
+                        _s, _a, _a2 = _ref
+                        if not _mos.ref_is_valid(_s, _a):
+                            _cnt = _mos.SURAH_AYAH_COUNT.get(_s)
+                            _honest = (
+                                f"Referensi itu tidak ada di mushaf: surah {_s} "
+                                + (f"hanya memiliki {_cnt} ayat." if _cnt else "tidak dikenal (1-114).")
+                                + " Coba periksa lagi nomor surah/ayatnya."
+                            )
+                        else:
+                            _verses = await _mos.quran_get_verse(_s, _a, _a2)
+                    if not _verses and not _honest:
+                        _verses = await _mos.quran_search(tool_query, 3)
+                    if _verses:
+                        _parts = []
+                        for _v in _verses[:5]:
+                            _tr = _v.get("translation_id") or _v.get("translation_en") or ""
+                            _parts.append(
+                                "**" + _v["ref"] + "**\n\n" + _v["arabic"]
+                                + ("\n\nArtinya: _" + _tr + "_" if _tr else "")
+                            )
+                        session.final_answer = (
+                            "\n\n".join(_parts)
+                            + "\n\n(Teks ayat diambil verbatim dari mushaf digital "
+                              "QPC Uthmani via MiganCore knowledge base — bukan digenerate model.)"
+                        )
+                        session.confidence = "tinggi"
+                        session.sources_used = ["quran_kb@migancore-os"]
+                        session.total_latency_ms = int((time.monotonic() - t0) * 1000)
+                        log.info("[omnyx] Quran fast-path: %d verse(s) verbatim, %dms",
+                                 len(_verses), session.total_latency_ms)
+                        return session
+                    if _honest or _ref:
+                        session.final_answer = _honest or (
+                            "Maaf, aku tidak menemukan ayat itu di knowledge base Quran — "
+                            "aku tidak akan menuliskan teks ayat dari ingatan model karena "
+                            "berisiko tidak akurat. Coba sebutkan nomor surah dan ayatnya."
+                        )
+                        session.confidence = "tinggi"
+                        session.sources_used = ["quran_kb@migancore-os"]
+                        session.total_latency_ms = int((time.monotonic() - t0) * 1000)
+                        log.info("[omnyx] Quran fast-path: honest no-result")
+                        return session
+                    log.info("[omnyx] Quran fast-path: no gated hit, falling through")
+                else:
+                    log.warning("[omnyx] Quran intent but migancore OS key unavailable — falling through")
+            except Exception as _exc:
+                log.warning("[omnyx] Quran fast-path failed (%s) — falling through", _exc)
 
         current_datetime = _current_datetime_response(tool_query)
         if current_datetime:
@@ -1399,3 +1482,69 @@ class OMNYXDirector:
 
     async def run(self, query: str, persona: str = "UTZ") -> dict:
         return await omnyx_process(query, persona)
+
+
+# ---------------------------------------------------------------------------
+# F-19x (2026-07-11): Quran verse-verbatim OUTPUT GATE (module-level helper)
+# ---------------------------------------------------------------------------
+_ARABIC_GATE_RE = re.compile(
+    r"[\u0600-\u06ff\u0750-\u077f\u08a0-\u08ff\ufb50-\ufdff\ufe70-\ufeff]"
+    r"[\u0600-\u06ff\u0750-\u077f\u08a0-\u08ff\ufb50-\ufdff\ufe70-\ufeff\s]*"
+)
+_QURAN_CLAIM_RE = re.compile(
+    r"\bqs\b|\bayat\b|\bsurat\b|\bsurah\b|qur'?an|\bfirman allah\b|\bjuz\b", re.I
+)
+
+
+async def _enforce_quran_verbatim(session) -> None:
+    """If the answer quotes Arabic in a Quranic context, every Arabic run must be
+    verifiable against the canonical mushaf (via migancore OS quran_verify).
+    fabricated -> stripped; real-but-unretrieved -> replaced with the canonical
+    verse fetched from the KB (so output is retrieval-verbatim either way)."""
+    ans = getattr(session, "final_answer", None) or ""
+    if getattr(session, "sources_used", None) == ["quran_kb@migancore-os"]:
+        return  # composed verbatim from the KB by construction
+    runs = [m.group(0).strip() for m in _ARABIC_GATE_RE.finditer(ans)]
+    runs = [r for r in runs if len(re.sub(r"\s+", "", r)) >= 12]
+    if not runs:
+        return
+    if not (_QURAN_CLAIM_RE.search(ans) or _QURAN_CLAIM_RE.search(getattr(session, "query", "") or "")):
+        return  # Arabic without any Quranic claim (e.g. du'a/hadith prose) — out of scope
+
+    from . import migancore_os as _mos
+
+    verdict = None
+    if _mos.os_available():
+        try:
+            verdict = await _mos.quran_verify(ans, "")
+        except Exception as exc:
+            log.warning("[omnyx] quran_verify unreachable: %s", exc)
+
+    note = None
+    if verdict and verdict.get("success"):
+        for v in verdict.get("violations", []):
+            seg, verd, ref = v.get("segment", ""), v.get("verdict"), v.get("ref") or ""
+            if not seg or seg not in ans:
+                continue
+            if verd == "not_retrieved" and ":" in ref:
+                try:
+                    _s, _a = ref.split(":", 1)
+                    fetched = await _mos.quran_get_verse(int(_s), int(_a))
+                    if fetched:
+                        ans = ans.replace(seg, fetched[0]["arabic"] + " (" + fetched[0]["ref"] + ")")
+                        note = "teks ayat diganti dengan teks mushaf verbatim"
+                        continue
+                except Exception:
+                    pass
+            ans = ans.replace(seg, "[teks Arab dihapus - tidak terverifikasi verbatim dengan mushaf]")
+            note = "sebagian teks Arab dihapus karena tidak terverifikasi dengan mushaf"
+            log.warning("[omnyx] verbatim gate STRIPPED %s segment (ref=%s)", verd, ref)
+    else:
+        # OS unreachable/failed -> the invariant wins: strip all Arabic runs
+        for seg in runs:
+            ans = ans.replace(seg, "[teks Arab dihapus - tidak bisa diverifikasi dengan mushaf]")
+        note = "teks Arab dihapus karena verifikasi mushaf tidak tersedia"
+        log.warning("[omnyx] verbatim gate: OS unavailable, stripped %d run(s)", len(runs))
+
+    if note:
+        session.final_answer = ans + "\n\n(Catatan: " + note + " — demi keaslian ayat.)"
