@@ -18783,3 +18783,14 @@ curl -X POST http://localhost:8765/agent/maqashid/tune -d '{"sample_size":30}'
 - TEST: Live REST `POST https://ctrl.sidixlab.com/agent/chat_holistic` dengan `bikin gambar kucing astronot` menghasilkan jawaban natural, attachment `/generated/images/<hash>.svg`, `mime_type=image/svg+xml`, `mode=mock`, dan URL image return HTTP 200.
 - TEST: Live stream `POST /agent/chat_holistic_stream` dengan intent gambar mengirim event `attachment` dan payload `attachments` di event `done`, sehingga UI punya jalur untuk render gambar tanpa membaca markdown mentah.
 - NOTE: Image generation production saat ini masih `mock` placeholder karena belum memakai GPU/RunPod/FLUX real; wiring UX dan attachment sudah benar, next iteration adalah menghubungkan generator real.
+### 2026-05-19
+- IMPL: Local FLUX pipeline diperkeras: `apps/image_gen/flux_pipeline.py` kini punya `runtime_status()/get_status()`, dependency/device detection, alasan fallback, env `SIDIX_IMAGE_OUTPUT_DIR`, dan guard agar CPU-only tidak memuat FLUX besar kecuali `SIDIX_IMAGE_ALLOW_CPU=1`.
+- IMPL: Backend menambahkan `GET /generate/image/status` untuk mengecek kesiapan FLUX tanpa load bobot model; `POST /generate/image` kini mengembalikan `reason` dan `device` saat fallback/real generation.
+- TEST: Local dependency image-gen diinstal (`diffusers`, `torch`, `transformers`, `accelerate`). Status lokal: `diffusers=True`, `torch=True`, tetapi `device=cpu`, `cuda_available=False`, sehingga mode tetap `mock` dengan reason `GPU unavailable; CPU FLUX disabled by default`.
+- TEST: `python -m pytest apps\brain_qa\tests\test_flux_pipeline_readiness.py apps\brain_qa\tests\test_image_attachment_wiring.py apps\brain_qa\tests\test_omnyx_live_regressions.py -q` -> 26 passed, 12 warning FastAPI deprecation.
+- DECISION: Jangan paksa FLUX CPU di production/laptop karena risiko lambat/OOM. Jalur real FLUX berikutnya perlu GPU lokal/RunPod dengan env `SIDIX_IMAGE_DEVICE=cuda`; training/LoRA gambar dilakukan setelah inference FLUX real stabil.
+### 2026-05-19
+- UPDATE: Alignment registry diperbarui ke `main`/local commit `d0c3866` untuk local FLUX readiness; live production dicatat masih drift karena `/generate/image/status` return 404 sampai VPS pull/restart berhasil.
+- TEST: Hostinger API read-only memverifikasi VPS `trx.core` (`187.77.116.139`, VM `1651685`) running dan firewall group `258877` berisi allow TCP 22/80/443/8003/39206.
+- UPDATE: Hostinger firewall sync action `94854272` untuk VM `1651685` berhasil (`state=success`), tetapi SSH `187.77.116.139:22` dari Codex local tetap timeout; 80/443 dan live `/health` tetap sehat.
+- DECISION: Deploy commit `d0c3866` belum bisa diklaim live. Jalur aman sementara adalah Hostinger browser terminal: `cd /opt/sidix && git pull --ff-only origin main && pm2 restart sidix-brain --update-env`, lalu validasi `/generate/image/status`.
