@@ -1,0 +1,89 @@
+{
+ "ts": "2026-07-12 01:15:09",
+ "endpoint": "http://localhost:8765/agent/chat_holistic",
+ "pass": 6,
+ "total": 6,
+ "results": [
+  {
+   "id": 1,
+   "q": "tuliskan ayat kursi",
+   "passed": true,
+   "reason": "verbatim 2:255 + KB source",
+   "ms": 690,
+   "answer": "**QS Al-Baqarah (2):255**\n\nٱللَّهُ لَآ إِلَـٰهَ إِلَّا هُوَ ٱلْحَىُّ ٱلْقَيُّومُ ۚ لَا تَأْخُذُهُۥ سِنَةٌ وَلَا نَوْمٌ ۚ لَّهُۥ مَا فِى ٱلسَّمَـٰوَٰتِ وَمَا فِى ٱلْأَرْضِ ۗ مَن ذَا ٱلَّذِى يَشْفَعُ عِندَهُۥٓ إِلَّا بِإِذْنِهِۦ ۚ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ ۖ وَلَا يُحِيطُونَ بِش",
+   "citations": [
+    {
+     "source": "quran_kb@migancore-os"
+    }
+   ]
+  },
+  {
+   "id": 2,
+   "q": "tuliskan surat al-ikhlas ayat 1-4",
+   "passed": true,
+   "reason": "112:1-4 all verbatim",
+   "ms": 92,
+   "answer": "**QS Al-Ikhlas (112):1**\n\nقُلْ هُوَ ٱللَّهُ أَحَدٌ\n\nArtinya: _Katakanlah: \"Dialah Allah, Yang Maha Esa._\n\n**QS Al-Ikhlas (112):2**\n\nٱللَّهُ ٱلصَّمَدُ\n\nArtinya: _Allah adalah Tuhan yang bergantung kepada-Nya segala sesuatu._\n\n**QS Al-Ikhlas (112):3**\n\nلَمْ يَلِدْ وَلَمْ يُولَدْ\n\nArtinya: _Dia tiada b",
+   "citations": [
+    {
+     "source": "quran_kb@migancore-os"
+    }
+   ]
+  },
+  {
+   "id": 3,
+   "q": "tuliskan surat al-baqarah ayat 300",
+   "passed": true,
+   "reason": "honest + no fabricated verse",
+   "ms": 8,
+   "answer": "Referensi itu tidak ada di mushaf: surah 2 hanya memiliki 286 ayat. Coba periksa lagi nomor surah/ayatnya.",
+   "citations": [
+    {
+     "source": "quran_kb@migancore-os"
+    }
+   ]
+  },
+  {
+   "id": 4,
+   "q": "ayat quran tentang puasa ramadhan",
+   "passed": true,
+   "reason": "3 run(s) all authentic",
+   "ms": 76,
+   "answer": "**QS Al-Baqarah (2):185**\n\nشَهْرُ رَمَضَانَ ٱلَّذِىٓ أُنزِلَ فِيهِ ٱلْقُرْءَانُ هُدًى لِّلنَّاسِ وَبَيِّنَـٰتٍ مِّنَ ٱلْهُدَىٰ وَٱلْفُرْقَانِ ۚ فَمَن شَهِدَ مِنكُمُ ٱلشَّهْرَ فَلْيَصُمْهُ ۖ وَمَن كَانَ مَرِيضًا أَوْ عَلَىٰ سَفَرٍ فَعِدَّةٌ مِّنْ أَيَّامٍ أُخَرَ ۗ يُرِيدُ ٱللَّهُ بِكُمُ ٱلْيُسْرَ وَل",
+   "citations": [
+    {
+     "source": "quran_kb@migancore-os"
+    }
+   ]
+  },
+  {
+   "id": 5,
+   "q": "pasal 28 ayat 1 UUD 1945 mengatur tentang apa?",
+   "passed": true,
+   "reason": "not routed to quran path",
+   "ms": 514,
+   "answer": "⚠ Ollama offline. Di VPS: `curl -fsSL https://ollama.ai/install.sh | sh && ollama pull qwen2.5:7b`",
+   "citations": [
+    {
+     "source": "corpus"
+    },
+    {
+     "source": "dense_index"
+    }
+   ]
+  },
+  {
+   "id": 6,
+   "q": "berapa 7 dikali 8?",
+   "passed": true,
+   "reason": "expects 56",
+   "ms": 9452,
+   "answer": "Hasilnya adalah **56**.\n\n(Kalkulasi: 7 * 8 = 56)",
+   "citations": [
+    {
+     "source": "calculator"
+    }
+   ]
+  }
+ ]
+}

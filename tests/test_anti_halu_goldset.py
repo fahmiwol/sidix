@@ -20,8 +20,17 @@ import urllib.request
 import urllib.error
 from dataclasses import dataclass
 from typing import Any, Callable, Union
+import sys
+from pathlib import Path
 
-CHAT_URL = "https://ctrl.sidixlab.com/agent/chat"
+# F-193c: make brain_qa importable for the honest scorer (eval_score)
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "apps" / "brain_qa"))
+
+# F-193c: /agent/chat is the LEGACY local-LoRA path (broken: returns
+# "Gagal load model: No module named torch" AS the answer). The real user
+# path is /agent/chat_holistic — override via env for honest baselines.
+import os
+CHAT_URL = os.environ.get("SIDIX_EVAL_URL", "https://ctrl.sidixlab.com/agent/chat")
 TIMEOUT_S = 300  # Sigma-2D: raised from 150s — RunPod token gen can take 90-150s
 
 
@@ -41,10 +50,18 @@ class GoldQ:
 def validate(answer: str, expected: Any) -> bool:
     if callable(expected):
         return bool(expected(answer))
-    if isinstance(expected, str):
-        expected = [expected]
-    a = (answer or "").lower()
-    return any(e.lower() in a for e in expected)
+    # F-193c (2026-07-12): honest scorer — pure substring FALSE-PASSES answers
+    # that mention the expected term while contradicting it (the Fidji-Simo
+    # class from the 2026-07-01 audit). score_answer = term present AND not
+    # negated/past-framed. Fail-open to the old substring check if unavailable.
+    try:
+        from brain_qa.eval_score import score_answer
+        return bool(score_answer(answer or "", expected)["passed"])
+    except Exception:
+        if isinstance(expected, str):
+            expected = [expected]
+        a = (answer or "").lower()
+        return any(e.lower() in a for e in expected)
 
 
 GOLDSET: list[GoldQ] = [
