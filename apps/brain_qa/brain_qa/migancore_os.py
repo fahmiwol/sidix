@@ -165,11 +165,22 @@ def _norm_q(q: str) -> str:
     return q
 
 
+FAMOUS_ALIASES = {
+    "ayat kursi": (2, 255, 0),
+    "ayatul kursi": (2, 255, 0),
+    "ayat al kursi": (2, 255, 0),
+}
+
+
 def parse_quran_ref(query: str) -> tuple[int, int, int] | None:
     """Extract (surah, ayah, ayah_to) from a query, or None.
     Handles 'QS 2:255', 'surat al-baqarah ayat 255', 'al ikhlas ayat 1-4',
-    'surah 2 ayat 255'."""
+    'surah 2 ayat 255', plus famous names (ayat kursi)."""
     q = _norm_q(query)
+
+    for alias, ref in FAMOUS_ALIASES.items():
+        if alias in q:
+            return ref
 
     m = re.search(r"\bqs\.?\s*(\d{1,3})\s*[:.]\s*(\d{1,3})(?:\s*[-–]\s*(\d{1,3}))?", q)
     if m:
