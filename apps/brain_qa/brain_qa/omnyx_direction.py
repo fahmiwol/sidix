@@ -621,6 +621,11 @@ class IntentClassifier:
         complexity, n_persona, model = cls.COMPLEXITY_MAP.get(
             intent, ("analytical", 3, "qwen2.5:7b")
         )
+        # F-193f E1: collapse default path. persona_fanout on CPU 7B made
+        # creative/comparison/strategy exceed the 300s client timeout (empty
+        # answers) and NEVER beat the raw model in A/B (F-193e). Default =
+        # single grounded generate; multi-persona is deep-mode only.
+        n_persona = 0
         log.info("[omnyx] Complexity: %s | persona=%d | model=%s", complexity, n_persona, model)
         return intent, tools, complexity, n_persona, model
 
@@ -971,18 +976,9 @@ class OmnyxDirector:
         turn1.tool_results = list(results)
         session.turns.append(turn1)
 
-        # Check if corpus passthrough applies (fast path)
-        corpus_result = self._find_corpus_primer(turn1.tool_results)
-        if corpus_result:
-            log.info("[omnyx] Corpus passthrough triggered")
-            session.final_answer = self._format_corpus_answer(corpus_result)
-            session.confidence = "tinggi"
-            session.sources_used = ["corpus"]
-            session.total_latency_ms = int((time.monotonic() - t0) * 1000)
-
-            # Auto-store to knowledge base
-            await self._auto_store(session)
-            return session
+        # F-193f E1: raw corpus-primer passthrough DISABLED (same disease as the
+        # simple-branch passthrough). A "primer"-tier doc is a good GROUNDING
+        # source, not the finished answer — it flows into synthesis below.
 
         # RESCUE-SPRINT 2026-07-01: Calculator fast-path
         # If calculator returned a valid numeric result (not error/expression-only),
@@ -1332,23 +1328,11 @@ class OmnyxDirector:
                 elif r.tool_name == "persona_brain":
                     bundle.persona_fanout = src; sources_used.append("persona_fanout")
 
-        # Sprint Speed Demon: simple factual → lighter synthesis or direct format
-        if complexity == "simple":
-            # Try corpus passthrough first
-            from .cognitive_synthesizer import _try_corpus_passthrough
-            direct = _try_corpus_passthrough(bundle)
-            if direct:
-                return direct, "tinggi", list(set(sources_used))
-            # Try web direct answer — strip "Title - Source — " prefix from search results
-            if bundle.web and bundle.web.success and bundle.web.data:
-                web_text = bundle.web.data.get("output", "")
-                if web_text:
-                    import re as _re
-                    # Match "Page title - Source — Content" → keep Content only
-                    m = _re.match(r'^.+?\s*—\s*(.+)', web_text.strip(), _re.DOTALL)
-                    cleaned = m.group(1).strip() if m else web_text.strip()
-                    cleaned = _select_relevant_web_answer(query, cleaned)
-                    return cleaned[:1200], "sedang", list(set(sources_used))
+        # F-193f E1: raw corpus/web passthrough DISABLED. It returned the nearest
+        # doc verbatim (goldset: "ibu kota?" -> "Cilacap", "let vs const" -> raw
+        # JS wiki, "attention" -> "[sunting | sunting sumber]..."). The model must
+        # stay in the loop: corpus/web are grounding INPUT to synthesis below,
+        # not a replacement for the answer. (Old fast-path kept in git history.)
 
         # Sprint B: Build Hafidz injection if available
         hafidz_prompt = ""

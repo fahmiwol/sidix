@@ -27,6 +27,7 @@ License: MIT
 from __future__ import annotations
 
 import json
+import os
 import logging
 import re
 from dataclasses import dataclass, field
@@ -243,8 +244,12 @@ async def verify_claim(
         await _verify_claim_corpus(claim, query)
     
     # Web verification
-    web_result = sources.get("web_search") or sources.get("web")  # RESCUE-SPRINT 2026-07-01
-    if web_result:
+    # F-193f E1: default-OFF. Per-claim mojeek/DDG web-verify was the dominant
+    # latency of the default path (each claim = a web round-trip) AND is
+    # 403-broken on this box -> NEVER adds a supporting source (identical sanad
+    # score, pure wasted time). Re-enable for deep mode via SANAD_WEB_VERIFY=on.
+    web_result = sources.get("web_search") or sources.get("web")
+    if web_result and os.getenv("SANAD_WEB_VERIFY", "off").lower() == "on":
         await _verify_claim_web(claim, query)
     
     # Tool verification
