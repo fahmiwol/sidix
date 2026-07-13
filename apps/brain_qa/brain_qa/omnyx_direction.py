@@ -91,6 +91,21 @@ _SIDIX_IHOS_TXT = (
     "sanad (chain of citation). IHOS adalah engineering framework, bukan label "
     "agama eksklusif."
 )
+_SIDIX_CAPABILITY_TXT = (
+    "Yang bisa aku lakukan sekarang:\n"
+    "1. **Tanya-jawab** — menjawab pertanyaan dengan grounding dari corpus "
+    "ber-sanad + web search.\n"
+    "2. **Al-Quran** — mengutip ayat VERBATIM dari mushaf digital (sebut "
+    "referensinya, mis. \"QS 2:255\" atau \"surat Al-Ikhlas ayat 1-4\"); "
+    "teks ayat tidak pernah aku karang.\n"
+    "3. **Hitung** — kalkulasi matematika langsung.\n"
+    "4. **Waktu** — hari/tanggal/jam/tahun saat ini (WIB).\n"
+    "5. **Kreatif** — caption, tagline, draft tulisan.\n"
+    "6. **5 persona** — UTZ (creative), ABOO (teknis), OOMAR (strategi), "
+    "ALEY (riset), AYMAN (santai).\n\n"
+    "Aku jujur soal batas: kalau tidak yakin atau sumbernya lemah, aku bilang."
+)
+
 _SIDIX_INTRO_TXT = (
     "SIDIX adalah AI agent self-hosted yang dibangun sebagai organisme digital: "
     "punya memori, RAG/sanad, persona, tool-calling, evaluasi diri, dan "
@@ -113,9 +128,20 @@ def _sidix_identity_response(query: str) -> str:
         "siapa kamu", "kamu siapa", "siapa anda", "anda siapa", "kamu ini siapa",
         "kenalkan dirimu", "perkenalkan dirimu", "who are you",
     ))
+    # F-193h: capability questions are ALSO identity — without this, "apa saja
+    # yang bisa kamu lakukan sekarang" fell to corpus retrieval and was answered
+    # with the movie "11:11: Apa yang Kau Lihat?" (real user hit 2026-07-13).
+    asks_capability = any(t in q for t in (
+        "bisa kamu lakukan", "yang bisa kamu", "kamu bisa apa", "bisa apa saja",
+        "apa kemampuanmu", "kemampuan kamu", "fitur kamu", "fiturmu",
+        "what can you do", "apa yang kamu bisa",
+    ))
 
-    if not asks_self and "sidix" not in q and "ihos" not in q:
+    if not asks_self and not asks_capability and "sidix" not in q and "ihos" not in q:
         return ""
+
+    if asks_capability:
+        return _SIDIX_CAPABILITY_TXT
 
     if "ihos" in q:
         return _SIDIX_IHOS_TXT
