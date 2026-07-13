@@ -226,11 +226,19 @@ def _current_datetime_response(query: str, now: datetime | None = None) -> str:
     asks_day = "hari apa" in q or "sekarang hari" in q or "hari ini" in q
     asks_date = "tanggal" in q or "tgl" in q
     asks_time = "jam berapa" in q or "pukul berapa" in q or "waktu sekarang" in q
-    if not (asks_day or asks_date or asks_time):
+    # F-193g: "tahun sekarang tahun berapa?" was answered "hijrah 622" from
+    # corpus noise. Guard "sekarang/saat ini" so HISTORICAL "X tahun berapa"
+    # questions (e.g. "dilantik tahun berapa") never hit the clock.
+    asks_year = ("tahun berapa" in q or "tahun sekarang" in q) and (
+        "sekarang" in q or "saat ini" in q or "kini" in q
+    )
+    if not (asks_day or asks_date or asks_time or asks_year):
         return ""
 
     now = now or _now_jakarta()
     date_text = _format_jakarta_date(now)
+    if asks_year and not (asks_date or asks_day or asks_time):
+        return f"Sekarang tahun {now.year}."
     if asks_time:
         return f"Sekarang pukul {now:%H:%M} WIB, {date_text}."
     if asks_date and asks_day:
