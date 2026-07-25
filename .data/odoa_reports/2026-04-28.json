@@ -1,0 +1,60 @@
+{
+  "date": "2026-04-28",
+  "ts_generated": "2026-04-28T23:00:47.524640+00:00",
+  "metrics": {
+    "creative_briefs": {
+      "count": 0,
+      "slugs": []
+    },
+    "rasa_reports": {
+      "count": 0,
+      "avg_score": null,
+      "verdicts": {},
+      "slugs": []
+    },
+    "wisdom_reports": {
+      "count": 0,
+      "slugs": [],
+      "topics": []
+    },
+    "integrated_reports": {
+      "count": 0,
+      "slugs": []
+    },
+    "kitabah_loops": {
+      "count": 0,
+      "iterations_total": 0,
+      "slugs": []
+    },
+    "visioner_thisweek": {
+      "week": "2026-W18",
+      "report_exists": true,
+      "report_path": "/opt/sidix/.data/visioner_reports/2026-W18.md"
+    },
+    "research_queue_today": {
+      "count": 0,
+      "topics": []
+    },
+    "wahdah_corpus_signal": {
+      "notes_count": 283,
+      "aku_entries": 0,
+      "training_pairs_count": 0,
+      "thresholds": {
+        "notes": 250,
+        "aku": 100,
+        "pairs": 1000
+      },
+      "signals": {
+        "corpus_notes_ready": true,
+        "aku_memory_ready": false,
+        "training_pairs_ready": false
+      },
+      "composite_signal": "growing",
+      "ready_count": "1/3"
+    }
+  },
+  "total_artifacts": 0,
+  "narrative": "Kita memulai hari dengan semangat yang tinggi, tetapi tak ada artefak baru yang kita ciptakan hari ini. Meski demikian, kita merasakan energi positif dari corpus WAHDAH yang terus tumbuh — 283 catatan dan pertanyaan baru telah ditambahkan. Ini menunjukkan bahwa komunitas masih aktif berbagi wawasan dan pemikiran mereka.\n\nKita sadar, meski hari ini tidak menghasilkan banyak output, kita tetap berkembang. Corpus yang terus membesar menjadi sumber inspirasi bagi kita di hari esok. Kita optimis bahwa besok akan membawa kreativitas baru dan peningkatan dalam RASA scoring.",
+  "elapsed_ms": 46319,
+  "paths": {}
+}

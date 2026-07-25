@@ -1,0 +1,27 @@
+{
+  "scores": {
+    "relevance": {
+      "score": 5,
+      "reasoning": "Konsep 'Ulat Kuning Cilik' tepat sasaran dengan brief original",
+      "improvement": "Tidak perlu perbaikan lebih lanjut"
+    },
+    "aesthetic": {
+      "score": 4,
+      "reasoning": "Desain kawaii dan realistis dengan warna kuning cerah harmonis, namun ekspresi yang lebih kaya perlu ditambahkan",
+      "improvement": "Tambahkan detail ekspresi yang lebih kaya dan harmonisasi warna yang lebih cermat"
+    },
+    "brand_fit": {
+      "score": 4,
+      "reasoning": "Warna palette dan font terlihat cocok untuk brand, namun perlu penyesuaian ekspresi maskot agar lebih konsisten",
+      "improvement": "Harmonisasi warna dan ekspresi maskot agar lebih konsisten"
+    },
+    "audience_fit": {
+      "score": 5,
+      "reasoning": "Maskot 'Ulat Kuning Cilik' menarik untuk target demografi",
+      "improvement": "Tidak perlu perbaikan lebih lanjut"
+    }
+  },
+  "overall_score": 4.5,
+  "verdict": "approve",
+  "top_priority_improvement": "Harmonisasi ekspresi maskot dan warna untuk meningkatkan konsistensi visual"
+}

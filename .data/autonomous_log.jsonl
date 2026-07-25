@@ -1,0 +1,474 @@
+{"ts": "2026-04-26T23:30:12.104028+00:00", "cycle_id": "cyc-1777246212", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-26T23:30:12.114359+00:00", "cycle_id": "cyc-1777246212", "event": "corpus_stats", "doc_count": 236, "chunk_count": 1182}
+{"ts": "2026-04-26T23:30:12.117827+00:00", "cycle_id": "cyc-1777246212", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-26T23:30:12.117919+00:00", "cycle_id": "cyc-1777246212", "event": "cycle_complete"}
+{"ts": "2026-04-26T23:45:01.438248+00:00", "cycle_id": "cyc-1777247101", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-26T23:45:01.450737+00:00", "cycle_id": "cyc-1777247101", "event": "corpus_stats", "doc_count": 236, "chunk_count": 1182}
+{"ts": "2026-04-26T23:45:01.455694+00:00", "cycle_id": "cyc-1777247101", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-26T23:45:01.455781+00:00", "cycle_id": "cyc-1777247101", "event": "cycle_complete"}
+{"ts": "2026-04-27T00:00:01.905427+00:00", "cycle_id": "cyc-1777248001", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-27T00:00:01.930635+00:00", "cycle_id": "cyc-1777248001", "event": "corpus_stats", "doc_count": 236, "chunk_count": 1182}
+{"ts": "2026-04-27T00:00:01.943613+00:00", "cycle_id": "cyc-1777248001", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-27T00:00:01.980505+00:00", "cycle_id": "cyc-1777248001", "event": "phase_start", "phase": "daily_growth_hourly"}
+{"ts": "2026-04-27T00:07:07.558995+00:00", "cycle_id": "cyc-1777248001", "event": "daily_growth_done", "duration_s": 425.58, "gaps_scanned": 0, "drafts_generated": 0, "training_pairs": 0}
+{"ts": "2026-04-27T00:07:07.559130+00:00", "cycle_id": "cyc-1777248001", "event": "cycle_complete"}
+{"ts": "2026-04-28T07:00:01.585347+00:00", "cycle_id": "cyc-1777359601", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-28T07:00:01.625163+00:00", "cycle_id": "cyc-1777359601", "event": "corpus_stats", "doc_count": 449, "chunk_count": 2245}
+{"ts": "2026-04-28T07:00:01.714519+00:00", "cycle_id": "cyc-1777359601", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-28T07:00:01.714673+00:00", "cycle_id": "cyc-1777359601", "event": "phase_start", "phase": "daily_growth_hourly"}
+{"ts": "2026-04-28T07:12:25.747676+00:00", "cycle_id": "cyc-1777359601", "event": "daily_growth_done", "duration_s": 744.03, "gaps_scanned": 0, "drafts_generated": 0, "training_pairs": 0}
+{"ts": "2026-04-28T07:12:25.747817+00:00", "cycle_id": "cyc-1777359601", "event": "cycle_complete"}
+{"ts": "2026-04-28T07:15:01.589215+00:00", "cycle_id": "cyc-1777360501", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-28T07:15:01.613118+00:00", "cycle_id": "cyc-1777360501", "event": "corpus_stats", "doc_count": 457, "chunk_count": 2287}
+{"ts": "2026-04-28T07:15:01.616906+00:00", "cycle_id": "cyc-1777360501", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-28T07:15:01.617009+00:00", "cycle_id": "cyc-1777360501", "event": "cycle_complete"}
+{"ts": "2026-04-28T07:30:01.764345+00:00", "cycle_id": "cyc-1777361401", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-28T07:30:01.842866+00:00", "cycle_id": "cyc-1777361401", "event": "corpus_stats", "doc_count": 457, "chunk_count": 2287}
+{"ts": "2026-04-28T07:30:01.849342+00:00", "cycle_id": "cyc-1777361401", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-28T07:30:01.849454+00:00", "cycle_id": "cyc-1777361401", "event": "cycle_complete"}
+{"ts": "2026-04-28T07:45:01.086172+00:00", "cycle_id": "cyc-1777362301", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-28T07:45:01.108780+00:00", "cycle_id": "cyc-1777362301", "event": "corpus_stats", "doc_count": 457, "chunk_count": 2287}
+{"ts": "2026-04-28T07:45:01.112950+00:00", "cycle_id": "cyc-1777362301", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-28T07:45:01.113048+00:00", "cycle_id": "cyc-1777362301", "event": "cycle_complete"}
+{"ts": "2026-04-28T08:00:01.160194+00:00", "cycle_id": "cyc-1777363201", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-28T08:00:01.191970+00:00", "cycle_id": "cyc-1777363201", "event": "corpus_stats", "doc_count": 457, "chunk_count": 2287}
+{"ts": "2026-04-28T08:00:01.196222+00:00", "cycle_id": "cyc-1777363201", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-28T08:00:01.196306+00:00", "cycle_id": "cyc-1777363201", "event": "phase_start", "phase": "daily_growth_hourly"}
+{"ts": "2026-04-28T08:02:55.416848+00:00", "cycle_id": "cyc-1777363201", "event": "daily_growth_done", "duration_s": 174.22, "gaps_scanned": 0, "drafts_generated": 0, "training_pairs": 0}
+{"ts": "2026-04-28T08:02:55.416957+00:00", "cycle_id": "cyc-1777363201", "event": "cycle_complete"}
+{"ts": "2026-04-28T08:15:01.577314+00:00", "cycle_id": "cyc-1777364101", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-28T08:15:01.598597+00:00", "cycle_id": "cyc-1777364101", "event": "corpus_stats", "doc_count": 457, "chunk_count": 2287}
+{"ts": "2026-04-28T08:15:01.602589+00:00", "cycle_id": "cyc-1777364101", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-28T08:15:01.602677+00:00", "cycle_id": "cyc-1777364101", "event": "cycle_complete"}
+{"ts": "2026-04-28T08:30:01.630141+00:00", "cycle_id": "cyc-1777365001", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-28T08:30:01.683661+00:00", "cycle_id": "cyc-1777365001", "event": "corpus_stats", "doc_count": 457, "chunk_count": 2287}
+{"ts": "2026-04-28T08:30:01.692560+00:00", "cycle_id": "cyc-1777365001", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-28T08:30:01.692694+00:00", "cycle_id": "cyc-1777365001", "event": "cycle_complete"}
+{"ts": "2026-04-28T08:45:01.680421+00:00", "cycle_id": "cyc-1777365901", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-28T08:45:01.702209+00:00", "cycle_id": "cyc-1777365901", "event": "corpus_stats", "doc_count": 457, "chunk_count": 2287}
+{"ts": "2026-04-28T08:45:01.706024+00:00", "cycle_id": "cyc-1777365901", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-28T08:45:01.706147+00:00", "cycle_id": "cyc-1777365901", "event": "cycle_complete"}
+{"ts": "2026-04-28T09:00:02.522427+00:00", "cycle_id": "cyc-1777366802", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-28T09:00:02.568289+00:00", "cycle_id": "cyc-1777366802", "event": "corpus_stats", "doc_count": 457, "chunk_count": 2287}
+{"ts": "2026-04-28T09:00:02.578481+00:00", "cycle_id": "cyc-1777366802", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-28T09:00:02.578608+00:00", "cycle_id": "cyc-1777366802", "event": "phase_start", "phase": "daily_growth_hourly"}
+{"ts": "2026-04-28T09:08:41.328984+00:00", "cycle_id": "cyc-1777366802", "event": "daily_growth_done", "duration_s": 518.75, "gaps_scanned": 0, "drafts_generated": 0, "training_pairs": 0}
+{"ts": "2026-04-28T09:08:41.329109+00:00", "cycle_id": "cyc-1777366802", "event": "cycle_complete"}
+{"ts": "2026-04-28T09:15:01.478331+00:00", "cycle_id": "cyc-1777367701", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-28T09:15:01.497790+00:00", "cycle_id": "cyc-1777367701", "event": "corpus_stats", "doc_count": 457, "chunk_count": 2287}
+{"ts": "2026-04-28T09:15:01.501807+00:00", "cycle_id": "cyc-1777367701", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-28T09:15:01.501920+00:00", "cycle_id": "cyc-1777367701", "event": "cycle_complete"}
+{"ts": "2026-04-28T09:30:02.459858+00:00", "cycle_id": "cyc-1777368601", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-28T09:30:02.554788+00:00", "cycle_id": "cyc-1777368601", "event": "corpus_stats", "doc_count": 457, "chunk_count": 2287}
+{"ts": "2026-04-28T09:30:02.575830+00:00", "cycle_id": "cyc-1777368601", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-28T09:30:02.575979+00:00", "cycle_id": "cyc-1777368601", "event": "cycle_complete"}
+{"ts": "2026-04-28T09:45:01.985936+00:00", "cycle_id": "cyc-1777369501", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-28T09:45:02.007686+00:00", "cycle_id": "cyc-1777369501", "event": "corpus_stats", "doc_count": 457, "chunk_count": 2287}
+{"ts": "2026-04-28T09:45:02.012264+00:00", "cycle_id": "cyc-1777369501", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-28T09:45:02.012397+00:00", "cycle_id": "cyc-1777369501", "event": "cycle_complete"}
+{"ts": "2026-04-28T10:00:01.731271+00:00", "cycle_id": "cyc-1777370401", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-28T10:00:01.757817+00:00", "cycle_id": "cyc-1777370401", "event": "corpus_stats", "doc_count": 457, "chunk_count": 2287}
+{"ts": "2026-04-28T10:00:01.762516+00:00", "cycle_id": "cyc-1777370401", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-28T10:00:01.762607+00:00", "cycle_id": "cyc-1777370401", "event": "phase_start", "phase": "daily_growth_hourly"}
+{"ts": "2026-04-28T10:15:02.055390+00:00", "cycle_id": "cyc-1777371301", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-28T10:15:02.093772+00:00", "cycle_id": "cyc-1777371301", "event": "corpus_stats", "doc_count": 457, "chunk_count": 2287}
+{"ts": "2026-04-28T10:15:02.103125+00:00", "cycle_id": "cyc-1777371301", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-28T10:15:02.103227+00:00", "cycle_id": "cyc-1777371301", "event": "cycle_complete"}
+{"ts": "2026-04-28T10:16:58.079869+00:00", "cycle_id": "cyc-1777370401", "event": "daily_growth_done", "duration_s": 1016.32, "gaps_scanned": 0, "drafts_generated": 0, "training_pairs": 0}
+{"ts": "2026-04-28T10:16:58.079972+00:00", "cycle_id": "cyc-1777370401", "event": "cycle_complete"}
+{"ts": "2026-04-28T10:30:01.580503+00:00", "cycle_id": "cyc-1777372201", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-28T10:30:01.606524+00:00", "cycle_id": "cyc-1777372201", "event": "corpus_stats", "doc_count": 457, "chunk_count": 2287}
+{"ts": "2026-04-28T10:30:01.610779+00:00", "cycle_id": "cyc-1777372201", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-28T10:30:01.610892+00:00", "cycle_id": "cyc-1777372201", "event": "cycle_complete"}
+{"ts": "2026-04-28T10:45:01.608068+00:00", "cycle_id": "cyc-1777373101", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-28T10:45:01.630846+00:00", "cycle_id": "cyc-1777373101", "event": "corpus_stats", "doc_count": 457, "chunk_count": 2287}
+{"ts": "2026-04-28T10:45:01.634546+00:00", "cycle_id": "cyc-1777373101", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-28T10:45:01.634625+00:00", "cycle_id": "cyc-1777373101", "event": "cycle_complete"}
+{"ts": "2026-04-28T11:00:01.836399+00:00", "cycle_id": "cyc-1777374001", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-28T11:00:01.866034+00:00", "cycle_id": "cyc-1777374001", "event": "corpus_stats", "doc_count": 457, "chunk_count": 2287}
+{"ts": "2026-04-28T11:00:01.871212+00:00", "cycle_id": "cyc-1777374001", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-28T11:00:01.871341+00:00", "cycle_id": "cyc-1777374001", "event": "phase_start", "phase": "daily_growth_hourly"}
+{"ts": "2026-04-28T11:15:01.684560+00:00", "cycle_id": "cyc-1777374901", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-28T11:15:01.741394+00:00", "cycle_id": "cyc-1777374901", "event": "corpus_stats", "doc_count": 457, "chunk_count": 2287}
+{"ts": "2026-04-28T11:15:01.745449+00:00", "cycle_id": "cyc-1777374901", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-28T11:15:01.745540+00:00", "cycle_id": "cyc-1777374901", "event": "cycle_complete"}
+{"ts": "2026-04-28T11:16:34.450463+00:00", "cycle_id": "cyc-1777374001", "event": "daily_growth_done", "duration_s": 992.58, "gaps_scanned": 0, "drafts_generated": 0, "training_pairs": 0}
+{"ts": "2026-04-28T11:16:34.450552+00:00", "cycle_id": "cyc-1777374001", "event": "cycle_complete"}
+{"ts": "2026-04-28T11:30:01.066419+00:00", "cycle_id": "cyc-1777375801", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-28T11:30:01.090771+00:00", "cycle_id": "cyc-1777375801", "event": "corpus_stats", "doc_count": 457, "chunk_count": 2287}
+{"ts": "2026-04-28T11:30:01.094402+00:00", "cycle_id": "cyc-1777375801", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-28T11:30:01.094482+00:00", "cycle_id": "cyc-1777375801", "event": "cycle_complete"}
+{"ts": "2026-04-28T11:45:01.098728+00:00", "cycle_id": "cyc-1777376701", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-28T11:45:01.139562+00:00", "cycle_id": "cyc-1777376701", "event": "corpus_stats", "doc_count": 457, "chunk_count": 2287}
+{"ts": "2026-04-28T11:45:01.143359+00:00", "cycle_id": "cyc-1777376701", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-28T11:45:01.143451+00:00", "cycle_id": "cyc-1777376701", "event": "cycle_complete"}
+{"ts": "2026-04-28T12:00:02.172009+00:00", "cycle_id": "cyc-1777377602", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-28T12:00:02.227191+00:00", "cycle_id": "cyc-1777377602", "event": "corpus_stats", "doc_count": 457, "chunk_count": 2287}
+{"ts": "2026-04-28T12:00:02.238651+00:00", "cycle_id": "cyc-1777377602", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-28T12:00:02.238767+00:00", "cycle_id": "cyc-1777377602", "event": "phase_start", "phase": "daily_growth_hourly"}
+{"ts": "2026-04-28T12:15:01.306192+00:00", "cycle_id": "cyc-1777378501", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-28T12:15:01.371611+00:00", "cycle_id": "cyc-1777378501", "event": "corpus_stats", "doc_count": 457, "chunk_count": 2287}
+{"ts": "2026-04-28T12:15:01.376385+00:00", "cycle_id": "cyc-1777378501", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-28T12:15:01.376484+00:00", "cycle_id": "cyc-1777378501", "event": "cycle_complete"}
+{"ts": "2026-04-28T12:16:58.672487+00:00", "cycle_id": "cyc-1777377602", "event": "daily_growth_done", "duration_s": 1016.43, "gaps_scanned": 0, "drafts_generated": 0, "training_pairs": 0}
+{"ts": "2026-04-28T12:16:58.672593+00:00", "cycle_id": "cyc-1777377602", "event": "cycle_complete"}
+{"ts": "2026-04-28T12:30:02.060385+00:00", "cycle_id": "cyc-1777379401", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-28T12:30:02.109007+00:00", "cycle_id": "cyc-1777379401", "event": "corpus_stats", "doc_count": 457, "chunk_count": 2287}
+{"ts": "2026-04-28T12:30:02.114784+00:00", "cycle_id": "cyc-1777379401", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-28T12:30:02.114889+00:00", "cycle_id": "cyc-1777379401", "event": "cycle_complete"}
+{"ts": "2026-04-28T12:45:01.222295+00:00", "cycle_id": "cyc-1777380301", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-28T12:45:01.242372+00:00", "cycle_id": "cyc-1777380301", "event": "corpus_stats", "doc_count": 457, "chunk_count": 2287}
+{"ts": "2026-04-28T12:45:01.246116+00:00", "cycle_id": "cyc-1777380301", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-28T12:45:01.246208+00:00", "cycle_id": "cyc-1777380301", "event": "cycle_complete"}
+{"ts": "2026-04-28T13:00:01.053960+00:00", "cycle_id": "cyc-1777381201", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-28T13:00:01.076453+00:00", "cycle_id": "cyc-1777381201", "event": "corpus_stats", "doc_count": 457, "chunk_count": 2287}
+{"ts": "2026-04-28T13:00:01.079836+00:00", "cycle_id": "cyc-1777381201", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-28T13:00:01.079907+00:00", "cycle_id": "cyc-1777381201", "event": "phase_start", "phase": "daily_growth_hourly"}
+{"ts": "2026-04-28T13:15:01.719588+00:00", "cycle_id": "cyc-1777382101", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-28T13:15:01.748152+00:00", "cycle_id": "cyc-1777382101", "event": "corpus_stats", "doc_count": 457, "chunk_count": 2287}
+{"ts": "2026-04-28T13:15:01.755928+00:00", "cycle_id": "cyc-1777382101", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-28T13:15:01.756020+00:00", "cycle_id": "cyc-1777382101", "event": "cycle_complete"}
+{"ts": "2026-04-28T13:16:33.575918+00:00", "cycle_id": "cyc-1777381201", "event": "daily_growth_done", "duration_s": 992.5, "gaps_scanned": 0, "drafts_generated": 0, "training_pairs": 0}
+{"ts": "2026-04-28T13:16:33.576044+00:00", "cycle_id": "cyc-1777381201", "event": "cycle_complete"}
+{"ts": "2026-04-28T13:30:01.064717+00:00", "cycle_id": "cyc-1777383001", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-28T13:30:01.087451+00:00", "cycle_id": "cyc-1777383001", "event": "corpus_stats", "doc_count": 457, "chunk_count": 2287}
+{"ts": "2026-04-28T13:30:01.091736+00:00", "cycle_id": "cyc-1777383001", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-28T13:30:01.091848+00:00", "cycle_id": "cyc-1777383001", "event": "cycle_complete"}
+{"ts": "2026-04-28T13:45:01.159388+00:00", "cycle_id": "cyc-1777383901", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-28T13:45:01.182325+00:00", "cycle_id": "cyc-1777383901", "event": "corpus_stats", "doc_count": 457, "chunk_count": 2287}
+{"ts": "2026-04-28T13:45:01.188098+00:00", "cycle_id": "cyc-1777383901", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-28T13:45:01.188185+00:00", "cycle_id": "cyc-1777383901", "event": "cycle_complete"}
+{"ts": "2026-04-28T14:00:01.340300+00:00", "cycle_id": "cyc-1777384801", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-28T14:00:01.365741+00:00", "cycle_id": "cyc-1777384801", "event": "corpus_stats", "doc_count": 457, "chunk_count": 2287}
+{"ts": "2026-04-28T14:00:01.369235+00:00", "cycle_id": "cyc-1777384801", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-28T14:00:01.374830+00:00", "cycle_id": "cyc-1777384801", "event": "phase_start", "phase": "daily_growth_hourly"}
+{"ts": "2026-04-28T14:14:09.685479+00:00", "cycle_id": "cyc-1777384801", "event": "daily_growth_done", "duration_s": 848.31, "gaps_scanned": 0, "drafts_generated": 0, "training_pairs": 0}
+{"ts": "2026-04-28T14:14:09.685658+00:00", "cycle_id": "cyc-1777384801", "event": "cycle_complete"}
+{"ts": "2026-04-28T14:15:01.896031+00:00", "cycle_id": "cyc-1777385701", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-28T14:15:01.942548+00:00", "cycle_id": "cyc-1777385701", "event": "corpus_stats", "doc_count": 457, "chunk_count": 2287}
+{"ts": "2026-04-28T14:15:01.946251+00:00", "cycle_id": "cyc-1777385701", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-28T14:15:01.946331+00:00", "cycle_id": "cyc-1777385701", "event": "cycle_complete"}
+{"ts": "2026-04-28T14:30:02.187562+00:00", "cycle_id": "cyc-1777386601", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-28T14:30:02.297274+00:00", "cycle_id": "cyc-1777386601", "event": "corpus_stats", "doc_count": 457, "chunk_count": 2287}
+{"ts": "2026-04-28T14:30:02.303848+00:00", "cycle_id": "cyc-1777386601", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-28T14:30:02.303987+00:00", "cycle_id": "cyc-1777386601", "event": "cycle_complete"}
+{"ts": "2026-04-28T14:45:01.802111+00:00", "cycle_id": "cyc-1777387501", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-28T14:45:01.826992+00:00", "cycle_id": "cyc-1777387501", "event": "corpus_stats", "doc_count": 457, "chunk_count": 2287}
+{"ts": "2026-04-28T14:45:01.830905+00:00", "cycle_id": "cyc-1777387501", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-28T14:45:01.831010+00:00", "cycle_id": "cyc-1777387501", "event": "cycle_complete"}
+{"ts": "2026-04-28T15:00:01.294183+00:00", "cycle_id": "cyc-1777388401", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-28T15:00:01.320100+00:00", "cycle_id": "cyc-1777388401", "event": "corpus_stats", "doc_count": 457, "chunk_count": 2287}
+{"ts": "2026-04-28T15:00:01.324636+00:00", "cycle_id": "cyc-1777388401", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-28T15:00:01.324741+00:00", "cycle_id": "cyc-1777388401", "event": "phase_start", "phase": "daily_growth_hourly"}
+{"ts": "2026-04-28T15:15:01.919092+00:00", "cycle_id": "cyc-1777389301", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-28T15:15:01.945302+00:00", "cycle_id": "cyc-1777389301", "event": "corpus_stats", "doc_count": 457, "chunk_count": 2287}
+{"ts": "2026-04-28T15:15:01.949173+00:00", "cycle_id": "cyc-1777389301", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-28T15:15:01.949259+00:00", "cycle_id": "cyc-1777389301", "event": "cycle_complete"}
+{"ts": "2026-04-28T15:16:34.118989+00:00", "cycle_id": "cyc-1777388401", "event": "daily_growth_done", "duration_s": 992.79, "gaps_scanned": 0, "drafts_generated": 0, "training_pairs": 0}
+{"ts": "2026-04-28T15:16:34.119087+00:00", "cycle_id": "cyc-1777388401", "event": "cycle_complete"}
+{"ts": "2026-04-28T15:30:01.961367+00:00", "cycle_id": "cyc-1777390201", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-28T15:30:01.987922+00:00", "cycle_id": "cyc-1777390201", "event": "corpus_stats", "doc_count": 457, "chunk_count": 2287}
+{"ts": "2026-04-28T15:30:01.991937+00:00", "cycle_id": "cyc-1777390201", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-28T15:30:01.992046+00:00", "cycle_id": "cyc-1777390201", "event": "cycle_complete"}
+{"ts": "2026-04-28T15:45:01.850206+00:00", "cycle_id": "cyc-1777391101", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-28T15:45:01.869376+00:00", "cycle_id": "cyc-1777391101", "event": "corpus_stats", "doc_count": 457, "chunk_count": 2287}
+{"ts": "2026-04-28T15:45:01.873200+00:00", "cycle_id": "cyc-1777391101", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-28T15:45:01.873286+00:00", "cycle_id": "cyc-1777391101", "event": "cycle_complete"}
+{"ts": "2026-04-28T16:00:01.268947+00:00", "cycle_id": "cyc-1777392001", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-28T16:00:01.296142+00:00", "cycle_id": "cyc-1777392001", "event": "corpus_stats", "doc_count": 457, "chunk_count": 2287}
+{"ts": "2026-04-28T16:00:01.300718+00:00", "cycle_id": "cyc-1777392001", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-28T16:00:01.300824+00:00", "cycle_id": "cyc-1777392001", "event": "phase_start", "phase": "daily_growth_hourly"}
+{"ts": "2026-04-28T16:15:01.149305+00:00", "cycle_id": "cyc-1777392901", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-28T16:15:01.180009+00:00", "cycle_id": "cyc-1777392901", "event": "corpus_stats", "doc_count": 457, "chunk_count": 2287}
+{"ts": "2026-04-28T16:15:01.184546+00:00", "cycle_id": "cyc-1777392901", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-28T16:15:01.184660+00:00", "cycle_id": "cyc-1777392901", "event": "cycle_complete"}
+{"ts": "2026-04-28T16:16:14.623282+00:00", "cycle_id": "cyc-1777392001", "event": "daily_growth_done", "duration_s": 973.32, "gaps_scanned": 0, "drafts_generated": 0, "training_pairs": 0}
+{"ts": "2026-04-28T16:16:14.623452+00:00", "cycle_id": "cyc-1777392001", "event": "cycle_complete"}
+{"ts": "2026-04-28T16:30:01.532716+00:00", "cycle_id": "cyc-1777393801", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-28T16:30:01.575426+00:00", "cycle_id": "cyc-1777393801", "event": "corpus_stats", "doc_count": 457, "chunk_count": 2287}
+{"ts": "2026-04-28T16:30:01.579589+00:00", "cycle_id": "cyc-1777393801", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-28T16:30:01.579693+00:00", "cycle_id": "cyc-1777393801", "event": "cycle_complete"}
+{"ts": "2026-04-28T16:45:01.484741+00:00", "cycle_id": "cyc-1777394701", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-28T16:45:01.548718+00:00", "cycle_id": "cyc-1777394701", "event": "corpus_stats", "doc_count": 457, "chunk_count": 2287}
+{"ts": "2026-04-28T16:45:01.553365+00:00", "cycle_id": "cyc-1777394701", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-28T16:45:01.553498+00:00", "cycle_id": "cyc-1777394701", "event": "cycle_complete"}
+{"ts": "2026-04-28T17:00:01.581756+00:00", "cycle_id": "cyc-1777395601", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-28T17:00:01.662027+00:00", "cycle_id": "cyc-1777395601", "event": "corpus_stats", "doc_count": 457, "chunk_count": 2287}
+{"ts": "2026-04-28T17:00:01.684094+00:00", "cycle_id": "cyc-1777395601", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-28T17:00:01.685176+00:00", "cycle_id": "cyc-1777395601", "event": "phase_start", "phase": "daily_growth_hourly"}
+{"ts": "2026-04-28T17:15:01.785281+00:00", "cycle_id": "cyc-1777396501", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-28T17:15:01.807990+00:00", "cycle_id": "cyc-1777396501", "event": "corpus_stats", "doc_count": 457, "chunk_count": 2287}
+{"ts": "2026-04-28T17:15:01.812917+00:00", "cycle_id": "cyc-1777396501", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-28T17:15:01.813056+00:00", "cycle_id": "cyc-1777396501", "event": "cycle_complete"}
+{"ts": "2026-04-28T17:16:34.672305+00:00", "cycle_id": "cyc-1777395601", "event": "daily_growth_done", "duration_s": 992.99, "gaps_scanned": 0, "drafts_generated": 0, "training_pairs": 0}
+{"ts": "2026-04-28T17:16:34.672401+00:00", "cycle_id": "cyc-1777395601", "event": "cycle_complete"}
+{"ts": "2026-04-28T17:30:01.405503+00:00", "cycle_id": "cyc-1777397401", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-28T17:30:01.428327+00:00", "cycle_id": "cyc-1777397401", "event": "corpus_stats", "doc_count": 457, "chunk_count": 2287}
+{"ts": "2026-04-28T17:30:01.432067+00:00", "cycle_id": "cyc-1777397401", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-28T17:30:01.432147+00:00", "cycle_id": "cyc-1777397401", "event": "cycle_complete"}
+{"ts": "2026-04-28T17:45:01.946845+00:00", "cycle_id": "cyc-1777398301", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-28T17:45:01.989258+00:00", "cycle_id": "cyc-1777398301", "event": "corpus_stats", "doc_count": 457, "chunk_count": 2287}
+{"ts": "2026-04-28T17:45:01.993892+00:00", "cycle_id": "cyc-1777398301", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-28T17:45:01.994003+00:00", "cycle_id": "cyc-1777398301", "event": "cycle_complete"}
+{"ts": "2026-04-28T18:00:02.219821+00:00", "cycle_id": "cyc-1777399202", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-28T18:00:02.249460+00:00", "cycle_id": "cyc-1777399202", "event": "corpus_stats", "doc_count": 457, "chunk_count": 2287}
+{"ts": "2026-04-28T18:00:02.254143+00:00", "cycle_id": "cyc-1777399202", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-28T18:00:02.254242+00:00", "cycle_id": "cyc-1777399202", "event": "phase_start", "phase": "daily_growth_hourly"}
+{"ts": "2026-04-28T18:15:02.113395+00:00", "cycle_id": "cyc-1777400101", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-28T18:15:02.147718+00:00", "cycle_id": "cyc-1777400101", "event": "corpus_stats", "doc_count": 457, "chunk_count": 2287}
+{"ts": "2026-04-28T18:15:02.151938+00:00", "cycle_id": "cyc-1777400101", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-28T18:15:02.152041+00:00", "cycle_id": "cyc-1777400101", "event": "cycle_complete"}
+{"ts": "2026-04-28T18:16:51.145757+00:00", "cycle_id": "cyc-1777399202", "event": "daily_growth_done", "duration_s": 1008.89, "gaps_scanned": 0, "drafts_generated": 0, "training_pairs": 0}
+{"ts": "2026-04-28T18:16:51.146126+00:00", "cycle_id": "cyc-1777399202", "event": "cycle_complete"}
+{"ts": "2026-04-28T18:30:02.010173+00:00", "cycle_id": "cyc-1777401001", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-28T18:30:02.200730+00:00", "cycle_id": "cyc-1777401001", "event": "corpus_stats", "doc_count": 457, "chunk_count": 2287}
+{"ts": "2026-04-28T18:30:02.204292+00:00", "cycle_id": "cyc-1777401001", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-28T18:30:02.204377+00:00", "cycle_id": "cyc-1777401001", "event": "cycle_complete"}
+{"ts": "2026-04-28T18:45:01.526494+00:00", "cycle_id": "cyc-1777401901", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-28T18:45:01.548960+00:00", "cycle_id": "cyc-1777401901", "event": "corpus_stats", "doc_count": 457, "chunk_count": 2287}
+{"ts": "2026-04-28T18:45:01.552962+00:00", "cycle_id": "cyc-1777401901", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-28T18:45:01.553078+00:00", "cycle_id": "cyc-1777401901", "event": "cycle_complete"}
+{"ts": "2026-04-28T19:00:01.847737+00:00", "cycle_id": "cyc-1777402801", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-28T19:00:01.874845+00:00", "cycle_id": "cyc-1777402801", "event": "corpus_stats", "doc_count": 457, "chunk_count": 2287}
+{"ts": "2026-04-28T19:00:01.879435+00:00", "cycle_id": "cyc-1777402801", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-28T19:00:01.879533+00:00", "cycle_id": "cyc-1777402801", "event": "phase_start", "phase": "daily_growth_hourly"}
+{"ts": "2026-04-28T19:15:02.019427+00:00", "cycle_id": "cyc-1777403701", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-28T19:15:02.070067+00:00", "cycle_id": "cyc-1777403701", "event": "corpus_stats", "doc_count": 457, "chunk_count": 2287}
+{"ts": "2026-04-28T19:15:02.079055+00:00", "cycle_id": "cyc-1777403701", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-28T19:15:02.079173+00:00", "cycle_id": "cyc-1777403701", "event": "cycle_complete"}
+{"ts": "2026-04-28T19:16:26.158460+00:00", "cycle_id": "cyc-1777402801", "event": "daily_growth_done", "duration_s": 984.28, "gaps_scanned": 0, "drafts_generated": 0, "training_pairs": 0}
+{"ts": "2026-04-28T19:16:26.158670+00:00", "cycle_id": "cyc-1777402801", "event": "cycle_complete"}
+{"ts": "2026-04-28T19:30:01.884412+00:00", "cycle_id": "cyc-1777404601", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-28T19:30:01.913824+00:00", "cycle_id": "cyc-1777404601", "event": "corpus_stats", "doc_count": 457, "chunk_count": 2287}
+{"ts": "2026-04-28T19:30:01.918582+00:00", "cycle_id": "cyc-1777404601", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-28T19:30:01.918688+00:00", "cycle_id": "cyc-1777404601", "event": "cycle_complete"}
+{"ts": "2026-04-28T19:45:02.010684+00:00", "cycle_id": "cyc-1777405501", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-28T19:45:02.045386+00:00", "cycle_id": "cyc-1777405501", "event": "corpus_stats", "doc_count": 457, "chunk_count": 2287}
+{"ts": "2026-04-28T19:45:02.050476+00:00", "cycle_id": "cyc-1777405501", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-28T19:45:02.050585+00:00", "cycle_id": "cyc-1777405501", "event": "cycle_complete"}
+{"ts": "2026-04-28T20:00:01.594591+00:00", "cycle_id": "cyc-1777406401", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-28T20:00:01.667065+00:00", "cycle_id": "cyc-1777406401", "event": "corpus_stats", "doc_count": 457, "chunk_count": 2287}
+{"ts": "2026-04-28T20:00:01.671823+00:00", "cycle_id": "cyc-1777406401", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-28T20:00:01.671927+00:00", "cycle_id": "cyc-1777406401", "event": "phase_start", "phase": "daily_growth_hourly"}
+{"ts": "2026-04-28T20:15:01.874549+00:00", "cycle_id": "cyc-1777407301", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-28T20:15:01.915978+00:00", "cycle_id": "cyc-1777407301", "event": "corpus_stats", "doc_count": 457, "chunk_count": 2287}
+{"ts": "2026-04-28T20:15:01.919220+00:00", "cycle_id": "cyc-1777407301", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-28T20:15:01.919306+00:00", "cycle_id": "cyc-1777407301", "event": "cycle_complete"}
+{"ts": "2026-04-28T20:16:34.435892+00:00", "cycle_id": "cyc-1777406401", "event": "daily_growth_done", "duration_s": 992.76, "gaps_scanned": 0, "drafts_generated": 0, "training_pairs": 0}
+{"ts": "2026-04-28T20:16:34.435984+00:00", "cycle_id": "cyc-1777406401", "event": "cycle_complete"}
+{"ts": "2026-04-28T20:30:01.650852+00:00", "cycle_id": "cyc-1777408201", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-28T20:30:01.684309+00:00", "cycle_id": "cyc-1777408201", "event": "corpus_stats", "doc_count": 457, "chunk_count": 2287}
+{"ts": "2026-04-28T20:30:01.689768+00:00", "cycle_id": "cyc-1777408201", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-28T20:30:01.689881+00:00", "cycle_id": "cyc-1777408201", "event": "cycle_complete"}
+{"ts": "2026-04-28T20:45:01.414526+00:00", "cycle_id": "cyc-1777409101", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-28T20:45:01.439198+00:00", "cycle_id": "cyc-1777409101", "event": "corpus_stats", "doc_count": 457, "chunk_count": 2287}
+{"ts": "2026-04-28T20:45:01.443584+00:00", "cycle_id": "cyc-1777409101", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-28T20:45:01.443689+00:00", "cycle_id": "cyc-1777409101", "event": "cycle_complete"}
+{"ts": "2026-04-28T21:00:01.596719+00:00", "cycle_id": "cyc-1777410001", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-28T21:00:01.622327+00:00", "cycle_id": "cyc-1777410001", "event": "corpus_stats", "doc_count": 457, "chunk_count": 2287}
+{"ts": "2026-04-28T21:00:01.626639+00:00", "cycle_id": "cyc-1777410001", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-28T21:00:01.626744+00:00", "cycle_id": "cyc-1777410001", "event": "phase_start", "phase": "daily_growth_hourly"}
+{"ts": "2026-04-28T21:04:37.670413+00:00", "cycle_id": "cyc-1777410001", "event": "daily_growth_done", "duration_s": 276.04, "gaps_scanned": 0, "drafts_generated": 0, "training_pairs": 0}
+{"ts": "2026-04-28T21:04:37.670585+00:00", "cycle_id": "cyc-1777410001", "event": "cycle_complete"}
+{"ts": "2026-04-28T21:15:01.756548+00:00", "cycle_id": "cyc-1777410901", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-28T21:15:01.788688+00:00", "cycle_id": "cyc-1777410901", "event": "corpus_stats", "doc_count": 457, "chunk_count": 2287}
+{"ts": "2026-04-28T21:15:01.793123+00:00", "cycle_id": "cyc-1777410901", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-28T21:15:01.793223+00:00", "cycle_id": "cyc-1777410901", "event": "cycle_complete"}
+{"ts": "2026-04-28T21:30:01.963187+00:00", "cycle_id": "cyc-1777411801", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-28T21:30:01.992581+00:00", "cycle_id": "cyc-1777411801", "event": "corpus_stats", "doc_count": 457, "chunk_count": 2287}
+{"ts": "2026-04-28T21:30:01.997132+00:00", "cycle_id": "cyc-1777411801", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-28T21:30:01.997237+00:00", "cycle_id": "cyc-1777411801", "event": "cycle_complete"}
+{"ts": "2026-04-28T21:45:01.420518+00:00", "cycle_id": "cyc-1777412701", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-28T21:45:01.446572+00:00", "cycle_id": "cyc-1777412701", "event": "corpus_stats", "doc_count": 457, "chunk_count": 2287}
+{"ts": "2026-04-28T21:45:01.450852+00:00", "cycle_id": "cyc-1777412701", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-28T21:45:01.450948+00:00", "cycle_id": "cyc-1777412701", "event": "cycle_complete"}
+{"ts": "2026-04-28T22:00:01.865430+00:00", "cycle_id": "cyc-1777413601", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-28T22:00:01.894288+00:00", "cycle_id": "cyc-1777413601", "event": "corpus_stats", "doc_count": 457, "chunk_count": 2287}
+{"ts": "2026-04-28T22:00:01.898945+00:00", "cycle_id": "cyc-1777413601", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-28T22:00:01.899044+00:00", "cycle_id": "cyc-1777413601", "event": "phase_start", "phase": "daily_growth_hourly"}
+{"ts": "2026-04-28T22:04:40.392828+00:00", "cycle_id": "cyc-1777413601", "event": "daily_growth_done", "duration_s": 278.49, "gaps_scanned": 0, "drafts_generated": 0, "training_pairs": 0}
+{"ts": "2026-04-28T22:04:40.392975+00:00", "cycle_id": "cyc-1777413601", "event": "cycle_complete"}
+{"ts": "2026-04-28T22:15:01.773142+00:00", "cycle_id": "cyc-1777414501", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-28T22:15:01.803295+00:00", "cycle_id": "cyc-1777414501", "event": "corpus_stats", "doc_count": 457, "chunk_count": 2287}
+{"ts": "2026-04-28T22:15:01.808006+00:00", "cycle_id": "cyc-1777414501", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-28T22:15:01.808109+00:00", "cycle_id": "cyc-1777414501", "event": "cycle_complete"}
+{"ts": "2026-04-28T22:30:01.901824+00:00", "cycle_id": "cyc-1777415401", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-28T22:30:01.932650+00:00", "cycle_id": "cyc-1777415401", "event": "corpus_stats", "doc_count": 457, "chunk_count": 2287}
+{"ts": "2026-04-28T22:30:01.936656+00:00", "cycle_id": "cyc-1777415401", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-28T22:30:01.936768+00:00", "cycle_id": "cyc-1777415401", "event": "cycle_complete"}
+{"ts": "2026-04-28T22:45:01.636548+00:00", "cycle_id": "cyc-1777416301", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-28T22:45:01.663928+00:00", "cycle_id": "cyc-1777416301", "event": "corpus_stats", "doc_count": 457, "chunk_count": 2287}
+{"ts": "2026-04-28T22:45:01.668570+00:00", "cycle_id": "cyc-1777416301", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-28T22:45:01.668670+00:00", "cycle_id": "cyc-1777416301", "event": "cycle_complete"}
+{"ts": "2026-04-28T23:00:01.233733+00:00", "cycle_id": "cyc-1777417201", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-28T23:00:01.262556+00:00", "cycle_id": "cyc-1777417201", "event": "corpus_stats", "doc_count": 457, "chunk_count": 2287}
+{"ts": "2026-04-28T23:00:01.266968+00:00", "cycle_id": "cyc-1777417201", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-28T23:00:01.267070+00:00", "cycle_id": "cyc-1777417201", "event": "phase_start", "phase": "daily_growth_hourly"}
+{"ts": "2026-04-28T23:05:06.384824+00:00", "cycle_id": "cyc-1777417201", "event": "daily_growth_done", "duration_s": 305.12, "gaps_scanned": 0, "drafts_generated": 0, "training_pairs": 0}
+{"ts": "2026-04-28T23:05:06.384946+00:00", "cycle_id": "cyc-1777417201", "event": "cycle_complete"}
+{"ts": "2026-04-28T23:15:01.761580+00:00", "cycle_id": "cyc-1777418101", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-28T23:15:01.815688+00:00", "cycle_id": "cyc-1777418101", "event": "corpus_stats", "doc_count": 457, "chunk_count": 2287}
+{"ts": "2026-04-28T23:15:01.820495+00:00", "cycle_id": "cyc-1777418101", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-28T23:15:01.820599+00:00", "cycle_id": "cyc-1777418101", "event": "cycle_complete"}
+{"ts": "2026-04-28T23:30:01.095097+00:00", "cycle_id": "cyc-1777419001", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-28T23:30:01.124499+00:00", "cycle_id": "cyc-1777419001", "event": "corpus_stats", "doc_count": 457, "chunk_count": 2287}
+{"ts": "2026-04-28T23:30:01.129151+00:00", "cycle_id": "cyc-1777419001", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-28T23:30:01.129293+00:00", "cycle_id": "cyc-1777419001", "event": "cycle_complete"}
+{"ts": "2026-04-28T23:45:01.160763+00:00", "cycle_id": "cyc-1777419901", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-28T23:45:01.187384+00:00", "cycle_id": "cyc-1777419901", "event": "corpus_stats", "doc_count": 457, "chunk_count": 2287}
+{"ts": "2026-04-28T23:45:01.191684+00:00", "cycle_id": "cyc-1777419901", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-28T23:45:01.191842+00:00", "cycle_id": "cyc-1777419901", "event": "cycle_complete"}
+{"ts": "2026-04-29T00:00:02.190667+00:00", "cycle_id": "cyc-1777420801", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-29T00:00:02.308171+00:00", "cycle_id": "cyc-1777420801", "event": "corpus_stats", "doc_count": 457, "chunk_count": 2287}
+{"ts": "2026-04-29T00:00:02.311695+00:00", "cycle_id": "cyc-1777420801", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-29T00:00:02.311803+00:00", "cycle_id": "cyc-1777420801", "event": "phase_start", "phase": "daily_growth_hourly"}
+{"ts": "2026-04-29T00:06:14.985927+00:00", "cycle_id": "cyc-1777420801", "event": "daily_growth_done", "duration_s": 372.67, "gaps_scanned": 0, "drafts_generated": 0, "training_pairs": 0}
+{"ts": "2026-04-29T00:06:14.986089+00:00", "cycle_id": "cyc-1777420801", "event": "cycle_complete"}
+{"ts": "2026-04-29T00:15:01.276155+00:00", "cycle_id": "cyc-1777421701", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-29T00:15:01.301812+00:00", "cycle_id": "cyc-1777421701", "event": "corpus_stats", "doc_count": 457, "chunk_count": 2287}
+{"ts": "2026-04-29T00:15:01.306402+00:00", "cycle_id": "cyc-1777421701", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-29T00:15:01.306530+00:00", "cycle_id": "cyc-1777421701", "event": "cycle_complete"}
+{"ts": "2026-04-29T00:30:02.021568+00:00", "cycle_id": "cyc-1777422601", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-29T00:30:02.047149+00:00", "cycle_id": "cyc-1777422601", "event": "corpus_stats", "doc_count": 457, "chunk_count": 2287}
+{"ts": "2026-04-29T00:30:02.051715+00:00", "cycle_id": "cyc-1777422601", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-29T00:30:02.051862+00:00", "cycle_id": "cyc-1777422601", "event": "cycle_complete"}
+{"ts": "2026-04-29T00:45:01.516794+00:00", "cycle_id": "cyc-1777423501", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-29T00:45:01.562582+00:00", "cycle_id": "cyc-1777423501", "event": "corpus_stats", "doc_count": 457, "chunk_count": 2287}
+{"ts": "2026-04-29T00:45:01.567344+00:00", "cycle_id": "cyc-1777423501", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-29T00:45:01.567441+00:00", "cycle_id": "cyc-1777423501", "event": "cycle_complete"}
+{"ts": "2026-04-29T01:00:01.558700+00:00", "cycle_id": "cyc-1777424401", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-29T01:00:01.580606+00:00", "cycle_id": "cyc-1777424401", "event": "corpus_stats", "doc_count": 457, "chunk_count": 2287}
+{"ts": "2026-04-29T01:00:01.585047+00:00", "cycle_id": "cyc-1777424401", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-29T01:00:01.585156+00:00", "cycle_id": "cyc-1777424401", "event": "phase_start", "phase": "daily_growth_hourly"}
+{"ts": "2026-04-29T01:06:23.878566+00:00", "cycle_id": "cyc-1777424401", "event": "daily_growth_done", "duration_s": 382.29, "gaps_scanned": 0, "drafts_generated": 0, "training_pairs": 0}
+{"ts": "2026-04-29T01:06:23.878706+00:00", "cycle_id": "cyc-1777424401", "event": "cycle_complete"}
+{"ts": "2026-04-29T01:15:01.996587+00:00", "cycle_id": "cyc-1777425301", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-29T01:15:02.029488+00:00", "cycle_id": "cyc-1777425301", "event": "corpus_stats", "doc_count": 457, "chunk_count": 2287}
+{"ts": "2026-04-29T01:15:02.037260+00:00", "cycle_id": "cyc-1777425301", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-29T01:15:02.037391+00:00", "cycle_id": "cyc-1777425301", "event": "cycle_complete"}
+{"ts": "2026-04-29T01:30:01.132611+00:00", "cycle_id": "cyc-1777426201", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-29T01:30:01.157726+00:00", "cycle_id": "cyc-1777426201", "event": "corpus_stats", "doc_count": 457, "chunk_count": 2287}
+{"ts": "2026-04-29T01:30:01.161659+00:00", "cycle_id": "cyc-1777426201", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-29T01:30:01.161761+00:00", "cycle_id": "cyc-1777426201", "event": "cycle_complete"}
+{"ts": "2026-04-29T01:45:01.563114+00:00", "cycle_id": "cyc-1777427101", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-29T01:45:01.584298+00:00", "cycle_id": "cyc-1777427101", "event": "corpus_stats", "doc_count": 457, "chunk_count": 2287}
+{"ts": "2026-04-29T01:45:01.587987+00:00", "cycle_id": "cyc-1777427101", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-29T01:45:01.588078+00:00", "cycle_id": "cyc-1777427101", "event": "cycle_complete"}
+{"ts": "2026-04-29T02:00:01.864541+00:00", "cycle_id": "cyc-1777428001", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-29T02:00:01.897578+00:00", "cycle_id": "cyc-1777428001", "event": "corpus_stats", "doc_count": 457, "chunk_count": 2287}
+{"ts": "2026-04-29T02:00:01.903591+00:00", "cycle_id": "cyc-1777428001", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-29T02:00:01.903714+00:00", "cycle_id": "cyc-1777428001", "event": "phase_start", "phase": "daily_growth_hourly"}
+{"ts": "2026-04-29T02:12:23.736617+00:00", "cycle_id": "cyc-1777428001", "event": "daily_growth_done", "duration_s": 741.83, "gaps_scanned": 0, "drafts_generated": 0, "training_pairs": 0}
+{"ts": "2026-04-29T02:12:23.736705+00:00", "cycle_id": "cyc-1777428001", "event": "cycle_complete"}
+{"ts": "2026-04-29T02:15:01.239707+00:00", "cycle_id": "cyc-1777428901", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-29T02:15:01.267320+00:00", "cycle_id": "cyc-1777428901", "event": "corpus_stats", "doc_count": 457, "chunk_count": 2287}
+{"ts": "2026-04-29T02:15:01.272118+00:00", "cycle_id": "cyc-1777428901", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-29T02:15:01.272228+00:00", "cycle_id": "cyc-1777428901", "event": "cycle_complete"}
+{"ts": "2026-04-29T02:30:01.805132+00:00", "cycle_id": "cyc-1777429801", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-29T02:30:01.824054+00:00", "cycle_id": "cyc-1777429801", "event": "corpus_stats", "doc_count": 457, "chunk_count": 2287}
+{"ts": "2026-04-29T02:30:01.828433+00:00", "cycle_id": "cyc-1777429801", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-29T02:30:01.828536+00:00", "cycle_id": "cyc-1777429801", "event": "cycle_complete"}
+{"ts": "2026-04-29T02:45:01.513384+00:00", "cycle_id": "cyc-1777430701", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-29T02:45:01.535555+00:00", "cycle_id": "cyc-1777430701", "event": "corpus_stats", "doc_count": 457, "chunk_count": 2287}
+{"ts": "2026-04-29T02:45:01.539259+00:00", "cycle_id": "cyc-1777430701", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-29T02:45:01.539349+00:00", "cycle_id": "cyc-1777430701", "event": "cycle_complete"}
+{"ts": "2026-04-29T03:00:01.543283+00:00", "cycle_id": "cyc-1777431601", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-29T03:00:01.575477+00:00", "cycle_id": "cyc-1777431601", "event": "corpus_stats", "doc_count": 457, "chunk_count": 2287}
+{"ts": "2026-04-29T03:00:01.580029+00:00", "cycle_id": "cyc-1777431601", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-29T03:00:01.580114+00:00", "cycle_id": "cyc-1777431601", "event": "phase_start", "phase": "daily_growth_hourly"}
+{"ts": "2026-04-29T03:09:04.981341+00:00", "cycle_id": "cyc-1777431601", "event": "daily_growth_done", "duration_s": 543.4, "gaps_scanned": 0, "drafts_generated": 0, "training_pairs": 0}
+{"ts": "2026-04-29T03:09:04.981437+00:00", "cycle_id": "cyc-1777431601", "event": "cycle_complete"}
+{"ts": "2026-04-29T03:15:01.911529+00:00", "cycle_id": "cyc-1777432501", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-29T03:15:01.935340+00:00", "cycle_id": "cyc-1777432501", "event": "corpus_stats", "doc_count": 457, "chunk_count": 2287}
+{"ts": "2026-04-29T03:15:01.939941+00:00", "cycle_id": "cyc-1777432501", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-29T03:15:01.940032+00:00", "cycle_id": "cyc-1777432501", "event": "cycle_complete"}
+{"ts": "2026-04-29T03:30:01.944965+00:00", "cycle_id": "cyc-1777433401", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-29T03:30:01.974089+00:00", "cycle_id": "cyc-1777433401", "event": "corpus_stats", "doc_count": 457, "chunk_count": 2287}
+{"ts": "2026-04-29T03:30:01.978890+00:00", "cycle_id": "cyc-1777433401", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-29T03:30:01.978992+00:00", "cycle_id": "cyc-1777433401", "event": "cycle_complete"}
+{"ts": "2026-04-29T03:45:01.090952+00:00", "cycle_id": "cyc-1777434301", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-29T03:45:01.111993+00:00", "cycle_id": "cyc-1777434301", "event": "corpus_stats", "doc_count": 457, "chunk_count": 2287}
+{"ts": "2026-04-29T03:45:01.115920+00:00", "cycle_id": "cyc-1777434301", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-29T03:45:01.116000+00:00", "cycle_id": "cyc-1777434301", "event": "cycle_complete"}
+{"ts": "2026-04-29T04:00:01.268173+00:00", "cycle_id": "cyc-1777435201", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-29T04:00:01.318609+00:00", "cycle_id": "cyc-1777435201", "event": "corpus_stats", "doc_count": 457, "chunk_count": 2287}
+{"ts": "2026-04-29T04:00:01.323425+00:00", "cycle_id": "cyc-1777435201", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-29T04:00:01.323548+00:00", "cycle_id": "cyc-1777435201", "event": "phase_start", "phase": "daily_growth_hourly"}
+{"ts": "2026-04-29T04:06:28.142291+00:00", "cycle_id": "cyc-1777435201", "event": "daily_growth_done", "duration_s": 386.82, "gaps_scanned": 0, "drafts_generated": 0, "training_pairs": 0}
+{"ts": "2026-04-29T04:06:28.142453+00:00", "cycle_id": "cyc-1777435201", "event": "cycle_complete"}
+{"ts": "2026-04-29T04:15:01.318742+00:00", "cycle_id": "cyc-1777436101", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-29T04:15:01.340403+00:00", "cycle_id": "cyc-1777436101", "event": "corpus_stats", "doc_count": 457, "chunk_count": 2287}
+{"ts": "2026-04-29T04:15:01.345168+00:00", "cycle_id": "cyc-1777436101", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-29T04:15:01.345279+00:00", "cycle_id": "cyc-1777436101", "event": "cycle_complete"}
+{"ts": "2026-04-29T04:30:01.518223+00:00", "cycle_id": "cyc-1777437001", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-29T04:30:01.540012+00:00", "cycle_id": "cyc-1777437001", "event": "corpus_stats", "doc_count": 457, "chunk_count": 2287}
+{"ts": "2026-04-29T04:30:01.543877+00:00", "cycle_id": "cyc-1777437001", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-29T04:30:01.543952+00:00", "cycle_id": "cyc-1777437001", "event": "cycle_complete"}
+{"ts": "2026-04-29T04:45:01.509332+00:00", "cycle_id": "cyc-1777437901", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-29T04:45:01.531284+00:00", "cycle_id": "cyc-1777437901", "event": "corpus_stats", "doc_count": 457, "chunk_count": 2287}
+{"ts": "2026-04-29T04:45:01.535052+00:00", "cycle_id": "cyc-1777437901", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-29T04:45:01.535137+00:00", "cycle_id": "cyc-1777437901", "event": "cycle_complete"}
+{"ts": "2026-04-29T05:00:01.394176+00:00", "cycle_id": "cyc-1777438801", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-29T05:00:01.432529+00:00", "cycle_id": "cyc-1777438801", "event": "corpus_stats", "doc_count": 457, "chunk_count": 2287}
+{"ts": "2026-04-29T05:00:01.437271+00:00", "cycle_id": "cyc-1777438801", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-29T05:00:01.437404+00:00", "cycle_id": "cyc-1777438801", "event": "phase_start", "phase": "daily_growth_hourly"}
+{"ts": "2026-04-29T05:06:09.727277+00:00", "cycle_id": "cyc-1777438801", "event": "daily_growth_done", "duration_s": 368.29, "gaps_scanned": 0, "drafts_generated": 0, "training_pairs": 0}
+{"ts": "2026-04-29T05:06:09.727369+00:00", "cycle_id": "cyc-1777438801", "event": "cycle_complete"}
+{"ts": "2026-04-29T05:15:01.837869+00:00", "cycle_id": "cyc-1777439701", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-29T05:15:01.870864+00:00", "cycle_id": "cyc-1777439701", "event": "corpus_stats", "doc_count": 457, "chunk_count": 2287}
+{"ts": "2026-04-29T05:15:01.875505+00:00", "cycle_id": "cyc-1777439701", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-29T05:15:01.875636+00:00", "cycle_id": "cyc-1777439701", "event": "cycle_complete"}
+{"ts": "2026-04-29T05:30:01.252433+00:00", "cycle_id": "cyc-1777440601", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-29T05:30:01.290581+00:00", "cycle_id": "cyc-1777440601", "event": "corpus_stats", "doc_count": 457, "chunk_count": 2287}
+{"ts": "2026-04-29T05:30:01.295704+00:00", "cycle_id": "cyc-1777440601", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-29T05:30:01.295839+00:00", "cycle_id": "cyc-1777440601", "event": "cycle_complete"}
+{"ts": "2026-04-29T05:45:01.859536+00:00", "cycle_id": "cyc-1777441501", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-29T05:45:01.887017+00:00", "cycle_id": "cyc-1777441501", "event": "corpus_stats", "doc_count": 457, "chunk_count": 2287}
+{"ts": "2026-04-29T05:45:01.891699+00:00", "cycle_id": "cyc-1777441501", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-29T05:45:01.891838+00:00", "cycle_id": "cyc-1777441501", "event": "cycle_complete"}
+{"ts": "2026-04-29T06:00:01.953676+00:00", "cycle_id": "cyc-1777442401", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-29T06:00:01.985073+00:00", "cycle_id": "cyc-1777442401", "event": "corpus_stats", "doc_count": 457, "chunk_count": 2287}
+{"ts": "2026-04-29T06:00:01.990147+00:00", "cycle_id": "cyc-1777442401", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-29T06:00:01.990275+00:00", "cycle_id": "cyc-1777442401", "event": "phase_start", "phase": "daily_growth_hourly"}
+{"ts": "2026-04-29T06:06:31.286651+00:00", "cycle_id": "cyc-1777442401", "event": "daily_growth_done", "duration_s": 389.3, "gaps_scanned": 0, "drafts_generated": 0, "training_pairs": 0}
+{"ts": "2026-04-29T06:06:31.287112+00:00", "cycle_id": "cyc-1777442401", "event": "cycle_complete"}
+{"ts": "2026-04-29T06:15:01.407559+00:00", "cycle_id": "cyc-1777443301", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-29T06:15:01.430823+00:00", "cycle_id": "cyc-1777443301", "event": "corpus_stats", "doc_count": 457, "chunk_count": 2287}
+{"ts": "2026-04-29T06:15:01.436071+00:00", "cycle_id": "cyc-1777443301", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-29T06:15:01.436214+00:00", "cycle_id": "cyc-1777443301", "event": "cycle_complete"}
+{"ts": "2026-04-29T06:30:01.128343+00:00", "cycle_id": "cyc-1777444201", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-29T06:30:01.156621+00:00", "cycle_id": "cyc-1777444201", "event": "corpus_stats", "doc_count": 457, "chunk_count": 2287}
+{"ts": "2026-04-29T06:30:01.160833+00:00", "cycle_id": "cyc-1777444201", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-29T06:30:01.160933+00:00", "cycle_id": "cyc-1777444201", "event": "cycle_complete"}
+{"ts": "2026-04-29T06:45:01.214200+00:00", "cycle_id": "cyc-1777445101", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-29T06:45:01.241981+00:00", "cycle_id": "cyc-1777445101", "event": "corpus_stats", "doc_count": 457, "chunk_count": 2287}
+{"ts": "2026-04-29T06:45:01.246678+00:00", "cycle_id": "cyc-1777445101", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-29T06:45:01.246782+00:00", "cycle_id": "cyc-1777445101", "event": "cycle_complete"}
+{"ts": "2026-04-29T07:00:01.426708+00:00", "cycle_id": "cyc-1777446001", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-29T07:00:01.514961+00:00", "cycle_id": "cyc-1777446001", "event": "corpus_stats", "doc_count": 457, "chunk_count": 2287}
+{"ts": "2026-04-29T07:00:01.530263+00:00", "cycle_id": "cyc-1777446001", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-29T07:00:01.530394+00:00", "cycle_id": "cyc-1777446001", "event": "phase_start", "phase": "daily_growth_hourly"}
+{"ts": "2026-04-29T07:09:08.806345+00:00", "cycle_id": "cyc-1777446001", "event": "daily_growth_done", "duration_s": 547.28, "gaps_scanned": 0, "drafts_generated": 0, "training_pairs": 0}
+{"ts": "2026-04-29T07:09:08.806474+00:00", "cycle_id": "cyc-1777446001", "event": "cycle_complete"}
+{"ts": "2026-04-29T07:15:01.587118+00:00", "cycle_id": "cyc-1777446901", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-29T07:15:01.642281+00:00", "cycle_id": "cyc-1777446901", "event": "corpus_stats", "doc_count": 457, "chunk_count": 2287}
+{"ts": "2026-04-29T07:15:01.646551+00:00", "cycle_id": "cyc-1777446901", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-29T07:15:01.646654+00:00", "cycle_id": "cyc-1777446901", "event": "cycle_complete"}
+{"ts": "2026-04-29T07:30:01.803503+00:00", "cycle_id": "cyc-1777447801", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-29T07:30:01.823655+00:00", "cycle_id": "cyc-1777447801", "event": "corpus_stats", "doc_count": 457, "chunk_count": 2287}
+{"ts": "2026-04-29T07:30:01.827839+00:00", "cycle_id": "cyc-1777447801", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-29T07:30:01.827943+00:00", "cycle_id": "cyc-1777447801", "event": "cycle_complete"}
+{"ts": "2026-04-29T07:45:01.722050+00:00", "cycle_id": "cyc-1777448701", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-29T07:45:01.756543+00:00", "cycle_id": "cyc-1777448701", "event": "corpus_stats", "doc_count": 457, "chunk_count": 2287}
+{"ts": "2026-04-29T07:45:01.761490+00:00", "cycle_id": "cyc-1777448701", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-29T07:45:01.761626+00:00", "cycle_id": "cyc-1777448701", "event": "cycle_complete"}
+{"ts": "2026-04-29T08:00:02.474223+00:00", "cycle_id": "cyc-1777449601", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-29T08:00:02.731256+00:00", "cycle_id": "cyc-1777449601", "event": "corpus_stats", "doc_count": 457, "chunk_count": 2287}
+{"ts": "2026-04-29T08:00:02.739500+00:00", "cycle_id": "cyc-1777449601", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-29T08:00:02.739926+00:00", "cycle_id": "cyc-1777449601", "event": "phase_start", "phase": "daily_growth_hourly"}
+{"ts": "2026-04-29T08:09:10.562869+00:00", "cycle_id": "cyc-1777449601", "event": "daily_growth_done", "duration_s": 547.82, "gaps_scanned": 0, "drafts_generated": 0, "training_pairs": 0}
+{"ts": "2026-04-29T08:09:10.563009+00:00", "cycle_id": "cyc-1777449601", "event": "cycle_complete"}
+{"ts": "2026-04-29T08:15:01.215231+00:00", "cycle_id": "cyc-1777450501", "event": "gap_snapshot", "count": 0, "top": []}
+{"ts": "2026-04-29T08:15:01.260863+00:00", "cycle_id": "cyc-1777450501", "event": "corpus_stats", "doc_count": 457, "chunk_count": 2287}
+{"ts": "2026-04-29T08:15:01.273823+00:00", "cycle_id": "cyc-1777450501", "event": "cache_health", "enabled": false}
+{"ts": "2026-04-29T08:15:01.273991+00:00", "cycle_id": "cyc-1777450501", "event": "cycle_complete"}

@@ -1,0 +1,48 @@
+{
+  "task_id": "spawn_6370ad6aa50d",
+  "goal": "test spawn",
+  "status": "completed",
+  "created_at": "2026-05-01T21:04:41.806527+00:00",
+  "entries": {
+    "spawn_event_research_41ee609d": {
+      "value": {
+        "event": "spawned",
+        "agent_type": "research",
+        "persona": "ALEY",
+        "task": "Research and synthesize findings for: test spawn",
+        "parent_task_id": "spawn_6370ad6aa50d",
+        "layer": 0
+      },
+      "agent_id": "research_41ee609d",
+      "agent_type": "research",
+      "layer": 0,
+      "timestamp": "2026-05-01T21:04:41.806842+00:00"
+    },
+    "result_research_41ee609d": {
+      "value": {
+        "output": "",
+        "agent_type": "research",
+        "persona": "ALEY"
+      },
+      "agent_id": "research_41ee609d",
+      "agent_type": "research",
+      "layer": 0,
+      "timestamp": "2026-05-01T21:04:41.808513+00:00"
+    },
+    "final_synthesis": {
+      "value": {
+        "answer": "",
+        "status": "completed",
+        "duration_ms": 2
+      },
+      "agent_id": "synthesizer",
+      "agent_type": "synthesis",
+      "layer": 999,
+      "timestamp": "2026-05-01T21:04:41.809005+00:00"
+    }
+  },
+  "layer_breakdown": {
+    "0": 2,
+    "999": 1
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "anonymous": true,
+  "rotateUA": true,
+  "timeout": 15000,
+  "maxRetries": 3,
+  "downloadDir": "/home/claude/hyperx-browser/downloads",
+  "proxy": null,
+  "stripCookies": true,
+  "stripTrackers": true,
+  "compress": true,
+  "jsDisabled": true,
+  "searchEngine": "multi",
+  "engines": {
+    "google": "https://www.google.com/search?q={q}&num=20",
+    "ddg": "https://html.duckduckgo.com/html/?q={q}",
+    "brave": "https://search.brave.com/search?q={q}",
+    "bing": "https://www.bing.com/search?q={q}",
+    "startpage": "https://www.startpage.com/do/search?q={q}",
+    "yandex": "https://yandex.com/search/?text={q}",
+    "ecosia": "https://www.ecosia.org/search?q={q}"
+  }
+}

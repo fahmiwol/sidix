@@ -607,7 +607,7 @@ class KitabahIterateRequest(BaseModel):
     """
     brief: str
     max_iter: int = 3
-    score_threshold: float = 4.0
+    score_threshold: float = 4.0  # RESCUE-NOTE: Kitabah creative score scale 1-5 (NOT sanad 0-1 scale)
     persist: bool = True
 
 
@@ -2089,14 +2089,22 @@ def create_app() -> "FastAPI":
                 memory_store.add_message(
                     effective_conversation_id, "assistant",
                     result.get("answer", ""), persona=effective_persona,
-                    confidence_score=0.7 if result.get("confidence") == "tinggi" else 0.5,
+                    # RESCUE: memory save confidence tied to sanad_score
+                    confidence_score=round(float(result.get("sanad_score") or 0.5), 2),
                 )
             except Exception as mem_err:
                 log.debug("[chat_holistic] memory save skipped: %s", mem_err)
 
-            # Sprint L: confidence auto-trigger — sanad_score < 0.4 (scale 0-1) → log error
+            # Sprint L: confidence auto-trigger — sanad_score < 0.4 (scale 0-1) → log error + RESCUE: ABSTAIN (override answer)
             sanad_score_val = float(result.get("sanad_score") or 0.0)
             if sanad_score_val < 0.4 and sanad_score_val > 0.0:
+                # RESCUE: override answer — do NOT return ungrounded hallucination
+                result["answer"] = (
+                    "Maaf, aku belum punya dasar/sumber yang cukup kuat untuk menjawab ini "
+                    "dengan yakin — aku tidak mau mengarang. Coba tanyakan dengan lebih spesifik, "
+                    "atau aku bisa cari referensi lebih dulu jika ada tools yang tersedia."
+                )
+                result["confidence"] = "rendah"
                 try:
                     from .error_registry import log_error, ErrorType
                     log_error(
@@ -2118,8 +2126,14 @@ def create_app() -> "FastAPI":
                 duration_ms=duration_ms,
                 finished=True,
                 error="",
-                confidence=result.get("confidence", "sedang"),
-                confidence_score=0.7 if result.get("confidence") == "tinggi" else 0.5,
+                # RESCUE: confidence label derived from sanad_score
+                confidence=(
+                    "tinggi" if float(result.get("sanad_score") or 0) >= 0.7
+                    else "sedang" if float(result.get("sanad_score") or 0) >= 0.4
+                    else result.get("confidence", "rendah")  # abstain path already set above
+                ),
+                # RESCUE: confidence_score tied to actual sanad grounding (0-1 scale)
+                confidence_score=round(float(result.get("sanad_score") or 0.5), 2),
                 answer_type="fakta",
                 user_id=effective_user_id,
                 conversation_id=effective_conversation_id,

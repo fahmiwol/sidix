@@ -1,0 +1,44 @@
+{
+  "ok": true,
+  "train_count": 6750,
+  "val_count": 750,
+  "val_ratio": 0.1,
+  "seed": 2026,
+  "per_persona": {
+    "UTZ": {
+      "total": 1500,
+      "train": 1350,
+      "val": 150,
+      "avg_signature_score": 0.767
+    },
+    "ABOO": {
+      "total": 1500,
+      "train": 1350,
+      "val": 150,
+      "avg_signature_score": 0.639
+    },
+    "OOMAR": {
+      "total": 1500,
+      "train": 1350,
+      "val": 150,
+      "avg_signature_score": 0.702
+    },
+    "ALEY": {
+      "total": 1500,
+      "train": 1350,
+      "val": 150,
+      "avg_signature_score": 0.74
+    },
+    "AYMAN": {
+      "total": 1500,
+      "train": 1350,
+      "val": 150,
+      "avg_signature_score": 0.742
+    }
+  },
+  "files": {
+    "train": "/opt/sidix/.data/training/persona_qa_train.jsonl",
+    "val": "/opt/sidix/.data/training/persona_qa_val.jsonl",
+    "stats": "/opt/sidix/.data/training/persona_qa_stats.json"
+  }
+}

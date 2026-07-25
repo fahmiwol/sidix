@@ -1,0 +1,106 @@
+{
+  "date": "2026-04-27",
+  "ts_generated": "2026-04-27T23:01:20.244265+00:00",
+  "metrics": {
+    "creative_briefs": {
+      "count": 4,
+      "slugs": [
+        "maskot-ulat-kuning-kawaii-brand-snack-anak-indonesia",
+        "maskot-brand-makanan-ringan-kawaii-ulat-kuning-ceria",
+        "maskot-sapi-merah-ngegas-brand-kopi-premium-remaja",
+        "maskot-brand-makanan-ringan-kawaii-ulat-kuning-untuk-anak-in"
+      ]
+    },
+    "rasa_reports": {
+      "count": 1,
+      "avg_score": 4.5,
+      "verdicts": {
+        "approve": 1
+      },
+      "slugs": [
+        "maskot-brand-makanan-ringan-kawaii-ulat-kuning-untuk-anak-in"
+      ]
+    },
+    "wisdom_reports": {
+      "count": 3,
+      "slugs": [
+        "launch-sidix-creative-pipeline-ke-pasar-umkm-indonesia-q3-20",
+        "maskot-brand-makanan-ringan-kawaii-ulat-kuning-untuk-anak-in",
+        "launch-sidix-creative-pipeline-ke-pasar-umkm-indonesia"
+      ],
+      "topics": [
+        "Launch SIDIX creative pipeline ke pasar UMKM Indonesia Q3 2026",
+        "Maskot brand makanan ringan kawaii ulat kuning untuk anak Indonesia 6-12 tahun",
+        "Launch SIDIX creative pipeline ke pasar UMKM Indonesia"
+      ]
+    },
+    "integrated_reports": {
+      "count": 1,
+      "slugs": [
+        "maskot-brand-makanan-ringan-kawaii-ulat-kuning-untuk-anak-in"
+      ]
+    },
+    "kitabah_loops": {
+      "count": 1,
+      "iterations_total": 2,
+      "slugs": [
+        "maskot-brand-makanan-ringan-kawaii-ulat-kuning-untuk-anak-in"
+      ]
+    },
+    "visioner_thisweek": {
+      "week": "2026-W18",
+      "report_exists": true,
+      "report_path": "/opt/sidix/.data/visioner_reports/2026-W18.md"
+    },
+    "research_queue_today": {
+      "count": 24,
+      "topics": [
+        "agent",
+        "generative",
+        "lora",
+        "diffusion",
+        "multimodal",
+        "AI",
+        "persona",
+        "creative",
+        "agent",
+        "generative",
+        "lora",
+        "diffusion",
+        "multimodal",
+        "AI",
+        "persona",
+        "creative",
+        "agent",
+        "generative",
+        "AI",
+        "lora",
+        "diffusion",
+        "multimodal",
+        "persona",
+        "creative"
+      ]
+    },
+    "wahdah_corpus_signal": {
+      "notes_count": 260,
+      "aku_entries": 0,
+      "training_pairs_count": 0,
+      "thresholds": {
+        "notes": 250,
+        "aku": 100,
+        "pairs": 1000
+      },
+      "signals": {
+        "corpus_notes_ready": true,
+        "aku_memory_ready": false,
+        "training_pairs_ready": false
+      },
+      "composite_signal": "growing",
+      "ready_count": "1/3"
+    }
+  },
+  "total_artifacts": 10,
+  "narrative": "Hari ini, kita menciptakan empat buah creative brief yang memberi dorongan besar ke dalam pipeline kreatif kita. Dari total artifact yang dibuat, 4 di antaranya mendapatkan rata-rata skor RASA 4.5 dan disetujui sepenuhnya. Ini adalah langkah penting dalam proses pengembangan produk, menunjukkan bahwa ide-ide kita semakin matang dan berkualitas.\n\nSelain itu, kita juga memulai diskusi strategis untuk meluncurkan pipeline kreatif kita ke pasar UMKM Indonesia pada kuartal ketiga tahun 2026. Ini merupakan langkah maju yang signifikan dalam implementasi visi kita untuk menciptakan dampak positif di masyarakat.\n\nWalaupun masih ada banyak tantangan dan tugas baru menanti, harapan kita terhadap besok adalah dengan kerja keras dan kolaborasi yang baik, kita dapat melanjutkan perkembangan yang signifikan.",
+  "elapsed_ms": 78381,
+  "paths": {}
+}
