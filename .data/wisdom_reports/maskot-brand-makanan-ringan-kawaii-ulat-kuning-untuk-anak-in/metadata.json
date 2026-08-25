@@ -1,0 +1,38 @@
+{
+  "topic": "Maskot brand makanan ringan kawaii ulat kuning untuk anak Indonesia 6-12 tahun",
+  "context": "",
+  "slug": "maskot-brand-makanan-ringan-kawaii-ulat-kuning-untuk-anak-in",
+  "ts": "2026-04-27T14:52:33.415706+00:00",
+  "stages": [
+    {
+      "capability": "aha",
+      "persona": "UTZ",
+      "elapsed_ms": 82594,
+      "content_len": 1175
+    },
+    {
+      "capability": "impact",
+      "persona": "OOMAR",
+      "elapsed_ms": 101427,
+      "content_len": 2375
+    },
+    {
+      "capability": "risk",
+      "persona": "ABOO",
+      "elapsed_ms": 142758,
+      "content_len": 3487
+    },
+    {
+      "capability": "speculation",
+      "persona": "ALEY",
+      "elapsed_ms": 180099,
+      "content_len": 140
+    },
+    {
+      "capability": "synthesis",
+      "persona": "AYMAN",
+      "elapsed_ms": 179455,
+      "content_len": 623
+    }
+  ]
+}

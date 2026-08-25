@@ -1,0 +1,65 @@
+{
+  "brief": "Maskot brand makanan ringan kawaii ulat kuning untuk anak Indonesia 6-12 tahun",
+  "base_slug": "maskot-brand-makanan-ringan-kawaii-ulat-kuning-untuk-anak-in",
+  "ts": "2026-04-27T18:09:33.397167+00:00",
+  "max_iter": 2,
+  "score_threshold": 4.5,
+  "iterations_run": 2,
+  "history": [
+    {
+      "iteration": 1,
+      "creative_slug": "maskot-brand-makanan-ringan-kawaii-ulat-kuning-untuk-anak-in",
+      "rasa_overall_score": 4.3,
+      "rasa_verdict": "approve",
+      "top_priority_improvement": "Tambahkan detail ekspresi yang lebih kaya dan harmonisasi warna dengan lebih cermat.",
+      "creative_paths": {
+        "report": "/opt/sidix/.data/creative_briefs/maskot-brand-makanan-ringan-kawaii-ulat-kuning-untuk-anak-in/report.md",
+        "metadata": "/opt/sidix/.data/creative_briefs/maskot-brand-makanan-ringan-kawaii-ulat-kuning-untuk-anak-in/metadata.json"
+      },
+      "rasa_paths": {
+        "structured": "/opt/sidix/.data/rasa_reports/maskot-brand-makanan-ringan-kawaii-ulat-kuning-untuk-anak-in/structured.json",
+        "report": "/opt/sidix/.data/rasa_reports/maskot-brand-makanan-ringan-kawaii-ulat-kuning-untuk-anak-in/report.md"
+      },
+      "elapsed_ms": 173958,
+      "creative_cache_hit": true
+    },
+    {
+      "iteration": 2,
+      "creative_slug": "maskot-brand-makanan-ringan-kawaii-ulat-kuning-untuk-anak-in",
+      "rasa_overall_score": 4.5,
+      "rasa_verdict": "approve",
+      "top_priority_improvement": "Harmonisasi ekspresi maskot dan warna untuk meningkatkan konsistensi visual",
+      "creative_paths": {
+        "report": "/opt/sidix/.data/creative_briefs/maskot-brand-makanan-ringan-kawaii-ulat-kuning-untuk-anak-in/report.md",
+        "metadata": "/opt/sidix/.data/creative_briefs/maskot-brand-makanan-ringan-kawaii-ulat-kuning-untuk-anak-in/metadata.json",
+        "asset_prompts": "/opt/sidix/.data/creative_briefs/maskot-brand-makanan-ringan-kawaii-ulat-kuning-untuk-anak-in/asset_prompts.txt"
+      },
+      "rasa_paths": {
+        "structured": "/opt/sidix/.data/rasa_reports/maskot-brand-makanan-ringan-kawaii-ulat-kuning-untuk-anak-in/structured.json",
+        "report": "/opt/sidix/.data/rasa_reports/maskot-brand-makanan-ringan-kawaii-ulat-kuning-untuk-anak-in/report.md"
+      },
+      "elapsed_ms": 1160518,
+      "creative_cache_hit": false
+    }
+  ],
+  "best_iteration": {
+    "iteration": 2,
+    "creative_slug": "maskot-brand-makanan-ringan-kawaii-ulat-kuning-untuk-anak-in",
+    "rasa_overall_score": 4.5,
+    "rasa_verdict": "approve",
+    "top_priority_improvement": "Harmonisasi ekspresi maskot dan warna untuk meningkatkan konsistensi visual",
+    "creative_paths": {
+      "report": "/opt/sidix/.data/creative_briefs/maskot-brand-makanan-ringan-kawaii-ulat-kuning-untuk-anak-in/report.md",
+      "metadata": "/opt/sidix/.data/creative_briefs/maskot-brand-makanan-ringan-kawaii-ulat-kuning-untuk-anak-in/metadata.json",
+      "asset_prompts": "/opt/sidix/.data/creative_briefs/maskot-brand-makanan-ringan-kawaii-ulat-kuning-untuk-anak-in/asset_prompts.txt"
+    },
+    "rasa_paths": {
+      "structured": "/opt/sidix/.data/rasa_reports/maskot-brand-makanan-ringan-kawaii-ulat-kuning-untuk-anak-in/structured.json",
+      "report": "/opt/sidix/.data/rasa_reports/maskot-brand-makanan-ringan-kawaii-ulat-kuning-untuk-anak-in/report.md"
+    },
+    "elapsed_ms": 1160518,
+    "creative_cache_hit": false
+  },
+  "stopped_reason": "achieved threshold (4.5 >= 4.5)",
+  "paths": {}
+}

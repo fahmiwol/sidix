@@ -1,0 +1,84 @@
+{
+  "brief": "Maskot brand makanan ringan kawaii ulat kuning untuk anak Indonesia 6-12 tahun",
+  "context": null,
+  "slug": "maskot-brand-makanan-ringan-kawaii-ulat-kuning-untuk-anak-in",
+  "ts": "2026-04-27T14:52:33.414675+00:00",
+  "creative": {
+    "slug": "maskot-brand-makanan-ringan-kawaii-ulat-kuning-untuk-anak-in",
+    "cached": true,
+    "report_path": "/opt/sidix/.data/creative_briefs/maskot-brand-makanan-ringan-kawaii-ulat-kuning-untuk-anak-in/report.md",
+    "metadata_path": "/opt/sidix/.data/creative_briefs/maskot-brand-makanan-ringan-kawaii-ulat-kuning-untuk-anak-in/metadata.json",
+    "stages_count": 3,
+    "ts": "2026-04-27T09:41:05.196543+00:00",
+    "report_size": 6063
+  },
+  "wisdom": {
+    "slug": "maskot-brand-makanan-ringan-kawaii-ulat-kuning-untuk-anak-in",
+    "cached": false,
+    "stages_count": 5,
+    "trending_keywords": [
+      "creative",
+      "persona",
+      "multimodal",
+      "diffusion",
+      "lora"
+    ],
+    "structured": {
+      "risk_register": [
+        {
+          "risk": "Reaksi Negatif dari Konsumen",
+          "probability": "Medium",
+          "impact": "High",
+          "mitigation": "Lakukan survei awal untuk memahami preferensi warna dan karakteristik maskot yang disukai anak-anak Indonesia. Siapkan alternatif maskot jika diperlukan.",
+          "reasoning": "Maskot ulat kuning dianggap tidak menarik atau menyeramkan oleh sebagian anak dan orangtua, mengakibatkan penolakan terhadap brand."
+        },
+        {
+          "risk": "Masalah Etika dan Higienis",
+          "probability": "Low",
+          "impact": "Medium",
+          "mitigation": "Pastikan maskot ulat kuning dirancang dengan cara yang tidak menyeramkan dan aman dari segi higienis. Lakukan konsultasi dengan ahli etika dan psikologi anak.",
+          "reasoning": "Maskot ulat kuning dianggap tidak sesuai dengan norma etik atau higienis, mengakibatkan reputasi brand tercoreng."
+        },
+        {
+          "risk": "Kompetisi dari Brand Lain",
+          "probability": "Medium",
+          "impact": "Low",
+          "mitigation": "Lakukan riset mendalam tentang tren dan preferensi maskot yang digunakan oleh brand kompetitor. Jelaskan unikan dari maskot ulat kuning dalam strategi marketing.",
+          "reasoning": "Maskot ulat kuning dianggap kurang unik dibandingkan maskot brand makanan ringan lainnya, mengakibatkan penurunan daya tarik dan keunggulan kompetitif."
+        }
+      ],
+      "impact_map": [
+        {
+          "stakeholder": "User/Customer",
+          "short_term": "Maskot menarik perhatian anak-anak dan meningkatkan penjualan.",
+          "long_term": "Membangun loyalitas di kalangan pelanggan target dalam 1-2 tahun ke depan.",
+          "severity": "high"
+        },
+        {
+          "stakeholder": "Audience/Market",
+          "short_term": "Maskot menciptakan perasaan segar dan inovatif, mengubah dinamika pasar.",
+          "long_term": "Meningkatkan pangsa pasar dalam 1-2 tahun ke depan.",
+          "severity": "high"
+        },
+        {
+          "stakeholder": "Brand/Product",
+          "short_term": "Brand dilihat sebagai inovatif dan peduli terhadap pendidikan.",
+          "long_term": "Meningkatkan reputasi brand dalam 1-2 tahun ke depan.",
+          "severity": "high"
+        },
+        {
+          "stakeholder": "Ekosistem/Partner",
+          "short_term": "Kolaborasi dengan seniman wayang golek dan peneliti entomologi memberikan nilai tambah.",
+          "long_term": "Mempertahankan dan memperluas jaringan mitra dalam 1-2 tahun ke depan.",
+          "severity": "high"
+        }
+      ]
+    },
+    "report_path": "/opt/sidix/.data/wisdom_reports/maskot-brand-makanan-ringan-kawaii-ulat-kuning-untuk-anak-in/report.md",
+    "structured_path": "/opt/sidix/.data/wisdom_reports/maskot-brand-makanan-ringan-kawaii-ulat-kuning-untuk-anak-in/structured.json"
+  },
+  "cache_hits": [
+    "creative"
+  ],
+  "paths": {}
+}

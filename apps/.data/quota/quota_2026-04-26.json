@@ -1,0 +1,23 @@
+{
+  "user:anon": {
+    "count": 6,
+    "tokens_in": 13,
+    "tokens_out": 185,
+    "sessions": [
+      "8cf98354",
+      "a1ce1fa5",
+      "b4ca06c7",
+      "2e049009",
+      "fea19852",
+      "dd20b5f2"
+    ]
+  },
+  "user:u_c93bd6ef5aa0": {
+    "count": 1,
+    "tokens_in": 4,
+    "tokens_out": 37,
+    "sessions": [
+      "88082cfa"
+    ]
+  }
+}

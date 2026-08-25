@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIDIX — AI Chat</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg: #0d0d0d;
+            --surface: #1a1a1a;
+            --surface-hover: #252525;
+            --border: #2a2a2a;
+            --text: #e0e0e0;
+            --text-secondary: #888;
+            --accent: #7c5cff;
+            --accent-hover: #9570ff;
+            --user-bg: #7c5cff;
+            --assistant-bg: #1e1e2e;
+            --tool-bg: #1a2a1a;
+            --error: #ff5c5c;
+            --success: #5cff7c;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background: var(--surface);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            padding: 16px;
+        }
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border);
+        }
+        .sidebar-header .logo {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        .sidebar-header .title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        .new-chat-btn {
+            background: var(--accent);
+            border: none;
+            color: white;
+            padding: 10px 16px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: background 0.2s;
+            margin-bottom: 16px;
+        }
+        .new-chat-btn:hover { background: var(--accent-hover); }
+        .sessions-list {
+            flex: 1;
+            overflow-y: auto;
+        }
+        .session-item {
+            padding: 10px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .session-item:hover, .session-item.active {
+            background: var(--surface-hover);
+            color: var(--text);
+        }
+        .session-item .icon { font-size: 14px; }
+        .session-item .text {
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        /* Main Chat */
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+        .chat-header {
+            padding: 12px 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .chat-header .model-selector {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            cursor: pointer;
+        }
+        .chat-header .status {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--success);
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        .messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .message {
+            display: flex;
+            gap: 12px;
+            max-width: 90%;
+        }
+        .message.user { align-self: flex-end; flex-direction: row-reverse; }
+        .message.assistant { align-self: flex-start; }
+        .message.tool { align-self: flex-start; }
+
+        .avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+        .message.user .avatar { background: var(--user-bg); }
+        .message.assistant .avatar { background: var(--accent); }
+        .message.tool .avatar { background: var(--success); }
+
+        .bubble {
+            padding: 12px 16px;
+            border-radius: 16px;
+            font-size: 14px;
+            line-height: 1.6;
+            word-break: break-word;
+        }
+        .message.user .bubble {
+            background: var(--user-bg);
+            border-bottom-right-radius: 4px;
+        }
+        .message.assistant .bubble {
+            background: var(--assistant-bg);
+            border-bottom-left-radius: 4px;
+            border: 1px solid var(--border);
+        }
+        .message.tool .bubble {
+            background: var(--tool-bg);
+            border: 1px solid #2a3a2a;
+            font-family: monospace;
+            font-size: 12px;
+        }
+
+        .thinking {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--text-secondary);
+            font-size: 13px;
+            padding: 8px 0;
+        }
+        .thinking-dots {
+            display: flex;
+            gap: 4px;
+        }
+        .thinking-dots span {
+            width: 6px;
+            height: 6px;
+            background: var(--text-secondary);
+            border-radius: 50%;
+            animation: bounce 1.4s ease-in-out infinite;
+        }
+        .thinking-dots span:nth-child(2) { animation-delay: 0.2s; }
+        .thinking-dots span:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes bounce {
+            0%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-6px); }
+        }
+
+        /* Input Area */
+        .input-area {
+            padding: 16px 24px 24px;
+            border-top: 1px solid var(--border);
+        }
+        .input-box {
+            display: flex;
+            align-items: flex-end;
+            gap: 8px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 8px 12px;
+        }
+        .input-box textarea {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: var(--text);
+            font-size: 14px;
+            line-height: 1.5;
+            resize: none;
+            outline: none;
+            max-height: 200px;
+            min-height: 24px;
+            font-family: inherit;
+        }
+        .input-box textarea::placeholder { color: var(--text-secondary); }
+        .send-btn {
+            background: var(--accent);
+            border: none;
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background 0.2s;
+            flex-shrink: 0;
+        }
+        .send-btn:hover { background: var(--accent-hover); }
+        .send-btn:disabled { background: var(--text-secondary); cursor: not-allowed; }
+
+        .input-tools {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+            padding: 0 4px;
+        }
+        .tool-toggle {
+            font-size: 12px;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 6px;
+            transition: background 0.2s;
+        }
+        .tool-toggle:hover { background: var(--surface-hover); }
+        .tool-toggle.active { color: var(--success); }
+
+        .welcome {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-secondary);
+        }
+        .welcome h1 { font-size: 32px; margin-bottom: 12px; color: var(--text); }
+        .welcome p { font-size: 16px; margin-bottom: 32px; }
+        .welcome .examples {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .welcome .example {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 10px 16px;
+            border-radius: 10px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .welcome .example:hover {
+            background: var(--surface-hover);
+            border-color: var(--accent);
+        }
+
+        .code-block {
+            background: #0a0a0a;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 12px;
+            margin: 8px 0;
+            font-family: 'Fira Code', monospace;
+            font-size: 13px;
+            overflow-x: auto;
+        }
+        .code-block pre { margin: 0; }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--text-secondary); }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">S</div>
+            <div class="title">SIDIX</div>
+        </div>
+        <button class="new-chat-btn" onclick="newChat()">+ Chat Baru</button>
+        <div class="sessions-list" id="sessionsList">
+            <!-- Sessions injected here -->
+        </div>
+    </div>
+
+    <div class="main">
+        <div class="chat-header">
+            <select class="model-selector" id="modelSelector">
+                <option value="sidix-lora">SIDIX LoRA</option>
+                <option value="qwen2.5:7b">Qwen 2.5 7B</option>
+                <option value="qwen2.5:1.5b">Qwen 2.5 1.5B</option>
+            </select>
+            <div class="status">
+                <div class="status-dot"></div>
+                <span id="statusText">Online</span>
+            </div>
+        </div>
+
+        <div class="messages" id="messages">
+            <div class="welcome" id="welcome">
+                <h1>SIDIX</h1>
+                <p>Asisten AI dengan epistemologi Islam — jujur, akurat, bermanfaat</p>
+                <div class="examples">
+                    <div class="example" onclick="setInput('Siapa kamu?')">Siapa kamu?</div>
+                    <div class="example" onclick="setInput('Berita terkini Indonesia')">Berita terkini</div>
+                    <div class="example" onclick="setInput('Hitung 2 + 2 * 3')">Hitung matematika</div>
+                    <div class="example" onclick="setInput('Jelaskan konsep sidq dalam Islam')">Konsep sidq</div>
+                    <div class="example" onclick="setInput('Jam berapa sekarang di Jakarta?')">Waktu Jakarta</div>
+                    <div class="example" onclick="setInput('Ringkas artikel dari https://...')">Ringkas URL</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="input-area">
+            <div class="input-box">
+                <textarea id="chatInput" rows="1" placeholder="Tanya SIDIX apa saja..." onkeydown="handleKeyDown(event)"></textarea>
+                <button class="send-btn" id="sendBtn" onclick="sendMessage()">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                </button>
+            </div>
+            <div class="input-tools">
+                <span class="tool-toggle active" id="toolsToggle" onclick="toggleTools()">
+                    <span>🔧</span> Tools aktif
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = window.location.origin.includes('localhost') ? 'http://localhost:8000' : '';
+        let currentSession = localStorage.getItem('sidix_session') || generateId();
+        let isStreaming = false;
+        let sessions = JSON.parse(localStorage.getItem('sidix_sessions') || '[]');
+
+        function generateId() {
+            return 'sid-' + Math.random().toString(36).substring(2, 10);
+        }
+
+        function newChat() {
+            currentSession = generateId();
+            localStorage.setItem('sidix_session', currentSession);
+            document.getElementById('messages').innerHTML = `
+                <div class="welcome" id="welcome">
+                    <h1>SIDIX</h1>
+                    <p>Asisten AI dengan epistemologi Islam — jujur, akurat, bermanfaat</p>
+                    <div class="examples">
+                        <div class="example" onclick="setInput('Siapa kamu?')">Siapa kamu?</div>
+                        <div class="example" onclick="setInput('Berita terkini Indonesia')">Berita terkini</div>
+                        <div class="example" onclick="setInput('Hitung 2 + 2 * 3')">Hitung matematika</div>
+                        <div class="example" onclick="setInput('Jelaskan konsep sidq dalam Islam')">Konsep sidq</div>
+                        <div class="example" onclick="setInput('Jam berapa sekarang di Jakarta?')">Waktu Jakarta</div>
+                        <div class="example" onclick="setInput('Ringkas artikel dari https://...')">Ringkas URL</div>
+                    </div>
+                </div>
+            `;
+            addSession(currentSession, 'Chat baru');
+            renderSessions();
+        }
+
+        function addSession(id, title) {
+            sessions = sessions.filter(s => s.id !== id);
+            sessions.unshift({ id, title, time: Date.now() });
+            sessions = sessions.slice(0, 50);
+            localStorage.setItem('sidix_sessions', JSON.stringify(sessions));
+        }
+
+        function renderSessions() {
+            const list = document.getElementById('sessionsList');
+            list.innerHTML = sessions.map(s => `
+                <div class="session-item ${s.id === currentSession ? 'active' : ''}" onclick="switchSession('${s.id}')">
+                    <span class="icon">💬</span>
+                    <span class="text">${escapeHtml(s.title)}</span>
+                </div>
+            `).join('');
+        }
+
+        function switchSession(id) {
+            currentSession = id;
+            localStorage.setItem('sidix_session', id);
+            renderSessions();
+            // Would load history from API here
+            document.getElementById('messages').innerHTML = '';
+        }
+
+        function setInput(text) {
+            document.getElementById('chatInput').value = text;
+            document.getElementById('chatInput').focus();
+        }
+
+        function toggleTools() {
+            const t = document.getElementById('toolsToggle');
+            t.classList.toggle('active');
+            t.innerHTML = t.classList.contains('active') ?
+                '<span>🔧</span> Tools aktif' :
+                '<span>🔧</span> Tools nonaktif';
+        }
+
+        function handleKeyDown(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function formatContent(text) {
+            // Basic markdown-like formatting
+            text = escapeHtml(text);
+            text = text.replace(/```(\w+)?\n([\s\S]*?)```/g, '<div class="code-block"><pre>$2</pre></div>');
+            text = text.replace(/`([^`]+)`/g, '<code style="background:#2a2a2a;padding:2px 6px;border-radius:4px;font-family:monospace;">$1</code>');
+            text = text.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+            text = text.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+            text = text.replace(/\n/g, '<br>');
+            return text;
+        }
+
+        function addMessage(role, content, isHtml = false) {
+            const messages = document.getElementById('messages');
+            const welcome = document.getElementById('welcome');
+            if (welcome) welcome.remove();
+
+            const div = document.createElement('div');
+            div.className = `message ${role}`;
+            div.innerHTML = `
+                <div class="avatar">${role === 'user' ? 'U' : (role === 'tool' ? '🔧' : 'S')}</div>
+                <div class="bubble">${isHtml ? content : formatContent(content)}</div>
+            `;
+            messages.appendChild(div);
+            messages.scrollTop = messages.scrollHeight;
+            return div;
+        }
+
+        function showThinking() {
+            const messages = document.getElementById('messages');
+            const div = document.createElement('div');
+            div.className = 'message assistant thinking';
+            div.id = 'thinkingMsg';
+            div.innerHTML = `
+                <div class="avatar">S</div>
+                <div class="bubble">
+                    <div class="thinking">
+                        <div class="thinking-dots"><span></span><span></span><span></span></div>
+                        <span>SIDIX sedang berpikir...</span>
+                    </div>
+                </div>
+            `;
+            messages.appendChild(div);
+            messages.scrollTop = messages.scrollHeight;
+        }
+
+        function hideThinking() {
+            const t = document.getElementById('thinkingMsg');
+            if (t) t.remove();
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const btn = document.getElementById('sendBtn');
+            const text = input.value.trim();
+            if (!text || isStreaming) return;
+
+            isStreaming = true;
+            btn.disabled = true;
+            input.value = '';
+            input.style.height = 'auto';
+
+            addMessage('user', text);
+            showThinking();
+
+            const model = document.getElementById('modelSelector').value;
+            const toolsEnabled = document.getElementById('toolsToggle').classList.contains('active');
+
+            try {
+                const response = await fetch(`${API_URL}/chat`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        message: text,
+                        session_id: currentSession,
+                        model: model,
+                        stream: true,
+                        tools_enabled: toolsEnabled
+                    })
+                });
+
+                if (!response.ok) throw new Error('API error: ' + response.status);
+
+                hideThinking();
+                const msgDiv = addMessage('assistant', '', true);
+                const bubble = msgDiv.querySelector('.bubble');
+                let fullText = '';
+
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+
+                    const chunk = decoder.decode(value, { stream: true });
+                    const lines = chunk.split('\n');
+
+                    for (const line of lines) {
+                        if (line.startsWith('data: ')) {
+                            try {
+                                const data = JSON.parse(line.substring(6));
+                                if (data.chunk) {
+                                    fullText += data.chunk;
+                                    bubble.innerHTML = formatContent(fullText);
+                                    document.getElementById('messages').scrollTop = document.getElementById('messages').scrollHeight;
+                                }
+                                if (data.tool_calls) {
+                                    for (const tc of data.tool_calls) {
+                                        addMessage('tool', `🔧 Tool: ${tc.name}\nArgs: ${JSON.stringify(tc.arguments)}`);
+                                    }
+                                }
+                                if (data.tool_result) {
+                                    addMessage('tool', `✅ Result: ${data.tool_result.result}`);
+                                }
+                                if (data.done) {
+                                    isStreaming = false;
+                                    btn.disabled = false;
+                                    addSession(currentSession, text.substring(0, 30));
+                                    renderSessions();
+                                }
+                            } catch (e) {
+                                // Ignore parse errors for incomplete chunks
+                            }
+                        }
+                    }
+                }
+            } catch (err) {
+                hideThinking();
+                addMessage('assistant', `[Error: ${err.message}]`);
+                isStreaming = false;
+                btn.disabled = false;
+            }
+        }
+
+        // Auto-resize textarea
+        document.getElementById('chatInput').addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = Math.min(this.scrollHeight, 200) + 'px';
+        });
+
+        // Init
+        renderSessions();
+        if (!sessions.find(s => s.id === currentSession)) {
+            addSession(currentSession, 'Chat baru');
+            renderSessions();
+        }
+    </script>
+</body>
+</html>

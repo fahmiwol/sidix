@@ -1,0 +1,60 @@
+{"id": "t-001", "type": "research", "question": "Apa itu sanad dalam tradisi keilmuan Islam dan kaitannya dengan AI?", "completed_ts": "2026-04-27T00:16:36.288548+00:00", "cycle_id": "wkr-1777248929"}
+{"id": "t-002", "type": "research", "question": "Siapa Presiden Indonesia 2024 2025 dan apa kebijakan utamanya?", "completed_ts": "2026-04-27T00:21:04.480969+00:00", "cycle_id": "wkr-1777249201"}
+{"id": "t-003", "type": "research", "question": "Bagaimana cara kerja LoRA fine-tuning untuk LLM?", "completed_ts": "2026-04-27T00:31:01.370777+00:00", "cycle_id": "wkr-1777249801"}
+{"id": "t-004", "type": "research", "question": "Apa beda RAG dan fine-tuning untuk knowledge update?", "completed_ts": "2026-04-27T00:40:27.355807+00:00", "cycle_id": "wkr-1777250401"}
+{"id": "t-005", "type": "research", "question": "Cara kerja Mixture of Experts (MoE) di model seperti Mixtral?", "completed_ts": "2026-04-27T00:50:47.825433+00:00", "cycle_id": "wkr-1777251001"}
+{"id": "t-006", "type": "research", "question": "Apa itu epistemic humility dan kenapa AI butuh ini?", "completed_ts": "2026-04-27T01:00:28.532375+00:00", "cycle_id": "wkr-1777251602"}
+{"id": "t-007", "type": "research", "question": "Bagaimana implementasi sanad chain di sistem AI agent modern?", "completed_ts": "2026-04-27T01:10:54.549809+00:00", "cycle_id": "wkr-1777252201"}
+{"id": "t-008", "type": "research", "question": "Apa berita teknologi penting Indonesia 2025?", "completed_ts": "2026-04-27T01:20:52.443954+00:00", "cycle_id": "wkr-1777252801"}
+{"id": "t-009", "type": "research", "question": "Best practices Python async untuk parallel I/O bound task?", "completed_ts": "2026-04-27T01:31:21.323515+00:00", "cycle_id": "wkr-1777253401"}
+{"id": "t-010", "type": "research", "question": "Bagaimana arsitektur Mamba state-space model dan kenapa lebih efisien dari Transformer?", "completed_ts": "2026-04-27T01:40:54.066980+00:00", "cycle_id": "wkr-1777254001"}
+{"id": "t-011", "type": "research", "question": "Apa itu Hafidz dalam tradisi Islam dan parallel-nya ke distributed knowledge system?", "completed_ts": "2026-04-27T01:50:50.445062+00:00", "cycle_id": "wkr-1777254601"}
+{"id": "t-012", "type": "research", "question": "Cara tepat menulis Indonesian language LoRA training data?", "completed_ts": "2026-04-27T02:01:34.230627+00:00", "cycle_id": "wkr-1777255201"}
+{"id": "t-013", "type": "research", "question": "Apa itu tadabbur dan bagaimana aplikasinya ke AI multi-agent reasoning?", "completed_ts": "2026-04-27T02:11:03.600850+00:00", "cycle_id": "wkr-1777255801"}
+{"id": "t-014", "type": "research", "question": "Bagaimana cara optimize cold-start serverless GPU inference?", "completed_ts": "2026-04-27T02:20:17.580654+00:00", "cycle_id": "wkr-1777256401"}
+{"id": "t-015", "type": "research", "question": "Apa beda BGE-M3 dan Mamba-embed untuk multilingual retrieval?", "completed_ts": "2026-04-27T02:30:59.746770+00:00", "cycle_id": "wkr-1777257001"}
+{"id": "t-016", "type": "research", "question": "Pattern Producer-Consumer di asyncio Python untuk pipeline data?", "completed_ts": "2026-04-27T02:41:32.709609+00:00", "cycle_id": "wkr-1777257601"}
+{"id": "t-017", "type": "research", "question": "Cara kerja vLLM continuous batching dan PagedAttention?", "completed_ts": "2026-04-27T02:50:55.394061+00:00", "cycle_id": "wkr-1777258201"}
+{"id": "t-018", "type": "research", "question": "Apa itu Agentic Workflow vs Pipeline di context LangGraph dan ReAct?", "completed_ts": "2026-04-27T03:00:59.028210+00:00", "cycle_id": "wkr-1777258801"}
+{"id": "t-019", "type": "research", "question": "Bagaimana etika penggunaan AI dalam pembelajaran fiqh?", "completed_ts": "2026-04-27T03:10:24.668171+00:00", "cycle_id": "wkr-1777259401"}
+{"id": "t-020", "type": "research", "question": "Apa itu Chain of Density (CoD) summarization technique?", "completed_ts": "2026-04-27T03:21:16.435711+00:00", "cycle_id": "wkr-1777260001"}
+{"id": "t-021", "type": "research", "question": "Cara kerja constitutional AI dan red-teaming model?", "completed_ts": "2026-04-27T03:31:07.672084+00:00", "cycle_id": "wkr-1777260601"}
+{"id": "t-022", "type": "research", "question": "Bagaimana arsitektur Hybrid Search (BM25 + dense) di production?", "completed_ts": "2026-04-27T03:40:58.529095+00:00", "cycle_id": "wkr-1777261201"}
+{"id": "t-023", "type": "research", "question": "Best practice naming convention untuk Python module yang clean code?", "completed_ts": "2026-04-27T03:50:53.032696+00:00", "cycle_id": "wkr-1777261801"}
+{"id": "t-024", "type": "research", "question": "Apa itu prompt caching dan kapan implementasinya ekonomis?", "completed_ts": "2026-04-27T04:00:50.345319+00:00", "cycle_id": "wkr-1777262401"}
+{"id": "t-025", "type": "research", "question": "Cara kerja Quantization Aware Training (QAT) vs Post-Training Quantization?", "completed_ts": "2026-04-27T04:10:57.908441+00:00", "cycle_id": "wkr-1777263001"}
+{"id": "t-026", "type": "research", "question": "Apa beda pipeline-parallel vs tensor-parallel di multi-GPU LLM serving?", "completed_ts": "2026-04-27T04:20:53.278814+00:00", "cycle_id": "wkr-1777263602"}
+{"id": "t-027", "type": "research", "question": "Bagaimana implementasi semantic cache untuk LLM response?", "completed_ts": "2026-04-27T04:31:02.795660+00:00", "cycle_id": "wkr-1777264201"}
+{"id": "t-028", "type": "research", "question": "Apa itu DPO (Direct Preference Optimization) vs RLHF?", "completed_ts": "2026-04-27T04:40:49.159519+00:00", "cycle_id": "wkr-1777264801"}
+{"id": "t-029", "type": "research", "question": "Cara kerja LangFuse atau Helicone untuk LLM observability?", "completed_ts": "2026-04-27T04:51:01.657746+00:00", "cycle_id": "wkr-1777265401"}
+{"id": "t-030", "type": "research", "question": "Apa itu hadith mutawatir dan parallel-nya ke high-confidence claim di AI?", "completed_ts": "2026-04-27T05:00:50.693775+00:00", "cycle_id": "wkr-1777266001"}
+{"id": "t-101", "type": "research", "question": "Apa berita politik Indonesia minggu ini?", "completed_ts": "2026-04-27T06:41:03.365914+00:00", "cycle_id": "wkr-1777272001"}
+{"id": "t-102", "type": "research", "question": "Bagaimana cara membuat pipeline asyncio Python untuk scraping 1000 URL parallel?", "completed_ts": "2026-04-28T06:51:36.741845+00:00", "cycle_id": "wkr-1777359001"}
+{"id": "t-103", "type": "research", "question": "Apa beda Mamba2 dan Transformer attention untuk long context?", "completed_ts": "2026-04-28T07:01:32.926816+00:00", "cycle_id": "wkr-1777359601"}
+{"id": "t-104", "type": "research", "question": "Cara terbaik membangun trust score per AI agent dalam multi-agent system?", "completed_ts": "2026-04-28T07:10:33.105279+00:00", "cycle_id": "wkr-1777360201"}
+{"id": "t-105", "type": "research", "question": "Best practice menulis system prompt untuk persona AI yang konsisten?", "completed_ts": "2026-04-28T07:21:32.590088+00:00", "cycle_id": "wkr-1777360801"}
+{"id": "t-106", "type": "research", "question": "Apa itu speculative decoding dan kapan implementasi worth-it?", "completed_ts": "2026-04-28T07:31:33.019377+00:00", "cycle_id": "wkr-1777361401"}
+{"id": "t-107", "type": "research", "question": "Bagaimana cara handle 1000 concurrent user di FastAPI Python single-server?", "completed_ts": "2026-04-28T07:41:36.845735+00:00", "cycle_id": "wkr-1777362001"}
+{"id": "t-108", "type": "research", "question": "Apa beda vector database Qdrant Weaviate Pinecone untuk RAG production?", "completed_ts": "2026-04-28T07:51:28.108489+00:00", "cycle_id": "wkr-1777362601"}
+{"id": "t-109", "type": "research", "question": "Bagaimana arsitektur memori jangka panjang vs jangka pendek di AI agent modern?", "completed_ts": "2026-04-28T08:05:34.632977+00:00", "cycle_id": "wkr-1777363441"}
+{"id": "t-110", "type": "research", "question": "Apa itu Mixture of Depths (MoD) dan kapan lebih efisien dari MoE?", "completed_ts": "2026-04-28T08:20:33.022383+00:00", "cycle_id": "wkr-1777364341"}
+{"id": "t-111", "type": "research", "question": "Cara membuat continuous learning loop yang tidak catastrophic forgetting?", "completed_ts": "2026-04-28T08:35:32.067580+00:00", "cycle_id": "wkr-1777365241"}
+{"id": "t-112", "type": "research", "question": "Apa metrics best practice untuk eval RAG production system?", "completed_ts": "2026-04-28T08:50:33.668758+00:00", "cycle_id": "wkr-1777366141"}
+{"id": "t-113", "type": "research", "question": "Bagaimana implementasi rate-limit di httpx async client yang scalable?", "completed_ts": "2026-04-28T09:04:25.897298+00:00", "cycle_id": "wkr-1777367041"}
+{"id": "t-114", "type": "research", "question": "Apa itu DSPy framework dan kapan lebih cocok dari LangChain?", "completed_ts": "2026-04-28T09:20:33.068974+00:00", "cycle_id": "wkr-1777367941"}
+{"id": "t-115", "type": "research", "question": "Cara design schema event-bus inter-service di mini-app architecture?", "completed_ts": "2026-04-28T09:35:34.225126+00:00", "cycle_id": "wkr-1777368841"}
+{"id": "t-116", "type": "research", "question": "Apa itu Constitutional AI dan apakah bisa dipakai untuk SIDIX?", "completed_ts": "2026-04-28T09:50:10.401002+00:00", "cycle_id": "wkr-1777369741"}
+{"id": "t-117", "type": "research", "question": "Best practice untuk versioning LoRA adapter di production?", "completed_ts": "2026-04-28T10:05:33.848976+00:00", "cycle_id": "wkr-1777370641"}
+{"id": "t-118", "type": "research", "question": "Bagaimana cara hindari prompt injection attack di multi-agent system?", "completed_ts": "2026-04-28T10:20:09.921939+00:00", "cycle_id": "wkr-1777371541"}
+{"id": "t-119", "type": "research", "question": "Apa itu speculative streaming dan implementasinya di vLLM?", "completed_ts": "2026-04-28T10:35:34.774024+00:00", "cycle_id": "wkr-1777372441"}
+{"id": "t-120", "type": "research", "question": "Bagaimana arsitektur observability LLM (LangFuse, Helicone, Phoenix)?", "completed_ts": "2026-04-28T10:50:34.137850+00:00", "cycle_id": "wkr-1777373341"}
+{"id": "t-121", "type": "research", "question": "Cara extract atomic knowledge unit (AKU) dari paragraf teks via NLP?", "completed_ts": "2026-04-28T11:05:34.348793+00:00", "cycle_id": "wkr-1777374241"}
+{"id": "t-122", "type": "research", "question": "Apa beda BM25 dan ColBERT untuk retrieval di RAG?", "completed_ts": "2026-04-28T11:20:33.683961+00:00", "cycle_id": "wkr-1777375141"}
+{"id": "t-123", "type": "research", "question": "Bagaimana cara implementasi cache cuckoo filter untuk dedup high-volume?", "completed_ts": "2026-04-28T11:35:32.365194+00:00", "cycle_id": "wkr-1777376041"}
+{"id": "t-124", "type": "research", "question": "Apa itu Constitutional AI Critique dan revision loop secara konkret?", "completed_ts": "2026-04-28T11:50:33.690143+00:00", "cycle_id": "wkr-1777376941"}
+{"id": "t-125", "type": "research", "question": "Cara design persona-aware system prompt yang nggak boilerplate?", "completed_ts": "2026-04-28T12:05:33.877970+00:00", "cycle_id": "wkr-1777377841"}
+{"id": "t-126", "type": "research", "question": "Apa state-of-the-art untuk Indonesian language model open source?", "completed_ts": "2026-04-28T12:20:33.673888+00:00", "cycle_id": "wkr-1777378741"}
+{"id": "t-127", "type": "research", "question": "Bagaimana arsitektur self-modifying agent dengan safety guardrail?", "completed_ts": "2026-04-28T12:35:33.588880+00:00", "cycle_id": "wkr-1777379641"}
+{"id": "t-128", "type": "research", "question": "Apa beda LoRA dan QLoRA dalam compute requirement dan quality trade-off?", "completed_ts": "2026-04-28T12:50:33.511001+00:00", "cycle_id": "wkr-1777380541"}
+{"id": "t-129", "type": "research", "question": "Cara design distributed knowledge graph untuk multi-domain reasoning?", "completed_ts": "2026-04-28T13:05:34.090295+00:00", "cycle_id": "wkr-1777381441"}
+{"id": "t-130", "type": "research", "question": "Apa itu Tree-of-Thoughts vs Graph-of-Thoughts dalam reasoning frameworks?", "completed_ts": "2026-04-28T13:20:33.350766+00:00", "cycle_id": "wkr-1777382341"}

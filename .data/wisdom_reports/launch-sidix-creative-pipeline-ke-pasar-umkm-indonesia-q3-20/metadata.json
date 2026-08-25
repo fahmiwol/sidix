@@ -1,0 +1,20 @@
+{
+  "topic": "Launch SIDIX creative pipeline ke pasar UMKM Indonesia Q3 2026",
+  "context": "Budget terbatas, GPU supply RunPod throttle, kompetitor ChatGPT mass-market",
+  "slug": "launch-sidix-creative-pipeline-ke-pasar-umkm-indonesia-q3-20",
+  "ts": "2026-04-27T13:46:14.021831+00:00",
+  "stages": [
+    {
+      "capability": "aha",
+      "persona": "UTZ",
+      "elapsed_ms": 82912,
+      "content_len": 1316
+    },
+    {
+      "capability": "synthesis",
+      "persona": "AYMAN",
+      "elapsed_ms": 48229,
+      "content_len": 868
+    }
+  ]
+}

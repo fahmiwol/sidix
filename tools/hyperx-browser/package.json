@@ -1,0 +1,29 @@
+{
+  "name": "hyperx-browser",
+  "version": "1.0.0",
+  "description": "Ultra-light anonymous CLI browser with MCP server",
+  "type": "module",
+  "bin": {
+    "hyperx": "./bin/hyperx.js",
+    "hyperx-mcp": "./bin/hyperx-mcp.js"
+  },
+  "scripts": {
+    "start": "node bin/hyperx.js",
+    "mcp": "node bin/hyperx-mcp.js",
+    "bg": "node bin/hyperx-daemon.js"
+  },
+  "dependencies": {
+    "canonicalize": "^2.0.0",
+    "chalk": "^5.3.0",
+    "cheerio": "^1.0.0",
+    "https-proxy-agent": "^7.0.4",
+    "minimist": "^1.2.8",
+    "node-fetch": "^3.3.2",
+    "ora": "^8.0.1",
+    "readline": "^1.3.0",
+    "socks-proxy-agent": "^8.0.3",
+    "tough-cookie": "^4.1.4",
+    "turndown": "^7.2.0",
+    "undici": "^6.19.8"
+  }
+}
