@@ -574,6 +574,21 @@ See **[CONTRIBUTING.md](CONTRIBUTING.md)** for the full guide.
 
 ---
 
+<!--toko-mulai-->
+
+## Related tools
+
+Building agents that keep their own state? These are the pieces I extracted from doing it:
+
+- **[Agent Memory Starter](https://github.com/fahmiwol/agent-memory-starter)** — free, open source. Four memory types and three prompts.
+- **[Agent Memory OS](https://fahmiwolf.gumroad.com/l/npfhry)** — $7. The full twelve-prompt method.
+- **[Second Brain Kit](https://fahmiwolf.gumroad.com/l/ezqudk)** — $29. One memory for every agent, served over MCP.
+- **[MCP Server Starter](https://fahmiwolf.gumroad.com/l/qfhvpk)** — $19. Build an MCP server, then prove it behaves.
+
+All of them: [fahmiwolf.gumroad.com](https://fahmiwolf.gumroad.com)
+
+<!--toko-akhir-->
+
 ## 📜 License
 
 MIT License — see [LICENSE](LICENSE).
