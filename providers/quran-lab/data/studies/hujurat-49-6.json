@@ -1,0 +1,104 @@
+{
+  "schema": "lab-study-v2",
+  "id": "hujurat-49-6",
+  "version": 1,
+  "title": "Fatabayyanū — gerbang verifikasi input",
+  "subtitle": "Periksa dulu kabarnya, sebelum ia merusak state-mu",
+  "ref": {
+    "surah": 49,
+    "from": 6,
+    "to": 6
+  },
+  "surah_name": "Al-Hujurat",
+  "theme": "Verifikasi informasi, anti-misinformation, integritas data",
+  "sourced_meaning": {
+    "summary": "Peringatan kepada kaum mukmin: jika seorang fasik datang membawa berita, jangan tergesa-gesa menerimanya sebelum diperiksa dan diteliti kebenarannya (fatabayyanū) — agar kalian tidak mencelakakan suatu kaum karena kebodohan (ketidaktahuan), lalu menyesali perbuatan itu.",
+    "sources": [
+      "Tafsir Kemenag RI QS 49:6",
+      "Tafsir al-Jalalayn QS 49:6"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Tangga epistemik",
+      "note": "kabar mentah = zhann; baru boleh ditindaklanjuti setelah tabayyun → menuju yaqīn"
+    },
+    {
+      "layer": "Memori & grounding",
+      "note": "berita diverifikasi SEBELUM masuk basis keputusan — gerbang di depan memori, bukan di belakang"
+    },
+    {
+      "layer": "Alignment",
+      "note": "biaya kesalahan disebut eksplisit: mencelakakan pihak tak bersalah + penyesalan — asymmetric harm"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "amal",
+      "reading": "Adab informasi: jangan meneruskan kabar sebelum memeriksa; tabayyun sebagai kewajiban sosial — akar etika anti-hoaks 14 abad sebelum media sosial.",
+      "quranic_term": "tabayyun"
+    },
+    {
+      "lens": "computational",
+      "reading": "Ini validasi input dengan model ancaman yang lengkap: sumber tak tepercaya (fāsiq) + payload (naba'/berita) → WAJIB melalui fungsi verifikasi sebelum diproses. Never trust input; validate at the boundary.",
+      "analogy": "input validation at trust boundary",
+      "quranic_term": "tabayyun"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "Strukturnya kondisional presisi: IF (source.trust == low AND message.impact == high) THEN verify() BEFORE act(). Yang di-rate bukan hanya pesannya tapi juga SUMBERNYA — reputasi pengirim adalah parameter keputusan.",
+      "analogy": "guard clause + sender reputation"
+    },
+    {
+      "lens": "algorithm",
+      "reading": "Pipeline: receive → quarantine → verify → then commit/discard. Berita tidak ditolak otomatis (fasik bisa saja benar) dan tidak diterima otomatis — ditahan di karantina sampai bukti masuk. Presumption of unverified, bukan presumption of false.",
+      "analogy": "quarantine-then-commit; staged ingestion"
+    },
+    {
+      "lens": "inference",
+      "reading": "Ayat memisahkan tiga hal yang sering dicampur: kredibilitas sumber, kebenaran isi, dan biaya tindakan. Keputusan rasional membutuhkan ketiganya — sumber lemah + isi belum teruji + biaya tinggi = jangan bertindak dulu.",
+      "quranic_term": "taʿaqqul"
+    },
+    {
+      "lens": "math-physics",
+      "reading": "Dalam bahasa keputusan: expected harm dari bertindak atas kabar salah ('menimpa suatu kaum tanpa pengetahuan') jauh melebihi biaya menunda untuk verifikasi — asimetri kerugian yang membenarkan default konservatif (fail-closed).",
+      "analogy": "asymmetric loss → conservative default"
+    },
+    {
+      "lens": "systems",
+      "reading": "Di tingkat masyarakat: satu berita tak terverifikasi bisa memicu kerusakan kolektif (konteks turunnya: nyaris terjadi penyerangan atas kaum yang tidak bersalah). Sistem sosial butuh gerbang verifikasi di tiap node, bukan hanya di pusat.",
+      "analogy": "per-node validation in a network"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Ini persis masalah grounding & halusinasi: agen yang menelan klaim tanpa verifikasi akan bertindak atas informasi salah dan merusak. Fatabayyanū = kewajiban retrieval-verification sebelum action — dan inilah dalil yang mendasari Eval-Gate aplikasi ini sendiri.",
+      "analogy": "verify-before-act; anti-hallucination gate",
+      "quranic_term": "tabayyun → yaqīn"
+    },
+    {
+      "lens": "artifact",
+      "reading": "Melembagakan verifikasi kabar melahirkan instrumen peradaban: ilmu isnad & kritik perawi (jarh wa taʿdīl) — sistem reputasi sumber tertua yang terdokumentasi, leluhur metodologis fact-checking modern.",
+      "analogy": "source-reputation systems"
+    }
+  ],
+  "inference": "Satu ayat memuat spesifikasi lengkap gerbang informasi: model ancaman (sumber fasik), aksi wajib (verifikasi), status default (karantina — bukan tolak, bukan terima), dan justifikasi biayanya (kerugian asimetris + penyesalan). Peradaban Islam mengeksekusi spesifikasi ini menjadi ilmu isnad. Aplikasi ini mengeksekusinya menjadi Eval-Gate. Prinsipnya satu: informasi yang belum diverifikasi boleh disimpan, tapi tidak boleh menggerakkan tindakan.",
+  "authors": [
+    "Draft AI (LLM draft) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-07",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-07",
+      "note": "Tadabbur perdana — Wave 1 batch tematik (ayat teknologi).",
+      "authors": [
+        "Draft AI (LLM draft)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

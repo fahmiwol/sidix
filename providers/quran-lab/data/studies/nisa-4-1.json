@@ -1,0 +1,109 @@
+{
+  "schema": "lab-study-v2",
+  "id": "nisa-4-1",
+  "version": 1,
+  "title": "Min nafsin wāhidah — satu asal, keragaman terurai, silaturahim terjaga",
+  "subtitle": "Bertakwalah kepada Tuhanmu yang menciptakan kamu dari satu jiwa, menciptakan pasangannya, & mengembangbiakkan banyak laki-laki & perempuan",
+  "ref": {
+    "surah": 4,
+    "from": 1,
+    "to": 1
+  },
+  "surah_name": "An-Nisa",
+  "theme": "Asal-tunggal, penyebaran populasi, jejaring kekerabatan, akuntabilitas",
+  "sourced_meaning": {
+    "summary": "Menurut Tafsir Kemenag, Allah memerintahkan manusia bertakwa kepada Tuhan yang memelihara mereka; Dialah yang menciptakan manusia dari satu diri (Adam, manusia pertama menurut jumhur mufasir), lalu menciptakan pasangannya, dan dari keduanya mengembangbiakkan banyak laki-laki dan perempuan. Ayat memerintahkan bertakwa kepada Allah yang dengan nama-Nya manusia saling meminta, dan memelihara hubungan silaturahim (al-arhām). Allah selalu menjaga dan mengawasi (raqīb). Tafsir mencatat kata 'khalaqa minhā zaujahā' kerap disalahpahami; ayat hanya menyebut 'menciptakan pasangannya dari dirinya'.",
+    "sources": [
+      "Tafsir Kemenag RI QS 4:1",
+      "Tafsir al-Jalalayn QS 4:1"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Memori & grounding",
+      "note": "'min nafsin wāhidah' = seluruh populasi diakarkan pada satu asal tunggal — common ancestor sebagai titik-nol silsilah"
+    },
+    {
+      "layer": "Aksi & transfer",
+      "note": "'bassa minhumā rijālan kathīran wa nisāʾan' = penyebaran/propagasi masif dari dua simpul awal menjadi banyak simpul terhubung"
+    },
+    {
+      "layer": "Alignment",
+      "note": "perintah 'ittaqū' membingkai seluruh sistem kekerabatan di bawah kesadaran akan Pencipta; kesatuan asal → kewajiban etis (jaga arhām)"
+    },
+    {
+      "layer": "Umpan balik",
+      "note": "'kāna ʿalaykum raqīban' = seluruh jejaring kekerabatan berada di bawah pengawasan penuh; tindakan antar-kerabat terobservasi"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "amal",
+      "reading": "Ayat menautkan pengetahuan asal-usul (satu jiwa) pada kewajiban praktis: jaga silaturahim (al-arhām). Kesadaran bahwa semua manusia satu keluarga besar menjadi dasar amal memelihara hubungan kekerabatan dan tidak memutusnya. Takwa dan pemeliharaan arhām disebut berdampingan.",
+      "quranic_term": "silaturahim (al-arhām)"
+    },
+    {
+      "lens": "systems",
+      "reading": "Sebuah pembacaan: 'min nafsin wāhidah' → 'bassa ... kathīran' menggambarkan graf yang tumbuh dari satu simpul akar (single root) menjadi jejaring luas melalui percabangan. Semua simpul terhubung ke akar yang sama, sehingga jaringan kekerabatan pada dasarnya satu komponen terhubung — tak ada manusia yang benar-benar terisolasi dari yang lain.",
+      "analogy": "single-rooted tree expanding into a connected graph",
+      "quranic_term": "nafs wāhidah (akar)"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Analogi untuk sistem agen berskala: banyak instance dapat di-spawn dari satu 'seed/base model' tunggal, lalu terdiferensiasi (rijāl & nisāʾ, beragam peran) — namun tetap membawa lineage yang sama dan tunduk pada aturan bersama. Actionable: (1) pertahankan provenance/lineage tiap agen ke asal-modelnya (audit trail 'dari nafs mana ia di-bassa') untuk akuntabilitas; (2) meski agen berkembang biak dan terspesialisasi, tanam constraint bersama yang tak boleh diputus (analog perintah jaga arhām — jaga tautan & kontrak antar-instance); (3) sadari raqīb: seluruh armada berada di bawah observabilitas/monitoring penuh, bukan kotak-hitam terpisah.",
+      "analogy": "instances spawned from one base model; lineage/provenance + shared constraints + full observability",
+      "quranic_term": "bassa (propagasi)"
+    },
+    {
+      "lens": "computational",
+      "reading": "Pola generatif: dari satu state awal (nafs wāhidah) + pasangannya, sistem menghasilkan populasi besar melalui replikasi berparameter. 'Bassa' (menyebarkan) = operasi fan-out masif dari sumber terbatas. Keragaman keluaran (banyak individu berbeda) berasal dari proses ekspansi atas basis yang sama.",
+      "analogy": "generative fan-out from a seed; parameterized replication",
+      "quranic_term": "bassa minhumā"
+    },
+    {
+      "lens": "biology-medicine",
+      "reading": "Resonansi struktural (analogi, bukan mukjizat numerik): genetika populasi menautkan garis keturunan manusia ke nenek moyang bersama (mis. konsep most-recent-common-ancestor), dan seluruh keragaman terurai dari kumpulan gen leluhur. Pola 'satu asal → populasi beragam yang tetap sekerabat' bergema dengan 'min nafsin wāhidah', sebagai analogi pemahaman.",
+      "analogy": "common ancestry; population diversity from a shared gene pool"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "Ayat menegakkan invariant relasi: semua node berbagi akar → relasi 'kerabat' bersifat transitif dan menyeluruh; dari sini diturunkan kewajiban (jaga arhām) sebagai constraint yang tak boleh dilanggar. Ditambah invariant pengawasan 'raqīb': setiap operasi dalam jejaring tercatat. Struktur asal (fakta) melahirkan kewajiban (norma) yang mengikat.",
+      "analogy": "shared-root invariant → transitive kinship → non-severable constraint"
+    },
+    {
+      "lens": "history-ummah",
+      "reading": "Sebagai pembuka Surah An-Nisa (tentang hak perempuan, anak yatim, waris), penegasan asal-tunggal berfungsi sebagai aksioma pembuka: semua aturan sosial yang menyusul dibangun di atas premis kesetaraan asal-usul. Fondasi hukum kekeluargaan diletakkan pada common origin sebelum rincian hak diurai.",
+      "analogy": "shared-origin axiom preceding social legislation"
+    },
+    {
+      "lens": "psychology",
+      "reading": "Kesadaran 'satu keluarga besar' memperluas lingkaran moral (moral circle): mengenali kekerabatan universal menurunkan dehumanisasi terhadap 'yang lain'. Ayat menautkan fakta asal-tunggal ke perintah menjaga arhām — mengubah pengetahuan silsilah menjadi empati terstruktur.",
+      "analogy": "moral circle expansion; kinship recognition reduces othering"
+    },
+    {
+      "lens": "inference",
+      "reading": "Benang merah: satu akar (nafs wāhidah) → fan-out masif (bassa) → jejaring terhubung penuh yang tetap terikat kewajiban bersama (arhām) di bawah pengawasan (raqīb). Untuk sistem apa pun yang berkembang biak dari basis tunggal, ayat menyarankan pola: jaga provenance ke akar, pertahankan constraint bersama antar-turunan, dan letakkan seluruhnya di bawah observabilitas — keragaman yang tumbuh tak boleh memutus tautan asal.",
+      "quranic_term": "arhām + raqīb"
+    }
+  ],
+  "inference": "Salah satu pembacaan rekayasa QS 4:1: populasi manusia digambarkan tumbuh dari satu akar tunggal ('min nafsin wāhidah') melalui operasi fan-out masif ('bassa minhumā rijālan kathīran wa nisāʾan') menjadi jejaring kekerabatan yang, karena berbagi akar, pada dasarnya satu komponen terhubung penuh. Struktur asal-usul ini melahirkan kewajiban yang mengikat — jaga silaturahim (al-arhām) — di bawah pengawasan penuh (raqīb). Untuk sistem yang berkembang biak dari basis tunggal (termasuk armada agen dari satu base model), pola ini menyarankan: pertahankan provenance/lineage tiap turunan ke asalnya demi akuntabilitas, tanam constraint bersama yang tak boleh diputus meski instance terspesialisasi, dan letakkan seluruh armada di bawah observabilitas alih-alih kotak-hitam terpisah. Ini analogi struktural untuk membangun sistem yang terlacak dan terikat etika — bukan klaim maksud tunggal ayat maupun mukjizat numerik.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-08",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-08",
+      "note": "Tadabbur perdana — Wave 8 manusia/sosial.",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

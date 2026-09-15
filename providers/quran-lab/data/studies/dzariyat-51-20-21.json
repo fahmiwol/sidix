@@ -1,0 +1,106 @@
+{
+  "schema": "lab-study-v2",
+  "id": "dzariyat-51-20-21",
+  "version": 1,
+  "title": "Tanda di bumi dan di dirimu — observabilitas, introspeksi, dan sinyal bagi yang yakin",
+  "subtitle": "Di bumi ada tanda-tanda bagi orang yakin; dan pada dirimu sendiri — apakah kalian tidak memperhatikan?",
+  "ref": {
+    "surah": 51,
+    "from": 20,
+    "to": 21
+  },
+  "surah_name": "Adh-Dhariyat",
+  "theme": "Observabilitas, dua sumber bukti (eksternal & internal), introspeksi, kesiapan pengamat, sinyal",
+  "sourced_meaning": {
+    "summary": "Di bumi terdapat tanda-tanda (āyāt) kekuasaan Allah bagi orang-orang yang yakin (mūqinīn) — bila dilihat dengan mata hati: matahari, bulan, gunung, hutan, samudra, dan makhluk di dalamnya; tafakur atasnya menambah cinta & keyakinan. Dan pada dirimu sendiri (anfusikum) pun ada bukti kekuasaan-Nya — perbedaan kemampuan, bahasa, kecerdasan, dan banyaknya anggota tubuh yang masing-masing berfungsi khas — 'maka apakah kalian tidak memperhatikan (tubṣirūn)?' Tafsir Kemenag menekankan tanda itu terbaca oleh yang yakin dan menuntut perhatian/penglihatan batin.",
+    "sources": [
+      "Tafsir Kemenag RI QS 51:20 & 51:21",
+      "Tafsir al-Jalalayn QS 51:20-21"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Persepsi",
+      "note": "'āyāt' = sinyal yang tersedia untuk diamati; 'afalā tubṣirūn' menuntut tindakan mengamati aktif, bukan pasif"
+    },
+    {
+      "layer": "Tangga epistemik",
+      "note": "'lil-mūqinīn' — pembacaan tanda bergantung pada kesiapan/disposisi pengamat; sinyal sama, hasil berbeda menurut keyakinan"
+    },
+    {
+      "layer": "Alignment",
+      "note": "dua sumber tanda (āfāq bumi + anfus diri) saling meneguhkan; bukti eksternal & internal dikawinkan menuju kesimpulan selaras"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "systems",
+      "reading": "Ayat menempatkan dua kanal observabilitas: tanda di BUMI (eksternal/lingkungan) dan tanda di DIRI (internal). Sistem yang bisa dipahami butuh instrumentasi di dua sisi — sinyal dari lingkungan dan sinyal dari dalam diri sistem. Mengabaikan salah satu membuat gambaran timpang; keduanya digabung memberi pemahaman yang teguh.",
+      "analogy": "observability dua-kanal: sinyal eksternal + internal",
+      "quranic_term": "āyāt fil-arḍ wa fī anfusikum"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Cetak biru observabilitas & introspeksi agen: ayat memasangkan pengamatan LINGKUNGAN (āfāq) dengan pengamatan DIRI (anfus). Actionable: (1) beri agen kanal persepsi lingkungan (state eksternal, hasil tool) DAN kanal introspeksi (log penalarannya sendiri, ketidakpastian, konsistensi internal); (2) jadikan 'afalā tubṣirūn' sebagai kewajiban self-check — agen harus secara aktif memeriksa sinyalnya, bukan menunggu; (3) sadari 'lil-mūqinīn': interpretasi sinyal bergantung pada prior/kebijakan agen — maka kalibrasi prior itu penting agar sinyal yang benar tidak salah dibaca. Gabungan bukti eksternal+internal = dasar keputusan yang lebih andal daripada salah satunya saja.",
+      "analogy": "agent: environmental sensing + self-introspection + active self-check"
+    },
+    {
+      "lens": "inference",
+      "reading": "'Tanda bagi orang yang yakin' menyoroti bahwa data yang sama menghasilkan kesimpulan berbeda tergantung prior pengamat — persis masalah inferensi: bukti diperbarui melalui keyakinan awal. Ayat tak berkata tanda itu tak ada bagi yang lain, melainkan hanya terbaca sebagai 'āyah' oleh yang siap. Pelajaran epistemik: kualitas kesimpulan = kualitas sinyal × kesiapan penafsir.",
+      "analogy": "interpretasi sinyal bergantung prior pengamat (posterior)",
+      "quranic_term": "mūqinīn"
+    },
+    {
+      "lens": "psychology",
+      "reading": "'Pada dirimu sendiri' adalah ajakan introspeksi: sumber bukti terdekat justru diri. Psikologi menegaskan pengenalan diri (metakognisi) sebagai kunci regulasi — mengamati pola pikir & emosi sendiri sebelum menyimpulkan tentang dunia. Banyak kekeliruan lahir dari mengamati luar sambil buta terhadap dalam; ayat menyeimbangkan keduanya.",
+      "analogy": "metakognisi: mengamati diri sebagai sumber bukti terdekat"
+    },
+    {
+      "lens": "biology-medicine",
+      "reading": "Tafsir menyebut 'banyaknya anggota tubuh yang masing-masing berfungsi khas' sebagai tanda pada diri. Ini membaca tubuh sebagai sistem termodularisasi: tiap organ satu fungsi, terintegrasi menjadi keseluruhan yang hidup. Kedokteran maju dengan 'memperhatikan' sinyal tubuh (biomarker, pencitraan) — persis semangat 'afalā tubṣirūn': pahami sistem dengan membaca tandanya.",
+      "analogy": "tubuh sebagai sistem termodularisasi; biomarker sebagai āyāt"
+    },
+    {
+      "lens": "earth-cosmos",
+      "reading": "Tafsir merinci tanda di bumi: matahari, bulan, gunung, samudra, dan makhluk hidup. Dibaca sebagai undangan mengamati alam (āfāq) sebagai sumber pengetahuan yang sah — resonansi dengan semangat sains observasional. Dicatat sebagai resonansi struktural yang bounded, BUKAN mukjizat numerik & bukan klaim bahwa ayat menetapkan temuan ilmiah tertentu; ia bingkai sikap mengamati, bukan dalil hasil.",
+      "analogy": "āfāq alam sebagai objek observasi (bounded)",
+      "quranic_term": "āyāt lil-mūqinīn"
+    },
+    {
+      "lens": "pedagogy",
+      "reading": "Ayat mengajar lewat pertanyaan reflektif ('apakah kalian tidak memperhatikan?') alih-alih menyodorkan kesimpulan — mendorong pembelajar menemukan sendiri dari dua sumber: dunia sekitar dan pengalaman diri. Pedagogi inquiry: bukti dihadirkan, penglihatan (baṣīrah) dilatih, kesimpulan ditumbuhkan, bukan ditanamkan paksa.",
+      "analogy": "inquiry-based learning: pertanyaan reflektif + dua sumber bukti"
+    },
+    {
+      "lens": "computational",
+      "reading": "'Āyāt' berlaku sebagai sinyal ber-makna yang tertanam dalam data lingkungan & diri; membacanya = ekstraksi fitur/pola dari observasi mentah. 'Afalā tubṣirūn' menuntut proses aktif memindai & menafsir sinyal. Tanpa pipeline yang 'memperhatikan', data melimpah tetap jadi noise; makna muncul hanya saat sinyal diproses oleh pengamat yang terkalibrasi.",
+      "analogy": "ekstraksi sinyal/pola dari observasi (data → makna)"
+    },
+    {
+      "lens": "amal",
+      "reading": "Tafsir menautkan tafakur atas tanda dengan bertambahnya cinta & keyakinan — maka amal yang dianjurkan adalah tafakur terjadwal: menyisihkan waktu mengamati alam dan merenungi diri sebagai ibadah reflektif, mengubah pengamatan menjadi kesadaran dan syukur, bukan sekadar rasa ingin tahu.",
+      "analogy": "tafakur sebagai amal reflektif terjadwal",
+      "quranic_term": "tafakkur → yaqīn"
+    }
+  ],
+  "inference": "Dua ayat ini, dibaca sebagai analogi rekayasa, merumuskan doktrin observabilitas yang lengkap: bukti hadir di DUA kanal — dunia luar (āfāq/bumi) dan diri dalam (anfus) — dan keduanya hanya menjadi 'tanda' bagi pengamat yang aktif memperhatikan serta siap menafsir ('lil-mūqinīn', 'afalā tubṣirūn'). Untuk perancang sistem, terutama agen AI: instrumentasikan sistem di dua sisi (sensing lingkungan + introspeksi internal), jadikan self-check sebagai kewajiban aktif, dan sadari bahwa penafsiran sinyal bergantung pada prior/kalibrasi pengamat. Pembacaan sains di sini adalah bingkai SIKAP mengamati, dicatat sebagai resonansi struktural yang bounded — BUKAN mukjizat numerik dan bukan penetapan temuan ilmiah; ini salah satu pembacaan rekayasa di atas makna zahir yang bersumber dari tafsir, bukan maksud tunggal ayat.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-08",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-08",
+      "note": "Tadabbur perdana — Wave 8 kosmos.",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

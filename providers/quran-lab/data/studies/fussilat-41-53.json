@@ -1,0 +1,104 @@
+{
+  "schema": "lab-study-v2",
+  "id": "fussilat-41-53",
+  "version": 1,
+  "title": "Āfāq wa anfus — konvergensi bukti dari dua kanal sensor",
+  "subtitle": "Tanda di ufuk (eksternal) dan di dalam diri (internal), sampai jelas kebenarannya",
+  "ref": {
+    "surah": 41,
+    "from": 53,
+    "to": 53
+  },
+  "surah_name": "Fussilat",
+  "theme": "Observabilitas, verifikasi konvergen, dua kanal bukti, batas kejelasan",
+  "sourced_meaning": {
+    "summary": "Allah akan memperlihatkan tanda-tanda (kekuasaan)-Nya di segala penjuru (al-āfāq) dan pada diri mereka sendiri (fī anfusihim), hingga jelas (yatabayyana) bagi mereka bahwa Al-Qur'an itu benar. Dan tidakkah cukup bahwa Tuhanmu menjadi saksi atas segala sesuatu?",
+    "sources": [
+      "Tafsir Kemenag RI QS 41:53",
+      "Tafsir al-Jalalayn QS 41:53"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Persepsi",
+      "note": "dua kanal sensor dinamai eksplisit: āfāq (dunia luar) + anfus (diri sendiri)"
+    },
+    {
+      "layer": "Tangga epistemik",
+      "note": "ḥattā yatabayyana — proses berjalan SAMPAI ambang kejelasan tercapai (tabayyun sbg kondisi henti)"
+    },
+    {
+      "layer": "Umpan balik",
+      "note": "bukti terus ditambahkan seiring waktu ('sanurīhim' — akan Kami perlihatkan, future tense)"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "amal",
+      "reading": "Dua medan tafakkur bagi seorang hamba: alam semesta (perjalanan, sains, observasi) dan dirinya sendiri (muhāsabah, kesehatan, psikologi) — keduanya jalan ma'rifah, bukan hanya teks.",
+      "quranic_term": "tafakkur + muhāsabah"
+    },
+    {
+      "lens": "computational",
+      "reading": "Verifikasi multi-kanal: klaim diuji terhadap dua stream data independen — eksternal (āfāq: observasi dunia) dan internal (anfus: introspeksi/telemetri diri). Dua kanal yang independen namun konvergen ke kesimpulan sama = bukti yang jauh lebih kuat dari satu kanal.",
+      "analogy": "multi-channel evidence; independent sensors",
+      "quranic_term": "tabayyun"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "'Ḥattā yatabayyana' = kondisi terminasi loop: bukti terus dialirkan WHILE belum jelas, UNTIL kejelasan tercapai. Prosesnya iteratif dan bersyarat henti — bukan dogma sekali-jadi.",
+      "analogy": "loop with convergence criterion"
+    },
+    {
+      "lens": "algorithm",
+      "reading": "'Sanurīhim' (future) = bukti bersifat progresif: dataset bertambah seiring zaman — tiap generasi melihat tanda yang generasi sebelumnya tak bisa lihat (mikroskop membuka anfus, teleskop membuka āfāq). Verifikasi sebagai proses anytime yang makin akurat.",
+      "analogy": "anytime algorithm; growing dataset"
+    },
+    {
+      "lens": "inference",
+      "reading": "Struktur argumennya: kebenaran yang sama harus tampak dari DUA arah yang tak saling bergantung. Dalam epistemologi: konsiliens (consilience) — konvergensi bukti lintas domain independen adalah penanda kebenaran terkuat yang tersedia bagi makhluk.",
+      "quranic_term": "yaqīn via tawātur bukti"
+    },
+    {
+      "lens": "math-physics",
+      "reading": "Āfāq membentang dari kosmologi hingga geofisika; anfus dari genom hingga neurosains — dan keduanya memakai matematika yang sama. Keterbacaan alam oleh satu bahasa formal (dari galaksi sampai sel) adalah fakta menakjubkan yang ayat ini jadikan medan pembuktian.",
+      "analogy": "one formal language across scales"
+    },
+    {
+      "lens": "systems",
+      "reading": "Prinsip observabilitas: sistem dinilai sehat bukan dari klaimnya tapi dari telemetrinya — luar (perilaku teramati) dan dalam (state internal). Ayat menutup dengan Syāhid atas segala sesuatu: observabilitas total hanya milik-Nya; sistem makhluk selalu teramati sebagian.",
+      "analogy": "observability (external behavior + internal state)"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Untuk agen: keyakinan harus dibangun dari dua kanal — world model (hasil observasi lingkungan) dan self-monitoring (introspeksi atas proses sendiri: confidence, konsistensi, jejak penalaran). Agen yang hanya melihat keluar tak sadar biasnya; yang hanya melihat ke dalam tak tersambung realitas. Kalibrasi = konvergensi keduanya.",
+      "analogy": "world-model + self-monitoring convergence",
+      "quranic_term": "āfāq + anfus"
+    },
+    {
+      "lens": "artifact",
+      "reading": "Dua keluarga instrumen manusia persis mengikuti dua kanal ini: instrumen āfāq (teleskop, satelit, sensor bumi) dan instrumen anfus (MRI, sekuenser genom, EEG) — peradaban membangun alat untuk kedua arah pandang yang ayat ini sebutkan.",
+      "analogy": "outward & inward instrumentation"
+    }
+  ],
+  "inference": "Ayat ini menetapkan protokol pembuktian yang berani: kebenaran wahyu dipersilakan diuji terhadap dua stream data independen — alam luar dan diri manusia — dengan proses progresif yang berjalan sampai ambang kejelasan (tabayyun) tercapai. Secara rekayasa, ini standar verifikasi tertinggi: konvergensi kanal-kanal yang tak saling bergantung. Sebuah teks yang takut pengujian tidak akan menunjuk seluruh alam semesta dan diri pembacanya sebagai medan verifikasinya sendiri.",
+  "authors": [
+    "Draft AI (LLM draft) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-07",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-07",
+      "note": "Tadabbur perdana — Wave 1 batch tematik (ayat teknologi).",
+      "authors": [
+        "Draft AI (LLM draft)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

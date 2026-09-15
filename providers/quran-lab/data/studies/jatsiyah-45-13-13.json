@@ -1,0 +1,111 @@
+{
+  "schema": "lab-study-v2",
+  "id": "jatsiyah-45-13-13",
+  "version": 1,
+  "title": "Alam yang Ditundukkan sebagai Antarmuka",
+  "subtitle": "Taskhir di QS Al-Jatsiyah 13 sebagai model abstraksi, affordance, dan API alam",
+  "ref": {
+    "surah": 45,
+    "from": 13,
+    "to": 13
+  },
+  "surah_name": "Al-Jatsiyah",
+  "theme": "Tafakkur & pengenalan pola: alam yang teratur dijadikan dapat dimanfaatkan bagi kaum berpikir",
+  "sourced_meaning": {
+    "summary": "Menurut Tafsir Kemenag, Allah menundukkan semua makhluk ciptaan-Nya di langit dan bumi agar manusia dapat menggunakan dan memanfaatkannya untuk kepentingan mereka dalam menjalankan tugas sebagai khalifah. Karena itu manusia wajib berusaha mencari manfaat dan kegunaan ciptaan Allah; kuncinya adalah kemauan berusaha dan keinginan mengetahui sebagian pengetahuan Allah. Tafsir menekankan makin lama bumi didiami, makin banyak ilmu Allah yang tersingkap dan makin banyak manfaat alam yang diperoleh — namun baru sebagian kecil dari ilmu Allah yang diketahui manusia. Semua ini menjadi tanda bagi kaum yang berpikir (yatafakkarun).",
+    "sources": [
+      "Tafsir Kemenag RI QS 45:13",
+      "Tafsir al-Jalalayn QS 45:13"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Persepsi",
+      "note": "Seluruh isi langit dan bumi disajikan sebagai satu ruang sumber daya yang teramati dan dapat diakses (jami'an — semuanya)."
+    },
+    {
+      "layer": "Aksi & transfer",
+      "note": "Taskhir (penundukan) membuka jalan dari observasi ke pemanfaatan; ilmu berpindah menjadi kegunaan praktis lintas generasi."
+    },
+    {
+      "layer": "Tangga epistemik",
+      "note": "Tafsir menekankan manfaat tersingkap bertahap dan baru sebagian kecil diketahui — pengetahuan bersifat inkremental dan tak pernah lengkap."
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "ai-agentic",
+      "reading": "Taskhir membaca sebagai lapisan affordance/tool yang membuat lingkungan dapat ditindaki oleh agen: alam sudah 'diekspos' dalam bentuk yang bisa dimanfaatkan, tinggal agen menemukan dan memakainya. Actionable: bekali agen dengan katalog tool/affordance yang jelas kontraknya, plus mekanisme discovery agar kapabilitas baru terus ditemukan; nilai agen bukan pada menciptakan hukum alam, melainkan pada seberapa efektif ia memakai antarmuka yang tersedia.",
+      "analogy": "Tool/affordance layer + capability discovery: environment ter-ekspos sebagai API; agent value = pemakaian efektif, bukan pembuatan.",
+      "quranic_term": "sakhkhara lakum (Dia tundukkan untukmu)"
+    },
+    {
+      "lens": "artifact",
+      "reading": "Alam yang 'ditundukkan untukmu' adalah sumber daya yang sudah dibuat dapat-dipakai tanpa perlu memahami seluruh mekanisme internalnya — manusia memakai gaya gravitasi, angin, dan air jauh sebelum memahami fisikanya. Ini abstraksi: manfaat terekspos di permukaan, kompleksitas disembunyikan.",
+      "analogy": "Abstraction / encapsulation: interface yang berguna menutupi implementasi yang rumit.",
+      "quranic_term": "ma fis-samawati wa ma fil-ard (apa di langit & bumi)"
+    },
+    {
+      "lens": "systems",
+      "reading": "Seluruh langit-bumi disebut sebagai satu ruang sumber daya bersama yang tunduk pada aturan yang sama, sehingga dapat diandalkan dan dikomposisi. Keteraturan (bukan kekacauan) itulah yang membuat alam bisa dijadikan platform bertingkat oleh manusia lintas zaman.",
+      "analogy": "Shared, reliable substrate: keteraturan sebagai prasyarat komposabilitas layer di atasnya.",
+      "quranic_term": "jami'an minhu (semuanya dari-Nya)"
+    },
+    {
+      "lens": "economy",
+      "reading": "Tafsir menautkan manfaat dengan 'kemauan berusaha' — sumber daya alam bernilai hanya bila ada upaya mengekstraknya. Nilai bukan intrinsik pada objek, melainkan direalisasi oleh kerja dan pengetahuan yang mengubah potensi menjadi guna.",
+      "analogy": "Resource → value butuh extraction cost; potensi terealisasi lewat labor + knowledge.",
+      "quranic_term": "rahmatan minhu (rahmat dari-Nya)"
+    },
+    {
+      "lens": "computational",
+      "reading": "Alam yang tertundukkan adalah dataset/kapabilitas yang tersedia; pemanfaatannya menuntut komputasi (mencari, mengukur, memodelkan). Ketersediaan sumber daya tidak otomatis menjadi manfaat tanpa langkah pemrosesan oleh pihak yang berpikir.",
+      "analogy": "Available capability ≠ realized utility tanpa compute/processing di atasnya.",
+      "quranic_term": "yatafakkarun (berpikir)"
+    },
+    {
+      "lens": "algorithm",
+      "reading": "Menemukan manfaat dari alam yang luas adalah pencarian di ruang besar: eksplorasi terarah untuk menemukan kegunaan baru. Tafsir menyebut manfaat tersingkap makin banyak seiring waktu — pola optimisasi yang terus berjalan, belum konvergen.",
+      "analogy": "Search / exploration di ruang solusi besar; diskoveri kegunaan = optimisasi berkelanjutan.",
+      "quranic_term": "sakhkhara (menundukkan)"
+    },
+    {
+      "lens": "inference",
+      "reading": "Keteraturan yang membuat alam bisa diandalkan menjadi tanda: dari fakta bahwa segala sesuatu tunduk pada pola yang stabil, akal menyimpulkan adanya keteraturan yang disengaja. Reliabilitas antarmuka itu sendiri adalah bukti.",
+      "analogy": "Regularitas yang dapat diprediksi sebagai sinyal desain; predictability → inference.",
+      "quranic_term": "la-ayat (tanda-tanda)"
+    },
+    {
+      "lens": "pedagogy",
+      "reading": "Tafsir menggambarkan ilmu manusia tumbuh 'makin lama makin banyak' — model pembelajaran kumulatif lintas generasi, di mana tiap generasi mewarisi antarmuka yang sudah dipahami dan menambah lapisan baru.",
+      "analogy": "Cumulative / transfer learning antar generasi: warisan pengetahuan sebagai basis kurikulum berikutnya.",
+      "quranic_term": "ilm (pengetahuan)"
+    },
+    {
+      "lens": "earth-cosmos",
+      "reading": "Ayat merangkul langit dan bumi sekaligus sebagai satu domain sumber daya yang koheren — dari benda langit sampai unsur bumi tunduk pada tatanan yang sama, memungkinkan navigasi, pertanian, dan teknologi berdiri di atas fondasi yang konsisten.",
+      "analogy": "Domain fisik terpadu: konsistensi lintas-skala memungkinkan aplikasi teknologi yang dapat diandalkan.",
+      "quranic_term": "as-samawati wal-ard (langit & bumi)"
+    }
+  ],
+  "inference": "QS Al-Jatsiyah 13 membingkai seluruh langit-bumi sebagai sesuatu yang 'ditundukkan untukmu' — teratur, dapat diandalkan, dan siap dimanfaatkan oleh yang mau berpikir. Dibaca sebagai rekayasa: taskhir menyerupai lapisan abstraksi/affordance yang mengekspos manfaat sambil menyembunyikan kompleksitas, sementara manfaat nyata baru terealisasi lewat usaha, pengetahuan, dan komputasi yang inkremental. Untuk desain agen AI: sediakan katalog tool/affordance berkontrak jelas plus discovery kapabilitas; keunggulan agen terletak pada pemakaian efektif antarmuka yang ada, bukan pada penciptaan hukum baru. Analogi ini bounded — resonansi struktural, bukan klaim mukjizat numerik.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-07",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-07",
+      "note": "Tadabbur perdana — Wave 7 tafakkur.",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

@@ -1,0 +1,99 @@
+{
+  "schema": "lab-study-v2",
+  "id": "nisa-4-135",
+  "version": 1,
+  "title": "Syuhadāʾ lillāh — kesaksian tak-bias bahkan melawan diri sendiri",
+  "subtitle": "Tegakkan keadilan, jadi saksi karena Allah walau atas dirimu sendiri",
+  "ref": {
+    "surah": 4,
+    "from": 135,
+    "to": 135
+  },
+  "surah_name": "An-Nisa",
+  "theme": "Kesaksian tak-bias, integritas evaluator, konflik kepentingan, keadilan",
+  "sourced_meaning": {
+    "summary": "Wahai orang beriman, jadilah penegak keadilan (qawwāmīna bil-qisṭ), menjadi saksi karena Allah walaupun terhadap dirimu sendiri, kedua orang tua, dan kerabatmu. Jika (yang terdakwa) kaya atau miskin, Allah lebih tahu kemaslahatan keduanya. Maka jangan ikuti hawa nafsu karena ingin menyimpang dari kebenaran. Tafsir Kemenag: perintah berlaku adil dalam segala hal, tak terpengaruh hubungan atau status.",
+    "sources": [
+      "Tafsir Kemenag RI QS 4:135",
+      "Tafsir al-Jalalayn QS 4:135"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Alignment",
+      "note": "kesaksian 'lillāh' = objektif ke standar tertinggi, bukan ke kepentingan pihak"
+    },
+    {
+      "layer": "Tangga epistemik",
+      "note": "keadilan menuntut penilai yang kebal dari bias relasi & status"
+    },
+    {
+      "layer": "Umpan balik",
+      "note": "'walau atas dirimu sendiri' = self-report jujur meski merugikan diri"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "amal",
+      "reading": "Kejujuran yang paling berat: bersaksi benar walau merugikan diri, keluarga, atau merugikan yang kaya/berkuasa. Keadilan diukur justru ketika ia melawan kepentinganmu — di situ integritas teruji.",
+      "quranic_term": "qisṭ / syahādah"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Spesifikasi evaluator/judge tak-bias: penilai (LLM-judge, verifier, auditor) harus melaporkan kebenaran INDEPENDEN dari kepentingannya sendiri — termasuk mengakui kesalahannya sendiri ('atas dirimu sendiri' = self-critique jujur). Bias yang dilarang dinamai eksplisit: afiliasi (kerabat) & status (kaya/miskin) = analog favoritisme sumber & popularitas. Sistem yang menilai ringan pihak yang menguntungkannya = qawwām yang rusak.",
+      "analogy": "unbiased judge; honest self-critique; anti-favoritism",
+      "quranic_term": "syuhadāʾ lillāh"
+    },
+    {
+      "lens": "inference",
+      "reading": "Ayat memisahkan kebenaran dari kepentingan penilai: bukti dinilai pada meritnya, bukan pada siapa yang diuntungkan. Ini prasyarat objektivitas — begitu penilai punya stake pada hasil, kesaksiannya terkontaminasi kecuali stake itu secara sadar dinetralkan.",
+      "quranic_term": "ʿadl"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "Guard eksplisit terhadap dua sumber bias: IF penilaian dipengaruhi(afiliasi) OR dipengaruhi(status) THEN invalid. 'Jangan ikuti hawa' = larangan membiarkan fungsi objektif tergeser oleh preferensi tersembunyi — decision harus fungsi dari evidence, bukan dari identity pihak.",
+      "analogy": "bias guards; decision independent of party identity"
+    },
+    {
+      "lens": "systems",
+      "reading": "Peradilan/audit yang kredibel butuh pemisahan penilai dari kepentingan (recusal, konflik-kepentingan). Ayat menuntut standar lebih tinggi: bahkan tanpa mekanisme eksternal, saksi menegakkan objektivitas dari dalam ('karena Allah'). Integritas terinternalisasi > pengawasan eksternal.",
+      "analogy": "conflict-of-interest recusal; internalized integrity"
+    },
+    {
+      "lens": "economy",
+      "reading": "Menolak bias status ('kaya atau miskin') = fondasi rule of law ekonomi: kontrak & sengketa dinilai sama tanpa memandang kekuatan pihak. Pasar yang penilainya bisa dibeli status/kekayaan kehilangan kepercayaan — biaya transaksi meledak.",
+      "analogy": "impartial adjudication under rule of law"
+    },
+    {
+      "lens": "psychology",
+      "reading": "Melawan motivated reasoning: manusia cenderung menilai ringan diri & yang dicintai. Perintah 'bersaksi atas dirimu sendiri' adalah latihan metakognitif tersulit — memisahkan apa yang benar dari apa yang menguntungkan ego. Kejujuran pada diri sendiri adalah akar semua kejujuran.",
+      "analogy": "countering self-serving bias",
+      "quranic_term": "muḥāsabah jujur"
+    },
+    {
+      "lens": "history-ummah",
+      "reading": "Peradaban tegak atau runtuh pada kredibilitas kesaksiannya: sistem yang saksinya bisa ditekuk afiliasi/kekuasaan membusuk dari dalam. Sejarah keadilan Islam klasik (qadi yang menolak hadiah dari pihak berperkara) adalah eksekusi ayat ini.",
+      "analogy": "institutional integrity of testimony"
+    }
+  ],
+  "inference": "Ayat ini adalah spesifikasi evaluator tak-bias yang paling tegas dalam korpus: kesaksian harus objektif ke standar tertinggi ('lillāh'), kebal dari dua bias yang dinamai (afiliasi & status), bahkan ketika kebenaran merugikan diri sendiri. Untuk sistem AI penilai — judge, verifier, auditor — ini blueprint langsung: keputusan harus fungsi dari evidence, bukan dari identitas atau kepentingan; dan kemampuan mengakui kesalahan sendiri ('bersaksi atas dirimu') adalah bentuk tertinggi dari objektivitas itu. Menariknya, ayat tak mengandalkan pengawas eksternal — ia menuntut integritas terinternalisasi, yang justru lebih tahan daripada guard yang bisa dimatikan.",
+  "authors": [
+    "Draft AI (LLM draft) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-07",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-07",
+      "note": "Tadabbur perdana — Wave 5 (cluster attestation & kesaksian).",
+      "authors": [
+        "Draft AI (LLM draft)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

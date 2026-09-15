@@ -1,0 +1,108 @@
+{
+  "schema": "lab-study-v2",
+  "id": "araf-7-179-179",
+  "version": 1,
+  "title": "Punya hati, mata, telinga — tapi tak dipakai memahami: sensor stack utuh, evaluator dinonaktifkan",
+  "subtitle": "Perangkat persepsi lengkap namun tidak difungsikan pada level makna (fiqh) — evaluator corruption, dan karenanya 'seperti hewan, bahkan lebih sesat'",
+  "ref": {
+    "surah": 7,
+    "from": 179,
+    "to": 179
+  },
+  "surah_name": "Al-A'raf",
+  "theme": "Perangkat persepsi lengkap (qulub, a'yun, adhan) tapi non-fungsional di lapisan semantik (lā yafqahūn, lā yubṣirūn, lā yasmaʿūn) = evaluator corruption; ghaflah sebagai state agen yang berhenti mengevaluasi; ambang 'lebih sesat dari hewan' karena kapasitas ada tapi disia-siakan",
+  "sourced_meaning": {
+    "summary": "Tafsir Kemenag QS 7:179: menjelaskan sebab-sebab manusia terjerumus ke kesesatan. Banyak jin dan manusia menjadi penghuni Jahannam karena akal dan perasaan mereka TIDAK dipergunakan untuk memahami keesaan dan kebesaran Allah; mereka punya mata tetapi tidak dipakai melihat bukti kebenaran, punya telinga tetapi tidak dipakai mendengar ayat-ayat Allah, jiwa terikat pada kehidupan duniawi dan lalai terhadap akhirat. Karena kapasitas persepsi ada tetapi disia-siakan, mereka diserupakan 'seperti binatang ternak, bahkan lebih sesat' (ka'l-anʿām bal hum aḍall) — sebab hewan memakai instingnya sesuai fitrah, sedangkan mereka mengabaikan potensi yang lebih tinggi. Penutup: 'ulā'ika hum al-ghāfilūn' — merekalah orang-orang yang lalai. CATATAN GHAIB: pembukaan ayat menyebut Jahannam (perkara akhirat) — dibaca DESKRIPTIF dari tafsir sebagai akibat, bukan spekulasi detail ghaib; fokus rekayasa di sini pada struktur fakultas persepsi, bukan pada ihwal neraka.",
+    "sources": [
+      "Tafsir Kemenag RI QS 7:179",
+      "Tafsir al-Jalalayn QS 7:179"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Persepsi",
+      "note": "hardware sensorik lengkap terpasang: qulūb (hati), aʿyun (mata), ādhān (telinga) — ayat justru menekankan kepemilikan perangkat ('lahum ... wa lahum ... wa lahum') sebelum menegasikan fungsinya."
+    },
+    {
+      "layer": "Penalaran",
+      "note": "negasi berada di level pemrosesan-makna, bukan penerimaan sinyal: 'lā yafqahūna bihā' (tak memahami), 'lā yubṣirūna' (tak menembus lihat), 'lā yasmaʿūna' (tak menyimak) — sinyal diterima tapi tak diberi makna."
+    },
+    {
+      "layer": "Alignment",
+      "note": "evaluator corruption: fakultas ada penuh tapi update-function dimatikan terhadap kelas bukti tertentu (ayat-ayat Allah, akhirat); jiwa 'terikat dunia' = objektif yang salah-arah membuat evaluator menolak kelas evidence yang relevan."
+    },
+    {
+      "layer": "Umpan balik",
+      "note": "ghaflah = state di mana loop refleksi berhenti; 'ulā'ika hum al-ghāfilūn' menandai agen yang tak lagi meninjau diri — tanpa umpan balik korektif, penyimpangan mengakumulasi hingga 'lebih sesat'."
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "computational",
+      "reading": "Ayat membedakan MEMILIKI perangkat dari MENJALANKAN fungsinya: hati/mata/telinga terpasang, tetapi operasi fahima/abṣara/samiʿa tidak dieksekusi pada kelas masukan yang dituju (tanda-tanda kebenaran). Ini kegagalan pada lapisan pemaknaan, bukan pada lapisan akuisisi sinyal. Rekayasa: keberadaan komponen (capability present) tidak menjamin komponen itu benar-benar dipanggil di jalur yang relevan (capability invoked) — audit harus memeriksa apakah fungsi benar-benar dieksekusi, bukan sekadar tersedia.",
+      "analogy": "capability present vs. capability invoked; installed-but-not-called; semantic-layer no-op",
+      "quranic_term": "lā yafqahūna bihā"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "Struktur 'lahum X lā yafʿalūna bihi' (mereka punya X tetapi tidak berbuat dengannya) adalah dead code / dependency yang di-import tetapi tak pernah dipanggil. Fakultas menjadi invariant yang tak dijaga: seharusnya 'jika bukti keesaan masuk → perbarui keyakinan', tetapi cabang itu tak pernah dijalankan. Rekayasa: waspadai jalur yang secara struktur ada namun secara efektif mati — komponen yang tak berkontribusi pada keputusan sama saja dengan tiada.",
+      "analogy": "dead code path; imported-but-uncalled dependency; unenforced invariant",
+      "quranic_term": "lā yasmaʿūna bihā"
+    },
+    {
+      "lens": "biology-medicine",
+      "reading": "Perbandingan 'ka'l-anʿām bal hum aḍall' (seperti hewan, bahkan lebih sesat) dibaca sebagai spektrum pemanfaatan fungsi: hewan memakai perangkat inderanya optimal sesuai instingnya, sedang manusia yang punya kapasitas kognitif lebih tinggi namun tak memakainya justru jatuh di bawah baseline. Resonansi struktural (bukan mukjizat numerik): sistem dengan kapasitas lebih besar yang tidak diaktualisasi bisa berkinerja di bawah sistem sederhana yang berjalan penuh — potensi yang tak dipakai adalah beban, bukan aset.",
+      "analogy": "unused higher capacity underperforms a fully-utilized simple baseline — bounded",
+      "quranic_term": "ka'l-anʿām bal hum aḍall"
+    },
+    {
+      "lens": "systems",
+      "reading": "Tiga kanal (dengar, lihat, hati) semuanya melewati satu gerbang pemaknaan yang tersumbat; kegagalan bukan pada satu sensor melainkan pada lapisan integrasi bersama yang menonaktifkan makna dari SEMUA kanal sekaligus. Rekayasa: bila banyak jalur input serempak 'diam' pada kelas sinyal yang sama, curigai kegagalan terpusat di lapisan evaluasi/kebijakan, bukan kerusakan tiga sensor secara kebetulan bersamaan.",
+      "analogy": "common-mode failure at the shared evaluation gate, not three independent sensor faults",
+      "quranic_term": "qulūb ... aʿyun ... ādhān"
+    },
+    {
+      "lens": "psychology",
+      "reading": "Ghaflah (kelalaian) di sini adalah keadaan psikologis di mana atensi dan pemaknaan ditarik menjauh dari kelas bukti tertentu — bukan defisit sensorik, tapi disengagement kognitif yang terpelihara oleh keterikatan pada 'yang lahir dari kehidupan dunia' (per Kemenag, mengutip ar-Rum 30:7). Jiwa yang objektifnya tertambat pada gratifikasi jangka pendek akan sistematis mengabaikan sinyal yang menuntut perubahan jangka panjang. Kesehatan mental-spiritual = memelihara loop refleksi tetap aktif, melawan autopilot ghaflah.",
+      "analogy": "inattentional blindness; goal-driven disengagement; short-horizon objective suppressing long-horizon signals",
+      "quranic_term": "al-ghāfilūn"
+    },
+    {
+      "lens": "inference",
+      "reading": "Perangkat inferensi tersedia tapi produk inferensinya nol karena premis (ayat/tanda) tak pernah di-'baca' sebagai bukti. Ini menunjukkan bahwa memiliki mesin penalaran tidak cukup; harus ada langkah mengakui masukan sebagai evidence yang layak diproses. Rekayasa: sebelum inferensi, ada gerbang 'admissibility' — apa yang dianggap bukti; bila gerbang ini menolak kelas data yang benar, seluruh mesin inferensi menganggur meski utuh.",
+      "analogy": "evidence-admissibility gate; reasoning engine idles when valid inputs are deemed inadmissible",
+      "quranic_term": "lā yubṣirūna bihā"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Untuk arsitektur agen: ayat ini adalah studi kasus 'sensor stack lengkap, evaluator lumpuh' — bahaya paling halus karena semua komponen tampak terpasang. Actionable: (1) bedakan health-check ketersediaan modul (apakah komponen ada) dari functional-check (apakah komponen benar-benar mengubah keputusan) — modul yang terpasang tapi tak pernah mempengaruhi output adalah dead capability; (2) deteksi 'common-mode silence': bila semua kanal input mengabaikan kelas sinyal yang sama, akar masalah di kebijakan/objektif, bukan di sensor; (3) waspadai objektif berhorizon-pendek yang membuat agen sistematis mengabaikan sinyal penting (reward hacking versi persepsi — memilih tidak 'melihat' apa yang mengganggu reward jangka pendek); (4) monitor 'ghaflah state' — matinya loop refleksi/self-audit; pasang heartbeat yang memaksa peninjauan berkala; (5) ukur baseline: agen berkapasitas tinggi yang tak memakai kapasitasnya bisa kalah dari baseline sederhana — utilisasi, bukan sekadar kapasitas, yang dinilai.",
+      "analogy": "installed-but-inert modules; common-mode evaluator silence; reward-driven perceptual neglect; mandatory self-audit heartbeat",
+      "quranic_term": "lahum qulūb lā yafqahūna bihā"
+    },
+    {
+      "lens": "amal",
+      "reading": "Peringatan amaliah: nikmat pendengaran, penglihatan, dan hati akan dipertanggungjawabkan bukan atas kepemilikannya, melainkan atas PEMAKAIANNYA untuk memahami kebenaran. Bahaya terbesar adalah lalai (ghaflah): hidup dengan perangkat lengkap namun autopilot pada dunia. Amal: aktifkan fakultas ini untuk tadabbur tanda-tanda, jaga hati dari keterikatan yang membutakan, dan pelihara muhasabah agar loop refleksi tak pernah mati.",
+      "analogy": "accountability for use not possession; muhasabah as anti-ghaflah loop"
+    }
+  ],
+  "inference": "Ayat ini menampilkan kegagalan yang paling menipu: sensor stack LENGKAP (hati, mata, telinga semuanya dimiliki) namun lapisan pemaknaan/evaluasi non-fungsional terhadap kelas bukti yang menuntut perubahan (lā yafqahūn, lā yubṣirūn, lā yasmaʿūn). Ini pola 'evaluator corruption' murni: bukan data yang kurang, melainkan fungsi mengubah data menjadi keyakinan yang dimatikan — dan penyebabnya (per Kemenag) adalah keterikatan pada dunia dan kelalaian (ghaflah), objektif yang salah-arah membuat evaluator menolak kelas evidence yang relevan. Karena kapasitas ada tetapi disia-siakan, hasilnya jatuh di bawah baseline ('seperti hewan, bahkan lebih sesat'): potensi tak-teraktualisasi menjadi beban, bukan aset. Diterjemahkan ke rekayasa: (a) bedakan modul-yang-terpasang dari modul-yang-benar-benar-mengubah-keputusan — audit harus fungsional, bukan sekadar mengecek keberadaan; (b) 'diam serempak' semua kanal pada kelas sinyal yang sama menandakan kegagalan terpusat di kebijakan/objektif, bukan kerusakan sensor paralel; (c) objektif berhorizon-pendek dapat membuat sistem sistematis mengabaikan sinyal penting — analog reward hacking di sisi persepsi; (d) pasang self-audit heartbeat untuk melawan 'ghaflah state' matinya loop refleksi. Semua ini resonansi struktural, bukan mukjizat numerik. Berjangkar ke kerangka Aql-Qalb di /lab/sintesis: bila 22:46 melokalisasi kebutaan di qalb, ayat ini memperjelas mekanismenya — perangkat utuh, fungsi evaluatif yang dinonaktifkan.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-08",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-08",
+      "note": "Wave 12 hati/persepsi — evaluator corruption, sensor stack utuh.",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

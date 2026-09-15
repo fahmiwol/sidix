@@ -1,0 +1,110 @@
+{
+  "schema": "lab-study-v2",
+  "id": "abasa-80-24-32",
+  "version": 1,
+  "title": "Falyanẓuril-insānu ilā ṭaʿāmih — rantai pasok pangan sebagai pipeline dari satu input",
+  "subtitle": "Perhatikan makananmu: air dicurahkan, bumi dibelah, tumbuh biji, anggur, sayur, zaitun, kurma, kebun, buah, rumput — untukmu & ternakmu",
+  "ref": {
+    "surah": 80,
+    "from": 24,
+    "to": 32
+  },
+  "surah_name": "'Abasa",
+  "theme": "Rantai pasok pangan, pipeline input→output beragam, sustainability, provisioning downstream",
+  "sourced_meaning": {
+    "summary": "Allah menyuruh manusia memperhatikan makanannya — bagaimana ia disiapkan bergizi (protein, karbohidrat) demi tubuh yang sehat untuk menunaikan tugasnya. Rangkaiannya dijelaskan bertahap: air hujan dicurahkan cukup untuk semua makhluk, bumi 'dibelah'/dibuka permukaannya agar udara & matahari masuk sehingga subur, lalu ditumbuhkan biji-bijian (gandum, padi — makanan pokok), anggur & aneka sayuran, zaitun & kurma, kebun-kebun lebat (buah sekaligus pohonnya untuk bahan bangunan), serta buah-buahan lain dan rumput. Penutupnya: semua itu 'untuk kesenanganmu dan untuk binatang ternakmu' — bekal hidup manusia dan pakan hewan. (Kemenag & Jalalain QS 80:24-32).",
+    "sources": [
+      "Tafsir Kemenag RI QS 80:24-32",
+      "Tafsir al-Jalalayn QS 80:24-32"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Persepsi",
+      "note": "perintah pembuka 'falyanẓur' (hendaklah ia memandang) — makanan sehari-hari dijadikan objek pengamatan sistematis, bukan konsumsi buta"
+    },
+    {
+      "layer": "Penalaran",
+      "note": "rangkaian sebab berurut: air → pembelahan bumi → benih → tanaman beragam → pangan; satu input hulu menuruni banyak cabang keluaran"
+    },
+    {
+      "layer": "Aksi & transfer",
+      "note": "penutup 'untukmu & ternakmu' mengarahkan pembacaan ke pemanfaatan (provisioning) bukan sekadar kekaguman"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "amal",
+      "reading": "Menatap sepiring makanan sebagai rantai panjang air, tanah, benih, musim, dan tangan yang bekerja — melahirkan syukur yang konkret dan menekan pemborosan; makan jadi tindakan sadar-sumber, bukan lalai.",
+      "quranic_term": "naẓar ilā ṭaʿām"
+    },
+    {
+      "lens": "systems",
+      "reading": "Ayat memetakan sebuah supply chain lengkap: sumber (air) → prapemrosesan lahan (belah bumi) → produksi (tumbuh benih) → diversifikasi produk (biji, anggur, sayur, zaitun, kurma, buah, rumput) → konsumen bertingkat (manusia lalu ternak). Ketahanan pangan = menjaga setiap simpul rantai, bukan satu titik saja.",
+      "analogy": "end-to-end food supply chain with tiered consumers",
+      "quranic_term": "matāʿan lakum wa li-anʿāmikum"
+    },
+    {
+      "lens": "computational",
+      "reading": "Struktur teks = satu pipeline dengan fan-out: input tunggal (mā'an, air) melewati transform berantai dan bercabang menjadi banyak keluaran terklasifikasi (ḥabb, ʿinab, qaḍb, zaitūn, nakhl, ḥadā'iq, fākihah, abb). Satu resource hulu, banyak stream hilir yang ter-tipe.",
+      "analogy": "single-source pipeline with typed fan-out streams",
+      "quranic_term": "fa-ambatnā fīhā ḥabbā"
+    },
+    {
+      "lens": "algorithm",
+      "reading": "Urutan langkahnya deterministik dan tak bisa ditukar: curah air → buka/olah bumi → semai benih → panen. Ini pola build berjenjang di mana tiap tahap prasyarat tahap berikut; melompati prapemrosesan lahan menggagalkan hasil. Konstruksi bertahap, bukan instan.",
+      "analogy": "ordered build pipeline; each stage gates the next",
+      "quranic_term": "thumma shaqaqnal-arḍa shaqqā"
+    },
+    {
+      "lens": "economy",
+      "reading": "Rezeki pangan disajikan sebagai portofolio terdiversifikasi: pokok (biji-bijian) + protektif/gizi (sayur, buah) + bernilai tinggi & tahan simpan (zaitun, kurma) + pakan ternak (rumput). Diversifikasi keluaran dari input yang sama = strategi anti-gagal-panen dan stabilitas pasokan.",
+      "analogy": "diversified yield portfolio hedging single-crop risk",
+      "quranic_term": "matāʿ"
+    },
+    {
+      "lens": "biology-medicine",
+      "reading": "Kemenag menyorot makanan 'bergizi (protein, karbohidrat)' untuk tubuh sehat. Ayat menyusun piramida gizi implisit: karbohidrat pokok (gandum/padi), lemak sehat (zaitun), gula alami & serat (anggur, kurma, buah), mikronutrien (sayur). Kesehatan sistem hidup = keragaman asupan, bukan monodiet.",
+      "analogy": "balanced nutrient stack from diverse crops",
+      "quranic_term": "ṭaʿām"
+    },
+    {
+      "lens": "chemistry-process",
+      "reading": "Rangkaian ini adalah transduksi materi-energi: air + tanah + cahaya matahari (disebut lewat 'belah bumi agar matahari masuk') dikonversi tumbuhan menjadi biomassa pangan. Fotosintesis sebagai reaktor alami yang mengubah input anorganik menjadi energi kimia yang bisa dimakan.",
+      "analogy": "photosynthetic conversion of raw inputs into edible energy",
+      "quranic_term": "shaqq al-arḍ li-nufūdh al-shams"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Pola 'perhatikan makananmu' adalah disiplin data-provenance untuk agen: sebelum mengonsumsi (memakai) sebuah keluaran, telusuri seluruh rantai pasoknya (sumber data → prapemrosesan → transformasi → produk). Sistem AI tangguh memperlakukan data sebagai supply chain yang harus di-audit ujung-ke-ujung, mendiversifikasi sumber agar tidak rapuh pada satu 'panen', dan menyediakan keluaran bertingkat untuk konsumen berbeda (manusia vs sistem hilir/'ternak'). Bangun data pipeline dengan lineage eksplisit, fallback antar-sumber, dan gating tiap tahap seperti urutan air→lahan→benih→panen.",
+      "analogy": "auditable data supply chain with lineage, source diversity, and tiered outputs",
+      "quranic_term": "falyanẓuril-insānu ilā ṭaʿāmih"
+    },
+    {
+      "lens": "artifact",
+      "reading": "Manusia membaca pola ini menjadi teknologi rantai pangan: irigasi, pengolahan tanah, rotasi tanaman, silo & rantai dingin, hingga sistem distribusi. Bahkan ayat menyinggung nilai ganda kebun (buah + kayu pohon untuk bangunan) — pemanfaatan berlapis satu sumber daya.",
+      "analogy": "irrigation, crop rotation, storage & distribution infrastructure",
+      "quranic_term": "ḥadā'iq ghulbā"
+    }
+  ],
+  "inference": "QS 80:24-32 membaca dapat dibaca-rekayasa sebagai cetak-biru rantai pasok: satu input hulu (air) melewati prapemrosesan (pembukaan bumi) dan produksi (penumbuhan benih) untuk bercabang menjadi portofolio keluaran ter-tipe (biji, buah, minyak, pakan) yang melayani konsumen bertingkat (manusia lalu ternak). Pelajaran rekayasanya konvergen: bangun sistem sebagai pipeline berjenjang yang urutannya dijaga, diversifikasikan keluaran dari sumber yang sama untuk ketahanan, audit provenance ujung-ke-ujung sebelum mengonsumsi, dan sediakan lapisan hasil untuk kelas pengguna berbeda. Perintah pembukanya — 'perhatikan makananmu' — adalah ajakan berpikir sistem: jangan menilai produk akhir tanpa memahami rantai yang melahirkannya. CATATAN TANZIH: yang dibaca di sini semata POLA pada ciptaan (air, tanah, benih, rantai pangan); perbuatan mencurahkan-membelah-menumbuhkan tetap milik Allah semata dan TIDAK dimodelkan/dianalogikan — analogi berhenti di lapisan sebab-akibat pada makhluk. Resonansi struktural, bukan klaim mukjizat numerik, dan bukan pula maksud tunggal ayat.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-08",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-08",
+      "note": "Wave 9 pertumbuhan/rezeki.",
+      "authors": [
+        "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

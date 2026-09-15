@@ -1,0 +1,104 @@
+{
+  "schema": "lab-study-v2",
+  "id": "qaf-50-9-11",
+  "version": 1,
+  "title": "Mā'an mubārakā — air berkah, panen berlipat, dan pemulihan negeri mati",
+  "subtitle": "Kami turunkan air berkah, tumbuhkan kebun & biji panen, pohon kurma; menghidupkan negeri mati — begitulah kebangkitan",
+  "ref": {
+    "surah": 50,
+    "from": 9,
+    "to": 11
+  },
+  "surah_name": "Qaf",
+  "theme": "Injeksi resource, scaling panen, disaster recovery, revival negeri mati, inferensi dari teramati ke belum-teramati",
+  "sourced_meaning": {
+    "summary": "Allah menerangkan cara menumbuhkan tumbuhan: menurunkan dari langit air hujan yang banyak manfaatnya (mubārak/berkah), lalu dengannya menumbuhkan pohon-pohon berbuah serta biji tanaman yang dapat dituai/diketam (padi, gandum, jagung), dan pohon kurma tinggi bermayang bersusun — semuanya sebagai rezeki bagi hamba-hamba-Nya. Kemenag mencatat rezeki di sini bersifat umum (tak dibatasi bagi yang mengingat Allah saja). Ditutup: 'Kami hidupkan dengan air itu negeri/tanah yang mati (kering); seperti itulah terjadinya kebangkitan.' — fenomena teramati dijadikan dalil atas kebangkitan yang belum teramati. (Kemenag & Jalalain QS 50:9-11).",
+    "sources": [
+      "Tafsir Kemenag RI QS 50:9-11",
+      "Tafsir al-Jalalayn QS 50:9-11"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Persepsi",
+      "note": "siklus tanah kering → subur setelah hujan = āyah berulang yang teramati tiap musim"
+    },
+    {
+      "layer": "Penalaran",
+      "note": "air disifati 'mubārak' (berkah/berlipat manfaat) — satu input dengan multiplier keluaran tinggi"
+    },
+    {
+      "layer": "Tangga epistemik",
+      "note": "'kadhālikal-khurūj' (begitulah kebangkitan) = qiyās dari data empiris menuju klaim yang belum teramati"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "amal",
+      "reading": "Menyikapi masa kering (kegagalan, kevakuman ruhani, keterpurukan) sebagai keadaan yang bisa dipulihkan bila 'air'-nya kembali; kegersangan bukan vonis akhir. Ini menanam kesabaran berbasis pola pemulihan yang teramati, bukan angan kosong.",
+      "quranic_term": "iḥyā' baldah mayyit"
+    },
+    {
+      "lens": "systems",
+      "reading": "Air 'mubārak' = leverage point: satu injeksi resource di titik yang tepat mengaktifkan kaskade sistemik (mikroba→tanaman→kebun→rezeki→ternak→manusia). Rezeki disebut 'umum' — resource yang benar mengalir ke seluruh simpul jaringan, bukan hanya satu kelas penerima.",
+      "analogy": "high-leverage resource injection cascading through a whole network",
+      "quranic_term": "mā'an mubārakā"
+    },
+    {
+      "lens": "computational",
+      "reading": "Pola pemulihan: sistem yang 'mati' (baldah mayyit) tidak dihapus lalu dibuat ulang — ia dihidupkan kembali dengan menginjeksikan substrat yang hilang (air). State lama + resource yang tepat = bangkit. Restorasi lewat dependency, bukan rebuild dari nol.",
+      "analogy": "revive a dead system by re-injecting its missing substrate",
+      "quranic_term": "aḥyaynā bihi baldah"
+    },
+    {
+      "lens": "economy",
+      "reading": "'Berkah' (mubārak) membaca konsep return-on-input yang berlipat: modal kecil (air) menghasilkan keluaran majemuk (kebun, biji panen, kurma) yang menuai berulang tiap musim. Ditambah frasa 'ḥabb al-ḥaṣīd' (biji yang diketam) — hasil yang bisa dipanen sekaligus disimpan-ditanam ulang: kapital yang beranak.",
+      "analogy": "compounding yield from a blessed (multiplicative) input",
+      "quranic_term": "ḥabb al-ḥaṣīd"
+    },
+    {
+      "lens": "inference",
+      "reading": "Struktur argumen: dari fenomena berulang yang teramati (negeri mati hidup lagi) → inferensi atas klaim yang belum teramati (kebangkitan). Precedent empiris dipakai sebagai basis ekstrapolasi — qiyās atas data. Yang mustahil-tampak dibenarkan oleh presedennya yang rutin terjadi.",
+      "analogy": "extrapolate an unseen claim from a repeatedly observed precedent",
+      "quranic_term": "kadhālikal-khurūj"
+    },
+    {
+      "lens": "earth-cosmos",
+      "reading": "Siklus hidrologi skala planet: evaporasi laut → awan → presipitasi → revival daratan → transpirasi kembali. Loop materi tertutup yang menjadikan air 'berkah' karena ia berputar dan dipakai berulang. Geosistem dirancang selaras musim: kering & basah bergantian sebagai ritme, bukan kerusakan.",
+      "analogy": "planetary water cycle enabling seasonal land revival",
+      "quranic_term": "nazzalnā minas-samā'i mā'ā"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Tiga pelajaran desain. (1) Disaster recovery: 'menghidupkan negeri mati' = pulihkan layanan yang down bukan dengan rebuild dari nol melainkan restore dari state + reinjeksi resource (data/traffic/compute) yang absen. (2) Resource-driven scaling: 'mubārak' menyiratkan input berkualitas dengan multiplier tinggi — satu korpus data bersih menumbuhkan banyak kapabilitas hilir; utamakan kualitas leverage-point ketimbang volume acak. (3) Inferensi kalibrasi: pola 'begitulah kebangkitan' = generalisasi dari kejadian berulang ke kasus tak-terlihat, disiplin inti reasoning yang harus dijaga agar ekstrapolasi berbasis preseden nyata, bukan halusinasi.",
+      "analogy": "restore-from-state recovery + high-leverage data injection + precedent-grounded extrapolation",
+      "quranic_term": "aḥyaynā bihil-arḍa baʿda mautihā"
+    },
+    {
+      "lens": "artifact",
+      "reading": "Peradaban menerjemahkan pola ini menjadi teknologi ketahanan: irigasi & bendungan (memindahkan air ke lahan mati), panen & lumbung (menyimpan 'ḥabb al-ḥaṣīd'), hingga rekayasa pemulihan lahan gersang dan reservoir cadangan — semua varian dari 'menghidupkan bumi sesudah matinya'.",
+      "analogy": "irrigation, granaries, land-restoration engineering",
+      "quranic_term": "jannāt wa ḥabb al-ḥaṣīd"
+    }
+  ],
+  "inference": "QS 50:9-11 dapat dibaca-rekayasa pada tiga poros. Pertama, air 'mubārak' sebagai leverage-point berlipat: satu input berkualitas di titik tepat mengaktifkan kaskade keluaran yang menuai berulang — resource-driven scaling yang mengutamakan kualitas-multiplier di atas volume. Kedua, 'menghidupkan negeri mati' sebagai pola pemulihan lewat reinjeksi substrat pada state lama, bukan rebuild dari nol — cetak-biru disaster recovery. Ketiga, penutup 'begitulah kebangkitan' sebagai disiplin inferensi: mengekstrapolasi klaim tak-teramati dari preseden yang berulang teramati. Konvergensinya untuk rekayasa: pilih titik ungkit berkualitas tinggi, pulihkan dari state alih-alih membangun ulang, dan dasarkan generalisasi pada preseden nyata. CATATAN TANZIH: menurunkan air, menumbuhkan, dan menghidupkan negeri mati adalah PERBUATAN ALLAH — tidak dimodelkan/dianalogikan; yang dibaca hanyalah POLA pada ciptaan (air, tanah, benih, siklus). Resonansi struktural, bukan mukjizat numerik; salah satu pembacaan, bukan maksud tunggal ayat.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-08",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-08",
+      "note": "Wave 9 pertumbuhan/rezeki.",
+      "authors": [
+        "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

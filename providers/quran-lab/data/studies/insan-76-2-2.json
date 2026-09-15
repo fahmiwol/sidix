@@ -1,0 +1,107 @@
+{
+  "schema": "lab-study-v2",
+  "id": "insan-76-2-2",
+  "version": 1,
+  "title": "Nutfah amsyaj — setetes campuran dua sumber, dicipta untuk diuji, lalu diberi pendengaran dan penglihatan",
+  "subtitle": "Kombinasi sumber (merge) sebagai titik awal, tujuan-uji (objective) yang menyertai penciptaan, dan sensor yang di-provision untuk menjalani uji",
+  "ref": {
+    "surah": 76,
+    "from": 2,
+    "to": 2
+  },
+  "surah_name": "Al-Insan",
+  "theme": "Nutfah amsyaj = kombinasi/merge dua sumber menjadi satu titik-awal; penciptaan yang goal-conditioned (untuk diuji: taklif); provisioning sensor (dengar-lihat) untuk menjalani uji",
+  "sourced_meaning": {
+    "summary": "Tafsir Kemenag: manusia diciptakan dari nutfah amsyaj — setetes mani yang BERCAMPUR, yaitu bercampurnya sperma laki-laki (keputih-putihan) dengan sel telur perempuan (kekuning-kuningan); campuran itu menghasilkan 'alaqah, lalu mudghah, lalu tulang berbalut daging, hingga lahir bayi sempurna. Maksud penciptaan adalah untuk menguji manusia dengan perintah (taklif) dan larangan, menegakkan risalah di bumi — apakah ia bersyukur saat senang dan sabar saat susah. Karena itu ia dianugerahi pendengaran dan penglihatan agar dapat menyimak dan menyaksikan kebesaran serta nikmat Allah. CATATAN TANZIH: Pencipta dan Penguji adalah Allah; yang dibaca-rekayasa hanya POLA pada ciptaan — penggabungan dua sumber sebagai titik awal, keterikatan proses pada tujuan, dan pengadaan sensor.",
+    "sources": [
+      "Tafsir Kemenag RI QS 76:2",
+      "Tafsir al-Jalalayn QS 76:2"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Memori & grounding",
+      "note": "'amsyaj' (campuran dua sumber) = titik-awal yang membawa warisan dua asal; sistem yang lahir dari penggabungan mewarisi properti dari kedua masukannya"
+    },
+    {
+      "layer": "Alignment",
+      "note": "penciptaan 'untuk diuji' (nabtalīhi) = ada objective/tujuan yang menyertai sejak awal; keberadaan bukan tanpa maksud, melainkan terikat kriteria penilaian"
+    },
+    {
+      "layer": "Persepsi",
+      "note": "pendengaran & penglihatan diberikan justru AGAR mampu menjalani uji — sensor diadakan untuk mendukung pencapaian tujuan, bukan hiasan"
+    },
+    {
+      "layer": "Tangga epistemik",
+      "note": "dari campuran material sederhana naik ke makhluk yang menyimak-menyaksikan dan dibebani tanggung jawab moral — lompatan tingkat dari materi ke agen bertanggung jawab"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "computational",
+      "reading": "Nutfah 'amsyaj' (bercampur) dibaca sebagai MERGE dua sumber data/genetik menjadi satu titik-awal tunggal yang membawa kontribusi keduanya. Analog penggabungan dua aliran masukan (fusion) menjadi state awal komposit; keluaran sistem sejak detik pertama adalah hasil kombinasi, bukan salinan satu sumber.",
+      "analogy": "merge/fusion of two input streams into one seed state",
+      "quranic_term": "amsyāj"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Tiga rancangan agen dalam satu ayat: (1) SEED dari kombinasi sumber — inisialisasi agen dari peleburan beberapa sumber (data/model/kebijakan) yang saling melengkapi, bukan sumber tunggal; (2) GOAL-CONDITIONED sejak lahir — agen diciptakan 'untuk diuji', maka tanam objective/kriteria evaluasi sebagai bagian identitasnya, bukan tempelan; agen tanpa tujuan yang jelas kehilangan alasan tindakannya; (3) SENSOR UNTUK MISI — sediakan kanal persepsi (dengar-lihat) yang memang diperlukan agar agen bisa menjalani ujian/tugasnya. Actionable: pasangkan setiap kapabilitas sensor ke objective yang ia layani, dan uji agen dengan skenario (ibtila') yang mengukur syukur-sabar-nya versi domain: perilaku benar saat 'reward tinggi' maupun 'reward rendah/tekanan'.",
+      "analogy": "composite seeding; goal-conditioned agent; mission-driven sensor provisioning; stress/eval scenarios",
+      "quranic_term": "nabtalīhi"
+    },
+    {
+      "lens": "biology-medicine",
+      "reading": "Amsyaj sebagai peleburan gamet (sperma+ovum) yang menyatukan dua set materi herediter, sebagaimana ditegaskan Kemenag, beresonansi dengan pembuahan yang menggabungkan warisan dua orang tua menjadi zygot tunggal. Resonansi struktural (bukan mukjizat numerik): analogi pemahaman tentang kombinasi herediter, bukan klaim genetika modern dari teks.",
+      "analogy": "gamete fusion; recombination of two hereditary sets — bounded",
+      "quranic_term": "nuthfah"
+    },
+    {
+      "lens": "systems",
+      "reading": "Sistem yang lahir dari penggabungan komponen heterogen harus mengelola KOMPATIBILITAS: dua sumber berbeda sifat ('keputih-putihan' & 'kekuning-kuningan') dipadukan menjadi satu entitas fungsional. Rekayasa integrasi: keluaran gabungan hanya andal bila antarmuka kedua sumber diselaraskan, lalu diarahkan ke satu tujuan sistem.",
+      "analogy": "heterogeneous integration; interface reconciliation toward one goal",
+      "quranic_term": "amsyāj"
+    },
+    {
+      "lens": "inference",
+      "reading": "Keberadaan sensor 'agar dapat menyimak dan menyaksikan' menautkan alat persepsi ke pembentukan keyakinan: data indrawi adalah premis untuk menyimpulkan 'kebesaran dan nikmat'. Rancang alur inferensi yang berangkat dari observasi terverifikasi menuju kesimpulan yang dituju.",
+      "analogy": "observation-grounded inference toward an intended conclusion",
+      "quranic_term": "sami'an bashiran"
+    },
+    {
+      "lens": "psychology",
+      "reading": "Uji berupa 'bersyukur saat senang, sabar saat susah' (per Kemenag) memetakan pengujian karakter di dua kutub kondisi — kemudahan dan kesulitan. Ketahanan sejati diukur di kedua rezim, bukan satu; kepribadian yang matang stabil lintas kondisi afektif.",
+      "analogy": "trait evaluation across opposite conditions (ease vs hardship)",
+      "quranic_term": "ibtila'"
+    },
+    {
+      "lens": "amal",
+      "reading": "Menyadari asal dari 'setetes campuran' meruntuhkan kesombongan, sementara sadar 'dicipta untuk diuji' membangkitkan kesungguhan: hidup adalah masa ujian dengan perintah dan larangan. Pendengaran dan penglihatan menjadi amanah untuk menyimak kebenaran dan menyaksikan tanda, lalu bersyukur — bukan untuk lalai.",
+      "analogy": "humble origin + purposeful trial; senses as trust for gratitude"
+    },
+    {
+      "lens": "pedagogy",
+      "reading": "Pola mengajar: tautkan asal-usul yang rendah dengan tujuan yang tinggi agar murid memahami bahwa nilai bukan pada bahan awal melainkan pada tujuan dan proses. Sediakan 'indra' (akses ke sumber) lalu arahkan pada tugas bermakna yang mengujinya.",
+      "analogy": "reframe humble start toward high purpose; access then meaningful task"
+    }
+  ],
+  "inference": "Ayat pendek ini mengunci tiga keputusan desain sekaligus. Pertama, TITIK AWAL dari kombinasi: 'nutfah amsyaj' — setetes yang bercampur dari dua sumber (per Kemenag: sperma dan sel telur) — dibaca sebagai merge/fusion yang menghasilkan satu seed komposit pembawa warisan keduanya; sistem yang lahir dari penggabungan mewarisi dan harus menyelaraskan properti kedua asalnya. Kedua, TUJUAN yang menyertai sejak awal: manusia dicipta 'untuk diuji' (taklif) — keberadaan yang goal-conditioned, di mana kriteria penilaian (syukur di kelapangan, sabar di kesempitan) tertanam sebagai bagian identitas, bukan tambahan. Ketiga, SENSOR UNTUK MISI: pendengaran dan penglihatan diberikan justru agar mampu menjalani uji itu — kapabilitas persepsi diadakan untuk melayani tujuan. Diterjemahkan ke desain agen: inisialisasi dari peleburan sumber yang saling melengkapi, tanam objective sejak awal, dan pasangkan setiap sensor pada tujuan yang ia layani, lalu uji perilaku di dua rezim (kemudahan dan tekanan). Semua ini resonansi struktural, bukan mukjizat numerik. CATATAN TANZIH: Pencipta dan Penguji adalah Allah semata; kita hanya membaca pola pada ciptaan-Nya dan menirunya di lapisan sebab.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-08",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-08",
+      "note": "Tadabbur perdana — Wave 9 penciptaan.",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

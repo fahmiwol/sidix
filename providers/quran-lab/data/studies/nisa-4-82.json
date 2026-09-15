@@ -1,0 +1,109 @@
+{
+  "schema": "lab-study-v2",
+  "id": "nisa-4-82",
+  "version": 1,
+  "title": "Tadabbur & uji-konsistensi — nirkontradiksi sebagai tes integritas",
+  "subtitle": "Ayat yang menamai Lab ini: telaah mendalam, dan tiadanya pertentangan sebagai sinyal keaslian sumber",
+  "ref": {
+    "surah": 4,
+    "from": 82,
+    "to": 82
+  },
+  "surah_name": "An-Nisa",
+  "theme": "Tadabbur (deep parsing), uji konsistensi, integritas sumber, nirkontradiksi, sumber-tunggal",
+  "sourced_meaning": {
+    "summary": "Orang kafir dan munafik dicela karena tidak mau men-tadabbur (memperhatikan/menyelami) Al-Qur'an. Seandainya mereka mau merenungkannya, mereka akan tahu bahwa ia benar-benar dari Allah. Menurut Kemenag (mengutip al-Maragi): kalau Al-Qur'an dibuat Muhammad ﷺ, bukan dari Allah, niscaya mereka menemukan di dalamnya ayat-ayat yang saling bertentangan — di antara buktinya, tidak ada makhluk yang mampu menggambarkan hakikat sesuatu tanpa pertentangan satu sama lain, dan ia menceritakan hal-hal masa lalu serta yang akan datang tanpa kontradiksi.",
+    "sources": [
+      "Tafsir Kemenag RI QS 4:82",
+      "Tafsir al-Jalalayn QS 4:82"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Penalaran",
+      "note": "tadabbur = menyelami susunan-kandungan-makna teks; ayat ini justru memerintah proses berpikir mendalam, bukan sekadar membaca"
+    },
+    {
+      "layer": "Tangga epistemik",
+      "note": "argumen kontrapositif: 'andai dari selain Allah → banyak pertentangan'; ketiadaan pertentangan dibaca sbg sinyal — dibaca struktural, bukan pembuktian teologis"
+    },
+    {
+      "layer": "Memori & grounding",
+      "note": "uji dijalankan atas korpus itu sendiri (self-test): konsistensi internal seluruh teks jadi bahan uji"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "computational",
+      "reading": "Dibaca sebagai sistem: 'ikhtilāf kathīr' (pertentangan yang banyak) berfungsi seperti sinyal korupsi/checksum-mismatch. Sumber yang koheren dan tunggal menghasilkan keluaran nirkontradiksi; makin banyak kontradiksi internal, makin tinggi kecurigaan terhadap integritas/asal-usulnya. Konsistensi lintas-bagian dijadikan alat uji keaslian, bukan sekadar estetika.",
+      "analogy": "internal-consistency check as integrity signal",
+      "quranic_term": "tadabbur"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "Nirkontradiksi diperlakukan sebagai invariant global: untuk seluruh korpus, tidak boleh ada dua pernyataan yang saling meniadakan. 'Andai dari selain Allah, pasti banyak pertentangan' = assertion; menemukan kontradiksi = assertion failure yang membatalkan klaim sumber. Ini pola self-consistency test: jalankan pemeriksaan menyeluruh, satu kontradiksi sudah cukup untuk menggugurkan hipotesis.",
+      "analogy": "global invariant / assertion — one violation falsifies",
+      "quranic_term": "tadabbur"
+    },
+    {
+      "lens": "algorithm",
+      "reading": "Tadabbur bukan single-pass reading melainkan deep parsing berulang: menelusuri teks lapis demi lapis, membandingkan bagian dengan bagian (cross-reference), lalu menyusun ulang pemahaman. Analog dengan multi-pass analysis / graph traversal atas korpus untuk mendeteksi simpul yang tak konsisten. Kedalaman diperoleh lewat iterasi, bukan sekali baca.",
+      "analogy": "multi-pass deep parse + cross-reference traversal",
+      "quranic_term": "tadabbur"
+    },
+    {
+      "lens": "inference",
+      "reading": "Struktur logisnya modus tollens/kontrapositif: 'jika P (dari selain Allah) maka Q (banyak kontradiksi); ~Q maka ~P'. Dalam kerangka rekayasa (bounded, sebagai analogi pemahaman) ini menunjukkan pola membangun keyakinan dari ketiadaan cacat yang teruji, bukan dari klaim langsung. Ditegaskan: ini pembacaan struktural atas bentuk argumen, BUKAN penilaian atas status teologis teks, dan bukan mukjizat numerik.",
+      "analogy": "contrapositive / modus tollens",
+      "quranic_term": "zhann → yaqīn"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Ini pola self-consistency sebagai sinyal validitas: keluaran yang benar cenderung koheren di banyak jalur, sedang fabrikasi (halusinasi) cenderung membelah menjadi klaim yang saling bertabrakan. Untuk desain sistem — jalankan pemeriksaan konsistensi lintas-jawaban/lintas-dokumen (consistency sampling, self-verification) dan pakai kontradiksi sebagai detektor halusinasi; jaga single-source-of-truth agar tak ada divergensi. Kontradiksi = red flag yang memicu peninjauan, bukan diabaikan.",
+      "analogy": "self-consistency sampling / contradiction as hallucination detector",
+      "quranic_term": "tadabbur → tabayyun"
+    },
+    {
+      "lens": "systems",
+      "reading": "Perbedaan tajam antara sistem bersumber-tunggal yang terkoordinasi dan sistem multi-sumber yang tak terkoordinasi: yang pertama konvergen dan nirkontradiksi, yang kedua rawan drift dan pernyataan yang bertabrakan seiring waktu. Ketiadaan pertentangan pada satu korpus besar dibaca sebagai ciri koordinasi/koherensi asal — analogi bagi arsitektur data dengan satu sumber kebenaran.",
+      "analogy": "single source of truth vs uncoordinated drift"
+    },
+    {
+      "lens": "pedagogy",
+      "reading": "Ayat ini membedakan membaca-permukaan dari tadabbur (telaah mendalam): pemahaman sejati lahir dari refleksi aktif dan pengulangan, bukan sekadar melewati teks. Metode belajar yang dianjurkan = merenung, menghubungkan bagian, menguji pemahaman sendiri — deep reading di atas skimming. Kegagalan memahami sering bukan karena teksnya, melainkan karena enggan menyelam.",
+      "analogy": "deep reading & active reflection over skimming",
+      "quranic_term": "tadabbur"
+    },
+    {
+      "lens": "math-physics",
+      "reading": "Serupa syarat konsistensi sebuah sistem aksiomatik: sistem yang sehat tidak menurunkan kontradiksi (P dan ~P) dari dirinya sendiri. Menemukan satu kontradiksi merobohkan seluruh bangunan (prinsip ex contradictione quodlibet). Nirkontradiksi lintas ribuan pernyataan dibaca sebagai indikasi koherensi struktural — dicatat sebagai resonansi struktural, bukan mukjizat numerik.",
+      "analogy": "consistency of an axiomatic system",
+      "quranic_term": "burhān"
+    },
+    {
+      "lens": "amal",
+      "reading": "Adab keilmuan: jangan menolak sebelum menelaah. Ayat mencela penolakan yang lahir dari keengganan men-tadabbur. Praktiknya — periksa dulu, uji koherensinya, baru simpulkan; sikap ini juga muhasabah bagi diri: apakah pemahamanku sendiri konsisten atau penuh pertentangan.",
+      "quranic_term": "tadabbur"
+    }
+  ],
+  "inference": "Dibaca sebagai analogi rekayasa, An-Nisa 82 menautkan dua hal: perintah men-tadabbur (menelaah mendalam, berulang, bukan sekali-baca) dan sebuah uji integritas berbasis konsistensi — 'seandainya dari selain Allah, pasti banyak pertentangan di dalamnya'. Ketiadaan kontradiksi lintas seluruh korpus dibaca (secara struktural, bounded) sebagai sinyal keaslian sumber, mirip checksum/self-consistency test yang memakai kontradiksi internal sebagai detektor korupsi atau fabrikasi. Untuk desain sistem — baik manusia maupun mesin — pelajarannya: pertama, pemahaman butuh deep parsing yang iteratif, bukan skimming; kedua, konsistensi lintas-bagian adalah alat validitas yang murah dan tajam, dan kontradiksi adalah red flag yang wajib memicu peninjauan (deteksi halusinasi, single source of truth). Ini salah satu pembacaan rekayasa di atas makna zahir yang bersumber, BUKAN maksud tunggal ayat. CATATAN TANZIH: bahwa Al-Qur'an 'dari sisi Allah' disebut dengan ta'zhim sebagai LANDASAN iman — Allah (Dzat & Sifat-Nya) tidak dimodelkan, tidak dijadikan 'sumber' dalam pengertian komponen sistem, dan perbuatan-Nya menurunkan wahyu tidak dianalogikan sebagai proses teknis. Yang dibaca secara struktural hanyalah sisi teks (koherensi internal korpus) dan laku manusia (tadabbur sebagai telaah). Resonansi 'uji-konsistensi' dicatat sebagai analogi pemahaman yang bounded, bukan mukjizat numerik.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-08",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-08",
+      "note": "Tadabbur perdana — Wave 12 tadabbur/ilmu (ayat nama Lab: konsistensi-tanpa-kontradiksi sbg uji integritas).",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

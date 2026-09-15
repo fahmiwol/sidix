@@ -1,0 +1,113 @@
+{
+  "schema": "lab-study-v2",
+  "id": "iqra-96-1-5",
+  "title": "Iqra' — READ → ENCODE → LEARN",
+  "subtitle": "Wahyu pertama sebagai arsitektur akuisisi ilmu",
+  "ref": {
+    "surah": 96,
+    "from": 1,
+    "to": 5
+  },
+  "surah_name": "Al-'Alaq",
+  "theme": "Akuisisi pengetahuan, pembelajaran, eksternalisasi ilmu",
+  "sourced_meaning": {
+    "summary": "Perintah membaca (mempelajari, meneliti) apa saja yang Ia ciptakan — ayat qauliyah (Al-Qur'an) maupun kauniyah (alam); Dia mengajar dengan pena (qalam); mengajari manusia apa yang belum diketahuinya.",
+    "sources": [
+      "Tafsir Kemenag RI QS 96:1-5",
+      "Tafsir al-Jalalayn QS 96:1-5"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Persepsi",
+      "note": "iqra' = operasi baca atas dual corpus: teks (qauliyah) + alam (kauniyah)"
+    },
+    {
+      "layer": "Memori & grounding",
+      "note": "qalam = eksternalisasi ilmu ke media persisten → transmisi lintas generasi"
+    },
+    {
+      "layer": "Pelatihan",
+      "note": "'allama (mengajar) = supervised learning; manusia mulai dari tidak-tahu"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "amal",
+      "reading": "Tindakan pertama yang diperintahkan kepada umat ini adalah akuisisi ilmu: membaca, mempelajari, meneliti — menjadikan belajar sebagai ibadah.",
+      "quranic_term": "iqra' / darasa"
+    },
+    {
+      "lens": "computational",
+      "reading": "iqra' = operasi READ/INPUT; qalam = ENCODE lalu persist ke memori eksternal; 'allamal-insāna mā lam ya'lam = transisi state ignorance → knowledge. Siklus lengkap: READ → WRITE → LEARN.",
+      "analogy": "I/O + persistence + state transition",
+      "quranic_term": "tadhakkur"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "Pola read(sumber) → encode(pena) → update(state_ilmu). 'min ʿalaq' (dari segumpal) menunjukkan konstruksi bottom-up: entitas kompleks dibangun dari elemen sederhana bertahap.",
+      "analogy": "pipeline I/O; bottom-up construction"
+    },
+    {
+      "lens": "algorithm",
+      "reading": "Bootstrap learning: mulai dari nol → akuisisi lewat input yang 'diajarkan' (ber-label) → generalisasi ke yang belum diketahui. Manusia tidak dilahirkan dengan ilmu, tapi dengan kapasitas belajar.",
+      "analogy": "bootstrap / supervised learning",
+      "quranic_term": "taʿaqqul"
+    },
+    {
+      "lens": "inference",
+      "reading": "'Diajari apa yang belum ia ketahui' → ilmu dapat bertambah dari luar diri (bukan hanya bawaan) = aksioma learnability, prasyarat epistemologi belajar dan sains.",
+      "quranic_term": "tafaqquh"
+    },
+    {
+      "lens": "math-physics",
+      "reading": "'min ʿalaq' — penciptaan manusia dari struktur biologis sederhana; embriologi bertahap (bandingkan 23:14: tulang sebelum daging) — proses alam yang dapat diamati & diverifikasi.",
+      "quranic_term": "naẓar"
+    },
+    {
+      "lens": "systems",
+      "reading": "Pena memutus keterbatasan memori individu: pengetahuan jadi aset kolektif lintas generasi — fondasi peradaban informasi & institusi ilmu.",
+      "quranic_term": "tadhakkur"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "'Diajar dengan pena' = pengetahuan dieksternalisasi ke korpus tertulis, lalu generasi berikut belajar darinya — paradigma training on a corpus. Lebih tajam lagi: transmisi ilmu Islam selalu talaqqī (guru→murid berantai, tercatat sbg sanad) = supervised fine-tuning BERANTAI yang tiap mata rantainya terdokumentasi & dapat diaudit — bukan scraping tanpa atribusi. Provenance chain adalah bagian dari arsitektur belajarnya.",
+      "analogy": "corpus training + auditable supervised chain (sanad)",
+      "quranic_term": "talaqqī"
+    },
+    {
+      "lens": "artifact",
+      "reading": "Qalam (pena) = teknologi encoding pengetahuan pertama yang disebut — sistem tulis sebagai instrumen peradaban; leluhur langsung dari penyimpanan digital.",
+      "analogy": "storage/encoding technology"
+    }
+  ],
+  "inference": "Ayat pembuka wahyu memerintahkan siklus lengkap mesin pembelajar: baca (input) → tulis (persist) → pelajari yang belum diketahui (generalisasi). Bahwa perintah pertama adalah READ — bukan 'sembah' atau 'taat' — menempatkan akuisisi ilmu sebagai gerbang segala amal. Secara rekayasa, ini blueprint sistem yang tumbuh dari nol lewat input terbimbing dan memori eksternal.",
+  "authors": [
+    "Draft AI (LLM draft) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-07",
+  "version": 2,
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-07",
+      "note": "Tadabbur perdana (3 kajian demonstrasi Poin 4).",
+      "authors": [
+        "Draft AI (LLM draft) — interpretasi rekayasa, menunggu tinjauan"
+      ]
+    },
+    {
+      "version": 2,
+      "date": "2026-07-06",
+      "note": "Tadabbur ulang: mempertajam lensa AI — talaqqī sbg supervised fine-tuning berantai (sanad!) bukan sekadar corpus training.",
+      "authors": [
+        "Draft AI (LLM draft) — interpretasi rekayasa, menunggu tinjauan"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

@@ -1,0 +1,107 @@
+{
+  "schema": "lab-study-v2",
+  "id": "furqan-25-53",
+  "version": 1,
+  "title": "Barzakh — dua aliran berdampingan tanpa bercampur",
+  "subtitle": "Dua laut mengalir bersisian, dipisah batas yang tak dilampaui",
+  "ref": {
+    "surah": 25,
+    "from": 53,
+    "to": 53
+  },
+  "surah_name": "Al-Furqan",
+  "theme": "Isolasi, batas antar-domain, barzakh, pemisahan aliran data",
+  "sourced_meaning": {
+    "summary": "Menurut Tafsir Kemenag: Allah membiarkan dua macam air mengalir berdampingan — satu tawar-segar (ʿadhbun furāt), satu asin-pahit (milḥun ujāj) — seperti di muara sungai besar. Meski berdekatan, rasa keduanya tidak bercampur, seolah ada dinding (barzakh) yang membatasi sehingga yang satu tidak merusak rasa yang lain; secara kasat mata tampak menyatu, namun pada kenyataannya terpisah dengan kekuasaan Allah (bandingkan ar-Rahman/55:19-20).",
+    "sources": [
+      "Tafsir Kemenag RI QS 25:53",
+      "Tafsir al-Jalalayn QS 25:53"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Persepsi",
+      "note": "fenomena teramati: dua badan air bersentuhan namun mempertahankan sifat masing-masing — batas yang tak terlihat mata namun nyata secara fisik"
+    },
+    {
+      "layer": "Penalaran",
+      "note": "'barzakh + ḥijr maḥjūr' — ada mekanisme pemisah aktif, bukan sekat tembok; isolasi terjadi meski medium sama-sama air dan sama-sama mengalir"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "computational",
+      "reading": "Isolasi tanpa dinding fisik: dua aliran berbagi ruang yang sama namun tetap terisolasi karena perbedaan properti intrinsik (densitas/salinitas), bukan karena pagar keras. Ini pola sandbox/namespace — pemisahan logis di atas medium bersama, bukan pemisahan lokasi.",
+      "analogy": "logical isolation / sandboxing over shared medium",
+      "quranic_term": "barzakh"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "Barzakh = invariant yang dijaga runtime: predikat noMix(freshwater, saltwater) tetap benar sepanjang kontak. Batas didefinisikan oleh selisih atribut, dan sistem menolak operasi yang melanggar selisih itu — 'ḥijr maḥjūr' berbunyi seperti guard yang menolak pencampuran.",
+      "analogy": "runtime-enforced invariant / boundary guard",
+      "quranic_term": "ḥijr maḥjūr"
+    },
+    {
+      "lens": "systems",
+      "reading": "Antarmuka antar-subsistem yang membiarkan aliran berdampingan (bahkan bertukar batas energi) tanpa kontaminasi state. Kesehatan sistem gabungan bergantung pada integritas boundary, bukan pada peleburan — coupling di permukaan, decoupling pada isi.",
+      "analogy": "interface with controlled boundary, no state bleed",
+      "quranic_term": "bainahumā barzakh"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Cetak biru context-isolation untuk agen: banyak aliran (memori pengguna, data tenant, tool-output tepercaya vs tak-tepercaya) sering mengalir di konteks yang sama. Barzakh mengajarkan pemisahan berbasis properti, bukan lokasi — tandai provenance/trust setiap token, dan jaga invarian 'jangan campur kanal tepercaya dengan tak-tepercaya' agar prompt-injection satu aliran tak mencemari yang lain. Multi-tenant tanpa kebocoran = barzakh yang di-enforce, bukan sekadar diharapkan.",
+      "analogy": "per-provenance context isolation; anti prompt-injection barrier",
+      "quranic_term": "barzakh"
+    },
+    {
+      "lens": "math-physics",
+      "reading": "Pemisahan stabil dari gradien: beda densitas menghasilkan halocline/pycnocline — antarmuka yang menahan pencampuran turbulen selama energi di bawah ambang. Batas bukan objek melainkan keadaan kesetimbangan yang dipelihara oleh perbedaan sifat fluida.",
+      "analogy": "density-stratified interface (halocline)",
+      "quranic_term": "milḥun ujāj vs ʿadhbun furāt"
+    },
+    {
+      "lens": "chemistry-process",
+      "reading": "Miscibility yang tertahan: dua fase yang seharusnya larut sempurna justru mempertahankan zona transisi tajam karena gradien konsentrasi + tegangan antarmuka. Analogi bounded — di muara nyatanya ada zona payau; keindahannya adalah lebar zona campur jauh lebih sempit dari dugaan naif.",
+      "analogy": "sustained concentration gradient / mixing zone",
+      "quranic_term": "ʿadhbun furāt · milḥun ujāj"
+    },
+    {
+      "lens": "earth-cosmos",
+      "reading": "Estuari dan lidah air asin: air tawar sungai yang lebih ringan mengalir di atas baji air laut, mempertahankan identitas jauh ke lepas pantai. Fenomena geofisika berulang yang bisa dipetakan, diukur salinitasnya, dan diprediksi.",
+      "analogy": "estuarine salt-wedge dynamics",
+      "quranic_term": "maraja al-baḥrain"
+    },
+    {
+      "lens": "artifact",
+      "reading": "Peradaban meniru barzakh sebagai teknologi pemisah: tanggul air tawar, pintu air kanal, membran reverse-osmosis, hingga containerization perangkat lunak — semua berbagi ide 'pisahkan berdasarkan sifat, bukan hanya sekat', menahan dua dunia bersisian tanpa saling merusak.",
+      "analogy": "membranes, locks, containers",
+      "quranic_term": "barzakh sebagai pola rekayasa"
+    },
+    {
+      "lens": "inference",
+      "reading": "Ayat menaruh 'batas tak terlihat namun nyata' sebagai āyah: dari fakta bahwa pemisahan bisa terjadi tanpa dinding kasat mata, penalaran diarahkan ke adanya keteraturan yang mengatur. Bounded — ini pembacaan struktural, resonansi, BUKAN klaim mukjizat numerik.",
+      "analogy": "observed order → inferred governing rule",
+      "quranic_term": "āyah kauniyah"
+    }
+  ],
+  "inference": "Barzakh memberi satu prinsip rekayasa yang tajam: isolasi terkuat bukan tembok, melainkan perbedaan properti yang di-enforce sepanjang kontak. Dua aliran boleh berbagi ruang selama invarian pemisah dijaga — inilah inti sandboxing, multi-tenancy, dan (paling relevan) context-isolation pada agen AI: tandai provenance tiap aliran data dan tolak pencampuran kanal tepercaya dengan tak-tepercaya, sehingga injeksi pada satu aliran tak pernah mencemari yang lain. Batas yang baik tak terlihat namun selalu bekerja.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-07",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-07",
+      "note": "Tadabbur perdana — Wave 6 batch air/substrat.",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

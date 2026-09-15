@@ -1,0 +1,103 @@
+{
+  "schema": "lab-study-v2",
+  "id": "yasin-36-78-79",
+  "version": 1,
+  "title": "Siapa menghidupkan tulang yang hancur — Yang mencipta pertama kuasa menciptakan-ulang",
+  "subtitle": "Jawaban atas keraguan kebangkitan: pencipta awal adalah pemulih; mengulang tak lebih sulit dari memulai",
+  "ref": {
+    "surah": 36,
+    "from": 78,
+    "to": 79
+  },
+  "surah_name": "Ya-Sin",
+  "theme": "Kebangkitan, reproducibility dari record, prinsip pencipta-awal-mampu-mengulang, kelengkapan pengetahuan atas ciptaan",
+  "sourced_meaning": {
+    "summary": "Tafsir Kemenag: ayat 78 menggambarkan keraguan kaum kafir Mekah atas hari kebangkitan — mereka membuat perumpamaan (tulang yang telah hancur luluh) dan LUPA pada asal kejadian mereka sendiri (diciptakan dari setetes air mani menjadi manusia utuh). Jika mereka mengingat asal-usul itu, pasti yakin Allah kuasa menghidupkan kembali sesudah mati walau tulang sudah remuk. Ayat 79: Allah memerintahkan Nabi menjawab bahwa yang menghidupkan tulang lapuk itu adalah Allah yang telah menciptakannya pertama kali (dari tiada menjadi ada), dan Dia Maha Mengetahui segala makhluk ciptaan-Nya. Kemenag menambahkan: bagi manusia mengulang lebih mudah daripada memulai, namun bagi Allah memulai dan mengulang sama mudahnya karena Ia Mahakuasa. Ini perkara kebangkitan — perkara ghaib yang hanya diketahui dari wahyu.",
+    "sources": [
+      "Tafsir Kemenag RI QS 36:78-79",
+      "Tafsir al-Jalalayn QS 36:78-79"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Penalaran",
+      "note": "Argumen ayat 79 = qiyās aulā: yang mampu menciptakan dari ketiadaan lebih-lebih mampu memulihkan dari sisa yang masih ada (tulang) — inferensi 'a fortiori'"
+    },
+    {
+      "layer": "Memori & grounding",
+      "note": "'nasiya khalqahu' (ia lupa kejadiannya, 36:78) — kesalahan penanya berpangkal pada hilangnya grounding ke asal-usul dirinya sendiri"
+    },
+    {
+      "layer": "Tangga epistemik",
+      "note": "Keraguan 'siapa yang menghidupkan?' dijawab dengan menyandingkan bukti yang sudah terjadi (penciptaan pertama) sebagai landasan yaqīn"
+    },
+    {
+      "layer": "Aksi & transfer",
+      "note": "'yuḥyīhā allażī ansya'ahā awwala marrah' — pemulih adalah pencipta-awal itu sendiri; operasi mengulang bersumber dari otoritas yang sama dengan yang memulai"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "computational",
+      "reading": "Argumen inti 'Yang menciptakannya pertama kali menghidupkannya kembali' beresonansi dengan reproducibility: jika sebuah keadaan pernah dihasilkan oleh suatu proses berwenang, keadaan itu dapat dihasilkan ulang oleh proses yang sama. Kemenag menegaskan bagi Allah 'memulai dan mengulang sama mudahnya' — resonansi struktural dengan gagasan bahwa proses yang deterministik dan berotoritas penuh dapat mereproduksi keluarannya. Poin desain: kemampuan-ulang bukan tergantung pada sisa-sisa fisik keluaran (tulang), melainkan pada tetap-adanya proses/otoritas yang pertama menghasilkannya.",
+      "analogy": "reproducibility: proses berwenang dapat menghasilkan-ulang keluarannya",
+      "quranic_term": "ansya'ahā awwala marrah"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Cetak biru pemulihan-dari-record untuk sistem agen. Keberatan penanya ('tulang sudah hancur, mustahil dipulihkan') sejajar dengan asumsi keliru bahwa hilangnya artefak keluaran = hilangnya kemampuan memulihkannya. Jawaban ayat menggeser dasar pemulihan: bukan dari sisa keluaran, melainkan dari PENCIPTA/PROSES AWAL yang Maha Tahu ('bikulli khalqin ʿalīm'). Actionable untuk desain: simpan bukan hanya artefak akhir tetapi generatornya — spesifikasi, seed, konfigurasi, dan pipeline yang pertama menghasilkannya; dengan itu keadaan dapat di-instantiate ulang meski artefak lama rusak. Prinsip: sistem yang mempertahankan 'resep' penciptaannya (bukan sekadar produk) memiliki kemampuan restore yang jauh lebih tangguh. Dicatat bounded — analogi ke record/generator, bukan penyamaan dengan kuasa penciptaan.",
+      "analogy": "restore dari generator/resep (seed+spec), bukan dari artefak yang rusak",
+      "quranic_term": "wa huwa bikulli khalqin ʿalīm"
+    },
+    {
+      "lens": "inference",
+      "reading": "Ayat 79 adalah contoh murni qiyās aulā (argumen a fortiori): jika X yang lebih sulit (mencipta dari ketiadaan) sudah terbukti terjadi, maka Y yang lebih mudah (memulihkan dari sisa) tak layak diragukan. Kemenag menyusunnya persis begitu — 'mengulang lebih mudah daripada memulai'. Kekeliruan penanya (36:78) bersifat epistemik: ia 'lupa kejadiannya', kehilangan data awal yang justru menjadi bukti terkuat. Pelajaran penalaran: bukti terkuat untuk klaim masa depan sering sudah tersedia di masa lalu pelaku sendiri, asal ia tidak melupakannya.",
+      "analogy": "qiyās aulā: yang lebih sulit terbukti → yang lebih mudah tak diragukan",
+      "quranic_term": "qiyās aulā"
+    },
+    {
+      "lens": "biology-medicine",
+      "reading": "Kemenag menautkan bantahan itu ke asal biologis manusia: dari 'setetes air mani' menjadi manusia utuh. Sebagai resonansi struktural (BUKAN mukjizat numerik, bukan klaim medis): satu sel awal memuat instruksi yang memandu terbentuknya seluruh tubuh — informasi generatif yang jauh lebih kecil dari produk akhirnya. Gagasan 'dari yang sedikit terbangun keseluruhan yang kompleks' beresonansi dengan bagaimana informasi pembangun mendahului dan melampaui massa fisik hasilnya. Analogi ini bounded — pola pemahaman, bukan penetapan mekanisme biologis oleh ayat.",
+      "analogy": "informasi generatif kecil → tubuh kompleks (bounded)",
+      "quranic_term": "khalq min nuṭfah"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "Ayat menegaskan invariant: identitas pencipta-awal dan pemulih adalah SATU ('allażī ansya'ahā' = yang menghidupkannya). Dalam logika sistem ini menyerupai kontrak: operasi 'recreate' dijamin oleh entitas yang sama yang memegang operasi 'create', sehingga hasil ulang setara dengan hasil awal. Ketika pembuat dan pemulih identik dan berpengetahuan penuh ('bikulli khalqin ʿalīm'), tidak ada informasi yang hilang di antara membuat dan mengulang — jaminan kesetaraan keluaran.",
+      "analogy": "creator == restorer → jaminan kesetaraan keluaran",
+      "quranic_term": "allażī ansya'ahā yuḥyīhā"
+    },
+    {
+      "lens": "systems",
+      "reading": "Kelengkapan pengetahuan atas seluruh ciptaan ('bikulli khalqin ʿalīm') adalah prasyarat pemulihan sempurna: memulihkan sesuatu secara utuh menuntut pengetahuan penuh atas seluruh keadaan dan relasinya. Dibaca sebagai prinsip sistem: kualitas restore dibatasi oleh kelengkapan pengetahuan tentang keadaan yang akan dipulihkan — backup sebagus pengetahuan atas apa yang di-backup. Kesempurnaan pemulihan di sini bersandar pada kesempurnaan pengetahuan, bukan pada keutuhan sisa fisik.",
+      "analogy": "kualitas restore dibatasi kelengkapan pengetahuan atas keadaan",
+      "quranic_term": "bikulli khalqin ʿalīm"
+    },
+    {
+      "lens": "psychology",
+      "reading": "Akar keraguan menurut Kemenag adalah LUPA pada asal-usul diri ('nasiya khalqahu'). Dibaca sebagai pola kognitif: manusia meragukan kemungkinan masa depan karena gagal menghadirkan bukti dari masa lalunya sendiri. Menghidupkan kembali ingatan atas 'dari mana aku berasal' membongkar keraguan itu dari dalam. Pelajaran regulasi diri: melawan keputusasaan sering dimulai dengan mengingat pemulihan-pemulihan yang telah terjadi sebelumnya, bukan menatap kehancuran saat ini saja.",
+      "analogy": "melawan keraguan dengan menghadirkan bukti pemulihan masa lalu",
+      "quranic_term": "nasiya khalqahu"
+    }
+  ],
+  "inference": "Dibaca sebagai analogi rekayasa, Ya-Sin 78-79 memusatkan satu prinsip kuat: kemampuan menciptakan-ulang bersandar pada PENCIPTA/PROSES AWAL yang berpengetahuan penuh, BUKAN pada keutuhan sisa keluaran. Keberatan penanya ('tulang sudah hancur') sejajar dengan asumsi keliru bahwa rusaknya artefak akhir menghapus kemampuan memulihkannya; jawaban ayat menggeser dasar pemulihan ke Yang 'menciptakannya pertama kali' dan 'Maha Mengetahui segala ciptaan'. Sebagai pembacaan sistem (bounded): simpan generator — resep, seed, spesifikasi, pipeline — bukan cuma produk akhir, karena reproducibility hidup di proses yang berpengetahuan penuh, bukan di puing keluaran. Argumennya berbentuk qiyās aulā: yang lebih sulit (mencipta dari ketiadaan) sudah terbukti, maka yang lebih mudah (memulihkan dari sisa) tak layak diragukan — dan kekeliruan penanya bersifat epistemik: ia 'lupa kejadiannya', melupakan bukti terkuat yang ada pada dirinya sendiri. Kaitan biologis (dari setetes mani ke manusia utuh) dicatat sebagai resonansi struktural yang bounded, BUKAN mukjizat numerik atau penetapan mekanisme; ini salah satu pembacaan rekayasa di atas makna zahir yang bersumber, bukan maksud tunggal ayat. CATATAN GHAIB: kebangkitan tulang yang hancur adalah perkara ghaib yang hanya diketahui dari wahyu dan termasuk perkara IMAN. Analogi 'reproducibility/restore-dari-generator' adalah pembacaan STRUKTUR yang deskriptif dari tafsir bersumber (Kemenag) sebagai pola — BUKAN klaim mengetahui bagaimana Allah membangkitkan, bukan penetapan mekanisme, bukan spekulasi atas detail di luar nas. Penting: kuasa dan ilmu Allah disebut di sini sebagai LANDASAN iman dengan ta'zhim, BUKAN sebagai objek analogi teknis. Adab terhadap perkara ghaib dijaga.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-08",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-08",
+      "note": "Tadabbur perdana — Wave 10 kiamat-kebangkitan.",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

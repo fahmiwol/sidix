@@ -1,0 +1,104 @@
+{
+  "schema": "lab-study-v2",
+  "id": "nahl-16-89-89",
+  "version": 1,
+  "title": "Tibyan li kulli syai' — spesifikasi rujukan yang komprehensif",
+  "subtitle": "Satu Kitab, banyak fungsi: penjelas, petunjuk, rahmat, kabar gembira",
+  "ref": {
+    "surah": 16,
+    "from": 89,
+    "to": 89
+  },
+  "surah_name": "An-Nahl",
+  "theme": "Reference spec komprehensif, dokumentasi lengkap, multi-fungsi satu artefak, audit/kesaksian",
+  "sourced_meaning": {
+    "summary": "Ayat menerangkan bahwa pada hari kiamat setiap umat dihadirkan seorang saksi dari kalangan mereka sendiri, dan Nabi Muhammad ﷺ menjadi saksi atas umatnya. Lalu Allah menyatakan menurunkan Al-Kitab (Al-Qur'an) kepada Nabi 'untuk menjelaskan segala sesuatu' (tibyānan li kulli syai') serta sebagai petunjuk (hudan), rahmat, dan kabar gembira (busyra) bagi orang-orang yang berserah diri (muslimin). Para mufassir memahami 'segala sesuatu' pada cakupan yang dibutuhkan bagi petunjuk agama (pokok-pokok yang mengantar kebahagiaan), bukan ensiklopedia segala ilmu duniawi secara harfiah.",
+    "sources": [
+      "Tafsir Kemenag RI QS 16:89",
+      "Tafsir al-Jalalayn QS 16:89"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Memori & grounding",
+      "note": "'tibyānan li kulli syai'' = Kitab sebagai korpus rujukan yang menjelaskan; grounding korpus tempat pemahaman ditambatkan"
+    },
+    {
+      "layer": "Aksi & transfer",
+      "note": "Satu artefak, empat fungsi (tibyan/hudan/rahmat/busyra) — dokumen yang sekaligus menjelaskan, memandu, merahmati, menggembirakan"
+    },
+    {
+      "layer": "Tangga epistemik",
+      "note": "Motif 'saksi atas tiap umat' dibaca (bounded) sebagai attestasi/audit — pencatatan yang kelak dihadirkan; perkara ghaib"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "computational",
+      "reading": "Dibaca sebagai sistem: 'tibyānan li kulli syai'' = spesifikasi/dokumentasi rujukan yang komprehensif atas domainnya. Sifat 'menjelaskan segala sesuatu' (dengan cakupan yang dibatasi mufassir pada apa yang diperlukan untuk petunjuk) beresonansi dengan reference-spec yang menutup kasus-kasus dalam domainnya, sehingga menjadi sumber otoritatif untuk dirujuk.",
+      "analogy": "comprehensive reference specification / documentation",
+      "quranic_term": "tibyān (penjelasan)"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "Berpola spesifikasi lengkap: idealnya tiap kasus dalam domain terdokumentasi sehingga sistem tak perlu menebak. Namun scope-nya penting dan harus 'bounded' — per mufassir, 'kulli syai'' = pokok-pokok yang dibutuhkan untuk hidayah, bukan klaim menutup seluruh domain fisika/teknis. Kelengkapan dinyatakan atas ruang-lingkup yang tepat, bukan tak-terbatas.",
+      "analogy": "complete spec within a bounded scope",
+      "quranic_term": "tibyān"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Ini pola knowledge base / grounding corpus: satu rujukan komprehensif yang menjadi tempat agen melakukan retrieval, sehingga jawaban ditambatkan ke sumber dan bukan dihalusinasi. Ayat juga menampilkan multi-output dari satu artefak: tibyan (dokumentasi) + hudan (policy/petunjuk) + rahmat + busyra (penguat) — satu spec melayani banyak fungsi. Untuk desain sistem: sediakan satu sumber rujukan otoritatif berscope jelas sebagai basis grounding, dan sadari satu dokumen dapat memikul beberapa peran sekaligus.",
+      "analogy": "grounding corpus / knowledge base; one spec, multiple functions",
+      "quranic_term": "tibyān → hudan"
+    },
+    {
+      "lens": "systems",
+      "reading": "Sebagai arsitektur: satu dokumen acuan yang menjadi otoritas bagi seluruh sistem menyederhanakan koordinasi — komponen yang berbeda merujuk ke sumber yang sama alih-alih ke salinan yang tercerai. Konsistensi lahir dari adanya reference tunggal yang disepakati.",
+      "analogy": "single authoritative reference for the whole system",
+      "quranic_term": "imām/kitāb"
+    },
+    {
+      "lens": "pedagogy",
+      "reading": "Berpola kurikulum/rujukan lengkap: bahan yang menjelaskan hal-hal pokok secara menyeluruh sehingga pembelajar punya satu tempat kembali. Kelengkapan yang terarah (pada yang esensial) lebih memberdayakan daripada kelimpahan yang tak tertata — dokumentasi yang menutup kebutuhan inti pembelajaran.",
+      "analogy": "comprehensive curriculum/reference",
+      "quranic_term": "taʿlīm"
+    },
+    {
+      "lens": "inference",
+      "reading": "Motif 'saksi atas tiap umat' dibaca (bounded, sebagai analogi pemahaman) serupa attestasi/audit: tiap entitas punya pencatat yang kelak memberi kesaksian atasnya. Secara struktur ini menautkan gagasan pertanggungjawaban dengan adanya rekam yang terpercaya. Ini pembacaan struktural atas perkara ghaib, BUKAN klaim tahu detail mekanismenya.",
+      "analogy": "per-entity attestation / audit witness",
+      "quranic_term": "syahīd (saksi)"
+    },
+    {
+      "lens": "artifact",
+      "reading": "Al-Kitab yang 'diturunkan' dan menjelaskan menjadi artefak rujukan yang tertulis dan persisten — bukan pengetahuan yang tersebar tanpa wadah. Ia dapat disalin identik, dirujuk lintas generasi, dan menjadi jangkar bersama; fondasi tradisi dokumentasi dan pengutipan.",
+      "analogy": "persisted written reference artifact",
+      "quranic_term": "kitāb"
+    },
+    {
+      "lens": "amal",
+      "reading": "Kelengkapan penjelasan menuntut respons berserah-diri ('bagi orang muslimin'): rujukan yang menjelaskan baru berbuah bila diamalkan, bukan sekadar disimpan. Petunjuk, rahmat, dan kabar gembira menjadi nyata pada yang menempuhnya dengan tunduk.",
+      "quranic_term": "islām (berserah)"
+    }
+  ],
+  "inference": "Dibaca sebagai analogi rekayasa, An-Nahl 89 menampilkan Al-Kitab sebagai 'tibyānan li kulli syai'' — sebuah rujukan yang menjelaskan, yang beresonansi (bounded) dengan gagasan spesifikasi/dokumentasi komprehensif atas domainnya. Penting menjaga scope: para mufassir memahami 'segala sesuatu' pada cakupan yang diperlukan untuk petunjuk, bukan klaim ensiklopedik atas seluruh ilmu — sehingga pembacaan 'complete spec' harus dinyatakan atas ruang-lingkup yang tepat, bukan tak-terbatas. Ayat juga menyatukan empat fungsi dalam satu artefak (tibyan/hudan/rahmat/busyra): satu dokumen memikul peran menjelaskan, memandu, merahmati, dan menguatkan — pola 'satu sumber, banyak fungsi' yang relevan bagi desain grounding corpus tempat sistem menambatkan jawaban alih-alih menebak. Ini salah satu pembacaan rekayasa di atas makna zahir yang bersumber, BUKAN maksud tunggal ayat, dan bukan penetapan hukum. CATATAN GHAIB: pembuka ayat tentang kebangkitan saksi atas tiap umat pada hari kiamat adalah perkara ghaib yang hanya diketahui dari wahyu dan termasuk perkara IMAN; analogi 'attestasi/audit' dibaca sebagai STRUKTUR deskriptif dari tafsir bersumber sebagai pola — BUKAN klaim mengetahui bagaimana kesaksian itu berlangsung atau penetapan mekanismenya. CATATAN TANZIH: 'Kami turunkan' dan penetapan Al-Qur'an sebagai rahmat adalah perbuatan Allah yang disebut dengan ta'zhim sebagai LANDASAN iman; Allah tidak dimodelkan sebagai komponen. Yang dibaca secara struktural hanyalah sisi makhluk/teks (Al-Kitab sebagai rujukan) dan sikap manusia. Resonansi 'reference spec / grounding corpus' adalah analogi yang bounded, bukan mukjizat numerik.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-08",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-08",
+      "note": "Tadabbur perdana — Wave 11 pedoman (sistem petunjuk/guidance).",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

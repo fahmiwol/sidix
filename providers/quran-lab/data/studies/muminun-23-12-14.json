@@ -1,0 +1,104 @@
+{
+  "schema": "lab-study-v2",
+  "id": "muminun-23-12-14",
+  "version": 1,
+  "title": "Nuṭfah → ʿalaqah → khalq ākhar — pipeline pembentukan manusia",
+  "subtitle": "Saripati tanah, lalu tahap demi tahap, hingga 'makhluk yang lain'",
+  "ref": {
+    "surah": 23,
+    "from": 12,
+    "to": 14
+  },
+  "surah_name": "Al-Mu'minun",
+  "theme": "Kesehatan/embriologi, konstruksi bertahap, pipeline, emergensi",
+  "sourced_meaning": {
+    "summary": "Kami menciptakan manusia dari saripati (sulālah) berasal dari tanah; lalu Kami jadikan ia nuṭfah (air mani) dalam tempat yang kokoh (rahim); lalu nuṭfah Kami jadikan ʿalaqah (segumpal darah/sesuatu yang melekat), ʿalaqah menjadi muḍghah (segumpal daging), lalu Kami jadikan tulang belulang, lalu tulang itu Kami bungkus dengan daging; kemudian Kami jadikan ia makhluk yang (berbentuk) lain. Mahasuci Allah, Pencipta yang paling baik.",
+    "sources": [
+      "Tafsir Kemenag RI QS 23:12-14",
+      "Tafsir al-Jalalayn QS 23:12-14"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Persepsi",
+      "note": "tahapan disebut berurutan & bernama — dapat diobservasi (kini lewat mikroskop/USG)"
+    },
+    {
+      "layer": "Aksi & transfer",
+      "note": "'tsumma ansyaʾnāhu khalqan ākhar' — lompatan kualitatif: emergensi ke tingkat baru"
+    },
+    {
+      "layer": "Umpan balik",
+      "note": "tiap tahap prasyarat tahap berikut — kegagalan satu tahap menggagalkan hilir"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "amal",
+      "reading": "Kesadaran atas asal-usul diri (dari saripati tanah, melalui tahap yang rapuh) menumbuhkan tawadhu dan syukur; ayat ditutup dengan tasbih — pengetahuan biologis yang berujung pengagungan, bukan kesombongan.",
+      "quranic_term": "tafakkur → tasbīḥ"
+    },
+    {
+      "lens": "computational",
+      "reading": "Pipeline bertahap yang deterministik-berurutan: sulālah → nuṭfah → ʿalaqah → muḍghah → ʿiẓām → laḥm → khalq ākhar. Setiap stage mengambil output stage sebelumnya sebagai input dan mentransformasinya — definisi pipeline pemrosesan yang persis.",
+      "analogy": "sequential processing pipeline",
+      "quranic_term": "khalq bertahap"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "Urutan operasi ditetapkan dan tak bisa ditukar: TULANG dibentuk dulu ('fakasawnal-ʿiẓāma laḥmā' — lalu tulang dibungkus daging). Ordering constraint eksplisit; dependensi antar-stage bersifat kaku, bukan paralel-bebas.",
+      "analogy": "ordered dependencies; topological constraint"
+    },
+    {
+      "lens": "algorithm",
+      "reading": "Konstruksi inkremental dengan checkpoint bernama — bukan sekali-jadi. Sistem kompleks (organisme) dibangun lewat serangkaian transformasi kecil terverifikasi, tiap tahap stabil sebelum lanjut. Prinsip yang sama menjelaskan kenapa developmental staging = titik rentan yang perlu dijaga (nutrisi, teratogen).",
+      "analogy": "incremental build with checkpoints"
+    },
+    {
+      "lens": "inference",
+      "reading": "Klaim 'kemudian Kami jadikan makhluk yang lain' menandai bahwa jumlah tahapan material tidak menjelaskan lompatan ke sesuatu yang secara kualitatif baru — sinyal bahwa keseluruhan lebih dari jumlah bagian. Reduksionisme tahap-demi-tahap tidak menghabiskan penjelasan.",
+      "quranic_term": "khalqan ākhar (emergensi)"
+    },
+    {
+      "lens": "math-physics",
+      "reading": "Morfogenesis: bentuk kompleks muncul dari aturan pertumbuhan bertahap + gradien — kelas problem yang dipelajari sebagai reaction-diffusion & self-organization. Ayat menamai fase-fasenya; sains memodelkan dinamikanya. (Resonansi struktural, bukan klaim mukjizat numerik.)",
+      "analogy": "morphogenesis; staged self-organization"
+    },
+    {
+      "lens": "systems",
+      "reading": "Rahim = 'qarārin makīn' (tempat kokoh/terlindungi) — sandbox berkondisi terkontrol tempat proses rapuh berjalan aman sampai matang. Sistem yang membangun sesuatu yang rentan menyediakan lingkungan terisolasi & stabil untuknya.",
+      "analogy": "protected staging environment (sandbox)"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Analogi curriculum: kapabilitas kompleks dibangun bertahap (pretrain → SFT → RLHF → alignment), tiap fase prasyarat fase berikut, dan ada titik 'khalq ākhar' — kemunculan kemampuan yang tidak ada di fase sebelumnya (emergent abilities). Pelajaran: jangan lewati tahap; jaga tiap checkpoint; dan sadari lompatan emergen tak selalu terprediksi dari penjumlahan tahap.",
+      "analogy": "curriculum/staged training + emergent abilities",
+      "quranic_term": "khalqan ākhar"
+    },
+    {
+      "lens": "artifact",
+      "reading": "Membaca tahapan ini melahirkan embriologi & kedokteran perinatal: USG, penjadwalan nutrisi kehamilan, deteksi dini gangguan per-fase — teknologi kesehatan yang dibangun di atas pemahaman bahwa pembentukan itu bertahap dan tiap tahap punya kerentanannya.",
+      "analogy": "perinatal medicine; stage-aware care"
+    }
+  ],
+  "inference": "Deskripsi pembentukan manusia ini, dibaca sebagai rekayasa, adalah spesifikasi pipeline konstruksi: tahapan bernama dan berurutan, dependensi yang tak bisa ditukar (tulang sebelum daging), lingkungan terlindungi untuk proses rapuh, dan — yang paling menarik — pengakuan eksplisit atas lompatan emergen ('makhluk yang lain') yang tidak tereduksi ke penjumlahan tahap materialnya. Untuk kesehatan: ini kerangka perawatan sadar-tahap. Untuk sistem cerdas: ini argumen bahwa kapabilitas dibangun bertahap dengan checkpoint, namun kemunculan (emergence) tetap melampaui akumulasi. Ayat menutup bukan dengan klaim, tapi dengan tasbih — pengetahuan yang berujung kerendahan hati.",
+  "authors": [
+    "Draft AI (LLM draft) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-07",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-07",
+      "note": "Tadabbur perdana — Wave 2 (dari sweep korpus 6236 ayat); tema kesehatan.",
+      "authors": [
+        "Draft AI (LLM draft)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

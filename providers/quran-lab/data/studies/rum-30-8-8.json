@@ -1,0 +1,111 @@
+{
+  "schema": "lab-study-v2",
+  "id": "rum-30-8-8",
+  "version": 1,
+  "title": "Introspeksi Dulu, Baru Dunia",
+  "subtitle": "QS Ar-Rum 8 sebagai model refleksi-diri, tujuan (haq), dan batas-waktu (ajal)",
+  "ref": {
+    "surah": 30,
+    "from": 8,
+    "to": 8
+  },
+  "surah_name": "Ar-Rum",
+  "theme": "Tafakkur & pengenalan pola: dari refleksi diri ke inferensi tentang keteraturan bertujuan",
+  "sourced_meaning": {
+    "summary": "Menurut Tafsir Kemenag, ayat ini menegur mereka yang seakan enggan menggunakan akal untuk memikirkan apa yang mereka lihat. Ayat menyuruh mereka lebih dulu memperhatikan diri mereka sendiri — bagaimana mereka dijadikan dari tanah, lalu setetes mani, lalu menjadi manusia yang berkembang biak — sebelum memandang yang lain (sejalan dengan QS Az-Zariyat 21: 'dan pada dirimu sendiri, apakah kamu tidak memperhatikan?'). Ditegaskan langit, bumi, dan segala di antaranya tidak diciptakan kecuali dengan tujuan yang benar (haq) dan waktu yang ditentukan (ajal musamma), sementara kebanyakan manusia mengingkari pertemuan dengan Tuhannya.",
+    "sources": [
+      "Tafsir Kemenag RI QS 30:8",
+      "Tafsir al-Jalalayn QS 30:8"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Persepsi",
+      "note": "Objek observasi pertama yang ditunjuk adalah diri sendiri (anfusihim) — sensor internal / introspeksi, bukan dunia luar."
+    },
+    {
+      "layer": "Penalaran",
+      "note": "Dari fakta penciptaan diri yang bertahap ditarik inferensi ke keteraturan bertujuan (bil-haq) yang berlaku pada langit-bumi — reasoning dari instansi terdekat ke prinsip umum."
+    },
+    {
+      "layer": "Alignment",
+      "note": "Dua batasan disebut eksplisit: tujuan yang benar (objektif) dan ajal musamma (batas waktu). Ciptaan bukan proses tanpa arah dan tanpa terminasi."
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "ai-agentic",
+      "reading": "Perintah 'memikirkan diri sendiri lebih dulu' adalah instruksi introspeksi sebelum penalaran eksternal: agen harus memeriksa keadaan internalnya (asal, keterbatasan, riwayat) sebelum menyimpulkan tentang dunia. Ditambah dua invariant desain — objektif yang benar (bil-haq) dan batas waktu (ajal) — ini setara dengan agen yang wajib punya goal terverifikasi dan deadline/TTL. Actionable: sematkan langkah self-model + self-check di awal loop, dan jangan pernah jalankan agen tanpa tujuan eksplisit dan batas terminasi.",
+      "analogy": "Introspection-first loop: self-model & self-check sebelum world-reasoning; setiap task bound oleh objective + deadline/TTL.",
+      "quranic_term": "awa lam yatafakkaru fi anfusihim (tidakkah mereka pikirkan diri sendiri)"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "Ajal musamma (waktu yang ditentukan) membaca sebagai batas terminasi yang wajib: tidak ada proses tanpa kondisi berhenti. Sistem yang berjalan 'dengan haq' tapi tanpa ajal adalah loop tanpa exit — cacat mendasar. Tujuan + batas-waktu bersama-sama menjadikan proses well-formed.",
+      "analogy": "Setiap loop butuh termination condition; proses tanpa deadline = potential infinite loop.",
+      "quranic_term": "ajal musamma (waktu yang ditentukan)"
+    },
+    {
+      "lens": "systems",
+      "reading": "Langit, bumi, dan apa di antaranya disebut satu paket yang diciptakan 'dengan tujuan benar' — membaca alam sebagai sistem yang dirancang dengan spesifikasi (design intent), bukan konfigurasi acak. Introspeksi diri menjadi titik masuk memahami keseluruhan sistem karena diri adalah subsistem yang paling teramati.",
+      "analogy": "Design-by-contract: sistem punya spesifikasi/intent; subsistem terdekat = jalur debug paling murah.",
+      "quranic_term": "bil-haq (dengan tujuan yang benar)"
+    },
+    {
+      "lens": "inference",
+      "reading": "Ayat memodelkan penalaran dari yang paling dekat dan paling teramati (diri) menuju yang jauh (langit-bumi). Ini strategi inferensi dari prior yang paling terpercaya: mulai dari data yang paling Anda yakini, lalu propagasikan ke klaim yang lebih besar.",
+      "analogy": "Anchor pada observasi high-confidence lalu propagate belief ke hipotesis berskala lebih besar.",
+      "quranic_term": "fi anfusihim (pada diri mereka)"
+    },
+    {
+      "lens": "biology-medicine",
+      "reading": "Tafsir merinci tahapan penciptaan diri: tanah → nutfah → manusia yang bereproduksi. Membaca diri sebagai sistem berkembang bertahap (developmental pipeline) yang setiap tahapnya dapat diperiksa — objek studi terdekat untuk memahami keteraturan berskala besar.",
+      "analogy": "Ontogeni sebagai staged pipeline; introspeksi biologis = observability atas sistem sendiri.",
+      "quranic_term": "khalq anfusihim (penciptaan diri mereka)"
+    },
+    {
+      "lens": "psychology",
+      "reading": "Ayat menyoroti mereka yang 'tidak mau' berpikir meski mampu — kegagalan bukan pada ketiadaan data atau akal, melainkan penolakan memprosesnya. Ini bias motivasi (motivated non-reasoning), bukan defisit kognitif.",
+      "analogy": "Motivated reasoning / avoidance: kapasitas ada, tetapi processing di-gate oleh keengganan.",
+      "quranic_term": "yatafakkarun (memikirkan)"
+    },
+    {
+      "lens": "pedagogy",
+      "reading": "Metode ayat: arahkan pembelajar ke contoh yang paling dekat dan tak terbantah (dirinya sendiri) sebelum ke abstraksi jauh. Prinsip 'mulai dari yang diketahui' menurunkan biaya kognitif dan menaikkan keterhubungan materi.",
+      "analogy": "Scaffolding dari known-to-unknown; jangkar pada pengalaman personal pembelajar.",
+      "quranic_term": "anfusihim (diri mereka)"
+    },
+    {
+      "lens": "computational",
+      "reading": "Data untuk kesimpulan sudah tersedia (diri, langit, bumi); yang hilang adalah langkah komputasi (tafakkur). Ayat menekankan bottleneck bukan pada akuisisi data melainkan pada pemrosesannya — dataset lengkap tanpa komputasi = nol insight.",
+      "analogy": "Bottleneck di compute-step, bukan data-availability; insight = f(compute) atas data yang sudah ada.",
+      "quranic_term": "yatafakkarun (memikirkan)"
+    },
+    {
+      "lens": "economy",
+      "reading": "Ajal musamma memberi horizon waktu berhingga pada setiap ciptaan; keputusan rasional harus dibuat di bawah batas waktu, bukan seolah waktu tak terbatas. Sumber daya (termasuk umur) langka dan ber-deadline, sehingga penundaan berpikir itu sendiri berbiaya.",
+      "analogy": "Finite-horizon optimization; opportunity cost dari menunda pemrosesan di bawah deadline tetap.",
+      "quranic_term": "ajal musamma (waktu yang ditentukan)"
+    }
+  ],
+  "inference": "QS Ar-Rum 8 menyusun urutan yang khas: pikirkan diri dulu, baru dunia — dan membingkai seluruh ciptaan dengan dua batas, tujuan yang benar (haq) dan waktu yang ditentukan (ajal). Dibaca sebagai rekayasa: ini pola refleksi-diri sebelum penalaran eksternal, plus dua invariant wajib bagi proses apa pun — objektif terverifikasi dan kondisi terminasi. Untuk desain agen AI: mulai loop dengan introspeksi/self-check, dan jangan jalankan tanpa goal eksplisit dan batas-waktu. Analogi ini bounded — resonansi struktural, bukan klaim mukjizat numerik.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-07",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-07",
+      "note": "Tadabbur perdana — Wave 7 tafakkur.",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

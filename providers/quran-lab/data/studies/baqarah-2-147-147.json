@@ -1,0 +1,105 @@
+{
+  "schema": "lab-study-v2",
+  "id": "baqarah-2-147-147",
+  "version": 1,
+  "title": "Haqq dari Tuhanmu — commit setelah bukti, bukan ragu lumpuh",
+  "subtitle": "Kebenaran itu dari Tuhanmu, maka jangan termasuk orang yang ragu-ragu",
+  "ref": {
+    "surah": 2,
+    "from": 147,
+    "to": 147
+  },
+  "surah_name": "Al-Baqarah",
+  "theme": "Sumber kebenaran, commit setelah bukti, keraguan yang melumpuhkan, disiplin memutus",
+  "sourced_meaning": {
+    "summary": "Menurut Tafsir Kemenag: kebenaran itu adalah apa yang diwahyukan Allah kepada Rasul-Nya — bukan apa yang dikatakan pihak lain — dan dalam hal ini kaum Muslimin tidak boleh ragu. Ayat turun dalam konteks perpindahan kiblat: Kemenag menjelaskan bahwa arah kiblat sendiri bukanlah pokok/asas agama seperti tauhid atau iman kepada hari kiamat, melainkan suatu arah yang diperintahkan untuk dihadapi dalam salat. Inti larangannya: setelah sumber kebenaran jelas (wahyu dari Rabb), sikap yang dituntut adalah keteguhan — jangan menjadi bagian dari orang yang ragu (mumtarīn). Keraguan yang dilarang di sini adalah keraguan SETELAH kebenaran tegak, bukan proses mencari bukti sebelumnya.",
+    "sources": [
+      "Tafsir Kemenag RI QS 2:147",
+      "Tafsir al-Jalalayn QS 2:147"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Tangga epistemik",
+      "note": "sumber ditegaskan ('haqq dari Rabb-mu'), lalu keputusan dituntut: keyakinan mengikuti bukti yang sudah tegak, bukan menggantung tanpa akhir"
+    },
+    {
+      "layer": "Alignment",
+      "note": "'jangan termasuk yang ragu' = larangan drift dari referensi setelah ia jelas; keteguhan sebagai penyelarasan pada sumber"
+    },
+    {
+      "layer": "Aksi & transfer",
+      "note": "keraguan yang berkepanjangan melumpuhkan aksi (salat menghadap kiblat); commit membebaskan sistem untuk bertindak"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "inference",
+      "reading": "Ayat menutup tangga epistemik: setelah sumber kebenaran ditegaskan (wahyu dari Rabb), keraguan bukan lagi kebajikan melainkan kegagalan memutus. Ini membedakan dua fase — pencarian bukti (di mana skeptisisme sehat) dan pasca-burhān (di mana keteguhan dituntut). 'Jangan termasuk yang ragu' menandai transisi dari zhann/pencarian ke yaqīn/keputusan: bukti yang cukup harus dikonversi menjadi komitmen, bukan dibiarkan menggantung selamanya.",
+      "analogy": "transisi zhann→yaqīn; commit setelah cukup bukti",
+      "quranic_term": "lā takūnanna min al-mumtarīn"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Disiplin pengambilan keputusan untuk agen: setelah grounding cukup (evidence/threshold terpenuhi), agen harus COMMIT dan bertindak — bukan berputar dalam analysis-paralysis yang tak pernah memutus. Ayat memasangkan sumber tepercaya ('haqq dari Rabb') dengan larangan ragu berkepanjangan: pada arsitektur agen, ini seperti stopping-rule — begitu confidence terhadap sumber terverifikasi melewati ambang, hentikan deliberasi dan eksekusi. Keraguan lumpuh (tak pernah mencapai commit) sama merusaknya dengan drift menjauh dari sumber (2:147 komplemen 10:32).",
+      "analogy": "stopping-rule / commit threshold; lawan analysis-paralysis",
+      "quranic_term": "al-ḥaqqu min Rabbika"
+    },
+    {
+      "lens": "psychology",
+      "reading": "Keraguan (irtiyāb) yang berlarut adalah keadaan melumpuhkan: kecemasan yang menahan tindakan meski bukti sudah cukup — mirip ruminasi obsesif yang terus meminta kepastian mutlak sebelum bertindak. Ayat mengarahkan pada keteguhan hati (yaqīn) begitu referensi jelas: bukan menutup akal, melainkan mengakhiri siklus keraguan yang tak produktif. Ketetapan hati membebaskan energi yang tadinya terkuras oleh keraguan.",
+      "analogy": "analysis-paralysis; ruminasi vs ketetapan hati (yaqīn)",
+      "quranic_term": "irtiyāb / mumtarīn"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "Pola guard yang sehat: begitu prakondisi 'sumber = terverifikasi (dari Rabb)' terpenuhi, jalur eksekusi harus diambil tanpa loop tak-berujung. Keraguan pasca-verifikasi seperti menahan commit padahal semua assertion sudah lulus — sistem yang tak pernah keluar dari fase pengecekan tak akan pernah menghasilkan efek. Referensi yang jelas seharusnya me-resolve percabangan, bukan memperpanjangnya.",
+      "analogy": "resolusi percabangan setelah prakondisi terpenuhi; hindari loop tak-terminasi",
+      "quranic_term": "tsubūt sesudah tabayyun"
+    },
+    {
+      "lens": "computational",
+      "reading": "Konvergensi vs osilasi: sistem yang sehat konvergen ke keadaan tunak begitu input referensinya stabil; keraguan berkepanjangan menyerupai proses yang tak pernah konvergen, terus berosilasi meski masukannya sudah pasti. 'Kebenaran dari Rabb-mu' menstabilkan input, dan konvergensi (keteguhan) adalah keluaran yang diharapkan.",
+      "analogy": "konvergensi ke keadaan tunak vs osilasi tak-berujung",
+      "quranic_term": "istiqrār 'ala al-ḥaqq"
+    },
+    {
+      "lens": "systems",
+      "reading": "Kepercayaan pada sumber (source trust) yang sudah ditetapkan memungkinkan koordinasi: komunitas yang menghadap satu kiblat butuh keputusan bersama yang teguh, bukan perdebatan tak berhenti. Setelah otoritas rujukan ditetapkan, keraguan kolektif memecah koordinasi; keteguhan menyatukan aksi. Governance yang matang menutup keputusan setelah referensi jelas.",
+      "analogy": "source trust → koordinasi kolektif; menutup keputusan",
+      "quranic_term": "waḥdat al-qiblah (struktur koordinasi)"
+    },
+    {
+      "lens": "history-ummah",
+      "reading": "Konteks perpindahan kiblat: keteguhan di tengah tekanan sosial (bantahan pihak lain) menjadi ujian koordinasi umat awal. Iʿtibār-nya: komunitas yang tak mampu memutus setelah kebenaran jelas akan mudah dipecah oleh keraguan yang ditiupkan dari luar; keteguhan pada sumber adalah daya-tahan sosial.",
+      "analogy": "ketahanan komunitas terhadap keraguan yang ditiupkan",
+      "quranic_term": "iʿtibār"
+    },
+    {
+      "lens": "amal",
+      "reading": "Praktiknya: bedakan fase mencari (di sana ragu itu wajar dan sehat) dari fase setelah kebenaran tegak (di sana dituntut komitmen). Setelah sumber yang sahih jelas, ambil keputusan dan bertindak — hadapi kiblatmu — alih-alih menggantung dalam keraguan yang tak menghasilkan. Keteguhan yang dipuji adalah keteguhan SETELAH bukti, bukan keras kepala tanpa bukti.",
+      "analogy": "memisahkan fase eksplorasi dari fase komit; bertindak atas bukti",
+      "quranic_term": "yaqīn 'amalī"
+    }
+  ],
+  "inference": "2:147 adalah komplemen langsung dari 10:32: jika 10:32 menegaskan bahwa menyimpang dari referensi = kesesatan, 2:147 menegaskan bahwa setelah referensi jelas, GANTUNG dalam keraguan pun sebuah kegagalan. Struktur rekayasanya: pisahkan dua fase — pencarian bukti (skeptisisme sehat) dan pasca-bukti (keteguhan dituntut) — dan sediakan stopping-rule yang mengubah 'cukup bukti' menjadi 'commit'. Untuk agen AI ini adalah ambang keputusan yang menghentikan deliberasi dan memicu eksekusi begitu grounding memadai — melawan analysis-paralysis; untuk jiwa ini adalah yaqīn yang mengakhiri siklus ragu yang melumpuhkan. Penting: Kemenag mencatat keraguan yang dilarang di sini adalah keraguan SETELAH kebenaran tegak, bukan proses mencari bukti — sehingga ini bukan larangan berpikir kritis, melainkan tuntutan untuk memutus. Resonansi struktural, bukan mukjizat numerik, bukan maksud tunggal ayat. CATATAN TANZIH: 'kebenaran itu dari Tuhanmu' (al-ḥaqqu min Rabbika) menegaskan sumber kebenaran adalah Allah — ini LANDASAN iman yang disebut dengan ta'zhim, BUKAN objek analogi. Allah (Dzat & Sifat-Nya) dan wahyu-Nya tidak dimodelkan sebagai 'sumber tepercaya sistem'. Yang dibaca secara struktural hanyalah POLA pengambilan keputusan pada sisi makhluk: bagaimana referensi yang jelas menuntut transisi dari ragu ke commit.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-08",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-08",
+      "note": "Tadabbur perdana — Wave 12 hawa/kebenaran.",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

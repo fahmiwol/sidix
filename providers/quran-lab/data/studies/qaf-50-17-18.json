@@ -1,0 +1,89 @@
+{
+  "schema": "lab-study-v2",
+  "id": "qaf-50-17-18",
+  "version": 1,
+  "title": "Raqīb ʿatīd — logging berkelanjutan oleh dua pencatat",
+  "subtitle": "Dua pencatat di kanan-kiri; tiada ucapan kecuali ada pengawas hadir",
+  "ref": {
+    "surah": 50,
+    "from": 17,
+    "to": 18
+  },
+  "surah_name": "Qaf",
+  "theme": "Logging berkelanjutan, audit trail, redundansi pencatat, observabilitas total",
+  "sourced_meaning": {
+    "summary": "(Ingatlah) ketika dua malaikat pencatat mencatat (amal), satu duduk di kanan dan satu di kiri. Tiada suatu ucapan pun yang diucapkan melainkan ada di dekatnya pengawas (raqīb) yang selalu hadir (ʿatīd). Tafsir Kemenag: meski Allah Maha Mengetahui, Ia tetap memerintahkan dua malaikat mencatat setiap ucapan & perbuatan.",
+    "sources": [
+      "Tafsir Kemenag RI QS 50:17-18",
+      "Tafsir al-Jalalayn QS 50:17-18"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Umpan balik",
+      "note": "pencatatan lengkap = basis audit & hisab (evaluasi akhir)"
+    },
+    {
+      "layer": "Alignment",
+      "note": "kesadaran selalu-tercatat mendorong perilaku ber-ihsan (kualitas di bawah observasi)"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "amal",
+      "reading": "Muraqabah: sadar setiap ucapan & amal tercatat rapi → mendorong menjaga lisan dan perbuatan. Bukan pengawasan yang mencekik, tapi kesadaran yang memuliakan — setiap kebaikan pun tak hilang tercatat.",
+      "quranic_term": "murāqabah"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Spesifikasi audit logging untuk agen: SETIAP tindakan & 'ucapan' (output) tercatat oleh observer yang selalu hadir (ʿatīd = always-on), dengan REDUNDANSI dua pencatat (kanan-kiri) sehingga log tak bergantung satu titik. Ini prasyarat akuntabilitas agen autonom: tanpa trace lengkap & tahan-gagal, perilaku tak bisa diaudit atau di-debug. 'Mā yalfizhu min qaulin illā...' = zero untracked actions — tak ada output di luar log.",
+      "analogy": "always-on redundant audit logging; zero untracked actions",
+      "quranic_term": "raqīb ʿatīd"
+    },
+    {
+      "lens": "computational",
+      "reading": "Write-ahead log dengan dua writer: tiap event (qaul/amal) di-append oleh dua pencatat independen di posisi tetap (kanan=kebaikan, kiri=keburukan → terklasifikasi saat ditulis). Logging yang terstruktur & terkategori di titik tulis, bukan post-hoc.",
+      "analogy": "dual-writer append log; categorized-at-write"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "Invariant liveness: untuk setiap ucapan, EXISTS pencatat yang hadir (∀ qaul ∃ raqīb). Tak ada celah waktu tanpa observer. 'ʿatīd' (siap/hadir) = observer tak pernah offline — coverage 100%, bukan sampling.",
+      "analogy": "full-coverage observer invariant (not sampling)"
+    },
+    {
+      "lens": "systems",
+      "reading": "Observabilitas total dengan redundansi: dua pencatat = tak ada single point of failure pada audit trail (bandingkan 2 saksi di 2:282). Menariknya tafsir mencatat: pencatatan tetap ada MESKI Yang Mengawasi sudah Maha Tahu — audit trail bernilai untuk pihak yang diaudit & untuk proses, bukan hanya untuk yang mengawasi.",
+      "analogy": "redundant audit trail; log for the audited too"
+    },
+    {
+      "lens": "psychology",
+      "reading": "Efek observer terhadap perilaku: kesadaran tercatat menaikkan kehati-hatian (mirip Hawthorne effect) — tapi versi sehatnya bukan paranoia, melainkan integritas yang terlatih sampai perilaku sama baik dengan/tanpa pengawasan (menuju ihsan).",
+      "analogy": "observer effect → internalized integrity"
+    },
+    {
+      "lens": "economy",
+      "reading": "Akuntabilitas berbasis rekaman lengkap = fondasi kepercayaan transaksional: pembukuan yang mencatat tiap arus (bandingkan 2:282) membuat sengketa terselesaikan pada bukti, bukan klaim. Audit trail adalah infrastruktur trust.",
+      "analogy": "complete bookkeeping as trust infrastructure"
+    }
+  ],
+  "inference": "Dua ayat ini adalah spesifikasi audit logging yang, dibaca sebagai rekayasa, mendahului praktik terbaik sistem modern: pencatatan berkelanjutan (ʿatīd = always-on, 100% coverage bukan sampling), redundansi (dua pencatat, tak ada single point of failure), dan kategorisasi di titik tulis (kanan/kiri). Untuk agen autonom, prinsipnya mengikat: tak ada tindakan atau output di luar log ('tiada ucapan kecuali ada pengawas'). Yang paling halus: tafsir menegaskan pencatatan tetap dilakukan meski Yang Mengawasi sudah Maha Tahu — audit trail bukan hanya untuk pengawas, tapi untuk keadilan proses dan bagi yang diaudit. Dan efek keperilakuannya (kesadaran tercatat → kehati-hatian) menghubungkan langsung ke ihsan: kualitas yang konsisten justru karena asumsi selalu teramati.",
+  "authors": [
+    "Draft AI (LLM draft) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-07",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-07",
+      "note": "Tadabbur perdana — Wave 5 (cluster attestation & kesaksian).",
+      "authors": [
+        "Draft AI (LLM draft)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

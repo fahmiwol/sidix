@@ -1,0 +1,105 @@
+{
+  "schema": "lab-study-v2",
+  "id": "yunus-10-32-32",
+  "version": 1,
+  "title": "Setelah haqq hanya dhalal — klasifikasi biner tanpa antara",
+  "subtitle": "Itulah Allah Tuhanmu yang haqq; sesudah kebenaran hanya kesesatan; mengapa berpaling?",
+  "ref": {
+    "surah": 10,
+    "from": 32,
+    "to": 32
+  },
+  "surah_name": "Yunus",
+  "theme": "Ground truth vs noise, klasifikasi biner, tak ada nilai antara, konsekuensi berpaling dari referensi",
+  "sourced_meaning": {
+    "summary": "Menurut Tafsir Kemenag: setelah menyebut sifat-sifat-Nya (yang memelihara, menghidupkan, mengurus segala urusan), ayat menegaskan bahwa Zat itulah Allah, Tuhan yang HAQQ (sebenarnya) dan satu-satunya yang berhak disembah; tidak ada yang mengurus segala urusan selain Dia. Lalu ditegaskan struktur yang tegas: sesudah kebenaran tidak ada lagi selain kesesatan — tidak ada wilayah ketiga. Allah menyalahkan dan meminta pertanggungjawaban mengapa mereka berpaling/dipalingkan dari kebenaran menuju yang batil, padahal bukti-bukti kebenaran sudah mereka ketahui; seolah lari dari petunjuk untuk mencari jalan sesat. Poin intinya: begitu referensi kebenaran ditetapkan, menyimpang darinya secara definisi berarti masuk ke kesesatan — bukan ke alternatif yang setara.",
+    "sources": [
+      "Tafsir Kemenag RI QS 10:32",
+      "Tafsir al-Jalalayn QS 10:32"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Tangga epistemik",
+      "note": "referensi kebenaran (haqq) ditetapkan sebagai patokan; sesuatu diklasifikasi relatif terhadapnya — benar atau menyimpang, tanpa gradien tengah"
+    },
+    {
+      "layer": "Alignment",
+      "note": "'mengapa kamu dipalingkan?' — pertanyaan tentang penyimpangan dari referensi yang sudah diketahui, bukan tentang ketiadaan referensi"
+    },
+    {
+      "layer": "Penalaran",
+      "note": "bukti-bukti sudah diketahui (Kemenag) — kegagalan bukan kurang data melainkan berpaling meski data cukup"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "inference",
+      "reading": "Ayat menaruh struktur epistemik yang tegas: begitu haqq (referensi kebenaran) ditetapkan, ruang keluar darinya kolaps menjadi satu kategori — dhalal. Ini seperti klasifikasi biner terhadap ground truth: sebuah klaim entah selaras dengan referensi atau menyimpang; 'sesudah kebenaran tak ada selain kesesatan' menutup wilayah ketiga. Konsekuensinya bagi penalaran: menetapkan referensi lebih dulu adalah prasyarat agar 'benar/salah' punya makna — tanpa patokan, kategori itu larut.",
+      "analogy": "binary classification terhadap ground truth; tak ada kelas antara",
+      "quranic_term": "ba'da al-ḥaqq illā aḍ-ḍalāl"
+    },
+    {
+      "lens": "computational",
+      "reading": "Model boolean tanpa nilai tengah: relatif terhadap referensi, output hanya {selaras, menyimpang}. Ini bukan berarti dunia bebas ambiguitas, melainkan bahwa TERHADAP PATOKAN yang sudah pasti, klasifikasi menjadi tegas. Sistem yang mendefinisikan sumber kebenaran secara jelas memperoleh keputusan yang deterministik; kekaburan muncul justru ketika referensi dibiarkan mengambang.",
+      "analogy": "boolean terhadap referensi tetap; determinisme dari patokan jelas",
+      "quranic_term": "ḥaqq vs ḍalāl"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Pelajaran grounding untuk agen: kualitas keputusan bergantung pada adanya ground truth yang tegas sebagai acuan; menyimpang dari sumber terverifikasi = masuk ke wilayah error/halusinasi — tak ada 'setengah benar' yang aman terhadap referensi. Rekayasa: patok sumber kebenaran (retrieval terverifikasi/spesifikasi), ukur output sebagai selaras-atau-menyimpang terhadapnya, dan waspadai drift menjauh dari acuan. 'Mengapa kamu dipalingkan?' menegur agen yang punya sinyal grounding namun tetap menyimpang — kegagalan alignment, bukan kekurangan data.",
+      "analogy": "grounding ke sumber terverifikasi; menyimpang = zona halusinasi/error",
+      "quranic_term": "al-ḥaqq sebagai marji'"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "Berfungsi seperti invariant biner: predikat conformsTo(referensi) bernilai benar atau salah; tidak ada keadaan ketiga yang sah. Begitu spesifikasi (haqq) ditetapkan sebagai sumber kebenaran, setiap keadaan yang tak memenuhinya adalah pelanggaran — bukan varian yang dapat ditoleransi. Kejelasan spesifikasi itulah yang membuat verifikasi mungkin.",
+      "analogy": "invariant biner terhadap spesifikasi; pelanggaran vs pemenuhan",
+      "quranic_term": "tsubūt al-ḥaqq"
+    },
+    {
+      "lens": "math-physics",
+      "reading": "Resonansi dengan pemisahan sinyal-dari-derau: kebenaran sebagai sinyal referensi, penyimpangan sebagai deviasi/error terhadapnya. Semakin tegas referensi ditetapkan, semakin bermakna pengukuran galat; 'tak ada antara' menyerupai keadaan di mana hanya ada 'on-signal' atau 'off-signal' relatif terhadap acuan. Bounded — ini analogi pemahaman, bukan klaim numerik.",
+      "analogy": "signal vs noise/deviasi terhadap referensi",
+      "quranic_term": "muqābalah ḥaqq-ḍalāl"
+    },
+    {
+      "lens": "systems",
+      "reading": "Sistem butuh satu sumber kebenaran (single source of truth) agar konsisten; ketika 'yang mengurus segala urusan' ditegaskan tunggal, tata kelola menjadi koheren. Percabangan otoritas (banyak 'tuhan yang mengurus') menghasilkan konflik state; menetapkan satu referensi otoritatif menghilangkan ambiguitas koordinasi. Berpaling darinya = memilih sumber yang tak otoritatif.",
+      "analogy": "single source of truth; koherensi dari otoritas tunggal",
+      "quranic_term": "tauhīd ar-rubūbiyyah (struktur otoritas tunggal)"
+    },
+    {
+      "lens": "psychology",
+      "reading": "Kegagalan yang ditegur bukan defisit informasi melainkan volisional — 'bukti sudah diketahui' namun orang tetap berpaling. Ini membedakan dua mode: tidak tahu vs tahu-lalu-menyimpang. Secara psikologis, berpaling meski tahu adalah gejala hawa yang mengalahkan pengakuan (bandingkan Abu Jahal di 45:23); jalan keluarnya bukan menambah data melainkan menutup celah antara mengetahui dan mengikuti.",
+      "analogy": "error volisional (tahu-lalu-menyimpang) ≠ error informasi; hawa mengalahkan pengakuan",
+      "quranic_term": "fa-annā tuṣrafūn"
+    },
+    {
+      "lens": "amal",
+      "reading": "Praktiknya: tetapkan sumber kebenaran yang jelas sebagai rujukan, dan begitu sesuatu terbukti haqq, ikuti — jangan menggantung di 'wilayah abu-abu' yang sebenarnya sudah menyimpang. Kejujuran adalah mengakui bahwa menjauh dari yang terbukti benar berarti mendekat pada yang salah, lalu bertindak sesuai pengakuan itu.",
+      "analogy": "komitmen pada referensi terverifikasi; menutup celah tahu-vs-amal",
+      "quranic_term": "ittibā' al-ḥaqq"
+    }
+  ],
+  "inference": "Ayat ini menyodorkan satu struktur epistemik yang kuat untuk desain: begitu sebuah referensi kebenaran (ground truth) ditetapkan dengan tegas, ruang di luarnya kolaps menjadi satu kategori — penyimpangan; 'sesudah kebenaran tak ada selain kesesatan' menutup wilayah ketiga. Ini menerangi tiga hal rekayasa: (1) grounding butuh acuan yang tegas agar 'benar/salah' bermakna — kekaburan lahir dari referensi yang mengambang, bukan dari sifat dunia; (2) relatif terhadap acuan, klasifikasi bisa deterministik (bandingkan biner terhadap ground truth pada 2:147); (3) teguran 'mengapa kamu dipalingkan?' menyorot error VOLISIONAL — berpaling meski bukti cukup — yang jalan keluarnya bukan menambah data melainkan menyelaraskan tindakan dengan yang sudah diketahui. Resonansi struktural, bukan mukjizat numerik, bukan maksud tunggal ayat. CATATAN TANZIH: 'itulah Allah Tuhanmu yang haqq' menegaskan Allah sebagai Al-Ḥaqq — ini LANDASAN iman dan tauhid yang disebut dengan ta'zhim, BUKAN objek analogi. Dzat dan Sifat Allah (termasuk Al-Ḥaqq) tidak pernah dimodelkan sebagai 'ground truth/referensi sistem'. Yang dibaca secara struktural hanyalah POLA epistemik pada sisi makhluk: bagaimana penetapan sebuah patokan membuat klasifikasi benar-menyimpang menjadi bermakna. Analogi 'ground truth' berlaku pada struktur penalaran manusia, tidak pada Dzat yang Haqq.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-08",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-08",
+      "note": "Tadabbur perdana — Wave 12 hawa/kebenaran.",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

@@ -1,0 +1,103 @@
+{
+  "schema": "lab-study-v2",
+  "id": "nuh-71-14-17",
+  "version": 1,
+  "title": "Khalaqakum aṭwārā — penciptaan bertahap & tumbuh dari bumi bak tumbuhan",
+  "subtitle": "Dia menciptakan kamu bertahap; menumbuhkan kamu dari bumi seperti tumbuhan",
+  "ref": {
+    "surah": 71,
+    "from": 14,
+    "to": 17
+  },
+  "surah_name": "Nuh",
+  "theme": "Pertumbuhan bertahap (aṭwār), organic bottom-up growth, staged development bukan instan, nutrisi dari substrat",
+  "sourced_meaning": {
+    "summary": "Nabi Nuh mengingatkan kaumnya pada tanda kebesaran Allah di dalam diri mereka: mereka diciptakan secara bertahap (aṭwār) — dari setetes mani, menjadi zigot, segumpal darah, lempeng daging & tulang, janin, lalu lahir; dari bayi yang tak tahu apa-apa menjadi dewasa, berketurunan, dan wafat. Nuh juga mengajak memperhatikan tujuh langit bertingkat, bulan sebagai cahaya (pantulan) dan matahari sebagai pelita (sumber sinar). Puncaknya (17): 'Allah menumbuhkan kamu dari bumi (tanah) dengan sebaik-baiknya' — Kemenag menafsirkan manusia tumbuh dengan nutrisi yang berasal dari tanah dan berkembang 'seperti tumbuhnya tanaman', melewati proses bertahap sebagaimana tanaman. (Kemenag & Jalalain QS 71:14-17).",
+    "sources": [
+      "Tafsir Kemenag RI QS 71:14-17",
+      "Tafsir al-Jalalayn QS 71:14-17"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Persepsi",
+      "note": "'alam taraw' (tidakkah kamu perhatikan) — ajakan mengamati tahapan diri & langit sebagai data"
+    },
+    {
+      "layer": "Penalaran",
+      "note": "'aṭwār' (tingkatan berjenjang) menegaskan proses inkremental berurutan, bukan lompatan sekali-jadi"
+    },
+    {
+      "layer": "Aksi & transfer",
+      "note": "analogi 'nabātā' (seperti tumbuhan) mentransfer pola germinasi ke perkembangan manusia"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "amal",
+      "reading": "Menerima bahwa pembentukan diri (ilmu, akhlak, keterampilan) berjalan bertahap seperti benih tumbuh — menuntut kesabaran proses dan menolak jalan pintas; setiap fase menyiapkan fase berikut, dan tergesa merusak hasil.",
+      "quranic_term": "khalaqakum aṭwārā"
+    },
+    {
+      "lens": "algorithm",
+      "reading": "'Aṭwār' = proses berjenjang di mana tiap tahap adalah prasyarat tahap berikut (mani→zigot→darah→daging→tulang→janin→lahir→dewasa). Ini konstruksi inkremental berurutan, bukan instansiasi sekali-jadi; melewati tahap = kegagalan. Kompleksitas dibangun langkah demi langkah.",
+      "analogy": "staged sequential construction where each step gates the next",
+      "quranic_term": "aṭwār"
+    },
+    {
+      "lens": "biology-medicine",
+      "reading": "Ayat memetakan embriogenesis bertahap dan pertumbuhan pascalahir yang bergantung nutrisi 'dari tanah' (rantai makanan tanah→tanaman→tubuh). Kemenag eksplisit: manusia 'tumbuh seperti tanaman'. Perkembangan hayati = ekspresi bertahap templat (genom) yang dipandu asupan substrat, bukan perakitan seketika.",
+      "analogy": "embryogenesis & growth as substrate-fed staged expression",
+      "quranic_term": "ambatakum minal-arḍi nabātā"
+    },
+    {
+      "lens": "pedagogy",
+      "reading": "Model kurikulum bertingkat: dari 'bayi yang tidak tahu apa-apa' menuju dewasa berilmu — pembelajaran berlapis dari fondasi ke lanjutan (scaffolding). Nuh sendiri mengajar dengan menunjuk tanda bertahap; ilmu ditransfer sesuai kesiapan tahap, tidak menuang seluruhnya sekaligus.",
+      "analogy": "scaffolded curriculum from foundation to mastery",
+      "quranic_term": "aṭwār al-ʿilm"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Prinsip 'aṭwār' + 'tumbuh dari bumi seperti tumbuhan' menolak paradigma sistem instan dan mengarah ke pertumbuhan organik bottom-up. (1) Curriculum learning: latih kapabilitas berjenjang — dasar dulu, tiap tahap prasyarat tahap berikut — alih-alih membebani model dengan tugas kompleks sejak awal. (2) Developmental/staged agents: bangun agen yang 'matang' melewati fase (perception → grounding → reasoning → tool-use → otonomi), tiap fase divalidasi sebelum lanjut. (3) Substrate-fed growth: kapabilitas 'tumbuh dari' data/lingkungannya (bottom-up dari interaksi nyata), bukan dipahat top-down sekali cetak. Bounded: analogi pada pola pertumbuhan, bukan klaim agen 'hidup'.",
+      "analogy": "curriculum learning + staged developmental agents grown bottom-up from substrate",
+      "quranic_term": "khalaqakum aṭwārā · nabātā"
+    },
+    {
+      "lens": "systems",
+      "reading": "Pertumbuhan bertahap adalah strategi pengelolaan kompleksitas: sistem yang matang lewat fase dapat dikoreksi di tiap simpangan sebelum galat menumpuk, sementara sistem 'sekali-jadi' rapuh terhadap kesalahan awal. Umpan-balik antar-tahap (validasi janin, tumbuh-kembang) menjaga integritas keseluruhan.",
+      "analogy": "phased maturation with inter-stage feedback to bound errors",
+      "quranic_term": "aṭwār"
+    },
+    {
+      "lens": "inference",
+      "reading": "Argumen Nuh: dari keteraturan tahapan pada diri & kosmos (aṭwār, langit bertingkat, matahari-bulan) ditarik kesimpulan atas Penciptanya. Bukti internal (tubuh sendiri) dipakai sebagai premis paling dekat & tak terbantah — penalaran dari yang paling teramati menuju yang transenden.",
+      "quranic_term": "alam taraw"
+    },
+    {
+      "lens": "earth-cosmos",
+      "reading": "Ayat menyandingkan pertumbuhan manusia dengan struktur berjenjang kosmos: 'tujuh langit bertingkat', bulan-pemantul & matahari-sumber. Keteraturan berlapis muncul di skala mikro (embrio) dan makro (langit) — pola 'berjenjang/bertingkat' sebagai motif desain lintas-skala yang teramati.",
+      "analogy": "layered/tiered order recurring across micro and macro scales",
+      "quranic_term": "sabʿa samāwātin ṭibāqā"
+    }
+  ],
+  "inference": "QS 71:14-17 dapat dibaca-rekayasa sebagai manifesto pertumbuhan bertahap. 'Aṭwār' menegaskan bahwa struktur kompleks dibangun inkremental — tiap fase prasyarat fase berikut — sementara 'menumbuhkan kamu dari bumi seperti tumbuhan' menegaskan pertumbuhan organik bottom-up yang disuapi substrat (nutrisi dari tanah), bukan perakitan top-down sekali-jadi. Untuk rekayasa (terutama AI): rancang curriculum learning dan agen developmental yang matang lewat fase tervalidasi, tumbuhkan kapabilitas dari interaksi/data nyata alih-alih memahatnya seketika, dan kelola kompleksitas dengan umpan-balik antar-tahap agar galat awal tak menumpuk. Pelajaran manusiawinya seiring: pembentukan diri butuh kesabaran proses; jalan pintas menyalahi pola tumbuh. CATATAN TANZIH: menciptakan-bertahap dan menumbuhkan manusia adalah PERBUATAN ALLAH — tidak dimodelkan/dianalogikan; yang dibaca hanyalah POLA berjenjang pada ciptaan (embrio, tanaman, kosmos). Resonansi struktural, bukan mukjizat numerik; salah satu pembacaan, bukan maksud tunggal ayat.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-08",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-08",
+      "note": "Wave 9 pertumbuhan/rezeki.",
+      "authors": [
+        "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

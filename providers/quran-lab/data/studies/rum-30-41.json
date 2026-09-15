@@ -1,0 +1,104 @@
+{
+  "schema": "lab-study-v2",
+  "id": "rum-30-41",
+  "version": 1,
+  "title": "Ẓaharal-fasād — umpan balik kerusakan agar sistem kembali",
+  "subtitle": "Kerusakan tampak di darat & laut karena tangan manusia — dirasakan sebagian, supaya mereka kembali",
+  "ref": {
+    "surah": 30,
+    "from": 41,
+    "to": 41
+  },
+  "surah_name": "Ar-Rum",
+  "theme": "Feedback loop, ekologi, atribusi kausal, koreksi sistem",
+  "sourced_meaning": {
+    "summary": "Telah tampak kerusakan (al-fasād) di darat dan di laut disebabkan perbuatan tangan manusia; Allah menimpakan kepada mereka sebagian dari (akibat) perbuatan mereka, agar mereka kembali (ke jalan yang benar). Tafsir Kemenag: al-fasād adalah segala bentuk pelanggaran atas sistem/hukum yang Allah buat.",
+    "sources": [
+      "Tafsir Kemenag RI QS 30:41",
+      "Tafsir al-Jalalayn QS 30:41"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Umpan balik",
+      "note": "liyudhīqahum baʿḍa... laʿallahum yarjiʿūn — akibat dirasakan SEBAGIAN, tujuannya koreksi (rujūʿ)"
+    },
+    {
+      "layer": "Persepsi",
+      "note": "ẓahara (telah TAMPAK) — kerusakan didefinisikan sebagai sinyal yang terobservasi"
+    },
+    {
+      "layer": "Alignment",
+      "note": "atribusi eksplisit: bimā kasabat aydin-nās — akar penyebabnya perbuatan manusia, bukan takdir buta"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "amal",
+      "reading": "Tanggung jawab ekologis sebagai iman: kerusakan lingkungan bukan 'nasib' melainkan akibat perbuatan — maka taubatnya pun berupa perbuatan: berhenti merusak, memperbaiki, menjaga. Khalifah di bumi = penjaga sistem, bukan pengurasnya.",
+      "quranic_term": "khalīfah / iṣlāḥ"
+    },
+    {
+      "lens": "computational",
+      "reading": "Ayat memodelkan sistem dengan telemetri: fasād 'tampak' (observable) di dua domain (darat & laut), dengan root-cause analysis yang tegas: input manusia. Kerusakan bukan noise acak melainkan sinyal berkorelasi dengan perbuatan — bisa dilacak, berarti bisa dikoreksi.",
+      "analogy": "observable failure + root-cause attribution",
+      "quranic_term": "fasād (pelanggaran sistem — per Kemenag)"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "Definisi Kemenag persis definisi rekayasa: fasād = pelanggaran atas sistem/hukum yang ditetapkan — korupsi state akibat melanggar invariant (bandingkan mīzān 55:8). Ayat ini adalah error report dari pelanggaran invariant itu.",
+      "analogy": "invariant violation → corrupted state"
+    },
+    {
+      "lens": "algorithm",
+      "reading": "Mekanisme koreksinya diukur: yang ditimpakan hanya SEBAGIAN (baʿḍa) dari akibat — feedback parsial, bukan hukuman total. Sistem yang menghukum penuh di kesalahan pertama tak memberi ruang belajar; feedback bertahap dengan tujuan eksplisit (agar kembali) = koreksi, bukan kehancuran.",
+      "analogy": "graduated feedback; corrective not destructive",
+      "quranic_term": "laʿallahum yarjiʿūn"
+    },
+    {
+      "lens": "inference",
+      "reading": "Tiga komponen kausalitas lengkap dalam satu ayat: efek teramati (fasād tampak) → penyebab teratribusi (tangan manusia) → intervensi bertujuan (rasakan sebagian agar kembali). Ini struktur penuh inferensi kausal: observasi, atribusi, intervensi.",
+      "quranic_term": "iʿtibār"
+    },
+    {
+      "lens": "math-physics",
+      "reading": "Darat & laut = dua reservoir sistem bumi yang tersambung; kerusakan di satu merambat ke yang lain (polusi darat → laut; laut → iklim → darat). Sistem tertutup dengan konservasi: yang dibuang tidak hilang, ia kembali — 'merasakan sebagian dari perbuatan sendiri' adalah deskripsi loop materi/energi.",
+      "analogy": "coupled reservoirs; conservation loop"
+    },
+    {
+      "lens": "systems",
+      "reading": "Ini ayat feedback loop par excellence: output sistem (kerusakan) diumpankan kembali ke aktor penyebabnya, dengan delay dan atenuasi (sebagian), agar aktor mengubah perilaku. Krisis ekologi modern persis skenario ayat: delay panjang membuat manusia lambat merasakan — tapi loop-nya tetap menutup.",
+      "analogy": "closed-loop feedback with delay"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Untuk sistem AI: kerusakan yang tampak (model drift, bias, harm) harus diatribusi ke perbuatan (data, deployment, keputusan desain) — bukan dianggap misteri. Dan pola koreksinya: paparkan sistem pada SEBAGIAN konsekuensi kesalahannya (error feedback) supaya belajar kembali ke jalur — persis training signal; hukuman total (matikan sistem) tidak menghasilkan pembelajaran.",
+      "analogy": "error attribution + corrective signal (not termination)"
+    },
+    {
+      "lens": "artifact",
+      "reading": "Kesadaran fasād melahirkan instrumen pemantau bumi: stasiun kualitas udara/air, satelit observasi, indeks kesehatan laut — telemetri planet untuk membuat 'yang tampak' terukur dan atribusinya bisa dibuktikan.",
+      "analogy": "planetary telemetry"
+    }
+  ],
+  "inference": "Ayat ini adalah spesifikasi loop umpan balik korektif yang lengkap: kerusakan didefinisikan sebagai pelanggaran sistem yang TERAMATI, diatribusikan tegas ke perbuatan manusia, lalu dikembalikan kepada pelakunya secara PARSIAL dengan tujuan yang dinyatakan — bukan menghancurkan, tapi membuat kembali (yarjiʿūn). Dua pelajaran desain: (1) sistem tanpa atribusi kausal tidak bisa belajar; (2) feedback terbaik adalah yang cukup menyakitkan untuk mengoreksi, tapi cukup parsial untuk memberi kesempatan kembali. Krisis ekologi adalah loop ini yang sedang menutup pada skala planet — dan resepnya ada di kata terakhirnya: rujūʿ, kembali.",
+  "authors": [
+    "Draft AI (LLM draft) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-07",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-07",
+      "note": "Tadabbur perdana — Wave 2 (dari sweep korpus 6236 ayat).",
+      "authors": [
+        "Draft AI (LLM draft)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

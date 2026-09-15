@@ -1,0 +1,96 @@
+{
+  "schema": "lab-study-v2",
+  "id": "maidah-5-1",
+  "version": 1,
+  "title": "Awfū bil-ʿuqūd — kontrak sebagai fondasi sistem",
+  "subtitle": "Ayat pembuka: penuhilah akad-akad itu",
+  "ref": {
+    "surah": 5,
+    "from": 1,
+    "to": 1
+  },
+  "surah_name": "Al-Ma'idah",
+  "theme": "Kontrak/komitmen, integritas janji, protokol, kepercayaan antar-pihak",
+  "sourced_meaning": {
+    "summary": "Wahai orang-orang beriman, penuhilah akad-akad (al-ʿuqūd). Tafsir Kemenag: perintah memenuhi janji yang telah diikrarkan — baik janji hamba kepada Allah maupun janji antar sesama manusia. (Lanjutan ayat: kehalalan ternak dengan pengecualian yang dibacakan — hukum pun disampaikan sebagai ketentuan eksplisit + daftar pengecualian.)",
+    "sources": [
+      "Tafsir Kemenag RI QS 5:1",
+      "Tafsir al-Jalalayn QS 5:1"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Alignment",
+      "note": "ʿuqūd mencakup dua arah: vertikal (kepada Allah) & horizontal (antar manusia) — komitmen sebagai pengikat"
+    },
+    {
+      "layer": "Aksi & transfer",
+      "note": "awfū = penunaian aktif; kontrak tidak selesai saat ditandatangani, tapi saat ditunaikan"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "amal",
+      "reading": "Memenuhi janji sebagai identitas mukmin — dari nazar kepada Allah sampai kontrak dagang. Surah dibuka dengan perintah ini sebelum membahas hukum apa pun: integritas komitmen mendahului detail aturan.",
+      "quranic_term": "wafāʾ bil-ʿahd"
+    },
+    {
+      "lens": "economy",
+      "reading": "Kontrak yang dipenuhi = fondasi seluruh ekonomi: tanpa keyakinan bahwa akad akan ditunaikan, biaya transaksi meledak (semua butuh jaminan & pengawasan) dan pasar mengecil ke lingkar kenalan. Enforcement komitmen adalah infrastruktur tak terlihat dari perdagangan berskala — melengkapi pencatatan 2:282: catat DAN tunaikan.",
+      "analogy": "contract enforcement as market infrastructure",
+      "quranic_term": "ʿuqūd"
+    },
+    {
+      "lens": "computational",
+      "reading": "ʿAqd (ikatan/simpul) = komitmen yang mengikat state masa depan: pihak yang berakad melepas sebagian kebebasannya di masa depan demi kepastian bersama. Persis semantik contract/promise dalam komputasi: interface yang MENJAMIN perilaku, bukan sekadar mendeklarasikannya.",
+      "analogy": "binding commitments; promises/contracts",
+      "quranic_term": "ʿaqd (simpul)"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "Design-by-contract: precondition-postcondition yang WAJIB dipenuhi (awfū = imperative). Dan struktur lanjutan ayat instruktif: aturan umum (dihalalkan ternak) + pengecualian eksplisit yang dibacakan ('illā mā yutlā) — pola rule + enumerated exceptions, bukan pengecualian diam-diam.",
+      "analogy": "design-by-contract + explicit exception list"
+    },
+    {
+      "lens": "inference",
+      "reading": "Mengapa perintah ini jadi PEMBUKA surah hukum terpanjang tentang muamalah? Karena seluruh sistem aturan tak berarti bila komitmen pada aturan itu sendiri tidak mengikat. Meta-komitmen ('aku akan menunaikan komitmenku') adalah aksioma yang menopang semua komitmen turunannya.",
+      "quranic_term": "wafāʾ sebagai meta-aturan"
+    },
+    {
+      "lens": "systems",
+      "reading": "Jaringan pihak-pihak yang saling menunaikan akad = sistem dengan protokol yang dihormati semua node. Satu node yang ingkar merusak lebih dari transaksinya sendiri: ia menaikkan biaya kepercayaan seluruh jaringan. Integritas protokol adalah barang publik.",
+      "analogy": "protocol adherence as public good"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Untuk agen autonom: komitmen yang diucapkan (rencana, promise ke user, kontrak antar-agen) harus MENGIKAT perilaku berikutnya — agen yang menyimpang diam-diam dari komitmennya tak bisa diorkestrasi. Commitment-keeping = prasyarat multi-agent coordination; dan setiap penyimpangan harus eksplisit & ternegosiasi (seperti pengecualian yang 'dibacakan'), bukan senyap.",
+      "analogy": "commitment binding for agent orchestration; no silent deviation",
+      "quranic_term": "awfū bil-ʿuqūd"
+    },
+    {
+      "lens": "psychology",
+      "reading": "Menunaikan janji membangun self-trust: orang yang terbiasa ingkar pada komitmen kecil kehilangan kemampuan mempercayai niatnya sendiri. Integritas adalah otot yang dilatih lewat akad-akad kecil yang ditunaikan.",
+      "analogy": "self-efficacy via kept commitments"
+    }
+  ],
+  "inference": "Surah hukum muamalah terpanjang dibuka dengan satu perintah meta: tunaikan akad — karena tanpa komitmen yang mengikat, seluruh sistem aturan di bawahnya kehilangan daya. Dibaca sebagai rekayasa, ini melengkapi 2:282 menjadi protokol kontrak yang utuh: CATAT komitmen (2:282) dan TUNAIKAN komitmen (5:1); pencatatan tanpa penunaian hanyalah arsip pengkhianatan yang rapi. Untuk sistem agen: komitmen harus mengikat perilaku masa depan, dan setiap penyimpangan wajib eksplisit — kemampuan diorkestrasi dibangun di atas janji yang ditepati.",
+  "authors": [
+    "Draft AI (LLM draft) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-07",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-07",
+      "note": "Tadabbur perdana — Wave 4 (memperkuat prinsip ledger-audit-trail).",
+      "authors": [
+        "Draft AI (LLM draft)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

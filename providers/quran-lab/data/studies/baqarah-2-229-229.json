@@ -1,0 +1,111 @@
+{
+  "schema": "lab-study-v2",
+  "id": "baqarah-2-229-229",
+  "version": 1,
+  "title": "Hududullah — batas keras yang tak boleh dilanggar",
+  "subtitle": "Ruang gerak yang sah punya tepi; melampauinya bukan kebebasan, tapi kerusakan",
+  "ref": {
+    "surah": 2,
+    "from": 229,
+    "to": 229
+  },
+  "surah_name": "Al-Baqarah",
+  "theme": "Batas mutlak (hududullah) sebagai hard constraint/invariant; koridor tindakan yang sah; pelanggaran batas = state zalim",
+  "sourced_meaning": {
+    "summary": "Talak raj'i hanya dua kali; setelah itu suami hanya punya dua pilihan sah: menahan (rujuk) dengan cara ma'ruf atau melepas dengan cara ihsan. Tidak halal mengambil kembali pemberian (mahar) kepada istri, kecuali bila keduanya khawatir tak dapat menegakkan hukum-hukum Allah — maka tebusan (khulu') dibolehkan. Kemenag: ayat ini membatasi praktik jahiliah yang menalak dan merujuk tanpa batas sehingga mempermainkan perempuan; Islam menatanya dengan batas yang jelas. Penutup ayat menegaskan: itulah batas-batas Allah (hududullah), jangan dilanggar; siapa melanggarnya, merekalah orang-orang zalim.",
+    "sources": [
+      "Tafsir Kemenag RI QS 2:229",
+      "Tafsir al-Jalalayn QS 2:229"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Alignment",
+      "note": "ada lapisan batas keras (hudud) yang mengungkung ruang tindakan — koridor yang sah didefinisikan lebih dulu, di ATAS preferensi pelaku"
+    },
+    {
+      "layer": "Aksi & transfer",
+      "note": "hanya dua transisi sah yang tersedia ('tahan dengan ma'ruf' / 'lepas dengan ihsan') — bukan ruang bebas tak terbatas"
+    },
+    {
+      "layer": "Umpan balik",
+      "note": "pelanggaran batas diberi label eksplisit: 'zalim' — sinyal kegagalan yang terdefinisi, bukan zona abu-abu"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "program-logic",
+      "reading": "Penutup ayat berfungsi sebagai invariant/assertion yang wajib dijaga: 'itulah batas Allah, jangan langgar'. Batas ini bukan nilai default yang bisa ditawar oleh optimasi lokal — ia kondisi yang harus tetap benar apa pun tujuan pelaku. Pelanggaran = assertion failure yang ditandai (zalim).",
+      "analogy": "invariant / assertion yang tak boleh dilanggar",
+      "quranic_term": "ḥudūd Allāh"
+    },
+    {
+      "lens": "computational",
+      "reading": "Struktur talak dibingkai sebagai state machine berbatas: pencacah talak raj'i punya plafon keras (maksimum dua sebelum status berubah ba'in). Ruang keadaan sengaja dipagari agar tak bisa dieksploitasi tanpa henti seperti pada praktik jahiliah.",
+      "analogy": "bounded counter / finite-state guard",
+      "quranic_term": "marratān"
+    },
+    {
+      "lens": "algorithm",
+      "reading": "Setiap titik keputusan hanya menyediakan cabang yang sah terbatas: 'imsāk bi-maʿrūf' ATAU 'tasrīḥ bi-iḥsān'. Tidak ada cabang 'ambil kembali pemberian' kecuali lewat jalur pengecualian yang bersyarat (khulu' saat keduanya khawatir tak bisa menegakkan hukum).",
+      "analogy": "guarded transition dengan cabang sah terbatas"
+    },
+    {
+      "lens": "systems",
+      "reading": "Batas ini adalah guardrail anti-penyalahgunaan: mengubah sistem tak-berbatas (yang menindas pihak lemah) menjadi sistem berpagar yang melindungi. Fungsi tepi bukan mengekang demi mengekang, tapi mencegah kerusakan pada node paling rentan.",
+      "analogy": "rate-limit / abuse guardrail pelindung pihak lemah"
+    },
+    {
+      "lens": "economy",
+      "reading": "Mahar diperlakukan sebagai transfer yang tak boleh ditarik balik (no clawback) — kecuali lewat kontrak keluar yang disepakati dua pihak (khulu') dengan syarat jelas. Batas melindungi kepemilikan pihak penerima dari pembatalan sepihak.",
+      "analogy": "kontrak dengan larangan clawback + exit yang dinegosiasi",
+      "quranic_term": "khulʿ"
+    },
+    {
+      "lens": "inference",
+      "reading": "Batas dibuat dapat-diperiksa: pelabelan 'zalim' pada pelanggar menunjukkan tepi itu knowable dan checkable — bukan norma kabur. Dari sisi keputusan, garis sah/tak-sah dapat dievaluasi, sehingga pelanggaran menjadi kondisi error yang terdeteksi.",
+      "analogy": "predikat batas yang decidable → error state"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Inilah pola constraint keras di atas fungsi tujuan: sebuah agen boleh mengoptimasi apa pun DI DALAM koridor, tapi ada batas yang tak boleh dilewati berapa pun 'imbalannya'. Hududullah menjadi analogi lapisan konstitusi/hard-constraint yang mengalahkan reward — pagar terhadap reward hacking dan optimasi yang menindas.",
+      "analogy": "hard-constraint / constitution layer di atas objective",
+      "quranic_term": "ḥudūd Allāh"
+    },
+    {
+      "lens": "amal",
+      "reading": "Adab menjaga batas: memperlakukan pasangan dengan hormat, tidak mempermainkan, dan menyadari bahwa tepi yang ditetapkan justru melindungi martabat — batas sebagai bentuk perlindungan, bukan sekadar larangan.",
+      "quranic_term": "maʿrūf / iḥsān"
+    },
+    {
+      "lens": "artifact",
+      "reading": "Batas yang dikodifikasi melahirkan instrumen peradaban: fiqh munakahat sebagai sistem constraint terdokumentasi — leluhur metodologis dari 'policy as code' yang membuat aturan main dapat diperiksa dan diwariskan.",
+      "analogy": "kodifikasi aturan → policy terdokumentasi"
+    },
+    {
+      "lens": "history-ummah",
+      "reading": "Kemenag mencatat pola: dari praktik jahiliah tanpa batas (talak-rujuk sekehendak hati) menuju sistem berpagar. Ini pola berulang — peradaban maju dengan memperkenalkan invariant untuk menghentikan penyalahgunaan yang sebelumnya legal secara adat.",
+      "analogy": "introduksi invariant untuk mengakhiri abuse"
+    }
+  ],
+  "inference": "Satu ayat memuat anatomi lengkap sebuah hard constraint: ruang tindakan yang sah didefinisikan sempit (dua cabang: tahan-ma'ruf / lepas-ihsan), plafon keras pada pencacah (talak raj'i maksimal dua), jalur pengecualian yang bersyarat (khulu'), penanda batas eksplisit ('itulah hududullah'), larangan tegas ('jangan langgar'), dan label kegagalan yang terdefinisi ('zalim'). Dibaca sebagai arsitektur tata kelola, hududullah adalah invariant yang mengungkung optimasi — bukan default yang bisa ditawar demi keuntungan lokal. CATATAN TANZIH: 'batas-batas Allah' — Allah sebagai Dzat yang menetapkan batas adalah LANDASAN iman dan disebut dengan ta'zhim; Ia TIDAK dianalogikan sebagai 'sistem/validator/penegak aturan'. Yang menjadi bahan analogi rekayasa hanyalah STRUKTUR batas tak-boleh-dilanggar pada sisi makhluk (kontrak, ruang tindakan manusia). Ini resonansi struktural, bukan mukjizat numerik, bukan maksud tunggal ayat, dan Lab TIDAK menetapkan fatwa/hukum fiqh apa pun — hanya membaca pola constraint-nya.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-08",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-08",
+      "note": "Wave 11 aturan/tata-kelola — hududullah sebagai hard constraint/invariant.",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

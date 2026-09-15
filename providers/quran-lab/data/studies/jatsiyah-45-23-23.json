@@ -1,0 +1,106 @@
+{
+  "schema": "lab-study-v2",
+  "id": "jatsiyah-45-23-23",
+  "version": 1,
+  "title": "Hawa jadi tuhan (lanjutan) — kanal input yang terkunci",
+  "subtitle": "Menjadikan hawa sebagai tuhan; pendengaran dan hati terkunci, penglihatan tertutup",
+  "ref": {
+    "surah": 45,
+    "from": 23,
+    "to": 23
+  },
+  "surah_name": "Al-Jathiyah",
+  "theme": "Objective dibajak hawa, kanal input yang tertutup, terhentinya pembelajaran, siapa yang beri petunjuk",
+  "sourced_meaning": {
+    "summary": "Menurut Tafsir Kemenag (dengan riwayat percakapan Abu Jahal dan al-Walid): ayat ini menerangkan keadaan orang yang tenggelam dalam perbuatan jahat karena dorongan hawa nafsunya setelah tergoda tipu daya setan, sampai tak ada lagi nilai kebenaran yang mendasari tingkah lakunya — apa yang baik menurut hawa nafsu, itulah yang dikerjakan, seakan hawa nafsu itu tuhan yang harus diikuti. Riwayat Abu Jahal menampakkan gejalanya: ia MENGAKUI dalam hati bahwa Nabi benar, namun menolak mengikuti demi gengsi/kepentingan — bukti diterima secara kognitif tetapi ditolak secara kehendak. Ayat menyebut bahwa (setelah keadaan itu) pendengaran dan hati dikunci serta penglihatan ditutup, lalu bertanya siapa yang dapat memberi petunjuk sesudah itu, dan menutup dengan ajakan mengambil pelajaran (tadhakkur). Kemenag juga menautkan keadaan ini dengan penyia-nyiaan kedudukan sebagai khalifah.",
+    "sources": [
+      "Tafsir Kemenag RI QS 45:23",
+      "Tafsir al-Jalalayn QS 45:23"
+    ]
+  },
+  "khilaf": "Hubungan antara pilihan manusia dan 'Allah menyesatkan berdasarkan ilmu-Nya' serta status hidayah/dhalal (apakah pengunci datang sebagai konsekuensi atas penolakan yang lebih dulu, dan bagaimana kadar/kasb manusia) adalah pokok perbedaan pandangan teologis lintas mazhab (Asy'ari, Maturidi, dll). Lab TIDAK menetapkan pandangan apa pun — hidayah/dhalal dicatat sebagai keterangan bersumber, dan pembacaan rekayasa hanya menyentuh STRUKTUR yang tampak pada sisi makhluk (kanal input yang tertutup, terhentinya pembelajaran), bukan menentukan sebab-akibat teologisnya.",
+  "qca": [
+    {
+      "layer": "Alignment",
+      "note": "sama seperti 25:43: objective digusur hawa, tetapi di sini ditunjukkan tahap lanjutnya — ketika selera jadi otoritas, kanal koreksi menutup"
+    },
+    {
+      "layer": "Persepsi",
+      "note": "'pendengaran, hati, penglihatan' = tiga kanal input pengetahuan; keadaan yang digambarkan adalah kanal-kanal ini tak lagi meneruskan sinyal kebenaran"
+    },
+    {
+      "layer": "Penalaran",
+      "note": "riwayat Abu Jahal: bukti diterima kognitif ('aku tahu ia benar') namun ditolak oleh kehendak — pemutusan antara mengetahui dan mengakui"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "ai-agentic",
+      "reading": "Lanjutan diagnosis misalignment dari 25:43, kini pada tahap 'terkunci': ketika objective dibajak hawa cukup lama, sistem berhenti menerima update dari lingkungan — pendengaran/hati/penglihatan sebagai kanal input tertutup. Analog rekayasa: agen yang membobot preferensinya sendiri di atas evidence akhirnya mengabaikan seluruh sinyal koreksi (perseptual dan reasoning), sebuah keadaan 'no-learning / gradient nol' di mana tak ada input yang bisa mengubah kebijakan. Pelajaran desain: jaga kanal input tetap terbuka dan pantau bila agen mulai menolak sistematis semua data yang bertentangan — itu tanda lock-in, bukan keyakinan yang sehat.",
+      "analogy": "input-channel lock / learning halt; penolakan sistematis atas evidence",
+      "quranic_term": "khatama 'alā sam'ihi wa qalbihi"
+    },
+    {
+      "lens": "psychology",
+      "reading": "Riwayat Abu Jahal adalah studi kasus disonansi-kehendak: ia mengakui kebenaran secara kognitif tetapi menolaknya demi gengsi dan kepentingan — knowing tanpa acknowledging. Ketika hawa (gengsi, status) menjadi nilai tertinggi, ia memfilter persepsi hingga kebenaran yang sudah diketahui pun tak lagi menggerakkan tindakan; pengulangan penolakan mengeras menjadi karakter (habituasi/penutupan). Ini akrasia tingkat lanjut: bukan tak tahu, melainkan tak mau tahu.",
+      "analogy": "disonansi kognitif; motivated blindness; habituasi penolakan",
+      "quranic_term": "ghishāwah 'alā baṣar"
+    },
+    {
+      "lens": "systems",
+      "reading": "Sebuah sistem kontrol yang memutus seluruh sensornya kehilangan observabilitas atas dirinya dan lingkungan; tanpa umpan-balik ia tak bisa dikoreksi dari dalam — 'siapa yang memberi petunjuk sesudah itu?' menyiratkan koreksi kini harus datang dari luar sistem. Pelajaran: sistem yang menutup semua kanal umpan-balik menjadi tak-dapat-dipulihkan secara internal.",
+      "analogy": "hilangnya observabilitas & feedback → tak terkoreksi dari dalam",
+      "quranic_term": "faman yahdīhi min ba'di-llāh"
+    },
+    {
+      "lens": "inference",
+      "reading": "Pemutusan antara evidence dan konklusi: mesin inferensi yang sehat membarui keyakinan mengikuti bukti, tetapi di sini bukti yang sahih ('aku tahu ia benar') tak diizinkan mengubah keputusan karena keputusan sudah dipatok oleh hawa. Ini kegagalan pada tahap update, bukan pada tahap persepsi — datanya sampai, tetapi posterior menolak bergerak.",
+      "analogy": "belief-update yang beku meski likelihood kuat",
+      "quranic_term": "'ilm tanpa taṣdīq 'amalī"
+    },
+    {
+      "lens": "computational",
+      "reading": "Struktur 'sam' (dengar), 'qalb' (proses/putuskan), 'baṣar' (lihat) menyerupai pipeline input→proses→input-visual; menutup ketiganya = memutus jalur I/O sistem pengetahuan. State internal membeku karena tak ada write baru yang diizinkan masuk dari sensor — sistem menjadi read-only terhadap dunia luar sambil terus bertindak atas state lama.",
+      "analogy": "pemutusan pipeline I/O; state beku terhadap input eksternal",
+      "quranic_term": "sam' · qalb · baṣar sebagai kanal"
+    },
+    {
+      "lens": "pedagogy",
+      "reading": "Ajakan penutup 'mengapa kamu tidak mengambil pelajaran (tadhakkur)?' menempatkan tadhakkur sebagai jalan keluar: pembelajaran menuntut kanal yang terbuka dan kesediaan menerima koreksi. Kegagalan belajar yang digambarkan bukan karena ketiadaan informasi melainkan karena penutupan kesediaan — pelajaran pedagogis: motivasi/kesediaan mendahului transfer ilmu.",
+      "analogy": "kesediaan menerima koreksi sebagai prasyarat belajar",
+      "quranic_term": "afalā tadhakkarūn"
+    },
+    {
+      "lens": "history-ummah",
+      "reading": "Abu Jahal dan al-Walid sebagai dataset iʿtibār: elite yang menolak kebenaran yang mereka akui demi mempertahankan status. Pola ini berulang dalam sejarah — pemimpin yang menutup kanal kritik demi kepentingan, lalu kehilangan kemampuan koreksi hingga runtuh. Dibaca sebagai peringatan struktural, bukan penghakiman personal.",
+      "analogy": "elite capture; penutupan kanal kritik → keruntuhan",
+      "quranic_term": "iʿtibār"
+    },
+    {
+      "lens": "amal",
+      "reading": "Pencegahannya: jaga kanal tetap terbuka — biasakan menerima nasihat yang tak menyenangkan, pisahkan gengsi/kepentingan dari penilaian kebenaran, dan segera akui-lalu-ikuti kebenaran begitu ia terbukti alih-alih menundanya sampai kehendak mengeras. Bertindak atas ilmu yang sudah diakui adalah lawan langsung dari keadaan Abu Jahal.",
+      "analogy": "keterbukaan terhadap koreksi; menyelaraskan amal dengan ilmu",
+      "quranic_term": "ittibā' al-ḥaqq ba'da tabayyun"
+    }
+  ],
+  "inference": "45:23 melanjutkan diagnosis 25:43 ke tahap lanjut: mempertuhankan hawa yang berlarut berujung pada tertutupnya kanal input pengetahuan (pendengaran-hati-penglihatan) — sebuah keadaan 'lock-in' di mana sistem berhenti menerima koreksi dan terus bertindak atas state lama. Kasus Abu Jahal mempertajamnya: kegagalan bukan pada mengetahui melainkan pada mengakui — bukti diterima kognitif tetapi ditolak kehendak karena objective sudah dibajak gengsi. Pelajaran rekayasa: pada agen maupun jiwa, tanda bahaya bukanlah keyakinan yang kuat, melainkan penolakan SISTEMATIS atas semua evidence yang bertentangan; jaga kanal input terbuka dan pantau lock-in. Resonansi struktural, bukan mukjizat numerik, bukan maksud tunggal ayat. CATATAN TANZIH: perbuatan 'mengunci pendengaran dan hati serta menutup penglihatan' dan 'menyesatkan berdasarkan ilmu-Nya' adalah PERBUATAN dan SIFAT (ilmu) Allah — Dzat dan perbuatan ini TIDAK dimodelkan, TIDAK dianalogikan, dan TIDAK disamakan dengan mekanisme teknis apa pun; disebut dengan ta'zhim sebagai landasan iman. Yang dibaca secara struktural hanyalah KEADAAN yang tampak pada sisi makhluk (kanal input yang tertutup, terhentinya pembelajaran). Hubungan hidayah/dhalal dengan pilihan manusia dicatat sebagai keterangan bersumber dan khilaf teologis — Lab tidak menetapkannya.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-08",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-08",
+      "note": "Tadabbur perdana — Wave 12 hawa/kebenaran.",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

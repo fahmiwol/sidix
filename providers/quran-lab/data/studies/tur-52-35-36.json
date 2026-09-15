@@ -1,0 +1,104 @@
+{
+  "schema": "lab-study-v2",
+  "id": "tur-52-35-36",
+  "version": 1,
+  "title": "Am khuliqū min ghayri syayʾ — argumen kausal & disjungsi tuntas",
+  "subtitle": "Tak ada efek tanpa sebab; semua cabang ditutup kecuali satu",
+  "ref": {
+    "surah": 52,
+    "from": 35,
+    "to": 36
+  },
+  "surah_name": "At-Tur",
+  "theme": "Prinsip kausalitas, disjungsi ekshaustif, pembuktian per-kasus",
+  "sourced_meaning": {
+    "summary": "Dua pertanyaan yang menutup semua kemungkinan: 'Apakah mereka tercipta tanpa sesuatu (tanpa pencipta), ataukah mereka yang menciptakan diri mereka sendiri? Ataukah mereka yang menciptakan langit dan bumi?' Tafsir Kemenag menegaskan: akal menetapkan setiap yang ada berasal dari tiada, maka pasti ada yang mengadakannya; anggapan tercipta tanpa pencipta atau menciptakan diri sendiri bertentangan dengan akal sehat; dan mereka pun tak berani mengaku mencipta langit-bumi — bila jujur, mereka mengakui Allah-lah penciptanya.",
+    "sources": [
+      "Tafsir Kemenag RI QS 52:35-36",
+      "Tafsir al-Jalalayn QS 52:35-36"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Penalaran",
+      "note": "argumen kausal + case analysis: enumerasi opsi, eliminasi yang mustahil, sisakan yang tak terelakkan"
+    },
+    {
+      "layer": "Tangga epistemik",
+      "note": "kesimpulan tak diklaim, tapi dipaksa keluar dari premis akal — 'setiap ada butuh sebab'"
+    },
+    {
+      "layer": "Aksi & transfer",
+      "note": "tafsir mencatat: bila jujur, mereka sendiri menutup kasus dengan mengakui Allah — konsistensi menuntut kesimpulan"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "inference",
+      "reading": "Bentuknya disjungsi ekshaustif lalu silogisme disjungtif: daftar semua kemungkinan asal-usul (tanpa sebab / mencipta diri / mencipta kosmos), tunjukkan tiap opsi mustahil, maka opsi tersisa (ada Pencipta) benar dengan sendirinya. Kekuatannya pada ketuntasan enumerasi.",
+      "analogy": "exhaustive disjunction → disjunctive syllogism"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "Ini switch dengan case yang menutup seluruh ruang: case(tanpa sebab) → false; case(mencipta diri) → false; case(mencipta langit-bumi) → false; default → ada Pencipta. Karena tak ada case yang tersisa tak-tertangani, kesimpulan default tak terhindarkan.",
+      "analogy": "exhaustive case analysis with forced default"
+    },
+    {
+      "lens": "math-physics",
+      "reading": "Prinsip kausalitas: tiap efek menuntut sebab yang memadai. 'Mencipta diri sendiri' menuntut sesuatu sudah ada sebelum ia ada agar bisa mengadakan dirinya — kontradiksi temporal. Rantai sebab tak boleh menutup pada dirinya; ia menuntut sebab di luar dirinya.",
+      "analogy": "no effect without a sufficient cause",
+      "quranic_term": "khalq"
+    },
+    {
+      "lens": "computational",
+      "reading": "Paradoks bootstrap: sebuah proses tak bisa menjadi penyebab bagi eksistensinya sendiri (chicken-and-egg) — ia harus sudah berjalan untuk memulai dirinya. Sistem yang ada menuntut penyebab eksternal / initializer di luar sistem, bukan self-boot dari ketiadaan.",
+      "analogy": "bootstrap paradox; no self-initialization from nothing"
+    },
+    {
+      "lens": "algorithm",
+      "reading": "Proof by exhaustion (pembuktian per-kasus): buktikan proposisi dengan menutup setiap cabang ruang kemungkinan. Bila semua cabang selain satu terbukti mustahil, cabang tersisa terbukti — teknik pembuktian baku yang di sini dijalankan atas asal-usul.",
+      "analogy": "proof by cases / exhaustion"
+    },
+    {
+      "lens": "systems",
+      "reading": "Model kausal sebagai graf berarah: tiap simpul (yang-ada) harus punya simpul-induk (sebab). Graf tanpa akar berarti ada simpul tanpa sebab — dilarang oleh premis. Maka graf menuntut sebuah akar tak-bersebab (uncaused cause) sebagai titik henti.",
+      "analogy": "causal DAG must terminate at a root cause"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Prinsip root-cause & provenance untuk agen: setiap fakta/keadaan dalam world-model harus punya sisi-asal (dari mana ia diketahui / apa sebabnya); 'muncul tanpa sebab' ditolak. Actionable: larang orphan facts — tiap node keyakinan wajib punya edge provenance menuju sumber; telusuri rantai sampai akar tepercaya, jangan berhenti di 'entah dari mana'.",
+      "analogy": "no orphan facts; every belief needs a provenance edge",
+      "quranic_term": "burhān"
+    },
+    {
+      "lens": "earth-cosmos",
+      "reading": "Langit dan bumi disodorkan sebagai efek berskala raksasa; efek sebesar itu menuntut sebab yang sepadan. Pertanyaan 'apakah kalian yang menciptakan langit-bumi?' memaksa kalibrasi antara besarnya akibat dan besarnya sebab yang diperlukan.",
+      "analogy": "cause must be adequate to the scale of the effect"
+    },
+    {
+      "lens": "psychology",
+      "reading": "Ayat memanggil intuisi kausal bawaan manusia — nalar yang sama yang membuat anak kecil pun bertanya 'kenapa?'. Menyodorkan opsi 'tanpa sebab' membuat akal sehat menolaknya spontan; argumen bekerja karena selaras dengan struktur kognisi.",
+      "quranic_term": "ʿaql"
+    }
+  ],
+  "inference": "Dua ayat ini adalah mesin bukti mungil: gabungan prinsip kausalitas ('tiap ada butuh sebab yang memadai') dengan pembuktian per-kasus atas disjungsi yang tuntas. Semua cabang asal-usul ditutup — tanpa sebab (langgar kausalitas), mencipta diri (paradoks bootstrap), mencipta kosmos (mereka sendiri tak berani) — menyisakan satu kesimpulan yang dipaksa keluar oleh konsistensi. Bagi rekayasa: ini pola larangan orphan fact — setiap keadaan wajib punya provenance menuju sebab, dan penelusuran berhenti hanya di akar tepercaya, bukan di 'entah muncul begitu saja'.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-07",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-07",
+      "note": "Tadabbur perdana — Wave 7 bukti/hujjah.",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

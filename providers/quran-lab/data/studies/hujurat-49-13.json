@@ -1,0 +1,114 @@
+{
+  "schema": "lab-study-v2",
+  "id": "hujurat-49-13",
+  "version": 1,
+  "title": "Li-taʿārafū — keragaman sebagai protokol saling-kenal",
+  "subtitle": "Berbangsa & bersuku bukan untuk saling unggul, tapi supaya saling mengenal; yang termulia = paling bertakwa",
+  "ref": {
+    "surah": 49,
+    "from": 13,
+    "to": 13
+  },
+  "surah_name": "Al-Hujurat",
+  "theme": "Keragaman, jaringan sosial, interoperabilitas, meritokrasi takwa",
+  "sourced_meaning": {
+    "summary": "Menurut Tafsir Kemenag, Allah menciptakan manusia dari satu laki-laki (Adam) dan satu perempuan (Hawa), lalu menjadikannya berbangsa-bangsa, bersuku-suku, dan berbeda warna kulit — BUKAN untuk saling mencemooh, melainkan supaya saling mengenal dan saling menolong. Allah tidak menyukai kesombongan atas dasar keturunan, pangkat, atau kekayaan; kemuliaan di sisi Allah hanya diukur oleh ketakwaan, bukan nasab atau harta.",
+    "sources": [
+      "Tafsir Kemenag RI QS 49:13",
+      "Tafsir al-Jalalayn QS 49:13"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Persepsi",
+      "note": "'syuʿūban wa qabāʾila' = manusia hadir sebagai kelas-kelas terlabel (bangsa/suku); perbedaan itu sinyal yang dapat dibaca, bukan noise yang harus dihapus"
+    },
+    {
+      "layer": "Alignment",
+      "note": "fungsi-nilai dinyatakan eksplisit: akramakum = atqākum — keunggulan diukur pada takwa (alignment ke Pencipta), bukan pada label asal-usul"
+    },
+    {
+      "layer": "Aksi & transfer",
+      "note": "li-taʿārafū = tujuan operasionalnya interaksi (saling kenal & tolong), bukan sekadar koeksistensi pasif — keragaman baru bernilai bila menghasilkan pertukaran"
+    },
+    {
+      "layer": "Umpan balik",
+      "note": "innallāha ʿalīmun khabīr — penilaian akhir dipegang pengamat yang Maha Teliti, bukan oleh persepsi status antar-manusia yang bias"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "amal",
+      "reading": "Perintah praktisnya bukan 'toleransi pasif' melainkan taʿāruf aktif: keluar mengenal yang berbeda suku/bangsa, lalu menurut tafsir Kemenag saling menolong. Kemuliaan digeser dari yang diwarisi (nasab, harta) ke yang diusahakan (takwa) — satu-satunya sumbu yang bisa dinaiki siapa pun.",
+      "quranic_term": "taʿāruf"
+    },
+    {
+      "lens": "systems",
+      "reading": "Sebuah pembacaan: keragaman diposisikan sebagai fitur sistemik, bukan cacat yang harus diseragamkan. Jaringan heterogen (banyak suku/bangsa) punya jangkauan dan ketahanan yang tak dimiliki jaringan homogen — asalkan ada protokol yang menyambungkannya. Ayat menyebut protokol itu: taʿāruf.",
+      "analogy": "heterogeneous network > monoculture; diversity as robustness",
+      "quranic_term": "syuʿūb wa qabāʾil"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Analogi untuk ekosistem multi-agen: keragaman agen (arsitektur, spesialisasi, sumber data berbeda) adalah aset — TAPI hanya jika ada protokol saling-kenal (handshake/service-discovery) yang menstandarkan cara mereka mengidentifikasi diri dan bertukar. Actionable: (1) beri tiap agen 'kartu identitas' terverifikasi (kapabilitas + asal + kredensial) sebelum kolaborasi; (2) rank kepercayaan pada alignment (takwa≈kepatuhan pada tujuan/keselamatan) bukan pada 'senioritas' atau vendor; (3) rancang interoperabilitas lintas-heterogen, jangan paksa monokultur satu-model.",
+      "analogy": "agent handshake / capability discovery; trust by alignment not origin",
+      "quranic_term": "li-taʿārafū"
+    },
+    {
+      "lens": "computational",
+      "reading": "'Taʿārafū' adalah bentuk resiprokal (saling): protokol dua-arah, bukan broadcast satu-arah. Saling-kenal menuntut kedua pihak memancarkan identitas DAN membaca identitas lawan — mirip handshake berpasangan yang membangun sesi tepercaya sebelum data mengalir.",
+      "analogy": "reciprocal handshake / mutual authentication",
+      "quranic_term": "taʿāruf resiprokal"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "Ayat menegakkan invariant nilai: rank(manusia) = f(takwa), dan bukan f(nasab, harta, warna). Semua atribut asal-usul dinyatakan sebagai data non-fungsional untuk penilaian — informatif untuk pengenalan (li-taʿārafū) tapi haram jadi basis peringkat. Pemisahan tegas antara 'field untuk identifikasi' dan 'field untuk penilaian'.",
+      "analogy": "separation of identity attributes vs ranking function"
+    },
+    {
+      "lens": "economy",
+      "reading": "Keragaman suku/bangsa ≈ pembagian kerja dan keunggulan komparatif: pihak-pihak berbeda punya sumber daya & keahlian berbeda, sehingga pertukaran (taʿāruf → taʿāwun/saling tolong per tafsir) menghasilkan surplus yang tak mungkin dicapai kelompok terisolasi. Pengenalan adalah prasyarat perdagangan dan kerja sama.",
+      "analogy": "gains from trade; comparative advantage"
+    },
+    {
+      "lens": "biology-medicine",
+      "reading": "Resonansi struktural (analogi pemahaman, bukan mukjizat numerik): populasi dengan keragaman genetik lebih tahan guncangan penyakit ketimbang monokultur; imunitas kawanan pun lahir dari heterogenitas. Pola 'keragaman = ketahanan' bergema dengan penempatan syuʿūb wa qabāʾil sebagai desain, bukan kekurangan.",
+      "analogy": "genetic diversity → resilience; monoculture fragility"
+    },
+    {
+      "lens": "psychology",
+      "reading": "Ilmu sosial modern menamai 'kontak antar-kelompok' sebagai penurun prasangka — kondisinya: status setara & tujuan bersama. Ayat mendahului dengan menyingkirkan hierarki status palsu (nasab/harta) lalu menetapkan tujuan bersama (saling mengenal-menolong) — dua syarat kontak yang mengurangi permusuhan.",
+      "analogy": "intergroup contact hypothesis"
+    },
+    {
+      "lens": "history-ummah",
+      "reading": "Konteks tafsir Kemenag menautkan ayat ke Fath Makkah — momen bangsa-bangsa Arab yang saling bermusuhan disatukan bukan dengan menghapus kesukuan, melainkan menundukkan kebanggaan suku di bawah takwa. Model historis: integrasi tanpa penyeragaman.",
+      "analogy": "integration without homogenization"
+    },
+    {
+      "lens": "inference",
+      "reading": "Benang merahnya: perbedaan bukan bug melainkan spesifikasi (li — 'supaya'), dengan syarat protokol penghubung (taʿāruf) dan fungsi-nilai yang benar (takwa, bukan asal-usul). Sistem sosial atau komputasional yang menghapus keragaman kehilangan jangkauan; yang membiarkannya tanpa protokol kenal-mengenal jatuh ke fragmentasi.",
+      "quranic_term": "li-taʿārafū"
+    }
+  ],
+  "inference": "Salah satu pembacaan rekayasa QS 49:13: keragaman (syuʿūb wa qabāʾil) diposisikan sebagai fitur bertujuan, bukan cacat yang harus diseragamkan — dengan dua syarat yang dinyatakan ayat itu sendiri. Pertama, protokol penghubung: 'li-taʿārafū' (saling mengenal), sebuah handshake resiprokal yang menjadikan heterogenitas dapat-dioperasikan alih-alih memecah. Kedua, fungsi-nilai yang benar: peringkat ditentukan takwa (alignment), bukan nasab atau harta (atribut asal-usul). Untuk desain sistem — sosial maupun multi-agen — ini menyarankan: rangkul heterogenitas demi jangkauan & ketahanan, wajibkan protokol saling-kenal terverifikasi sebelum kolaborasi, dan letakkan peringkat kepercayaan pada alignment, bukan pada asal atau senioritas. Ini analogi struktural untuk membangun sistem, bukan klaim maksud tunggal ayat maupun mukjizat numerik.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-08",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-08",
+      "note": "Tadabbur perdana — Wave 8 manusia/sosial.",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

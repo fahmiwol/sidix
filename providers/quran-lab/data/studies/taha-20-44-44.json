@@ -1,0 +1,107 @@
+{
+  "schema": "lab-study-v2",
+  "id": "taha-20-44-44",
+  "version": 1,
+  "title": "Qaulan layyinan — kata-kata lembut bahkan kepada pihak yang paling keras",
+  "subtitle": "Berkatalah kepadanya (Firʿaun) dengan lemah lembut, mudah-mudahan ia ingat atau takut — nada rendah-friksi untuk membuka penerimaan",
+  "ref": {
+    "surah": 20,
+    "from": 44,
+    "to": 44
+  },
+  "surah_name": "Taha",
+  "theme": "Nada & framing lembut, persuasi rendah-friksi, membuka penerimaan, antarmuka yang tak memicu resistensi",
+  "sourced_meaning": {
+    "summary": "Menurut Tafsir Kemenag, Allah mengajarkan Musa dan Harun cara menghadapi Firʿaun: dengan kata-kata yang halus dan lemah lembut. Orang yang dihadapi demikian hatinya akan terkesan dan cenderung menyambut serta menerima dakwah. Cara bijaksana ini juga diajarkan kepada Nabi Muhammad (dikaitkan dengan QS 16:125). Sebaliknya, jika dihadapi dengan kekerasan dan bentakan, orang justru menentang dan menjauh (dikaitkan dengan QS 3:159: 'sekiranya engkau bersikap keras dan berhati kasar, tentulah mereka menjauhkan diri'). Tafsir juga menyebut kata-kata yang diajarkan untuk disampaikan kepada Firʿaun (QS 79:18-19): ajakan membersihkan diri dan menuju jalan Tuhan agar ia takut kepada-Nya — dengan harapan Firʿaun menyadari kesesatan dan takut pada azab bila terus membangkang.",
+    "sources": [
+      "Tafsir Kemenag RI QS 20:44",
+      "Tafsir al-Jalalayn QS 20:44"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Persepsi",
+      "note": "sasaran (Firʿaun) dikenali sebagai pihak paling keras & berkuasa; strategi memperhitungkan profil penerima — bukan nada seragam untuk semua, melainkan disesuaikan dengan kondisi lawan yang sensitif terhadap konfrontasi"
+    },
+    {
+      "layer": "Alignment",
+      "note": "tujuan tetap disampaikan (mengingatkan, mengajak ke jalan Tuhan) namun dibungkus nada lembut — objektif tak dikorbankan, hanya kemasannya dioptimalkan agar tak memicu penolakan reflektif"
+    },
+    {
+      "layer": "Aksi & transfer",
+      "note": "'qaulan layyinan' = pilihan kanal/register keluaran yang low-friction; tafsir: kata halus 'terkesan di hati' & 'cenderung menerima', kata keras memicu 'menentang dan menjauh' — kualitas transfer bergantung pada nada"
+    },
+    {
+      "layer": "Umpan balik",
+      "note": "'laʿallahu yatadhakkaru aw yakhsyā' = harapan hasil (ingat/takut) sebagai sinyal terbuka-tidaknya penerima; nada lembut memaksimalkan probabilitas penerimaan, meski hasil akhir tak dijamin"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "ai-agentic",
+      "reading": "Analogi untuk desain antarmuka & nada respons agen: bahkan ketika lawan bicara keras, berkuasa, atau memusuhi (Firʿaun sebagai kasus ekstrem), strategi yang diajarkan adalah nada LEMBUT & rendah-friksi — bukan konfrontasi. Actionable: (1) framing pesan agar tak memicu penolakan reflektif (reactance) — sampaikan tujuan tanpa membuat penerima merasa diserang; (2) sesuaikan nada dengan sensitivitas penerima, terutama yang defensif; (3) optimalkan 'kemasan' pesan (tone) sambil menjaga isi/tujuan tetap utuh. Prinsip low-friction interface: turunkan hambatan penerimaan agar isi dapat masuk, karena nada keras menutup kanal ('menjauh').",
+      "analogy": "low-friction interface; framing to minimize reactance; tone adapted to a hostile recipient",
+      "quranic_term": "qaulan layyinan"
+    },
+    {
+      "lens": "psychology",
+      "reading": "Tafsir mengontraskan dua jalur: kata halus → 'terkesan di hati, cenderung menerima'; kata keras/bentakan → 'menentang dan menjauh'. Ini resonansi kuat dengan psychological reactance & sikap defensif: konfrontasi mengaktifkan pertahanan ego dan menutup penerimaan, sedangkan pendekatan lembut menjaga rasa otonomi penerima sehingga pesan bisa diproses. Membuka pintu sebelum menyampaikan isi.",
+      "analogy": "reactance theory; defensiveness closes the channel, gentleness keeps it open",
+      "quranic_term": "qaulan layyinan vs kekerasan"
+    },
+    {
+      "lens": "systems",
+      "reading": "Sebuah pembacaan: nada adalah lapisan transport, isi adalah muatan. Jika lapisan transport bermusuhan (kasar), muatan ditolak sebelum diproses (koneksi putus — 'menjauh'). Nada lembut menjaga koneksi tetap terbuka sehingga muatan sampai. Optimasi berlaku pada lapisan transport, tanpa mengubah muatan/tujuan.",
+      "analogy": "transport layer (tone) vs payload (content); hostile handshake drops the connection",
+      "quranic_term": "layyin sebagai transport"
+    },
+    {
+      "lens": "pedagogy",
+      "reading": "Prinsip pedagogis: penerima yang defensif atau berstatus tinggi butuh pendekatan yang menjaga muka agar mau belajar. Nada lembut menurunkan ancaman sehingga koreksi dapat diterima; ini selaras dengan QS 16:125 (mauʿizhah hasanah) yang dirujuk tafsir. Mengajar pihak yang keras dimulai dengan menurunkan tembok pertahanannya.",
+      "analogy": "face-saving pedagogy; lowering affective filter before instruction",
+      "quranic_term": "laʿallahu yatadhakkar"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "Ayat memisahkan dua variabel independen: ISI (ajakan ke jalan Tuhan, tetap) dan NADA (lembut, dapat-diatur). Guard-nya: apa pun status lawan, nada di-set ke 'layyin'. Ini menegaskan bahwa parameter penyampaian dioptimalkan terpisah dari muatan — mengubah nada tidak mengubah kebenaran isi, tapi menentukan apakah isi diterima.",
+      "analogy": "decouple tone parameter from content; set delivery=soft regardless of recipient power",
+      "quranic_term": "qaulan layyinan (parameter nada)"
+    },
+    {
+      "lens": "history-ummah",
+      "reading": "Konteks kisah: perintah ini diberikan justru untuk menghadapi Firʿaun — tiran paling angkuh. Bahwa metode lembut diperintahkan pada kasus paling ekstrem menjadikannya batas-atas prinsip: jika kelembutan dianjurkan menghadapi Firʿaun, maka a fortiori berlaku untuk lawan yang lebih ringan. Model historis: persuasi mendahului paksaan, bahkan terhadap penindas.",
+      "analogy": "extreme-case establishes the rule (a fortiori); persuasion before force",
+      "quranic_term": "menghadapi Firʿaun dengan lembut"
+    },
+    {
+      "lens": "amal",
+      "reading": "Amal praktisnya: saat menasihati atau mengingatkan siapa pun — terlebih yang berkuasa, keras, atau mudah tersinggung — pilih kata yang lembut dan tidak menyerang, sampaikan tujuan tanpa mempermalukan. Kekerasan menutup hati; kelembutan membukanya. Hasilnya tetap di luar kendali kita ('mudah-mudahan'), tugas kita menyampaikan dengan cara terbaik.",
+      "quranic_term": "faqūlā lahu qaulan layyinan"
+    },
+    {
+      "lens": "inference",
+      "reading": "Benang merahnya: keberhasilan menyampaikan pesan bergantung tak hanya pada kebenaran isi tapi pada nada yang menjaga kanal tetap terbuka — bahkan, terutama, kepada penerima yang paling keras. Nada keras menutup penerimaan ('menjauh'); nada lembut memaksimalkan peluang isi masuk ('terkesan di hati'). Optimalkan kemasan, jaga isi.",
+      "quranic_term": "qaulan layyinan"
+    }
+  ],
+  "inference": "Salah satu pembacaan rekayasa QS 20:44: efektivitas penyampaian dimodelkan sebagai isi (tetap) yang dibungkus nada rendah-friksi (dapat-diatur). Meski sasarannya Firʿaun — pihak paling keras dan berkuasa — metode yang diperintahkan adalah 'qaulan layyinan' (kata-kata lembut), karena menurut tafsir kata halus membuat hati 'terkesan dan cenderung menerima', sedangkan kekerasan membuat lawan 'menentang dan menjauh'. Nada berperan seperti lapisan transport: jika bermusuhan, muatan ditolak sebelum diproses; jika lembut, kanal terbuka dan isi bisa sampai. Untuk desain sistem — antarmuka percakapan, agen, atau persuasi — ini menyarankan: framing yang meminimalkan resistensi (reactance), nada yang disesuaikan dengan sensitivitas penerima terutama yang defensif, dan pemisahan parameter nada dari muatan sehingga tujuan tetap utuh sementara penerimaan dimaksimalkan. Bahwa kelembutan diperintahkan pada kasus paling ekstrem menjadikannya batas-atas prinsip. CATATAN TANZIH: harapan 'agar ia ingat atau takut' merujuk takut kepada Allah dan hidayah yang milik-Nya — perkara iman yang tidak dimodelkan atau dianalogikan; yang dibaca-rekayasa hanyalah POLA komunikasi manusia (nada lembut) di sisi makhluk. Ini resonansi struktural, bukan mukjizat numerik; salah satu pembacaan, bukan maksud tunggal ayat.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-08",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-08",
+      "note": "Tadabbur perdana — Wave 11 wasilah/metode & komunikasi.",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

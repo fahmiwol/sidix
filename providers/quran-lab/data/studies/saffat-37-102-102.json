@@ -1,0 +1,86 @@
+{
+  "schema": "lab-study-v2",
+  "id": "saffat-37-102-102",
+  "version": 1,
+  "title": "Ibrahim & putranya — mimpi sebagai perintah, dan kesediaan yang teruji",
+  "subtitle": "\"Anakku, sesungguhnya aku melihat dalam mimpi bahwa aku menyembelihmu — maka pikirkanlah pendapatmu.\" Ia menjawab: \"Kerjakanlah apa yang diperintahkan; insya Allah kau dapati aku termasuk orang yang sabar.\"",
+  "ref": {
+    "surah": 37,
+    "from": 102,
+    "to": 102
+  },
+  "surah_name": "As-Saffat",
+  "theme": "Salah satu ujian paling berat dalam Al-Qur'an — mimpi sebagai kanal perintah tertinggi, dan kesediaan tulus seorang anak. Kajian ini menempatkan bobot teologis & moral di atas segala catatan struktural; dibaca dengan penuh penghormatan, bukan sebagai studi kasus dingin.",
+  "sourced_meaning": {
+    "summary": "Tatkala anak itu sampai pada usia mampu berusaha bersama Ibrahim, Ibrahim berkata: 'Anakku, sesungguhnya aku melihat dalam mimpi bahwa aku menyembelihmu — maka pikirkanlah pendapatmu!' Ia menjawab: 'Wahai bapakku, kerjakanlah apa yang diperintahkan kepadamu; insya Allah kau akan mendapatiku termasuk orang-orang yang sabar.' Tafsir Kemenag: Allah menguji Ibrahim dengan perintah menyembelih anak satu-satunya (menurut al-Farra', Ismail saat itu berusia 13 tahun — tradisi tafsir mayoritas termasuk Kemenag mengidentifikasi anak ini sebagai Ismail; beberapa riwayat lain menyebut Ishaq, dicatat sebagai keragaman klasik). Ibrahim, dengan hati sedih, memberitahukan perintah yang disampaikan lewat mimpi itu kepada anaknya dan MEMINTA PENDAPATNYA. Ismail menjawab dengan kerendahan hati: taat, rela, ikhlas menerima ketentuan Allah, tabah menghadapi cobaan. KELANJUTAN KISAH (37:103-107, disertakan agar konteks utuh): keduanya berserah diri; tepat saat penyembelihan hendak dilaksanakan, malaikat menyeru bahwa mimpi itu telah 'dibenarkan' (ditunaikan kesediaannya) — Allah menebus anak itu dengan seekor sembelihan besar (domba). Kemenag menegaskan: ini 'ujian yang nyata', hak Allah menguji hamba-Nya, dan peristiwa ini menjadi dasar syariat ibadah kurban yang berlanjut hingga umat Nabi Muhammad.",
+    "sources": [
+      "Tafsir Kemenag RI QS 37:102 & 37:103-107",
+      "Tafsir al-Jalalayn QS 37:102"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Aksi & transfer",
+      "note": "perintah tertinggi (menyembelih anak) datang lewat KANAL MIMPI kepada seorang nabi — bukan kanal wahyu-terjaga lainnya, namun tetap diyakini otoritatif & wajib ditaati"
+    },
+    {
+      "layer": "Alignment",
+      "note": "Ibrahim TIDAK langsung bertindak sepihak — ia menyampaikan perintah itu kepada anaknya dan bertanya pendapatnya ('fanzhur madza tara') sebelum melangkah"
+    },
+    {
+      "layer": "Tangga epistemik",
+      "note": "respons anak memakai 'in sya'a Allah' (insya Allah) — kesanggupan diri sendiri digantungkan pada kehendak Allah, bukan diklaim pasti oleh diri sendiri"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "psychology",
+      "reading": "Respons Ismail adalah salah satu model kesediaan (willing submission) paling murni dalam narasi Al-Qur'an — bukan kepatuhan yang dipaksakan, melainkan pilihan sadar seorang anak muda yang diajak berdialog, bukan sekadar diperintah. 'In sya'a Allah' menunjukkan kerendahan hati epistemik: ia tak mengklaim kekuatannya sendiri pasti cukup, ia menyandarkannya kepada Allah.",
+      "analogy": "kesediaan sadar berbasis dialog, bukan kepatuhan paksa — dengan kerendahan hati epistemik",
+      "quranic_term": "ṣābirīn (orang-orang yang sabar)"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Sebelum bertindak atas perintah paling berat sekalipun, Ibrahim tetap MENGKOMUNIKASIKANNYA kepada pihak yang akan terdampak langsung dan meminta pendapatnya ('fanzhur madza tara') — bukan mengeksekusi sepihak walau ia yakin itu perintah sah. Pola ini, dibaca sangat terbatas pada struktur komunikasinya: keputusan berdampak besar & ireversibel tetap melibatkan dialog dengan pihak terdampak sebelum eksekusi, bukan unilateral meski otoritas untuk bertindak ada.",
+      "analogy": "keputusan berdampak besar tetap didahului dialog dengan pihak terdampak, bukan eksekusi unilateral"
+    },
+    {
+      "lens": "systems",
+      "reading": "Kisah ini menunjukkan bahwa PERINTAH PALING BERAT sekalipun disampaikan lewat kanal yang sama seperti kanal-kanal wahyu lain kepada para nabi (mimpi — bandingkan taksonomi kanal di kajian Asy-Syura 42:51) — beratnya isi pesan tidak mengubah jenis kanalnya. Yang membedakan level ujian bukan mekanisme penyampaiannya, melainkan BOBOT ISInya.",
+      "analogy": "bobot pesan tak menentukan jenis kanal — kanal yang sama membawa pesan ringan maupun terberat"
+    },
+    {
+      "lens": "inference",
+      "reading": "Kesediaan Ismail dikonfirmasi ('ditunaikan') pada TITIK PALING KRITIS — bukan pada momen ia mengucapkan kata-kata kesediaan, melainkan saat tindakan benar-benar hendak dilaksanakan (37:103-105). Ini pembeda penting: kesediaan verbal dan kesediaan teruji-pada-momen-kritis adalah dua tingkat berbeda; yang kedua bernilai jauh lebih tinggi."
+    },
+    {
+      "lens": "history-ummah",
+      "reading": "Peristiwa ini menjadi ASAL-USUL syariat ibadah kurban yang diteruskan pada syariat Nabi Muhammad (Kemenag: 'peristiwa Ibrahim menyembelih anaknya akan tetap dikenang... dan diikuti oleh umatnya') — satu peristiwa personal-ekstrem menjadi fondasi praktik ibadah kolektif berkelanjutan lintas generasi.",
+      "analogy": "peristiwa personal-ekstrem menjadi fondasi praktik kolektif berkelanjutan lintas generasi"
+    },
+    {
+      "lens": "amal",
+      "reading": "Ini adalah salah satu narasi paling agung tentang tawakal & kepasrahan total (islam dalam makna hurufiahnya — penyerahan diri) dalam Al-Qur'an. Kajian ini dengan sengaja TIDAK mereduksinya menjadi sekadar 'pola menarik' — bobot utamanya adalah teladan iman, kesabaran, dan kasih sayang antara ayah dan anak yang keduanya memilih taat kepada Allah melebihi kehendak & rasa sayang mereka sendiri. Peristiwa ini ditebus dengan rahmat (domba pengganti) — bukan berakhir tragis, melainkan berakhir dengan pembuktian ketaatan yang diterima & dibalas."
+    }
+  ],
+  "inference": "Kisah ini adalah salah satu ujian keimanan paling berat yang direkam Al-Qur'an: perintah tertinggi datang lewat kanal mimpi kepada seorang nabi, disampaikan dengan dialog (bukan paksaan sepihak) kepada anaknya, dan disambut dengan kesediaan tulus yang berlandaskan tawakal ('in sya' Allah'), lalu teruji nyata pada momen paling kritis SEBELUM ditebus dengan rahmat (37:103-107). Catatan rekayasa yang SANGAT dibatasi, ditempatkan setelah & di bawah makna utamanya: (1) struktur komunikasi Ibrahim-Ismail menunjukkan bahwa bahkan perintah terberat sekalipun disertai dialog dengan pihak terdampak sebelum eksekusi; (2) bobot sebuah pesan tidak mengubah jenis kanal penyampaiannya. CATATAN TANZIH (wajib): perintah ini adalah ujian yang ditetapkan Allah atas hamba pilihan-Nya — kewenangan menguji & menetapkan takaran ujian adalah hak Allah semata (Kemenag: 'memang hak Allah untuk menguji hamba yang dikehendaki-Nya'), tidak dianalogikan sebagai mekanisme sistem apa pun; yang dibaca-rekayasa hanyalah STRUKTUR dialog & kesediaan pada pihak makhluk (Ibrahim dan anaknya). Kisah ini ditutup dengan penebusan (fidyah) — bukan kesudahan tragis, melainkan bukti ketaatan yang diterima, menjadi asal ibadah kurban yang diwariskan hingga kini.",
+  "authors": [
+    "Draft AI (LLM draft) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-12",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-12",
+      "note": "Tadabbur perdana — Wave 16 mimpi & wahyu. Kajian ditulis dengan kehati-hatian & penghormatan tertinggi (ujian dzabih Ibrahim).",
+      "authors": [
+        "Draft AI (LLM draft)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

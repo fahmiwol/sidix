@@ -1,0 +1,95 @@
+{
+  "schema": "lab-study-v2",
+  "id": "sad-38-41-44",
+  "version": 1,
+  "title": "Irkuḍ bi-rijlik — protokol preskriptif, dan dispensasi yang menepati sumpah tanpa mematahkannya",
+  "subtitle": "Hentakkan kakimu; inilah air sejuk untuk mandi dan minum — dan ambillah seikat rumput, pukullah dengannya, dan janganlah kau langgar sumpahmu",
+  "ref": {
+    "surah": 38,
+    "from": 41,
+    "to": 44
+  },
+  "surah_name": "Sad",
+  "theme": "Dua pola berbeda dalam satu narasi: (1) remedi preskriptif yang menuntut tindakan penerima, bukan penyembuhan pasif; (2) akomodasi kesulitan yang menepati kendala/sumpah persis-hurufnya, bukan melanggarnya",
+  "sourced_meaning": {
+    "summary": "Ingatlah hamba Kami Ayyub ketika ia menyeru Tuhannya: 'Aku diganggu setan dengan kepayahan dan siksaan.' (Allah berfirman): 'Hentakkanlah kakimu; inilah air yang sejuk untuk mandi dan untuk minum.' Dan Kami anugerahi dia keluarganya dan sebanyak mereka pula, sebagai rahmat dari Kami dan pelajaran bagi orang-orang berpikiran. Dan ambillah dengan tanganmu seikat rumput, maka pukullah dengannya, dan janganlah kamu melanggar sumpah. Sesungguhnya Kami dapati dia seorang yang sabar — sebaik-baik hamba, sesungguhnya dia amat taat. Tafsir Kemenag: Ayub petani-peternak kaya yang taat, diuji Allah dengan penyakit kulit parah hingga harta habis & keluarga tercerai. Atas kesabarannya, Allah memerintahkan menghentakkan kaki — memancar mata air sejuk untuk mandi & minum, seketika sembuh total. Soal ayat 44: Ayub pernah bersumpah (menurut HADIS, tak dirinci Al-Qur'an) akan memukul istrinya Rahmah 100 kali karena suatu keterlambatan. Allah memberi keringanan: memukul dengan seikat 100 tangkai rumput sekali pukul dianggap menunaikan sumpah — kemurahan bagi Ayub & istrinya yang telah merawatnya dengan baik, sehingga ia terhindar dari melanggar sumpah.",
+    "sources": [
+      "Tafsir Kemenag RI QS 38:41-44",
+      "Tafsir al-Jalalayn QS 38:41-44"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Aksi & transfer",
+      "note": "'irkuḍ bi-rijlik' — remedi diberikan sebagai INSTRUKSI TINDAKAN kepada penerima, bukan penyembuhan yang terjadi tanpa keterlibatannya"
+    },
+    {
+      "layer": "Tangga epistemik",
+      "note": "satu sumber air, DUA moda pakai disebut eksplisit: mughtasal (mandi/topikal) DAN syarāb (minum/sistemik)"
+    },
+    {
+      "layer": "Alignment",
+      "note": "'wa lā taḥnats' — kendala asal (sumpah) TETAP dijaga utuh; solusinya mengubah BENTUK pemenuhan, bukan melanggar batasnya"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "biology-medicine",
+      "reading": "Protokol yang diberikan mencakup DUA moda sekaligus dari satu sumber: mandi (aplikasi topikal/eksternal) dan minum (asupan sistemik/internal) — pendekatan ganda pada satu titik intervensi, bukan hanya salah satu jalur. Kemenag: 'seketika itu Allah menyembuhkan penyakitnya seakan-akan tidak pernah sakit sebelumnya' — pemulihan total, bukan parsial.",
+      "analogy": "intervensi dua-moda (topikal + sistemik) dari satu sumber",
+      "quranic_term": "mughtasalun bāridun wa syarāb"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Remedi di sini BUKAN penyembuhan otomatis yang terjadi di belakang layar — Ayyub diperintah bertindak ('irkuḍ' = hentakkan) sebagai syarat sebelum pemulihan terjadi. Pola desain: sistem bantuan yang memberi INSTRUKSI actionable kepada penerima (bukan menyelesaikan segalanya secara silent), melibatkan agency penerima sebagai bagian dari proses — beda dari 26:80 (self-healing built-in tanpa instruksi eksternal).",
+      "analogy": "remedi actionable yang menuntut aksi penerima, bukan black-box otomatis",
+      "quranic_term": "irkuḍ bi-rijlik"
+    },
+    {
+      "lens": "systems",
+      "reading": "Pola 'wa lā taḥnats' (jangan langgar sumpah) pada ayat 44 adalah CONSTRAINT-PRESERVING ACCOMMODATION: kesulitan besar (memukul istri 100 kali di tengah kelemahan fisiknya) diakomodasi BUKAN dengan melanggar kendala asal (sumpah), melainkan dengan menyediakan jalur pemenuhan alternatif yang tetap sah menurut bilangannya (seikat 100 tangkai, dipukulkan sekali). Ini pola berbeda dari 'hard-inviolable-bounds' (2:229, 65:1, 55:5-9) yang menegaskan batas tak boleh dilanggar sama sekali — di sini ditunjukkan mekanisme KOMPLEMENTER: bukan melanggar batas, melainkan rukhsah/jalur akomodasi yang tetap menepati hurufnya sambil meringankan bebannya.",
+      "analogy": "constraint-preserving accommodation (rukhsah): akomodasi kesulitan tanpa melanggar invariant asal",
+      "quranic_term": "wa lā taḥnats (jangan langgar sumpah)"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "'Khudz ḍightsan fadhrib bihī' (ambil seikat, pukullah dengannya) menyelesaikan predikat sumpah (100 pukulan) lewat representasi berkuantitas setara — 100 tangkai dalam satu ikat, dieksekusi dalam SATU operasi pukul, bukan 100 iterasi terpisah. Secara struktural: constraint COUNT terpenuhi via representasi batch, bukan loop penuh.",
+      "analogy": "constraint terpenuhi via representasi batch (satu operasi setara N-iterasi), bukan loop penuh",
+      "quranic_term": "ḍightsan (seikat/berkas)"
+    },
+    {
+      "lens": "psychology",
+      "reading": "Rukhsah diberikan pada momen paling rentan bagi ketiganya: Ayyub sakit parah, istrinya lelah merawat, dan sebuah sumpah terucap di masa kepayahan ('massaniyash-shayṭānu binuṣbin wa ʿadzāb'). Solusi teknis (seikat rumput) di sini menyatukan kepatuhan hukum dan kasih sayang dalam satu tindakan — bukan dua hal yang dipisah atau dipertentangkan.",
+      "analogy": "kepatuhan & kasih sayang terintegrasi dalam satu solusi, bukan dipisah"
+    },
+    {
+      "lens": "inference",
+      "reading": "Kemenag mencatat: Al-Qur'an TIDAK merinci isi sumpah Ayyub — hanya hadis yang menjelaskan sebab & bilangannya. Ini pembeda lapisan sumber yang jujur: TEKS ayat (pasti, tingkat tinggi) vs PENJELASAN RIWAYAT/hadis (tingkat kepastian berbeda, melengkapi konteks) — dua lapis yang perlu dibedakan, bukan dicampur seolah satu tingkat.",
+      "analogy": "pembedaan lapisan sumber: teks primer vs riwayat pelengkap konteks"
+    },
+    {
+      "lens": "amal",
+      "reading": "Penilaian akhir yang diberikan — 'innā wajadnāhu ṣābiran, niʿmal-ʿabdu, innahū awwāb' (Kami dapati ia sabar, sebaik-baik hamba, amat taat) — berfokus pada KARAKTER (sabar, taat, kembali kepada Allah) sepanjang proses, bukan pada tanpa-cela atau performa sempurna. Riwayat yang dikutip Kemenag (doa Ayyub tentang lisan-hati-mata yang selaras, berbagi makan dengan anak yatim) melengkapi gambaran keutuhan akhlaknya."
+    }
+  ],
+  "inference": "Kisah ini menyingkap dua pola berbeda dalam satu narasi berkelanjutan. Pola pertama (38:41-43): remedi preskriptif dua-moda (mandi + minum dari satu sumber air) yang menuntut TINDAKAN dari penerima ('irkuḍ') — pemulihan bukan otomatis di belakang layar, melainkan melibatkan agensi Ayyub sendiri, lalu diikuti pemulihan keluarga berlipat (konsisten dengan 21:83-84). Pola kedua (38:44): dispensasi sumpah — kesulitan besar diakomodasi TANPA melanggar kendala asal, lewat jalur pemenuhan alternatif yang tetap sah secara hitungan (seikat 100 tangkai dipukulkan sekali). Bacaan rekayasa: (1) remedi actionable (menuntut aksi penerima) adalah pola berbeda dari self-healing otomatis (bandingkan 26:80) — desain bantuan yang baik kadang perlu melibatkan agency penerima, bukan menyelesaikan semuanya secara silent; (2) 'wa lā taḥnats' menunjukkan pola constraint-preserving accommodation — pelengkap yang kontras dengan prinsip hard-inviolable-bounds yang sudah ada di sintesis (2:229/65:1/55:5-9): batas tetap tak dilanggar, namun tersedia rukhsah/jalur pemenuhan alternatif yang sah, bukan bypass diam-diam. CATATAN TANZIH: seluruh perintah ('irkuḍ', 'khudz', 'lā taḥnats') dan pemberian (mata air, pemulihan keluarga) adalah firman & perbuatan Allah kepada hamba-Nya — tidak dianalogikan sebagai mekanisme sistem; yang dibaca-rekayasa hanyalah STRUKTUR pola remedi & akomodasi kendala pada pihak makhluk.",
+  "authors": [
+    "Draft AI (LLM draft) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-12",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-12",
+      "note": "Tadabbur perdana — Wave 15 penyembuhan (kisah Ayyub, bagian 2/2).",
+      "authors": [
+        "Draft AI (LLM draft)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

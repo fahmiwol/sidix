@@ -1,0 +1,115 @@
+{
+  "schema": "lab-study-v2",
+  "id": "at-takwir-81-1-14",
+  "version": 1,
+  "title": "Matahari digulung — shutdown terurut subsistem kosmik dan flush log yang lengkap",
+  "subtitle": "Dua belas 'apabila' berderet: subsistem dinonaktifkan satu per satu hingga tiap jiwa tahu apa yang diperbuatnya",
+  "ref": {
+    "surah": 81,
+    "from": 1,
+    "to": 14
+  },
+  "surah_name": "At-Takwir",
+  "theme": "Eskatologi kosmik, teardown berurutan, penonaktifan subsistem, audit final, penyingkapan catatan amal",
+  "sourced_meaning": {
+    "summary": "Tafsir Kemenag: rangkaian ayat ini menggambarkan kehancuran alam semesta menjelang Kiamat secara berurutan — matahari digulung dan padam cahayanya lalu jatuh berantakan (ayat 1), bintang berjatuhan, gunung dijalankan/dihancurkan, unta bunting ditinggalkan tak dipedulikan, binatang liar dikumpulkan, lautan dijadikan meluap/mendidih, ruh dipertemukan dengan tubuh, bayi yang dikubur hidup-hidup ditanya atas dosa apa ia dibunuh, lembaran catatan amal dibuka, langit dilenyapkan, neraka dinyalakan, surga didekatkan. Puncaknya ayat 14: 'tiap jiwa akan mengetahui apa yang telah dikerjakannya'. Kemenag menekankan bahwa saat catatan amal dibuka manusia tercengang karena semuanya tercatat rapi dan teliti (dikaitkan dengan 18:49), dan setiap orang wajib menimbang amalnya dengan timbangan yang benar. Ini perkara Kiamat — perkara ghaib yang hanya diketahui dari wahyu.",
+    "sources": [
+      "Tafsir Kemenag RI QS 81:1-14",
+      "Tafsir al-Jalalayn QS 81:1-14"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Aksi & transfer",
+      "note": "Deret 'iżā' (apabila) = rentetan operasi teardown aktif: kuwwirat/inkadarat/suyyirat/sujjirat — tiap kata kerja pasif menandai satu subsistem yang dinonaktifkan, bukan peluruhan pasif spontan"
+    },
+    {
+      "layer": "Umpan balik",
+      "note": "'nusyirat aṣ-ṣuḥuf' (lembaran dibuka) — seluruh riwayat amal yang tercatat disingkap kembali sebagai umpan balik final atas seluruh masa hidup"
+    },
+    {
+      "layer": "Memori & grounding",
+      "note": "'ʿalimat nafs mā aḥḍarat' (81:14) — tiap jiwa memperoleh pengetahuan penuh atas apa yang telah diperbuatnya; grounding ke catatan yang lengkap, bukan ingatan yang bias"
+    },
+    {
+      "layer": "Alignment",
+      "note": "Puncak deret adalah penyelarasan akhir: setelah semua subsistem mati, yang tersisa adalah kesesuaian antara amal dan ganjaran — surga didekatkan, neraka dinyalakan"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "systems",
+      "reading": "Dua belas klausa 'apabila' membentuk urutan penonaktifan (shutdown sequence) yang terjadwal: sumber energi utama dulu (matahari digulung), lalu benda-benda yang bergantung padanya (bintang berjatuhan), lalu struktur besar (gunung dijalankan), lalu subsistem lokal (laut, hewan). Ini bukan crash acak melainkan teardown berorde — sistem besar dimatikan lapis demi lapis mengikuti dependensi. Pelajaran rekayasa: sistem tangguh butuh urutan shutdown yang menghormati graf ketergantungan, bukan mematikan semuanya sekaligus dan berharap tak ada yang menggantung.",
+      "analogy": "graceful shutdown sequence menuruti dependency graph",
+      "quranic_term": "iżā … kuwwirat"
+    },
+    {
+      "lens": "computational",
+      "reading": "'Nusyirat aṣ-ṣuḥuf' (catatan-catatan dibuka) menyerupai flush + open dari log yang selama ini ditulis diam-diam: semua peristiwa terekam ke penyimpanan yang persisten, lalu pada titik terminasi seluruhnya dibaca-ulang. Kemenag menegaskan 'tercatat rapi dan teliti, tidak ada yang tertinggal kecil maupun besar' — resonansi dengan sifat log append-only yang lengkap dan tak bisa diubah surut. Poin desain: pencatatan yang benar terjadi sepanjang runtime, penyingkapannya di akhir hanyalah pembacaan, bukan penciptaan data baru.",
+      "analogy": "append-only audit log → final flush & read-back",
+      "quranic_term": "nusyirat aṣ-ṣuḥuf"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Cetak biru fase terminasi agen dengan audit menyeluruh. (1) Shutdown terurut: matikan tool-connection & subproses mengikuti urutan dependensi, bukan kill paksa serempak. (2) Sepanjang hidup agen, tulis jejak keputusan ke log append-only yang tak bisa ditulis-ulang (immutable trace) — inilah 'ṣuḥuf' yang kelak 'nusyirat'/dibuka. (3) Pada terminasi, jalankan audit final: setiap tindakan agen dapat ditelusuri ke catatannya, sehingga 'tiap jiwa tahu apa yang diperbuat' setara dengan traceability sempurna. Actionable: jadikan logging keputusan wajib (bukan opsional) dan pisahkan penulisan-jejak (runtime) dari pembacaan-audit (terminasi). Agen tanpa jejak yang lengkap tak bisa diaudit — dan yang tak bisa diaudit tak bisa dipercaya.",
+      "analogy": "agent teardown + immutable decision-trace → final auditability",
+      "quranic_term": "ʿalimat nafs mā aḥḍarat"
+    },
+    {
+      "lens": "algorithm",
+      "reading": "Struktur 'iżā (syarat berderet) … fa (maka akibat)' adalah pola guard berlapis: dua belas prakondisi harus terpenuhi lebih dulu, baru konsekuensi tunggal di ayat 14 dieksekusi. Ini menyerupai barrier/join — sebuah titik sinkronisasi tempat banyak proindependen harus selesai sebelum tahap final berjalan. Urutannya juga menandai kompleksitas terjadwal: bukan satu operasi, melainkan pipeline penonaktifan yang setiap tahapnya prasyarat bagi keadaan akhir.",
+      "analogy": "guard berlapis (iżā×12 → fa): barrier/join sebelum tahap final",
+      "quranic_term": "iżā … fa-ʿalimat"
+    },
+    {
+      "lens": "earth-cosmos",
+      "reading": "Kemenag membaca ayat 1 sebagai matahari yang padam cahayanya lalu jatuh berantakan bersama hancurnya alam. Sebagai resonansi struktural (BUKAN mukjizat numerik, bukan penetapan model ilmiah): astrofisika mengenal bintang yang kehabisan bahan bakar lalu runtuh/mengembang di akhir siklus hidupnya, dan gangguan bintang pusat meruntuhkan kestabilan orbit benda-benda yang bergantung padanya. Urutan 'matahari dulu, lalu bintang, lalu gunung' beresonansi dengan gagasan kegagalan berantai dari simpul pusat ke pinggir. Analogi ini bounded — gambaran struktur, bukan klaim bahwa ayat menetapkan kosmologi tertentu.",
+      "analogy": "kegagalan berantai dari simpul pusat (bintang) ke tepi (bounded)",
+      "quranic_term": "āyāt kauniyah"
+    },
+    {
+      "lens": "inference",
+      "reading": "Bentuk retorisnya menaruh seluruh bobot pada satu kesimpulan yang tertunda: dua belas kondisi masa depan yang mustahil diverifikasi kini, ditutup dengan kepastian epistemik penuh — 'tiap jiwa AKAN TAHU' (ʿalimat), bukan 'mungkin tahu'. Tangga zhann→yaqīn di sini diselesaikan bukan lewat bukti empiris sekarang, melainkan lewat penyingkapan catatan yang selama ini tersembunyi. Secara struktur: kepastian akhir bersandar pada kelengkapan rekaman, bukan pada persepsi pelaku saat kejadian.",
+      "analogy": "kepastian akhir bersandar pada kelengkapan rekaman, bukan persepsi saat itu",
+      "quranic_term": "zhann → yaqīn"
+    },
+    {
+      "lens": "psychology",
+      "reading": "Kemenag mencatat banyak manusia 'tertipu godaan' dan amal berselubung ria tak berfaedah. Dibaca sebagai cermin regulasi diri: ada jarak antara citra-diri yang kita rawat dan rekaman perbuatan yang sebenarnya. Momen 'catatan dibuka' adalah konfrontasi total dengan data mentah tentang diri — melampaui rasionalisasi dan memori selektif. Pelajaran: kejujuran diri dibangun dengan menimbang amal 'dengan timbangan yang benar' jauh sebelum audit tak terhindarkan, bukan sesudahnya.",
+      "analogy": "konfrontasi citra-diri vs rekaman perbuatan sebenarnya",
+      "quranic_term": "muḥāsabah an-nafs"
+    },
+    {
+      "lens": "amal",
+      "reading": "Inti praktis yang ditegaskan Kemenag: 'setiap orang wajib memandang amalnya dengan kaca mata agama dan menimbangnya dengan timbangan yang benar'. Dimensi amal dari deret kosmik ini bukan spekulasi tentang kapan Kiamat, melainkan dorongan bertindak sekarang — karena yang kelak disingkap adalah apa yang diperbuat hari ini. Tindakan yang lahir: audit-diri berkala (muḥāsabah) sebagai kebiasaan, bukan kepanikan di akhir.",
+      "analogy": "muḥāsabah rutin sebagai disiplin, bukan audit dadakan",
+      "quranic_term": "ḥāsibū anfusakum"
+    },
+    {
+      "lens": "artifact",
+      "reading": "Citra 'aṣ-ṣuḥuf' (lembaran-lembaran) berakar pada teknologi pencatatan: lembaran tempat perbuatan didaftar dan disimpan hingga saatnya dibuka. Peradaban selalu memperluas kemampuan merekam yang tadinya luput — dari lembaran, ke ledger, ke log digital yang tak terhapus. Gambaran catatan yang 'tak meninggalkan yang kecil maupun besar' beresonansi dengan cita-cita arsip yang lengkap dan tahan-ubah, meski kelengkapan sempurna hanya milik pencatatan ilahiah.",
+      "analogy": "lembaran → ledger → immutable log: arsip yang makin lengkap",
+      "quranic_term": "kitāb / ṣuḥuf"
+    }
+  ],
+  "inference": "Dibaca sebagai analogi rekayasa, At-Takwir 1-14 menonjolkan dua pola yang sering diabaikan perancang sistem. Pertama, TEARDOWN TERURUT: alam tidak dimatikan sekaligus melainkan lapis demi lapis mengikuti dependensi (sumber energi → benda bergantung → struktur → subsistem lokal), sebuah shutdown sequence yang menghormati graf ketergantungan. Kedua, AUDIT FINAL dari catatan yang lengkap: sepanjang 'runtime' dunia, amal ditulis rapi ke 'ṣuḥuf' yang append-only, dan pada terminasi seluruhnya dibuka (nusyirat) sehingga 'tiap jiwa tahu apa yang diperbuat' (81:14) — traceability sempurna, bukan ingatan yang bias. Untuk sistem, terutama agen AI: rancang urutan penonaktifan sekelas rancangan startup, dan jadikan pencatatan keputusan yang immutable sebagai kewajiban runtime agar audit di akhir hanya membaca, bukan menebak. Semua pembacaan kosmologis (matahari padam ≈ akhir siklus bintang) ditegaskan sebagai resonansi struktural yang bounded, BUKAN mukjizat numerik atau penetapan model ilmiah; ini salah satu pembacaan rekayasa di atas makna zahir yang bersumber, bukan maksud tunggal ayat. CATATAN GHAIB: Kiamat dan kebangkitan adalah perkara ghaib yang hanya diketahui dari wahyu dan termasuk perkara IMAN. Analogi 'shutdown/audit-log' di sini adalah pembacaan STRUKTUR yang deskriptif dari tafsir bersumber (Kemenag) sebagai pola — BUKAN klaim mengetahui bagaimana Kiamat sesungguhnya terjadi, bukan penetapan mekanisme, dan bukan spekulasi atas detail yang tidak disebut nas. Adab terhadap perkara ghaib dijaga: yang kita tiru hanyalah pola keteraturan pada deskripsi, bukan hakikat peristiwanya.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-08",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-08",
+      "note": "Tadabbur perdana — Wave 10 kiamat-kebangkitan.",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

@@ -1,0 +1,101 @@
+{
+  "schema": "lab-study-v2",
+  "id": "furqan-25-67",
+  "version": 1,
+  "title": "Qawāman — alokasi di titik tengah",
+  "subtitle": "Tidak boros, tidak kikir: pembelanjaan di tengah keduanya",
+  "ref": {
+    "surah": 25,
+    "from": 67,
+    "to": 67
+  },
+  "surah_name": "Al-Furqan",
+  "theme": "Ekonomi/alokasi, nilai tengah, kontrol pengeluaran, stabilitas",
+  "sourced_meaning": {
+    "summary": "Salah satu sifat 'ibādur-Raḥmān: apabila membelanjakan harta, mereka tidak berlebihan (isrāf) dan tidak pula kikir (qatr), dan pembelanjaan itu qawāman — di tengah-tengah antara keduanya. Tafsir Kemenag: memelihara keseimbangan antara dua sifat buruk (boros dan kikir).",
+    "sources": [
+      "Tafsir Kemenag RI QS 25:67",
+      "Tafsir al-Jalalayn QS 25:67"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Alignment",
+      "note": "qawām = titik seimbang antara dua mode gagal yang dinamai eksplisit"
+    },
+    {
+      "layer": "Umpan balik",
+      "note": "menjaga posisi tengah = koreksi terus-menerus dari dua arah tarikan"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "amal",
+      "reading": "Adab nafkah 'ibādur-Raḥmān: dermawan tanpa menghancurkan diri, hemat tanpa menahan hak orang. Keseimbangan sebagai ibadah harian dalam hal paling duniawi: uang.",
+      "quranic_term": "qawām"
+    },
+    {
+      "lens": "economy",
+      "reading": "Kebijakan alokasi dengan DUA mode gagal yang dinamai: overspending (isrāf — menguras cadangan, rapuh terhadap guncangan) dan underspending (qatr — modal mati, pertumbuhan macet). Optimum bukan di kutub melainkan interior — konsumsi yang menjaga solvabilitas sekaligus sirkulasi. Prinsip yang sama menopang manajemen kas, kebijakan fiskal, hingga personal finance.",
+      "analogy": "interior optimum; dual failure modes",
+      "quranic_term": "isrāf vs qatr"
+    },
+    {
+      "lens": "computational",
+      "reading": "Alokasi resource dengan batas dua sisi: budget = clamp(spend, min, max). Sistem yang menghabiskan seluruh kapasitasnya tak punya headroom (crash saat lonjakan); yang menahan semuanya idle (utilisasi nol). Target: utilisasi tengah yang menyisakan buffer.",
+      "analogy": "two-sided clamp; utilization with headroom"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "'Bayna dzālika qawāmā' = invariant interval: nilai wajib berada DI ANTARA dua ambang, bukan sekadar di bawah satu ambang. Constraint dua sisi lebih kuat dari satu sisi — melarang dua arah pelanggaran sekaligus.",
+      "analogy": "range invariant (lower & upper bound)"
+    },
+    {
+      "lens": "inference",
+      "reading": "Ayat menolak solusi kutub yang 'mudah' (habiskan semua = dermawan?; tahan semua = hemat?) — keduanya divonis buruk. Kebajikan ada di interior yang harus terus dicari, bukan di ekstrem yang gampang diklaim. Menemukan titik tengah butuh penilaian aktif; ekstrem tidak.",
+      "quranic_term": "wasaṭ / qawām"
+    },
+    {
+      "lens": "math-physics",
+      "reading": "Fungsi kerugian berbentuk U: penalti naik di kedua arah dari optimum interior. Menyatakan optimum 'di antara' dua batas = definisi minimum interior, bukan corner solution — struktur yang sama dengan regulasi optimal dan kontrol.",
+      "analogy": "U-shaped loss; interior minimum"
+    },
+    {
+      "lens": "systems",
+      "reading": "Homeostasis anggaran: sistem sehat menjaga variabel vitalnya dalam RENTANG (bukan nilai maksimal/minimal) — seperti suhu tubuh, tekanan darah, atau tingkat inventori. Melewati batas atas ATAU bawah sama-sama patologis.",
+      "analogy": "homeostatic range regulation"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Relevan untuk resource management agen: exploration budget, spending token, rate-limit — semuanya butuh clamp dua sisi (terlalu boros = boros komputasi & bahaya; terlalu pelit = agen tak belajar/bertindak). Juga regularisasi: model yang 'menghafal semua' (overfit) dan 'menahan semua' (underfit) sama-sama gagal; kebaikan generalisasi ada di tengah.",
+      "analogy": "two-sided budget clamp; overfit vs underfit",
+      "quranic_term": "qawām"
+    },
+    {
+      "lens": "psychology",
+      "reading": "Regulasi diri finansial: boros dan kikir adalah dua disregulasi dari impuls yang sama (relasi tak sehat dengan harta). Kesehatan = kemampuan menahan DAN melepas sesuai konteks — fleksibilitas, bukan aturan kaku satu arah.",
+      "analogy": "flexible self-regulation",
+      "quranic_term": "iʿtidāl"
+    }
+  ],
+  "inference": "Satu ayat mendefinisikan struktur optimasi yang berulang di banyak bidang: dua mode gagal yang dinamai (boros/kikir), vonis buruk untuk keduanya, dan optimum di interior ('di antara keduanya, qawām'). Ini penguat kuat untuk prinsip nilai-tengah (bersama 2:143): dalam korpus, keseimbangan bukan kompromi lembek melainkan spesifikasi teknis — invariant dua sisi yang harus dijaga aktif. Dari manajemen kas sampai regularisasi model ML: kebaikan ada di rentang tengah yang menuntut penilaian terus-menerus, bukan di ekstrem yang mudah diklaim.",
+  "authors": [
+    "Draft AI (LLM draft) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-07",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-07",
+      "note": "Tadabbur perdana — Wave 4 (memperkuat prinsip median-stable-fair).",
+      "authors": [
+        "Draft AI (LLM draft)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

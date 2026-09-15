@@ -1,0 +1,105 @@
+{
+  "schema": "lab-study-v2",
+  "id": "anbiya-21-22",
+  "version": 1,
+  "title": "Law kāna fīhimā ālihatun — bukti keesaan lewat kontradiksi",
+  "subtitle": "Dua otoritas final di satu sistem → konflik → rusak. Karena itu single source of truth",
+  "ref": {
+    "surah": 21,
+    "from": 22,
+    "to": 22
+  },
+  "surah_name": "Al-Anbya",
+  "theme": "Reductio ad absurdum, konsistensi sistem, otoritas tunggal",
+  "sourced_meaning": {
+    "summary": "Bukti rasional keesaan (dalīl at-tamānuʿ): seandainya di langit dan bumi ada tuhan-tuhan selain Allah, niscaya keduanya rusak binasa. Tafsir Kemenag menjelaskan sebabnya — bila ada lebih dari satu tuhan, kehendak mereka bisa berbeda dalam mengelola alam; keinginan yang berbenturan (satu ingin mencipta, satu tidak) membuat alam terkatung-katung antara ada dan tiada. Maka keteraturan alam justru bukti bahwa pengaturnya Esa.",
+    "sources": [
+      "Tafsir Kemenag RI QS 21:22",
+      "Tafsir al-Jalalayn QS 21:22"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Penalaran",
+      "note": "bentuk argumennya reductio: asumsikan >1 tuhan → turunkan konsekuensi (rusak) → konsekuensi mustahil → asumsi batal"
+    },
+    {
+      "layer": "Tangga epistemik",
+      "note": "kesimpulan tauhid tidak ditumpu klaim, tapi diturunkan dari konsistensi — burhan, bukan zhann"
+    },
+    {
+      "layer": "Alignment",
+      "note": "sistem dengan dua fungsi-tujuan final yang bisa berbenturan tidak punya perilaku koheren"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "inference",
+      "reading": "Ini proof by contradiction (reductio ad absurdum) yang murni: andaikan premis lawan (banyak tuhan) benar → deduksi kerusakan → kerusakan kontradiktif dengan realitas yang tertib → premis lawan runtuh → keesaan tegak. Struktur logis, bukan sekadar seruan.",
+      "analogy": "reductio ad absurdum",
+      "quranic_term": "dalīl at-tamānuʿ"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "Dua otoritas menulis ke satu state global tanpa penengah = race condition. Kehendak yang berbenturan (create vs not-create pada objek yang sama) menghasilkan write conflict → state tak terdefinisi → korupsi. Alam yang konsisten menandakan hanya ada satu writer berwenang.",
+      "analogy": "concurrent write conflict on shared state"
+    },
+    {
+      "lens": "systems",
+      "reading": "Inilah sebab arsitektur menuntut single source of truth. Dua master dengan kewenangan final atas data yang sama → split-brain: masing-masing mengklaim benar, sistem terbelah dan rusak. Konsistensi hanya terjamin bila otoritas kanonik tunggal.",
+      "analogy": "single source of truth; anti split-brain",
+      "quranic_term": "tawḥīd"
+    },
+    {
+      "lens": "computational",
+      "reading": "Consistency-check pada invariant sistem: 'alam tetap utuh' adalah invariant. Model 'banyak tuhan berkehendak mandiri' melanggar invariant itu (menghasilkan kondisi bertentangan yang sama-sama terlaksana). Model yang melanggar invariant ditolak — yang lolos hanya otoritas tunggal.",
+      "analogy": "invariant violation under multi-authority model"
+    },
+    {
+      "lens": "algorithm",
+      "reading": "Konsensus terdistribusi menuntut satu leader (Raft/Paxos). Dua leader sah serentak → partisi → tak ada urutan operasi yang disepakati → sistem gagal. Tafsir menyebut skenario persis ini: kehendak berbeda yang sama-sama terlaksana = mustahil dijalankan bersama.",
+      "analogy": "leader election; two leaders → partition failure"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Pelajaran desain multi-agen: bila dua agen memegang fungsi-tujuan final yang bisa saling bertentangan tanpa arbiter, hasilnya deadlock atau aksi tak koheren yang merusak lingkungan bersama. Solusinya satu objective kanonik / satu arbiter final. Actionable: jangan pernah dua sumber kebenaran yang sama-sama berwenang menimpa state — tunjuk satu.",
+      "analogy": "single canonical objective; one final arbiter",
+      "quranic_term": "tawḥīd"
+    },
+    {
+      "lens": "math-physics",
+      "reading": "Dua himpunan hukum pengatur yang tak-kompatibel atas sistem yang sama = sistem overdetermined: lebih banyak batasan bertentangan daripada derajat kebebasan → tidak ada solusi konsisten. Alam yang bersolusi (teratur, berjalan) menyiratkan satu himpunan hukum tunggal.",
+      "analogy": "overdetermined system → no consistent solution"
+    },
+    {
+      "lens": "artifact",
+      "reading": "Prinsip otoritas-tunggal ini melembaga jadi peradaban: satu konstitusi tertinggi, satu standar pengukuran (lihat mīzān), satu sumber hukum final untuk mencegah putusan yang saling membatalkan. Fragmentasi otoritas final selalu berbuah kekacauan tata kelola.",
+      "analogy": "supreme unified authority in governance"
+    },
+    {
+      "lens": "history-ummah",
+      "reading": "Tauhid berfungsi sebagai poros integrasi: satu rujukan tertinggi menyatukan hukum, waktu, arah, dan standar sebuah peradaban — kebalikan dari fragmentasi otoritas yang dalam sejarah memecah dan melumpuhkan.",
+      "quranic_term": "tawḥīd"
+    }
+  ],
+  "inference": "Ayat ini bukan pernyataan, melainkan argumen: proof by contradiction yang bila diformalkan menjadi teorema konsistensi sistem. Intinya universal dan terukur — sebuah sistem tidak boleh punya dua otoritas final yang sama-sama berwenang menimpa state yang sama, sebab kehendak yang berbenturan menghasilkan korupsi (race condition / split-brain / sistem overdetermined). Keteraturan yang bertahan adalah tanda otoritas tunggal. Inilah dasar rekayasa dari single source of truth, dan dasar teologis dari tawḥīd.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-07",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-07",
+      "note": "Tadabbur perdana — Wave 7 bukti/hujjah.",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

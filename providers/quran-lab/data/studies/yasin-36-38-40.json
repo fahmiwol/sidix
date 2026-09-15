@@ -1,0 +1,111 @@
+{
+  "schema": "lab-study-v2",
+  "id": "yasin-36-38-40",
+  "version": 1,
+  "title": "Li-mustaqarr — matahari menuju tempat menetap, bulan berfase, tak saling mendahului",
+  "subtitle": "Peredaran matahari, manzilah bulan, dan Sunnatullah yang menjaga tak ada tabrakan",
+  "ref": {
+    "surah": 36,
+    "from": 38,
+    "to": 40
+  },
+  "surah_name": "Ya-Sin",
+  "theme": "Ketetapan (taqdir) sebagai kontrak invarian; fase periodik; konkurensi tanpa bentrok",
+  "sourced_meaning": {
+    "summary": "Tafsir Kemenag: (38) Matahari beredar pada garis edarnya yang tertentu dengan tertib menurut ketentuan Allah; menyimpang seujung rambut pun akan menimbulkan tabrakan dengan benda langit lain — itulah ketetapan Yang Maha Perkasa lagi Maha Mengetahui. (39) Bulan ditetapkan menempuh manzilah-manzilah (jarak/tahap tertentu) sehingga bentuk, ukuran, dan sinarnya berubah bertahap dari sabit, purnama, lalu menyusut menyerupai tandan kering — kembali ke keadaan semula. (40) Berdasarkan Sunnatullah, mustahil matahari menyusul bulan dan malam mendahului siang; masing-masing beredar pada garis edarnya.",
+    "sources": [
+      "Tafsir Kemenag RI QS 36:38",
+      "Tafsir Kemenag RI QS 36:39-40",
+      "Tafsir al-Jalalayn QS 36:38-40"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Persepsi",
+      "note": "fase bulan yang berubah tiap malam adalah tampilan (display) status sistem yang bisa dibaca mata telanjang"
+    },
+    {
+      "layer": "Penalaran",
+      "note": "'tak saling mendahului' dinyatakan sebagai aturan (Sunnatullah), bukan kebetulan — mengundang pembacaan sebagai hukum/kontrak"
+    },
+    {
+      "layer": "Alignment",
+      "note": "batas 'seujung rambut' menandakan toleransi ketat: sistem yang dijaga dalam koridor aman agar tidak katastrofik"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "amal",
+      "reading": "Bulan menempuh 'manzilah' bertahap sampai sempurna lalu menyusut — analogi perjalanan amal yang berproses melalui tahap, bukan sekali jadi. Kesadaran akan tahapan menumbuhkan kesabaran menapaki proses dan penerimaan bahwa surut pun bagian dari siklus.",
+      "analogy": "staged progression (manzilah)",
+      "quranic_term": "manazil"
+    },
+    {
+      "lens": "computational",
+      "reading": "Fase bulan = pengindeksan keadaan kontinu menjadi tahap-tahap diskret (manzilah) yang terhitung dan dapat diprediksi. Ini persis kuantisasi: sinyal analog (posisi orbit) dipetakan ke keadaan diskret berlabel, sehingga status sistem bisa disimpan, dikirim, dan dihitung secara efisien.",
+      "analogy": "quantization; discrete state indexing",
+      "quranic_term": "manazil"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "'Matahari tak menyusul bulan, malam tak mendahului siang' adalah INVARIAN — pernyataan yang harus selalu benar di setiap keadaan sistem. Setara assertion/kontrak yang dijaga runtime: pelanggarannya (tabrakan) = kegagalan fatal. Desain andal dibangun dari invarian yang tak boleh dilanggar.",
+      "analogy": "invariant/assertion; safety contract",
+      "quranic_term": "la yanbaghi"
+    },
+    {
+      "lens": "algorithm",
+      "reading": "Dua-tiga proses (matahari, bulan, siklus siang-malam) berjalan konkuren dengan periode berbeda namun tak pernah bentrok — analog penjadwalan bebas-deadlock: tiap proses punya lintasan/sumber daya terpisah dan urutan yang dijaga. 'Tak saling mendahului' = jaminan mutual-exclusion tanpa perlu penguncian karena jalur sudah terpisah by design.",
+      "analogy": "deadlock-free concurrent scheduling; lane separation",
+      "quranic_term": "kullun fī falak"
+    },
+    {
+      "lens": "math-physics",
+      "reading": "Resonansi struktural (BUKAN mukjizat numerik): 'li-mustaqarr' dibaca sebagai adanya keadaan-tujuan/kesetimbangan yang tertata, dan fase bulan sebagai fungsi periodik posisi relatif. Tafsir bersumber menekankan ketertiban dan toleransi sempit, bukan angka spesifik; kami tak mengklaim teori tertentu.",
+      "analogy": "periodic phase function; tight tolerance — bounded",
+      "quranic_term": "mustaqarr"
+    },
+    {
+      "lens": "systems",
+      "reading": "Sistem dengan banyak benda yang tetap stabil karena tiap komponen diberi lintasan tetap dan margin toleransi yang dijaga ketat. Pelajaran keandalan: stabilitas bukan dari kebebasan tanpa batas melainkan dari batasan yang tepat (constraint) plus margin keselamatan yang kecil tapi tak dilanggar.",
+      "analogy": "constraint-based stability; safety margins"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Untuk agen otonom: perlakukan aturan 'tak saling mendahului' sebagai HARD CONSTRAINT yang ditegakkan, bukan preferensi lunak. Actionable: (1) rumuskan invarian keselamatan eksplisit dan verifikasi di setiap langkah (constraint checker/shield) sebelum aksi dieksekusi; (2) representasikan status lingkungan periodik sebagai fase diskret (manzilah) agar planning ringkas; (3) tetapkan toleransi ketat + deteksi dini penyimpangan ('seujung rambut') supaya koreksi dilakukan sebelum kegagalan katastrofik. Ini pola safe-RL/shielding.",
+      "analogy": "safety shield; hard-constraint enforcement; phase-state planning",
+      "quranic_term": "la yanbaghi"
+    },
+    {
+      "lens": "artifact",
+      "reading": "Kalender lunar berbasis manzilah (fase) menjadi antarmuka status paling tua: satu pandangan ke langit memberi tanggal. Prinsipnya hidup di dashboard modern — memetakan proses kontinu ke indikator diskret yang mudah dibaca sekilas.",
+      "analogy": "phase display; status dashboard",
+      "quranic_term": "manazil"
+    },
+    {
+      "lens": "earth-cosmos",
+      "reading": "Tiga irama bersarang — hari (siang/malam), bulan (fase), tahun (musim) — membentuk hierarki penanda waktu berlapis yang saling konsisten. Sistem koordinat waktu berjenjang ini memungkinkan penjadwalan dari skala jam sampai musim tanpa konflik.",
+      "analogy": "hierarchical time base",
+      "quranic_term": "al-lail wa an-nahar"
+    }
+  ],
+  "inference": "Tiga ayat ini, dibaca sebagai rekayasa, memusatkan pada satu ide keandalan: ketetapan (taqdir/Sunnatullah) berperan seperti KONTRAK INVARIAN yang menjaga banyak proses konkuren agar tak pernah bentrok. Tiga mekanisme terbaca jelas: (1) invarian keselamatan — 'matahari tak menyusul bulan, malam tak mendahului siang' setara assertion yang tak boleh dilanggar; (2) kuantisasi status — fase bulan (manzilah) memetakan gerak kontinu menjadi tahap diskret yang terhitung dan mudah dibaca, seperti display status; (3) toleransi ketat — 'seujung rambut' menandai margin keselamatan sempit yang dijaga agar tak katastrofik. Untuk agen AI, ini memberi cetak biru safety: rumuskan invarian eksplisit, tegakkan sebagai hard-constraint lewat shield/checker sebelum tiap aksi, wakili lingkungan periodik dalam fase diskret untuk perencanaan ringkas, dan pasang deteksi penyimpangan dini. Keteraturan langit di sini bukan sekadar indah — ia adalah demonstrasi bagaimana banyak proses bisa hidup berdampingan dengan aman karena tiap-tiap terikat kontrak yang dijaga.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-07",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-07",
+      "note": "Tadabbur perdana — Wave 6 batch astronomi.",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

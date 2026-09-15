@@ -1,0 +1,93 @@
+{
+  "schema": "lab-study-v2",
+  "id": "nur-24-4",
+  "version": 1,
+  "title": "Arbaʿati syuhadāʾ — ambang bukti berskala dengan besar tuduhan",
+  "subtitle": "Tuduhan berat (zina) butuh empat saksi; gagal = hukuman balik bagi penuduh",
+  "ref": {
+    "surah": 24,
+    "from": 4,
+    "to": 4
+  },
+  "surah_name": "An-Nur",
+  "theme": "Ambang bukti, biaya klaim palsu, proporsionalitas evidence, anti-fitnah",
+  "sourced_meaning": {
+    "summary": "Orang yang menuduh perempuan baik-baik (berzina) lalu tidak mendatangkan EMPAT saksi, deralah mereka 80 kali dan jangan terima kesaksian mereka selamanya; merekalah orang-orang fasik. Tafsir Kemenag: penuduh yang tak dapat membuktikan dengan empat saksi dikenai sanksi. (Ayat berikutnya: kecuali yang bertobat & memperbaiki diri.)",
+    "sources": [
+      "Tafsir Kemenag RI QS 24:4",
+      "Tafsir al-Jalalayn QS 24:4"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Tangga epistemik",
+      "note": "ambang bukti (4 saksi) jauh di atas standar biasa (2) — skala dgn beratnya klaim"
+    },
+    {
+      "layer": "Alignment",
+      "note": "biaya klaim palsu ditanggung penuduh (80 dera + kredibilitas dicabut selamanya)"
+    },
+    {
+      "layer": "Umpan balik",
+      "note": "reputasi saksi dicabut permanen = konsekuensi berbobot untuk misinformasi"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "amal",
+      "reading": "Menjaga kehormatan orang: menuduh tanpa bukti kuat adalah dosa besar dengan sanksi berat. Ayat melindungi reputasi dari fitnah — di era hoaks, prinsipnya makin relevan: jangan sebar tuduhan tanpa bukti yang sepadan beratnya.",
+      "quranic_term": "qadzf (tuduhan palsu)"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Confidence threshold yang BERSKALA dengan potensi harm: klaim berdampak besar (menghancurkan reputasi) menuntut bukti jauh lebih kuat (4x standar) sebelum di-assert. Dan biaya asimetris: assertion berbahaya yang gagal dibuktikan menghukum si pembuat klaim (kredibilitas dicabut permanen) — persis mekanisme yang dibutuhkan agar sistem AI tak menyebar tuduhan/klaim berisiko tinggi dengan percaya diri. High-stakes output butuh high evidentiary bar.",
+      "analogy": "harm-scaled confidence threshold; asymmetric cost of false high-stakes claims",
+      "quranic_term": "arbaʿati syuhadāʾ"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "Ambang dinamis: required_evidence = f(severity_of_claim). Untuk tuduhan ringan, standar normal; untuk yang menghancurkan (zina), threshold 4 saksi. Bukan satu ambang untuk semua — proporsional terhadap konsekuensi. Plus penalti: gagal memenuhi ambang → si penuduh yang di-flag fasik.",
+      "analogy": "severity-scaled evidence threshold + penalty"
+    },
+    {
+      "lens": "inference",
+      "reading": "Ayat mengalibrasi trade-off false-positive vs false-negative berdasarkan biaya kesalahan: untuk tuduhan yang salahnya menghancurkan orang tak bersalah, sistem sengaja dibuat SANGAT sulit meng-assert (butuh 4 saksi) — memilih menerima lebih banyak false-negative demi menghindari false-positive yang fatal. Kalibrasi ini eksplisit di ayat.",
+      "quranic_term": "bayyinah"
+    },
+    {
+      "lens": "systems",
+      "reading": "Sistem reputasi dengan konsekuensi permanen: saksi/penuduh palsu kehilangan hak bersaksi SELAMANYA — reputasi sebagai stake yang bisa hangus mendisiplinkan kualitas klaim. Sistem informasi tanpa biaya untuk klaim palsu akan tenggelam dalam noise; ayat menaruh biaya berat di sumbernya.",
+      "analogy": "permanent reputation stake; costly-signal for claims"
+    },
+    {
+      "lens": "history-ummah",
+      "reading": "Konteks turun (peristiwa al-ifk/tuduhan atas Aisyah ra) menunjukkan ayat lahir untuk membongkar mekanika fitnah kolektif: rumor menyebar tanpa bukti, merusak, lalu ayat menetapkan ambang tinggi + sanksi. Studi kasus manajemen misinformasi yang tetap relevan.",
+      "analogy": "misinformation containment case study"
+    },
+    {
+      "lens": "economy",
+      "reading": "Anti-fraud lewat costly signaling: menuduh jadi 'mahal' (risiko 80 dera + kredibilitas). Sama seperti sistem yang menaruh biaya/stake pada klaim untuk menyaring yang tak serius — spam & tuduhan iseng tersaring oleh biaya di muka.",
+      "analogy": "costly-signaling anti-fraud"
+    }
+  ],
+  "inference": "Ayat ini mengalibrasi ambang bukti secara proporsional terhadap besarnya potensi kerusakan: tuduhan yang salahnya menghancurkan orang tak bersalah dibuat sangat sulit di-assert (empat saksi, bukan dua), dan kegagalan membuktikannya menghukum si pembuat klaim dengan mencabut kredibilitasnya secara permanen. Untuk sistem AI, ini dua prinsip desain sekaligus: (1) confidence threshold harus berskala dengan potensi harm — output berisiko tinggi butuh bukti jauh lebih kuat; (2) biaya klaim palsu harus asimetris dan jatuh pada sumbernya, agar sistem tak terinsentif menyebar tuduhan berbahaya dengan percaya diri. Melengkapi 49:6 (verifikasi input), ayat ini mengatur sisi output: apa yang boleh di-assert, dan berapa buktinya.",
+  "authors": [
+    "Draft AI (LLM draft) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-07",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-07",
+      "note": "Tadabbur perdana — Wave 5 (cluster attestation & kesaksian).",
+      "authors": [
+        "Draft AI (LLM draft)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

@@ -1,0 +1,88 @@
+{
+  "schema": "lab-study-v2",
+  "id": "fajr-89-27-30",
+  "version": 1,
+  "title": "An-Nafs al-Muthmaʾinnah — jiwa yang tenang, kembali dengan ridha yang berbalas ridha",
+  "subtitle": "Hai jiwa yang tenang, kembalilah kepada Tuhanmu dengan hati yang puas lagi diridhai-Nya, masuklah ke dalam jamaah hamba-Ku, masuklah ke dalam surga-Ku",
+  "ref": {
+    "surah": 89,
+    "from": 27,
+    "to": 30
+  },
+  "surah_name": "Al-Fajr",
+  "theme": "Nafs muthmainnah — status akhir/konvergen busur taksonomi nafs: ketenangan sebagai kepuasan DUA ARAH, bukan sekadar tenang sepihak",
+  "sourced_meaning": {
+    "summary": "Hai jiwa yang tenang. Kembalilah kepada Tuhanmu dengan hati yang puas lagi diridhai-Nya. Maka masuklah ke dalam jamaah hamba-hamba-Ku, dan masuklah ke dalam surga-Ku. Tafsir Kemenag: Allah memanggil jiwa yang tenang & damai ketika diwafatkan — jiwa yang suci karena iman & amal saleh, sehingga memperoleh yang dijanjikan Allah. Jiwa itu diminta pulang menghadap-Nya dengan perasaan puas & senang karena telah memenuhi perintah-perintah-Nya semasa hidup di dunia; Allah pun puas & senang kepadanya karena telah menjalankan perintah-perintah-Nya. Setelah itu, jiwa dipersilakan masuk ke dalam kelompok hamba-hamba-Nya, yaitu ke dalam surga-Nya.",
+    "sources": [
+      "Tafsir Kemenag RI QS 89:27-30",
+      "Tafsir al-Jalalayn QS 89:27-30"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Tangga epistemik",
+      "note": "empat ayat = status akhir yang DICAPAI, bukan proses — kontras posisinya dalam busur taksonomi dengan lawwamah (75:1-2) yang masih berproses"
+    },
+    {
+      "layer": "Alignment",
+      "note": "'rāḍiyatan marḍiyyah' — kepuasan DUA ARAH disebut eksplisit: jiwa puas DAN diridhai — bukan hanya ketenangan sepihak dari sisi jiwa"
+    },
+    {
+      "layer": "Aksi & transfer",
+      "note": "urutan perintah berjenjang & berurutan: irjiʿī (kembali) → fadkhulī (masuklah ke jamaah) → wadkhulī (masuklah ke surga) — tiga langkah bergerbang, bukan simultan"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "psychology",
+      "reading": "'Rāḍiyatan marḍiyyah' (puas lagi diridhai) menyatakan ketenangan sebagai konvergensi DUA ARAH — bukan sekadar rasa damai internal sepihak (self-acceptance semata), melainkan juga diterima/disambut oleh pihak yang dituju. Ini pengertian ketenangan yang lebih kaya daripada sekadar 'merasa tenang': ketenangan sejati bukan hanya soal perasaan sendiri, tapi keselarasan yang terkonfirmasi dari relasi.",
+      "analogy": "ketenangan sebagai konvergensi dua-arah, bukan kepuasan sepihak",
+      "quranic_term": "rāḍiyatan marḍiyyah"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Sebagai titik akhir busur (ammārah→lawwāmah→muthmainnah), status ini secara struktural membaca sebagai KRITERIA KONVERGENSI sebuah proses penyelarasan: bukan sekadar 'tak ada lagi sinyal galat' (diam/pasif), melainkan penerimaan dua-arah antara keadaan entitas dan standar yang mengevaluasinya. CATATAN TANZIH ditegaskan: analogi ini HANYA menyentuh BENTUK struktural 'konvergensi = penerimaan dua-arah', sama sekali tidak memodelkan Allah sebagai proses evaluator atau bagian arsitektur sistem apa pun.",
+      "analogy": "kriteria konvergensi: penerimaan dua-arah, bukan sekadar tanpa-galat (dibatasi ketat, TANZIH)"
+    },
+    {
+      "lens": "systems",
+      "reading": "Busur taksonomi (ammārah → lawwāmah → muthmainnah) dibaca sebagai lintasan bertahap menuju status akhir/accepting-state — dan struktur ayat menunjukkan status ini TIDAK dicapai langsung dari ammārah; tahap lawwāmah (audit-diri berkelanjutan) tersirat sebagai fase penyaringan yang tak terlewati. Ini selaras pola tazkiyah (penyucian bertahap) di kajian Asy-Syams 91:7-10.",
+      "analogy": "accepting-state hanya dicapai lewat tahap penyaringan, tak bisa dilompati",
+      "quranic_term": "muṭmaʾinnah (status akhir setelah proses)"
+    },
+    {
+      "lens": "inference",
+      "reading": "Tiga perintah berurutan — irjiʿī, fadkhulī, wadkhulī — memakai huruf 'fa' (maka) yang menandai SEKUENSIAL bergerbang: kembali dulu, BARU bergabung, BARU masuk surga. Bukan tiga hal yang terjadi bersamaan, melainkan tahapan yang masing-masing menjadi syarat bagi tahap berikutnya.",
+      "analogy": "gerbang sekuensial: tiap tahap adalah syarat bagi tahap berikutnya",
+      "quranic_term": "irjiʿī … fadkhulī … wadkhulī"
+    },
+    {
+      "lens": "pedagogy",
+      "reading": "Dibaca sebagai satu kesatuan busur bersama 12:53 & 75:1-2, taksonomi nafs menjadi model TAHAPAN perkembangan moral — bukan tiga tipe orang yang terpisah tetap, melainkan lintasan yang bisa dilalui satu jiwa: dari dorongan default (ammārah), lewat kritik-diri yang belum stabil (lawwāmah), menuju keselarasan yang matang (muthmainnah). Model perkembangan ini lebih membangun dibanding label statis."
+    },
+    {
+      "lens": "amal",
+      "reading": "Ayat ini adalah salah satu janji paling menenangkan dalam Al-Qur'an — disampaikan dengan nada penuh sambutan hangat ('hamba-hamba-Ku', 'surga-Ku'), bukan sekadar keterangan teknis. Pembacaan apa pun di kajian ini tetap menomorsatukan makna ini: harapan & sukacita bagi jiwa yang beriman & beramal saleh, bukan sekadar diagram proses."
+    }
+  ],
+  "inference": "An-nafs al-muthmaʾinnah adalah status akhir busur taksonomi nafs: setelah dorongan default (ammārah, 12:53) dan audit-diri yang belum stabil (lawwāmah, 75:1-2), jiwa mencapai ketenangan yang dikonfirmasi DUA ARAH — 'rāḍiyatan marḍiyyah', puas dan diridhai sekaligus. Bacaan rekayasa (dibatasi ketat): busur ammārah→lawwāmah→muthmainnah membaca sebagai lintasan bertahap menuju status konvergen, di mana tahap kritik-diri tak bisa dilompati — dan konvergensi sejati bukan sekadar 'diam tanpa galat' melainkan penerimaan dua-arah. CATATAN GHAIB (wajib): ayat ini menggambarkan momen wafat & penyambutan jiwa — perkara ghaib yang diimani dari kabar wahyu, dibaca deskriptif dari tafsir bersumber, bukan pengalaman empiris. CATATAN TANZIH (wajib, ketat): 'irjiʿī ilā rabbiki', 'ʿibādī', 'jannatī' — Allah berfirman langsung memanggil jiwa dengan kepemilikan eksklusif (hamba-Ku, surga-Ku); struktur relasi & panggilan ini TIDAK dianalogikan sebagai arsitektur/peran sistem apa pun — yang dibaca-rekayasa hanya BENTUK struktural 'konvergensi dua-arah sebagai status akhir', bukan penggambaran Dzat yang memanggil.",
+  "authors": [
+    "Draft AI (LLM draft) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-12",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-12",
+      "note": "Tadabbur perdana — Wave 14 taksonomi nafs (ammarah/lawwamah/muthmainnah).",
+      "authors": [
+        "Draft AI (LLM draft)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

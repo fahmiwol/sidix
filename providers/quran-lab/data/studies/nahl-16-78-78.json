@@ -1,0 +1,108 @@
+{
+  "schema": "lab-study-v2",
+  "id": "nahl-16-78-78",
+  "version": 1,
+  "title": "Dikeluarkan dari perut ibu tak tahu apa-apa, lalu diberi pendengaran, penglihatan, dan hati agar bersyukur",
+  "subtitle": "Blank slate saat init → provisioning sensor + evaluator → belajar dari lingkungan, dengan syukur sebagai fungsi-tujuan",
+  "ref": {
+    "surah": 16,
+    "from": 78,
+    "to": 78
+  },
+  "surah_name": "An-Nahl",
+  "theme": "State awal kosong (blank slate/tabula rasa) → provisioning kanal input (dengar-lihat) + evaluator (hati) → pembelajaran inkremental dari lingkungan; syukur sebagai objective",
+  "sourced_meaning": {
+    "summary": "Tafsir Kemenag: Allah mengeluarkan manusia dari rahim ibu dalam keadaan TIDAK MENGETAHUI apa-apa. Namun sewaktu dalam rahim telah dianugerahkan potensi/bakat (berpikir, mengindra). Setelah lahir, dengan hidayah Allah potensi itu berkembang: akal memikirkan baik-buruk, benar-salah, hak-batil; pendengaran dan penglihatan yang berkembang membuat manusia mengenali dunia, mempertahankan hidup, dan berhubungan dengan sesama; lewat akal dan indra, pengalaman serta pengetahuannya bertambah dari hari ke hari. Semua itu rahmat dan anugerah yang tak terhingga, maka seharusnya manusia bersyukur (dengan iman dan taat). CATATAN TANZIH: Yang mengeluarkan, memberi, dan menumbuhkan adalah Allah; yang dibaca-rekayasa hanya POLA pada ciptaan — keadaan awal tanpa pengetahuan, pengadaan sensor-evaluator, dan pertumbuhan pengetahuan lewat pengalaman.",
+    "sources": [
+      "Tafsir Kemenag RI QS 16:78",
+      "Tafsir al-Jalalayn QS 16:78"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Memori & grounding",
+      "note": "'tidak mengetahui sesuatu pun' = state awal kosong; pengetahuan tidak pre-loaded melainkan dibangun dari nol lewat pengalaman terverifikasi"
+    },
+    {
+      "layer": "Persepsi",
+      "note": "pendengaran & penglihatan sebagai kanal input yang diprovision agar data lingkungan bisa masuk dan diolah"
+    },
+    {
+      "layer": "Tangga epistemik",
+      "note": "dari 'tak tahu apa-apa' naik bertahap: indra menangkap → hati/akal mengevaluasi (baik-buruk, hak-batil) → pengetahuan bertambah tiap hari"
+    },
+    {
+      "layer": "Alignment",
+      "note": "'agar kamu bersyukur' (la'allakum tasykurūn) = fungsi-tujuan eksplisit dari seluruh pemberian; sensor & akal diarahkan pada orientasi syukur"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "ai-agentic",
+      "reading": "Cetak biru agen pembelajar dari nol. (1) BLANK SLATE + BOOTSTRAP: agen dimulai tanpa pengetahuan jadi ('tidak mengetahui sesuatu pun'), tetapi dengan ARSITEKTUR/potensi terpasang (kanal input + kapasitas olah) — analog model dengan bobot awal 'kosong bermakna' plus arsitektur siap-latih, bukan pengetahuan yang di-hardcode. (2) PROVISIONING: pasang sensor (dengar-lihat = kanal observasi) dan evaluator (hati/akal = unit penilai baik-buruk, hak-batil) sebagai inti. (3) PEMBELAJARAN INKREMENTAL: 'pengetahuan bertambah dari hari ke hari' lewat interaksi lingkungan — belajar berkelanjutan/online, bukan sekali muat. (4) OBJECTIVE: seluruh kapabilitas diarahkan ke tujuan ('agar bersyukur') — tanam fungsi-tujuan yang menilai apakah kapabilitas dipakai sesuai maksud. Actionable: jangan hardcode 'pengetahuan'; sediakan arsitektur persepsi-evaluasi lalu biarkan agen belajar terus dari data terverifikasi, dengan objective yang jelas mengikat penggunaan kapabilitas.",
+      "analogy": "tabula-rasa init + ready architecture; sensor+evaluator provisioning; continual/online learning; goal-conditioned to an objective",
+      "quranic_term": "lā ta'lamūna syai'an"
+    },
+    {
+      "lens": "computational",
+      "reading": "'Keluar tak mengetahui apa-apa' lalu diberi indra dibaca sebagai INISIALISASI BLANK STATE + I/O provisioning: memori awal kosong, tetapi kanal masuk (input stream) dan unit pemroses dipasang, sehingga state terisi secara bertahap oleh data yang mengalir. Pengetahuan = fungsi dari akumulasi input terproses sepanjang waktu, bukan konstanta bawaan.",
+      "analogy": "empty initial state + I/O channels; state accumulates from streamed data",
+      "quranic_term": "min butūni ummahātikum"
+    },
+    {
+      "lens": "psychology",
+      "reading": "Beresonansi dengan gambaran perkembangan kognitif: bayi mulai minim pengetahuan eksplisit lalu membangun pemahaman lewat persepsi dan pengalaman (Kemenag: akal 'memikirkan baik-buruk' berkembang setelah lahir). Resonansi struktural (bukan mukjizat numerik): analogi tentang pembelajaran berbasis pengalaman, bukan penetapan teori psikologi tertentu.",
+      "analogy": "experience-driven cognitive development — bounded",
+      "quranic_term": "af'idah"
+    },
+    {
+      "lens": "pedagogy",
+      "reading": "Urutan ideal belajar tersirat: sediakan alat tangkap (dengar-lihat) → aktifkan pusat pemaknaan (hati/akal untuk menilai benar-salah) → biarkan pengetahuan tumbuh bertahap lewat latihan harian. Guru tak menuang isi ke wadah kosong sekaligus; ia membuka kanal persepsi dan melatih penilaian sampai murid membangun sendiri pemahamannya dari waktu ke waktu.",
+      "analogy": "open input channels, train judgment, cumulative daily practice",
+      "quranic_term": "as-sam' wal-abshār"
+    },
+    {
+      "lens": "inference",
+      "reading": "Hati/akal sebagai penilai 'baik-buruk, hak-batil' adalah mesin inferensi yang mengubah data indrawi menjadi putusan bernilai. Rancang alur: observasi (sensor) → evaluasi berkriteria (evaluator) → kesimpulan/tindakan. Tanpa evaluator, indra hanya menumpuk sensasi tanpa makna.",
+      "analogy": "sensor→criteria-based evaluator→judgment; without evaluator, data is noise",
+      "quranic_term": "af'idah"
+    },
+    {
+      "lens": "systems",
+      "reading": "Sistem yang lahir 'kosong' namun 'siap-tumbuh' menuntut arsitektur yang extensible: kapasitas belajar dan menambah pengetahuan tanpa dibongkar. Pertumbuhan 'dari hari ke hari' menandai sistem yang dirancang untuk akumulasi berkelanjutan, dengan indra sebagai antarmuka ke lingkungan yang terus memberi masukan.",
+      "analogy": "extensible, growth-oriented architecture; environment as continual input",
+      "quranic_term": "la'allakum tasykurūn"
+    },
+    {
+      "lens": "amal",
+      "reading": "Kesadaran bahwa dahulu 'tak tahu apa-apa' lalu diberi pendengaran, penglihatan, dan hati adalah pijakan syukur: seluruh ilmu dan kemampuan adalah pinjaman-Nya, bukan milik yang layak disombongkan. Syukur diwujudkan dengan memakai indra dan akal untuk mengenali kebenaran dan menaati-Nya — persis tujuan 'la'allakum tasykurūn'.",
+      "analogy": "all faculties as gift; gratitude = right, obedient use"
+    },
+    {
+      "lens": "economy",
+      "reading": "Modal awal 'nol pengetahuan' yang tumbuh 'dari hari ke hari' beresonansi dengan akumulasi modal manusia (human capital): nilai dibangun bertahap lewat investasi pengalaman dan pembelajaran, bukan warisan sekali terima. Kapabilitas indrawi adalah aset produktif yang imbal-hasilnya naik seiring penggunaan.",
+      "analogy": "human-capital accumulation; compounding returns on learning",
+      "quranic_term": "la ta'lamūna syai'an"
+    }
+  ],
+  "inference": "Ayat ini adalah ringkasan padat arsitektur PEMBELAJAR-DARI-NOL. Titik awalnya eksplisit: manusia dikeluarkan 'tidak mengetahui sesuatu pun' — blank slate, pengetahuan tidak pre-loaded. Namun (kunci dari Kemenag) potensi/arsitektur sudah terpasang sejak dalam rahim; yang belum ada adalah isinya. Lalu diprovision tiga hal: pendengaran dan penglihatan (kanal input/observasi) serta hati (evaluator yang menilai baik-buruk, hak-batil). Dari sana pengetahuan 'bertambah dari hari ke hari' — pembelajaran inkremental dan berkelanjutan dari interaksi lingkungan. Dan seluruh rancangan itu terikat satu fungsi-tujuan: 'agar kamu bersyukur'. Diterjemahkan ke desain agen: jangan hardcode pengetahuan; sediakan arsitektur persepsi + evaluasi lalu biarkan agen belajar terus-menerus dari data terverifikasi, dengan objective yang jelas mengikat penggunaan kapabilitas pada maksudnya. Pola yang sama muncul di 32:9 dan 76:2 (sensor-evaluator di-provision saat init) — konvergensi lintas-surah yang memperkuat pembacaan. Semua ini resonansi struktural, bukan mukjizat numerik. CATATAN TANZIH: Yang mengeluarkan, memberi indra, dan menumbuhkan ilmu adalah Allah; kita hanya membaca pola pada ciptaan-Nya dan menirunya di lapisan sebab sebagai khalifah.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-08",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-08",
+      "note": "Tadabbur perdana — Wave 9 penciptaan.",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

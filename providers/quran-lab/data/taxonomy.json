@@ -1,0 +1,43 @@
+{
+  "schema": "lab-taxonomy-v1",
+  "lenses": [
+    { "key": "amal", "title": "Amal / Perbuatan", "icon": "🤲", "desc": "Tindakan & pengamalan yang lahir dari ayat (dimensi praktik)." },
+    { "key": "computational", "title": "Komputasional", "icon": "💻", "desc": "Struktur informasi, state, operasi input-output, determinisme." },
+    { "key": "program-logic", "title": "Logika Program", "icon": "🧩", "desc": "Paradigma (deklaratif/imperatif), invariant, constraint, assertion." },
+    { "key": "algorithm", "title": "Algoritma & Metode", "icon": "⚙️", "desc": "Prosedur, kompleksitas, loop kontrol, penjadwalan, konstruksi bertahap." },
+    { "key": "inference", "title": "Inferensi & Epistemologi", "icon": "🔍", "desc": "Apa yang bisa disimpulkan; tangga bukti zhann→burhān→yaqīn." },
+    { "key": "math-physics", "title": "Matematika & Fisika", "icon": "📐", "desc": "Keteraturan, perhitungan, periodisitas, hukum alam." },
+    { "key": "systems", "title": "Sistem & Organisasi", "icon": "🕸️", "desc": "Keseimbangan, umpan-balik, tata kelola, ekologi sistem." },
+    { "key": "ai-agentic", "title": "AI & Agentic", "icon": "🤖", "desc": "Analogi ke arsitektur agen: grounding, reasoning, alignment, pelatihan." },
+    { "key": "artifact", "title": "Artefak & Teknologi", "icon": "🛠️", "desc": "Teknologi/instrumen yang disebut atau diimplikasikan (pena, timbangan, besi)." },
+    { "key": "psychology", "title": "Psikologi & Jiwa", "icon": "🧠", "desc": "Regulasi diri (nafs), motivasi, emosi, kesehatan mental, kognisi." },
+    { "key": "economy", "title": "Ekonomi & Muamalah", "icon": "💰", "desc": "Nilai, insentif, distribusi, kontrak, sumber daya, waktu sebagai kapital." },
+    { "key": "pedagogy", "title": "Pendidikan & Pedagogi", "icon": "📚", "desc": "Metode ajar, kurikulum bertahap, repetisi, keteladanan, transfer ilmu." },
+    { "key": "biology-medicine", "title": "Biologi & Kedokteran", "icon": "🧬", "desc": "Kehidupan, tubuh, perkembangan, penyembuhan, ekologi hayati." },
+    { "key": "earth-cosmos", "title": "Bumi & Kosmos", "icon": "🌌", "desc": "Astronomi, geologi, geografi, iklim — āyāt kauniyah skala besar." },
+    { "key": "chemistry-process", "title": "Kimia & Proses", "icon": "⚗️", "desc": "Transformasi materi, fermentasi/pemurnian, proses industri, siklus zat." },
+    { "key": "history-ummah", "title": "Sejarah & Peradaban", "icon": "📜", "desc": "Kisah umat terdahulu sebagai dataset; pola naik-turun peradaban; iʿtibār historis." }
+  ],
+  "cognitive_terms": [
+    { "term": "taʿaqqul / ʿaql", "arabic": "تعقّل / عقل", "meaning": "menalar; mengikat pengetahuan", "operation": "deduksi + observasi; teori+fakta+tindakan", "ayat_claimed": "89:5, 21:67, 6:151 (49x)" },
+    { "term": "tafakkur", "arabic": "تفكّر", "meaning": "merenung/refleksi", "operation": "refleksi deliberatif sistematis; 17/18x bentuk jamak → berpikir kolektif (shūrā)", "ayat_claimed": "59:18 (18x)" },
+    { "term": "tadabbur", "arabic": "تدبّر", "meaning": "menelaah mendalam", "operation": "menyelami kandungan-susunan-makna teks; nama Lab ini", "ayat_claimed": "4:82, 47:24, 38:29" },
+    { "term": "tadhakkur / dhikr", "arabic": "تذكّر / ذكر", "meaning": "mengingat; mencamkan", "operation": "recall sebagai alat pikir; fondasi penghubung fakultas kognitif", "ayat_claimed": "13:19, 8:26, 7:201 (akar ±292 bentuk)" },
+    { "term": "tafaqquh / fiqh", "arabic": "تفقّه / فقه", "meaning": "memahami mendalam", "operation": "membangun worldview/model dunia dari pemahaman", "ayat_claimed": "9:122, 4:78 (±20x)" },
+    { "term": "tabaṣṣur / baṣīrah", "arabic": "تبصّر / بصيرة", "meaning": "wawasan; penglihatan batin", "operation": "refining pengetahuan → representasi/desain", "ayat_claimed": "7:201, 12:108, 45:20" },
+    { "term": "naẓar", "arabic": "نظر", "meaning": "mengamati-menalar", "operation": "observasi sebagai titik awal penalaran", "ayat_claimed": "—" },
+    { "term": "tawassum", "arabic": "توسّم", "meaning": "membaca tanda", "operation": "sign-reading; persepsi pola", "ayat_claimed": "—" },
+    { "term": "iʿtibār", "arabic": "اعتبار", "meaning": "mengambil pelajaran", "operation": "transfer pelajaran → APLIKASI praktis (analogi/qiyās)", "ayat_claimed": "12:111" },
+    { "term": "idrāk", "arabic": "إدراك", "meaning": "mempersepsi/menyadari", "operation": "realisasi kebenaran; probing sumber perkara", "ayat_claimed": "101:2, 10:90, 27:66" },
+    { "term": "zhann → yaqīn", "arabic": "ظنّ ← يقين", "meaning": "dugaan → kepastian", "operation": "tangga epistemik: klaim butuh bukti (burhān) sebelum yakin", "ayat_claimed": "2:111, 10:36, 49:6" },
+    { "term": "ḥikmah", "arabic": "حكمة", "meaning": "kebijaksanaan", "operation": "evaluative judgment; puncak: generasi ilmu baru", "ayat_claimed": "—" }
+  ],
+  "provenance": [
+    { "name": "Jamal Badi (2011), 'Thinking' terminologies from Qur'anic perspective, Int. J. Arab Culture (IIUM)", "note": "taksonomi kognitif; frekuensi istilah" },
+    { "name": "Abdel-Maguid & Abdel-Halim (2015), The Qur'an and the development of rational thinking, Urology Annals", "note": "metode penalaran (bukti, qiyās, sebab-akibat, anti-taklid)" },
+    { "name": "Kemas Abdul Hai (2017), The Islamic Education Methods in Al-Quran, Ta'dib", "note": "metode pendidikan (16:125)" },
+    { "name": "Aldi & Wahyuni (2025), Islamic Method in the Qur'an: Keeping Life in Equilibrium", "note": "5 metode keseimbangan (modelling, refleksi, experiential, trial-error)" },
+    { "name": "Athoillah (2020), Learning to Read and Memorize the Qur'an, Ittishal", "note": "workflow hafalan: talaqqī→taṣḥīḥ→tasmīʿ→murājaʿah" },
+    { "name": "Riset web: 114chambers, lampofislam, quranicma, qurangrace, azharelquran", "note": "istilah berpikir, berpikir kritis, teknik hafalan" }
+  ]
+}

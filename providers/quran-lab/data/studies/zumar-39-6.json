@@ -1,0 +1,101 @@
+{
+  "schema": "lab-study-v2",
+  "id": "zumar-39-6",
+  "version": 1,
+  "title": "Khalqan min baʿdi khalqin fī ẓulumātin tsalāts — konstruksi berlapis dalam tiga kegelapan",
+  "subtitle": "Penciptaan demi penciptaan, dalam tiga lapis pelindung",
+  "ref": {
+    "surah": 39,
+    "from": 6,
+    "to": 6
+  },
+  "surah_name": "Az-Zumar",
+  "theme": "Kesehatan/perkembangan, isolasi berlapis, konstruksi bertahap, proteksi proses",
+  "sourced_meaning": {
+    "summary": "Dia menciptakan kamu dari diri yang satu, kemudian menjadikan darinya pasangannya, dan menurunkan delapan pasang hewan ternak. Dia menciptakan kamu dalam perut ibumu, penciptaan demi penciptaan (khalqan min baʿdi khalqin), dalam tiga kegelapan (fī ẓulumātin tsalāts). Itulah Allah Tuhanmu, milik-Nya segala kerajaan. Tafsir Kemenag menunjuk tanda kekuasaan pada penciptaan diri manusia (bertahap, dalam kandungan).",
+    "sources": [
+      "Tafsir Kemenag RI QS 39:6",
+      "Tafsir al-Jalalayn QS 39:6"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Pelatihan",
+      "note": "khalqan min baʿdi khalqin — fase demi fase, tiap fase melampaui yang sebelumnya"
+    },
+    {
+      "layer": "Alignment",
+      "note": "proses paling rapuh dijalankan di lingkungan paling terlindungi (3 lapis kegelapan)"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "amal",
+      "reading": "Mengenang tempat pembentukan diri (tiga kegelapan rahim) menumbuhkan bakti pada ibu dan tawadhu: setiap manusia — sekuat apa pun kini — pernah sepenuhnya bergantung pada perlindungan yang tak ia sadari.",
+      "quranic_term": "birrul-wālidain"
+    },
+    {
+      "lens": "computational",
+      "reading": "'Penciptaan demi penciptaan' = build berlapis: tiap versi dibangun DI ATAS versi sebelumnya, bukan dari nol — incremental construction dengan state yang diwariskan antar fase. Dan lingkungannya: tiga lapis isolasi bersarang (nested), bukan satu.",
+      "analogy": "incremental builds + nested isolation",
+      "quranic_term": "khalqan min baʿdi khalqin"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "Defense-in-depth eksplisit: TIGA lapis kegelapan (klasik ditafsirkan: dinding perut, rahim, selaput amnion) — redundansi proteksi berlapis, sehingga kegagalan satu lapis tidak mengekspos proses di dalamnya. Satu lapis pelindung adalah single point of failure; tiga bukan.",
+      "analogy": "defense-in-depth (3 nested layers)"
+    },
+    {
+      "lens": "inference",
+      "reading": "Korelasi yang ditunjuk ayat: makin rapuh & penting sebuah proses, makin dalam lapis perlindungannya. Kebalikannya juga bermakna — proses yang dibiarkan terekspos di fase rapuhnya adalah desain yang buruk. Tingkat proteksi = fungsi dari kerentanan fase.",
+      "quranic_term": "ḥifẓ (penjagaan)"
+    },
+    {
+      "lens": "math-physics",
+      "reading": "Isolasi bersarang mengontrol kondisi batas: tiap lapis meredam gangguan (mekanik, termal, kimiawi) satu orde lebih jauh — seperti shielding bertingkat pada instrumen presisi. Lingkungan terkontrol adalah prasyarat proses presisi tinggi. (Resonansi struktural; tafsir klasik memang menyebut tiga pelindung fisik.)",
+      "analogy": "staged shielding; controlled boundary conditions"
+    },
+    {
+      "lens": "systems",
+      "reading": "Melengkapi 23:12-14 (qarār makīn): di sini arsitektur pelindungnya dirinci — BERLAPIS-3 dan bersarang. Sistem yang membangun komponen kritis menyediakan environment bertingkat: dev → staging → produksi terbatas; tiap lapis menyaring gangguan berbeda.",
+      "analogy": "nested environments (dev→staging→canary)"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Untuk melatih & merilis sistem AI: fase paling rapuh (model belum aligned) dijalankan dalam sandbox berlapis — isolasi komputasi, gerbang evaluasi, rilis bertahap (canary) — 'penciptaan demi penciptaan' dengan tiap fase keluar satu lapis kegelapan hanya setelah matang di lapis dalamnya. Kemampuan penuh diekspos terakhir, bukan pertama.",
+      "analogy": "staged sandboxed release; capability exposed last",
+      "quranic_term": "ẓulumāt tsalāts (sandbox berlapis)"
+    },
+    {
+      "lens": "psychology",
+      "reading": "Perkembangan psikis pun bertahap & butuh ruang aman: pertumbuhan (anak, murid, pemulihan trauma) menuntut lingkungan yang melindungi fase rapuh dari paparan dini — secure base sebelum eksplorasi. Memaksa 'lahir' sebelum matang merusak, bukan mempercepat.",
+      "analogy": "secure base before exposure",
+      "quranic_term": "tadarruj (kebertahapan)"
+    },
+    {
+      "lens": "artifact",
+      "reading": "Teknologi kesehatan meniru tiga kegelapan: inkubator neonatal (lingkungan terkontrol bagi yang lahir terlalu dini), ruang bersih (cleanroom) bagi manufaktur rapuh, hingga containment bertingkat di laboratorium — semua adalah rahim buatan untuk proses yang belum siap terekspos.",
+      "analogy": "incubators, cleanrooms, containment levels"
+    }
+  ],
+  "inference": "Ayat ini merinci dua spesifikasi yang saling mengunci: konstruksi berjalan fase-demi-fase (khalqan min baʿdi khalqin — tiap fase mewarisi hasil fase sebelumnya), DAN fase-fase rapuh itu dijalankan dalam tiga lapis isolasi bersarang. Bersama 23:12-14, ini melengkapi prinsip perawatan-sadar-tahap dengan arsitektur pelindungnya: defense-in-depth. Terjemahan rekayasanya langsung: komponen kritis yang belum matang (termasuk model AI yang belum aligned) dibangun dalam sandbox berlapis dan keluar satu lapis pada satu waktu — kemampuan penuh diekspos paling akhir. Memaksa kelahiran dini, dalam biologi maupun teknologi, bukan percepatan melainkan kerusakan.",
+  "authors": [
+    "Draft AI (LLM draft) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-07",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-07",
+      "note": "Tadabbur perdana — Wave 4 (memperkuat prinsip stage-aware-care).",
+      "authors": [
+        "Draft AI (LLM draft)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

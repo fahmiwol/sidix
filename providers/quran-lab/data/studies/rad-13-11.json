@@ -1,0 +1,114 @@
+{
+  "schema": "lab-study-v2",
+  "id": "rad-13-11",
+  "version": 1,
+  "title": "Hattā yughayyirū mā bi-anfusihim — perubahan sistem dimulai dari state internal",
+  "subtitle": "Allah tidak mengubah keadaan suatu kaum sampai mereka mengubah apa yang ada pada diri mereka sendiri",
+  "ref": {
+    "surah": 13,
+    "from": 11,
+    "to": 11
+  },
+  "surah_name": "Ar-Ra'd",
+  "theme": "Perubahan bottom-up, self-modification, kausalitas internal→eksternal",
+  "sourced_meaning": {
+    "summary": "Menurut Tafsir Kemenag, ayat ini menegaskan bahwa Allah tidak mengubah keadaan (nasib lahiriah) suatu kaum sampai kaum itu lebih dahulu mengubah apa yang ada pada diri mereka sendiri — sikap, mental, dan perbuatan. Bagian awal ayat menerangkan malaikat muʿaqqibāt yang menjaga dan mencatat manusia bergiliran atas perintah Allah; bagian akhir menegaskan bila Allah menghendaki keburukan pada suatu kaum, tak ada yang dapat menolaknya, dan tak ada pelindung selain Dia.",
+    "sources": [
+      "Tafsir Kemenag RI QS 13:11",
+      "Tafsir al-Jalalayn QS 13:11"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Memori & grounding",
+      "note": "'mā bi-anfusihim' = state internal kaum (sikap, niat, kebiasaan) diperlakukan sebagai variabel penyebab yang mendahului keadaan lahiriah"
+    },
+    {
+      "layer": "Penalaran",
+      "note": "urutan kausal dinyatakan berarah: perubahan internal → izin perubahan eksternal; bukan sebaliknya. Intervensi luar tanpa perubahan dalam tidak dijanjikan bertahan"
+    },
+    {
+      "layer": "Aksi & transfer",
+      "note": "yughayyirū (mereka mengubah, kata kerja aktif jamak) — beban aksi ada pada kolektif kaum, bukan menunggu perubahan turun dari luar"
+    },
+    {
+      "layer": "Umpan balik",
+      "note": "muʿaqqibāt yang mencatat & menjaga = mekanisme observasi berkelanjutan; perubahan internal terjadi di bawah pencatatan penuh"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "amal",
+      "reading": "Ayat memindahkan titik ungkit dari 'menuntut keadaan luar berubah' ke 'mengubah diri lebih dulu'. Amal yang diminta: perbaiki state internal kolektif (niat, disiplin, sikap) sebagai prasyarat, bukan konsekuensi, dari perbaikan nasib.",
+      "quranic_term": "taghyīr an-nafs"
+    },
+    {
+      "lens": "computational",
+      "reading": "Sebuah pembacaan: keadaan lahiriah kaum adalah fungsi dari state internalnya — output = f(internal_state). Selama variabel internal tak berubah, fungsi menghasilkan output yang sama betapapun kerasnya berharap. Perubahan sejati menuntut mutasi state, bukan sekadar menunggu output berbeda dari input yang sama.",
+      "analogy": "output is a function of internal state; same state → same output",
+      "quranic_term": "mā bi-anfusihim"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Analogi kuat untuk agen yang belajar: perbaikan perilaku yang tahan lama datang dari SELF-MODIFICATION — memperbarui kebijakan/representasi internal — bukan dari menambal keluaran akhir. Actionable: (1) prioritaskan update pada policy/prompt/memori internal (state) di atas post-processing kosmetik output; (2) jadikan refleksi-diri (evaluasi state sendiri) langkah wajib sebelum menuntut lingkungan berubah; (3) urutan benar = ubah representasi internal dulu, baru harapkan metrik eksternal bergeser; menukar urutan = cargo-cult.",
+      "analogy": "durable change via policy/self-model update, not output patching",
+      "quranic_term": "yughayyirū mā bi-anfusihim"
+    },
+    {
+      "lens": "systems",
+      "reading": "Perubahan diposisikan bottom-up: agen-agen internal (individu dalam kaum) mengubah dirinya, lalu keadaan agregat sistem bergeser. Ini pola emergence — properti makro (nasib kaum) tumbuh dari perubahan mikro yang terdistribusi, bukan didekritkan dari atas. Reformasi top-down tanpa perubahan simpul dasar rapuh.",
+      "analogy": "bottom-up emergence; micro-state change → macro shift"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "Ayat memasang precondition (guard) eksplisit: transisi keadaan-baik TIDAK dieksekusi 'hattā' (sampai) predikat 'kaum mengubah diri' bernilai benar. Ini invariant kausal: tak ada jalur pintas yang melewati syarat internal. Namun paruh akhir ayat menandai batas: kehendak Allah tetap berdaulat (bila Dia kehendaki keburukan, tak tertolak) — precondition manusiawi bukan penentu mutlak.",
+      "analogy": "guarded state transition with precondition; bounded by sovereign override",
+      "quranic_term": "hattā (guard)"
+    },
+    {
+      "lens": "psychology",
+      "reading": "Bergema dengan 'locus of control' internal: individu/kelompok yang meyakini perubahan berasal dari agensi mereka sendiri lebih gigih dan lebih mungkin bertransformasi, ketimbang yang menanti keselamatan dari luar. Ayat menanamkan locus internal sebagai teologi aksi.",
+      "analogy": "internal locus of control; agency belief"
+    },
+    {
+      "lens": "economy",
+      "reading": "Sejalan dengan temuan pembangunan: bantuan/intervensi eksternal jarang bertahan tanpa perubahan institusi & kebiasaan internal (kapasitas, tata kelola, etos). Modal yang disuntikkan ke sistem yang state-internalnya tak berubah cenderung menguap. Perubahan endogen mendahului keberlanjutan.",
+      "analogy": "endogenous institutional change precedes sustainable growth"
+    },
+    {
+      "lens": "biology-medicine",
+      "reading": "Resonansi struktural (analogi, bukan mukjizat numerik): penyembuhan tahan lama sering menuntut perubahan gaya hidup/perilaku pasien (state internal), bukan hanya intervensi simtomatik dari luar. Obat menahan gejala; perubahan internal yang mengubah lintasan penyakit.",
+      "analogy": "root-cause (lifestyle) change vs symptomatic treatment"
+    },
+    {
+      "lens": "pedagogy",
+      "reading": "Belajar yang mengendap adalah perubahan model-mental pelajar (internal), bukan sekadar paparan materi dari luar. Guru menyediakan kondisi; transformasi terjadi ketika pelajar merestrukturisasi pemahamannya sendiri — 'yughayyirū mā bi-anfusihim' versi kelas.",
+      "analogy": "conceptual change; learner-side restructuring"
+    },
+    {
+      "lens": "inference",
+      "reading": "Arah kausalitas ditetapkan: internal → eksternal, dan urutannya tak bisa dibalik tanpa kehilangan daya-tahan. Untuk sistem apa pun (kaum, organisasi, agen belajar), perbaikan yang menempel butuh mutasi state internal lebih dahulu; menunggu keadaan luar berubah dari input internal yang statis adalah menuntut output berbeda dari fungsi yang sama.",
+      "quranic_term": "mā bi-anfusihim"
+    }
+  ],
+  "inference": "Salah satu pembacaan rekayasa QS 13:11: keadaan lahiriah suatu kaum diperlakukan sebagai fungsi dari state internalnya, dengan urutan kausal yang berarah dan bersyarat — 'hattā yughayyirū mā bi-anfusihim' memasang precondition bahwa transformasi eksternal tidak dijanjikan sampai perubahan internal terjadi lebih dulu. Untuk desain sistem dan agen yang belajar, ini menyarankan disiplin self-modification: perbaikan yang tahan lama datang dari memperbarui kebijakan/representasi/kebiasaan internal (bottom-up, terdistribusi), bukan dari menambal keluaran akhir atau menanti lingkungan berubah dengan sendirinya. Paruh akhir ayat sekaligus menandai batas rambu: kedaulatan kehendak Ilahi tetap di atas mekanisme sebab-akibat manusiawi — maka ini analogi struktural untuk membangun sistem, bukan hukum determinisme dan bukan klaim maksud tunggal ayat.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-08",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-08",
+      "note": "Tadabbur perdana — Wave 8 manusia/sosial.",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

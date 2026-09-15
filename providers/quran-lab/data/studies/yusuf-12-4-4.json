@@ -1,0 +1,83 @@
+{
+  "schema": "lab-study-v2",
+  "id": "yusuf-12-4-4",
+  "version": 1,
+  "title": "Innī ra'aytu aḥada 'asyara kaukaban — sinyal simbolik yang belum bisa dibaca literal",
+  "subtitle": "Yusuf berkata kepada ayahnya: aku bermimpi melihat sebelas bintang, matahari, dan bulan — kulihat semuanya sujud kepadaku",
+  "ref": {
+    "surah": 12,
+    "from": 4,
+    "to": 4
+  },
+  "surah_name": "Yusuf",
+  "theme": "Pembuka busur mimpi Yusuf — mimpi sebagai payload simbolik yang butuh decoding, bukan pesan literal",
+  "sourced_meaning": {
+    "summary": "Ketika Yusuf berkata kepada ayahnya: 'Wahai ayahku, sesungguhnya aku bermimpi melihat sebelas bintang, matahari dan bulan; kulihat semuanya sujud kepadaku.' Tafsir Kemenag: 'sujud' di sini bukan makna menyembah, melainkan makna kiasan tunduk-patuh (dibandingkan dengan 55:6, tetumbuhan & pepohonan 'sujud' dalam arti tunduk pada hukum alam). Ya'qub menyadari mimpi ini bukan mimpi biasa, melainkan ILHAM dari Allah sebagaimana kerap dialami para nabi — pertanda Yusuf akan menghadapi urusan penting dan kelak menjadi pemimpin yang ditunduki, termasuk oleh saudara-saudara & orang tuanya sendiri.",
+    "sources": [
+      "Tafsir Kemenag RI QS 12:4",
+      "Tafsir al-Jalalayn QS 12:4"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Persepsi",
+      "note": "objek mimpi (bintang, matahari, bulan) bukan makna literal — 'sujud' ditegaskan Kemenag sebagai KIASAN (tunduk-patuh), bukan penyembahan harfiah"
+    },
+    {
+      "layer": "Tangga epistemik",
+      "note": "Ya'qub, sebagai pihak yang lebih berpengalaman, langsung mengenali mimpi ini SEBAGAI ILHAM (bukan mimpi biasa) — klasifikasi sinyal sebelum isinya sepenuhnya jelas"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "computational",
+      "reading": "Mimpi ini adalah PAYLOAD TERENKODE: objek konkret (11 bintang, matahari, bulan) yang merepresentasikan entitas lain (saudara, orang tua) lewat pemetaan simbolik, bukan pesan literal. Decoding-nya baru terjadi puluhan tahun kemudian (12:100) — payload diterima jauh sebelum skema decoding-nya diketahui.",
+      "analogy": "payload terenkode/simbolik yang diterima sebelum skema decoding-nya diketahui",
+      "quranic_term": "ru'yā (penglihatan/mimpi)"
+    },
+    {
+      "lens": "inference",
+      "reading": "Ya'qub mengenali KELAS sinyal ('ilham dari Allah, bukan mimpi biasa') sebelum makna spesifiknya bisa dipastikan sepenuhnya — klasifikasi tingkat-signifikansi bisa dilakukan lebih dulu, sebelum decoding detail lengkap tersedia.",
+      "analogy": "klasifikasi signifikansi sinyal mendahului decoding detail lengkapnya"
+    },
+    {
+      "lens": "psychology",
+      "reading": "Kemenag mencatat Ya'qub 'menyadari' lewat intuisi berpengalaman (bukan analisis eksplisit) bahwa ini pertanda penting — pengenalan pola berbasis pengalaman panjang (mengenal banyak kasus ilham kenabian sebelumnya), bentuk keahlian tacit yang sulit diformalkan tapi akurat.",
+      "analogy": "pengenalan pola berbasis pengalaman tacit, bukan analisis eksplisit langkah-demi-langkah"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Sinyal diterima oleh satu pihak (Yusuf) namun signifikansinya baru dikenali sepenuhnya oleh pihak KEDUA yang lebih berpengalaman (Ya'qub) — pola review/triase oleh pihak senior sebelum sinyal ditindaklanjuti, relevan bagi sistem yang melibatkan output model muda/baru yang perlu direview entitas berpengalaman sebelum diberi bobot penuh.",
+      "analogy": "triase oleh pihak berpengalaman sebelum sinyal diberi bobot penuh"
+    },
+    {
+      "lens": "history-ummah",
+      "reading": "Kemenag mencatat pola berulang: mimpi sebagai ilham kenabian 'kerapkali dialami oleh para nabi' — bukan kasus tunggal Yusuf, melainkan pola kanal komunikasi yang sudah dikenali dalam tradisi kenabian sebelumnya.",
+      "analogy": "pola kanal yang sudah dikenali dari presedan sebelumnya, bukan fenomena baru"
+    },
+    {
+      "lens": "amal",
+      "reading": "Yusuf menceritakan mimpinya kepada ayahnya dengan polos dan terbuka — kepercayaan seorang anak kepada orang tuanya sebagai tempat pertama berbagi pengalaman batin yang membingungkan."
+    }
+  ],
+  "inference": "Ayat pembuka busur mimpi Yusuf ini menghadirkan sebuah sinyal simbolik yang jelas signifikan namun belum bisa dipastikan maknanya secara literal — 'sujud' ditegaskan Kemenag sebagai kiasan tunduk-patuh, bukan penyembahan. Ya'qub, dengan pengalamannya, mengenali KELAS sinyal ini (ilham kenabian) sebelum makna detailnya jelas. Bacaan rekayasa: payload simbolik bisa diklasifikasikan signifikansinya lebih dulu (oleh pihak berpengalaman) sebelum skema decoding lengkapnya tersedia — decoding penuh ayat ini baru datang di 12:100, puluhan tahun kemudian, menutup satu busur penuh yang dimulai di sini. CATATAN TANZIH: sumber ilham (dari Allah) adalah wilayah wahyu/karunia kenabian, tidak dianalogikan sebagai mekanisme sistem; yang dibaca-rekayasa hanyalah pola PENERIMAAN & KLASIFIKASI AWAL sinyal simbolik pada pihak manusia (Yusuf & Ya'qub).",
+  "authors": [
+    "Draft AI (LLM draft) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-12",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-12",
+      "note": "Tadabbur perdana — Wave 16 mimpi & wahyu, siklus mimpi Yusuf (1/5).",
+      "authors": [
+        "Draft AI (LLM draft)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

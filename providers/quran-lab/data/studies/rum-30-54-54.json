@@ -1,0 +1,98 @@
+{
+  "schema": "lab-study-v2",
+  "id": "rum-30-54-54",
+  "version": 1,
+  "title": "Lemah — kuat — lemah: kurva kapasitas yang tak konstan",
+  "subtitle": "Allah menciptakanmu dari keadaan lemah, lalu kuat, lalu lemah kembali dan beruban; Dia menciptakan apa yang Dia kehendaki",
+  "ref": {
+    "surah": 30,
+    "from": 54,
+    "to": 54
+  },
+  "surah_name": "Ar-Rum",
+  "theme": "Kurva kapasitas sepanjang siklus hidup (ramp-up, puncak, penurunan) + jalur pengecualian dari lintasan default",
+  "sourced_meaning": {
+    "summary": "Allah, Dialah yang menciptakan kamu dari keadaan lemah, kemudian Dia menjadikan (kamu) sesudah keadaan lemah itu menjadi kuat, kemudian Dia menjadikan (kamu) sesudah kuat itu lemah (kembali) dan beruban. Dia menciptakan apa yang dikehendaki-Nya dan Dialah Yang Maha Mengetahui lagi Maha Kuasa. Tafsir Kemenag: ayat ini menyampaikan perjalanan hidup manusia — dari nutfah yang tak berdaya, berkembang jadi janin lalu lahir (rujuk al-Mu'minun/23:12-14), dari kanak-kanak ke remaja-dewasa-matang jadi manusia perkasa, lalu menua kembali lemah (rambut beruban, kulit keriput, penglihatan-pendengaran melemah), hingga wafat. 'Yakhluqu mā yashā'' menunjukkan Allah dapat menentukan lain — manusia bisa wafat pada usia yang dikehendaki-Nya sebelum tua. Kesimpulan Kemenag: manusia hendaknya tidak menyombongkan diri, tetapi beriman dan patuh kepada-Nya.",
+    "sources": [
+      "Tafsir Kemenag RI QS 30:54",
+      "Tafsir al-Jalalayn QS 30:54"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Aksi & transfer",
+      "note": "ḍaʿf → quwwah → ḍaʿf: tiga fase eksplisit dalam satu ayat — kurva non-monoton, bukan garis naik terus atau tetap"
+    },
+    {
+      "layer": "Tangga epistemik",
+      "note": "'yakhluqu mā yashā'' ditempatkan SETELAH pola tiga-fase digambarkan — pola adalah kelaziman (sunnah), bukan hukum kaku tanpa kecuali"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "biology-medicine",
+      "reading": "Kurva ini persis deskripsi biologi penuaan manusia: pertumbuhan (growth) dari lemahnya bayi, kematangan fisiologis di usia dewasa (peak bone/muscle mass, performa puncak organ), lalu senescence (penurunan bertahap kapasitas seluler & organ). Kemenag merinci: uban, kulit keriput, penglihatan-pendengaran melemah — semua penanda klinis penuaan yang dikenal. Tiga fase ini bukan pengecualian melainkan pola umum (sunnatullah) pada makhluk hidup kompleks.",
+      "analogy": "kurva pertumbuhan-puncak-senescence pada organisme",
+      "quranic_term": "ḍaʿf … quwwah … ḍaʿf"
+    },
+    {
+      "lens": "systems",
+      "reading": "Prinsip rekayasa: kapasitas sebuah sistem TIDAK konstan sepanjang siklus hidupnya — ada fase ramp-up, fase puncak stabil, dan fase penurunan (degradasi/aus). Sistem yang dirancang dengan asumsi 'kapasitas selalu penuh' akan gagal menilai performa dengan adil pada fase awal atau akhir. Desain yang matang menjadwalkan ekspektasi & beban SESUAI fase, bukan menyamaratakan.",
+      "analogy": "capacity planning ber-fase: ramp-up / peak / degradasi, bukan kapasitas tetap",
+      "quranic_term": "quwwah (kekuatan sebagai fase, bukan konstanta)"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Analogi pada model/agen: performa naik selama fase pelatihan (ramp-up), mencapai puncak kompetensi, lalu berpotensi drift/menurun bila tak dirawat (data lawas, lingkungan berubah, tak ada retraining) — mirip 'beruban'-nya sebuah model. Pembacaan struktural: sistem yang sehat MEMANTAU fase kapasitasnya sendiri dan menjadwalkan evaluasi ulang/retraining sebelum penurunan mengganggu keandalan, alih-alih berasumsi puncak performa abadi.",
+      "analogy": "capability curve model: ramp-up → peak → drift; perlunya monitoring fase & retraining terjadwal"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "'Yakhluqu mā yashā'' setelah pola tiga-fase menandai bahwa lintasan lemah→kuat→lemah adalah DEFAULT/kelaziman (sunnah), bukan hukum deterministik tanpa kecuali — Kemenag mencatat: manusia bisa wafat pada usia yang dikehendaki-Nya sebelum fase tua. Secara logika program: ada 'jalur utama' (happy path) dan 'jalur pengecualian' (early exit) yang tetap sah dalam desain yang sama.",
+      "analogy": "default trajectory + explicit exception/override path, bukan hukum kaku",
+      "quranic_term": "yakhluqu mā yashā'"
+    },
+    {
+      "lens": "psychology",
+      "reading": "Kesadaran akan kurva ini — bahwa kekuatan puncak adalah FASE, bukan status permanen — melatih penerimaan (acceptance) atas penuaan alih-alih penyangkalan. Kemenag menutup dengan pesan: manusia hendaknya tidak menyombongkan diri (karena kekuatan puncaknya sementara) tetapi beriman dan patuh. Ini kalibrasi psikologis: kekuatan hari ini bukan jaminan esok.",
+      "analogy": "penerimaan siklus hidup vs penyangkalan atas fana-nya kekuatan puncak",
+      "quranic_term": "lā tastakbirū (implikasi: jangan menyombongkan diri)"
+    },
+    {
+      "lens": "computational",
+      "reading": "Tiga fase dapat dibaca sebagai state machine sederhana: State(lemah) → transisi(pertumbuhan) → State(kuat) → transisi(penuaan) → State(lemah, beruban). Tidak ada state 'kuat' yang final/statis — sistem terus bertransisi sampai akhir siklus (ajal), sejalan pola life-cycle yang dibaca di kajian-kajian lain (bandingkan 40:67, 75:3-4).",
+      "analogy": "state machine 3-fase tanpa status akhir yang statis",
+      "quranic_term": "khalaqakum … thumma jaʿala"
+    },
+    {
+      "lens": "inference",
+      "reading": "Struktur ayat memakai 'thumma' (kemudian) dua kali — menandai urutan bertahap yang disengaja, bukan simultan atau acak. Pembacaan yang cermat memisahkan POLA (tiga fase, dibaca dari teks) dari KEPASTIAN INDIVIDUAL (siapa mengalami fase tua, siapa tidak — dibaca dari 'yakhluqu mā yashā'' sebagai wilayah kehendak yang tak kita ketahui rincinya).",
+      "analogy": "pola umum (observable) vs kepastian kasus-per-kasus (bukan wilayah kita)",
+      "quranic_term": "thumma (kemudian)"
+    },
+    {
+      "lens": "amal",
+      "reading": "Fase kuat adalah titik paling rawan lupa diri (ghurur) — justru di situ ayat mengingatkan bahwa itu bagian dari siklus yang akan berbalik lemah. Sikap yang dituntun: syukur di masa kuat, sabar di masa lemah, dan tidak pernah merasa berdiri sendiri di luar kehendak Allah."
+    }
+  ],
+  "inference": "Rum 30:54 memetakan kurva kapasitas manusia dalam tiga fase eksplisit: lemah (asal-mula) → kuat (puncak) → lemah kembali (penuaan, beruban) — dibaca sebagai pola umum (sunnatullah) pada makhluk hidup, bukan garis linear yang terus naik atau tetap. Bacaan rekayasa: (1) sistem/agen yang sehat memperlakukan kapasitas sebagai fungsi dari FASE, bukan konstanta — capacity planning & evaluasi kinerja harus menyesuaikan; (2) penutup ayat 'yakhluqu mā yashā'' menandai lintasan tiga-fase sebagai DEFAULT/kelaziman, bukan hukum kaku — ada jalur pengecualian (wafat lebih awal) yang tetap berada dalam kendali-Nya, bukan anomali di luar desain. CATATAN TANZIH: 'Allahu alladzī khalaqakum' dan 'yakhluqu mā yashā'' — perbuatan mencipta & kehendak mutlak adalah wewenang Allah semata, tidak dianalogikan sebagai mekanisme sistem apa pun; yang dibaca-rekayasa hanyalah POLA kurva pada makhluk-Nya. Penutup Kemenag menegaskan sisi amal: kesadaran akan fana-nya kekuatan puncak seharusnya mencegah kesombongan, mendorong iman dan kepatuhan.",
+  "authors": [
+    "Draft AI (LLM draft) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-12",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-12",
+      "note": "Tadabbur perdana — Wave 13 kelahiran/tumbuh-kembang.",
+      "authors": [
+        "Draft AI (LLM draft)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

@@ -1,0 +1,105 @@
+{
+  "schema": "lab-study-v2",
+  "id": "mizan-55-5-9",
+  "title": "Ḥusbān & Mīzān — komputasi kosmik dan constraint keseimbangan",
+  "subtitle": "Alam berjalan di atas perhitungan; jangan langgar timbangan",
+  "ref": {
+    "surah": 55,
+    "from": 5,
+    "to": 9
+  },
+  "surah_name": "Ar-Rahman",
+  "theme": "Determinisme, keteraturan alam, invariant, alignment",
+  "sourced_meaning": {
+    "summary": "Matahari dan bulan beredar pada orbit dengan perhitungan yang sangat pasti (bi-ḥusbān); Allah meninggikan langit dan menegakkan mīzān (keseimbangan/keadilan), melarang manusia melampaui keseimbangan itu, dan memerintahkan menimbang dengan adil (qisṭ) tanpa mengurangi timbangan.",
+    "sources": [
+      "Tafsir Kemenag RI QS 55:5-9",
+      "Tafsir al-Jalalayn QS 55:5-9"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Persepsi",
+      "note": "matahari-bulan-bintang = āyāt kauniyah yang bisa diobservasi & dihitung"
+    },
+    {
+      "layer": "Alignment/governance",
+      "note": "mīzān + qisṭ = constraint yang membatasi seluruh tindakan/optimisasi"
+    },
+    {
+      "layer": "Epistemik",
+      "note": "keteraturan ber-ḥusbān → alam lawful → prediksi & sains dimungkinkan"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "amal",
+      "reading": "Keadilan dalam menimbang (perdagangan, hukum, relasi) dan menjaga keseimbangan ekologi & sosial — melampaui mīzān = kerusakan (bandingkan 30:41).",
+      "quranic_term": "qisṭ / mīzān"
+    },
+    {
+      "lens": "computational",
+      "reading": "bi-ḥusbān: alam semesta berjalan di atas kalkulasi deterministik. Prediktabilitas orbital melahirkan kalender, ephemeris, navigasi — komputasi sebagai sifat kosmos, bukan penemuan manusia.",
+      "analogy": "deterministic computation",
+      "quranic_term": "ḥusbān"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "mīzān = invariant sistem; 'allā tathghaw fil-mīzān' (jangan melampaui) = runtime assertion yang tidak boleh dilanggar oleh proses mana pun. Pelanggaran invariant → korupsi state (kerusakan).",
+      "analogy": "invariant / assertion"
+    },
+    {
+      "lens": "algorithm",
+      "reading": "Proses periodik terjadwal (orbit, musim) + loop kontrol yang menjaga ekuilibrium — analogi homeostasis atau kontroler umpan-balik yang terus mengoreksi penyimpangan.",
+      "analogy": "scheduler + control loop (PID)"
+    },
+    {
+      "lens": "inference",
+      "reading": "Jika benda langit ber-ḥusbān (terhitung pasti), alam itu lawful dan seragam → observasi hari ini berlaku besok → sains dimungkinkan. Ayat ini menyediakan prasyarat epistemologis metode ilmiah.",
+      "quranic_term": "naẓar → yaqīn"
+    },
+    {
+      "lens": "math-physics",
+      "reading": "Mekanika benda langit: orbit = fungsi periodik yang dapat dihitung presisi (dasar penanggalan — bandingkan 10:5 'liṭaʿlamū ʿadada s-sinīn wal-ḥisāb'). Keteraturan kuantitatif alam semesta.",
+      "analogy": "celestial mechanics; periodic functions",
+      "quranic_term": "ḥusbān"
+    },
+    {
+      "lens": "systems",
+      "reading": "Sistem sehat = sistem yang keseimbangannya dijaga. Ekologi, ekonomi, organisasi: umpan-balik + batas. Melanggar mīzān di satu subsistem merambat merusak keseluruhan.",
+      "analogy": "systems equilibrium / feedback governance"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Ini ayat alignment: optimisasi apa pun (agen, perusahaan, model) dibatasi mīzān + qisṭ — jangan maksimalkan satu objective sampai merusak keseimbangan. Fairness constraint sebagai hukum, bukan opsi.",
+      "analogy": "constrained optimization; alignment guardrails",
+      "quranic_term": "mīzān / qisṭ / ḥikmah"
+    },
+    {
+      "lens": "artifact",
+      "reading": "Timbangan = instrumen ukur pertama; melahirkan metrologi, standar, kalibrasi — prasyarat perdagangan adil dan sains eksperimental.",
+      "analogy": "metrology & standards"
+    }
+  ],
+  "inference": "Satu bagian pendek memuat dua pilar teknologi sekaligus: (1) alam yang terhitung (ḥusbān) → dasar prediksi & sains; (2) keseimbangan yang tak boleh dilanggar (mīzān) → dasar etika sistem & alignment. Secara rekayasa: komputasi tanpa constraint itu destruktif; constraint tanpa komputasi itu buta. Ayat ini menyatukan keduanya — dan menariknya, 'logika sebagai mīzān untuk menimbang ide' juga muncul dalam tradisi keilmuan Islam.",
+  "authors": [
+    "Draft AI (LLM draft) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-07",
+  "version": 1,
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-07",
+      "note": "Tadabbur perdana (3 kajian demonstrasi Poin 4).",
+      "authors": [
+        "Draft AI (LLM draft) — interpretasi rekayasa, menunggu tinjauan"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

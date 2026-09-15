@@ -1,0 +1,113 @@
+{
+  "schema": "lab-study-v2",
+  "id": "fatihah-1-1-7",
+  "version": 1,
+  "title": "Al-Fatihah — protokol pembuka & loop kalibrasi harian",
+  "subtitle": "Tujuh ayat yang dijalankan miliaran manusia ≥17× sehari, identik, selama 14 abad",
+  "ref": {
+    "surah": 1,
+    "from": 1,
+    "to": 7
+  },
+  "surah_name": "Al-Fatihah",
+  "theme": "Protokol interaksi, alignment, spesifikasi via contoh, sinkronisasi global",
+  "sourced_meaning": {
+    "summary": "Ummul-Kitab: dibuka dengan nama Allah Yang Maha Pengasih-Penyayang; segala puji milik Allah Rabb seluruh alam, Maha Pengasih-Penyayang, Pemilik hari pembalasan; pernyataan hanya kepada-Nya menyembah dan hanya kepada-Nya memohon pertolongan; lalu permohonan inti: tunjukilah kami jalan yang lurus — jalan orang yang Engkau beri nikmat, bukan jalan yang dimurkai dan bukan yang sesat. (Status basmalah sebagai ayat = perbedaan antar tradisi penghitungan — metadata, mushaf ini memakai hitungan Kufi/Hafs.)",
+    "sources": [
+      "Tafsir Kemenag RI QS 1:1-7",
+      "Tafsir al-Jalalayn QS 1:1-7"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Memori & grounding",
+      "note": "dibaca ulang tiap rakaat = konteks inti yang selalu di-load ulang sebelum sesi — grounding tak pernah basi"
+    },
+    {
+      "layer": "Tangga epistemik",
+      "note": "struktur pujian→pernyataan→permohonan: akui realitas dulu (siapa Rabb), baru minta arah"
+    },
+    {
+      "layer": "Alignment",
+      "note": "ihdinā = permohonan alignment eksplisit, dispesifikasi via contoh positif & negatif"
+    },
+    {
+      "layer": "Pelatihan",
+      "note": "repetisi ≥17×/hari seumur hidup = murājaʿah (spaced repetition) paling masif dalam sejarah"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "amal",
+      "reading": "Rukun salat yang dibaca tiap rakaat — kalibrasi niat & arah minimal 17× sehari: memuji, mengakui kepemilikan hari pembalasan, memperbarui janji ibadah, memohon jalan lurus. Hidup di-reset ke orientasi yang benar berkali-kali sehari.",
+      "quranic_term": "dhikr / murājaʿah"
+    },
+    {
+      "lens": "computational",
+      "reading": "Struktur 7 ayat = protokol sesi lengkap: (1-4) identifikasi & konteks — dengan nama siapa, sifat-Nya (Rahmān-Rahīm disebut dua kali: sebelum & sesudah 'Rabb al-ʿālamīn'), otoritas-Nya (Mālik yawm ad-dīn); (5) binding eksklusif dua-arah — iyyāka naʿbudu WA iyyāka nastaʿīn (hanya-Engkau kami sembah, hanya-Engkau kami mintai tolong); (6-7) request + spesifikasi. Handshake → auth → request.",
+      "analogy": "session protocol: identify → bind → request",
+      "quranic_term": "tadabbur"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "Ayat 6-7 = query dengan spesifikasi rangkap tiga: definisi abstrak ('jalan lurus') + contoh positif ('jalan orang yang Engkau beri nikmat') + dua counter-example ('bukan yang dimurkai, bukan yang sesat'). Spesifikasi via contoh & kontra-contoh — pola yang di rekayasa dikenal sangat mengurangi ambiguitas.",
+      "analogy": "spec by example + negative examples",
+      "quranic_term": "iʿtibār"
+    },
+    {
+      "lens": "algorithm",
+      "reading": "Dieksekusi ≥17×/hari (rakaat wajib) pada jadwal tersebar sepanjang hari (subuh-zuhur-asar-maghrib-isya) = spaced repetition + heartbeat loop: sistem yang menjaga state-nya dengan re-sinkronisasi periodik, bukan sekali setup lalu drift.",
+      "analogy": "heartbeat / scheduled re-sync; spaced repetition",
+      "quranic_term": "murājaʿah"
+    },
+    {
+      "lens": "inference",
+      "reading": "Urutannya epistemik: pengakuan realitas (siapa Rabb, apa otoritas-Nya) MENDAHULUI permohonan. Tidak minta arah sebelum menetapkan kerangka acuan. Dan 'ghayr il-maghḍūb / walā ḍḍāllīn' membedakan dua mode gagal yang berbeda: tahu-tapi-melanggar vs tersesat-tanpa-tahu — taksonomi error yang presisi.",
+      "analogy": "reference frame first; error taxonomy (willful vs lost)",
+      "quranic_term": "taʿaqqul"
+    },
+    {
+      "lens": "math-physics",
+      "reading": "As-sabʿul-matsānī (tujuh yang diulang-ulang, QS 15:87 — klaim rujukan): struktur pendek berulang dengan posisi tengah di ayat 5 (titik balik dari pujian → permohonan) — simetri pujian(1-4) | ikrar(5) | doa(6-7).",
+      "analogy": "symmetric structure with pivot",
+      "quranic_term": "tadhakkur"
+    },
+    {
+      "lens": "systems",
+      "reading": "Miliaran orang membaca teks yang persis sama, dalam bahasa yang sama, pada jam-jam yang sama, selama 14 abad — protokol sinkronisasi terdistribusi paling tahan lama yang pernah ada: tanpa server pusat, integritas terjaga oleh hafalan massal (tawātur) + kini bisa diverifikasi kriptografis (Merkle app ini).",
+      "analogy": "distributed consensus via mass replication",
+      "quranic_term": "tawātur"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Analogi ada pada DISIPLIN MANUSIA-nya, bukan penggambaran Yang disembah. Al-Fatihah dibaca ulang di awal tiap rakaat seperti memperbarui kesadaran & orientasi sebelum bertindak: mengikat tujuan hati secara EKSKLUSIF ke satu arah (iyyāka), lalu memohon petunjuk (ihdinā) yang dispesifikasi lewat contoh positif & dua larangan. Pelajaran alignment-nya di sisi pelaku: kalibrasi nilai inti berkala agar tak drift. (Tanzih: Yang disembah tidak dimodelkan sebagai komponen/peran sistem.)",
+      "analogy": "core context reload + alignment request + exemplar/negative spec",
+      "quranic_term": "dhikr → iʿtibār"
+    },
+    {
+      "lens": "artifact",
+      "reading": "Artefak liturgi tertua yang masih dibaca identik secara global tiap hari — praktik ibadah yang dibakukan; dan karena wajib dibaca dalam bahasa Arab, ia juga instrumen pemersatu bahasa lintas bangsa.",
+      "analogy": "standardized interface; lingua franca"
+    }
+  ],
+  "inference": "Al-Fatihah, dibaca sebagai disiplin PENGABDIAN, memuat pola lengkap DI SISI MANUSIA: perbarui kesadaran & akui realitas → ikat orientasi hati secara eksklusif (hanya kepada-Nya) → mohon arah → spesifikasi lewat contoh & kontra-contoh → ulangi berkala agar tak menyimpang. CATATAN TANZIH: Allah tidak digambarkan/dimodelkan — Dia landasan transenden yang ghaib; yang dibaca-rekayasa hanyalah struktur ibadah & posisi hati pelakunya. Pelajaran untuk sistem buatan manusia: keselarasan bukan status sekali-jadi melainkan proses kalibrasi berulang.",
+  "authors": [
+    "Draft AI (LLM draft) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-07",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-07",
+      "note": "Tadabbur perdana — pilot sintesis per-surah (surah pertama, 7 ayat penuh).",
+      "authors": [
+        "Draft AI (LLM draft)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

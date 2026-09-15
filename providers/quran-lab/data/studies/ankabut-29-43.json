@@ -1,0 +1,102 @@
+{
+  "schema": "lab-study-v2",
+  "id": "ankabut-29-43",
+  "version": 1,
+  "title": "Wa mā yaʿqiluhā illa-l-ʿālimūn — decoding perumpamaan menuntut ilmu",
+  "subtitle": "Perumpamaan dibuat untuk semua, tetapi hanya yang berilmu yang mampu memahaminya",
+  "ref": {
+    "surah": 29,
+    "from": 43,
+    "to": 43
+  },
+  "surah_name": "Al-'Ankabut",
+  "theme": "Abstraksi/perumpamaan (matsal), ilmu sebagai kunci decode, prasyarat pemahaman, kompresi makna",
+  "sourced_meaning": {
+    "summary": "Allah membuat perumpamaan-perumpamaan (amtsāl) bagi manusia — pada konteks ini perumpamaan rumah laba-laba sebagai serapuh-rapuh rumah bagi yang berlindung pada selain Allah. Menurut Kemenag, hanya orang berakal yang dapat memikirkan perumpamaan itu; orang yang selalu menggunakan hati dan pikirannya serta ahli ilmu pengetahuan pasti dapat memahaminya dan makin banyak mengetahui rahasia yang terkandung dalam ayat-ayat-Nya. Laba-laba dipilih karena mudah dipahami dan untuk menyingkap keraguan. Diriwayatkan (al-Haitsami) bahwa orang berilmu ialah yang menjaga perintah Allah, beramal taat, dan menjauhi murka-Nya.",
+    "sources": [
+      "Tafsir Kemenag RI QS 29:43",
+      "Tafsir al-Jalalayn QS 29:43"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Penalaran",
+      "note": "matsal = abstraksi terkompresi; memahaminya menuntut menalar dari lambang ke maksud (decode), bukan membaca harfiah"
+    },
+    {
+      "layer": "Tangga epistemik",
+      "note": "'wa mā yaʿqiluhā illa-l-ʿālimūn' — kunci pemahaman digerbang oleh ilmu; tanpa kunci, perumpamaan tetap terenkripsi"
+    },
+    {
+      "layer": "Aksi & transfer",
+      "note": "yang paham makin menyingkap 'rahasia' lain (per Kemenag) — decode satu abstraksi membuka transfer ke banyak kasus"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "inference",
+      "reading": "Struktur pembatas 'wa mā yaʿqiluhā illa-l-ʿālimūn' menyatakan: perumpamaan disebarkan untuk semua, namun pemahamannya eksklusif bagi yang berilmu. Ini pola akses berkunci: sinyal tersedia luas, tetapi men-decode-nya butuh 'kunci' (ilmu). Dalam kerangka rekayasa (bounded), makna abstrak tidak dapat diekstrak tanpa prasyarat pengetahuan — pembacaan struktural, bukan penetapan hukum.",
+      "analogy": "broadcast to all, decodable only with the key (knowledge)",
+      "quranic_term": "taʿaqqul"
+    },
+    {
+      "lens": "computational",
+      "reading": "Dibaca sebagai sistem: matsal (perumpamaan) = pesan terkompresi/ter-enkode — banyak makna dipadatkan ke dalam satu citra sederhana (rumah laba-laba). Memahaminya = proses decode/dekompresi yang menuntut codec yang benar (ilmu). Tanpa codec, penerima hanya melihat permukaan literal; dengan codec, ia memulihkan muatan penuhnya. Abstraksi menghemat transmisi tetapi memindahkan beban ke sisi pemahaman.",
+      "analogy": "compressed/encoded message; decoding needs the right codec",
+      "quranic_term": "matsal"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Ini soal kapasitas abstraksi: memahami analogi/metafora menuntut model yang cukup kaya untuk memetakan struktur lintas-domain (source→target mapping), bukan pencocokan permukaan. Untuk desain agen — kemampuan menangani abstraksi dan few-shot analogi adalah fungsi dari kedalaman representasi (prior/pengetahuan); agen 'dangkal' salah tafsir metafora sebagai literal. Pelajaran: sediakan grounding/pengetahuan yang memadai sebelum mengharap penalaran analogis yang benar. Kunci decode = knowledge prior.",
+      "analogy": "analogical reasoning requires rich cross-domain representation",
+      "quranic_term": "taʿaqqul"
+    },
+    {
+      "lens": "pedagogy",
+      "reading": "Perumpamaan adalah alat ajar par excellence — Kemenag mencatat laba-laba dipilih karena 'mudah dipahami' dan untuk menyingkap keraguan. Tetapi efektivitasnya bergantung pada kesiapan murid: perumpamaan menurunkan tangga menuju konsep abstrak, namun murid tetap harus menaikinya dengan bekal ilmu. Mengajar dengan analogi menjembatani yang konkret ke yang abstrak, asalkan penerima punya prasyarat untuk menyeberang.",
+      "analogy": "analogy as a scaffold from concrete to abstract",
+      "quranic_term": "matsal"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "Perumpamaan berfungsi seperti abstraksi/enkapsulasi: detail rumit disembunyikan di balik antarmuka sederhana (citra laba-laba), memungkinkan penalaran pada tingkat yang lebih tinggi. Namun memakai abstraksi dengan benar menuntut memahami kontraknya — 'yaʿqiluhā' = memahami maksud di balik antarmuka. Pengguna yang tak paham kontrak akan menyalahgunakan atau salah-baca abstraksi itu.",
+      "analogy": "abstraction/encapsulation — correct use needs grasp of the contract"
+    },
+    {
+      "lens": "systems",
+      "reading": "Perumpamaan memampatkan pola kompleks (kerapuhan bergantung pada selain Allah) menjadi model mental yang dapat dipindahkan. Ini seperti membangun model tereduksi dari sistem rumit: menangkap struktur esensial sambil membuang derau. Nilai model bergantung pada pembaca yang bisa memetakannya kembali ke realitas — pemetaan itulah yang menuntut ilmu.",
+      "analogy": "reduced model capturing essential structure",
+      "quranic_term": "iʿtibār"
+    },
+    {
+      "lens": "math-physics",
+      "reading": "Matsal serupa isomorfisme/pemodelan: memetakan struktur satu domain (jaring laba-laba yang rapuh) ke domain lain (kerapuhan bergantung pada selain Allah) dengan mempertahankan relasi yang relevan. Memahami pemetaan menuntut mengenali struktur di kedua sisi — literasi yang, dalam kerangka rekayasa, disebut sebagai kemampuan abstraksi. Dicatat sebagai resonansi struktural, bukan mukjizat numerik.",
+      "analogy": "structure-preserving mapping (model/isomorphism)"
+    },
+    {
+      "lens": "amal",
+      "reading": "Kemenag (via al-Haitsami) menautkan 'berilmu' dengan menjaga perintah Allah, beramal taat, dan menjauhi murka-Nya — sehingga 'kunci pemahaman' bukan sekadar kecerdasan teknis melainkan ilmu yang berpadu dengan sikap dan amal. Yang membuka rahasia perumpamaan adalah hati-dan-pikir yang aktif sekaligus lurus, bukan kecerdasan yang lepas dari adab.",
+      "quranic_term": "ʿilm → ʿamal"
+    }
+  ],
+  "inference": "Dibaca sebagai analogi rekayasa, Al-Ankabut 43 memisahkan penyebaran dari pemahaman: perumpamaan (matsal) 'dibuat untuk manusia' secara luas, tetapi 'tiada yang memahaminya kecuali orang berilmu'. Perumpamaan berfungsi seperti pesan terkompresi/ter-enkode — banyak makna dipadatkan ke citra sederhana (rumah laba-laba) — dan men-decode-nya menuntut 'kunci' berupa ilmu. Untuk desain sistem (manusia atau mesin), pelajarannya: menangani abstraksi dan analogi adalah fungsi dari kedalaman representasi/pengetahuan penerima, bukan pencocokan permukaan; abstraksi menghemat transmisi tetapi memindahkan beban ke sisi pemahaman, sehingga grounding yang memadai adalah prasyarat penalaran analogis yang benar. Dalam pendidikan, analogi adalah scaffold ampuh dari konkret ke abstrak — asalkan murid punya bekal untuk menyeberang. Ilmu yang dimaksud (per Kemenag) berpadu dengan amal dan adab, bukan kecerdasan yang lepas. Ini salah satu pembacaan rekayasa di atas makna zahir yang bersumber, BUKAN maksud tunggal ayat, dan resonansi 'kompresi/decode' dicatat sebagai analogi pemahaman yang bounded, bukan mukjizat numerik.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-08",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-08",
+      "note": "Tadabbur perdana — Wave 12 tadabbur/ilmu (ilmu = kunci decode perumpamaan/abstraksi).",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

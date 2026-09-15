@@ -1,0 +1,88 @@
+{
+  "schema": "lab-study-v2",
+  "id": "yusuf-12-36-36",
+  "version": 1,
+  "title": "Innā narāka minal-muḥsinīn — kepercayaan yang dibangun sebelum keahlian diminta",
+  "subtitle": "Dua pemuda masuk penjara bersama Yusuf, masing-masing bermimpi; mereka berkata: beritahukan kepada kami takwilnya, sesungguhnya kami melihatmu termasuk orang-orang yang berbuat baik",
+  "ref": {
+    "surah": 12,
+    "from": 36,
+    "to": 36
+  },
+  "surah_name": "Yusuf",
+  "theme": "Dua sinyal mentah dari sumber sama diminta didekode bersamaan; permintaan didahului pengakuan kredibilitas — kepercayaan mendahului delegasi keahlian",
+  "sourced_meaning": {
+    "summary": "Bersama Yusuf masuk pula ke penjara dua orang pemuda. Salah seorang berkata: 'Aku bermimpi memeras anggur.' Yang lain berkata: 'Aku bermimpi membawa roti di atas kepalaku, sebagiannya dimakan burung.' Keduanya berkata: 'Beritahukan kepada kami takwilnya; sesungguhnya kami memandangmu termasuk orang-orang yang berbuat baik (muḥsinīn).' Tafsir Kemenag: kedua pemuda itu bekas tukang siram kebun raja & bekas bendahara raja, dipenjara karena bersalah. Yusuf mendapati keduanya bersedih & bingung karena mimpi 'aneh dan ajaib' yang tak mereka pahami. Yusuf menyapa lebih dulu, baru mereka bercerita. Kemenag menegaskan: harapan mereka tertumpu pada Yusuf KARENA selama di penjara mereka telah mengenalnya sebagai orang baik, luas ilmunya, baik pergaulannya, dan dekat dengan Tuhannya — kepercayaan itu terbangun dari observasi berkelanjutan, bukan klaim sepihak Yusuf.",
+    "sources": [
+      "Tafsir Kemenag RI QS 12:36",
+      "Tafsir al-Jalalayn QS 12:36"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Aksi & transfer",
+      "note": "DUA mimpi berbeda dari SATU konteks (penjara sama, waktu sama) diajukan bersamaan untuk didekode — permintaan batch, bukan satu-per-satu"
+    },
+    {
+      "layer": "Tangga epistemik",
+      "note": "permintaan takwil (kepercayaan keahlian) didahului pernyataan alasan eksplisit ('innā narāka minal-muḥsinīn') — kredibilitas dinyatakan SEBELUM permintaan diajukan, bukan diasumsikan"
+    },
+    {
+      "layer": "Persepsi",
+      "note": "Kemenag: Yusuf yang menyapa duluan ('mengapa kalian begini?') — inisiatif membaca kondisi orang lain mendahului permintaan bantuan diajukan"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "psychology",
+      "reading": "Kepercayaan pada Yusuf sebagai penakwil TIDAK muncul dari klaim keahlian Yusuf sendiri, melainkan dari OBSERVASI BERKELANJUTAN atas karakternya selama di penjara ('luas ilmunya, baik pergaulannya, dekat dengan Tuhannya') — kredibilitas yang dibangun lewat rekam jejak perilaku, bukan pengakuan sepihak.",
+      "analogy": "kredibilitas dibangun dari rekam jejak perilaku teramati, bukan klaim sepihak",
+      "quranic_term": "narāka minal-muḥsinīn (kami melihatmu termasuk yang berbuat baik)"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Delegasi tugas interpretasi (takwil) ke pihak ketiga (Yusuf) didahului oleh proses ASESMEN KREDIBILITAS yang terpisah dari tugas itu sendiri — pemohon tidak sekadar meminta hasil, mereka lebih dulu menyatakan alasan kenapa Yusuf pantas dipercaya. Pola ini relevan bagi sistem yang men-delegasikan sub-tugas ke agen lain: kepercayaan sebaiknya dibangun/diverifikasi lebih dulu, bukan diasumsikan otomatis oleh kompetensi klaim.",
+      "analogy": "delegasi tugas didahului asesmen kredibilitas eksplisit terhadap penerima delegasi",
+      "quranic_term": "nabbi'nā bi-ta'wīlihī (beritahukan kepada kami takwilnya)"
+    },
+    {
+      "lens": "computational",
+      "reading": "Dua mimpi ini adalah dua PAYLOAD TERPISAH dari sumber-waktu yang sama (dua orang, satu penjara, kejadian berdekatan) — diajukan sebagai satu permintaan batch untuk didekode oleh satu decoder. Yusuf, di ayat-ayat berikutnya, memberi hasil BERBEDA untuk tiap payload (satu selamat, satu dieksekusi) — decoder yang sama menghasilkan output berbeda tergantung input, bukan template tunggal.",
+      "analogy": "batch-request dua payload berbeda ke satu decoder, hasil per-payload berbeda",
+      "quranic_term": "ru'yā (masing-masing mimpi)"
+    },
+    {
+      "lens": "systems",
+      "reading": "Yusuf menyapa lebih dulu ketika melihat kegelisahan mereka ('mengapa kalian begini?') — deteksi kondisi bermasalah pada pihak lain mendahului permintaan bantuan formal diajukan. Sistem/pihak yang responsif terhadap sinyal kegelisahan (bukan menunggu permintaan eksplisit) sering mempercepat resolusi masalah.",
+      "analogy": "deteksi proaktif kondisi bermasalah mendahului permintaan formal"
+    },
+    {
+      "lens": "inference",
+      "reading": "Kedua pemuda secara jujur mengaku TIDAK TAHU tafsir mimpi mereka sendiri ('kami tidak tahu apa tafsir mimpi kami ini', per Kemenag) — pengakuan gap-pengetahuan yang jujur, prasyarat bagi permintaan bantuan yang tulus (bandingkan kontras di 12:43-44: pembesar kerajaan juga mengaku tak tahu, tapi dalam skala lebih besar & lebih terbuka)."
+    },
+    {
+      "lens": "amal",
+      "reading": "Yusuf, meski dalam kondisinya sendiri sebagai tahanan tak bersalah, tetap memberi perhatian & pertolongan kepada sesama tahanan yang gelisah — kebaikan yang tak menunggu posisi diri sendiri aman lebih dulu."
+    }
+  ],
+  "inference": "Dua pemuda mengajukan dua mimpi berbeda untuk ditakwilkan Yusuf, namun permintaan ini didahului pernyataan eksplisit tentang MENGAPA mereka mempercayainya — kredibilitas yang dibangun dari observasi karakter berkelanjutan selama di penjara, bukan klaim keahlian sepihak. Bacaan rekayasa: (1) delegasi tugas interpretasi kepada pihak lain di sini didahului asesmen kredibilitas eksplisit — pola yang relevan bagi sistem multi-agen yang mendelegasikan sub-tugas: kepercayaan dibangun/diverifikasi, bukan diasumsikan; (2) dua payload (mimpi) berbeda dari konteks yang sama diajukan sebagai batch ke satu decoder (Yusuf), yang kelak menghasilkan output berbeda untuk tiap payload — bukan template tunggal untuk semua kasus. Dibaca berdampingan dengan kajian 12:43-44 (kontras kompetensi): di sini permintaan berhasil karena penakwilnya (Yusuf) memang berkompeten & telah dibuktikan lewat observasi; di 12:43-44, para pembesar kerajaan justru mengaku TIDAK berkompeten. CATATAN TANZIH: kemampuan Yusuf menakwil mimpi adalah karunia ilmu dari Allah (disebut Kemenag di ayat-ayat berikutnya sebagai ilmu yang diajarkan Allah kepadanya) — sumber keahlian itu sendiri tidak dianalogikan; yang dibaca-rekayasa hanyalah pola sosial permintaan-kredibilitas-delegasi pada pihak manusia.",
+  "authors": [
+    "Draft AI (LLM draft) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-12",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-12",
+      "note": "Tadabbur perdana — Wave 16 mimpi & wahyu, siklus mimpi Yusuf (3/5).",
+      "authors": [
+        "Draft AI (LLM draft)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

@@ -1,0 +1,110 @@
+{
+  "schema": "lab-study-v2",
+  "id": "taha-20-114-114",
+  "version": 1,
+  "title": "Rabbi zidni 'ilma — permintaan TAMBAH ILMU tanpa henti",
+  "subtitle": "Jangan tergesa; dan berdoa: Tuhanku, tambahkanlah ilmu kepadaku",
+  "ref": {
+    "surah": 20,
+    "from": 114,
+    "to": 114
+  },
+  "surah_name": "Taha",
+  "theme": "Pembelajaran berkelanjutan, kesabaran akuisisi, growth mindset",
+  "sourced_meaning": {
+    "summary": "Allah melarang Nabi tergesa-gesa membaca/mengulang Al-Qur'an sebelum wahyu disempurnakan kepadanya, karena tergesa justru mengacaukan hafalan; Allah sendiri menjamin pemeliharaannya. Sesudah larangan tergesa, Nabi diperintahkan berdoa memohon tambahan ilmu — menegaskan ilmu sebagai sesuatu yang senantiasa bertambah dan dimohonkan.",
+    "sources": [
+      "Tafsir Kemenag RI QS 20:114",
+      "Tafsir al-Jalalayn QS 20:114"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Umpan balik",
+      "note": "'jangan tergesa membaca sebelum wahyu sempurna' = tunggu input lengkap sebelum meng-commit output; tergesa = error"
+    },
+    {
+      "layer": "Tangga epistemik",
+      "note": "'tambahkanlah ilmu' = pengetahuan tidak pernah komplet; selalu ada delta yang dapat ditambahkan"
+    },
+    {
+      "layer": "Aksi & transfer",
+      "note": "doa tambah-ilmu menjadikan pembelajaran sebagai keadaan permanen, bukan peristiwa sekali selesai"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "ai-agentic",
+      "reading": "Dua instruksi bertumpuk: (1) jangan keluarkan output sebelum konteks penuh diterima ('la ta'jal'), (2) terus perbarui parameter pengetahuan ('zidni 'ilma'). Actionable: rancang agen dengan dua disiplin — buffer input hingga sinyal 'wahyu sempurna' (jangan streaming jawaban dari premis parsial), dan continual learning yang tak pernah membekukan bobot sebagai 'sudah tahu segalanya'. Rasa cukup-ilmu adalah mode kegagalan.",
+      "analogy": "await-full-context before emit + continual/online learning loop",
+      "quranic_term": "rabbi zidni 'ilma"
+    },
+    {
+      "lens": "algorithm",
+      "reading": "'zidni 'ilma' = fungsi objektif yang tak pernah konvergen ke nol gradien: selalu ada langkah perbaikan berikutnya. Model belajar sebagai proses monoton-naik tanpa titik terminasi 'sudah optimal' — anti-plateau yang disengaja.",
+      "analogy": "non-terminating gradient ascent; open-ended objective",
+      "quranic_term": "ziyadah al-'ilm"
+    },
+    {
+      "lens": "psychology",
+      "reading": "Doa ini adalah rumusan growth mindset paling padat: ilmu dipandang dapat bertambah selamanya, dan penambahannya dimohonkan sebagai nikmat. Lawannya — fixed mindset yang merasa 'sudah tahu' — persis sikap tergesa yang dilarang di awal ayat.",
+      "analogy": "growth mindset vs. premature closure",
+      "quranic_term": "la ta'jal"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "'Jangan tergesa membaca sebelum disempurnakan' = jangan proses/commit sebelum transaksi input lengkap — hindari race condition membaca state yang belum final. Tergesa = membaca buffer setengah terisi lalu menghasilkan korupsi (tafsir: 'mengacaukan hafalan').",
+      "analogy": "race condition; read-after-write ordering; commit only when complete",
+      "quranic_term": "la ta'jal bil-Qur'an"
+    },
+    {
+      "lens": "computational",
+      "reading": "Ilmu sebagai state yang di-append terus-menerus (zidni = increment), bukan snapshot beku. Sistem yang sehat memodelkan pengetahuannya sebagai log yang bertumbuh, dengan konsistensi dijaga oleh urutan penulisan yang benar (tidak tergesa).",
+      "analogy": "append-only knowledge log; incremental state",
+      "quranic_term": "zidni"
+    },
+    {
+      "lens": "pedagogy",
+      "reading": "Bahkan penerima wahyu — puncak otoritas ilmu — diperintahkan memohon tambahan ilmu. Ini menutup pintu kesombongan pedagogis: guru pun tetap murid. Kurikulum sejati tak berujung; kelulusan hanyalah izin belajar tingkat berikut.",
+      "analogy": "lifelong learning; no terminal mastery",
+      "quranic_term": "zidni 'ilma"
+    },
+    {
+      "lens": "systems",
+      "reading": "Menahan diri dari tergesa = backpressure: laju keluaran diselaraskan dengan laju masuknya wahyu, mencegah overflow (lupa). Sistem stabil menyerap pada kecepatan sumber, bukan memaksakan kecepatan sendiri.",
+      "analogy": "backpressure; rate matching to source",
+      "quranic_term": "hatta yuqda ilaika wahyuh"
+    },
+    {
+      "lens": "economy",
+      "reading": "Ilmu = aset dengan imbal-hasil majemuk (compounding): tiap tambahan menjadi basis tambahan berikutnya. Doa 'zidni 'ilma' adalah reinvestasi tanpa henti pada aset berdaya-ungkit tertinggi, bukan konsumsi sekali pakai.",
+      "analogy": "compounding capital; reinvestment",
+      "quranic_term": "ziyadah"
+    },
+    {
+      "lens": "amal",
+      "reading": "Menjadikan 'rabbi zidni 'ilma' wirid harian mengubah belajar menjadi ibadah berkelanjutan: setiap hari mengejar delta pengetahuan sebagai bentuk syukur dan pengabdian, bukan ambisi kosong.",
+      "quranic_term": "rabbi zidni 'ilma"
+    }
+  ],
+  "inference": "Ayat menyandingkan dua disiplin belajar yang tampak berlawanan namun saling melengkapi: SABAR (jangan tergesa mengeluarkan output sebelum input sempurna) dan LAPAR (terus memohon tambahan ilmu). Secara rekayasa, ini blueprint sistem pembelajar sehat: buffer input hingga lengkap sebelum meng-commit, lalu perlakukan pengetahuan sebagai state yang selalu bertumbuh tanpa titik 'sudah cukup'. Merasa cukup-ilmu adalah bentuk tergesa yang halus — keduanya mode kegagalan.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-07",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-07",
+      "note": "Tadabbur perdana — Wave 7 ilmu/ajar.",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

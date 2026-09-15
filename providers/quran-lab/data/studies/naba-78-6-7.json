@@ -1,0 +1,104 @@
+{
+  "schema": "lab-study-v2",
+  "id": "naba-78-6-7",
+  "version": 1,
+  "title": "Bumi hamparan, gunung pasak — stabilizer, anchor, dan peredam osilasi",
+  "subtitle": "Bumi dijadikan hamparan yang mudah didiami; gunung sebagai pasak (autad) pengokoh",
+  "ref": {
+    "surah": 78,
+    "from": 6,
+    "to": 7
+  },
+  "surah_name": "An-Naba",
+  "theme": "Kestabilan sistem, ground/landasan, anchor, peredam guncangan, prasyarat kelayakhunian",
+  "sourced_meaning": {
+    "summary": "Bukankah Kami menjadikan bumi sebagai hamparan (mihād) yang mudah didiami manusia dan hewan, dan gunung-gunung sebagai pasak (autād) untuk mengokohkan bumi sehingga tidak bergoyang oleh guncangan di bawahnya? Tafsir Kemenag menegaskan bumi sebetulnya bulat seperti bola namun tampak datar karena begitu besar, dan fungsi gunung adalah menstabilkan agar bumi tidak berguncang.",
+    "sources": [
+      "Tafsir Kemenag RI QS 78:6 & 78:7",
+      "Tafsir al-Jalalayn QS 78:6-7"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Persepsi",
+      "note": "'alam naj'al' (bukankah Kami jadikan) — bentuk pertanyaan retoris yang mengarahkan pengamatan ke kondisi lingkungan yang menopang hidup"
+    },
+    {
+      "layer": "Memori & grounding",
+      "note": "mihād = landasan/ground yang stabil, prasyarat sebelum aktivitas apa pun berlangsung di atasnya"
+    },
+    {
+      "layer": "Umpan balik",
+      "note": "autād = elemen yang meredam guncangan; menjaga sistem tetap pada titik kerja meski ada gangguan dari bawah"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "systems",
+      "reading": "Gunung sebagai autād berperan seperti stabilizer/damper: elemen yang menyerap dan meredam guncangan agar sistem tetap pada titik operasi. Tanpa peredam, gangguan kecil membesar jadi osilasi merusak. Prinsip rekayasa: sistem yang menampung beban dinamis butuh massa/elemen peredam yang sengaja ditempatkan, bukan sekadar rangka kaku.",
+      "analogy": "damper/stabilizer peredam osilasi sistem",
+      "quranic_term": "autād (pasak)"
+    },
+    {
+      "lens": "earth-cosmos",
+      "reading": "Tafsir Kemenag menyebut fungsi pengokoh gunung; dibaca berdampingan dengan model isostasi/akar gunung (dijelaskan Kemenag pada QS 16:15) — massa gunung punya 'akar' yang menunjam, menstabilkan kerak. Dicatat sebagai resonansi struktural yang menarik antara citra 'pasak' dan akar isostatik — BUKAN mukjizat numerik dan bukan bukti bahwa ayat menetapkan teori geologi; ia analogi bounded, alat pemahaman bukan dalil sains.",
+      "analogy": "autad ≈ akar isostatik gunung (bounded)",
+      "quranic_term": "āyāt kauniyah"
+    },
+    {
+      "lens": "math-physics",
+      "reading": "Sebuah pasak (tent-peg) menahan tenda dari terguling angin dengan menambah titik jangkar & menurunkan pusat gaya. Analog: menambah anchor point menaikkan margin kestabilan struktur terhadap gaya lateral. Yang ditonjolkan bukan rumus, melainkan struktur: kestabilan diperoleh dengan menancapkan jangkar yang melawan mode-mode goyangan.",
+      "analogy": "anchor point menaikkan margin kestabilan terhadap gaya lateral"
+    },
+    {
+      "lens": "computational",
+      "reading": "Mihād = 'ground'/landasan tempat komputasi berlangsung; sebelum program jalan, dibutuhkan platform stabil yang tak berubah di bawahnya. Autād = invariant/konstanta yang dijaga tetap agar keadaan runtime tidak 'berguncang'. Sistem yang andal memisahkan lapisan stabil (fondasi) dari lapisan dinamis (aktivitas) di atasnya.",
+      "analogy": "stable ground/platform + invariant yang dijaga tetap"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Cetak biru 'anchor' untuk agen: agen yang bekerja pada tugas dinamis butuh AUTĀD — sekumpulan invariant yang ditancapkan agar perilakunya tak berosilasi liar saat masukan bergejolak. Actionable: (1) tetapkan constraint/guardrail keras (tujuan, batas, nilai) sebagai 'pasak' yang tak boleh bergeser antar-langkah; (2) tambahkan mekanisme peredam — rate-limit, hysteresis, atau memori keputusan — agar agen tak berayun antar-pilihan tiap sedikit perubahan sinyal; (3) sediakan 'mihād', konteks-dasar stabil (system prompt/kebijakan) yang menjadi landasan tetap. Tanpa pasak & peredam, agen menunjukkan osilasi & thrashing; dengan keduanya, ia stabil di bawah gangguan.",
+      "analogy": "agent anchoring: invariant guardrail + damper anti-osilasi"
+    },
+    {
+      "lens": "artifact",
+      "reading": "Metafora ayat justru berasal dari teknologi manusia: tenda yang berdiri karena pasak (autād) menahannya dari angin. Semua struktur tinggi meminjam prinsip ini — pancang pondasi, jangkar kapal, guy-wire menara. Kestabilan adalah hasil rancangan penjangkaran, bukan kebetulan berat.",
+      "analogy": "pasak tenda / pancang pondasi / jangkar"
+    },
+    {
+      "lens": "psychology",
+      "reading": "Jiwa yang menghadapi guncangan hidup butuh 'autād' batin: prinsip & rutinitas yang ditancapkan tetap agar tidak berayun mengikuti setiap gelombang emosi. 'Mihād' menyerupai rasa aman dasar (secure base) tempat seseorang berpijak. Ketahanan psikologis = landasan stabil + jangkar nilai yang meredam guncangan.",
+      "analogy": "secure base + jangkar nilai peredam guncangan batin"
+    },
+    {
+      "lens": "economy",
+      "reading": "Sistem ekonomi yang tahan krisis punya 'stabilizer' bawaan — cadangan penyangga, jaring pengaman otomatis, aturan yang meredam siklus. Autād = mekanisme kontra-siklus yang mencegah goncangan kecil berubah jadi krisis berayun. Kestabilan makro dirancang lewat penyangga, bukan diandaikan.",
+      "analogy": "automatic stabilizer / buffer kontra-siklus"
+    },
+    {
+      "lens": "pedagogy",
+      "reading": "Kurikulum yang baik menyediakan 'mihād' — fondasi konsep yang mantap sebelum membangun materi lanjutan di atasnya; dan 'autād' — beberapa prinsip inti yang ditancapkan kuat sebagai jangkar pemahaman. Belajar di atas landasan goyah menghasilkan pengetahuan yang mudah runtuh saat diuji.",
+      "analogy": "fondasi konsep + prinsip-jangkar sebelum materi lanjut"
+    }
+  ],
+  "inference": "Dua ayat pendek ini, dibaca sebagai analogi rekayasa, memadatkan satu prinsip desain yang dalam: sistem yang menopang aktivitas di atasnya harus lebih dulu menyediakan LANDASAN yang stabil (mihād) dan JANGKAR peredam (autād) yang mencegahnya berosilasi di bawah gangguan. Untuk perancang sistem — terutama agen AI — pelajarannya konkret: tancapkan invariant/guardrail yang tak bergeser, sisipkan mekanisme peredam terhadap masukan bergejolak, dan pisahkan lapisan fondasi yang tenang dari lapisan kerja yang dinamis. Pembacaan geologis (pasak ≈ akar isostatik) ditegaskan sebagai resonansi struktural yang bounded, BUKAN mukjizat numerik dan bukan penetapan teori ilmiah; ini salah satu pembacaan di atas makna zahir yang bersumber dari tafsir, bukan maksud tunggal ayat.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-08",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-08",
+      "note": "Tadabbur perdana — Wave 8 kosmos.",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

@@ -1,0 +1,95 @@
+{
+  "schema": "lab-study-v2",
+  "id": "anbiya-21-83-84",
+  "version": 1,
+  "title": "Anta arḥamur-rāḥimīn — seruan, tanggap, dan pemulihan berlipat",
+  "subtitle": "Ayyub menyeru Tuhannya: aku ditimpa penyakit, dan Engkau Yang Maha Penyayang di antara para penyayang — maka Kami perkenankan, Kami lenyapkan, Kami lipatgandakan",
+  "ref": {
+    "surah": 21,
+    "from": 83,
+    "to": 84
+  },
+  "surah_name": "Al-Anbiya",
+  "theme": "Busur insiden penyembuhan: penderitaan berkepanjangan → seruan berbasis nilai → respons eksplisit → pemulihan yang melampaui kondisi semula, didokumentasikan sebagai preseden",
+  "sourced_meaning": {
+    "summary": "Dan (ingatlah kisah) Ayub, ketika ia menyeru Tuhannya: 'Sesungguhnya aku telah ditimpa penyakit dan Engkau adalah Tuhan Yang Maha Penyayang di antara semua penyayang.' Maka Kami pun memperkenankan seruannya itu, lalu Kami lenyapkan penyakit yang ada padanya, dan Kami kembalikan keluarganya kepadanya, dan Kami lipatgandakan bilangan mereka, sebagai suatu rahmat dari sisi Kami dan untuk menjadi peringatan bagi semua yang menyembah Allah. Tafsir Kemenag: Ayyub ditimpa penyakit berat, diuji pula pada harta & keluarga, namun menghadapinya dengan sabar & tawakal tanpa mengurangi iman & ibadahnya. Allah mengabulkan doanya, menyembuhkannya, mengembalikan keluarganya dengan jumlah berlipat, lalu mengangkatnya jadi nabi. Kemenag mencatat tiga pelajaran: (a) Allah memberi rahmat & pertolongan pada hamba yang mukmin-bertakwa-saleh-sabar; (b) orang beriman tak luput dari cobaan sebagai ujian; (c) tak boleh berputus asa dari rahmat-Nya — dikutip pula hadis: semakin tinggi kedudukan seseorang, semakin berat ujiannya.",
+    "sources": [
+      "Tafsir Kemenag RI QS 21:83-84",
+      "Tafsir al-Jalalayn QS 21:83-84"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Aksi & transfer",
+      "note": "rantai empat-tahap eksplisit: nādā (menyeru) → istajabnā (Kami perkenankan) → kashafnā (Kami lenyapkan) → ātaynā (Kami beri) — permohonan, respons, remediasi, kompensasi berurutan"
+    },
+    {
+      "layer": "Tangga epistemik",
+      "note": "seruan Ayyub dibuka dengan pengakuan sifat ('anta arḥamur-rāḥimīn'), bukan daftar tuntutan — permohonan dibingkai lewat pengakuan nilai"
+    },
+    {
+      "layer": "Umpan balik",
+      "note": "hasil akhir bukan sekadar restore-to-original: 'mitslahum maʿahum' (dan sebanyak mereka bersama mereka) = pemulihan MELAMPAUI kondisi semula"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "psychology",
+      "reading": "Kemenag menegaskan iman & ibadah Ayyub 'sedikit pun tidak berkurang' sepanjang penderitaan panjang SEBELUM resolusi datang — ini model resiliensi jangka panjang di bawah adversitas berkepanjangan, bukan sekadar ketabahan sesaat menghadapi kejutan singkat. Stabilitas nilai dipertahankan independen dari kapan hasil tiba.",
+      "analogy": "resiliensi jangka-panjang di bawah adversitas berkepanjangan, independen dari waktu penyelesaian",
+      "quranic_term": "ṣabr"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Struktur nādā→istajabnā (seru→respons eksplisit) adalah pola request-acknowledge yang jelas, bukan silent-drop: permohonan tidak dibiarkan menggantung tanpa status. Untuk desain sistem bantuan/dukungan: kanal yang meng-ACK permintaan secara eksplisit (walau resolusi penuh belum tiba) membangun kepercayaan berbeda dari kanal yang diam total.",
+      "analogy": "request-acknowledge eksplisit, bukan silent-drop — dasar kanal yang trustworthy",
+      "quranic_term": "nādā … fastajabnā"
+    },
+    {
+      "lens": "systems",
+      "reading": "Pemulihan tidak berhenti di 'kembali ke baseline': 'kashafnā mā bihī min ḍurr' (hapus derita) diikuti 'ātaynāhu ahlahū wa mitslahum maʿahum' (kembalikan KELUARGA + SEBANYAK ITU LAGI) — pola over-provisioning pasca-insiden, bukan disaster-recovery yang pas-pasan kembali ke titik semula.",
+      "analogy": "pemulihan pasca-insiden yang over-provisioned, bukan sekadar kembali ke baseline",
+      "quranic_term": "mitslahum maʿahum (dilipatgandakan)"
+    },
+    {
+      "lens": "inference",
+      "reading": "Alasan hasil ini dicatat RANGKAP dua: 'raḥmatan min ʿindinā' (rahmat) DAN 'dzikrā lil-ʿābidīn' (peringatan/pelajaran bagi yang beribadah) — penyelesaian personal sekaligus didokumentasikan sebagai preseden bagi pihak lain. Satu insiden, dua fungsi: resolusi individu + data pembelajaran publik.",
+      "analogy": "satu insiden, dua fungsi: resolusi individu + preseden/pembelajaran publik",
+      "quranic_term": "dzikrā lil-ʿābidīn"
+    },
+    {
+      "lens": "economy",
+      "reading": "'Mitslahum maʿahum' bukan penggantian setara (replacement 1:1), melainkan penggantian dengan margin bonus — pemulihan pasca-kerugian besar yang secara eksplisit melebihi apa yang hilang, bukan sekadar impas.",
+      "analogy": "kompensasi pasca-kerugian dengan margin, bukan penggantian 1:1"
+    },
+    {
+      "lens": "pedagogy",
+      "reading": "Kisah ini secara eksplisit ditandai sebagai bahan ajar ('dzikrā') — didaktik by design sejak awal narasinya diturunkan, bukan pembelajaran insidental yang ditarik belakangan oleh pembaca.",
+      "analogy": "narasi didaktik by design, bukan pelajaran insidental"
+    },
+    {
+      "lens": "amal",
+      "reading": "Doa Ayyub dibuka dengan pengakuan sifat Allah (arḥamur-rāḥimīn), bukan daftar tuntutan — adab bermohon: menyebut siapa yang dimintai sebelum menyebut apa yang diminta. Pola ini konsisten dengan struktur Al-Fatihah (pengakuan realitas mendahului permohonan)."
+    }
+  ],
+  "inference": "Kisah Ayyub di sini memetakan busur penuh sebuah insiden penderitaan: penyakit berat berkepanjangan → seruan yang dibingkai pengakuan sifat (bukan tuntutan) → respons eksplisit diperkenankan → remediasi (hapus derita) → kompensasi yang MELAMPAUI kondisi semula (keluarga kembali + berlipat) → didokumentasikan sebagai preseden pembelajaran. Bacaan rekayasa: (1) pola request→acknowledge yang eksplisit (nādā→istajabnā) adalah dasar kanal yang bisa dipercaya, berbeda dari permintaan yang dibiarkan tanpa status; (2) pemulihan pasca-insiden di sini over-provisioned, bukan sekadar kembali ke baseline — pelajaran desain: pemulihan yang baik kadang perlu margin, bukan pas-pasan; (3) satu insiden diberi fungsi ganda — resolusi personal SEKALIGUS preseden publik yang didokumentasikan. Dibaca berdampingan dengan Asy-Syu'ara 26:80 (penyembuhan sebagai proses internal built-in pada tubuh): kisah ini melengkapinya dengan jalur ESKALASI — ketika penderitaan berat & berkepanjangan, ada jalur permohonan eksplisit ke luar diri, bukan hanya menunggu proses internal. CATATAN TANZIH: seluruh tindakan (istajabnā, kashafnā, ātaynā) dan Sifat yang diseru (arḥamur-rāḥimīn) adalah perbuatan & Sifat Allah semata — tidak dianalogikan sebagai mekanisme sistem; yang dibaca-rekayasa hanyalah STRUKTUR pola seruan-respons-pemulihan pada pihak makhluk (Ayyub).",
+  "authors": [
+    "Draft AI (LLM draft) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-12",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-12",
+      "note": "Tadabbur perdana — Wave 15 penyembuhan (kisah Ayyub, bagian 1/2).",
+      "authors": [
+        "Draft AI (LLM draft)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

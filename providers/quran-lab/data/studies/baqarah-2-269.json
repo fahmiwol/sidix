@@ -1,0 +1,103 @@
+{
+  "schema": "lab-study-v2",
+  "id": "baqarah-2-269",
+  "version": 1,
+  "title": "Hikmah — puncak sintesis: penilaian bijak di atas sekadar data",
+  "subtitle": "Diberi hikmah berarti diberi kebaikan yang banyak; hikmah = kemampuan membedakan yang benar dari yang batil",
+  "ref": {
+    "surah": 2,
+    "from": 269,
+    "to": 269
+  },
+  "surah_name": "Al-Baqarah",
+  "theme": "Hikmah (judgment/wisdom), sintesis ilmu+amal, kemampuan membedakan, keputusan bijak, puncak epistemik",
+  "sourced_meaning": {
+    "summary": "Allah menganugerahkan hikmah kepada siapa yang Dia kehendaki. Menurut Kemenag, hikmah adalah kebijaksanaan serta ilmu pengetahuan yang dengannya seseorang dapat membedakan yang benar dari yang salah, membedakan was-was setan dari ilham Allah. Alat untuk memperoleh hikmah adalah akal yang sehat dan cerdas yang mengenal sesuatu berdasarkan dalil dan bukti serta mengetahui hakikat yang sebenarnya. Barangsiapa mencapai hikmah, ia telah memperoleh kebaikan yang banyak (di dunia dan akhirat); ia menggunakan seluruh indra, akal, dan pengetahuannya untuk membedakan yang baik dari yang batil, lalu berserah diri kepada Allah. Ayat ditutup dengan pujian bagi ulul albab yang mengambil pelajaran.",
+    "sources": [
+      "Tafsir Kemenag RI QS 2:269",
+      "Tafsir al-Jalalayn QS 2:269"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Penalaran",
+      "note": "hikmah = evaluative judgment: membedakan benar-salah, ilham-was-was; puncak proses berpikir, bukan sekadar simpan fakta"
+    },
+    {
+      "layer": "Tangga epistemik",
+      "note": "alatnya 'akal sehat yang mengenal berdasarkan dalil dan bukti' — hikmah berpijak pada burhān, lalu naik ke keputusan"
+    },
+    {
+      "layer": "Aksi & transfer",
+      "note": "'khairan kathīra' — hikmah berbuah kebaikan banyak; pengetahuan yang matang mentransfer ke keputusan & amal yang tepat"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "inference",
+      "reading": "Hikmah dalam ayat ini dibaca sebagai lapisan tertinggi tangga epistemik: bukan sekadar data (fakta), bukan sekadar ilmu (fakta terstruktur), melainkan judgment — kemampuan menerapkan pengetahuan pada situasi konkret untuk membedakan benar/batil. Kemenag menegaskan alatnya 'dalil dan bukti', jadi hikmah berdiri di atas burhān lalu melampauinya menjadi keputusan yang tepat. Data→informasi→ilmu→hikmah, dengan hikmah sebagai puncak evaluatif.",
+      "analogy": "wisdom as apex of the DIKW ladder — judgment over data",
+      "quranic_term": "ḥikmah"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Ini pembeda tajam antara knowledge dan wisdom untuk desain agen: menyimpan/mengambil fakta (RAG, memori) berbeda dari menilai secara bijak dalam konteks — memilih tindakan yang tepat, membedakan sinyal benar dari godaan/derau ('ilham vs was-was'). Agen canggih butuh lapisan judgment/evaluasi di atas retrieval: reasoning yang terkalibrasi pada nilai dan bukti, bukan sekadar prediksi token. Hikmah = decision-making yang selaras, bukan akumulasi parameter. Sasaran: agen yang bijak memutuskan, bukan hanya kaya data.",
+      "analogy": "judgment/evaluation layer above retrieval; wisdom ≠ knowledge",
+      "quranic_term": "ḥikmah"
+    },
+    {
+      "lens": "computational",
+      "reading": "Dibaca sebagai sistem: hikmah berfungsi seperti fungsi keputusan/klasifikasi bermutu tinggi yang memisahkan dua kelas yang mudah tertukar (benar vs batil, ilham vs was-was). Nilainya bukan pada volume data tersimpan melainkan pada ketepatan pembedaan (diskriminasi). 'Khairan kathīra' = keluaran berdampak besar dari fungsi penilaian yang benar — leverage tinggi: satu keputusan bijak melipatgandakan kebaikan.",
+      "analogy": "high-quality decision/classification function; leverage of good judgment",
+      "quranic_term": "ḥikmah"
+    },
+    {
+      "lens": "algorithm",
+      "reading": "Kemenag menuturkan prosedurnya: mengenal sesuatu berdasarkan dalil dan bukti → mengetahui hakikatnya → membedakan benar dari batil → berserah diri (bertindak). Ini alur dari pengumpulan bukti ke penilaian ke keputusan — bukan lompatan intuitif buta, melainkan judgment yang tergrounding pada evidence lalu menyimpul pada tindakan. Hikmah adalah tahap sintesis-dan-putus di hilir pipeline pengetahuan.",
+      "analogy": "evidence → discrimination → decision (synthesis stage)",
+      "quranic_term": "burhān → ḥikmah"
+    },
+    {
+      "lens": "pedagogy",
+      "reading": "Tujuan tertinggi pendidikan bukan transfer fakta melainkan penumbuhan kearifan: kemampuan menimbang dan memutuskan dengan tepat. Ayat menempatkan hikmah sebagai 'kebaikan yang banyak' — hasil belajar paling berharga. Kurikulum yang matang bergerak dari menghafal (data) ke memahami (ilmu) ke menilai-dan-menerapkan (hikmah); hanya ulul albab (yang mengolah dengan akal aktif) yang sampai ke puncak ini.",
+      "analogy": "education's telos: cultivating judgment, not transferring facts",
+      "quranic_term": "ḥikmah"
+    },
+    {
+      "lens": "psychology",
+      "reading": "Hikmah menautkan kognisi dengan regulasi diri: membedakan 'ilham dari Allah' vs 'was-was setan' adalah metakognisi — memilah dorongan internal mana yang layak diikuti. Ini kematangan psikologis: menahan reaksi impulsif, menimbang sumber dorongan, memilih respons yang selaras. Kebijaksanaan sebagai kendali reflektif atas nafs, bukan sekadar kecerdasan analitis yang dingin.",
+      "analogy": "metacognition — discerning which internal impulse to trust",
+      "quranic_term": "ḥikmah"
+    },
+    {
+      "lens": "systems",
+      "reading": "Hikmah dibaca sebagai lapisan governance/kontrol tertinggi dalam sistem pengetahuan seseorang: ia mengarahkan bagaimana ilmu dipakai, menimbang trade-off, dan menjaga keselarasan tindakan dengan tujuan. Sistem yang kaya data tetapi miskin lapisan penilaian mudah salah-arah; hikmah adalah fungsi pengarah yang membuat seluruh kapasitas kognitif menghasilkan 'kebaikan yang banyak', bukan sekadar aktivitas.",
+      "analogy": "top-level governance/steering over knowledge capacity"
+    },
+    {
+      "lens": "amal",
+      "reading": "Hikmah dalam ayat berujung pada laku: membedakan yang baik lalu 'berserah diri sepenuhnya kepada Allah', menjauhi bisikan jahat. Jadi kebijaksanaan bukan kontemplasi pasif melainkan ilmu yang matang menjadi keputusan dan amal yang tepat. Puncak ilmu diverifikasi oleh kualitas tindakan yang lahir darinya — hikmah yang tak berbuah amal belum sempurna.",
+      "quranic_term": "ḥikmah → ʿamal"
+    }
+  ],
+  "inference": "Dibaca sebagai analogi rekayasa, Al-Baqarah 269 menempatkan hikmah sebagai lapisan tertinggi dalam tangga pengetahuan: bukan sekadar data atau ilmu, melainkan judgment — kemampuan menerapkan pengetahuan pada situasi nyata untuk membedakan yang benar dari yang batil, dan (per Kemenag) memilah ilham Allah dari was-was setan. Alatnya adalah akal yang mengenal berdasarkan dalil dan bukti, jadi hikmah berpijak pada burhān lalu melampauinya menjadi keputusan yang tepat; buahnya 'khairan kathīra' menandakan leverage tinggi — satu penilaian bijak melipatgandakan kebaikan. Untuk desain sistem (manusia atau mesin), pelajarannya: menyimpan dan mengambil fakta (retrieval/memori) berbeda tegas dari menilai secara bijak dalam konteks; agen yang matang membutuhkan lapisan judgment/evaluasi yang terkalibrasi pada bukti dan nilai di atas sekadar prediksi atau akumulasi data — wisdom bukan knowledge. Dalam pendidikan, telos-nya adalah menumbuhkan kearifan, bukan mentransfer fakta, dan hanya akal yang aktif (ulul albab) yang sampai ke puncak ini. Ini salah satu pembacaan rekayasa di atas makna zahir yang bersumber, BUKAN maksud tunggal ayat. CATATAN TANZIH: bahwa hikmah adalah KARUNIA Allah 'kepada siapa yang Dia kehendaki' disebut dengan ta'zhim sebagai LANDASAN iman — Allah (Dzat, Sifat, kehendak, dan perbuatan-Nya memberi karunia) tidak dimodelkan, tidak dijadikan komponen/agen dalam analogi, dan pemberian-Nya tidak direduksi menjadi proses teknis. Yang dibaca secara struktural hanyalah sisi makhluk: hikmah sebagai kapasitas penilaian pada manusia dan sikap ulul albab. Resonansi 'lapisan judgment' dicatat sebagai analogi pemahaman yang bounded, bukan mukjizat numerik.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-08",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-08",
+      "note": "Tadabbur perdana — Wave 12 tadabbur/ilmu (hikmah = puncak sintesis ilmu+amal, judgment di atas data).",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

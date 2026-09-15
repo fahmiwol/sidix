@@ -1,0 +1,104 @@
+{
+  "schema": "lab-study-v2",
+  "id": "nahl-16-43",
+  "version": 1,
+  "title": "Ahl adz-dzikr — routing kueri ke pemegang pengetahuan",
+  "subtitle": "Kalau tidak tahu, jangan mengarang — tanyakan pada yang menyimpan ilmunya",
+  "ref": {
+    "surah": 16,
+    "from": 43,
+    "to": 43
+  },
+  "surah_name": "An-Nahl",
+  "theme": "Expert routing, retrieval, epistemic humility, pembagian kerja pengetahuan",
+  "sourced_meaning": {
+    "summary": "Allah tidak mengutus rasul sebelum Muhammad ﷺ kecuali laki-laki yang diberi wahyu; maka (kepada yang meragukan) diperintahkan: bertanyalah kepada ahl adz-dzikr — orang yang mempunyai pengetahuan (tentang kitab-kitab terdahulu) — jika kamu tidak mengetahui.",
+    "sources": [
+      "Tafsir Kemenag RI QS 16:43",
+      "Tafsir al-Jalalayn QS 16:43"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Memori & grounding",
+      "note": "dzikr = pengetahuan tersimpan; ahl adz-dzikr = penjaga korpus — kueri diarahkan ke sana"
+    },
+    {
+      "layer": "Tangga epistemik",
+      "note": "'jika kamu tidak tahu' — prasyaratnya jujur mengakui batas pengetahuan sendiri"
+    },
+    {
+      "layer": "Penalaran",
+      "note": "jawaban dicari dari sumber yang tepat, bukan direka dari asumsi (anti-zhann)"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "amal",
+      "reading": "Adab keilmuan: tidak berfatwa/berpendapat tanpa ilmu; merujuk kepada ahlinya bukan kehinaan melainkan perintah. Menjadi dasar tradisi rujuk-merujuk antar ulama lintas disiplin.",
+      "quranic_term": "tafaqquh"
+    },
+    {
+      "lens": "computational",
+      "reading": "Pola query routing: bila pengetahuan lokal tidak memadai (cache miss), rutekan kueri ke node yang menyimpan datanya (ahl adz-dzikr — 'pemilik memori/dzikr'). Jangan menjawab dari state kosong.",
+      "analogy": "query routing on cache miss",
+      "quranic_term": "dhikr (memori)"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "Guard eksplisit: IF !self.knows(x) THEN ask(experts_on(x)) — bukan ELSE fabricate(x). Kondisinya ('in kuntum lā taʿlamūn') memaksa introspeksi jujur atas batas pengetahuan sendiri sebelum memilih jalur.",
+      "analogy": "known-unknown guard"
+    },
+    {
+      "lens": "algorithm",
+      "reading": "Pembagian kerja pengetahuan: tidak semua node menyimpan semua ilmu; sistem sehat bila tiap node tahu SIAPA yang tahu (meta-knowledge/indeks) — pencarian dua langkah: temukan ahlinya, lalu tanyakan.",
+      "analogy": "distributed knowledge index; two-hop lookup"
+    },
+    {
+      "lens": "inference",
+      "reading": "Ayat memisahkan dua keadaan yang kritis dibedakan: tidak-tahu vs tahu. Kesalahan epistemik terbesar bukan ketidaktahuan, melainkan menjawab seolah tahu. Ketidaktahuan yang diakui adalah pintu ilmu; yang disembunyikan adalah pintu kesesatan.",
+      "quranic_term": "zhann vs ʿilm"
+    },
+    {
+      "lens": "math-physics",
+      "reading": "Dalam istilah informasi: estimasi dari prior kosong menghasilkan noise; nilai informasi jawaban sebanding dengan kualitas sumbernya. Merutekan ke sumber ber-sinyal-tinggi memaksimalkan informasi per kueri.",
+      "analogy": "signal quality > answer speed"
+    },
+    {
+      "lens": "systems",
+      "reading": "Masyarakat sebagai jaringan pengetahuan terdistribusi: ada pemegang spesialisasi (ahl), ada mekanisme rujuk (bertanya), ada kewajiban dua arah — yang tak tahu bertanya, yang tahu menjawab (ayat lain mencela menyembunyikan ilmu). Infrastruktur sosial bagi sirkulasi ilmu.",
+      "analogy": "knowledge network with duty to serve"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Ini spesifikasi RAG dan tool-use dalam satu kalimat: model yang tidak memiliki pengetahuan WAJIB retrieve dari sumber otoritatif, bukan menghalusinasi. Juga pola mixture-of-experts & agent handoff: rutekan tugas ke agen yang domainnya cocok. 'In kuntum lā taʿlamūn' = uncertainty estimation yang memicu retrieval.",
+      "analogy": "RAG / expert routing / uncertainty-triggered retrieval",
+      "quranic_term": "dhikr → tabayyun"
+    },
+    {
+      "lens": "artifact",
+      "reading": "Melembagakan 'bertanya pada ahl adz-dzikr' melahirkan artefak peradaban: majelis ilmu, ijazah keilmuan (lisensi transmisi), kamus biografi perawi — direktori manusia-ahli tertua yang terdokumentasi rapi.",
+      "analogy": "expert directories & credentialing"
+    }
+  ],
+  "inference": "Ayat ini adalah satu kalimat yang menyelesaikan masalah halusinasi — 14 abad sebelum istilah itu ada: sistem (manusia atau mesin) wajib mengenali batas pengetahuannya, dan ketika berada di luar batas itu, wajib merutekan pertanyaan ke pemegang pengetahuan, bukan mengarang jawaban. Seluruh arsitektur RAG, mixture-of-experts, dan tool-use modern adalah variasi teknis dari perintah ini. Prasyarat tersulitnya justru yang paling manusiawi: jujur mengatakan 'aku tidak tahu'.",
+  "authors": [
+    "Draft AI (LLM draft) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-07",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-07",
+      "note": "Tadabbur perdana — Wave 1 batch tematik (ayat teknologi).",
+      "authors": [
+        "Draft AI (LLM draft)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

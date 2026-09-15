@@ -1,0 +1,105 @@
+{
+  "schema": "lab-study-v2",
+  "id": "at-talaq-65-1-1",
+  "version": 1,
+  "title": "Melanggar batas = merusak diri sendiri",
+  "subtitle": "Constraint bukan pagar sewenang-wenang; menembusnya justru melukai si penembus",
+  "ref": {
+    "surah": 65,
+    "from": 1,
+    "to": 1
+  },
+  "surah_name": "At-Talaq",
+  "theme": "Batas Allah dengan penalti terinternalisasi (pelanggar menzalimi dirinya); precondition & waktu sah operasi; menjaga optionality masa depan",
+  "sourced_meaning": {
+    "summary": "Seruan (secara zahir kepada Nabi, hakikatnya kepada umat mukmin): bila hendak menceraikan istri, lakukan pada waktu istri dapat langsung menjalani idahnya — yaitu saat suci dan belum dicampuri (Kemenag mengutip hadis Ibnu 'Umar). Hitunglah masa idah dengan cermat dan bertakwalah kepada Allah. Jangan keluarkan mereka dari rumah dan jangan pula mereka keluar, kecuali bila berbuat keji yang nyata. Itulah batas-batas Allah; siapa melanggarnya sungguh telah menzalimi dirinya sendiri. Dan penutup: kamu tidak tahu, boleh jadi setelah itu Allah mengadakan suatu hal yang baru.",
+    "sources": [
+      "Tafsir Kemenag RI QS 65:1",
+      "Tafsir al-Jalalayn QS 65:1"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Alignment",
+      "note": "batas keras (hudud) mengungkung operasi; penalti pelanggaran bukan eksternal semata tapi jatuh ke pelaku sendiri ('menzalimi dirinya')"
+    },
+    {
+      "layer": "Aksi & transfer",
+      "note": "operasi (talak) hanya sah pada state tertentu — precondition waktu (suci, belum dicampuri) sebelum aksi boleh dieksekusi"
+    },
+    {
+      "layer": "Tangga epistemik",
+      "note": "'kamu tidak tahu, boleh jadi Allah mengadakan hal baru' — kerendahan epistemik atas state masa depan; jangan menutup opsi"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "program-logic",
+      "reading": "Operasi talak diberi precondition ketat: hanya sah pada keadaan tertentu (waktu suci, belum dicampuri, idah dapat langsung dihitung). Menjalankan operasi di luar precondition adalah tindakan invalid — bukan sekadar salah gaya, tapi merusak. Ini guard yang melindungi integritas transisi.",
+      "analogy": "precondition guard sebelum operasi",
+      "quranic_term": "ḥudūd Allāh"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Kunci ayat: 'siapa melanggar batas, ia menzalimi DIRINYA'. Ini analogi kuat bahwa menembus hard constraint bukan strategi cerdas melainkan self-defeating — seperti agen yang meng-exploit celah spesifikasi (reward hacking) dan justru merusak tujuannya sendiri. Constraint yang dilanggar memberi kerugian yang terinternalisasi ke pelaku.",
+      "analogy": "pelanggaran constraint = self-harm / reward hacking yang berbalik",
+      "quranic_term": "ẓalama nafsah"
+    },
+    {
+      "lens": "inference",
+      "reading": "Fungsi biaya pelanggaran dipasang self-referential: kerugian tidak dilempar ke pihak lain, melainkan kembali ke pelaku ('menzalimi dirinya sendiri'). Dari sisi keputusan, ini membuat melanggar batas menjadi pilihan negative-sum yang secara rasional dihindari.",
+      "analogy": "penalti terinternalisasi / self-inflicted loss"
+    },
+    {
+      "lens": "algorithm",
+      "reading": "Prosedur cerai bukan aksi instan tapi punya jendela tunggu wajib (idah) yang harus dicacah cermat sebelum finalisasi. Ini seperti cooldown/masa jeda sebelum commit tak-terbalikkan — mencegah keputusan panas dieksekusi seketika.",
+      "analogy": "mandatory cooldown / delay sebelum finalize",
+      "quranic_term": "ʿiddah"
+    },
+    {
+      "lens": "systems",
+      "reading": "Larangan mengeluarkan istri dari rumah menjaga state aman selama masa transisi: teardown dilakukan tanpa mencabut perlindungan pihak rentan lebih dulu. Sistem tetap menjaga invariant keselamatan bahkan saat sebuah relasi sedang dibongkar.",
+      "analogy": "graceful teardown yang menjaga safety-invariant"
+    },
+    {
+      "lens": "computational",
+      "reading": "'Hitunglah idah' menjadikan pencatatan waktu sebagai kewajiban: state masa tunggu harus dilacak akurat, bukan diperkirakan. Bookkeeping yang benar adalah bagian dari kepatuhan, bukan tambahan opsional.",
+      "analogy": "mandatory timer / bookkeeping state"
+    },
+    {
+      "lens": "psychology",
+      "reading": "Jendela idah plus 'boleh jadi Allah mengadakan hal baru' berfungsi menjaga optionality: jangan membakar jembatan dalam luapan emosi; jeda memberi ruang bagi keadaan berubah dan penyesalan dihindari. Desain yang melawan keputusan impulsif.",
+      "analogy": "preservasi optionality / regret-avoidance by delay"
+    },
+    {
+      "lens": "economy",
+      "reading": "Biaya menjalankan proses secara salah (di luar waktu sah, tanpa mencacah idah) ditanggung oleh pelaku sendiri — insentif diselaraskan agar mengikuti prosedur yang benar menjadi pilihan paling murah bagi aktor.",
+      "analogy": "internalisasi biaya prosedur ke aktor"
+    },
+    {
+      "lens": "amal",
+      "reading": "Takwa dibingkai sebagai kesadaran-batas: menegakkan hudud dengan cermat, memperlakukan proses perpisahan dengan tetap menjaga hak dan tempat tinggal pihak lain — kepatuhan yang berpihak pada perlindungan.",
+      "quranic_term": "taqwā"
+    }
+  ],
+  "inference": "Ayat ini menambah satu properti krusial pada konsep hard constraint: penaltinya terinternalisasi. Bukan hanya 'jangan langgar batas' (2:229), tapi 'yang melanggar telah menzalimi DIRINYA sendiri' — melampaui tepi bukan kelihaian melainkan tindakan yang berbalik merugikan pelaku, persis pola reward hacking yang menggagalkan tujuannya sendiri. Ditambah lagi: operasi hanya sah pada precondition tertentu (waktu suci), butuh bookkeeping wajib (cacah idah), menjaga state aman pihak rentan selama teardown (jangan diusir dari rumah), dan menutup dengan kerendahan epistemik yang menjaga optionality ('boleh jadi Allah mengadakan hal baru'). CATATAN TANZIH: 'batas-batas Allah' dan 'boleh jadi Allah mengadakan hal baru' — Allah sebagai penetap batas dan pembawa keadaan baru adalah LANDASAN iman, disebut dengan ta'zhim; Ia TIDAK dianalogikan sebagai sistem/pengendali. Yang dianalogikan hanyalah STRUKTUR pada sisi makhluk: penalti yang jatuh ke pelaku, precondition operasi, dan jendela tunggu. Resonansi struktural, bukan mukjizat numerik, bukan maksud tunggal ayat; Lab TIDAK menetapkan fatwa/hukum — hanya membaca pola constraint-nya.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-08",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-08",
+      "note": "Wave 11 aturan/tata-kelola — hudud dengan penalti terinternalisasi (self-harm on violation).",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

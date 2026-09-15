@@ -1,0 +1,104 @@
+{
+  "schema": "lab-study-v2",
+  "id": "zumar-39-9",
+  "version": 1,
+  "title": "Hal yastawī — asimetri antara yang tahu dan yang tidak tahu",
+  "subtitle": "Pertanyaan retoris yang menetapkan: informasi mengubah kelas",
+  "ref": {
+    "surah": 39,
+    "from": 9,
+    "to": 9
+  },
+  "surah_name": "Az-Zumar",
+  "theme": "Asimetri informasi, nilai pengetahuan, kelas ekuivalensi, ulū l-albāb",
+  "sourced_meaning": {
+    "summary": "(Apakah orang musyrik lebih beruntung) ataukah orang yang beribadah di waktu malam dengan sujud dan berdiri, takut pada akhirat dan mengharap rahmat Tuhannya? Katakanlah: 'Adakah sama orang-orang yang mengetahui dengan orang-orang yang tidak mengetahui?' Sesungguhnya hanya ulū l-albāb (orang berakal) yang dapat menerima pelajaran.",
+    "sources": [
+      "Tafsir Kemenag RI QS 39:9",
+      "Tafsir al-Jalalayn QS 39:9"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Tangga epistemik",
+      "note": "pemisahan kelas eksplisit: yaʿlamūn vs lā yaʿlamūn — pengetahuan sebagai pembeda status"
+    },
+    {
+      "layer": "Penalaran",
+      "note": "penutup: hanya ulū l-albāb yang yatadhakkarūn — menerima pelajaran butuh fakultas aktif"
+    },
+    {
+      "layer": "Aksi & transfer",
+      "note": "konteksnya amal malam (qunut) — pengetahuan yang dimaksud hidup dalam praktik, bukan koleksi fakta"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "amal",
+      "reading": "Konteks ayat: ahli ibadah malam yang takut dan berharap — ilmu yang diperhitungkan adalah yang menggerakkan amal dan adab, bukan yang berhenti sebagai hafalan. Tahu-yang-tak-diamalkan tidak masuk kelas 'yang mengetahui' di ayat ini.",
+      "quranic_term": "khasyyah (buah ilmu)"
+    },
+    {
+      "lens": "computational",
+      "reading": "'Hal yastawī' = uji ekuivalensi, dan jawabannya: TIDAK — dua agen dengan state pengetahuan berbeda bukan anggota kelas ekuivalensi yang sama meski identik di semua atribut lain. Pengetahuan adalah bagian dari identitas state, bukan aksesori.",
+      "analogy": "equivalence classes; knowledge as state",
+      "quranic_term": "ʿilm"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "Bentuk retorisnya adalah assertion negatif: assert(!equal(knows, !knows)). Pembuktian lewat pertanyaan yang jawabannya dipaksa oleh akal pendengar sendiri — teknik argumen yang membuat lawan bicara menjadi verifikator klaim.",
+      "analogy": "self-verifying assertion (socratic)"
+    },
+    {
+      "lens": "algorithm",
+      "reading": "Dalam keputusan berurutan, agen ber-informasi mengungguli yang tidak secara terakumulasi: tiap langkah keputusan yang lebih baik menggandakan selisih (compounding). Ketidaksetaraan kecil dalam pengetahuan menjadi jurang besar dalam hasil seiring iterasi.",
+      "analogy": "compounding information advantage"
+    },
+    {
+      "lens": "inference",
+      "reading": "Ayat menolak relativisme epistemik dengan satu pertanyaan: bila tahu dan tidak-tahu itu setara, belajar tidak punya nilai dan nasihat tidak punya makna. Keberadaan pembelajaran sebagai aktivitas bermakna MENSYARATKAN ketidaksetaraan ini.",
+      "quranic_term": "taʿaqqul"
+    },
+    {
+      "lens": "math-physics",
+      "reading": "Dalam teori keputusan, nilai informasi selalu non-negatif dan positif ketika mengubah keputusan — 'yang tahu' dan 'yang tidak tahu' menghadapi distribusi hasil yang berbeda secara terukur. Asimetri informasi juga inti ekonomi modern (pasar lemon, sinyal).",
+      "analogy": "value of information ≥ 0; information asymmetry"
+    },
+    {
+      "lens": "systems",
+      "reading": "Masyarakat yang memperlakukan keahlian dan kebodohan sebagai setara (semua opini sama beratnya) kehilangan kemampuan memutuskan dengan benar — ayat ini adalah anti-tesis dari flat epistemology; sistem butuh pembobotan berdasarkan pengetahuan.",
+      "analogy": "weighted voting by expertise"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Dua model dengan arsitektur sama tapi pengetahuan berbeda BUKAN model yang sama — evaluasi harus mengukur state pengetahuan, bukan hanya arsitektur. Dan untuk routing: jawaban dari agen yang tahu dan yang menebak tidak boleh diberi bobot sama; confidence tanpa knowledge adalah noise yang percaya diri.",
+      "analogy": "knowledge-weighted ensembling; capability ≠ architecture",
+      "quranic_term": "yaʿlamūn vs lā yaʿlamūn"
+    },
+    {
+      "lens": "artifact",
+      "reading": "Peradaban yang menginternalisasi ketidaksetaraan ini membangun alat ukurnya: ijazah, gelar, peer review, sertifikasi — instrumen untuk membedakan siapa tahu apa, dengan segala ketidaksempurnaannya.",
+      "analogy": "credentialing as knowledge measurement"
+    }
+  ],
+  "inference": "Satu pertanyaan retoris menetapkan aksioma yang menopang seluruh bangunan ilmu: tahu dan tidak-tahu bukan kelas yang sama. Dari aksioma ini turun banyak hal: belajar bernilai, mengajar bermakna, keahlian layak dibobot lebih, dan (di ranah mesin) jawaban ber-grounding tidak setara dengan tebakan percaya diri. Penutup ayat menajamkan: pemisah kelasnya bukan kepemilikan fakta, melainkan lubb — inti akal yang mengubah pengetahuan menjadi pelajaran. Pengetahuan yang tidak mengubah keputusan belum menjadi ilmu dalam arti ayat ini.",
+  "authors": [
+    "Draft AI (LLM draft) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-07",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-07",
+      "note": "Tadabbur perdana — Wave 2 (dari sweep korpus 6236 ayat).",
+      "authors": [
+        "Draft AI (LLM draft)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

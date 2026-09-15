@@ -1,0 +1,95 @@
+{
+  "schema": "lab-study-v2",
+  "id": "yusuf-12-18-18",
+  "version": 1,
+  "title": "Sawwalat lakum anfusukum amran — jiwa sebagai penutur kisah pembenar diri",
+  "subtitle": "Ya'qub: \"Sebenarnya dirimu sendirilah yang memandang baik perbuatan itu; maka kesabaran yang baik itulah (sikapku)\"",
+  "ref": {
+    "surah": 12,
+    "from": 18,
+    "to": 18
+  },
+  "surah_name": "Yusuf",
+  "theme": "Mekanisme nafs sebelum diberi nama (ammarah) — jiwa sebagai penutur yang membenarkan tindakannya sendiri; awal busur taksonomi nafs",
+  "sourced_meaning": {
+    "summary": "Saudara-saudara Yusuf datang membawa baju gamisnya yang berlumuran darah palsu, mengaku ia dimangsa serigala. Ya'qub berkata: 'Sebenarnya dirimu sendirilah yang memandang baik perbuatan (buruk) itu; maka kesabaran yang baik itulah (sikapku). Dan Allah sajalah yang dimohon pertolongan-Nya terhadap apa yang kamu ceritakan.' Tafsir Kemenag: Ya'qub memeriksa baju itu — utuh, tak robek, tak ada bekas cakaran/gigitan serigala — sehingga ia tak percaya cerita mereka dan meyakini jiwa mereka yang jahat telah mendorong perbuatan aniaya itu. Sebagai ayah tua yang tak berdaya menuntut, ia memilih sabar penuh dan tawakal kepada Allah.",
+    "sources": [
+      "Tafsir Kemenag RI QS 12:18",
+      "Tafsir al-Jalalayn QS 12:18"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Aksi & transfer",
+      "note": "bukti fisik palsu (darah tanpa robekan baju) dibawa untuk MENDUKUNG narasi — kebohongan terstruktur, bukan spontan"
+    },
+    {
+      "layer": "Tangga epistemik",
+      "note": "Ya'qub menolak 'bukti' bukan karena menuduh tanpa dasar, tapi karena mendeteksi INKONSISTENSI internal bukti itu sendiri (baju utuh vs klaim serigala)"
+    },
+    {
+      "layer": "Persepsi",
+      "note": "'sawwalat lakum anfusukum' — nafs digambarkan sebagai pihak yang MEMBUAT TAMPAK BAIK (taswīl), bukan sekadar mendorong tindakan"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "psychology",
+      "reading": "'Taswīl' (sawwalat) adalah motivated reasoning dalam bentuk paling tegas: nafs tidak hanya mendorong perbuatan buruk, ia MENATA ULANG persepsi pelakunya sendiri agar perbuatan itu tampak wajar/dibenarkan — bias kognitif yang sudah dikenal luas dalam psikologi (self-serving bias, rasionalisasi pasca-tindakan). Ya'qub menamainya secara presisi 15 abad sebelum istilah teknisnya ada.",
+      "analogy": "motivated reasoning / self-serving rationalization",
+      "quranic_term": "taswīl (menjadikan tampak baik)"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Sebuah agen yang SEKALIGUS bertindak dan menyusun narasi pembenaran atas tindakannya sendiri rentan pada satu mode kegagalan spesifik: audit trail yang dihasilkan sendiri oleh pelaku, tanpa verifikasi independen, tidak bisa dipercaya begitu saja — laporan-diri (self-report) yang tak diperiksa silang adalah kanal yang mudah terkorupsi oleh kepentingan si pelapor sendiri.",
+      "analogy": "self-reporting agent tanpa verifikasi independen = audit trail rentan korup",
+      "quranic_term": "sawwalat (menyusun narasi pembenar)"
+    },
+    {
+      "lens": "inference",
+      "reading": "Metode deteksi Ya'qub bukan menuduh tanpa dasar, melainkan uji KONSISTENSI internal atas bukti yang diajukan: baju berlumur darah tapi utuh tanpa sobekan/bekas cakaran tak konsisten dengan klaim 'dimangsa serigala'. Ini pola forensik dasar — anomali pada 'bukti' sendiri membongkar narasi, sejalan prinsip nirkontradiksi-sebagai-uji-integritas (bandingkan kajian An-Nisa 4:82).",
+      "analogy": "deteksi inkonsistensi forensik pada bukti yang diajukan",
+      "quranic_term": "qamīṣihī bi-damin kadzib (baju dengan darah palsu)"
+    },
+    {
+      "lens": "systems",
+      "reading": "Struktur di sini menyingkap conflict of interest bawaan: pelaku peristiwa dan penutur laporan adalah ORANG YANG SAMA (saudara-saudara Yusuf). Kanal pelaporan yang tidak independen dari pihak yang dilaporkan secara struktural tak bisa dijadikan sumber kebenaran tunggal — prinsip ini mendasari kenapa sistem yang matang memisahkan peran pelaku dari peran pelapor/auditor.",
+      "analogy": "conflict of interest: pelaku = pelapor = kanal tak independen",
+      "quranic_term": "jāʾū ʿalā qamīṣihī (mereka datang dengan 'bukti')"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "'Taswīl' dapat dibaca sebagai langkah pra-commit dalam alur tindakan-buruk: sebelum atau sesudah bertindak, ada proses internal yang 'meloloskan' tindakan itu ke kesadaran pelakunya sebagai sesuatu yang dapat diterima — sejenis validasi internal yang longgar, bukan gerbang yang jujur.",
+      "analogy": "pra-commit validation yang longgar/self-serving, bukan gerbang jujur"
+    },
+    {
+      "lens": "history-ummah",
+      "reading": "Kisah ini adalah studi kasus konkret (bukan abstrak) tentang mekanisme nafs sebelum ia dinamai eksplisit di ayat lain (12:53 — ammarah bis-sūʾ). Al-Qur'an mendahulukan NARASI atas KONSEP: pembaca melihat taswīl beraksi dalam kisah nyata sebelum diberi label teknisnya.",
+      "analogy": "studi kasus naratif mendahului definisi konsep"
+    },
+    {
+      "lens": "amal",
+      "reading": "Respons Ya'qub adalah teladan: ia tidak membalas tuduhan dengan tuduhan tanpa bukti, memilih ṣabrun jamīl (kesabaran yang baik/tanpa keluh-kesah) dan menyerahkan penilaian akhir kepada Allah — komposur di bawah pengkhianatan, bukan pasif, melainkan sabar aktif yang tetap disertai upaya (di ayat-ayat berikutnya Ya'qub tetap mencari Yusuf)."
+    }
+  ],
+  "inference": "Ayat ini membuka busur taksonomi nafs dengan sebuah MEKANISME, sebelum nama teknisnya diberikan di ayat lain (12:53 — ammārah bis-sūʾ). 'Sawwalat lakum anfusukum amran' menunjukkan nafs tidak sekadar mendorong tindakan buruk, tapi menyusun narasi yang membuatnya tampak dapat diterima bagi pelakunya sendiri — motivated reasoning yang dinamai presisi jauh sebelum istilah psikologi modern. Bacaan rekayasa: (1) agen yang sekaligus bertindak dan melaporkan tindakannya sendiri adalah kanal audit yang rawan korup — laporan-diri tanpa verifikasi independen tak bisa jadi sumber kebenaran tunggal; (2) metode deteksi yang benar (dicontohkan Ya'qub) bukan menuduh tanpa dasar, melainkan menguji konsistensi internal bukti yang diajukan. CATATAN TANZIH: 'Allahul-mustaʿānu' (Allah sajalah tempat memohon pertolongan) adalah penyerahan Ya'qub kepada Allah — bukan bahan analogi; yang dibaca-rekayasa hanyalah pola taswīl & deteksinya pada pihak makhluk.",
+  "authors": [
+    "Draft AI (LLM draft) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-12",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-12",
+      "note": "Tadabbur perdana — Wave 14 taksonomi nafs (ammarah/lawwamah/muthmainnah).",
+      "authors": [
+        "Draft AI (LLM draft)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

@@ -1,0 +1,104 @@
+{
+  "schema": "lab-study-v2",
+  "id": "isra-17-81",
+  "version": 1,
+  "title": "Jāʾa al-ḥaqqu wa zahaqa al-bāṭil — kebenaran menggeser kebatilan",
+  "subtitle": "Yang tak berlandasan pasti lenyap; ground truth mengalahkan noise",
+  "ref": {
+    "surah": 17,
+    "from": 81,
+    "to": 81
+  },
+  "surah_name": "Al-Isra",
+  "theme": "Ground truth, robustness, konvergensi, koreksi kesalahan",
+  "sourced_meaning": {
+    "summary": "Perintah menyampaikan: 'Yang hak telah datang dan yang batil lenyap; sesungguhnya yang batil itu pasti lenyap.' Tafsir Kemenag menjelaskan yang hak adalah Al-Qur'an, iman, dan Islam; yang batil adalah kesyirikan dan kekafiran yang pasti hancur karena tidak mempunyai landasan yang benar — kebatilan tidak bertahan lama. Diperkuat QS 21:18: yang hak dilemparkan atas yang batil lalu menghancurkannya hingga batil lenyap.",
+    "sources": [
+      "Tafsir Kemenag RI QS 17:81",
+      "Tafsir al-Jalalayn QS 17:81"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Alignment",
+      "note": "yang lurus pada ground truth menang; yang menyimpang, tanpa landasan, luruh"
+    },
+    {
+      "layer": "Umpan balik",
+      "note": "kebenaran datang → koreksi berjalan → kebatilan terhapus; ini loop koreksi, bukan sekali tembak"
+    },
+    {
+      "layer": "Penalaran",
+      "note": "sebab lenyapnya batil dinyatakan: 'tidak punya landasan' — bukan takdir buta, tapi konsekuensi struktural"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "inference",
+      "reading": "Kebenaran bersifat konvergen dan stabil karena berpijak pada landasan (dasar yang benar); kebatilan transien karena tak punya fondasi. Klaim tanpa dasar tak bertahan diuji waktu — ia hanya bertahan selama tak diperiksa terhadap ground truth.",
+      "analogy": "grounded truth is stable; unsupported claim decays",
+      "quranic_term": "ḥaqq vs bāṭil"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "Batil = state tanpa invariant yang menopangnya. Begitu kebenaran (referensi yang valid) masuk, state ilegal itu tak lolos pengecekan dan dipangkas — seperti nilai tak-valid yang di-garbage-collect saat pemeriksaan konsistensi jalan.",
+      "analogy": "invalid state pruned on consistency check"
+    },
+    {
+      "lens": "systems",
+      "reading": "Robustness: sistem yang di-grounding pada ground truth menekan noise dari waktu ke waktu. Kebatilan berperilaku seperti derau — bisa mengaburkan sinyal sesaat, tapi tak punya energi topangan; sinyal yang benar akhirnya menggeser derau.",
+      "analogy": "signal displaces noise; grounded robustness"
+    },
+    {
+      "lens": "computational",
+      "reading": "Konvergensi ke fixed point: proses yang benar menuju titik-tetap (ḥaqq) yang stabil terhadap gangguan; kebatilan bukan fixed point — setiap iterasi pemeriksaan menjauhkannya, sehingga ia tak bertahan sebagai keadaan akhir.",
+      "analogy": "convergence to a stable fixed point"
+    },
+    {
+      "lens": "algorithm",
+      "reading": "Kode koreksi-kesalahan: kebenaran berfungsi sebagai referensi/redundansi yang mendeteksi dan menghapus korupsi. QS 21:18 ('hak dilemparkan atas batil lalu menghancurkannya') persis operasi denoising — referensi yang benar mengoreksi bit yang rusak.",
+      "analogy": "error-correcting code; denoising against a reference"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Grounding & self-correction: output yang tak berpijak pada sumber (halusinasi = bāṭil) runtuh begitu diperiksa terhadap dokumen otoritatif (ḥaqq). Loop verifikasi yang mengembalikan setiap klaim ke referensi akan secara sistematis menghapus halusinasi. Actionable: jadikan retrieval sebagai wasit — klaim yang tak cocok dengan sumber di-flag/di-drop, jangan disiarkan.",
+      "analogy": "retrieval as referee; verification loop removes hallucination",
+      "quranic_term": "ḥaqq → yaqīn"
+    },
+    {
+      "lens": "math-physics",
+      "reading": "Batil ibarat keadaan metastable tanpa penopang: energi landasannya nol, maka runtuh ke keadaan dasar begitu ada gangguan. Haq adalah ground state yang stabil — sistem cenderung relaks ke sana dan bertahan di sana.",
+      "analogy": "metastable vs stable ground state"
+    },
+    {
+      "lens": "psychology",
+      "reading": "Kebenaran punya koherensi internal sehingga murah dipertahankan; kebohongan menuntut pemeliharaan konstan (harus mengingat versi, menambal celah) — beban kognitif yang akhirnya kolaps. Konsistensilah yang membuat haq bertahan dan batil lelah sendiri.",
+      "quranic_term": "bāṭil"
+    },
+    {
+      "lens": "history-ummah",
+      "reading": "Pola longitudinal peradaban: rezim dan ideologi yang tak berpijak pada kebenaran/keadilan runtuh meski sempat berkuasa; yang berlandasan bertahan melampaui generasi. Waktu adalah penguji yang memisahkan yang berfondasi dari yang berbusa.",
+      "quranic_term": "ḥaqq"
+    }
+  ],
+  "inference": "Ayat menyatakan hukum dinamika, bukan sekadar janji: yang berpijak pada landasan (ground truth) stabil dan konvergen; yang tak berlandasan (kebatilan) metastable dan pasti luruh saat diperiksa. Sebabnya dinyatakan eksplisit — 'tidak punya landasan' — sehingga ini konsekuensi struktural, bukan keberuntungan. Bagi rekayasa AI, ini dalil bagi grounding dan loop verifikasi: kebenaran yang dijadikan referensi akan menghapus halusinasi seperti kode koreksi-kesalahan menghapus derau. Yang perlu dijaga bukan hanya menghadirkan haq, tapi menjalankan loop yang terus-menerus mengujinya.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-07",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-07",
+      "note": "Tadabbur perdana — Wave 7 bukti/hujjah.",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

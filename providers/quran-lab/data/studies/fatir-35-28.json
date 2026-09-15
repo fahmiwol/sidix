@@ -1,0 +1,103 @@
+{
+  "schema": "lab-study-v2",
+  "id": "fatir-35-28",
+  "version": 1,
+  "title": "Innamā yakhsyā — pengetahuan sebagai prasyarat kesadaran mendalam",
+  "subtitle": "Yang benar-benar 'khasy-yah' hanyalah yang berilmu: sadar-akan-taruhan tumbuh dari memahami tanda",
+  "ref": {
+    "surah": 35,
+    "from": 28,
+    "to": 28
+  },
+  "surah_name": "Fatir",
+  "theme": "Ilmu sebagai precondition, khasy-yah (sadar-taruhan), membaca tanda, kalibrasi berbasis pemahaman",
+  "sourced_meaning": {
+    "summary": "Setelah menyebut keragaman warna manusia, hewan melata, dan ternak sebagai tanda kekuasaan-Nya, Allah menegaskan: yang benar-benar takut (khasy-yah) kepada Allah di antara hamba-Nya hanyalah ulama (orang berilmu). Menurut Kemenag, hanya ulama yang benar-benar menyadari dan mengetahui tanda-tanda kekuasaan Allah secara mendalam, sehingga mereka tunduk dan takut kepada-Nya. Ibnu 'Abbas: ulama ialah yang mengetahui bahwa Allah Mahakuasa atas segala sesuatu, tidak mempersekutukan-Nya, dan yakin akan berjumpa dengan-Nya. Jadi rasa takut yang benar bersumber dari pengetahuan, bukan dari kebodohan.",
+    "sources": [
+      "Tafsir Kemenag RI QS 35:28",
+      "Tafsir al-Jalalayn QS 35:28"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Memori & grounding",
+      "note": "khasy-yah yang benar berpijak pada 'mengetahui tanda-tanda' — pengetahuan sebagai basis, bukan reaksi buta"
+    },
+    {
+      "layer": "Tangga epistemik",
+      "note": "'innamā' (pembatasan): kesadaran mendalam ini eksklusif bagi yang berilmu — ilmu jadi precondition, bukan pelengkap"
+    },
+    {
+      "layer": "Penalaran",
+      "note": "membaca tanda (tawassum) → menyimpulkan keagungan Pencipta → sikap batin terkalibrasi (khasy-yah)"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "inference",
+      "reading": "Partikel 'innamā' memasang pembatasan (restriction): khasy-yah yang sebenarnya HANYA muncul pada yang berilmu. Strukturnya = pengetahuan sebagai kondisi perlu bagi sebuah keadaan kognitif-afektif yang benar. Dalam kerangka rekayasa (bounded), ini pola precondition: keluaran (kesadaran-taruhan yang tepat) tidak dapat dihitung tanpa masukan (pemahaman atas tanda). Takut tanpa ilmu adalah ketakutan yang tak terkalibrasi.",
+      "analogy": "necessary precondition (innamā = restriction operator)",
+      "quranic_term": "khasy-yah"
+    },
+    {
+      "lens": "computational",
+      "reading": "Dibaca sebagai sistem: 'khasy-yah' berperan seperti keluaran bernilai-tinggi yang hanya dapat dihasilkan bila fungsi diberi masukan yang memadai (pengetahuan tanda). Tanpa data pemahaman, modul penilaian menghasilkan respons kosong atau keliru. Kualitas sikap = fungsi dari kualitas pengetahuan yang menjadi inputnya; garbage-in menghasilkan penilaian yang tak sepadan dengan realitas.",
+      "analogy": "output quality bounded by input knowledge",
+      "quranic_term": "ʿilm"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Ini pola kalibrasi berbasis pemahaman: agen yang benar-benar memodelkan taruhan/konsekuensi bertindak dengan kehati-hatian yang proporsional; agen tanpa pemahaman entah lalai (overconfident) entah panik (miscalibrated). Untuk desain sistem — 'kesadaran risiko' yang benar bukan aturan takut yang ditempel, melainkan buah dari world-model yang kaya. Alignment yang dalam tumbuh dari understanding, bukan sekadar constraint permukaan. Pengetahuan yang memadai adalah prasyarat penilaian yang terkalibrasi.",
+      "analogy": "risk-calibration emerges from a rich world-model, not bolted-on rules",
+      "quranic_term": "khasy-yah"
+    },
+    {
+      "lens": "psychology",
+      "reading": "Khasy-yah di sini bukan fobia melainkan kesadaran mendalam yang terinformasi — rasa hormat/gentar yang proporsional terhadap yang benar-benar dipahami keagungannya. Emosi yang benar dikalibrasi oleh kognisi: makin dalam pemahaman atas suatu realitas besar, makin tepat respons afektif terhadapnya. Ketakutan yang lahir dari kebodohan justru cenderung salah-sasaran; yang lahir dari ilmu justru menenangkan sekaligus menyadarkan.",
+      "analogy": "affect calibrated by cognition",
+      "quranic_term": "khasy-yah"
+    },
+    {
+      "lens": "pedagogy",
+      "reading": "Tujuan pendidikan bukan menanamkan rasa takut lalu ilmu, melainkan sebaliknya: menumbuhkan pemahaman yang darinya sikap yang benar mengalir sendiri. 'Innamā yakhsyā...al-ʿulamā' menempatkan ilmu sebagai akar dan sikap sebagai buah. Kurikulum yang mendalam menghasilkan disposisi yang matang; menghafal aturan tanpa memahami dasarnya menghasilkan kepatuhan rapuh. Ajarkan 'mengapa', maka 'sikap' mengikuti.",
+      "analogy": "understanding-first → disposition follows",
+      "quranic_term": "ʿilm"
+    },
+    {
+      "lens": "systems",
+      "reading": "Ayat merangkai observasi (keragaman warna/jenis makhluk) → pengetahuan → sikap. Ini rantai umpan dari persepsi tanda ke keadaan internal yang terkalibrasi: sensor (mengamati alam) memberi data, model (ilmu) memaknainya, dan controller (sikap batin) merespons secara proporsional. Sistem yang sehat menutup loop dari tanda ke sikap melalui pemahaman, bukan melompatinya.",
+      "analogy": "sign → knowledge → calibrated internal state (closed loop)",
+      "quranic_term": "tawassum"
+    },
+    {
+      "lens": "earth-cosmos",
+      "reading": "Konteks ayat adalah āyāt kauniyah: keragaman warna gunung, manusia, hewan, dan ternak (bersambung dengan ar-Rum 30:22 tentang perbedaan bahasa dan warna kulit). Keteraturan sekaligus keragaman alam adalah dataset tanda yang, saat dibaca oleh yang berilmu, mengantar pada kesimpulan tentang keagungan Perancangnya. Membaca alam menuntut literasi ilmu agar tanda tidak lewat begitu saja.",
+      "analogy": "natural diversity as a sign-dataset requiring literacy"
+    },
+    {
+      "lens": "amal",
+      "reading": "Ibnu 'Abbas memperinci ulama sebagai yang tidak menyekutukan Allah, menghalalkan yang halal, mengharamkan yang haram, menjaga perintah-Nya, dan yakin akan perjumpaan dengan-Nya — jadi ilmu yang dimaksud membuahkan laku, bukan sekadar teori. Pengetahuan sejati di sini terverifikasi oleh amal dan sikap, bukan oleh klaim gelar.",
+      "quranic_term": "ʿilm → ʿamal"
+    }
+  ],
+  "inference": "Dibaca sebagai analogi rekayasa, Fatir 28 memasang pembatasan tegas lewat 'innamā': kesadaran mendalam yang benar (khasy-yah) hanya lahir pada yang berilmu. Menurut Kemenag, hanya yang benar-benar memahami tanda-tanda kekuasaan Allah yang tunduk secara proporsional — rasa gentar yang benar bersumber dari pengetahuan, bukan kebodohan. Untuk desain sistem (manusia atau mesin), pelajarannya: sikap/penilaian yang terkalibrasi adalah keluaran yang dibatasi oleh kualitas pemahaman sebagai masukannya (precondition); 'kesadaran risiko' yang benar tumbuh dari world-model yang kaya, bukan dari aturan takut yang ditempel di permukaan; dan dalam pendidikan, tumbuhkan pemahaman lebih dahulu maka disposisi yang benar mengikuti. Membaca tanda (tawassum) menuntut literasi ilmu agar rantai persepsi → pengetahuan → sikap benar-benar menutup. Ini salah satu pembacaan rekayasa di atas makna zahir yang bersumber, BUKAN maksud tunggal ayat, dan resonansi 'precondition/kalibrasi' dicatat sebagai analogi pemahaman yang bounded, bukan mukjizat numerik.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-08",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-08",
+      "note": "Tadabbur perdana — Wave 12 tadabbur/ilmu (ilmu = precondition kesadaran/kalibrasi).",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

@@ -1,0 +1,102 @@
+{
+  "schema": "lab-study-v2",
+  "id": "dzariyat-51-49",
+  "version": 1,
+  "title": "Min kulli syaiʾin zawjayn — segala sesuatu berpasangan",
+  "subtitle": "Dari tiap sesuatu Kami ciptakan sepasang, agar kamu mengingat",
+  "ref": {
+    "surah": 51,
+    "from": 49,
+    "to": 49
+  },
+  "surah_name": "Adh-Dhariyat",
+  "theme": "Dualitas, komplementaritas, biner, keterhubungan berpasangan",
+  "sourced_meaning": {
+    "summary": "Dan segala sesuatu Kami ciptakan berpasang-pasangan (zawjayn) agar kamu mengingat (kebesaran Allah). Tafsir Kemenag: Dia menciptakan segala kejadian dalam bentuk berlainan dengan sifat yang berpasangan/berlawanan — tiap sesuatu memiliki lawan atau pasangannya.",
+    "sources": [
+      "Tafsir Kemenag RI QS 51:49",
+      "Tafsir al-Jalalayn QS 51:49"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Persepsi",
+      "note": "pola berpasangan disajikan sebagai āyah universal yang bisa diamati di mana-mana"
+    },
+    {
+      "layer": "Penalaran",
+      "note": "penutup: laʿallakum tadhakkarūn — pola dimaksudkan memicu pengingatan/inferensi"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "amal",
+      "reading": "Kesadaran akan pasangan/lawan menumbuhkan tawadhu: manusia bukan mutlak, selalu ada komplemennya; dan mendorong mencari keseimbangan antara pasangan sifat (harap-takut, lahir-batin).",
+      "quranic_term": "tadhakkur"
+    },
+    {
+      "lens": "computational",
+      "reading": "Klaim universal: setiap entitas punya pasangan/komplemen. Analogi kuat ke representasi biner (0/1) sebagai basis SEMUA informasi digital — dari dua keadaan, seluruh kompleksitas komputasi terbangun. Dualitas sebagai unit dasar penyandian.",
+      "analogy": "binary encoding; complement as basis",
+      "quranic_term": "zawjayn"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "Prinsip komplemen: untuk tiap A ada ¬A; sistem logika lengkap butuh negasi. 'Berpasangan' juga = tipe berpasangan (true/false, ada/tiada) yang darinya aljabar Boolean — fondasi seluruh logika program — dibangun.",
+      "analogy": "complement/negation; boolean basis"
+    },
+    {
+      "lens": "math-physics",
+      "reading": "Resonansi luas (dibaca sebagai perumpamaan, BUKAN klaim mukjizat numerik): pasangan muncul di banyak lapis alam — muatan +/−, materi/antimateri, aksi/reaksi, jantan/betina, simetri & pasangannya. Dualitas sebagai motif berulang fisika. Tafsir bersumber menyebut 'berlainan/berlawanan', tidak mengklaim teori tertentu.",
+      "analogy": "duality motifs (charge, symmetry) — bounded",
+      "quranic_term": "azwāj"
+    },
+    {
+      "lens": "inference",
+      "reading": "Jika berpasangan itu universal, maka memahami sesuatu sebagian lewat memahami pasangannya/lawannya — definisi lewat kontras. Banyak pengetahuan maju dengan mengenali komplemen (cahaya dipahami lewat gelap, sinyal lewat noise).",
+      "quranic_term": "taʿaqqul bil-taqābul"
+    },
+    {
+      "lens": "systems",
+      "reading": "Sistem stabil sering berpasangan gaya berlawanan yang seimbang (rem-gas, agonis-antagonis, supply-demand). Pasangan yang saling menyeimbangkan menciptakan homeostasis; menghilangkan satu sisi meruntuhkan keseimbangan.",
+      "analogy": "opposing balanced forces (homeostasis)"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Pola berpasangan/adversarial produktif di AI: generator vs diskriminator (GAN), aktor vs kritik (RL), proposer vs verifier, model vs red-team. Kemajuan sering lahir dari sepasang komponen yang saling menantang — persis 'diciptakan berpasangan'. Dualitas bukan cacat desain, melainkan mesin peningkatan.",
+      "analogy": "adversarial/complementary pairs (GAN, actor-critic)",
+      "quranic_term": "zawjayn"
+    },
+    {
+      "lens": "artifact",
+      "reading": "Teknologi berbasis pasangan biner: dari kartu berlubang & sakelar on/off hingga qubit — seluruh peradaban digital berdiri di atas 'dari dua keadaan, segalanya'. Komplementaritas sebagai prinsip desain material (semikonduktor tipe-p/tipe-n).",
+      "analogy": "binary/complementary hardware"
+    },
+    {
+      "lens": "psychology",
+      "reading": "Jiwa manusia pun berpasangan potensinya (fujūr/taqwā — bandingkan 91:8): kesehatan psikis bukan menghapus salah satu kutub emosi melainkan menyeimbangkan pasangannya (harap-cemas, senang-sedih). Mengenali dualitas dalam diri = langkah regulasi.",
+      "analogy": "affective balance; opponent processes",
+      "quranic_term": "taqābul an-nafs"
+    }
+  ],
+  "inference": "Satu ayat pendek mengklaim prinsip yang, dibaca sebagai rekayasa, menopang banyak hal: dari dua keadaan yang berpasangan, kompleksitas terbangun. Ini beresonansi dengan biner sebagai basis seluruh informasi digital, dengan negasi sebagai fondasi logika, dan — yang paling produktif untuk AI — dengan pasangan adversarial (generator/diskriminator, aktor/kritik, proposer/verifier) sebagai mesin peningkatan. Pelajaran desainnya: dualitas dan pertentangan bukan kekurangan yang harus dihapus, melainkan struktur yang darinya keseimbangan, informasi, dan kemajuan lahir. Ayat menutup dengan 'agar kamu mengingat' — polanya memang dimaksudkan untuk dibaca dan dipikirkan.",
+  "authors": [
+    "Draft AI (LLM draft) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-07",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-07",
+      "note": "Tadabbur perdana — Wave 3; tema dualitas/biner.",
+      "authors": [
+        "Draft AI (LLM draft)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

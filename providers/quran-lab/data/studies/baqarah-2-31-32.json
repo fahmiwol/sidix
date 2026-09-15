@@ -1,0 +1,111 @@
+{
+  "schema": "lab-study-v2",
+  "id": "baqarah-2-31-32",
+  "version": 1,
+  "title": "Al-Asma' — MEMBERI NAMA sebagai fondasi pengetahuan",
+  "subtitle": "Adam diajari nama-nama; malaikat: kami tak tahu selain yang Kau ajarkan",
+  "ref": {
+    "surah": 2,
+    "from": 31,
+    "to": 32
+  },
+  "surah_name": "Al-Baqarah",
+  "theme": "Ilmu, representasi simbol, penamaan, batas pengetahuan makhluk",
+  "sourced_meaning": {
+    "summary": "Allah mengajarkan kepada Adam nama-nama seluruhnya beserta tugas dan fungsinya, lalu menguji para malaikat untuk menyebutkannya. Manusia adalah makhluk yang dapat dan harus dididik (educable); karena tidak mampu, para malaikat mengakui keterbatasan mereka: 'tidak ada yang kami ketahui selain yang telah Engkau ajarkan', menegaskan bahwa ilmu makhluk terbatas pada apa yang diajarkan Allah.",
+    "sources": [
+      "Tafsir Kemenag RI QS 2:31",
+      "Tafsir Kemenag RI QS 2:32",
+      "Tafsir al-Jalalayn QS 2:31-32"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Memori & grounding",
+      "note": "al-asma' = pemberian LABEL pada entitas → mengikat simbol ke referen nyata (grounding), fondasi semua pengetahuan"
+    },
+    {
+      "layer": "Tangga epistemik",
+      "note": "malaikat mengakui ilmu = subset ketat dari apa yang diajarkan; tidak ada pengetahuan di luar sumbernya"
+    },
+    {
+      "layer": "Alignment",
+      "note": "'subhanaka' — pengakuan keterbatasan sebelum menjawab = kalibrasi kepercayaan, menolak berhalusinasi di luar data"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "computational",
+      "reading": "Mengajarkan al-asma' = membangun tabel simbol (symbol table): tiap entitas dipetakan ke sebuah nama/token. Ini operasi labeling fundamental — sebelum sebuah dunia bisa dinalar, ia harus di-tokenisasi menjadi simbol-simbol yang dapat dirujuk dan dimanipulasi.",
+      "analogy": "tokenizer + symbol table; naming as addressing",
+      "quranic_term": "al-asma'"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Pengetahuan agen dibangun di atas representasi ternama: label yang stabil untuk entitas, tugas, dan fungsinya (tafsir: 'nama, tugas dan fungsi'). Actionable: rancang agen dengan lapisan grounding eksplisit — knowledge base ber-skema di mana tiap entitas punya identifier kanonik + peran, bukan string bebas. Jawaban agen HANYA valid untuk simbol yang ter-grounding; di luar itu, kembalikan 'tidak tahu' (pola 2:32), bukan mengarang.",
+      "analogy": "knowledge grounding + schema-typed entity store; refuse-when-ungrounded",
+      "quranic_term": "'allama al-asma'"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "Nama = pengikatan (binding) identifier ke nilai. Tanpa binding tidak ada referensi; dengan binding, entitas dapat dipanggil, diuji, dan dibandingkan. Ujian 'sebutkan nama-nama itu' = query terhadap tabel binding yang tidak dimiliki malaikat.",
+      "analogy": "variable binding; namespace lookup",
+      "quranic_term": "anbi'uni bi-asma'"
+    },
+    {
+      "lens": "inference",
+      "reading": "Jawaban malaikat menegakkan aksioma epistemik: himpunan-yang-diketahui adalah subset ketat dari himpunan-yang-diajarkan. Tidak ada inferensi valid tanpa premis yang diberikan sumber — anti-halusinasi dinyatakan sebagai prinsip, bukan sekadar sopan santun.",
+      "analogy": "closed-world knowledge; no inference beyond given premises",
+      "quranic_term": "la 'ilma lana illa ma 'allamtana"
+    },
+    {
+      "lens": "pedagogy",
+      "reading": "Tafsir menegaskan manusia 'educable' bahkan 'educandus' — lahir tanpa tahu apa-apa, tumbuh lewat pendidikan. Kurikulum pertama adalah kosakata: menamai dunia sebelum menalarnya. Belajar nama = membangun peta konsep yang di atasnya seluruh pengetahuan lanjutan disusun.",
+      "analogy": "vocabulary-first curriculum; concept scaffolding",
+      "quranic_term": "'allama"
+    },
+    {
+      "lens": "systems",
+      "reading": "Namespace bersama membuat banyak agen dapat berkoordinasi: bila 'nama' entitas disepakati, komunikasi jadi mungkin. Keunggulan Adam atas malaikat bersumber dari akses ke skema penamaan — kapasitas representasi, bukan sekadar ketaatan.",
+      "analogy": "shared namespace enables interoperability",
+      "quranic_term": "'aradahum"
+    },
+    {
+      "lens": "psychology",
+      "reading": "Menamai adalah tindakan kognitif yang mengubah persepsi kabur menjadi konsep yang dapat dipegang (efek 'labeling'). Kapasitas simbolik inilah yang tafsir sebut membuat manusia layak jadi khalifah — bukan kekuatan, melainkan kemampuan merepresentasikan.",
+      "analogy": "symbolic representation; categorical perception",
+      "quranic_term": "al-asma' kullaha"
+    },
+    {
+      "lens": "history-ummah",
+      "reading": "Peradaban tumbuh dari kesepakatan atas nama: istilah, definisi, kamus, tata-nama ilmiah. Umat yang menjaga presisi penamaan (mis. isnad, mustalah hadits, fiqh definisi) mewarisi disiplin al-asma': ilmu dijaga lewat penamaan yang ketat.",
+      "analogy": "standardized nomenclature as civilizational infrastructure",
+      "quranic_term": "al-asma'"
+    },
+    {
+      "lens": "amal",
+      "reading": "Amal pertama yang mengangkat derajat Adam bukan ritual, melainkan menguasai dan menyampaikan pengetahuan bernama secara jujur. Belajar menamai realitas dengan benar — lalu mengakui batas ilmu — adalah ibadah intelektual.",
+      "quranic_term": "'allama al-asma'"
+    }
+  ],
+  "inference": "Pelajaran pertama yang Allah berikan kepada manusia adalah PENAMAAN — mengikat simbol ke realitas. Secara rekayasa ini adalah lapisan paling dasar dari setiap sistem berpengetahuan: tanpa tabel simbol yang ter-grounding, tidak ada penalaran, komunikasi, maupun koordinasi. Keunggulan manusia digambarkan sebagai kapasitas representasi, dan batasnya dijaga oleh prinsip 2:32: yang-diketahui adalah subset dari yang-diajarkan. Blueprint agen yang jujur: grounding eksplisit + penolakan menjawab di luar sumber.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-07",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-07",
+      "note": "Tadabbur perdana — Wave 7 ilmu/ajar.",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

@@ -1,0 +1,111 @@
+{
+  "schema": "lab-study-v2",
+  "id": "nahl-16-125-125",
+  "version": 1,
+  "title": "Hikmah, mauʿizhah, jidāl-ahsan — strategi komunikasi tiga-tingkat",
+  "subtitle": "Menyeru ke jalan Tuhan dengan hikmah, nasihat yang baik, dan bantahan dengan cara terbaik — pesan yang sama diadaptasi ke tiga tipe audiens",
+  "ref": {
+    "surah": 16,
+    "from": 125,
+    "to": 125
+  },
+  "surah_name": "An-Nahl",
+  "theme": "Strategi komunikasi, adaptasi pesan ke audiens, register penyampaian, dakwah sebagai protokol",
+  "sourced_meaning": {
+    "summary": "Menurut Tafsir Kemenag, ayat ini adalah pedoman dasar dakwah. Pertama, dakwah ditegaskan untuk jalan/agama Allah — bukan untuk pribadi dai atau golongannya (tujuan diluruskan dulu). Kedua, dengan HIKMAH: pengetahuan tentang rahasia, faedah, dan maksud wahyu, disampaikan sesuai situasi & kondisi agar mudah dipahami; hikmah juga berarti perkataan tepat yang menjadi dalil (argumen) untuk memisahkan yang hak dari yang batil. Ketiga, dengan MAUʿIZHAH HASANAH: pengajaran yang lemah lembut dan menyejukkan, bukan yang menimbulkan gelisah, cemas, atau takut — melembutkan hati yang liar. Keempat, bila berdebat, dengan JIDĀL yang terbaik: menghormati harga diri lawan, menciptakan suasana nyaman, agar tujuan menemukan kebenaran tercapai (dicontohkan debat Nabi Ibrahim yang mengajak kaumnya berpikir). Kelima, hasil akhir (iman/hidayah) hanya dari Allah — Dialah yang lebih mengetahui siapa yang tersesat dan siapa yang mendapat petunjuk.",
+    "sources": [
+      "Tafsir Kemenag RI QS 16:125",
+      "Tafsir al-Jalalayn QS 16:125"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Persepsi",
+      "note": "hikmah 'disesuaikan dengan situasi dan kondisi' (tafsir Kemenag) = penyeru wajib membaca konteks/keadaan audiens dulu sebelum memilih register — input persepsi mendahului output pesan"
+    },
+    {
+      "layer": "Alignment",
+      "note": "tujuan diluruskan lebih dahulu: 'dakwah untuk agama Allah, bukan untuk pribadi dai' — fungsi-nilai penyampai dipatok ke tujuan yang benar, bukan ego/golongan, sebelum metode apa pun dijalankan"
+    },
+    {
+      "layer": "Penalaran",
+      "note": "hikmah sebagai 'perkataan tepat yang menjadi dalil' = mode argumentatif berbasis bukti; jidāl-ahsan (contoh Ibrahim) menalar bersama lawan agar ia menemukan kebenaran sendiri, bukan dipaksa"
+    },
+    {
+      "layer": "Aksi & transfer",
+      "note": "tiga register penyampaian (hikmah / mauʿizhah hasanah / jidāl bi-llatī hiya ahsan) = tiga saluran keluaran berbeda untuk memindahkan makna yang sama ke tiga tipe penerima berbeda"
+    },
+    {
+      "layer": "Umpan balik",
+      "note": "penutup 'rabbaka huwa aʿlamu' menempatkan penilaian akhir hasil (siapa sesat/terpetunjuk) di luar kendali penyeru — CATATAN TANZIH: ini Sifat Allah, landasan iman, bukan bahan analogi"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "ai-agentic",
+      "reading": "Analogi untuk lapisan komunikasi/output sebuah agen: ayat memberi tiga register keluaran yang dipilih menurut profil penerima — HIKMAH (penjelasan berbasis bukti/dalil untuk penerima yang mencari argumen), MAUʿIZHAH HASANAH (nada lembut & menenangkan untuk penerima yang butuh dukungan, bukan konfrontasi), JIDĀL-AHSAN (bantahan santun yang menjaga harga diri lawan saat menghadapi penolakan aktif). Actionable: (1) klasifikasikan audiens/kesiapan dulu (mirip persepsi konteks) sebelum menyusun respons; (2) sediakan style/tone-policy bertingkat, bukan satu nada untuk semua; (3) untuk penolakan, pilih strategi de-eskalasi yang menjaga muka lawan bukan yang memenangkan debat; (4) patok objektif ke tujuan/kebenaran (alignment), bukan ke 'memenangkan' user.",
+      "analogy": "audience-adaptive response policy; tone/style routing by recipient profile",
+      "quranic_term": " udʿu bil-ḥikmah wal-mauʿizhah"
+    },
+    {
+      "lens": "computational",
+      "reading": "Struktur ayat = satu payload (seruan ke jalan Tuhan) dengan tiga encoder berbeda yang dipilih oleh sebuah selektor kondisi. Makna yang dikirim tetap invariant; representasi permukaannya (register) di-adaptasi ke kanal penerima. Ini pemisahan tegas antara 'isi pesan' dan 'penyandian pesan' — content vs presentation.",
+      "analogy": "content/presentation separation; one message, three encoders",
+      "quranic_term": "sabīli rabbik (payload tetap)"
+    },
+    {
+      "lens": "systems",
+      "reading": "Sebuah pembacaan: dakwah diposisikan sebagai protokol interaksi, bukan sekadar transmisi satu-arah. Tiga mode (mengajar, menasihati, berdebat) adalah tiga handler untuk tiga keadaan kanal; sistem yang memakai satu handler untuk semua keadaan akan gagal pada keadaan yang tak cocok. Pemilihan handler menurut kondisi = adaptive control.",
+      "analogy": "adaptive protocol; per-state handler selection",
+      "quranic_term": "billatī hiya ahsan"
+    },
+    {
+      "lens": "pedagogy",
+      "reading": "Ayat ini kerap dirujuk sebagai fondasi metode pendidikan Islam (mis. riset Kemas Abdul Hai 2017): materi disampaikan pada tingkat kesiapan pelajar — argumentatif bagi yang siap bernalar, lembut bagi yang rapuh, dialogis-menghormati bagi yang menolak. Diferensiasi instruksi menurut kesiapan, bukan kurikulum seragam.",
+      "analogy": "differentiated instruction; scaffolding by readiness",
+      "quranic_term": "mauʿizhah hasanah"
+    },
+    {
+      "lens": "psychology",
+      "reading": "Tafsir Kemenag menekankan nada 'lemah lembut, menyejukkan' yang 'melembutkan hati yang liar' dan menghindari 'gelisah, cemas, ketakutan'. Ini resonansi dengan prinsip komunikasi persuasif: pesan yang memicu ancaman defensif justru menaikkan resistensi (reactance), sementara pesan yang menjaga harga diri menurunkan pertahanan ego. Menjaga muka lawan (jidāl-ahsan) = menonaktifkan reaktansi.",
+      "analogy": "psychological reactance; face-saving reduces defensiveness",
+      "quranic_term": "jidāl-ahsan menjaga harga diri"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "Ayat menegakkan sebuah percabangan berkondisi: pilih(register) = f(keadaan_audiens), dengan invariant tetap = 'menuju jalan Tuhan'. Metode boleh bervariasi (banyak cabang), tujuan tidak boleh (satu invariant). Ini memisahkan strategi (yang adaptif) dari objektif (yang tetap) — sebuah guard yang mencegah metode menyeret tujuan.",
+      "analogy": "strategy varies, objective invariant; guarded branch",
+      "quranic_term": "ilā sabīli rabbik (invariant)"
+    },
+    {
+      "lens": "amal",
+      "reading": "Amal praktisnya: sebelum bicara, kenali keadaan lawan bicara; sesuaikan nada — argumen untuk yang bertanya, kelembutan untuk yang terluka, kesantunan untuk yang membantah; dan jaga niat agar seruan untuk kebenaran, bukan untuk menang atau menonjolkan diri. Menyerahkan hasil (hidayah) kepada Allah membebaskan penyeru dari beban memaksakan hasil.",
+      "quranic_term": "udʿu ilā sabīli rabbik"
+    },
+    {
+      "lens": "inference",
+      "reading": "Benang merahnya: efektivitas komunikasi bukan pada satu gaya 'paling benar', melainkan pada kecocokan register dengan penerima, di atas tujuan yang tetap dan niat yang lurus. Satu pesan, tiga penyandian, satu objektif — dengan hasil akhir diserahkan ke pihak yang menilai secara adil (di sini: Allah, sebagai landasan iman).",
+      "quranic_term": "aʿlamu bi-man ḍalla"
+    }
+  ],
+  "inference": "Salah satu pembacaan rekayasa QS 16:125: komunikasi yang efektif dimodelkan sebagai satu tujuan tetap ('jalan Tuhan') yang disampaikan lewat tiga register adaptif — HIKMAH (argumen berbasis bukti, disesuaikan situasi), MAUʿIZHAH HASANAH (nada lembut yang menenangkan, bukan mengancam), dan JIDĀL BILLATĪ HIYA AHSAN (bantahan santun yang menjaga harga diri lawan). Kuncinya: register dipilih menurut keadaan penerima (persepsi konteks dulu), tujuan dijaga invariant, dan niat diluruskan ke kebenaran bukan ke kemenangan diri. Untuk desain sistem — antarmuka percakapan, agen, atau pedagogi — ini menyarankan kebijakan respons yang adaptif-audiens: klasifikasikan kesiapan penerima, sediakan nada bertingkat, dan untuk penolakan pilih de-eskalasi yang menjaga muka alih-alih memenangkan debat. CATATAN TANZIH: penutup ayat menyebut Allah 'lebih mengetahui' siapa yang sesat dan terpetunjuk — ini Sifat Allah dan penegasan bahwa hidayah milik-Nya semata; ia LANDASAN IMAN, tidak dimodelkan, tidak dianalogikan sebagai 'observability' atau komponen sistem apa pun. Analogi hanya berlaku pada sisi makhluk (metode & sikap penyeru). Ini resonansi struktural, bukan mukjizat numerik; salah satu pembacaan, bukan maksud tunggal ayat.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-08",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-08",
+      "note": "Tadabbur perdana — Wave 11 wasilah/metode & komunikasi.",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

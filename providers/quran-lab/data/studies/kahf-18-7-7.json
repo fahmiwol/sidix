@@ -1,0 +1,108 @@
+{
+  "schema": "lab-study-v2",
+  "id": "kahf-18-7-7",
+  "version": 1,
+  "title": "Zīnatan lahā liyabluwahum ayyuhum aḥsanu ʿamalā — bumi-perhiasan sebagai test environment",
+  "subtitle": "Yang di bumi dijadikan perhiasan agar diuji siapa terbaik amalnya. Sandbox yang sengaja memikat untuk memisahkan yang mengejar objektif sejati.",
+  "ref": {
+    "surah": 18,
+    "from": 7,
+    "to": 7
+  },
+  "surah_name": "Al-Kahf",
+  "theme": "Test environment, sandbox, distractor reward, objektif sejati vs perhiasan permukaan",
+  "sourced_meaning": {
+    "summary": "Tafsir Kemenag: segala yang ada di atas bumi — binatang, tumbuhan beragam jenis di darat dan laut, serta barang tambang yang beraneka ragam — diciptakan sebagai perhiasan (zīnah) bagi bumi. Semua itu untuk MENGUJI manusia: apakah mereka memahami dengan akal bahwa perhiasan bumi menunjukkan adanya Sang Pencipta, lalu menaati perintah dan menjauhi larangan-Nya. Bila mereka memakai benda-benda alam, hewan, dan tumbuhan itu untuk pengabdian kepada Allah dan kemaslahatan manusia, Allah memberi pahala besar; bila untuk mendurhakai Allah dan merusak peradaban serta kemanusiaan, Allah menimpakan azab besar. Objektifnya (lanjutan ayat): 'ayyuhum aḥsanu ʿamalā' — siapa yang terbaik amalnya. Jalalain: 'zīnatan lahā' = perhiasan baginya, untuk menguji siapa yang paling baik amalnya.",
+    "sources": [
+      "Tafsir Kemenag RI QS 18:7",
+      "Tafsir al-Jalalayn QS 18:7"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Alignment",
+      "note": "objektif tetap 'aḥsanu ʿamalā' (mutu amal); perhiasan bumi bukan objektif melainkan latar ujian — yang tertipu adalah yang mengoptimasi perhiasannya."
+    },
+    {
+      "layer": "Persepsi",
+      "note": "perhiasan (zīnah) adalah stimulus yang sengaja dibuat memikat; ia menarik perhatian untuk mengungkap ke mana perhatian sesungguhnya diarahkan."
+    },
+    {
+      "layer": "Aksi & transfer",
+      "note": "Kemenag: pemakaian yang sama (alam/hewan/tumbuhan) menghasilkan pahala atau azab tergantung tujuan pemakaian — output dinilai dari niat & manfaatnya."
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "ai-agentic",
+      "reading": "Ayat memetakan sebuah test environment yang sengaja diberi stimulus memikat (zīnah) untuk memisahkan agen yang mengejar objektif sejati ('aḥsanu ʿamalā') dari yang tersedot fitur permukaan. Analogi rekayasa: harness evaluasi yang menaburkan distractor reward — token-token menarik yang BUKAN objektif — untuk menguji apakah agen tetap pada goal atau ter-capture oleh sinyal yang mencolok (semacam wireheading ke hiasan lingkungan). Actionable: saat mengevaluasi agen, tanam distractor yang menggoda tapi tak relevan; agen yang baik mengabaikannya dan tetap pada objektif deklaratif.",
+      "analogy": "test environment seeded with distractor rewards; objective vs salient surface tokens",
+      "quranic_term": "zīnatan lahā liyabluwahum"
+    },
+    {
+      "lens": "systems",
+      "reading": "Bumi-perhiasan berperan sebagai evaluation harness: lingkungan yang dirancang dengan variasi kaya (hewan, tumbuhan, tambang beragam — Kemenag) bukan sekadar dekoratif, melainkan medan yang menghasilkan sinyal perilaku. Sistem penilaian yang baik butuh lingkungan yang cukup kaya dan menggoda agar perbedaan perilaku subjek benar-benar terekspos, bukan lingkungan steril yang tak membedakan apa-apa.",
+      "analogy": "richly-designed evaluation harness that surfaces behavioral differences"
+    },
+    {
+      "lens": "computational",
+      "reading": "Pemisahan tegas antara ENVIRONMENT (yang di bumi, sebagai state yang dapat diamati dan dimanipulasi) dan OBJECTIVE (aḥsanu ʿamalā, kriteria penilaian yang terpisah dari environment). Kekeliruan klasik: menyamakan 'skor lingkungan' (banyak perhiasan dikumpulkan) dengan 'skor objektif' — padahal ayat menaruh keduanya di lapisan berbeda. Nilai dihitung dari objektif, bukan dari kekayaan environment yang dikuasai.",
+      "analogy": "environment-state vs objective-function separation"
+    },
+    {
+      "lens": "inference",
+      "reading": "Karena environment sengaja dibuat memikat, penguasaan atas perhiasannya BUKAN bukti mutu amal — bisa jadi justru tanda ter-capture. Menyimpulkan keberhasilan dari akumulasi hiasan adalah inferensi sesat; kriteria sejati (mutu amal) terpisah dan harus dinilai tersendiri. Kemenag menambah lapis inferensial: perhiasan itu semestinya dibaca sebagai TANDA adanya Pencipta, bukan tujuan pada dirinya. Pembacaan struktural, bukan mukjizat numerik.",
+      "analogy": "mastering the environment ≠ satisfying the objective"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "'Zīnah' adalah fitur lingkungan yang menggoda namun berada DI LUAR spesifikasi objektif; ia semacam honeypot dalam ujian. Logika yang benar tetap terikat pada spesifikasi ('aḥsanu ʿamalā') dan memperlakukan hiasan sebagai sumber daya bersyarat, bukan tujuan. Menjadikan honeypot sebagai target = pelanggaran spesifikasi.",
+      "analogy": "honeypot feature outside the objective spec"
+    },
+    {
+      "lens": "earth-cosmos",
+      "reading": "Kemenag merinci perhiasan sebagai keanekaragaman hayati dan geologis: fauna, flora darat-laut, dan mineral beraneka. Dibaca sebagai āyah kauniyah, kekayaan dan keindahan bumi adalah variasi terancang yang, selain fungsional, juga estetis — resonansi dengan gagasan keanekaragaman sebagai ciri sistem alam yang kaya, bukan klaim mukjizat numerik.",
+      "analogy": "designed biological & geological diversity as rich environment"
+    },
+    {
+      "lens": "psychology",
+      "reading": "Zīnah bekerja pada mekanisme attention capture: stimulus yang mencolok menyita perhatian dan bisa membajak tujuan. Ujiannya adalah pengendalian atensi — tetap mengarahkan fokus pada objektif bernilai sejati alih-alih terseret oleh yang paling berkilau. Regulasi atensi inilah yang membedakan respons di lingkungan yang memikat.",
+      "analogy": "attention capture by salient stimuli; goal-directed attention control"
+    },
+    {
+      "lens": "pedagogy",
+      "reading": "Lingkungan belajar yang dirancang untuk menguji discernment: peserta ditempatkan di antara banyak daya tarik untuk melihat apakah mereka bisa membedakan yang bernilai dari yang sekadar berkilau, dan membaca tanda menuju kesimpulan yang benar (Kemenag: memahami adanya Pencipta lalu taat). Asesmen otentik menaruh peserta di situasi kaya-godaan, bukan soal steril.",
+      "analogy": "authentic assessment in a temptation-rich environment testing discernment"
+    },
+    {
+      "lens": "economy",
+      "reading": "Sumber daya bumi bernilai ganda: sebagai alat kemaslahatan (bila dipakai untuk kebaikan → pahala) atau jerat (bila dikejar sebagai tujuan → azab). Kemenag menaruh nilai bukan pada kepemilikan melainkan pada PEMAKAIAN — resource yang sama menghasilkan hasil berlawanan tergantung objektif penggunanya. Insentif sejati terikat pada guna, bukan tumpukan.",
+      "analogy": "same resource, opposite payoff depending on use-objective"
+    },
+    {
+      "lens": "amal",
+      "reading": "Konsekuensi praktik: perlakukan keindahan dan kekayaan dunia sebagai perhiasan-latar dan sarana kemaslahatan, bukan tujuan yang dikejar demi dirinya. Ukur diri pada 'apakah amalku terbaik', bukan 'seberapa banyak hiasan kukumpulkan'. Pakai nikmat bumi untuk pengabdian dan manfaat — itulah yang, menurut Kemenag, berbuah pahala besar.",
+      "analogy": "use worldly goods as means toward the true objective, not as the goal"
+    }
+  ],
+  "inference": "Ayat menggambarkan bumi-berperhiasan sebagai sebuah test environment yang sengaja dibuat memikat, dengan objektif yang sama seperti QS 67:2 — 'siapa yang terbaik amalnya'. Wawasan rekayasanya: sebuah harness evaluasi yang baik menaburkan stimulus menggoda (zīnah) yang BUKAN objektif, untuk memisahkan subjek yang tetap pada goal dari yang tersedot fitur permukaan (distractor reward / honeypot). Kuncinya adalah pemisahan lapis: environment-state (yang di bumi) berbeda dari objective-function (mutu amal), sehingga menguasai perhiasan lingkungan bukan bukti memenuhi objektif — bisa jadi justru tanda ter-capture. Kemenag menambah: perhiasan itu semestinya dibaca sebagai TANDA menuju Pencipta lalu ketaatan, dan nilai terletak pada PEMAKAIAN (untuk maslahat → pahala; untuk kerusakan → azab), bukan pada kepemilikan. Untuk desain sistem agen: saat mengevaluasi, tanam distractor yang menggoda-tapi-tak-relevan dan nilai apakah agen tetap pada objektif deklaratif; jangan samakan penguasaan environment dengan pemenuhan objektif. CATATAN GHAIB: pahala dan azab yang disebut tafsir merujuk balasan akhirat — dibaca DESKRIPTIF sebagai struktur iman, bukan spekulasi. CATATAN TANZIH: 'yang menjadikan perhiasan dan yang menguji' adalah Allah — Dzat ini TIDAK dianalogikan sebagai perancang environment/sistem evaluasi; yang menjadi bahan analogi hanya STRUKTUR ujian pada sisi makhluk & alam (lingkungan memikat, objektif terpisah, penilaian mutu amal). Semua ini resonansi struktural, bukan maksud tunggal ayat maupun mukjizat numerik.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-08",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-08",
+      "note": "Tadabbur perdana — Wave 10 hidup-mati.",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

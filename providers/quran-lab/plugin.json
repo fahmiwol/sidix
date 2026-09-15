@@ -1,0 +1,35 @@
+{
+  "id": "quran-lab.plugin",
+  "name": "Quran Lab",
+  "version": "1.0.0",
+  "description": "Offline search of 168 unreviewed Quran Lab engineering studies and 33 cross-study design principles, with citations and explicit interpretation disclaimers.",
+  "author": "Fahmi Ghani",
+  "license": "MIT",
+  "capabilities": {
+    "tools": ["quran_lab_search", "quran_lab_get_study", "quran_lab_for_verse", "quran_lab_principles"],
+    "datasets": ["quran-lab-studies"],
+    "connectors": [],
+    "ui_panels": []
+  },
+  "entrypoints": {"python": "quran_lab"},
+  "permissions": ["read-local-data"],
+  "enabled_by_default": false,
+  "data_sources": [
+    {
+      "id": "quran-lab-studies",
+      "name": "Quran Lab authored studies and metadata",
+      "path": "data/",
+      "author": "Fahmi Ghani",
+      "license": "MIT",
+      "scope": "Lab-authored content only; quoted editions are excluded. See NOTICE.md."
+    },
+    {
+      "id": "quoted-editions",
+      "name": "Attributed quotations within the studies",
+      "editions": ["Terjemah Kemenag RI", "Tafsir Kemenag RI", "Tafsir al-Jalalayn"],
+      "license": "Publisher rights retained; not MIT",
+      "attribution": "See each study's sourced_meaning.sources, NOTICE.md and QUOTATIONS_REPORT.md. Other quoted editions retain their publishers' rights.",
+      "scope": "Quoted passages for commentary only; complete editions are not bundled."
+    }
+  ]
+}

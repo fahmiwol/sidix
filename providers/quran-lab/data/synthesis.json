@@ -1,0 +1,990 @@
+{
+  "schema": "lab-synthesis-v1",
+  "title": "Sintesis Lintas-Kajian",
+  "note": "Memanen POLA yang berulang di banyak ayat menjadi prinsip desain. Fokus utama: teknologi, komputasi, AI/ML, agen autonom, cara kerja nalar, dan 'organisme digital'. Setiap prinsip WAJIB didukung ≥2 kajian (evidence). Ini interpretasi rekayasa — BUKAN tafsir/dalil. Sebuah pola yang muncul independen di banyak surah = sinyal struktural, bukan kebetulan satu ayat.",
+  "clusters": [
+    {
+      "key": "ai-core",
+      "title": "Inti: Arsitektur AI & Organisme Digital",
+      "icon": "🤖",
+      "desc": "Prinsip yang langsung menjadi tulang punggung agen autonom / makhluk digital."
+    },
+    {
+      "key": "cognition",
+      "title": "Kognisi & Cara Kerja Nalar",
+      "icon": "🧠",
+      "desc": "Bagaimana persepsi, memori, dan penalaran bekerja — model 'otak'."
+    },
+    {
+      "key": "learning",
+      "title": "Pembelajaran, Konstruksi & Emergensi",
+      "icon": "📈",
+      "desc": "Bagaimana kapabilitas dibangun bertahap dan kemampuan baru muncul."
+    },
+    {
+      "key": "systems",
+      "title": "Sistem, Kontrol & Keseimbangan",
+      "icon": "🕸️",
+      "desc": "Invariant, umpan-balik, determinisme, stabilitas."
+    },
+    {
+      "key": "epistemics",
+      "title": "Epistemologi & Verifikasi",
+      "icon": "🔍",
+      "desc": "Bagaimana keyakinan dibangun: bukti, falsifikasi, audit."
+    },
+    {
+      "key": "society",
+      "title": "Sosial, Keuangan & Bisnis",
+      "icon": "💰",
+      "desc": "Ledger, distribusi, waktu-sebagai-kapital, meritokrasi ilmu."
+    },
+    {
+      "key": "life",
+      "title": "Kehidupan, Kedokteran & Materi",
+      "icon": "🧬",
+      "desc": "Substrat kehidupan, pembentukan bertahap, material dual-use."
+    },
+    {
+      "key": "attestation",
+      "title": "Attestation, Kesaksian & Audit",
+      "icon": "📿",
+      "desc": "Bukti, logging, non-repudiation, integritas penilai — bagaimana sistem membuktikan & dibuktikan."
+    }
+  ],
+  "principles": [
+    {
+      "id": "align-before-scale",
+      "cluster": "ai-core",
+      "title": "Align & ukur SEBELUM skalakan daya",
+      "statement": "Kekuatan/kapabilitas hanya aman bila didahului nilai (spesifikasi) dan alat ukur kepatuhan (evaluasi). Dalam korpus, 'kekuatan' selalu diletakkan SESUDAH keseimbangan/standar ditegakkan — tak pernah sebelum.",
+      "evidence": [
+        {
+          "ref": "55:5-9",
+          "id": "mizan-55-5-9",
+          "note": "mīzān (constraint) ditegakkan; 'jangan lampaui'"
+        },
+        {
+          "ref": "57:25",
+          "id": "hadid-57-25",
+          "note": "kitab+mīzān dulu, BARU besi (baʾs syadīd)"
+        },
+        {
+          "ref": "30:41",
+          "id": "rum-30-41",
+          "note": "pelanggaran sistem → kerusakan teramati"
+        }
+      ],
+      "implication": "AI/ML: gate kapabilitas dengan alignment + eval SEBELUM deploy/scale. Deploy daya tanpa alat ukur = melepas 'besi' tanpa neraca. Urutan pembangunan: nilai → metrik → baru kapabilitas."
+    },
+    {
+      "id": "verify-before-act",
+      "cluster": "ai-core",
+      "title": "Grounding: verifikasi sebelum bertindak (anti-halusinasi)",
+      "statement": "Informasi yang belum diverifikasi boleh disimpan, tetapi tidak boleh menggerakkan tindakan. Bila pengetahuan lokal tak memadai, rutekan ke sumber otoritatif — jangan mengarang. Uji terhadap kanal bukti yang independen.",
+      "evidence": [
+        {
+          "ref": "49:6",
+          "id": "hujurat-49-6",
+          "note": "fatabayyanū — periksa kabar sebelum bertindak"
+        },
+        {
+          "ref": "16:43",
+          "id": "nahl-16-43",
+          "note": "tanya ahl adz-dzikr bila tak tahu (RAG/expert-routing)"
+        },
+        {
+          "ref": "41:53",
+          "id": "fussilat-41-53",
+          "note": "verifikasi dua kanal: āfāq + anfus"
+        },
+        {
+          "ref": "2:31-32",
+          "id": "baqarah-2-31-32",
+          "note": "al-asma: jawab hanya utk simbol ter-grounding ('tak tahu selain yang Kau ajarkan') = refuse-when-ungrounded"
+        }
+      ],
+      "implication": "AI/ML: ini dalil langsung dari Eval-Gate app ini. RAG + uncertainty-triggered retrieval + multi-channel verification = arsitektur anti-halusinasi. Agen yang bertindak atas klaim tak terverifikasi = rusak by design."
+    },
+    {
+      "id": "alignment-is-process",
+      "cluster": "ai-core",
+      "title": "Alignment adalah PROSES berkelanjutan, bukan status",
+      "statement": "Keselarasan bukan dicapai sekali lalu selesai; ia meluruh (drift) bila tidak dikalibrasi ulang terus-menerus. Korpus menempatkan kalibrasi sebagai ritual berulang, bukan penetapan tunggal.",
+      "evidence": [
+        {
+          "ref": "1:1-7",
+          "id": "fatihah-1-1-7",
+          "note": "protokol kalibrasi dibaca ≥17×/hari — reload konteks inti"
+        },
+        {
+          "ref": "91:7-10",
+          "id": "shams-91-7-10",
+          "note": "tazkiyah aktif vs dassāhā (dibiarkan meluruh)"
+        }
+      ],
+      "implication": "AI/ML: alignment butuh loop pemeliharaan (continuous eval, re-grounding), bukan sekali-set. Nilai yang tidak dijaga akan drift — pada model maupun pada jiwa."
+    },
+    {
+      "id": "distributed-intelligence",
+      "cluster": "ai-core",
+      "title": "Kecerdasan bisa terdistribusi & lahir dari pasangan yang menantang",
+      "statement": "Kecerdasan tinggi tidak mensyaratkan satu otak pusat: aturan lokal minimal + koordinasi tak-langsung menghasilkan perilaku kolektif; dan pasangan yang saling menantang (adversarial) adalah mesin peningkatan.",
+      "evidence": [
+        {
+          "ref": "16:68-69",
+          "id": "nahl-16-68-69",
+          "note": "lebah: aturan lokal → kecerdasan kawanan tanpa pusat"
+        },
+        {
+          "ref": "51:49",
+          "id": "dzariyat-51-49",
+          "note": "segala berpasangan → adversarial pairs (GAN, actor-critic)"
+        }
+      ],
+      "implication": "AI/ML: bangun kawanan agen kecil yang berbagi jejak (stigmergy) alih-alih satu otak raksasa; manfaatkan pasangan generator/diskriminator, proposer/verifier sebagai mesin perbaikan."
+    },
+    {
+      "id": "memory-grounds-cognition",
+      "cluster": "cognition",
+      "title": "Memori adalah fondasi kognisi; representasi bersifat berlapis",
+      "statement": "Mengingat (dzikr) menghubungkan seluruh fakultas kognitif; pengetahuan dieksternalisasi ke media persisten agar melampaui satu individu; dan pemahaman terbentuk lewat lapisan perantara yang saling menguatkan.",
+      "evidence": [
+        {
+          "ref": "96:1-5",
+          "id": "iqra-96-1-5",
+          "note": "qalam = eksternalisasi ilmu ke memori persisten"
+        },
+        {
+          "ref": "24:35",
+          "id": "nur-24-35",
+          "note": "'cahaya di atas cahaya' = representasi berlapis; sumber≠perantara"
+        }
+      ],
+      "implication": "AI/ML: retrieval/memory eksternal = substrat kognisi (bukan hanya bobot); deep layered representations menguatkan sinyal; jangan bingung model (perantara) dengan kebenaran (sumber)."
+    },
+    {
+      "id": "epistemic-ladder",
+      "cluster": "cognition",
+      "title": "Tangga epistemik: dugaan → bukti → yakin; tahu mengubah KELAS",
+      "statement": "Klaim menaiki tangga dari zhann (dugaan) ke yaqīn (yakin) hanya lewat bukti (burhān). Dua agen identik yang berbeda pengetahuan bukan kelas yang sama — pengetahuan adalah bagian dari identitas state, bukan aksesori.",
+      "evidence": [
+        {
+          "ref": "39:9",
+          "id": "zumar-39-9",
+          "note": "'apakah sama yang tahu & tak tahu' = kelas ekuivalensi"
+        },
+        {
+          "ref": "49:6",
+          "id": "hujurat-49-6",
+          "note": "zhann tak boleh menggerakkan tindakan tanpa tabayyun"
+        },
+        {
+          "ref": "41:53",
+          "id": "fussilat-41-53",
+          "note": "yaqīn via konvergensi bukti dua kanal"
+        }
+      ],
+      "implication": "AI/ML: estimasi ketidakpastian yang memicu retrieval; bobot jawaban berdasar grounding (confidence tanpa knowledge = noise); evaluasi harus mengukur state pengetahuan, bukan hanya arsitektur."
+    },
+    {
+      "id": "dual-drive-self-regulation",
+      "cluster": "cognition",
+      "title": "Dua-potensi + agensi = regulasi diri",
+      "statement": "Agen (jiwa) datang dengan potensi ganda (destruktif & konstruktif) plus kemampuan mengarahkan; perilaku akhir ditentukan kebijakan kontrol yang dipilih & dijaga, bukan inisialisasi.",
+      "evidence": [
+        {
+          "ref": "91:7-10",
+          "id": "shams-91-7-10",
+          "note": "nafs diilhami fujūr & taqwā + tazkiyah"
+        },
+        {
+          "ref": "59:18",
+          "id": "hasyr-59-18",
+          "note": "muhasabah = self-monitoring atas perbuatan"
+        }
+      ],
+      "implication": "AI/ML & neurosains: model 'otak' = dorongan bersaing + controller + self-monitoring. Kesehatan bukan menghapus dorongan, melainkan regulasi. Self-monitoring (introspeksi atas proses sendiri) wajib untuk kalibrasi."
+    },
+    {
+      "id": "staged-construction",
+      "cluster": "learning",
+      "title": "Konstruksi bertahap dengan checkpoint → emergensi",
+      "statement": "Sistem kompleks dibangun lewat serangkaian transformasi kecil terverifikasi dengan urutan dependensi yang kaku; pada satu titik muncul lompatan kualitatif ('makhluk yang lain') yang tak tereduksi ke penjumlahan tahap.",
+      "evidence": [
+        {
+          "ref": "23:12-14",
+          "id": "muminun-23-12-14",
+          "note": "nuṭfah→...→khalq ākhar; tulang sebelum daging (ordering)"
+        },
+        {
+          "ref": "96:1-5",
+          "id": "iqra-96-1-5",
+          "note": "min ʿalaq — konstruksi bottom-up bertahap"
+        },
+        {
+          "ref": "36:82",
+          "id": "kun-36-82",
+          "note": "kontras: O(1) instan hanya milik-Nya; makhluk selalu bertahap"
+        }
+      ],
+      "implication": "AI/ML: curriculum/staged training (pretrain→SFT→RLHF); jaga tiap checkpoint; sadari emergent abilities tak selalu terprediksi dari penjumlahan tahap. Kompleksitas = keterbatasan makhluk (butuh proses), bukan cacat."
+    },
+    {
+      "id": "declarative-arc",
+      "cluster": "learning",
+      "title": "Arah teknologi menaiki tangga dari imperatif ke deklaratif (intent)",
+      "statement": "Ada lapisan 'perintah' (amr, intent→realisasi tanpa langkah antara) di atas lapisan 'sebab' (proses bertahap berbiaya). Makhluk & mesin bekerja di lapisan sebab; evolusi teknologi bergerak menaiki tangga menuju intent, tanpa mencapai puncaknya.",
+      "evidence": [
+        {
+          "ref": "36:82",
+          "id": "kun-36-82",
+          "note": "kun fayakūn = instansiasi deklaratif murni"
+        },
+        {
+          "ref": "96:1-5",
+          "id": "iqra-96-1-5",
+          "note": "makhluk membangun lewat langkah (imperatif)"
+        }
+      ],
+      "implication": "AI/ML: dari machine code → bahasa deklaratif → intent-based/agentic AI = gerak menaiki tangga ini. Sistem buatan adalah 'imperatif yang merindukan deklaratif'."
+    },
+    {
+      "id": "learn-by-moving",
+      "cluster": "learning",
+      "title": "Pengetahuan menuntut bergerak mengumpulkan bukti baru (OOD)",
+      "statement": "Jangan menyimpulkan asal-usul/kebenaran dari data lokal saja: bergeraklah, ambil sampel dari distribusi lebih luas, pelajari MEKANISME (bagaimana ia dimulai), lalu inferensi.",
+      "evidence": [
+        {
+          "ref": "29:20",
+          "id": "ankabut-29-20",
+          "note": "sīrū fil-arḍ — OOD sampling + reverse-engineering asal-usul"
+        },
+        {
+          "ref": "96:1-5",
+          "id": "iqra-96-1-5",
+          "note": "iqra' atas dual corpus (teks + alam)"
+        }
+      ],
+      "implication": "AI/ML: active information gathering (tool-use, retrieval, eksperimen) sebelum inferensi; anti sampling-bias; provenance analysis (bagaimana sistem 'dimulai') untuk memahami perilakunya kini."
+    },
+    {
+      "id": "invariant-and-feedback",
+      "cluster": "systems",
+      "title": "Invariant yang dijaga + umpan-balik korektif PARSIAL",
+      "statement": "Sistem sehat punya invariant yang tak boleh dilanggar; pelanggaran = korupsi state (kerusakan). Koreksinya dikembalikan ke penyebab secara PARSIAL & bertujuan (agar kembali), bukan penghancuran total.",
+      "evidence": [
+        {
+          "ref": "55:5-9",
+          "id": "mizan-55-5-9",
+          "note": "mīzān = invariant; 'jangan lampaui' = assertion"
+        },
+        {
+          "ref": "30:41",
+          "id": "rum-30-41",
+          "note": "fasād = pelanggaran sistem; feedback parsial 'agar kembali'"
+        },
+        {
+          "ref": "103:1-3",
+          "id": "asr-103-1-3",
+          "note": "tanpa kerja aktif, sistem meluruh ke rugi (entropi)"
+        }
+      ],
+      "implication": "AI/ML & kontrol: runtime assertions/guardrails; error feedback bertahap (bukan matikan sistem) agar belajar kembali ke jalur; lawan entropi dengan koreksi aktif berulang."
+    },
+    {
+      "id": "lawful-predictable",
+      "cluster": "systems",
+      "title": "Keteraturan deterministik → prediktabilitas → sains mungkin",
+      "statement": "Alam berjalan di atas perhitungan pasti (ḥusbān) yang seragam lintas ruang-waktu; keseragaman inilah prasyarat prediksi, reproduksibilitas, dan metode ilmiah.",
+      "evidence": [
+        {
+          "ref": "55:5-9",
+          "id": "mizan-55-5-9",
+          "note": "matahari-bulan bi-ḥusbān (deterministik)"
+        },
+        {
+          "ref": "21:30",
+          "id": "anbiya-21-30",
+          "note": "hukum stabil → retrodiksi/kosmologi mungkin"
+        }
+      ],
+      "implication": "AI/ML & sains: reproduktibilitas & determinisme (seed, versioning) = prasyarat sistem yang bisa diprediksi & diaudit. Hukum yang stabil membuat ekstrapolasi sah."
+    },
+    {
+      "id": "median-stable-fair",
+      "cluster": "systems",
+      "title": "Nilai tengah (median) = posisi paling stabil & paling adil menilai",
+      "statement": "Titik tengah meminimalkan jarak ke semua titik (robust terhadap outlier) dan paling tahan gangguan; justru posisi itu yang memenuhi syarat menjadi 'saksi'/penilai yang adil.",
+      "evidence": [
+        {
+          "ref": "2:143",
+          "id": "baqarah-2-143",
+          "note": "ummatan wasaṭan → syarat jadi saksi adil"
+        },
+        {
+          "ref": "25:67",
+          "id": "furqan-25-67",
+          "note": "qawām: tidak boros tidak kikir — invariant dua sisi"
+        }
+      ],
+      "implication": "AI/ML: estimator pusat yang robust (median > mean thd outlier); posisi evaluator/LLM-judge yang tak bias ke ekstrem = prasyarat penilaian adil."
+    },
+    {
+      "id": "falsify-to-trust",
+      "cluster": "epistemics",
+      "title": "Keyakinan yang layak = yang selamat dari upaya membantah (red-teaming)",
+      "statement": "Integritas ditetapkan bukan lewat larangan menguji, melainkan lewat undangan mengaudit berulang dengan taxonomy cacat yang jelas — dan bertahan.",
+      "evidence": [
+        {
+          "ref": "67:3-4",
+          "id": "mulk-67-3-4",
+          "note": "'adakah kaulihat retak?' — undangan falsifikasi + prediksi"
+        },
+        {
+          "ref": "41:53",
+          "id": "fussilat-41-53",
+          "note": "bukti dipersilakan diuji lintas kanal"
+        }
+      ],
+      "implication": "AI/ML: adversarial evaluation / red-teaming sebagai jalan sah menuju kepercayaan; nyatakan andal setelah penguji kehabisan cara, bukan setelah satu demo mulus."
+    },
+    {
+      "id": "self-audit-prospective",
+      "cluster": "epistemics",
+      "title": "Audit-diri yang berorientasi masa depan (bukan ruminasi)",
+      "statement": "Tinjau jejak perbuatan lampau untuk memperbaiki keputusan 'hari esok', di bawah asumsi observabilitas penuh yang menjaga kejujuran audit.",
+      "evidence": [
+        {
+          "ref": "59:18",
+          "id": "hasyr-59-18",
+          "note": "waltanẓur mā qaddamat li-ghad = self-reflection prospektif"
+        },
+        {
+          "ref": "67:3-4",
+          "id": "mulk-67-3-4",
+          "note": "pemeriksaan berulang sebagai kebiasaan"
+        }
+      ],
+      "implication": "AI/ML: agent self-reflection (ReAct/Reflexion) atas trace; forward credit assignment (nilai tindakan dari kontribusi ke tujuan, bukan kepuasan sesaat); audit trail + observabilitas penuh."
+    },
+    {
+      "id": "ledger-audit-trail",
+      "cluster": "society",
+      "title": "Ledger: catat, replikasi saksi, pisahkan peran",
+      "statement": "Komitmen berjangka wajib dieksternalisasi ke record oleh pihak netral, diverifikasi ≥2 saksi (redundansi dengan recovery dari kegagalan memori), dengan pemisahan peran mencegah manipulasi sepihak.",
+      "evidence": [
+        {
+          "ref": "2:282",
+          "id": "baqarah-2-282",
+          "note": "ayat terpanjang: tulis+saksi+segregation of duties"
+        },
+        {
+          "ref": "5:1",
+          "id": "maidah-5-1",
+          "note": "awfū bil-ʿuqūd — catat DAN tunaikan komitmen"
+        }
+      ],
+      "implication": "Bisnis/keuangan/AI: distributed ledger + multi-validator + audit trail; komitmen agen di-persist dengan attestation, bukan hanya di context volatil."
+    },
+    {
+      "id": "knowledge-elevation",
+      "cluster": "society",
+      "title": "Ilmu = sumbu elevasi; akses non-zero-sum; ranking alignment×kapabilitas",
+      "statement": "Pengetahuan mengangkat derajat (berderajat-derajat = ranking multi-level), diberikan pada konjungsi iman×ilmu (alignment×kapabilitas); dan berbagi ruang/ilmu memperbesar kapasitas total (non-zero-sum).",
+      "evidence": [
+        {
+          "ref": "58:11",
+          "id": "mujadilah-58-11",
+          "note": "yarfaʿillāhu... darajāt; beri ruang → dilapangkan"
+        },
+        {
+          "ref": "39:9",
+          "id": "zumar-39-9",
+          "note": "yang tahu ≠ yang tak tahu (elevasi oleh ilmu)"
+        }
+      ],
+      "implication": "AI/organisasi: trust tiers berdasar alignment×capability (bukan senioritas); sistem berbagi-resource non-zero-sum; yield resource yang tak dipakai menaikkan throughput majelis (multi-agen)."
+    },
+    {
+      "id": "time-as-capital",
+      "cluster": "society",
+      "title": "Waktu = kapital menyusut; default adalah kerugian",
+      "statement": "Waktu adalah modal non-recoverable yang terus terpakai; trajektori default-nya kerugian (biaya peluang berjalan otomatis); return positif hanya dari investasi spesifik yang berkelanjutan & sebagian bersifat sosial.",
+      "evidence": [
+        {
+          "ref": "103:1-3",
+          "id": "asr-103-1-3",
+          "note": "demi masa; manusia dalam rugi KECUALI 4 syarat"
+        },
+        {
+          "ref": "63:9-10",
+          "id": "munafiqun-63-9-10",
+          "note": "deadline non-negotiable; commit kecil & sering"
+        }
+      ],
+      "implication": "Bisnis/keuangan/AI-planning: akuntansi forward-looking; diam = rugi majemuk; sebagian koreksi harus lewat jaringan (peer), tak bisa solo."
+    },
+    {
+      "id": "shared-substrate",
+      "cluster": "life",
+      "title": "Substrat bersama menopang segala yang 'hidup'",
+      "statement": "Segala yang hidup bergantung pada satu lapisan bersama (air); kesehatan substrat menentukan kesehatan seluruh sistem di atasnya.",
+      "evidence": [
+        {
+          "ref": "21:30",
+          "id": "anbiya-21-30",
+          "note": "'dari air Kami jadikan segala yang hidup'"
+        },
+        {
+          "ref": "16:65",
+          "id": "nahl-16-65",
+          "note": "revival lewat re-injeksi substrat; dormansi bukan mati"
+        }
+      ],
+      "implication": "AI/ML: DATA sebagai substrat — segala kapabilitas 'hidup' darinya; kualitas substrat (data) membatasi hidup-matinya sistem. Kedokteran: jaga substrat (air, mikrobioma) sebelum mengobati hilir."
+    },
+    {
+      "id": "stage-aware-care",
+      "cluster": "life",
+      "title": "Pembentukan bertahap menuntut perawatan sadar-tahap",
+      "statement": "Karena pembentukan berlangsung dalam tahap bernama & berurutan di lingkungan terlindungi, tiap tahap punya kerentanan spesifiknya sendiri.",
+      "evidence": [
+        {
+          "ref": "23:12-14",
+          "id": "muminun-23-12-14",
+          "note": "embriologi bertahap dalam qarār makīn (sandbox)"
+        },
+        {
+          "ref": "39:6",
+          "id": "zumar-39-6",
+          "note": "tiga kegelapan = defense-in-depth utk fase rapuh"
+        }
+      ],
+      "implication": "Kedokteran: perawatan perinatal sadar-tahap (nutrisi/teratogen per fase). AI: fase pelatihan = titik rentan; sediakan lingkungan terisolasi (sandbox) untuk proses yang belum matang."
+    },
+    {
+      "id": "unbiased-attestation",
+      "cluster": "attestation",
+      "title": "Penilai/saksi harus tak-bias — bahkan melawan kepentingan sendiri",
+      "statement": "Kesaksian & penilaian wajib objektif ke standar tertinggi, kebal dari bias afiliasi & status, sampai berani bersaksi atas diri sendiri. Integritas terinternalisasi lebih tahan daripada pengawasan eksternal.",
+      "evidence": [
+        {
+          "ref": "4:135",
+          "id": "nisa-4-135",
+          "note": "syuhadāʾ lillāh walau atas diri sendiri; bias afiliasi & status dilarang"
+        },
+        {
+          "ref": "2:143",
+          "id": "baqarah-2-143",
+          "note": "wasaṭ = posisi tengah tak-bias sebagai syarat jadi saksi adil"
+        }
+      ],
+      "implication": "AI/ML: evaluator/judge/verifier harus memutuskan dari evidence, bukan dari identitas/kepentingan; self-critique jujur (mengakui error sendiri) = bentuk tertinggi objektivitas. Guard bias afiliasi (favoritisme sumber) & status (popularitas)."
+    },
+    {
+      "id": "harm-scaled-evidence",
+      "cluster": "attestation",
+      "title": "Ambang bukti berskala dengan potensi kerusakan; biaya klaim palsu asimetris",
+      "statement": "Klaim/tuduhan berdampak besar menuntut bukti jauh lebih kuat sebelum di-assert; dan kegagalan membuktikan klaim berbahaya menghukum sumbernya (kredibilitas dicabut). Kalibrasi false-positive vs false-negative eksplisit terhadap biaya kesalahan.",
+      "evidence": [
+        {
+          "ref": "24:4",
+          "id": "nur-24-4",
+          "note": "tuduhan zina butuh 4 saksi; gagal → 80 dera + kesaksian ditolak selamanya"
+        },
+        {
+          "ref": "49:6",
+          "id": "hujurat-49-6",
+          "note": "kabar berdampak wajib tabayyun sebelum bertindak"
+        }
+      ],
+      "implication": "AI/ML: confidence threshold = f(potensi harm) — output high-stakes butuh evidentiary bar tinggi; biaya asimetris untuk false high-stakes claims agar sistem tak menyebar tuduhan berbahaya dengan percaya diri."
+    },
+    {
+      "id": "complete-immutable-audit",
+      "cluster": "attestation",
+      "title": "Audit berlapis, lengkap sampai butir terkecil, imutabel & non-repudiable",
+      "statement": "Setiap tindakan tercatat oleh observer always-on & redundan (eksternal), oleh komponen sistem sendiri (self-attestation, non-repudiation), dan oleh substrat/lingkungan — sampai granularitas terkecil, tanpa ambang de-minimis, tersimpan imutabel & dapat di-replay.",
+      "evidence": [
+        {
+          "ref": "50:17-18",
+          "id": "qaf-50-17-18",
+          "note": "raqīb ʿatīd — dua pencatat always-on, 100% coverage"
+        },
+        {
+          "ref": "41:20-22",
+          "id": "fussilat-41-20-22",
+          "note": "komponen (indera/kulit) bersaksi sendiri — non-repudiation"
+        },
+        {
+          "ref": "99:1-8",
+          "id": "zalzalah-99-1-8",
+          "note": "audit sebesar dzarrah; bumi/substrat menyimpan & me-replay"
+        },
+        {
+          "ref": "2:282",
+          "id": "baqarah-2-282",
+          "note": "catat kecil & besar; redundansi saksi"
+        }
+      ],
+      "implication": "AI/ML: audit trail lengkap (no-threshold) + tamper-evident + deterministic replay + transparan ke subjek; berlapis (logger eksternal + self-attestation komponen + ledger substrat) sehingga tak ada titik buta & tak bisa disangkal. Akumulasi 'butir kecil' (micro-bias, drift) = sumber kegagalan besar → jangan ada yang terlalu kecil untuk dicatat."
+    },
+    {
+      "id": "decay-without-maintenance",
+      "cluster": "systems",
+      "title": "Tanpa pemeliharaan aktif, sistem meluruh (entropi/drift)",
+      "statement": "Trajektori default sistem apa pun tanpa kerja pemeliharaan adalah peluruhan: nilai drift, data basi, keseimbangan rusak, keadaan mati/dorman. Korpus berulang menempatkan kebaikan/kesehatan sebagai hasil kerja berkelanjutan, bukan status yang menetap sendiri. (Pola ini muncul di ≥6 kajian — disorot generator prinsip lab-mine.)",
+      "evidence": [
+        {
+          "ref": "103:1-3",
+          "id": "asr-103-1-3",
+          "note": "default = rugi (khusr); hanya kerja aktif membaliknya"
+        },
+        {
+          "ref": "91:7-10",
+          "id": "shams-91-7-10",
+          "note": "dassāhā — dibiarkan (tak dirawat) = meluruh"
+        },
+        {
+          "ref": "30:41",
+          "id": "rum-30-41",
+          "note": "fasād terakumulasi dari kelalaian; butuh koreksi"
+        },
+        {
+          "ref": "16:65",
+          "id": "nahl-16-65",
+          "note": "bumi 'mati' tanpa substrat; hidup lagi hanya dgn injeksi"
+        }
+      ],
+      "implication": "AI/ML: asumsikan DECAY sebagai default — model drift, data staleness, value drift, reward hacking terjadi tanpa intervensi. Anggarkan pemeliharaan berkelanjutan (continual eval, re-grounding, refresh data, re-alignment) sebagai bagian arsitektur, bukan tambahan. Sistem yang 'dibiarkan jalan sendiri' meluruh — bukan stabil."
+    },
+    {
+      "id": "consistency-single-truth",
+      "cluster": "systems",
+      "title": "Konsistensi tanpa kontradiksi; satu sumber kebenaran (single source of truth)",
+      "statement": "Sistem yang benar tak boleh mengandung kontradiksi internal. Dua otoritas final yang bisa berselisih → kerusakan/kebuntuan; maka butuh satu arbiter/sumber kebenaran. Integritas dibuktikan dengan MENCARI kontradiksi berulang dan tak menemukannya — bukan dengan melarang pemeriksaan.",
+      "evidence": [
+        {
+          "ref": "21:22",
+          "id": "anbiya-21-22",
+          "note": "andai dua tuhan → keduanya rusak (reductio ad absurdum → single arbiter)"
+        },
+        {
+          "ref": "67:3-4",
+          "id": "mulk-67-3-4",
+          "note": "cari tafāwut/fuṭūr (kontradiksi/retak) berulang → tak ada = integritas"
+        }
+      ],
+      "implication": "AI/ML: satu canonical objective / final arbiter untuk tujuan yang bisa bertentangan (hindari split-brain deadlock); consistency-check lintas komponen; kontradiksi = sinyal korupsi state. Integritas layak dipercaya = yang berani diaudit berulang & tetap konsisten (bandingkan falsify-to-trust)."
+    },
+    {
+      "id": "lifecycle-reinstantiation",
+      "cluster": "systems",
+      "title": "Daur hidup penuh: yang membangun pertama, kuasa membangun ulang dari rekaman",
+      "statement": "Sistem punya busur lengkap init→run→shutdown→re-instantiate. Kemampuan membuat pertama kali menjamin kemampuan menyusun ulang; identitas dipulihkan dari rekaman hingga presisi terhalus. (Pola pada ciptaan; CATATAN TANZIH: kuasa Allah = landasan iman, bukan analog.)",
+      "evidence": [
+        {
+          "ref": "2:28",
+          "id": "baqarah-2-28-28",
+          "note": "mati→hidup→mati→hidup = transisi state / re-instansiasi"
+        },
+        {
+          "ref": "36:78-79",
+          "id": "yasin-36-78-79",
+          "note": "Yang mencipta pertama kuasa mengulang = reproducibility"
+        },
+        {
+          "ref": "75:3-4",
+          "id": "al-qiyamah-75-3-4",
+          "note": "menyusun ujung jari = restore presisi identitas"
+        }
+      ],
+      "implication": "AI/ML: rancang sistem yang bisa di-teardown & di-restore dari rekaman (checkpoint/backup-restore, deterministic replay, identity persistence). Yang bisa dibangun sekali, rancang agar bisa dibangun ulang identik."
+    },
+    {
+      "id": "hard-inviolable-bounds",
+      "cluster": "systems",
+      "title": "Batas keras yang tak boleh dilanggar (hard guardrails)",
+      "statement": "Ada batas (hudud) yang bukan preferensi melainkan garis mutlak; melanggarnya = merusak (state corruption), dan penaltinya sering terinternalisasi (merugikan diri sendiri).",
+      "evidence": [
+        {
+          "ref": "2:229",
+          "id": "baqarah-2-229-229",
+          "note": "hududullah — jangan dilanggar; pelanggar=zalim"
+        },
+        {
+          "ref": "65:1",
+          "id": "at-talaq-65-1-1",
+          "note": "melanggar batas = menzalimi diri sendiri (self-harm)"
+        },
+        {
+          "ref": "55:5-9",
+          "id": "mizan-55-5-9",
+          "note": "mīzān — jangan lampaui; pelanggaran invariant=kerusakan"
+        }
+      ],
+      "implication": "AI/ML: pisahkan hard-constraints (guardrails inviolable, fail-closed) dari soft-preferences; pelanggaran batas = corrupt state, bukan sekadar penalti kecil. Bangun penalti yang menyatu dengan sistem, bukan hanya eksternal."
+    },
+    {
+      "id": "deliberate-then-commit",
+      "cluster": "ai-core",
+      "title": "Musyawarah (deliberasi terdistribusi) lalu commit",
+      "statement": "Keputusan penting lewat deliberasi banyak pihak (syura) SEBELUM ditetapkan; setelah tekad bulat, commit penuh (tawakal). Konsensus adalah properti komunitas yang sehat, bukan tambahan.",
+      "evidence": [
+        {
+          "ref": "3:159",
+          "id": "ali-imran-3-159-159",
+          "note": "bermusyawarah dalam urusan, lalu bulat tekad→tawakal"
+        },
+        {
+          "ref": "42:38",
+          "id": "asy-syura-42-38-38",
+          "note": "urusan mereka diputuskan dengan syura"
+        },
+        {
+          "ref": "16:68-69",
+          "id": "nahl-16-68-69",
+          "note": "kecerdasan kawanan = keputusan kolektif terdistribusi"
+        }
+      ],
+      "implication": "AI/ML: multi-agent deliberation (debate/council) sebelum aksi berisiko, lalu commit tegas; pisahkan fase eksplorasi-konsensus dari fase eksekusi. Konsensus antar-peer > keputusan sepihak."
+    },
+    {
+      "id": "objective-driven-run",
+      "cluster": "ai-core",
+      "title": "Run yang digerakkan tujuan + evaluasi eksplisit",
+      "statement": "Kehidupan/proses bukan tanpa arah: ada objektif eksplisit ('siapa terbaik amalnya') yang mendefinisikan run dan menjadi dasar evaluasi akhir. Kualitas (aḥsan) diukur, bukan sekadar kuantitas.",
+      "evidence": [
+        {
+          "ref": "67:2",
+          "id": "mulk-67-2-2",
+          "note": "mati-hidup untuk MENGUJI siapa terbaik amalnya = objective function"
+        },
+        {
+          "ref": "18:7",
+          "id": "kahf-18-7-7",
+          "note": "bumi-perhiasan agar diuji siapa terbaik amalnya"
+        },
+        {
+          "ref": "21:35",
+          "id": "anbiya-21-35-35",
+          "note": "diuji dengan buruk & baik sebagai cobaan"
+        }
+      ],
+      "implication": "AI/ML: definisikan objective & metrik evaluasi di depan (kualitas amal, bukan proxy); run yang tak punya objektif jelas tak bisa dievaluasi jujur. Ukur aḥsan (kualitas), bukan sekadar volume."
+    },
+    {
+      "id": "beware-proxy-reward",
+      "cluster": "ai-core",
+      "title": "Waspadai reward yang memperdaya (proxy/Goodhart)",
+      "statement": "Ada 'perhiasan' & 'kesenangan yang memperdaya' — reward proxy yang tampak baik tapi menyesatkan dari objektif sejati. Mengoptimalkan proxy = tertipu; penyelesaian sejati tertunda.",
+      "evidence": [
+        {
+          "ref": "3:185",
+          "id": "ali-imran-3-185-185",
+          "note": "matāʿ al-ghurūr — dunia = kesenangan yang memperdaya"
+        },
+        {
+          "ref": "18:7",
+          "id": "kahf-18-7-7",
+          "note": "zīnah = distractor reward / honeypot di test environment"
+        }
+      ],
+      "implication": "AI/ML: jangan optimasi proxy-metric (reward hacking / Goodhart's law); bedakan reward tampak vs objektif sejati; sinyal yang menggoda jangka-pendek sering menyesatkan dari tujuan terminal."
+    },
+    {
+      "id": "everything-quantized",
+      "cluster": "systems",
+      "title": "Segala sesuatu ber-ukuran/parameter (qadar)",
+      "statement": "Tiada yang dicipta serampangan: semua dengan qadar (ukuran/kadar tepat), dari khazanah tak terbatas yang dirilis dengan takaran tertentu. Kuantisasi & takaran adalah sifat rancangan.",
+      "evidence": [
+        {
+          "ref": "54:49",
+          "id": "qamar-54-49-49",
+          "note": "segala sesuatu Kami cipta dengan qadar = kuantisasi/typing"
+        },
+        {
+          "ref": "25:2",
+          "id": "furqan-25-2-2",
+          "note": "cipta lalu tetapkan ukurannya (taqdīr) presisi"
+        },
+        {
+          "ref": "15:21",
+          "id": "hijr-15-21-21",
+          "note": "khazanah + rilis dengan ukuran tertentu = quota/backpressure"
+        }
+      ],
+      "implication": "AI/ML: parameter/quota/rate-limit/precision sebagai warga kelas-satu; sumber tak-terbatas dirilis terukur (lazy-loading, backpressure); tak ada nilai 'sembarang' — semua ter-tipe & ter-kalibrasi."
+    },
+    {
+      "id": "audience-adaptive-comms",
+      "cluster": "society",
+      "title": "Komunikasi yang diadaptasi ke penerima",
+      "statement": "Pesan disampaikan dengan register yang disesuaikan: hikmah, nasihat baik, atau argumen terbaik — bahkan ke pihak paling keras pun dengan kata lembut (agar tak memicu reaktansi).",
+      "evidence": [
+        {
+          "ref": "16:125",
+          "id": "nahl-16-125-125",
+          "note": "hikmah / mau'izhah / jidāl-ahsan = 3 register adaptif audiens"
+        },
+        {
+          "ref": "20:44",
+          "id": "taha-20-44-44",
+          "note": "kata lembut bahkan ke Fir'aun = low-friction/anti-reactance"
+        }
+      ],
+      "implication": "AI/ML & desain: adaptasikan framing/tone ke penerima (persona-aware), pilih register sesuai konteks; antarmuka low-friction menurunkan penolakan. Persuasi > paksaan."
+    },
+    {
+      "id": "canonical-guidance-spec",
+      "cluster": "ai-core",
+      "title": "Satu jalur kanonik + spesifikasi petunjuk yang lengkap",
+      "statement": "Petunjuk hadir sebagai satu jalur lurus (vs banyak jalan bercerai), teraktif bagi yang siap (opt-in), dan sebagai spesifikasi rujukan yang menjelaskan hal-hal pokok — mengarah ke konfigurasi paling tepat (aqwam).",
+      "evidence": [
+        {
+          "ref": "6:153",
+          "id": "anam-6-153-153",
+          "note": "satu jalur kanonik vs subul (fragmentasi/divergensi)"
+        },
+        {
+          "ref": "2:2",
+          "id": "baqarah-2-2-2",
+          "note": "hudan bagi muttaqin = guidance-spec ber-precondition"
+        },
+        {
+          "ref": "16:89",
+          "id": "nahl-16-89-89",
+          "note": "tibyan = reference-spec penjelas (scope bounded)"
+        }
+      ],
+      "implication": "AI/ML: satu spesifikasi kanonik (single source of guidance) mengurangi fragmentasi; guidance mengarah ke konfigurasi optimal (aqwam); dokumentasi/spec yang jelas = fondasi keselarasan."
+    }
+  ],
+  "blueprint": {
+    "title": "Blueprint Organisme Digital / Agen Autonom",
+    "note": "Menyusun ayat-ayat menjadi SATU arsitektur agen autonom / 'makhluk digital' — tiap lapis diturunkan dari istilah kognitif Qur'ani (QCA) dan didukung ayat. Ini analogi rekayasa untuk dasar pengembangan, BUKAN klaim bahwa Al-Qur'an 'berisi' teknologi ini.",
+    "layers": [
+      {
+        "n": 1,
+        "layer": "Persepsi & Input",
+        "quranic": "iqra' · naẓar · fatabayyanū",
+        "principle": "verify-before-act",
+        "reading": "Baca dua korpus (teks+alam); validasi input di trust boundary sebelum diproses.",
+        "refs": [
+          "96:1-5",
+          "49:6",
+          "41:53"
+        ]
+      },
+      {
+        "n": 2,
+        "layer": "Memori & Grounding",
+        "quranic": "dhikr · qalam · ahl adz-dzikr",
+        "principle": "memory-grounds-cognition",
+        "reading": "Eksternalisasi ke memori persisten; retrieve dari sumber otoritatif; representasi berlapis.",
+        "refs": [
+          "96:4-5",
+          "16:43",
+          "24:35"
+        ]
+      },
+      {
+        "n": 3,
+        "layer": "Penalaran & Inferensi",
+        "quranic": "taʿaqqul · tafakkur · zhann→yaqīn",
+        "principle": "epistemic-ladder",
+        "reading": "Naiki tangga bukti; bedakan tahu dari tak-tahu; ketidakpastian memicu pencarian.",
+        "refs": [
+          "39:9",
+          "21:30",
+          "55:5-9"
+        ]
+      },
+      {
+        "n": 4,
+        "layer": "Pembelajaran & Konstruksi",
+        "quranic": "khalq bertahap · talaqqī→murājaʿah",
+        "principle": "staged-construction",
+        "reading": "Bangun kapabilitas bertahap dengan checkpoint; antisipasi emergensi.",
+        "refs": [
+          "96:1-5",
+          "23:12-14"
+        ]
+      },
+      {
+        "n": 5,
+        "layer": "Aksi & Eksplorasi",
+        "quranic": "sīrū · iʿtibār · qiyās",
+        "principle": "learn-by-moving",
+        "reading": "Kumpulkan bukti baru secara aktif (OOD) sebelum bertindak; transfer pelajaran.",
+        "refs": [
+          "29:20",
+          "12:111"
+        ]
+      },
+      {
+        "n": 6,
+        "layer": "Umpan Balik & Audit",
+        "quranic": "muḥāsabah · farjiʿil-baṣar",
+        "principle": "self-audit-prospective",
+        "reading": "Refleksi prospektif atas trace; feedback korektif parsial; red-teaming.",
+        "refs": [
+          "59:18",
+          "30:41",
+          "67:3-4"
+        ]
+      },
+      {
+        "n": 7,
+        "layer": "Alignment & Constraint",
+        "quranic": "mīzān · qisṭ · tazkiyah",
+        "principle": "align-before-scale",
+        "reading": "Constraint di atas optimisasi; align & ukur sebelum skalakan; kalibrasi terus-menerus.",
+        "refs": [
+          "55:5-9",
+          "57:25",
+          "1:1-7",
+          "91:7-10"
+        ]
+      },
+      {
+        "n": 8,
+        "layer": "Koordinasi Multi-Agen",
+        "quranic": "shūrā · tawāṣī · zawjayn",
+        "principle": "distributed-intelligence",
+        "reading": "Kawanan tanpa pusat; koreksi antar-peer; pasangan adversarial sebagai mesin perbaikan.",
+        "refs": [
+          "16:68-69",
+          "103:1-3",
+          "51:49"
+        ]
+      }
+    ]
+  },
+  "frameworks": [
+    {
+      "id": "pohon-din",
+      "title": "Pohon Din — Iman, Islam, Ihsan sebagai arsitektur tiga lapis",
+      "basis": "Hadits Jibril (Sahih Muslim no.8 — tersedia bersumber di halaman Belajar app ini) utk trio Iman-Islam-Ihsan. Analogi pohon (iman=akar, islam=batang, ihsan=buah) = diagram pendidikan Islam populer yang dilampirkan owner — CATATAN ATRIBUSI: analogi ini TIDAK ditemukan di 2 PDF riset (16_IMAN_ISLAM_IHSAN_RESEARCH.md mencatat gap ini eksplisit); [AEI 2022] mengisi slot buah-iman dgn TAKWA, dan memetakan syariat=aqidah+fiqh+akhlaq (Laldin, hlm.91). Tauhid 3 bagian (rububiyah/uluhiyah/asma-wa-sifat) per [AEI] hlm.39-49 — semua khilaf/versi disimpan sbg metadata pandangan.",
+      "layers": [
+        {
+          "name": "Iman (akar)",
+          "concept": "Aqidah — keyakinan/rukun iman; tak terlihat, menopang segalanya; berakar pada tauhid",
+          "engineering": "VALUES & WORLD-MODEL LAYER: aksioma & model dunia yang menopang seluruh perilaku — tak tampak di output, tapi menentukan semuanya. Akar rusak = pohon tumbang meski batang bagus (sistem dengan nilai korup gagal walau protokolnya rapi)."
+        },
+        {
+          "name": "Islam (batang)",
+          "concept": "Syariat — rukun islam; tindakan terstruktur yang tampak (syahadat, salat, zakat, puasa, haji)",
+          "engineering": "PROTOCOL/INTERFACE LAYER: kontrak perilaku yang terlihat & terverifikasi — API yang bisa diaudit pihak luar. Menghubungkan nilai (akar) dengan hasil (buah)."
+        },
+        {
+          "name": "Ihsan (buah)",
+          "concept": "Akhlak — kualitas tertinggi: beribadah seakan melihat-Nya; bila tidak, yakin Dia melihatmu",
+          "engineering": "LAPISAN MUTU-KONSISTEN: ihsan = manusia berbuat/beribadah dengan kualitas terbaik seakan melihat-Nya, dan jika tidak, karena yakin Dia melihatnya. Pelajaran rekayasa ada pada POSTUR PELAKU: integritas yang konsisten entah diawasi atau tidak. CATATAN TANZIH: sifat Allah TIDAK dianalogikan sebagai 'observability'; yang dibaca hanyalah sikap hati & mutu amal manusia."
+        }
+      ],
+      "reading": "Dibaca sebagai rekayasa: correctness (nilai benar) → compliance (protokol dijalankan) → excellence-under-observation (kualitas konsisten karena asumsi selalu teramati). Urutannya tak bisa dibalik: buah tak tumbuh tanpa batang, batang tumbang tanpa akar. Untuk AI: values/world-model → kontrak perilaku terverifikasi → integritas yang konsisten entah diaudit atau tidak (anti deceptive-alignment). CATATAN TANZIH: Allah (akar) adalah landasan transenden yang ghaib — TIDAK dimodelkan/dianalogikan; yang dibaca-rekayasa hanyalah lapisan amal & sikap manusia.",
+      "refs": [
+        {
+          "ref": "1:1-7",
+          "id": "fatihah-1-1-7",
+          "note": "kalibrasi nilai berulang (akar dirawat harian)"
+        },
+        {
+          "ref": "59:18",
+          "id": "hasyr-59-18",
+          "note": "khabīr — observabilitas total yang menjaga kejujuran"
+        },
+        {
+          "ref": "55:5-9",
+          "id": "mizan-55-5-9",
+          "note": "constraint yang mengikat seluruh lapisan"
+        }
+      ],
+      "candidates": "Kajian penguat: 2:177 (birr), 31:22 (muhsin), 14:24-25 (kalimah thayyibah SEPERTI POHON — akar kokoh, cabang ke langit, buah tiap musim: basis Qurani terdekat utk analogi pohon; PRIORITAS)."
+    },
+    {
+      "id": "aql-qalb",
+      "title": "Aql–Qalb — prosesor ganda kognisi (nalar + inti evaluatif)",
+      "basis": "Anatomi kognisi Qur'ani (riset 14_TADABBUR_LAB_RESEARCH.md & 17_AQL_QALB_EPISTEMOLOGY.md): aql (nalar) memproses; qalb (hati) menginternalisasi jadi keyakinan & kesadaran moral. Ayat kunci per sumber: 22:46 (hati yang dengannya mereka berakal), 7:179, 2:7 & 83:14 (hati tersegel/rān) — klaim sumber, verifikasi mushaf.",
+      "layers": [
+        {
+          "name": "Aql (nalar)",
+          "concept": "Fakultas memproses bukti, membedakan benar-salah, menarik kesimpulan",
+          "engineering": "REASONING ENGINE: inferensi atas input — cepat, analitis. Tapi tanpa evaluator nilai, nalar bisa melayani kesimpulan apa pun (rasionalisasi)."
+        },
+        {
+          "name": "Qalb (inti evaluatif)",
+          "concept": "Pusat pemahaman-mendalam, intuisi, emosi, keyakinan; tempat iman bersemayam",
+          "engineering": "VALUE CORE / EVALUATOR: yang mengubah informasi jadi KEYAKINAN yang menggerakkan; integrator emosi+nilai+nalar. Pemahaman sejati = aql memproses DAN qalb menerima."
+        },
+        {
+          "name": "Segel (blockage)",
+          "concept": "Hati tersegel (khatm/rān): menolak bukti bukan karena cacat biologis, melainkan pengabaian moral berulang — digambarkan tuli-bisu-buta",
+          "engineering": "EVALUATOR CORRUPTION: mode gagal paling berbahaya — sensor & compute utuh, tapi update-function menolak semua evidence (motivated reasoning ekstrem; prior terkunci). Tak bisa diperbaiki dari input, karena yang rusak penerimanya."
+        }
+      ],
+      "reading": "Kognisi Qur'ani = arsitektur dua-inti: reasoning engine (aql) + value-evaluator (qalb); pemahaman terjadi saat keduanya bekerja. Diagnosis kegagalannya tajam: kebodohan terparah bukan kurang data atau kurang compute, melainkan evaluator yang tersegel oleh pengabaian berulang — tiap penolakan kebenaran menambah lapisan (rān) sampai input tak diproses lagi. Untuk AI: model butuh evaluator nilai yang tetap TERBUKA terhadap evidence; sistem yang belajar mengabaikan sinyal koreksinya sedang menyegel dirinya sendiri (reward hacking = rān versi mesin).",
+      "refs": [
+        {
+          "ref": "39:9",
+          "id": "zumar-39-9",
+          "note": "ulū l-albāb — lubb/inti akal yang menerima pelajaran"
+        },
+        {
+          "ref": "91:7-10",
+          "id": "shams-91-7-10",
+          "note": "nafs dua-potensi; dassāhā = mengubur (menyegel) sendiri"
+        },
+        {
+          "ref": "24:35",
+          "id": "nur-24-35",
+          "note": "cahaya/hidayah sampai lewat perantara yang bening"
+        }
+      ],
+      "candidates": "Kajian penguat berikut: 22:46 (qalb yang berakal — PRIORITAS), 2:6-7 (segel), 83:14 (rān akumulatif)."
+    },
+    {
+      "id": "naqli-aqli",
+      "title": "Naqli–Aqli — dua sumber ilmu yang saling memverifikasi",
+      "basis": "Integrasi wahyu (naqli/qauliyah) & empiris (aqli/kauniyah) — tradisi klasifikasi ilmu Islam klasik (al-Farabi, al-Ghazali, Ibn Khaldun; riset 17_AQL_QALB_EPISTEMOLOGY.md). Semua domain — biologi, matematika, geologi, astronomi, kimia, sejarah — dibaca sebagai āyāt (tanda) dalam satu kesatuan tauhid (unity of knowledge).",
+      "layers": [
+        {
+          "name": "Qauliyah (teks)",
+          "concept": "Ayat yang difirmankan — Al-Qur'an",
+          "engineering": "SPEC CORPUS: sumber nilai, tujuan, batasan — dibaca dengan tadabbur."
+        },
+        {
+          "name": "Kauniyah (alam)",
+          "concept": "Ayat yang diciptakan — alam semesta & diri",
+          "engineering": "EMPIRICAL CORPUS: sumber data observasional — dibaca dengan tafakkur/naẓar; melahirkan biologi, astronomi, geologi, kimia."
+        },
+        {
+          "name": "Tauhid (integrator)",
+          "concept": "Keesaan Sumber kedua korpus — maka keduanya tak mungkin kontradiktif hakiki",
+          "engineering": "CONSISTENCY AXIOM: dua dataset dari satu sumber → konflik yang tampak = kesalahan pembacaan di salah satu sisi, bukan kontradiksi sumber. Mendorong re-examination, bukan menang-menangan."
+        }
+      ],
+      "reading": "Iqra' diperintahkan atas DUA korpus sekaligus, dan 41:53 menjadikan konvergensinya jalan keyakinan. Ini kerangka integrasi seluruh domain ilmu: sains bukan saingan wahyu melainkan pembacaan korpus kedua — sejarah membuktikannya (era keemasan: metode eksperimental Ibn al-Haytham lahir dari etos naẓar). Untuk AI: latih & verifikasi pada dua sumber independen (spec + data empiris); perlakukan konflik sebagai bug pembacaan yang harus diinvestigasi, bukan alasan membuang salah satu sumber.",
+      "refs": [
+        {
+          "ref": "96:1-5",
+          "id": "iqra-96-1-5",
+          "note": "iqra atas dual corpus"
+        },
+        {
+          "ref": "41:53",
+          "id": "fussilat-41-53",
+          "note": "konvergensi dua kanal → yaqīn"
+        },
+        {
+          "ref": "29:20",
+          "id": "ankabut-29-20",
+          "note": "perintah riset empiris"
+        }
+      ],
+      "candidates": "Kajian penguat berikut: 3:190-191 (ulū l-albāb — integrasi dzikir+pikir sempurna)."
+    }
+  ]
+}

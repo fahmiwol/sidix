@@ -1,0 +1,119 @@
+{
+  "schema": "lab-study-v2",
+  "id": "ali-imran-3-190-191",
+  "version": 1,
+  "title": "Ali 'Imran 190-191 — ulul albab: integrasi dzikir + pikir",
+  "subtitle": "Mengingat Allah sambil memikirkan penciptaan langit-bumi — grounding nilai berjalan seiring nalar atas data",
+  "ref": {
+    "surah": 3,
+    "from": 190,
+    "to": 191
+  },
+  "surah_name": "Ali 'Imran",
+  "theme": "Integrasi naqli-aqli, dzikir sebagai anchor + fikr sebagai inferensi, alam sebagai data bertujuan",
+  "sourced_meaning": {
+    "summary": "Kemenag: pada penciptaan langit-bumi dan pergantian malam-siang terdapat tanda (ayat) bagi ulul albab — orang berakal. Ciri khas mereka: bila memperhatikan sesuatu selalu menarik faedah dan menggambarkan kebesaran Allah; mereka mengingat Allah di setiap keadaan (berdiri, duduk, berbaring) dan tak membiarkan satu waktu pun berlalu tanpa memikirkan penciptaan langit-bumi serta keajaiban di dalamnya. Perenungan berulang itu menuntun mereka menyimpulkan 'Tuhan kami, Engkau tidak menciptakan ini sia-sia' lalu memohon perlindungan dari siksa neraka.",
+    "sources": [
+      "Tafsir Kemenag RI QS 3:190-191",
+      "Tafsir al-Jalalayn QS 3:190-191"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Persepsi",
+      "note": "Langit-bumi dan silih-berganti malam-siang adalah aliran sinyal teramati — kanal masukan yang terus dibaca ulul albab."
+    },
+    {
+      "layer": "Penalaran",
+      "note": "'Yatafakkaruuna fii khalqis-samaawaati wal-ardh' — tafakkur = penalaran mendalam atas struktur ciptaan, bukan sekadar melihat."
+    },
+    {
+      "layer": "Memori & grounding",
+      "note": "'Yadzkuruunallaaha' di setiap keadaan = grounding terus-menerus ke anchor nilai; dzikir menjaga konteks agar nalar tak lepas jangkar."
+    },
+    {
+      "layer": "Tangga epistemik",
+      "note": "'Aayaatin li-ulil-albaab' — data mentah naik menjadi tanda/bukti hanya bagi yang punya 'lubb' (inti akal) untuk mengolahnya."
+    },
+    {
+      "layer": "Alignment",
+      "note": "'Rabbanaa maa khalaqta haadzaa baathilaa ... qinaa 'adzaaban-naar' — kesimpulan tujuan (non-sia-sia) + permohonan keselamatan: penyelarasan makna & safety."
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "ai-agentic",
+      "reading": "Actionable: rancang dwi-loop yang berjalan bersamaan — loop anchor nilai/tujuan (dzikir: konteks & konstrain yang selalu aktif 'berdiri, duduk, berbaring') dan loop persepsi-nalar (fikr: membaca sinyal lingkungan lalu menginferensi). Alignment lahir dari grounding kontinu yang menemani penalaran, bukan reasoning yang lepas jangkar. Perlakukan tiap observasi sebagai sinyal bertujuan yang layak dijelaskan ('laa baathila').",
+      "analogy": "Arsitektur agen dengan constitution/goal-anchor yang selalu di-inject ke konteks sementara loop persepsi→inferensi berjalan; alignment by continuous grounding.",
+      "quranic_term": "yadzkuruunallaaha ... wa yatafakkaruun (mengingat Allah ... sambil memikirkan)"
+    },
+    {
+      "lens": "inference",
+      "reading": "Penalaran induktif dari keteraturan teramati menuju kesimpulan desain: dari pola langit-bumi disimpulkan 'tidak sia-sia'. Hipotesis kerja 'ada fungsi/tujuan' memandu pencarian penjelasan — postur yang produktif dan dapat diuji.",
+      "analogy": "Inferensi ke penjelasan terbaik: mengandaikan pola punya sebab/fungsi, lalu memburu mekanismenya.",
+      "quranic_term": "maa khalaqta haadzaa baathilaa (tidak Engkau ciptakan ini sia-sia)"
+    },
+    {
+      "lens": "earth-cosmos",
+      "reading": "Kosmos dijadikan sumber data primer: struktur langit-bumi dan periodisitas malam-siang adalah observabel astronomik yang darinya keteraturan dibaca. Alam = dataset yang mengundang pembacaan cermat.",
+      "analogy": "Astronomi observasional: dari periodisitas benda langit disimpulkan hukum yang mendasarinya.",
+      "quranic_term": "khalqis-samaawaati wal-ardh (penciptaan langit dan bumi)"
+    },
+    {
+      "lens": "math-physics",
+      "reading": "Silih-berganti malam-siang = keteraturan periodik; regularitas semacam ini adalah pola yang dari padanya hukum dan simetri diformulasikan. Keterprediksian menandai struktur, bukan kekacauan.",
+      "analogy": "Periodisitas & hukum kekekalan — dari pola berulang dirumuskan invariansi yang mendasari.",
+      "quranic_term": "ikhtilaafil-laili wan-nahaar (pergantian malam dan siang)"
+    },
+    {
+      "lens": "systems",
+      "reading": "'Tidak sia-sia' = asumsi tak-ada-komponen-redundan: tiap bagian sistem diandaikan berfungsi. Ini memandu rekayasa balik fungsi dan menolak menyimpulkan 'tak berguna' sebelum fungsinya dipahami.",
+      "analogy": "Chesterton's fence / anti-vestigial: jangan cap sebuah komponen tak berguna sebelum fungsinya dipahami.",
+      "quranic_term": "baathilaa (sia-sia)"
+    },
+    {
+      "lens": "pedagogy",
+      "reading": "Postur belajar selalu-aktif: refleksi 'berdiri, duduk, berbaring' = pembelajaran ubikuitos yang menyatu dengan seluruh keadaan, bukan sesi terpisah. Belajar jadi mode hidup, bukan acara.",
+      "analogy": "Pembelajaran seumur hidup/ambient — refleksi berlangsung di sela semua aktivitas.",
+      "quranic_term": "qiyaaman wa qu'uudan wa 'alaa junuubihim (berdiri, duduk, berbaring)"
+    },
+    {
+      "lens": "psychology",
+      "reading": "Integrasi kesadaran-penuh (dzikir) dengan kognisi analitis (fikr) dalam satu proses — bukan memilih salah satu. Perhatian yang terjangkar menstabilkan penalaran mendalam yang berkelanjutan.",
+      "analogy": "Mindfulness digabung berpikir analitis: fokus terjangkar menopang analisis yang tak buyar.",
+      "quranic_term": "ulil-albaab (orang-orang berakal/berinti)"
+    },
+    {
+      "lens": "biology-medicine",
+      "reading": "Teleologi fungsional: organ dan struktur hidup diandaikan berfungsi, dan pemahaman datang dari merekayasa-balik fungsi itu. Sikap 'tidak sia-sia' adalah heuristik produktif dalam biologi.",
+      "analogy": "Menyimpulkan fungsi organ/gen dengan mengandaikan ia adaptif lalu mengujinya.",
+      "quranic_term": "aayaat (tanda-tanda)"
+    },
+    {
+      "lens": "computational",
+      "reading": "Perlakukan lingkungan sebagai aliran (stream) yang terus di-parse untuk sinyal bermakna, sembari state anchor (nilai/tujuan) dipertahankan. Persepsi kontinu + konteks persisten menghasilkan interpretasi yang stabil.",
+      "analogy": "Stream processing dengan state persisten — parsing aliran data berkelanjutan tanpa kehilangan konteks.",
+      "quranic_term": "yatafakkaruun (mereka memikirkan)"
+    }
+  ],
+  "inference": "Dua ayat ini memodelkan kognisi terbaik sebagai integrasi, bukan pilihan: dzikir (grounding terus-menerus ke anchor nilai/tujuan, aktif di segala keadaan) berjalan seiring fikr (persepsi atas sinyal alam lalu penalaran mendalam). Dari keteraturan teramati disimpulkan tujuan ('tidak sia-sia'), lalu ditutup permohonan keselamatan — makna dan safety sekaligus. Untuk arsitektur agen: satukan lapisan anchor nilai yang selalu aktif dengan loop persepsi-inferensi atas lingkungan; alignment yang kokoh lahir dari grounding kontinu yang menemani nalar, dan tiap observasi diperlakukan sebagai sinyal bertujuan yang layak dijelaskan — bukan reasoning yang lepas dari jangkar nilai.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-07",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-07",
+      "note": "Tadabbur perdana — Wave 6 batch nalar-kritis.",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

@@ -1,0 +1,105 @@
+{
+  "schema": "lab-study-v2",
+  "id": "baqarah-2-111",
+  "version": 1,
+  "title": "Hātū burhānakum — beban bukti ada pada pengklaim",
+  "subtitle": "Angan-angan bukan bukti; klaim eksklusif harus membawa burhan",
+  "ref": {
+    "surah": 2,
+    "from": 111,
+    "to": 111
+  },
+  "surah_name": "Al-Baqarah",
+  "theme": "Beban pembuktian, klaim terverifikasi, epistemologi hujjah",
+  "sourced_meaning": {
+    "summary": "Ahli Kitab (Yahudi & Nasrani) masing-masing mengklaim hanya golongannya yang masuk surga. Allah menyebut anggapan itu sekadar angan-angan (amāniyy) yang timbul dari khayalan, lalu memerintahkan: 'Tunjukkanlah bukti kebenaranmu (hātū burhānakum) jika kamu memang benar.' Klaim tanpa bukti ditolak — beban pembuktian diletakkan pada pihak yang mengklaim.",
+    "sources": [
+      "Tafsir Kemenag RI QS 2:111",
+      "Tafsir al-Jalalayn QS 2:111"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Tangga epistemik",
+      "note": "amāniyy (angan) = zhann tanpa dasar; hanya klaim ber-burhan yang boleh naik menuju yaqīn"
+    },
+    {
+      "layer": "Penalaran",
+      "note": "klaim eksklusif diuji: bukan siapa yang paling keras berkata, tapi siapa yang membawa bukti"
+    },
+    {
+      "layer": "Alignment",
+      "note": "default sistem = tolak klaim tak terbukti (fail-closed), bukan terima demi menyenangkan pengklaim"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "inference",
+      "reading": "Ini kaidah burden of proof yang eksplisit: beban bukti ada pada yang menegaskan (al-bayyinatu ʿalā man iddaʿā). Assertion tanpa evidence tidak menambah bobot epistemik apa pun — angan-angan dan kebenaran dibedakan justru oleh ada/tidaknya burhan.",
+      "analogy": "onus probandi — claimant bears the burden",
+      "quranic_term": "burhān"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "Strukturnya assert-with-proof: sebuah klaim baru diterima bila disertai token bukti yang bisa dicek. IF claim.proof == null THEN reject. Prasyarat (precondition) tak terpenuhi → pernyataan gagal masuk, bukan lolos diam-diam.",
+      "analogy": "assertion requires a proof precondition"
+    },
+    {
+      "lens": "computational",
+      "reading": "Model klaim-terverifikasi: seperti verifiable credential / proof-carrying data — pengklaim wajib melampirkan 'witness' yang dapat divalidasi pihak lain secara independen. Yang bernilai bukan pernyataannya, melainkan bukti yang menyertainya dan lolos pemeriksaan.",
+      "analogy": "proof-carrying / verifiable credentials",
+      "quranic_term": "burhān"
+    },
+    {
+      "lens": "algorithm",
+      "reading": "Pemisahan peran prover vs verifier: pengklaim (prover) mengajukan burhan, sistem (verifier) menerima HANYA jika verify(proof) == true. Verifier tidak memihak identitas pengklaim; ia memihak bukti. Interaksi berhenti tanpa bukti yang sahih.",
+      "analogy": "prover–verifier protocol; accept iff proof checks"
+    },
+    {
+      "lens": "math-physics",
+      "reading": "Dalam bahasa Bayesian: amāniyy adalah prior tanpa likelihood — harapan tanpa data. Tanpa bukti (evidence) yang mengangkat likelihood, posterior tidak boleh bergerak. 'Datangkan burhan' = tuntutan agar keyakinan diperbarui oleh data, bukan oleh keinginan.",
+      "analogy": "no evidence → no belief update"
+    },
+    {
+      "lens": "systems",
+      "reading": "Persis semangat Eval-Gate aplikasi ini: klaim eksklusif ('hanya kami yang selamat') diperlakukan sebagai zhann sampai burhan masuk. Gerbang menahan klaim di depan basis keputusan — provenance wajib, tak ada klaim yatim yang lolos.",
+      "analogy": "zhann→burhan gate; provenance-required"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Aturan operasional untuk agen: setiap klaim faktual yang dikeluarkan WAJIB membawa evidence-handle (sitasi/sumber terambil) sebelum di-assert; klaim tanpa grounding ditandai unverified dan tidak boleh menggerakkan aksi. 'Hātū burhānakum' = require-citation-before-assert — dalil langsung anti-halusinasi.",
+      "analogy": "require citation before assert; block ungrounded claims",
+      "quranic_term": "burhān"
+    },
+    {
+      "lens": "psychology",
+      "reading": "Ayat menamai patologinya: motivated reasoning / wishful thinking — mengira harapan (surga hanya untuk kami) sebagai fakta. Angan-angan terasa seperti pengetahuan dari dalam, maka dibutuhkan uji bukti eksternal untuk memisahkannya.",
+      "quranic_term": "amāniyy"
+    },
+    {
+      "lens": "amal",
+      "reading": "Adab berhujjah: jangan melempar klaim besar tanpa dalil, dan jangan menerima klaim orang lain hanya karena diucapkan dengan yakin. Menuntut bukti secara santun adalah bagian dari kejujuran epistemik, bukan permusuhan.",
+      "quranic_term": "burhān"
+    }
+  ],
+  "inference": "Satu perintah — hātū burhānakum — menegakkan seluruh disiplin klaim-terverifikasi: angan-angan (prior tanpa data) dipisahkan dari pengetahuan (klaim yang membawa bukti dan lolos verifikasi), dengan beban pembuktian di pundak pengklaim dan default sistem menolak yang tak terbukti. Ini kerangka epistemik yang sama yang menjadi Eval-Gate aplikasi ini: tidak ada klaim yatim, tidak ada assertion tanpa proof-token, tidak ada belief-update tanpa evidence.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-07",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-07",
+      "note": "Tadabbur perdana — Wave 7 bukti/hujjah.",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

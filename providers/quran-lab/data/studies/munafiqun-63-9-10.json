@@ -1,0 +1,96 @@
+{
+  "schema": "lab-study-v2",
+  "id": "munafiqun-63-9-10",
+  "version": 1,
+  "title": "Lau lā akhkhartanī — deadline yang tak bisa dinegosiasi",
+  "subtitle": "Belanjakan sebelum maut datang — saat permintaan perpanjangan tak lagi diterima",
+  "ref": {
+    "surah": 63,
+    "from": 9,
+    "to": 10
+  },
+  "surah_name": "Al-Munafiqun",
+  "theme": "Waktu/deadline, biaya penundaan, distraksi, irreversibilitas",
+  "sourced_meaning": {
+    "summary": "Wahai orang beriman, jangan sampai harta dan anak-anakmu melalaikanmu dari mengingat Allah — yang berbuat demikian merugi. Dan belanjakanlah (infakkan) sebagian rezekimu SEBELUM kematian datang, lalu (saat itu) ia berkata: 'Ya Tuhanku, mengapa tidak Engkau tangguhkan aku sebentar (ilā ajalin qarīb), supaya aku bisa bersedekah dan menjadi orang saleh?' — permintaan yang tidak dikabulkan. Tafsir Kemenag: kesibukan harta & anak jangan membuat lalai dari kewajiban.",
+    "sources": [
+      "Tafsir Kemenag RI QS 63:9-10",
+      "Tafsir al-Jalalayn QS 63:9-10"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Alignment",
+      "note": "distraksi (harta/anak) = kompetitor atensi yang menggeser objective utama"
+    },
+    {
+      "layer": "Umpan balik",
+      "note": "penyesalan di deadline = feedback yang datang TERLAMBAT untuk bisa dipakai"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "amal",
+      "reading": "Amal yang tertunda oleh 'nanti' adalah amal yang paling sering tak pernah terjadi. Ayat menyuruh menyegerakan infak & kebaikan SEKARANG — karena satu-satunya waktu yang pasti dimiliki adalah saat ini.",
+      "quranic_term": "musāraʿah (bersegera)"
+    },
+    {
+      "lens": "economy",
+      "reading": "Model deadline keras: aset (waktu hidup) berjalan menuju expiry yang tak diketahui & tak bisa diperpanjang — 'lau lā akhkhartanī' ditolak. Nilai tindakan baik terdepresiasi menjadi NOL tepat di deadline; procrastination = memegang opsi yang bisa hangus kapan saja tanpa peringatan. Melengkapi 103:1-3: di sana default-nya rugi; di sini ditambah — jendelanya bisa tertutup mendadak.",
+      "analogy": "hard expiry; option that can lapse without notice",
+      "quranic_term": "ajal"
+    },
+    {
+      "lens": "computational",
+      "reading": "Sistem dengan deadline non-negotiable dan tanpa graceful extension: kerja yang belum ter-commit saat cutoff, hilang. Desain yang benar: commit kecil & sering (infak sebagian, sekarang) alih-alih menumpuk untuk satu commit besar 'nanti' yang berisiko tak pernah terjadi.",
+      "analogy": "commit early & often before hard cutoff"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "Urutan dua ayat = urutan kegagalan: (1) distraksi menggeser prioritas (lāhā ʿan dzikrillāh), (2) baru penyesalan di batas waktu. Bug-nya bukan di detik terakhir melainkan di alokasi atensi jauh sebelumnya — root cause analysis yang jujur.",
+      "analogy": "failure traced to earlier attention misallocation"
+    },
+    {
+      "lens": "inference",
+      "reading": "Permintaan 'tangguhkan sebentar saja' mengungkap bias yang terdokumentasi baik: manusia menilai waktu-dekat-deadline jauh lebih tinggi dari waktu-jauh-deadline, padahal keduanya menit yang sama. Ayat menutup celah rasionalisasi: nilai waktu itu SAMA sekarang dan nanti — bedanya, sekarang pasti ada, nanti belum tentu.",
+      "quranic_term": "ghaflah (lalai)"
+    },
+    {
+      "lens": "systems",
+      "reading": "Harta & anak = subsistem yang sah tapi bisa membajak scheduler: konsumsi atensi tanpa batas hingga proses prioritas utama kelaparan (starvation). Sistem sehat mengalokasikan atensi dengan reservasi untuk yang utama, bukan sisa-sisa.",
+      "analogy": "priority starvation by legitimate subsystems"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Untuk agen berhorizon panjang: (1) anytime behavior — hasil parsial harus ter-commit terus-menerus, karena episode bisa terpotong kapan saja tanpa sinyal; (2) distraction resistance — sub-goal yang sah (mengumpulkan resource) tidak boleh menggeser objective terminal; (3) penyesalan pasca-deadline adalah gradien yang tak bisa dipakai — feedback harus diambil SEBELUM cutoff lewat evaluasi antisipatif.",
+      "analogy": "anytime commits + objective guarding + pre-deadline eval",
+      "quranic_term": "qabla an yaʾtiya (sebelum datang)"
+    },
+    {
+      "lens": "psychology",
+      "reading": "Psikologi prokrastinasi & penyesalan dalam dua ayat: distraksi → penundaan → permintaan perpanjangan → penyesalan. Terapi perilakunya persis anjuran ayat: pecah amal besar jadi tindakan kecil segera ('sebagian dari rezeki', bukan semuanya), karena niat besar-nanti kalah oleh tindakan kecil-sekarang.",
+      "analogy": "beat procrastination via small immediate actions",
+      "quranic_term": "taswīf (menunda-nunda)"
+    }
+  ],
+  "inference": "Dua ayat ini melengkapi model waktu korpus (103:1-3) dengan sifat yang paling keras: deadline-nya tidak bisa dinegosiasi dan bisa jatuh tanpa peringatan — permintaan 'tangguhkan sebentar' didokumentasikan DAN ditolak. Konsekuensi desainnya tegas, untuk manusia maupun agen: commit kecil dan sering (jangan menumpuk kebaikan untuk 'nanti' yang tak dijamin), jaga objective utama dari pembajakan sub-goal yang sah, dan ambil feedback sebelum cutoff — karena penyesalan setelah deadline adalah gradien yang tak bisa dipakai belajar lagi.",
+  "authors": [
+    "Draft AI (LLM draft) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-07",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-07",
+      "note": "Tadabbur perdana — Wave 4 (memperkuat prinsip time-as-capital).",
+      "authors": [
+        "Draft AI (LLM draft)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

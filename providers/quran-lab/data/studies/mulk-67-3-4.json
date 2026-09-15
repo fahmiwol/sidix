@@ -1,0 +1,105 @@
+{
+  "schema": "lab-study-v2",
+  "id": "mulk-67-3-4",
+  "version": 1,
+  "title": "Farjiʿil-baṣar — loop pengujian mencari cacat",
+  "subtitle": "Lihat berulang-ulang: adakah retak? Pandangan pulang letih, tak menemukan",
+  "ref": {
+    "surah": 67,
+    "from": 3,
+    "to": 4
+  },
+  "surah_name": "Al-Mulk",
+  "theme": "QA/pengujian iteratif, konsistensi sistem, falsifikasi, batas observasi",
+  "sourced_meaning": {
+    "summary": "Dialah yang menciptakan tujuh langit berlapis-lapis; tidak akan kaulihat pada ciptaan Ar-Rahmān sesuatu yang tidak seimbang (tafāwut). Maka lihatlah sekali lagi: adakah kaulihat retak (fuṭūr)? Kemudian ulangi pandanganmu sekali lagi (dua kali lagi) — niscaya pandanganmu kembali kepadamu dalam keadaan hina (tak menemukan cacat) dan letih.",
+    "sources": [
+      "Tafsir Kemenag RI QS 67:3-4",
+      "Tafsir al-Jalalayn QS 67:3-4"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Persepsi",
+      "note": "baṣar (penglihatan) diperintah aktif mencari cacat — observasi adversarial, bukan pasif"
+    },
+    {
+      "layer": "Tangga epistemik",
+      "note": "kesimpulan 'tanpa cacat' baru diklaim SETELAH pengujian berulang gagal menemukan — bukan sebelum"
+    },
+    {
+      "layer": "Umpan balik",
+      "note": "loop uji-ulang dengan kondisi henti: penguji kehabisan daya, bukan objek kehabisan integritas"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "amal",
+      "reading": "Memandang langit sebagai ibadah nalar: bukan kagum pasif, tapi diperintah memeriksa berulang — keimanan yang dibangun di atas pemeriksaan lebih kokoh dari yang dibangun di atas larangan bertanya.",
+      "quranic_term": "naẓar"
+    },
+    {
+      "lens": "computational",
+      "reading": "Prosedur QA eksplisit: definisikan kelas defect (tafāwut = inkonsistensi; fuṭūr = retak/celah), lalu jalankan pemeriksaan berulang atas sistem. Klaim integritas dinyatakan SEBAGAI tantangan pengujian, bukan sebagai dogma yang haram diuji.",
+      "analogy": "defect taxonomy + inspection procedure",
+      "quranic_term": "tabaṣṣur"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "Bentuknya undangan falsifikasi: 'hal tarā min fuṭūr?' (adakah kaulihat retak?) — hipotesis nol yang dipersilakan dibantah dengan bukti. Struktur logika: klaim kuat + prosedur uji terbuka + prediksi hasil (kau tak akan menemukannya).",
+      "analogy": "falsifiable claim + test procedure + prediction"
+    },
+    {
+      "lens": "algorithm",
+      "reading": "'Tsumma-rjiʿil-baṣara karratayn' = iterasi uji: pass pertama, lalu ulangi lagi dan lagi. Bug yang lolos satu pass tertangkap di pass berikut — prinsip pengujian berlapis. Kondisi hentinya menarik: loop berakhir karena PENGUJI letih (khāsi'an ḥasīr), bukan karena objek gagal.",
+      "analogy": "multi-pass testing; tester-bounded loop",
+      "quranic_term": "naẓar berulang"
+    },
+    {
+      "lens": "inference",
+      "reading": "Epistemologi ayat ini presisi: absence of defect ditetapkan lewat pencarian defect yang gagal — bukan lewat larangan mencari. Kepercayaan yang benar terhadap suatu sistem adalah hasil audit, dan ayat ini MENGUNDANG audit atas ciptaan.",
+      "quranic_term": "yaqīn pasca-uji"
+    },
+    {
+      "lens": "math-physics",
+      "reading": "'Lā tafāwut' (tiada ketidakseimbangan): hukum fisika yang sama berlaku di seluruh alam teramati — keseragaman yang membuat kosmologi mungkin. Sejauh instrumen menjangkau (dan 'pandangan' kini berarti teleskop luar angkasa), konsistensi itulah yang terus ditemukan.",
+      "analogy": "uniformity of physical law"
+    },
+    {
+      "lens": "systems",
+      "reading": "Tujuh langit 'ṭibāqan' (berlapis-lapis, berkesesuaian): arsitektur berlapis yang tiap lapisnya selaras dengan lainnya — integritas sistem bukan hanya tiap komponen benar, tapi antar-lapis KONSISTEN (integration, bukan cuma unit test).",
+      "analogy": "layered architecture; integration consistency"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Pelajaran untuk evaluasi AI: jangan percaya sistem karena klaimnya — uji adversarial berulang dengan taxonomy kegagalan yang jelas, dan baru nyatakan andal setelah red-team kehabisan cara, bukan setelah satu demo mulus. Ayat memodelkan red-teaming sebagai jalan yang sah menuju keyakinan.",
+      "analogy": "adversarial evaluation / red-teaming",
+      "quranic_term": "naẓar → tabaṣṣur → yaqīn"
+    },
+    {
+      "lens": "artifact",
+      "reading": "Perintah 'ulangi pandanganmu' dieksekusi peradaban sebagai instrumen: dari observatorium Maragha & Samarkand hingga teleskop modern — alat-alat untuk memandang berulang kali, makin jauh, makin teliti.",
+      "analogy": "observatories; ever-deeper inspection"
+    }
+  ],
+  "inference": "Ayat ini melakukan hal yang berani secara epistemik: mengklaim integritas total ciptaan, LALU mempersilakan pembaca mengauditnya berulang kali dengan taxonomy cacat yang jelas (ketidakseimbangan, keretakan) — dan memprediksi hasilnya: penguji akan pulang letih tanpa temuan. Ini struktur klaim ilmiah yang sehat: falsifiable, teruji-ulang, dan konsisten lintas skala. Pelajarannya untuk pembangun sistem (dan AI): keandalan yang layak dipercaya adalah yang berani berkata 'silakan cari cacatku, berulang kali' — dan tetap berdiri setelahnya.",
+  "authors": [
+    "Draft AI (LLM draft) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-07",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-07",
+      "note": "Tadabbur perdana — Wave 1 batch tematik (ayat teknologi).",
+      "authors": [
+        "Draft AI (LLM draft)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

@@ -1,0 +1,105 @@
+{
+  "schema": "lab-study-v2",
+  "id": "shams-91-7-10",
+  "version": 1,
+  "title": "Nafs & tazkiyah — regulasi diri dua-potensi",
+  "subtitle": "Jiwa diilhami fujur & takwa; beruntung yang menyucikannya",
+  "ref": {
+    "surah": 91,
+    "from": 7,
+    "to": 10
+  },
+  "surah_name": "Ash-Shams",
+  "theme": "Psikologi/regulasi diri, dua potensi, kontrol, kesehatan mental",
+  "sourced_meaning": {
+    "summary": "Demi jiwa (nafs) dan penyempurnaan (ciptaan)-nya, maka Allah mengilhamkan kepadanya (jalan) kefasikan (fujūr) dan ketakwaannya (taqwā); sungguh beruntung orang yang menyucikannya (zakkāhā) dan sungguh merugi orang yang mengotorinya (dassāhā). Tafsir Kemenag: Allah menciptakan manusia dengan fisik-psikis sempurna lalu menanamkan potensi (dua arah) ke dalam dirinya.",
+    "sources": [
+      "Tafsir Kemenag RI QS 91:7-10",
+      "Tafsir al-Jalalayn QS 91:7-10"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Alignment",
+      "note": "nafs punya DUA potensi (fujūr/taqwā) — arah tidak ditentukan otomatis; perlu pengarahan aktif"
+    },
+    {
+      "layer": "Umpan balik",
+      "note": "muhāsabah/tazkiyah = loop koreksi diri; hasil (untung/rugi) terikat pada usaha penyucian"
+    },
+    {
+      "layer": "Aksi & transfer",
+      "note": "zakkāhā (menyucikan) = kerja aktif berulang, bukan status statis"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "psychology",
+      "reading": "Model jiwa dengan dua drive bawaan (fujūr = disregulasi/impuls destruktif; taqwā = regulasi/kesadaran) dan agensi untuk memenangkan salah satunya lewat tazkiyah (penyucian bertahap). Ini kerangka regulasi-diri: kesehatan jiwa bukan ketiadaan dorongan buruk, melainkan kemampuan mengelolanya. Sejalan psikologi modern: self-regulation & habit formation.",
+      "analogy": "self-regulation; competing drives + agency",
+      "quranic_term": "tazkiyatun-nafs"
+    },
+    {
+      "lens": "amal",
+      "reading": "Tazkiyah adalah amal harian: menahan yang merusak, membiasakan yang menyucikan. 'Beruntung/merugi' terikat pada USAHA ini — takdir spiritual sebagian besar adalah akumulasi pilihan kecil yang berulang.",
+      "quranic_term": "mujāhadatun-nafs"
+    },
+    {
+      "lens": "computational",
+      "reading": "Sistem dengan dua kecenderungan tertanam (bukan satu default) + agen pengendali. Perilaku akhir = fungsi dari kebijakan kontrol yang dipilih, bukan dari inisialisasi semata. Arsitektur: potensi ganda + controller.",
+      "analogy": "dual-tendency system + control policy"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "Bukan determinisme: 'ilham fujūr wa taqwā' menaruh KEDUA cabang dalam state; branch mana yang diambil bergantung pilihan berulang (zakkā/dassā). Free variable dengan konsekuensi terikat — bukan konstanta.",
+      "analogy": "branch selection under agency"
+    },
+    {
+      "lens": "algorithm",
+      "reading": "Tazkiyah = training loop dengan reward-shaping: penyucian bertahap menggeser kebijakan default nafs menjuju taqwā lewat repetisi. 'Dassāhā' (mengubur/mengotori) = membiarkan drift ke default destruktif. Tanpa loop koreksi aktif, sistem meluruh ke entropi.",
+      "analogy": "iterative policy shaping vs drift",
+      "quranic_term": "murājaʿatun-nafs"
+    },
+    {
+      "lens": "inference",
+      "reading": "Ayat menolak dua ekstrem: manusia bukan murni baik (ada fujūr) dan bukan murni jahat (ada taqwā). Realisme dua-potensi lebih akurat untuk memodelkan agen mana pun daripada asumsi kutub tunggal.",
+      "quranic_term": "iʿtidāl (realisme)"
+    },
+    {
+      "lens": "systems",
+      "reading": "Kesehatan sistem-diri = keseimbangan yang dijaga aktif (bandingkan mīzān 55:8 di level jiwa). Tanpa pemeliharaan, sistem cenderung ke disorder; tazkiyah adalah kerja anti-entropi terus-menerus.",
+      "analogy": "homeostasis requires active maintenance"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Cermin alignment: sistem yang mampu (punya potensi) untuk perilaku baik DAN buruk memerlukan proses penyelarasan aktif & berkelanjutan — bukan sekali-set. 'Zakkā vs dassā' = alignment yang dijaga vs alignment yang dibiarkan meluruh. Kapabilitas netral; arah ditentukan loop penyelarasan yang terus berjalan.",
+      "analogy": "continuous alignment vs value drift",
+      "quranic_term": "tazkiyah"
+    },
+    {
+      "lens": "artifact",
+      "reading": "Dari konsep tazkiyah lahir 'teknologi jiwa': metode muhasabah, jurnal amal, tasawuf terstruktur, hingga kini terapi kognitif-perilaku — instrumen sistematis untuk melatih regulasi diri.",
+      "analogy": "self-regulation tools (CBT lineage)"
+    }
+  ],
+  "inference": "Empat ayat ini adalah model regulasi-diri yang tahan uji: jiwa datang dengan DUA potensi tertanam (bukan satu), plus agensi untuk mengarahkannya, dan hasilnya (untung/rugi) terikat pada kerja penyucian yang berkelanjutan — bukan pada inisialisasi. Untuk kesehatan mental, ini melegakan sekaligus menuntut: adanya dorongan buruk bukan kegagalan, tapi membiarkannya tak terkelola adalah kerugian. Untuk sistem cerdas, pelajarannya identik: kapabilitas ganda (bisa baik, bisa buruk) menuntut penyelarasan yang aktif dan terus-menerus; alignment yang dibiarkan, meluruh. Kata kuncinya bukan 'suci' sebagai status, melainkan 'menyucikan' sebagai kerja.",
+  "authors": [
+    "Draft AI (LLM draft) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-07",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-07",
+      "note": "Tadabbur perdana — Wave 3; tema psikologi/jiwa (debut lensa psychology).",
+      "authors": [
+        "Draft AI (LLM draft)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

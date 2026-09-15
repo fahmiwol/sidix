@@ -1,0 +1,104 @@
+{
+  "schema": "lab-study-v2",
+  "id": "baqarah-2-2-2",
+  "version": 1,
+  "title": "Hudan lil-muttaqin — spesifikasi petunjuk yang teraktif bagi yang siap",
+  "subtitle": "Sumber tanpa-keraguan yang memandu, tetapi output-nya digerbang oleh kesiapan penerima",
+  "ref": {
+    "surah": 2,
+    "from": 2,
+    "to": 2
+  },
+  "surah_name": "Al-Baqarah",
+  "theme": "Guidance spec, integritas sumber, precondition/opt-in, kesiapan penerima",
+  "sourced_meaning": {
+    "summary": "Al-Qur'an tidak dapat diragukan karena ia wahyu Allah yang diturunkan kepada Nabi Muhammad ﷺ; disebut 'Al-Kitab' sebagai isyarat bahwa ia harus ditulis (maka para sahabat diperintahkan menuliskannya). Ia menjadi bimbingan/petunjuk (hudan) bagi orang yang bertakwa, yaitu orang yang memelihara diri dari azab Allah dengan melaksanakan perintah-Nya dan menjauhi larangan-Nya.",
+    "sources": [
+      "Tafsir Kemenag RI QS 2:2",
+      "Tafsir al-Jalalayn QS 2:2"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Memori & grounding",
+      "note": "'Al-Kitab' = isyarat wajib ditulis (per Kemenag) → petunjuk dipersistensi sebagai dokumen rujukan tetap, bukan lisan yang menguap"
+    },
+    {
+      "layer": "Tangga epistemik",
+      "note": "'lā rayba fīh' (tak ada keraguan) memosisikan sumber di atas tangga bukti — dibaca sbg landasan/aksioma iman, bukan hipotesis yang diuji"
+    },
+    {
+      "layer": "Aksi & transfer",
+      "note": "'hudan lil-muttaqin' — fungsi petunjuk baru terealisasi (transfer) pada penerima yang keadaannya (taqwa) memenuhi prasyarat"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "computational",
+      "reading": "Dibaca sebagai sistem: hudan = spesifikasi/guidance-spec, dan 'lā rayba fīh' = jaminan integritas sumber (high-integrity, checksummed) — referensi yang dinyatakan bebas-cacat sehingga bisa dijadikan basis. Namun 'resolve' menjadi petunjuk aktual hanya untuk penerima ber-state 'muttaqin'. Guidance sebagai spec, bukan sekadar pesan.",
+      "analogy": "high-integrity spec + conditional resolution",
+      "quranic_term": "hudan (petunjuk)"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "Struktur berpola guard kondisional: guidance TIDAK di-broadcast tanpa syarat lalu auto-apply ke semua; output 'hidayah' digerbang oleh precondition taqwa — IF receiver.state == muttaqin THEN guidance.applies. Petunjuk yang sama menemui dua nasib berbeda tergantung keadaan penerima; sinyalnya invarian, resepsinya kondisional.",
+      "analogy": "precondition guard / opt-in gating",
+      "quranic_term": "taqwa (precondition)"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Ini pola alignment yang tajam: sebuah policy/spesifikasi yang benar hanya membentuk agen yang memang sedang mengoptimalkan ke arahnya. Seperti reward signal atau konstitusi yang hanya efektif pada model dengan prior yang reseptif — 'hudan lil-muttaqin' = petunjuk terkondisi pada prior yang selaras. Untuk desain sistem: menyediakan spesifikasi berkualitas saja tak cukup; agen penerima harus punya objektif & disposisi yang kompatibel agar guidance benar-benar mengubah perilaku (bukan diabaikan sbg noise).",
+      "analogy": "constitution/spec effective only on aligned prior; opt-in guidance",
+      "quranic_term": "hudan → istiqamah"
+    },
+    {
+      "lens": "pedagogy",
+      "reading": "Prinsip kesiapan belajar (readiness): kurikulum terbaik pun hanya 'menembus' murid yang siap menerimanya. Petunjuk mensyaratkan sikap batin (taqwa/keterbukaan) sebagai gerbang; tanpa itu materi yang identik tak menghasilkan transformasi. Menempatkan disposisi penerima sebagai variabel utama keberhasilan transfer ilmu, bukan hanya mutu materi.",
+      "analogy": "learner readiness gates transfer",
+      "quranic_term": "tadhakkur"
+    },
+    {
+      "lens": "systems",
+      "reading": "Sebagai teori kontrol: petunjuk adalah sinyal kontrol (reference signal), dan penerima adalah sistem yang harus 'ter-tune' (taqwa) agar merespons sinyal itu alih-alih mengabaikannya. Sistem yang gain-nya nol terhadap sinyal petunjuk tak akan bergerak walau sinyalnya sempurna — keselarasan penerima menentukan apakah loop kendali menutup.",
+      "analogy": "reference signal + tuned receiver closes the loop",
+      "quranic_term": "hudan"
+    },
+    {
+      "lens": "inference",
+      "reading": "'lā rayba fīh' menegaskan tipe klaim: ini dinyatakan sebagai landasan (given), bukan proposisi yang harus dibuktikan lebih dulu sebelum dipakai. Dalam kerangka rekayasa (bounded, sebagai analogi pemahaman) ini serupa membedakan aksioma dari teorema — beberapa titik pijak diterima sbg dasar sistem agar penalaran lain bisa dibangun di atasnya. Ini pembacaan struktural, bukan penilaian atas status teologis teks.",
+      "analogy": "axiom vs theorem (basis vs derived)",
+      "quranic_term": "yaqīn"
+    },
+    {
+      "lens": "artifact",
+      "reading": "Penyebutan 'Al-Kitab' yang (per Kemenag) mengisyaratkan wajib ditulis melahirkan artefak: petunjuk dibekukan menjadi dokumen tertulis yang persisten dan dapat diverifikasi — bukan tradisi lisan yang berubah tiap transmisi. Fondasi bagi rujukan tetap, salinan identik, dan integritas antar-generasi.",
+      "analogy": "written persistent reference document",
+      "quranic_term": "kitāb"
+    },
+    {
+      "lens": "amal",
+      "reading": "Taqwa di sini bukan label pasif melainkan praktik: melaksanakan perintah dan menjauhi larangan (per Kemenag) — sikap aktif yang membuka diri terhadap petunjuk. Petunjuk diperoleh melalui laku, bukan sekadar membaca; disposisi diamalkan agar gerbang penerimaan terbuka.",
+      "quranic_term": "taqwa"
+    }
+  ],
+  "inference": "Dibaca sebagai analogi rekayasa, Al-Baqarah 2 memisahkan dua hal yang sering dikira satu: kualitas sumber dan keberhasilan penerimaan. Sisi sumber ditegaskan tanpa-keraguan ('lā rayba fīh') — sebuah referensi berintegritas tinggi yang dipersistensi sebagai 'Al-Kitab' (tertulis). Tetapi fungsinya sebagai 'hudan' bukan broadcast tanpa syarat; ia digerbang oleh keadaan penerima ('lil-muttaqin'), sehingga petunjuk yang identik menghasilkan transformasi hanya pada agen yang disposisinya selaras. Untuk desain sistem petunjuk (manusia atau mesin): menyediakan spesifikasi yang benar dan berintegritas adalah syarat perlu, bukan syarat cukup — kesiapan/keselarasan penerima adalah variabel yang menentukan apakah sinyal menutup loop atau diabaikan sebagai noise. Ini salah satu pembacaan rekayasa di atas makna zahir yang bersumber, BUKAN maksud tunggal ayat, dan 'muttaqin' dibaca sebagai struktur prasyarat, bukan penetapan hukum/fatwa. CATATAN TANZIH: bahwa Al-Qur'an adalah wahyu Allah yang tak diragukan disebut dengan ta'zhim sebagai LANDASAN iman — Allah (Dzat & Sifat-Nya) tidak dimodelkan, tidak dijadikan komponen/agen dalam analogi; yang dibaca secara struktural hanyalah sisi makhluk/teks (Kitab sebagai spesifikasi tertulis) dan sikap manusia (taqwa sebagai kesiapan). Resonansi 'spec/precondition' dicatat sebagai analogi pemahaman yang bounded, bukan mukjizat numerik.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-08",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-08",
+      "note": "Tadabbur perdana — Wave 11 pedoman (sistem petunjuk/guidance).",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

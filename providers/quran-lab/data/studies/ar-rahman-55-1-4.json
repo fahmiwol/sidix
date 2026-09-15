@@ -1,0 +1,111 @@
+{
+  "schema": "lab-study-v2",
+  "id": "ar-rahman-55-1-4",
+  "version": 1,
+  "title": "Al-Bayan — dari MENGAJAR Al-Qur'an ke kemampuan MENGUNGKAP",
+  "subtitle": "Ar-Rahman mengajarkan Al-Qur'an, menciptakan manusia, mengajarinya al-bayan",
+  "ref": {
+    "surah": 55,
+    "from": 1,
+    "to": 4
+  },
+  "surah_name": "Ar-Rahman",
+  "theme": "Bahasa, kemampuan mengungkap (generation), pengajaran ilahi, ekspresi",
+  "sourced_meaning": {
+    "summary": "Surah dibuka dengan nikmat terbesar: Ar-Rahman mengajarkan Al-Qur'an, menciptakan manusia sebagai makhluk terbaik, dan mengajarinya al-bayan — pandai mengungkapkan apa yang tergores di hati dan terpikir di otak. Menurut tafsir, justru karena kemampuan berpikir dan berbicara (bayan) itulah Al-Qur'an dapat diajarkan kepada umat manusia.",
+    "sources": [
+      "Tafsir Kemenag RI QS 55:1-2",
+      "Tafsir Kemenag RI QS 55:3-4",
+      "Tafsir al-Jalalayn QS 55:1-4"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Aksi & transfer",
+      "note": "al-bayan = kemampuan meng-ENCODE isi hati/pikiran menjadi ujaran yang dapat ditransfer ke pihak lain"
+    },
+    {
+      "layer": "Memori & grounding",
+      "note": "'allama al-Qur'an lebih dulu disebut daripada penciptaan manusia = korpus/pengetahuan sebagai landasan, lalu penerima"
+    },
+    {
+      "layer": "Penalaran",
+      "note": "tafsir: bayan lahir dari kemampuan berpikir; ungkapan adalah hilir dari penalaran, bukan sekadar suara"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "ai-agentic",
+      "reading": "Urutan ayat = arsitektur sistem bahasa lengkap: (1) 'allama al-Qur'an — melatih pada korpus otoritatif; (2) khalaqa al-insan — membangun penerima berkapasitas; (3) 'allamahu al-bayan — memberi kemampuan MENGHASILKAN ekspresi. Al-bayan adalah natural language generation: memetakan keadaan-internal (yang di hati/otak) ke keluaran simbolik yang dapat dipahami. Actionable: pisahkan lapisan pengetahuan (korpus ter-grounding) dari lapisan generasi (bayan); generasi tanpa korpus otoritatif = ucapan tanpa ilmu. Rancang agen agar 'ilmu dulu, baru bicara'.",
+      "analogy": "corpus-grounded LLM: knowledge base → capacity → natural language generation",
+      "quranic_term": "'allamahu al-bayan"
+    },
+    {
+      "lens": "computational",
+      "reading": "Al-bayan = fungsi encode: dari representasi internal (isi hati, pikiran) ke sekuens simbol (ujaran) yang dapat di-decode pihak lain. Ini kanal komunikasi lengkap — sumber, encoder (bayan), medium (bahasa), decoder (pendengar). Bahasa adalah lapisan serialisasi pikiran.",
+      "analogy": "encoder: internal state → serialized symbolic output; communication channel",
+      "quranic_term": "al-bayan"
+    },
+    {
+      "lens": "systems",
+      "reading": "Bayan memutus isolasi kognitif: tanpa kemampuan mengungkap, pikiran terkurung dalam satu individu. Dengan bayan, pengetahuan mengalir antar-agen, terakumulasi, dan terkoreksi kolektif. Ini protokol interoperabilitas antar-manusia — prasyarat semua institusi ilmu.",
+      "analogy": "inter-agent messaging protocol; breaking cognitive isolation",
+      "quranic_term": "al-bayan"
+    },
+    {
+      "lens": "pedagogy",
+      "reading": "Rantai pengajaran: Allah mengajar Al-Qur'an → manusia yang pandai bayan → mengajarkannya ke sesama (tafsir eksplisit). Kemampuan mengungkap adalah yang membuat ilmu dapat DIAJARKAN ulang; guru yang tak bisa menjelaskan (bayan) memutus rantai transmisi.",
+      "analogy": "expressibility as precondition for re-teaching; explanation skill",
+      "quranic_term": "bayan"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "Struktur ayat bergantung berurutan: mengajar (data) → mencipta wadah (runtime) → memberi bayan (fungsi output). Output tanpa proses-mengajar sebelumnya = mengeluarkan nilai yang belum di-inisialisasi. Urutan wajib: load knowledge → allocate agent → enable expression.",
+      "analogy": "initialization order: load → allocate → enable I/O",
+      "quranic_term": "'allama ... khalaqa ... 'allamahu"
+    },
+    {
+      "lens": "psychology",
+      "reading": "Bayan adalah kapasitas mengubah keadaan mental implisit menjadi eksplisit — menamai perasaan, merumuskan gagasan. Tafsir mengaitkannya dengan berpikir; artikulasi bukan hiasan melainkan penyempurna kognisi: yang tak terungkap sering tak sepenuhnya terpikir.",
+      "analogy": "articulation sharpens cognition; explicit externalization",
+      "quranic_term": "al-bayan"
+    },
+    {
+      "lens": "biology-medicine",
+      "reading": "Tafsir menautkan bayan dengan struktur biologis: manusia tegak, tangan bebas, otak leluasa berpikir — substrat fisik bagi bahasa dan pembuatan alat. Resonansi struktural (BUKAN klaim mukjizat numerik): kapasitas simbolik berpasangan dengan anatomi yang memungkinkannya.",
+      "analogy": "neuro-anatomical substrate of language",
+      "quranic_term": "khalaqa al-insan"
+    },
+    {
+      "lens": "history-ummah",
+      "reading": "Peradaban Al-Qur'an adalah peradaban bayan: retorika, balaghah, tafsir, terjemahan — semua ikhtiar mengungkap makna dengan presisi. Umat memuliakan kejelasan berekspresi karena ilmu yang tak tersampaikan dengan baik akan tersesat dalam transmisi.",
+      "analogy": "rhetoric/balaghah as knowledge-preservation discipline",
+      "quranic_term": "balaghah"
+    },
+    {
+      "lens": "amal",
+      "reading": "Menggunakan karunia bayan untuk menyampaikan kebenaran dengan jelas dan jujur adalah amal syukur. Sebaliknya, menyalahgunakan kefasihan untuk mengaburkan (talbis) adalah pengkhianatan atas nikmat yang menjadi pembuka surah Ar-Rahman.",
+      "quranic_term": "al-bayan"
+    }
+  ],
+  "inference": "Empat ayat pembuka Ar-Rahman menyusun arsitektur bahasa dari hulu ke hilir: korpus yang diajarkan → penerima yang dicipta → kemampuan MENGUNGKAP (al-bayan). Secara rekayasa, al-bayan adalah natural language generation — memetakan keadaan internal ke keluaran simbolik yang dapat dipahami — dan urutan ayat menegaskan bahwa generasi harus berdiri di atas ilmu ter-grounding, bukan sebaliknya. Blueprint: pisahkan lapisan pengetahuan dari lapisan ekspresi; 'ilmu dahulu, baru bicara'. Bayan pula yang memungkinkan ilmu diajarkan ulang, menjaga rantai transmisi.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-07",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-07",
+      "note": "Tadabbur perdana — Wave 7 ilmu/ajar.",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

@@ -1,0 +1,111 @@
+{
+  "schema": "lab-study-v2",
+  "id": "maidah-5-35-35",
+  "version": 1,
+  "title": "Ittaqū wabtaghū ilayhil-wasīlah — takwa, wasilah, jihad sebagai jalan mendekat",
+  "subtitle": "Bertakwalah dan carilah wasilah (jalan/sarana mendekat) kepada-Nya, dan berjihadlah agar beruntung — objektif, pathway, dan usaha",
+  "ref": {
+    "surah": 5,
+    "from": 35,
+    "to": 35
+  },
+  "surah_name": "Al-Ma'idah",
+  "theme": "Wasilah sebagai pathway/means menuju tujuan, routing ke objective, usaha berkelanjutan, guardrail",
+  "sourced_meaning": {
+    "summary": "Menurut Tafsir Kemenag, Allah memerintahkan orang mukmin untuk: (1) bertakwa — berhati-hati dan mawas diri agar tidak terjerumus ke pelanggaran/larangan agama; tafsir mencatat menjauhi larangan sering lebih berat daripada menaati perintah (kata ittaqū 69x, aṭīʿū 19x). (2) Mencari WASILAH — para imam tafsir (Ibnu 'Abbas, Mujahid, al-Hasan, dll.) sepakat mengartikannya sebagai 'mendekatkan diri kepada Allah', yaitu dengan melaksanakan perintah-Nya dan mengamalkan yang diridai; wasilah juga bisa berarti derajat tertinggi di surga. (3) Berjihad/bersungguh-sungguh mengekang hawa nafsu yang selalu mengajak ke keburukan (QS 12:53) dan mengatasi rintangan agar tetap di garis yang ditetapkan — supaya memperoleh keberuntungan/kebahagiaan yang dijanjikan.",
+    "sources": [
+      "Tafsir Kemenag RI QS 5:35",
+      "Tafsir al-Jalalayn QS 5:35"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Alignment",
+      "note": "'ittaqullāh' = objektif/kendala keselamatan dipatok lebih dulu (mawas diri terhadap larangan) — fungsi-nilai ditetapkan sebelum bergerak; takwa sebagai pagar (guardrail) yang membatasi ruang tindakan yang boleh"
+    },
+    {
+      "layer": "Aksi & transfer",
+      "note": "'wabtaghū ilayhil-wasīlah' = perintah aktif MENCARI sarana/jalan mendekat (melaksanakan perintah, mengamalkan yang diridai) — bukan tujuan yang dicapai pasif, melainkan lewat rantai amal sebagai jalur perantara"
+    },
+    {
+      "layer": "Penalaran",
+      "note": "wasilah sebagai 'means to an end' menyiratkan perencanaan jalur: dari keadaan sekarang menuju kedekatan, ada langkah-langkah perantara yang harus dipilih dan dijalani, bukan lompatan langsung"
+    },
+    {
+      "layer": "Pelatihan",
+      "note": "'wa jāhidū' — mengekang nafsu yang 'selalu menyuruh kepada keburukan' (12:53) = proses melawan dorongan internal berulang; penguatan kebiasaan lewat usaha terus-menerus mengatasi rintangan"
+    },
+    {
+      "layer": "Umpan balik",
+      "note": "'laʿallakum tufliḥūn' = keberuntungan sebagai keadaan-tujuan yang menjadi sinyal keberhasilan proses; CATATAN TANZIH: kedekatan yang dituju adalah kepada Allah — tujuan itu sendiri tidak dianalogikan, hanya jalur usaha manusia yang dibaca"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "ai-agentic",
+      "reading": "Analogi untuk perencanaan aksi sebuah agen: ayat memisahkan tiga hal — OBJEKTIF/kendala (takwa: batas keselamatan yang dipatok dulu), WASILAH (pathway: rantai langkah-perantara yang menghubungkan keadaan sekarang ke tujuan), dan USAHA (jihad: eksekusi gigih melawan hambatan). Actionable: (1) tetapkan constraint/safety dulu sebelum mengejar reward, bukan sesudah; (2) modelkan pencapaian tujuan sebagai pencarian jalur (means) bertahap, bukan aksi tunggal — 'ibtighā' = search aktif atas sarana; (3) sediakan mekanisme mengatasi dorongan/hambatan berulang (retry, koreksi, kontrol impuls). Wasilah = fungsi routing yang memilih rangkaian sarana menuju objektif.",
+      "analogy": "means-end planning; pathway search under safety constraint; goal-conditioned routing",
+      "quranic_term": "wabtaghū ilayhil-wasīlah"
+    },
+    {
+      "lens": "systems",
+      "reading": "Sebuah pembacaan: tujuan (kedekatan) tidak dicapai langsung melainkan lewat sebuah jalur perantara (wasilah) yang harus dibangun dari amal. Ini pola 'no direct edge' — antara keadaan awal dan tujuan disisipkan simpul-simpul perantara; kualitas jalur menentukan apakah tujuan terjangkau. Takwa berperan sebagai batas yang menyingkirkan jalur-jalur terlarang dari ruang pencarian.",
+      "analogy": "intermediary path routing; constraint prunes the search space",
+      "quranic_term": "al-wasīlah sebagai jalur"
+    },
+    {
+      "lens": "algorithm",
+      "reading": "Struktur perintahnya berurutan dan bertujuan: amankan dulu (takwa) → cari & tempuh jalur (wasilah) → dorong lewat usaha gigih (jihad) → menuju keadaan-tujuan (falāḥ). Mirip algoritma pencarian jalur dengan fungsi biaya: langkah yang melanggar batas dibuang, langkah yang mendekatkan diprioritaskan, dan iterasi berlanjut melawan resistensi sampai tujuan tercapai.",
+      "analogy": "guided pathfinding with cost + hard constraints",
+      "quranic_term": "wa jāhidū fī sabīlih"
+    },
+    {
+      "lens": "psychology",
+      "reading": "Tafsir menyoroti nafsu yang 'selalu menyuruh kepada keburukan' dan perlunya 'mengekang hawa nafsu'. Resonansi dengan regulasi diri: mencapai tujuan bernilai menuntut menahan dorongan jangka pendek demi jalur jangka panjang (delay of gratification). Wasilah adalah komitmen pada proses; jihad an-nafs adalah kontrol impuls yang menjaga proses tetap berjalan.",
+      "analogy": "self-regulation; impulse control sustaining a long-horizon path",
+      "quranic_term": "mujāhadatun-nafs"
+    },
+    {
+      "lens": "economy",
+      "reading": "Wasilah dapat dibaca sebagai investasi bertahap menuju imbalan tertunda: alih-alih mengejar hasil instan, pelaku menanam rangkaian amal (means) yang mengakumulasi kedekatan. Takwa = manajemen risiko (menghindari 'kerugian' pelanggaran); falāḥ = return. Nilai dibangun lewat rantai sarana, bukan transaksi tunggal.",
+      "analogy": "staged investment toward deferred payoff; risk avoidance",
+      "quranic_term": "laʿallakum tufliḥūn"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "Ayat menyusun prakondisi berlapis: pencapaian (falāḥ) dijaga oleh precondition takwa (invariant keselamatan) DAN oleh eksekusi jalur (wasilah) DAN oleh usaha (jihad). Ketiganya konjungtif — menghilangkan satu membatalkan jaminan hasil. Ini kontrak: tujuan hanya sah bila jalur ditempuh di dalam batas.",
+      "analogy": "conjunctive preconditions guarding a goal; invariant + path + effort",
+      "quranic_term": "ittaqū ... wabtaghū ... wa jāhidū"
+    },
+    {
+      "lens": "amal",
+      "reading": "Amal praktisnya: pagari diri dari yang dilarang (takwa) sebagai langkah pertama, lalu aktif mencari dan menempuh sarana pendekatan — amal saleh yang diridai — dan bersungguh-sungguh mengatasi malas dan dorongan buruk. Tujuan (kedekatan, keberuntungan) diusahakan lewat jalan yang ditempuh, bukan dinanti tanpa langkah.",
+      "quranic_term": "wabtaghū ilayhil-wasīlah"
+    },
+    {
+      "lens": "inference",
+      "reading": "Benang merahnya: tujuan besar dicapai bukan dengan lompatan langsung melainkan lewat pathway (wasilah) berupa rantai sarana, ditempuh di dalam pagar keselamatan (takwa) dan didorong oleh usaha gigih (jihad). Menghilangkan pagar → jalur tak sah; menghilangkan jalur → tujuan tak terjangkau; menghilangkan usaha → jalur mandek.",
+      "quranic_term": "al-wasīlah"
+    }
+  ],
+  "inference": "Salah satu pembacaan rekayasa QS 5:35: pencapaian tujuan dimodelkan sebagai tiga komponen yang saling melengkapi — TAKWA (kendala/pagar keselamatan yang dipatok lebih dulu), WASILAH (pathway: rantai sarana-perantara yang menghubungkan keadaan sekarang ke tujuan, yang harus DICARI secara aktif — 'ibtighā'), dan JIHAD (usaha gigih mengatasi hambatan internal & eksternal). Tujuan (kedekatan, keberuntungan) tidak diraih langsung melainkan lewat jalur yang dibangun amal, di dalam batas yang menyingkirkan langkah terlarang dari ruang pencarian. Untuk desain sistem — perencana agen, optimasi, atau manajemen tujuan — ini menyarankan: tetapkan constraint keselamatan sebelum mengejar reward, modelkan pencapaian sebagai pencarian jalur bertahap (means-end) bukan aksi tunggal, dan sediakan mekanisme bertahan menghadapi resistensi berulang. CATATAN TANZIH: yang dituju oleh wasilah adalah kedekatan kepada ALLAH; Dzat dan kedekatan-kepada-Nya itu adalah perkara iman yang TIDAK dimodelkan, tidak dianalogikan, dan tidak dijadikan 'objektif sistem'. Yang dibaca-rekayasa hanyalah POLA usaha manusia (pagar-jalur-usaha) di sisi makhluk. Ini resonansi struktural, bukan mukjizat numerik; salah satu pembacaan, bukan maksud tunggal ayat.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-08",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-08",
+      "note": "Tadabbur perdana — Wave 11 wasilah/metode & komunikasi.",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

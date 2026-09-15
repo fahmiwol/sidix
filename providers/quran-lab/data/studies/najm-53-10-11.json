@@ -1,0 +1,87 @@
+{
+  "schema": "lab-study-v2",
+  "id": "najm-53-10-11",
+  "version": 1,
+  "title": "Mā kadzabal-fu'ādu mā ra'ā — hati tidak mendustakan apa yang dilihatnya",
+  "subtitle": "Lalu Dia menyampaikan kepada hamba-Nya (Muhammad) apa yang telah diwahyukan; hatinya tidak mendustakan apa yang telah dilihatnya",
+  "ref": {
+    "surah": 53,
+    "from": 10,
+    "to": 11
+  },
+  "surah_name": "An-Najm",
+  "theme": "Fidelitas persepsi & keyakinan pada pengalaman wahyu — penyangkalan eksplisit atas kemungkinan kekeliruan. PENTING: konteks ayat ini adalah penglihatan Nabi atas MALAIKAT JIBRIL, bukan penglihatan atas Allah — dibedakan tegas mengikuti tafsir sumber sendiri.",
+  "sourced_meaning": {
+    "summary": "Lalu Dia (Jibril) menyampaikan kepada hamba-Nya (Muhammad) apa yang telah Allah wahyukan. Hatinya tidak mendustakan apa yang telah dilihatnya. Tafsir Kemenag: setelah Nabi Muhammad sudah berdekatan benar dengan Jibril, Jibril menyampaikan wahyu Allah. Ayat 11 menerangkan bahwa kebanyakan manusia menyangka telah menggambarkan apa yang dilihatnya, padahal hatinya belum sepenuhnya yakin terhadap apa yang dilihat itu — TIDAK DEMIKIAN penglihatan & keyakinan Muhammad terhadap Jibril, meski kedatangannya kerap berbeda bentuk, karena Muhammad telah mengetahui bentuk aslinya (dilihat pertama kali di Gua Hira saat menerima wahyu pertama). Ketika Jibril menyamar dalam bentuk seorang sahabat (Dihyah al-Kalbi), penyamaran itu tidak menghilangkan pengenalan Nabi karena rujukan bentuk asli sudah dikenali sebelumnya.",
+    "sources": [
+      "Tafsir Kemenag RI QS 53:10-11",
+      "Tafsir al-Jalalayn QS 53:10-11"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Tangga epistemik",
+      "note": "'mā kadzaba' (tidak mendustakan) — negasi eksplisit atas kemungkinan kekeliruan persepsi; klaim fidelitas dinyatakan langsung, bukan diasumsikan diam-diam"
+    },
+    {
+      "layer": "Persepsi",
+      "note": "Kemenag membedakan MELIHAT (pengalaman inderawi) dari YAKIN (keyakinan hati) — pada umumnya manusia bisa 'melihat' tanpa keyakinan penuh; pada Muhammad, keduanya digambarkan selaras"
+    },
+    {
+      "layer": "Alignment",
+      "note": "pengenalan wujud ASLI (di Gua Hira) mendahului paparan pada VARIASI penampilan (menyamar sebagai sahabat) — rujukan ditetapkan lebih dulu, sebelum menghadapi variasi"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "psychology",
+      "reading": "Ayat menyoal gap yang nyata dalam psikologi persepsi: pengalaman inderawi ('melihat') dan keyakinan epistemik penuh ('meyakini') bisa terpisah pada kebanyakan orang — Kemenag mencatat ini sebagai kondisi umum manusia, dikontraskan dengan keselarasan penuh pada kasus Nabi. Pengakuan atas gap ini sendiri adalah kejujuran psikologis: tidak semua yang 'terlihat' otomatis 'diyakini'.",
+      "analogy": "gap antara pengalaman inderawi dan keyakinan epistemik penuh — diakui, bukan diabaikan",
+      "quranic_term": "fu'ād (hati/pusat keyakinan)"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Pola pengenalan sumber di sini mengikuti prinsip enrollment-sebelum-verifikasi: entitas (Nabi) mengenali WUJUD ASLI sumber informasi (Jibril, dilihat pertama di Gua Hira) SEBELUM menghadapi variasi representasi (menyamar sebagai sahabat). Referensi/ground-truth dikenali & dikonfirmasi terlebih dulu — baru sistem bisa reliably mengenali sumber yang sama meski tampil dalam bentuk berbeda-beda.",
+      "analogy": "enrollment-sebelum-verifikasi: rujukan asli dikonfirmasi dulu, baru variasi representasi bisa dikenali reliabel",
+      "quranic_term": "mā ra'ā (apa yang dilihatnya)"
+    },
+    {
+      "lens": "inference",
+      "reading": "Struktur negasi ganda 'mā kadzaba…mā ra'ā' (tidak mendustakan…apa yang dilihat) adalah pernyataan FIDELITAS eksplisit — jarang sebuah pernyataan menegaskan langsung 'laporan ini bukan kekeliruan persepsi'; biasanya fidelitas laporan diasumsikan diam-diam, bukan ditegaskan tegas seperti ini.",
+      "analogy": "pernyataan fidelitas eksplisit, bukan asumsi diam-diam"
+    },
+    {
+      "lens": "systems",
+      "reading": "Pengenalan sumber lintas representasi berbeda (Jibril tampil dalam rupa berbeda-beda, tetap dikenali) adalah pola invariant-recognition: identitas dikenali dari sesuatu yang tak berubah dan sudah dikonfirmasi sejak awal (rujukan pertama), bukan dari rupa permukaan yang bisa bervariasi tiap kemunculan.",
+      "analogy": "invariant recognition: identitas dikenali dari rujukan awal yang tetap, bukan rupa permukaan yang bervariasi"
+    },
+    {
+      "lens": "history-ummah",
+      "reading": "Kemenag menyebut kasus konkret: penyamaran Jibril sebagai sahabat Dihyah al-Kalbi — sebuah kejadian spesifik yang dikonfirmasi riwayat, bukan generalisasi abstrak tentang bagaimana wahyu 'biasanya' bekerja."
+    },
+    {
+      "lens": "amal",
+      "reading": "Fidelitas yang ditegaskan ayat ini menjadi salah satu dasar keyakinan bahwa pengalaman wahyu Nabi bukan khayalan atau kekeliruan persepsi — penting bagi pembaca untuk memahami ini sebagai penegasan tentang keteguhan & kejujuran pengalaman kenabian, bukan sekadar detail teknis."
+    }
+  ],
+  "inference": "Ayat ini menegaskan fidelitas pengalaman wahyu Nabi Muhammad atas apa yang dilihatnya (Jibril) — hatinya tidak mendustakan penglihatannya, berbeda dari kondisi umum manusia yang menurut Kemenag bisa 'melihat' tanpa sepenuhnya yakin. Bacaan rekayasa: (1) pembedaan pengalaman-inderawi vs keyakinan-epistemik adalah gap psikologis yang diakui secara jujur oleh teks, bukan diabaikan; (2) pengenalan wujud asli sumber SEBELUM menghadapi variasi penampilannya (di Gua Hira, lalu variasi rupa lain) adalah pola enrollment-sebelum-verifikasi — rujukan dikonfirmasi dulu, baru variasi bisa dikenali reliabel sebagai sumber yang sama. KLARIFIKASI PENTING (mengikuti tafsir sumber sendiri, agar tak disalahpahami): konteks ayat ini adalah penglihatan Nabi atas MALAIKAT JIBRIL yang menyampaikan wahyu — bukan penglihatan atas Allah; pembedaan ini eksplisit dalam Kemenag & konsisten dengan ayat lain (7:143, Musa diberi tahu 'lan tarani' — engkau tak akan sanggup melihat-Ku, dikutip pula di kajian Asy-Syura 42:51). CATATAN TANZIH: yang dibaca-rekayasa di kajian ini semata pola pengenalan & fidelitas persepsi pada pengalaman Nabi terhadap Jibril — sama sekali tidak menyentuh atau menganalogikan Dzat Allah.",
+  "authors": [
+    "Draft AI (LLM draft) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-12",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-12",
+      "note": "Tadabbur perdana — Wave 16 mimpi & wahyu.",
+      "authors": [
+        "Draft AI (LLM draft)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

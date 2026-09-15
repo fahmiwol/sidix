@@ -1,0 +1,111 @@
+{
+  "schema": "lab-study-v2",
+  "id": "waqiah-56-68-70",
+  "version": 1,
+  "title": "Al-māʾ alladhī tashrabūn — provenance sumber daya yang bukan buatanmu",
+  "subtitle": "Air yang kamu minum: kamukah yang menurunkannya? Kalau Kami mau, Kami jadikan asin",
+  "ref": {
+    "surah": 56,
+    "from": 68,
+    "to": 70
+  },
+  "surah_name": "Al-Waqi'ah",
+  "theme": "Provenance sumber daya, atribusi infrastruktur, counterfactual, kalibrasi syukur",
+  "sourced_meaning": {
+    "summary": "Menurut Tafsir Kemenag: Allah mengungkap salah satu nikmat agung untuk direnungkan — apakah manusia mengetahui asal air yang mereka minum. Apakah mereka yang menurunkannya dari langit ataukah Allah? Air hujan berasal dari uap yang terkena panas matahari, menjadi awan lalu mendung, turun sebagai air tawar-sejuk yang menyegarkan, bukan asin seperti air laut. Tanpa hujan, tak ada sungai mengalir, tak ada mata air, sumur pun kering. Ayat 70 menegaskan: seandainya Allah kehendaki, air itu dijadikan-Nya asin (ujāj) — maka mengapa tidak bersyukur?",
+    "sources": [
+      "Tafsir Kemenag RI QS 56:68-70",
+      "Tafsir al-Jalalayn QS 56:68-70"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Persepsi",
+      "note": "objek sehari-hari yang paling dianggap remeh (air minum) dijadikan titik perhatian ulang"
+    },
+    {
+      "layer": "Penalaran",
+      "note": "pertanyaan retoris 'aʾantum anzaltumūhu am naḥnu' memaksa audit atribusi: siapa sesungguhnya penyedia rantai pasok ini?"
+    },
+    {
+      "layer": "Alignment",
+      "note": "counterfactual 'law nashāʾ jaʿalnāhu ujāj' — properti nikmat (tawar) bukan default yang terjamin, melainkan pilihan yang bisa lain; ditutup dengan tuntutan syukur"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "computational",
+      "reading": "Audit provenance sumber daya: air minum adalah keluaran akhir dari rantai pasok panjang (evaporasi → awan → presipitasi → akuifer) yang konsumennya tidak membangun. Ayat memaksa menelusuri dependency graph ke akarnya — siapa provider sejati, bukan sekadar titik konsumsi terdekat.",
+      "analogy": "trace resource provenance to true upstream provider",
+      "quranic_term": "aʾantum anzaltumūhu am naḥnu"
+    },
+    {
+      "lens": "systems",
+      "reading": "Ketergantungan pada infrastruktur yang tak kau kendalikan: seluruh peradaban berjalan di atas layanan yang tidak dibuat oleh penggunanya. Ayat menyorot fragilitas tersembunyi — hilangkan satu input dasar (air tawar) dan seluruh sistem hilir runtuh, meski penggunanya merasa mandiri.",
+      "analogy": "critical dependency on unowned infrastructure",
+      "quranic_term": "law nashāʾ jaʿalnāhu ujāj"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Disiplin provenance & kerendahan-hati infrastruktur untuk agen: sebuah agen tidak menciptakan substratnya sendiri — data latih, komputasi, listrik, korpus pengetahuan semuanya 'air yang ia minum' dari hulu yang bukan buatannya. Implikasi desain: (1) lacak dan atribusikan asal setiap sumber daya/klaim (provenance-first), jangan mengaku-aku keluaran sebagai milik sendiri; (2) uji counterfactual 'law nashāʾ jaʿalnāhu ujāj' — jangan asumsikan input berkualitas (data bersih, API tersedia) sebagai jaminan; rancang agar tetap kalibrasi saat substrat berubah pahit/rusak/hilang. Agen yang sadar ia bergantung pada substrat yang tak dikuasainya lebih jujur dan lebih tahan.",
+      "analogy": "provenance-first attribution + robustness to degraded substrate",
+      "quranic_term": "al-māʾ alladhī tashrabūn"
+    },
+    {
+      "lens": "economy",
+      "reading": "Barang bebas yang sebenarnya langka: air tawar diperlakukan gratis padahal rantai penyediaannya mahal dan bisa gagal. Ekonomi yang sehat menghargai (menghitung, tidak menyia-nyiakan) sumber daya fondasi sebelum kelangkaan memaksanya — kalibrasi nilai sebelum krisis.",
+      "analogy": "pricing/valuing a taken-for-granted foundational good",
+      "quranic_term": "afalā tashkurūn"
+    },
+    {
+      "lens": "psychology",
+      "reading": "Bias atribusi & habituasi: yang selalu tersedia berhenti terlihat, dan penerima cenderung mengklaim kemandirian ('kamukah yang menurunkan?'). Ayat melatih atribusi yang benar dan mematahkan buta karena kebiasaan — melihat ulang yang rutin sebagai pemberian.",
+      "analogy": "correcting self-attribution bias / hedonic habituation",
+      "quranic_term": "afalā tashkurūn"
+    },
+    {
+      "lens": "inference",
+      "reading": "Struktur argumen interogatif-kontrafaktual: pertanyaan 'siapa yang menurunkan' + skenario 'seandainya Kami jadikan asin' memaksa audiens menyimpulkan penyedia sejati dengan mengandaikan ketiadaannya. Penalaran lewat counterfactual, bukan asersi langsung.",
+      "analogy": "counterfactual reasoning to reveal true cause",
+      "quranic_term": "law nashāʾ"
+    },
+    {
+      "lens": "earth-cosmos",
+      "reading": "Siklus hidrologi sebagai penyuling raksasa: matahari menguapkan air laut yang asin, meninggalkan garam, menurunkannya kembali tawar. Sistem geofisika berskala planet yang mengubah 'ujāj' menjadi layak minum — teramati, terukur, berulang.",
+      "analogy": "planetary-scale distillation via the water cycle",
+      "quranic_term": "min al-muzn"
+    },
+    {
+      "lens": "chemistry-process",
+      "reading": "Desalinasi alami: penguapan memisahkan H2O murni dari larutan garam — persis prinsip distilasi/RO yang ditiru industri. 'Tawar vs ujāj' adalah selisih beberapa gram garam per liter yang menentukan layak-tidaknya diminum.",
+      "analogy": "natural distillation / desalination",
+      "quranic_term": "ʿadhb vs ujāj"
+    },
+    {
+      "lens": "math-physics",
+      "reading": "Sistem yang dijaga jauh dari kesetimbangan: air laut adalah keadaan asin berenergi rendah; menjadikannya tawar butuh input energi (matahari) terus-menerus. Nikmat 'tawar' adalah keadaan terpelihara aktif, bukan default gratis — 'law nashāʾ' menunjuk pemeliharaan itu bisa dihentikan.",
+      "analogy": "actively maintained non-equilibrium state",
+      "quranic_term": "law nashāʾ jaʿalnāhu ujāj"
+    }
+  ],
+  "inference": "Tiga ayat ini adalah latihan audit provenance: ambil sumber daya yang paling dianggap remeh (air minum), telusuri rantai pasoknya ke hulu, dan sadari penggunanya tak membangunnya. Dua pelajaran rekayasa menyusul. Pertama, atribusi jujur — untuk agen AI: lacak asal data/komputasi/pengetahuan yang jadi 'air'-nya alih-alih mengaku mandiri. Kedua, counterfactual 'kalau Kami mau, Kami jadikan asin' — properti baik dari input bukan jaminan; rancang sistem yang tetap terkalibrasi saat substratnya memburuk. Yang sadar bergantung pada sumber yang tak dikuasainya menjadi lebih jujur, lebih hemat, dan lebih tahan.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-07",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-07",
+      "note": "Tadabbur perdana — Wave 6 batch air/substrat.",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

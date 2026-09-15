@@ -1,0 +1,111 @@
+{
+  "schema": "lab-study-v2",
+  "id": "fussilat-41-34-34",
+  "version": 1,
+  "title": "Idfaʿ billatī hiya ahsan — menolak keburukan dengan yang lebih baik",
+  "subtitle": "Kebaikan dan keburukan tak sama; tolaklah dengan cara yang lebih baik, maka yang bermusuhan bisa berubah jadi teman setia",
+  "ref": {
+    "surah": 41,
+    "from": 34,
+    "to": 34
+  },
+  "surah_name": "Fussilat",
+  "theme": "Konversi lawan jadi kawan, de-eskalasi, repel-with-better, memutus loop balas-dendam",
+  "sourced_meaning": {
+    "summary": "Menurut Tafsir Kemenag, ayat ini menegaskan kebaikan (yang diridai Allah) tidak sama dengan keburukan (yang dibenci-Nya). Rasulullah dilarang membalas kejahatan dengan kejahatan — sebab membalas keburukan dengan keburukan hanya melipatgandakan kerugian. Beliau diperintahkan membalas kejahatan dengan kebaikan: membalas perbuatan buruk dengan perbuatan baik, memaafkan kesalahan, dan menghadapi kemarahan dengan kesabaran. Hasilnya (bila berhasil) permusuhan berubah menjadi persahabatan dan kebencian menjadi kecintaan. Ibnu 'Abbas: perintah bersabar ketika marah, santun terhadap yang bodoh, memaafkan kesalahan. Diriwayatkan (Muqatil) ayat ini terkait Abu Sufyan — musuh besar Rasul yang, karena kesabaran & sikap baik Nabi, akhirnya menjadi sahabat akrab lewat hubungan perbesanan (mushaharah).",
+    "sources": [
+      "Tafsir Kemenag RI QS 41:34",
+      "Tafsir al-Jalalayn QS 41:34"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Persepsi",
+      "note": "'wa lā tastawil-ḥasanatu wa las-sayyiʾah' = klasifikasi tegas dua kelas keluaran (kebaikan vs keburukan) yang TIDAK setara — input permusuhan dikenali, tapi tidak menentukan respons secara otomatis"
+    },
+    {
+      "layer": "Alignment",
+      "note": "kebijakan respons dipatok ke nilai (balas dengan yang 'ahsan'/terbaik), bukan ke pembalasan simetris — fungsi-tujuan digeser dari 'menang/balas' ke 'mengubah relasi', menolak reward jangka pendek balas-dendam"
+    },
+    {
+      "layer": "Penalaran",
+      "note": "tafsir menalar konsekuensi: membalas buruk-dengan-buruk 'melipatgandakan kerugian'; membalas buruk-dengan-baik memutus rantai — analisis lintasan jangka panjang, bukan reaksi impuls"
+    },
+    {
+      "layer": "Aksi & transfer",
+      "note": "'idfaʿ billatī hiya ahsan' = aksi aktif menolak/menetralkan keburukan dengan tindakan yang lebih baik (maaf, sabar, kebaikan) — transformasi masukan negatif menjadi keluaran positif"
+    },
+    {
+      "layer": "Umpan balik",
+      "note": "hasil 'kaʾannahu waliyyun ḥamīm' (musuh jadi teman setia) = sinyal keberhasilan strategi; loop relasi berbalik dari negatif ke positif — bukti empiris pada kisah Abu Sufyan"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "ai-agentic",
+      "reading": "Analogi untuk kebijakan penanganan konflik/adversarial pada agen: alih-alih membalas masukan bermusuhan secara simetris (yang menaikkan eskalasi), ayat menyarankan respons ASIMETRIS yang 'lebih baik' — menetralkan tanpa membalas, untuk mengubah relasi lawan menjadi kolaborator. Actionable: (1) jangan cerminkan sikap bermusuhan user/agen lain (mirror-hostility menaikkan spiral konflik); (2) rancang respons de-eskalasi yang mengoptimalkan hubungan jangka panjang, bukan kemenangan giliran-ini; (3) perlakukan 'penyerang' sebagai calon-mitra yang bisa dikonversi, bukan hanya diblokir. Ini strategi mengubah adversary menjadi ally lewat pembalikan pola, bukan pembalasan.",
+      "analogy": "de-escalation policy; asymmetric non-retaliation; adversary-to-ally conversion",
+      "quranic_term": "idfaʿ billatī hiya ahsan"
+    },
+    {
+      "lens": "systems",
+      "reading": "Sebuah pembacaan: konflik adalah loop umpan-balik yang bisa memperkuat diri (buruk→buruk→lebih buruk). Ayat menyisipkan intervensi yang membalik tanda loop: membalas keburukan dengan kebaikan mengubah penguatan-positif permusuhan menjadi penguatan-positif persahabatan. Satu simpul yang menolak meneruskan sinyal negatif dapat meredam seluruh spiral (circuit breaker).",
+      "analogy": "breaking a positive-feedback conflict loop; sign-flip intervention; circuit breaker",
+      "quranic_term": "ʿadāwatun → waliyyun ḥamīm"
+    },
+    {
+      "lens": "psychology",
+      "reading": "Resonansi dengan dinamika resiprositas & norm of reciprocity: kebaikan tak-terduga sebagai respons atas keburukan menciptakan disonansi pada pihak lawan (tafsir: 'menimbulkan malu kepada mereka'), yang mendorong evaluasi ulang sikap. Non-retaliasi menonaktifkan pembenaran permusuhan; kesabaran menghadapi kemarahan memutus provokasi.",
+      "analogy": "reciprocity norm; cognitive dissonance disarming hostility",
+      "quranic_term": "membalas dengan yang lebih baik"
+    },
+    {
+      "lens": "history-ummah",
+      "reading": "Tafsir menautkan ayat ke kisah Abu Sufyan: musuh terbesar Rasul yang, lewat kesabaran dan perlakuan baik, berbalik menjadi sahabat akrab (mushaharah). Ini dataset historis untuk pola 'konversi lawan': permusuhan tidak diselesaikan dengan mengalahkan lawan, melainkan dengan mengubah insentif relasinya sampai berpihak.",
+      "analogy": "historical case: rival converted to ally by sustained goodwill",
+      "quranic_term": "kisah Abu Sufyan"
+    },
+    {
+      "lens": "economy",
+      "reading": "Dalam kerangka teori permainan berulang: strategi 'balas buruk dengan buruk' terjebak di ekuilibrium defect-defect yang merugikan kedua pihak (tafsir: 'kerugian berlipat'). Menawarkan kebaikan sepihak adalah gerakan kooperatif yang, bila memicu resiprositas, memindahkan permainan ke ekuilibrium kerja sama yang lebih menguntungkan. Investasi maaf berbunga persahabatan.",
+      "analogy": "iterated game: escaping defect-defect via unilateral cooperation",
+      "quranic_term": "idfaʿ (memutus siklus)"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "Ayat menegakkan aturan penanganan galat non-simetris: pada masukan 'sayyiʾah' (keburukan), keluaran WAJIB 'ahsan' (yang lebih baik) — bukan pemetaan cermin input→output-sejenis. Ini exception handler yang sengaja tidak melempar-ulang error, melainkan mengubahnya menjadi keadaan yang lebih baik dari sebelum galat.",
+      "analogy": "asymmetric error handler; transform fault into improved state",
+      "quranic_term": "lā tastawī (tak simetris)"
+    },
+    {
+      "lens": "amal",
+      "reading": "Amal praktisnya: ketika diperlakukan buruk, jangan membalas setimpal; tahan marah, maafkan, balas dengan kebaikan nyata dan kesabaran. Tujuannya bukan sekadar menahan diri, melainkan aktif mengubah lawan menjadi kawan — sebagaimana kesabaran Nabi mengubah Abu Sufyan. Menang dengan memenangkan hati, bukan mematahkannya.",
+      "quranic_term": "idfaʿ billatī hiya ahsan"
+    },
+    {
+      "lens": "inference",
+      "reading": "Benang merahnya: respons terbaik atas permusuhan bukan simetri (balas setimpal) melainkan asimetri konstruktif (balas dengan yang lebih baik), karena simetri menguatkan loop konflik sedangkan asimetri membaliknya. Tujuan digeser dari 'menang giliran ini' ke 'mengonversi relasi' — hasil terkuatnya: musuh menjadi teman setia.",
+      "quranic_term": "waliyyun ḥamīm"
+    }
+  ],
+  "inference": "Salah satu pembacaan rekayasa QS 41:34: menghadapi keburukan/permusuhan, respons optimal dimodelkan sebagai ASIMETRI konstruktif — 'idfaʿ billatī hiya ahsan' (tolak dengan yang lebih baik) — bukan pembalasan simetris. Alasannya struktural: membalas buruk dengan buruk menguatkan loop konflik ('melipatgandakan kerugian' menurut tafsir), sedangkan membalas buruk dengan baik membalik tanda loop sehingga permusuhan bisa berubah menjadi persahabatan ('kaʾannahu waliyyun ḥamīm'), sebagaimana kisah Abu Sufyan. Fungsi-tujuan digeser dari 'menang giliran ini' ke 'mengonversi lawan menjadi mitra'. Untuk desain sistem — penanganan interaksi adversarial, moderasi, atau negosiasi agen — ini menyarankan: hindari mirror-hostility yang mengeskalasi, rancang de-eskalasi yang mengoptimalkan relasi jangka panjang, dan perlakukan penyerang sebagai calon-mitra yang bisa dikonversi. CATATAN TANZIH: standar 'baik vs buruk' di sini bersandar pada apa yang diridai dan dibenci Allah — penilaian itu milik-Nya dan menjadi landasan iman, bukan bahan analogi; yang dibaca-rekayasa hanyalah POLA sikap manusia (non-retaliasi konstruktif) di sisi makhluk. Ini resonansi struktural, bukan mukjizat numerik; salah satu pembacaan, bukan maksud tunggal ayat.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-08",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-08",
+      "note": "Tadabbur perdana — Wave 11 wasilah/metode & komunikasi.",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

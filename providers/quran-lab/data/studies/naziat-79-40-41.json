@@ -1,0 +1,105 @@
+{
+  "schema": "lab-study-v2",
+  "id": "naziat-79-40-41",
+  "version": 1,
+  "title": "Menahan hawa — self-regulation sebagai gerbang menuju hasil",
+  "subtitle": "Yang takut kedudukan Tuhannya dan menahan diri dari hawa nafsunya, surga tempatnya",
+  "ref": {
+    "surah": 79,
+    "from": 40,
+    "to": 41
+  },
+  "surah_name": "An-Nazi'at",
+  "theme": "Regulasi diri, impulse-control, menahan dorongan, mempersiapkan hasil jangka-panjang",
+  "sourced_meaning": {
+    "summary": "Menurut Tafsir Kemenag: sebagai lawan dari orang yang melampaui batas dan mengutamakan kehidupan dunia (ayat sebelumnya), ditegaskan bahwa orang yang takut serta mengadakan persiapan karena memandang kebesaran kedudukan Tuhannya, dan MENAHAN DIRI dari ajakan hawa nafsunya, maka surgalah tempat kediamannya yang kekal. Dua syarat digandeng: rasa takut/kesadaran akan kedudukan Rabb (yang melahirkan persiapan) dan kemampuan menahan diri dari dorongan hawa. Kemenag menutup dengan 'alangkah beruntung mereka memperoleh bagian seperti itu' — menahan diri di sini bukan penekanan pasif, melainkan disiplin aktif yang berujung pada hasil.",
+    "sources": [
+      "Tafsir Kemenag RI QS 79:40-41",
+      "Tafsir al-Jalalayn QS 79:40-41"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Alignment",
+      "note": "kesadaran akan otoritas di atas diri ('takut kedudukan Rabb') menjadi jangkar yang menahan objective agar tak melayang ke keinginan sesaat"
+    },
+    {
+      "layer": "Umpan balik",
+      "note": "menahan diri = mekanisme inhibisi: sinyal dorongan tidak langsung dieksekusi, ada gate yang menyaring sebelum aksi"
+    },
+    {
+      "layer": "Aksi & transfer",
+      "note": "buah dari inhibisi bukan kekosongan melainkan 'persiapan' — energi yang ditahan dialihkan ke hasil jangka-panjang (surga sebagai settlement)"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "psychology",
+      "reading": "Ini definisi klinis self-regulation: menahan diri dari hawa (impulse-control) yang berjangkar pada kesadaran nilai yang lebih tinggi (takut kedudukan Rabb). Ayat memasangkan inhibisi dorongan dengan orientasi tujuan — persis dua komponen yang membedakan penundaan-kepuasan yang berhasil: bukan sekadar menekan, tetapi menekan KARENA ada nilai/hadiah masa depan yang dipegang. Bandingkan tazkiyatun-nafs (91:7-10) sebagai pelatihan menang atas dorongan.",
+      "analogy": "delay-of-gratification; inhibisi dorongan berjangkar tujuan",
+      "quranic_term": "nahā an-nafsa 'an al-hawā"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Cetak biru lapisan kendali-impuls untuk agen: sebelum eksekusi, tiap dorongan aksi harus lolos gate yang mengecek terhadap objective berjangka-panjang dan constraint bernilai-tinggi — bukan langsung dieksekusi karena reward sesaat besar. 'Takut kedudukan Rabb' = objective/constraint eksternal yang di-hormati; 'menahan hawa' = action-gating/impulse suppression. Rekayasa: pisahkan proposal-aksi dari eksekusi, sisipkan pengecekan kebijakan (guardrail) di antaranya, dan optimalkan reward terdiskonto jangka-panjang alih-alih reward instan. Ini komplemen positif dari misalignment di 25:43.",
+      "analogy": "action-gating; long-horizon reward; guardrail pra-eksekusi",
+      "quranic_term": "khāfa maqāma Rabbihi"
+    },
+    {
+      "lens": "algorithm",
+      "reading": "Struktur kontrol dua tahap: (1) kondisi penjaga 'khāfa maqāma Rabbihi' dievaluasi lebih dulu, (2) barulah aksi 'nahā an-nafs' dijalankan — inhibisi bukan reaksi acak melainkan cabang bersyarat. Menahan diri secara algoritmik adalah menyisipkan langkah verifikasi sebelum commit, menukar latensi (menunda kepuasan) demi kebenaran hasil.",
+      "analogy": "guard clause + deferred commit; trade latensi demi korektness",
+      "quranic_term": "tartīb syarṭ-jawāb"
+    },
+    {
+      "lens": "systems",
+      "reading": "Sistem yang stabil membutuhkan umpan-balik negatif (peredam) agar tak melampaui batas; 'menahan diri' berfungsi sebagai damping yang mencegah osilasi/eskalasi dorongan. Tanpa peredam, sistem melampaui batas (ṭaghā, ayat 37) dan runtuh; dengan peredam, ia menuju keadaan tunak yang diinginkan. Kesehatan sistem = adanya rem, bukan hanya gas.",
+      "analogy": "negative feedback / damping; pencegah overshoot",
+      "quranic_term": "muqābil aṭ-ṭughyān"
+    },
+    {
+      "lens": "economy",
+      "reading": "Pilihan antar-waktu yang matang: menahan konsumsi sekarang (menahan hawa) sebagai investasi untuk imbalan yang jauh lebih besar dan kekal (surga sebagai return). 'Mengadakan persiapan' adalah menabung/menanam modal alih-alih membelanjakan seluruh utilitas di depan — kebalikan dari diskonto ekstrem si pemuja hawa.",
+      "analogy": "penundaan konsumsi sebagai investasi; return jangka-panjang",
+      "quranic_term": "isti'dād (persiapan)"
+    },
+    {
+      "lens": "pedagogy",
+      "reading": "Menahan diri adalah keterampilan yang dilatih, bukan bakat instan: kesadaran akan kedudukan Rabb ditanam sebagai motivasi, lalu inhibisi dilatih berulang hingga menjadi karakter. Ini kurikulum bertahap — sinyal nilai dulu (mengapa menahan), baru pembiasaan (bagaimana menahan) — sehingga kontrol menjadi otomatis seperti keterampilan yang terlatih.",
+      "analogy": "pembentukan kebiasaan; skill inhibisi via repetisi bermotif",
+      "quranic_term": "tarbiyat an-nafs"
+    },
+    {
+      "lens": "biology-medicine",
+      "reading": "Resonansi dengan arsitektur kontrol saraf: dorongan dari sistem limbik disaring oleh kontrol prefrontal sebelum menjadi tindakan. 'Menahan hawa' seolah menguatkan jalur inhibisi top-down atas impuls bottom-up. Bounded — ini analogi pemahaman fungsi (rem atas dorongan), bukan klaim ayat menyebut neuro-anatomi.",
+      "analogy": "kontrol top-down atas impuls (regulasi eksekutif)",
+      "quranic_term": "kabḥ al-hawā"
+    },
+    {
+      "lens": "amal",
+      "reading": "Amalan konkretnya: hadirkan kesadaran akan kedudukan Rabb (murāqabah) sebagai jangkar, lalu latih jeda sebelum menuruti dorongan — kenali pemicu, tunda respons, evaluasi terhadap tujuan, baru bertindak. Menahan diri yang berbuah bukan sekadar 'tidak', melainkan 'tidak sekarang demi yang lebih baik nanti', disertai persiapan aktif.",
+      "analogy": "murāqabah + jeda-evaluasi-aksi",
+      "quranic_term": "mujāhadah + isti'dād"
+    }
+  ],
+  "inference": "Ayat ini adalah pasangan positif dari 25:43: bila mempertuhankan hawa adalah objective yang dibajak, maka menahan hawa adalah objective yang dijaga. Struktur rekayasanya jelas — kendali-impuls yang efektif butuh DUA hal sekaligus: jangkar nilai/tujuan di atas diri (di sini: kesadaran akan kedudukan Rabb) dan gate inhibisi yang menyaring dorongan sebelum dieksekusi. Untuk agen AI ini berarti memisahkan proposal-aksi dari eksekusi, menyisipkan pengecekan constraint bernilai-tinggi di antaranya, dan mengoptimalkan reward berjangka-panjang alih-alih instan; untuk jiwa ini adalah tazkiyah (bandingkan 91:7-10). Menahan diri di sini bukan kelumpuhan pasif melainkan disiplin aktif yang berujung 'persiapan' dan hasil. Resonansi struktural, bukan mukjizat numerik, bukan maksud tunggal ayat. CATATAN TANZIH: 'kedudukan Tuhannya' (maqām Rabb) disebut dengan ta'zhim sebagai landasan iman dan tauhid — Allah TIDAK dijadikan komponen/otoritas-sistem dalam analogi; yang dibaca secara struktural hanyalah sisi makhluk: mekanisme menahan diri pada nafs manusia. CATATAN GHAIB: 'surga' sebagai tempat kembali adalah perkara ghaib yang diimani dari wahyu; disebut deskriptif sebagai settlement/hasil, bukan spekulasi atas detail yang tak disebut teks.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-08",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-08",
+      "note": "Tadabbur perdana — Wave 12 hawa/kebenaran.",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

@@ -1,0 +1,104 @@
+{
+  "schema": "lab-study-v2",
+  "id": "anam-6-153-153",
+  "version": 1,
+  "title": "Sirat mustaqim vs subul — satu jalur kanonik lawan fragmentasi",
+  "subtitle": "Satu jalan yang mengumpulkan, banyak jalan yang mencerai-beraikan",
+  "ref": {
+    "surah": 6,
+    "from": 153,
+    "to": 153
+  },
+  "surah_name": "Al-An'am",
+  "theme": "Single canonical path, konvergensi vs divergensi, fragmentasi, standar tunggal",
+  "sourced_meaning": {
+    "summary": "Rasulullah ﷺ diperintah menjelaskan bahwa Al-Qur'an mengajak ke jalan yang benar dan menjadi pedoman/petunjuk dari Allah untuk kebahagiaan dunia-akhirat: 'inilah jalan-Ku yang lurus, maka ikutilah, dan jangan mengikuti jalan-jalan lain yang akan menyesatkan (mencerai-beraikan) kamu dari jalan Allah.' Kemenag menautkan riwayat Ibnu Mas'ud: Nabi menggaris satu garis lurus ('ini jalan Allah'), lalu garis-garis di kanan-kirinya ('ini jalan-jalan yang sesat', pada tiap ujungnya ada setan yang menyeru).",
+    "sources": [
+      "Tafsir Kemenag RI QS 6:153",
+      "Tafsir al-Jalalayn QS 6:153"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Aksi & transfer",
+      "note": "'fattabiʿūhu' (maka ikutilah) — perintah menempuh satu jalur; petunjuk diterjemahkan menjadi laku mengikuti, bukan sekadar mengetahui"
+    },
+    {
+      "layer": "Penalaran",
+      "note": "Kontras tunggal-vs-jamak ('as-sirāt' mufrad lawan 'as-subul' jamak) = argumen struktural: satu yang menyatukan, banyak yang memecah"
+    },
+    {
+      "layer": "Tangga epistemik",
+      "note": "Riwayat garis (Ibnu Mas'ud) memberi model visual: satu geodesik lurus vs banyak cabang menyimpang — grounding historis pembacaan"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "computational",
+      "reading": "Dibaca sebagai sistem: 'as-sirāt al-mustaqīm' (tunggal) = single source of truth / jalur kanonik, sedangkan 'as-subul' (jamak) = fork yang menyimpang. Kata 'tafarraqa' (mencerai-beraikan) persis menggambarkan divergensi: ketika banyak cabang diikuti, state terpecah dan menjauh dari basis. Satu jalur kanonik meminimalkan drift antar penempuh.",
+      "analogy": "single source of truth vs forked divergence",
+      "quranic_term": "sirāt mustaqīm"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "Berpola main branch tunggal vs percabangan tak terkendali. Mengikuti banyak 'subul' menghasilkan fragmentasi state yang tak bisa di-merge (jalan-jalan itu 'mencerai-beraikan dari jalan-Nya'). Invariant sistem terjaga bila ada satu lintasan otoritatif; tiap deviasi menambah jarak dan konflik yang tak terrekonsiliasi.",
+      "analogy": "one canonical branch; forks fragment state",
+      "quranic_term": "tafarruq (perpecahan)"
+    },
+    {
+      "lens": "algorithm",
+      "reading": "Sebagai optimasi: 'mustaqīm' (lurus) = lintasan langsung menuju tujuan, sedangkan cabang-cabang lain menyebar ke banyak arah dan menaikkan biaya/jarak. Konvergensi ke satu solusi lawan tersebar di banyak minimum lokal — jalur lurus adalah geodesik yang paling hemat, penyimpangan memperpanjang tempuh.",
+      "analogy": "geodesic / convergence vs scattering to local minima",
+      "quranic_term": "istiqāmah"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Ini pola alignment ke objektif tunggal lawan goal-drift. Ketika sistem mengejar banyak objektif yang bersaing ('subul'), policy-nya terfragmentasi dan bisa reward-hack ke arah yang menyimpang dari maksud asli ('menyesatkan dari jalan-Nya'). Untuk desain agen: tetapkan satu spesifikasi/objektif kanonik sebagai acuan, dan perlakukan proliferasi tujuan turunan yang tak selaras sebagai risiko divergensi yang harus dijaga, bukan keragaman yang netral.",
+      "analogy": "single-objective alignment vs goal drift / reward hacking",
+      "quranic_term": "ittibāʿ"
+    },
+    {
+      "lens": "systems",
+      "reading": "Ada gaya sentripetal (menyatukan, 'sirāt' tunggal) lawan sentrifugal (memecah, 'subul' jamak). Serupa standar/protokol tunggal yang menjaga interoperabilitas versus fork tak-kompatibel yang memecah ekosistem. Sistem yang sehat butuh titik acuan bersama; fragmentasi menaikkan entropi koordinasi.",
+      "analogy": "single protocol/standard vs incompatible forks",
+      "quranic_term": "jamāʿah"
+    },
+    {
+      "lens": "math-physics",
+      "reading": "Garis lurus = lintasan aksi-minimum antara dua titik; setiap simpangan menambah panjang tempuh. Model garis dalam riwayat Ibnu Mas'ud (satu lurus, banyak menyimpang) beresonansi dengan gagasan geodesik: satu jalur optimal, tak terhingga jalur yang lebih panjang. Dicatat sebagai resonansi struktural, bukan mukjizat numerik.",
+      "analogy": "straight line = least-path geodesic",
+      "quranic_term": "mustaqīm"
+    },
+    {
+      "lens": "history-ummah",
+      "reading": "Riwayat garis membingkai sejarah umat: kesatuan pada satu jalur vs perpecahan menjadi banyak golongan (tafarruq). Sebagai dataset iʿtibar historis, pola 'divergensi menjauhkan dari basis bersama' berulang; kohesi merawat arah, fragmentasi mengikis. Dibaca sebagai pelajaran struktur, tanpa menghakimi kelompok tertentu.",
+      "analogy": "cohesion vs sectarian fragmentation as historical pattern",
+      "quranic_term": "iʿtibār"
+    },
+    {
+      "lens": "amal",
+      "reading": "Perintahnya laku: 'ikutilah' satu jalan dan 'jangan ikuti' jalan lain — komitmen menempuh jalur yang jelas, bukan mengarang jalur sendiri. Disiplin mengikuti pedoman yang otoritatif alih-alih berpencar mengejar preferensi masing-masing.",
+      "quranic_term": "ittibāʿ"
+    }
+  ],
+  "inference": "Dibaca sebagai analogi rekayasa, Al-An'am 153 mengontraskan bentuk tunggal ('as-sirāt al-mustaqīm') dengan bentuk jamak ('as-subul') untuk menyatakan satu prinsip desain sistem petunjuk: satu jalur kanonik menjaga konvergensi, sedangkan proliferasi jalur-jalur turunan memicu divergensi yang 'mencerai-beraikan' — memecah state dan menjauhkannya dari basis bersama. Dalam istilah rekayasa (bounded, sebagai analogi pemahaman) ini beresonansi dengan single-source-of-truth, satu main-branch, alignment ke objektif tunggal, dan standar/protokol bersama yang mencegah fork tak-kompatibel. Model 'garis lurus vs garis menyimpang' dari riwayat Ibnu Mas'ud menambatkan pembacaan ini pada konteks bersumbernya, bukan spekulasi lepas. Ini salah satu pembacaan rekayasa di atas makna zahir yang bersumber, BUKAN maksud tunggal ayat; dan sebagai kajian syariat, yang dibaca adalah STRUKTUR sistem petunjuknya — bukan penetapan fatwa/hukum atau penghakiman kelompok. CATATAN TANZIH: 'jalan-Ku' / 'jalan Allah' disebut dengan ta'zhim sebagai LANDASAN iman; Allah (Dzat & Sifat-Nya) tidak dimodelkan atau dijadikan komponen sistem. Yang dianalogikan secara struktural hanyalah sisi makhluk/teks — yakni jalur petunjuk (syariat/teks) sebagai jalur kanonik dan sikap manusia dalam mengikutinya. Resonansi 'jalur tunggal vs fork' adalah analogi yang bounded, bukan mukjizat numerik.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-08",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-08",
+      "note": "Tadabbur perdana — Wave 11 pedoman (sistem petunjuk/guidance).",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

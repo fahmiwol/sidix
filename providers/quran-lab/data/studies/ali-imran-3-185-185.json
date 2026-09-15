@@ -1,0 +1,106 @@
+{
+  "schema": "lab-study-v2",
+  "id": "ali-imran-3-185-185",
+  "version": 1,
+  "title": "Matāʿ al-ghurūr — kesenangan dunia sebagai reward yang memperdaya",
+  "subtitle": "Tiap jiwa merasakan mati; balasan disempurnakan di kiamat; dunia = kesenangan yang menipu. Peringatan terhadap proxy-reward yang menyesatkan.",
+  "ref": {
+    "surah": 3,
+    "from": 185,
+    "to": 185
+  },
+  "surah_name": "Ali 'Imran",
+  "theme": "Terminasi universal, settlement tertunda, reward hacking, proxy-goal yang menyesatkan",
+  "sourced_meaning": {
+    "summary": "Tafsir Kemenag: setiap yang bernyawa pasti merasakan mati, dan pada hari kiamat balasan tiap orang disempurnakan — yang baik dibalas surga, yang buruk dibalas neraka. Kemenag mengutip hadis bahwa kubur bisa menjadi taman surga atau jurang neraka, dan bahwa keberuntungan sejati adalah dijauhkan dari neraka lalu dimasukkan ke surga; jalannya adalah mati dalam keadaan beriman dan berbuat baik kepada sesama. Penutup ayat: kehidupan dunia tidak lain adalah 'kesenangan yang memperdayakan' (matāʿ al-ghurūr) — kenikmatan sementara yang bisa menipu bila dijadikan tujuan akhir. Jalalain: 'ghurūr' = yang memperdaya, sebab ia menggoda lalu ditinggalkan.",
+    "sources": [
+      "Tafsir Kemenag RI QS 3:185",
+      "Tafsir al-Jalalayn QS 3:185"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Alignment",
+      "note": "peringatan inti: sinyal 'kesenangan dunia' bukan objektif sejati; mengoptimasinya (menjadikannya tujuan) = tertipu (ghurūr). Objektif sejati diselesaikan belakangan."
+    },
+    {
+      "layer": "Tangga epistemik",
+      "note": "'kullu nafsin dhā'iqatul mawt' = premis universal tanpa kecuali — kepastian (yaqīn), bukan dugaan; landasan yang tak butuh sampel tambahan."
+    },
+    {
+      "layer": "Aksi & transfer",
+      "note": "balasan (ujūr) diberikan atas hasil, tapi 'disempurnakan' (tuwaffawna) hanya di kiamat — penilaian penuh ditahan sampai akhir."
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "ai-agentic",
+      "reading": "Pembacaan paling tajam: 'matāʿ al-ghurūr' berperilaku seperti reward yang menyesatkan (deceptive/proxy reward). Kesenangan dunia adalah sinyal antara yang mudah diukur dan menggoda, tetapi berkorelasi buruk dengan objektif sejati yang baru diselesaikan di akhir. Agen (atau manusia) yang mengoptimasi proxy ini terjebak reward hacking — skor interim tinggi, hasil final rendah. Actionable: jangan latih/beri insentif pada sinyal yang mudah dipuaskan bila ia hanya proxy; kalibrasi ke objektif sejati yang, dalam ayat ini, sengaja ditahan penilaiannya sampai penutupan.",
+      "analogy": "deceptive proxy reward; reward hacking vs true objective",
+      "quranic_term": "matāʿ al-ghurūr"
+    },
+    {
+      "lens": "inference",
+      "reading": "Karena 'ujūr' baru 'disempurnakan' (tuwaffawna) di kiamat, skor yang tampak selama run bukan skor final — menyimpulkan sukses dari sinyal interim adalah kesalahan inferensi. Ini memisahkan metrik-proses (yang terlihat sekarang) dari metrik-hasil (yang dikunci di akhir); percaya penuh pada yang pertama = tertipu. Pembacaan struktural, bukan mukjizat numerik.",
+      "analogy": "interim metric ≠ final settled metric; deferred ground truth"
+    },
+    {
+      "lens": "systems",
+      "reading": "'Kullu nafsin dhā'iqatul mawt' menetapkan jaminan terminasi universal: tak ada entitas hidup yang luput dari stop. Dalam istilah sistem, setiap proses punya kondisi henti yang pasti — desain apa pun yang mengandaikan sebuah komponen berjalan selamanya keliru. Justru kepastian terminasi inilah yang membuat penyelesaian akhir (settlement) bisa terjadi untuk semua.",
+      "analogy": "universal guaranteed termination for every process",
+      "quranic_term": "kullu nafsin dhā'iqatul mawt"
+    },
+    {
+      "lens": "economy",
+      "reading": "'Tuwaffawna ujūrakum' memakai citra pembayaran upah yang dilunasi PENUH di waktu jatuh tempo (kiamat). Model ini memisahkan kinerja (dikerjakan sekarang) dari pelunasan (dibayar penuh nanti) — mirip akad dengan settlement tertunda. Kesenangan dunia yang dinikmati di muka bukan pelunasan; ia bahkan bisa menipu pihak yang mengira sudah 'dibayar'.",
+      "analogy": "deferred full settlement; interim gratification ≠ payment",
+      "quranic_term": "tuwaffawna ujūrakum"
+    },
+    {
+      "lens": "psychology",
+      "reading": "'Ghurūr' adalah bias kognitif yang dinamai: tergoda hadiah dekat-dan-nyata sambil mengabaikan hasil jauh-dan-besar — resonansi dengan present bias / temporal discounting. Kenikmatan sementara memberi umpan balik cepat yang membajak penilaian. Kesadaran bahwa sinyal ini menipu adalah langkah pertama meregulasi diri agar tak mengejar imbalan semu.",
+      "analogy": "present bias / temporal discounting; salient near reward hijacks judgment",
+      "quranic_term": "ghurūr"
+    },
+    {
+      "lens": "computational",
+      "reading": "Nilai final sebuah lintasan tidak dapat dibaca dari state antara; ia baru terdefinisi setelah proses berhenti dan diselesaikan. Membaca 'skor' dari kondisi tengah = membaca nilai yang belum di-commit. Ayat memisahkan tegas 'observasi selama run' dari 'nilai yang di-commit di terminasi'.",
+      "analogy": "value undefined until commit at termination; no reading uncommitted state"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "Ada dua fungsi nilai berbeda yang tak boleh dicampur: fungsi 'kenikmatan sekarang' dan fungsi 'balasan akhir'. Ayat menegaskan yang kedua sebagai yang otoritatif dan menandai yang pertama sebagai menyesatkan bila dijadikan patokan. Menyamakan keduanya adalah bug alignment — objektif proxy menggantikan objektif sejati.",
+      "analogy": "two distinct value functions; proxy must not shadow true objective"
+    },
+    {
+      "lens": "algorithm",
+      "reading": "Struktur reward: sparse & terminal — hadiah sejati diberikan sekali di akhir atas keseluruhan lintasan, sementara lingkungan penuh reward-antara yang padat tapi menyesatkan. Strategi benar adalah tahan godaan sinyal padat demi hasil terminal — persis tantangan credit assignment jangka panjang.",
+      "analogy": "sparse terminal reward amid dense misleading intermediate signals"
+    },
+    {
+      "lens": "amal",
+      "reading": "Konsekuensi praktik: perlakukan kenikmatan dunia sebagai sarana (matāʿ), bukan tujuan; ukur keputusan terhadap hasil akhir, bukan kepuasan sesaat. Kemenag menautkan keberuntungan sejati pada mati dalam iman dan berbuat baik kepada sesama — itulah amal yang berbobot di penilaian final, bukan tumpukan kesenangan.",
+      "analogy": "treat worldly gain as means not end; optimize for final outcome"
+    }
+  ],
+  "inference": "Ayat menyatukan tiga hal: kepastian terminasi universal (tiap jiwa merasakan mati), penyelesaian penuh yang ditunda ke akhir (balasan disempurnakan di kiamat), dan peringatan bahwa kehidupan dunia adalah 'kesenangan yang memperdaya'. Dibaca sebagai struktur rekayasa: kesenangan dunia berfungsi seperti proxy-reward yang menyesatkan — sinyal antara yang mudah dipuaskan namun berkorelasi buruk dengan objektif sejati, sehingga mengoptimasinya adalah bentuk reward hacking (skor interim naik, hasil final turun). Kuncinya, ayat sengaja MENAHAN penilaian penuh sampai penutupan ('tuwaffawna ... yawmal qiyāmah'), memisahkan metrik-proses dari metrik-hasil. Untuk desain sistem agen: jangan beri insentif pada sinyal yang mudah dipuaskan bila ia sekadar proxy; kalibrasi ke objektif sejati dan sadari bahwa nilai lintasan belum 'di-commit' sampai terminasi. CATATAN GHAIB: kiamat, penyempurnaan balasan, surga dan neraka adalah perkara ghaib akhirat — dibaca DESKRIPTIF dari tafsir Kemenag/Jalalain sebagai pola/struktur iman, bukan spekulasi mekanisme pembalasan atau klaim detail di luar nas. CATATAN TANZIH: 'yang menyempurnakan balasan' adalah Allah — Dzat ini TIDAK dianalogikan sebagai pembayar/evaluator/sistem; yang menjadi bahan analogi hanya struktur ujian-balasan pada sisi makhluk (sinyal proxy, settlement tertunda, terminasi). Semua ini resonansi struktural, bukan maksud tunggal ayat maupun mukjizat numerik.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-08",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-08",
+      "note": "Tadabbur perdana — Wave 10 hidup-mati.",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

@@ -1,0 +1,111 @@
+{
+  "schema": "lab-study-v2",
+  "id": "nahl-16-12-12",
+  "version": 1,
+  "title": "Sinyal Periodik Langit sebagai Jam & Kompas",
+  "subtitle": "QS An-Nahl 12 sebagai model timing, sinkronisasi, dan referensi navigasi",
+  "ref": {
+    "surah": 16,
+    "from": 12,
+    "to": 12
+  },
+  "surah_name": "An-Nahl",
+  "theme": "Tafakkur & pengenalan pola: benda langit yang periodik menjadi tanda bagi kaum berakal",
+  "sourced_meaning": {
+    "summary": "Menurut Tafsir Kemenag, Allah mengendalikan malam dan siang serta matahari dan bulan untuk kepentingan manusia. Malam dan siang bergilir: malam untuk beristirahat dan tidur agar pikiran tenang, siang untuk berusaha mencari rezeki. Matahari disebut sebagai penyebab siang dan malam — terbit di timur menandai siang, tenggelam di barat menandai malam — dan sebagai sumber tenaga yang sangat diperlukan seluruh makhluk hidup. Bintang-bintang pun ditundukkan dengan perintah-Nya. Semua itu menjadi tanda bagi kaum yang berakal (ya'qilun).",
+    "sources": [
+      "Tafsir Kemenag RI QS 16:12",
+      "Tafsir al-Jalalayn QS 16:12"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Persepsi",
+      "note": "Objek yang ditunjuk adalah sinyal berulang yang mudah diamati: pergantian malam-siang, gerak matahari-bulan, kemunculan bintang."
+    },
+    {
+      "layer": "Memori & grounding",
+      "note": "Keteraturan periodik memberi referensi tetap (timur-barat, siklus harian) yang bisa dijadikan patokan waktu dan arah lintas waktu."
+    },
+    {
+      "layer": "Aksi & transfer",
+      "note": "Tafsir menautkan sinyal waktu ke pembagian aktivitas — malam untuk istirahat, siang untuk usaha — yaitu penjadwalan perilaku berbasis sinyal alam."
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "math-physics",
+      "reading": "Malam-siang, matahari, dan bulan adalah osilator dengan periode stabil dan dapat diprediksi. Keteraturan periodik inilah yang mengubahnya dari sekadar cahaya menjadi acuan pengukuran — resonansi struktural dengan gagasan sinyal periodik sebagai basis metrologi waktu, BUKAN klaim mukjizat numerik.",
+      "analogy": "Osilator periodik stabil sebagai basis pengukuran (frekuensi tetap → referensi terkalibrasi).",
+      "quranic_term": "asy-syamsa wal-qamar (matahari & bulan)"
+    },
+    {
+      "lens": "algorithm",
+      "reading": "Bintang yang 'ditundukkan dengan perintah-Nya' berfungsi sebagai titik acuan tetap untuk menentukan posisi dan arah — inti algoritma navigasi selestial: dari beberapa referensi langit yang diketahui, hitung lokasi dan haluan. Pola tetap → penyelesaian posisi.",
+      "analogy": "Celestial navigation / triangulasi: fixed reference points → resolve posisi & bearing.",
+      "quranic_term": "an-nujum (bintang-bintang)"
+    },
+    {
+      "lens": "computational",
+      "reading": "Terbit-tenggelamnya matahari adalah 'sinyal' mentah; ia baru menjadi informasi waktu setelah diamati, dihitung, dan dipetakan ke jadwal. Ayat menautkan pengendalian benda langit dengan syarat 'bagi kaum berakal' — data periodik bermakna hanya bila diproses.",
+      "analogy": "Raw periodic signal → informasi waktu setelah sampling + pemetaan; makna = f(pemrosesan).",
+      "quranic_term": "ya'qilun (kaum berakal)"
+    },
+    {
+      "lens": "earth-cosmos",
+      "reading": "Ayat merangkai skala langit (matahari, bulan, bintang) dengan ritme bumi (malam, siang) sebagai satu sistem tanda yang saling terhubung. Gerak benda langit menjadi pengatur fenomena terestrial — kerangka acuan kosmik untuk kehidupan di bumi.",
+      "analogy": "Coupling langit-bumi: benda kosmik sebagai reference frame untuk fenomena terestrial.",
+      "quranic_term": "al-layl wan-nahar (malam & siang)"
+    },
+    {
+      "lens": "systems",
+      "reading": "Tafsir memetakan malam ke istirahat dan siang ke usaha — perilaku makhluk disinkronkan ke sinyal jam eksternal (matahari). Ini clock global yang menyelaraskan banyak subsistem hidup pada fase yang benar, mencegah tabrakan aktivitas.",
+      "analogy": "Global clock / sinkronisasi: external timing signal menyelaraskan fase banyak subsistem.",
+      "quranic_term": "sakhkhara lakum (Dia tundukkan untukmu)"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Sinyal langit adalah sumber waktu dan orientasi bersama yang tepercaya. Cetak biru agen: butuh sumber waktu tunggal yang andal untuk penjadwalan dan koordinasi, plus referensi tetap untuk grounding posisi/orientasi. Actionable: sematkan clock terkalibrasi untuk menjadwalkan siklus kerja-istirahat (duty cycle) agen dan gunakan landmark stabil sebagai jangkar spasial; keandalan koordinasi multi-agen bertumpu pada acuan waktu dan orientasi yang sama.",
+      "analogy": "Shared trusted clock + fixed landmarks: timing untuk scheduling/koordinasi, referensi tetap untuk spatial grounding.",
+      "quranic_term": "bi-amrihi (dengan perintah-Nya)"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "Pergantian malam-siang adalah siklus dua-keadaan yang deterministik: fase terbit memicu 'siang', fase tenggelam memicu 'malam', berulang tanpa henti. Membaca alam sebagai state machine berjam yang transisinya dipicu ambang posisi matahari.",
+      "analogy": "Clocked two-state machine: transisi fase dipicu threshold (posisi matahari) secara deterministik.",
+      "quranic_term": "ikhtilaf al-layl wan-nahar (silih berganti malam & siang)"
+    },
+    {
+      "lens": "inference",
+      "reading": "Dari keteraturan yang berulang dan dapat diprediksi, akal menyimpulkan adanya tatanan yang disengaja. Prediktabilitas itu sendiri menjadi tanda: pola yang stabil lintas waktu adalah bukti struktur, bukan kebetulan.",
+      "analogy": "Predictability sebagai sinyal keteraturan; regularitas berulang → inferensi adanya struktur.",
+      "quranic_term": "la-ayat (tanda-tanda)"
+    },
+    {
+      "lens": "pedagogy",
+      "reading": "Ayat memakai fenomena yang dialami setiap orang setiap hari (matahari terbit, malam datang) sebagai bahan ajar — memanfaatkan pengalaman universal yang tak terbantah sebagai jangkar pemahaman sebelum menaikkan ke kesimpulan yang lebih besar.",
+      "analogy": "Grounding pada pengalaman universal harian sebagai anchor sebelum abstraksi.",
+      "quranic_term": "ya'qilun (kaum berakal)"
+    }
+  ],
+  "inference": "QS An-Nahl 12 menunjuk sinyal-sinyal langit yang periodik dan stabil — malam-siang, matahari, bulan, bintang — lalu menautkannya dengan 'kaum yang berakal'. Dibaca sebagai rekayasa: benda langit berfungsi sebagai jam dan kompas — osilator periodik yang menjadi acuan waktu, dan referensi tetap yang menjadi acuan arah — namun keduanya baru bermakna setelah diamati dan diproses. Untuk desain agen AI: sediakan sumber waktu tunggal yang andal untuk penjadwalan/koordinasi dan landmark stabil untuk grounding spasial; koordinasi multi-agen bergantung pada acuan waktu dan orientasi bersama. Analogi ini bounded — resonansi struktural, bukan klaim mukjizat numerik.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-07",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-07",
+      "note": "Tadabbur perdana — Wave 7 tafakkur.",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

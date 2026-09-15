@@ -1,0 +1,82 @@
+{
+  "schema": "lab-study-v2",
+  "id": "yusuf-12-43-44",
+  "version": 1,
+  "title": "Aḍghātsu aḥlām — mengaku tak tahu, alih-alih berpura-pura tahu",
+  "subtitle": "Raja bermimpi tujuh sapi gemuk dimakan tujuh sapi kurus, minta ditakwilkan; para pembesar menjawab: itu mimpi kosong, dan kami sama sekali tak tahu takwil mimpi",
+  "ref": {
+    "surah": 12,
+    "from": 43,
+    "to": 44
+  },
+  "surah_name": "Yusuf",
+  "theme": "Kontras kompetensi: pemegang kekuasaan tertinggi kerajaan mengakui GAP KEAHLIAN secara terbuka, alih-alih memberi jawaban asal demi menjaga wibawa",
+  "sourced_meaning": {
+    "summary": "Raja berkata kepada para pembesarnya: 'Sesungguhnya aku bermimpi melihat tujuh ekor sapi betina gemuk dimakan tujuh ekor sapi betina kurus, dan tujuh bulir gandum hijau dan tujuh lainnya kering. Wahai orang-orang terkemuka, terangkanlah kepadaku takwil mimpiku itu jika kamu dapat mentakwilkan mimpi.' Mereka menjawab: '(Itu) mimpi-mimpi yang kosong (aḍghātsu aḥlām), dan kami sekali-kali tidak tahu menakwilkan mimpi itu.' Tafsir Kemenag: raja mengumpulkan semua orang cerdik-pandai, juru tenung, dan pembesar kerajaannya — mimpi ini sangat menggelisahkannya, belum pernah ia alami seumur hidup. Namun tak satu pun dari mereka mampu memecahkannya; ada yang berpendapat itu 'permainan tidur' tanpa arti, ada pula yang menyebutnya 'pengaruh angan-angan'. Kemenag: 'terhadap mimpi seperti itu, mereka tidak mempunyai ilmu untuk mencarikan tabirnya.'",
+    "sources": [
+      "Tafsir Kemenag RI QS 12:43-44",
+      "Tafsir al-Jalalayn QS 12:43-44"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Tangga epistemik",
+      "note": "raja secara eksplisit memberi SYARAT pada permintaannya: 'jika kamu dapat menakwilkan mimpi' — pengakuan bahwa keahlian ini tidak dijamin dimiliki semua orang"
+    },
+    {
+      "layer": "Aksi & transfer",
+      "note": "jawaban pembesar kerajaan adalah PENGAKUAN KETIDAKMAMPUAN eksplisit ('wa mā naḥnu bi-ta'wīlil-aḥlāmi bi-'ālimīn' — kami sekali-kali tidak tahu), bukan tebakan yang dipoles seolah otoritatif"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "psychology",
+      "reading": "Para pembesar kerajaan — pihak dengan status & tekanan sosial tertinggi untuk 'tampak tahu' di hadapan raja — justru memilih mengaku tak mampu daripada memberi jawaban asal demi menjaga wibawa. Ini kontras dengan bias umum (terutama pada figur berkuasa) untuk menghindari pengakuan ketidaktahuan di depan publik.",
+      "analogy": "pengakuan ketidaktahuan oleh figur berstatus tinggi, melawan tekanan sosial untuk 'tampak tahu'",
+      "quranic_term": "mā naḥnu bi-'ālimīn (kami tidak tahu)"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "'Aḍghātsu aḥlām' (mimpi kosong/kacau) adalah label yang diberikan BUKAN karena mimpi itu benar-benar tanpa makna, melainkan karena para penanggap KURANG SKILL untuk mendekode maknanya — Kemenag menutup dengan jelas: 'mereka tidak mempunyai ilmu untuk mencarikan tabirnya', bukan 'mimpi itu memang tak bermakna'. Prinsip penting: ketika sebuah sistem/model gagal menginterpretasi input, kegagalan itu bisa jadi ADA DI SISI INTERPRETER (kurang kapasitas), bukan otomatis berarti input-nya noise/kosong — pelabelan 'data sampah' butuh kehati-hatian, karena mimpi yang sama kelak ditakwilkan tepat oleh Yusuf (12:47-49).",
+      "analogy": "kegagalan interpretasi ≠ input tanpa makna — bisa jadi gap kapasitas interpreter, bukan sifat data",
+      "quranic_term": "aḍghātsu aḥlām (mimpi kosong/kacau)"
+    },
+    {
+      "lens": "systems",
+      "reading": "Raja mengumpulkan SELURUH kelas ahli yang tersedia (cerdik-pandai, juru tenung, pembesar) — sebuah proses eskalasi yang lengkap sebelum kesimpulan 'tak ada yang bisa' diterima. Kegagalan kolektif satu populasi ahli tak otomatis berarti tak ada solusi — hanya berarti solusi ada DI LUAR populasi yang sudah dicoba (baru ditemukan lewat rujukan tak terduga: bekas tahanan, 12:45-46).",
+      "analogy": "kegagalan kolektif populasi-ahli-yang-tersedia ≠ ketiadaan solusi — solusi mungkin di luar populasi yang dicoba"
+    },
+    {
+      "lens": "inference",
+      "reading": "Syarat yang disematkan raja pada permintaannya sendiri ('in kuntum lir-ru'yā ta'burūn' — jika kamu dapat menakwilkan) menunjukkan ia sudah mengantisipasi kemungkinan tak ada yang mampu — permintaan dirumuskan dengan kesadaran akan ketidakpastian jawabannya sendiri, bukan asumsi pasti akan terjawab."
+    },
+    {
+      "lens": "economy",
+      "reading": "Konsultasi kepada 'seluruh orang cerdik-pandai kerajaan' adalah pencarian solusi berbiaya tinggi (mengumpulkan banyak ahli sekaligus) yang tetap berujung nihil — menunjukkan bahwa kuantitas konsultan tak menjamin ditemukannya keahlian yang tepat; keahlian spesifik (takwil mimpi presisi) langka meski populasi penasihat besar."
+    },
+    {
+      "lens": "amal",
+      "reading": "Kejujuran para pembesar mengakui ketidaktahuan, alih-alih menjaga muka dengan jawaban asal yang bisa menyesatkan kebijakan kerajaan (mimpi ini terkait persiapan pangan tujuh tahun, hal yang berdampak nyata pada rakyat), adalah sikap terpuji — kejujuran intelektual diutamakan di atas menjaga wibawa saat taruhannya besar."
+    }
+  ],
+  "inference": "Ketika raja meminta takwil mimpinya yang meresahkan, seluruh kelas ahli yang tersedia di kerajaan mengaku terbuka tidak mampu — 'aḍghātsu aḥlām' bukan penilaian bahwa mimpi itu tanpa makna, melainkan pengakuan jujur atas keterbatasan keahlian mereka sendiri (Kemenag: 'mereka tidak mempunyai ilmu untuk mencarikan tabirnya'). Bacaan rekayasa: (1) kegagalan interpretasi sebuah sistem tak selalu berarti input-nya memang kosong/noise — bisa jadi gap ada di sisi interpreter, bukan sifat datanya, terbukti kelak mimpi yang sama ditakwilkan presisi oleh Yusuf; (2) kegagalan kolektif seluruh populasi ahli yang tersedia tak otomatis berarti solusi tak ada — solusi ditemukan di luar populasi yang sudah dicoba. Dibaca berdampingan dengan kajian 12:36 (kepercayaan dibangun dari rekam jejak): di sana permintaan takwil berhasil karena penakwilnya (Yusuf) sudah terbukti berkompeten lewat observasi; di sini permintaan GAGAL total justru dari sumber daya keahlian formal terbesar yang tersedia — kompetensi nyata tak selalu berkorelasi dengan status/jumlah penasihat. CATATAN TANZIH: tidak ada subjek Allah langsung di ayat ini; yang dibaca-rekayasa adalah pola sosial pengakuan-ketidaktahuan & pencarian keahlian pada pihak manusia.",
+  "authors": [
+    "Draft AI (LLM draft) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-12",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-12",
+      "note": "Tadabbur perdana — Wave 16 mimpi & wahyu, siklus mimpi Yusuf (4/5).",
+      "authors": [
+        "Draft AI (LLM draft)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

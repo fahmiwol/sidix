@@ -1,0 +1,123 @@
+{
+  "schema": "lab-study-v2",
+  "id": "ala-87-1-5",
+  "version": 1,
+  "title": "Khalaqa–sawwa–qaddara–hada — pipeline lifecycle penciptaan",
+  "subtitle": "Cipta lalu sempurnakan, tetapkan kadar lalu beri petunjuk; tumbuhkan lalu jadikan kering",
+  "ref": {
+    "surah": 87,
+    "from": 1,
+    "to": 5
+  },
+  "surah_name": "Al-A'la",
+  "theme": "Pipeline init→configure→guide→lifecycle; tahap berurutan penciptaan; petunjuk (hidayah) sebagai runtime setelah konfigurasi kadar",
+  "sourced_meaning": {
+    "summary": "Menurut Tafsir Kemenag, rangkaian ini diawali perintah menyucikan nama Tuhan Yang Mahatinggi (ayat 1). Lalu diterangkan Dialah yang menciptakan dan menyempurnakan penciptaan segala makhluk (sawwa), menentukan segala sesuatu menurut bentuk dan ukuran yang tepat dan seimbang serta menetapkan ketentuan/hukum bagi tiap makhluk sehingga dapat hidup, berkembang biak, dan memelihara hidupnya (qaddara–hada). Kemudian Dia menumbuhkan rumput hijau segar (makanan ternak) lalu menjadikannya kering kehitam-hitaman — bukti kuasa-Nya, bukan berhala yang disembah kaum kafir.",
+    "sources": [
+      "Tafsir Kemenag RI QS 87:1-5",
+      "Tafsir al-Jalalayn QS 87:1-5"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Persepsi",
+      "note": "rangkaian kata kerja berurutan (khalaqa, sawwa, qaddara, hada, akhraja, ja'ala) terbaca sebagai tahap-tahap proses yang eksplisit — sebuah 'trace' langkah demi langkah"
+    },
+    {
+      "layer": "Penalaran",
+      "note": "urutan bermakna: menyempurnakan bentuk (sawwa) mendahului menetapkan kadar (qaddara), yang mendahului memberi petunjuk (hada) — konfigurasi sebelum menjalankan"
+    },
+    {
+      "layer": "Aksi & transfer",
+      "note": "siklus hidup lengkap ditampilkan: dari tumbuh-hijau sampai kering-kehitaman — sistem bukan hanya di-'deploy' tapi punya fase akhir yang juga ditetapkan"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "amal",
+      "reading": "Hipotesis amal: tasbih (ayat 1) mendahului uraian proses — sikap yang benar terhadap keteraturan adalah memuliakan Sumbernya, bukan mengklaim kendali. Praktik: mensyukuri 'hidayah' sebagai penutup rangkaian nikmat penciptaan.",
+      "analogy": "acknowledgment sebelum utilisasi",
+      "quranic_term": "sabbih"
+    },
+    {
+      "lens": "computational",
+      "reading": "Rangkaian sawwa→qaddara→hada beresonansi kuat dengan lifecycle objek: allocate/normalize state (sawwa) → set parameter & invariant (qaddara) → jalankan dengan aturan main (hada). Tiap tahap prasyarat tahap berikut; melewati satu tahap menghasilkan objek tak-terkonfigurasi yang berperilaku tak terdefinisi.",
+      "analogy": "object lifecycle: init → configure → run",
+      "quranic_term": "sawwa → qaddara → hada"
+    },
+    {
+      "lens": "algorithm",
+      "reading": "Terbaca sebagai pipeline deterministik multi-stage: create → shape → parameterize → guide → grow → senesce. Ada stage input (tumbuhkan hijau) dan stage terminasi (kering kehitaman) — pipeline yang menyertakan garbage collection / end-of-life, bukan hanya start.",
+      "analogy": "staged pipeline dengan terminasi",
+      "quranic_term": "fa-ja'alahu (lalu Dia jadikan)"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Cetak biru actionable untuk agen: pisahkan siklus menjadi INIT (muat model/skema) → CONFIGURE (set kadar: batas langkah, kuota, kebijakan) → GUIDE (hidayah = policy/system-prompt yang mengarahkan perilaku saat runtime). 'Hada' sesudah 'qaddara' mengajarkan urutan penting: JANGAN memberi arahan perilaku sebelum parameter & guardrail ditetapkan. Tambahkan fase lifecycle: setiap agent-run punya awal, jalan berkadar, dan terminasi bersih (ghutha' = teardown/cleanup), bukan proses menggantung.",
+      "analogy": "agent lifecycle: init→configure→guide→teardown",
+      "quranic_term": "qaddara fa-hada"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "'Qaddara fa-hada' sebagai constraint-then-policy: tetapkan dulu domain nilai yang sah (kadar), baru berikan aturan navigasi di dalam domain itu (petunjuk). Petunjuk tanpa batas domain = perilaku liar; batas tanpa petunjuk = kaku tanpa arah. Keduanya dipasangkan.",
+      "analogy": "constraints + guiding policy",
+      "quranic_term": "qaddara + hada"
+    },
+    {
+      "lens": "biology-medicine",
+      "reading": "Urutan ini beresonansi dengan ontogeni: pembentukan (morfogenesis, sawwa), penetapan program regulasi (ekspresi gen berkadar, qaddara), lalu perilaku terpandu (tropisme/insting, hada), diakhiri senescence (layu, ghutha' ahwa). Analogi pemahaman atas perkembangan makhluk hidup yang bertahap dan berujung — bukan bukti tekstual.",
+      "analogy": "ontogeni → regulasi → perilaku → senescence",
+      "quranic_term": "hada (petunjuk fitrah)"
+    },
+    {
+      "lens": "chemistry-process",
+      "reading": "'Menumbuhkan hijau lalu menjadikan kering kehitaman' beresonansi dengan transformasi materi bertahap: fotosintesis (fiksasi karbon, hijau) → penuaan → dekomposisi/karbonisasi (menghitam). Siklus zat: unsur yang sama diproses melalui fase-fase — analogi siklus karbon, bukan klaim kimiawi tekstual.",
+      "analogy": "siklus materi: sintesis → penuaan → dekomposisi",
+      "quranic_term": "ghutha' ahwa"
+    },
+    {
+      "lens": "earth-cosmos",
+      "reading": "Skala ekosistem: pertumbuhan musiman padang rumput lalu kekeringannya adalah siklus yang terukur oleh iklim & musim — 'kadar' waktu dan air yang menentukan fase. Resonansi struktural dengan ritme bumi yang periodik dan terjadwal.",
+      "analogy": "siklus musiman terjadwal",
+      "quranic_term": "qaddara"
+    },
+    {
+      "lens": "systems",
+      "reading": "Rangkaian menampilkan sistem lengkap dengan feedback lingkungan: tumbuhan tumbuh sesuai input (air), memberi output (pakan ternak), lalu meluruh mengembalikan materi ke tanah. Ini loop tertutup — 'kadar' menjaga tiap fase tidak lepas kendali.",
+      "analogy": "closed-loop material cycle",
+      "quranic_term": "qaddara–hada"
+    },
+    {
+      "lens": "pedagogy",
+      "reading": "Pola bertahap = prinsip scaffolding: bentuk dasar dulu (sawwa), lalu takar beban sesuai kemampuan (qaddara), baru beri arahan/bimbingan (hada). Mengajar mengikuti urutan ini menghindari overload; membalik urutan (menuntut sebelum menakar) menggagalkan transfer.",
+      "analogy": "scaffolding berurutan",
+      "quranic_term": "qaddara fa-hada"
+    },
+    {
+      "lens": "inference",
+      "reading": "Rangkaian ini sendiri sebuah argumen: keteraturan bertahap (bentuk pas, kadar seimbang, petunjuk fungsional, siklus tuntas) dijadikan tanda satu Pengatur — melawan penyembahan berhala (kata Kemenag). Struktur inferensinya: dari desain berjenjang yang koheren ke kesimpulan tentang Perancang tunggal.",
+      "analogy": "argument from staged design",
+      "quranic_term": "i'tibar"
+    }
+  ],
+  "inference": "Dibaca sebagai pola rekayasa, QS 87:1-5 menampilkan sebuah pipeline lifecycle yang eksplisit: cipta → sempurnakan bentuk (sawwa) → tetapkan kadar/parameter (qaddara) → beri petunjuk perilaku (hada) → tumbuhkan → terminasi (kering kehitaman). Pelajaran desain yang menonjol adalah URUTAN: konfigurasi kadar mendahului pemberian arahan perilaku, dan sistem yang utuh menyertakan fase akhir yang bersih, bukan hanya awal. Untuk agen AI, ini cetak biru langsung: init → configure (set guardrail & kuota) → guide (policy runtime) → teardown. Rangkaian dibingkai tasbih (ayat 1), mengingatkan bahwa pembacaan ini memuliakan keteraturan, bukan mengklaimnya. (Satu pembacaan rekayasa, bukan maksud tunggal ayat; keterkaitan sains/biologi di sini analogi pemahaman, bukan bukti.)",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-08",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-08",
+      "note": "Tadabbur perdana — Wave 8 kadar/takdir.",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

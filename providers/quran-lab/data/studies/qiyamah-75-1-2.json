@@ -1,0 +1,94 @@
+{
+  "schema": "lab-study-v2",
+  "id": "qiyamah-75-1-2",
+  "version": 1,
+  "title": "An-Nafs al-Lawwāmah — jiwa yang terus mengaudit dirinya sendiri",
+  "subtitle": "Aku bersumpah demi hari Kiamat, dan aku bersumpah dengan jiwa yang amat menyesali dirinya sendiri",
+  "ref": {
+    "surah": 75,
+    "from": 1,
+    "to": 2
+  },
+  "surah_name": "Al-Qiyamah",
+  "theme": "Nafs lawwamah — fungsi audit-diri yang terus-menerus, belum konvergen; tahap transisi dalam busur taksonomi nafs",
+  "sourced_meaning": {
+    "summary": "Aku bersumpah demi hari Kiamat, dan aku bersumpah dengan jiwa yang amat menyesali dirinya sendiri (an-nafs al-lawwāmah). Tafsir Kemenag: Allah bersumpah dengan hari Kiamat untuk menegaskan kepastian datangnya, dan dengan an-nafs al-lawwāmah — jiwa yang senantiasa menyesali sikap & perbuatannya sendiri, baik atas kejahatan yang tak sanggup dihentikan maupun kebaikan yang tak diperbanyak. Jiwa ini juga tak stabil: boros & royal di waktu senang, menyesali nasib & menjauhi agama di waktu susah. Kemenag menyebutnya jiwa mukmin yang BELUM mencapai tingkat sempurna — penyesalan adalah bentengnya. Huruf 'lā' pada kedua ayat adalah lā zāʾidah (penguat makna). Kemenag menautkan: pasangan sumpah (hari Kiamat + nafs lawwamah) menunjukkan audit internal (nafs) mengantisipasi audit eksternal (Kiamat) yang akan membeberkan nasib setiap jiwa.",
+    "sources": [
+      "Tafsir Kemenag RI QS 75:1-2",
+      "Tafsir al-Jalalayn QS 75:1-2"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Tangga epistemik",
+      "note": "dua sumpah berpasangan: peristiwa eksternal-final (hari Kiamat) + fungsi internal-berkelanjutan (nafs lawwamah) — audit luar & audit dalam disandingkan"
+    },
+    {
+      "layer": "Umpan balik",
+      "note": "lawwamah = terus-menerus mengevaluasi & menyesali; TIDAK PERNAH sepenuhnya puas, bahkan atas kebaikan yang telah dikerjakan"
+    },
+    {
+      "layer": "Alignment",
+      "note": "Kemenag: 'jiwa mukmin yang belum mencapai tingkat lebih sempurna' — lawwamah eksplisit ditandai sebagai tahap TRANSISI, bukan tujuan akhir"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "psychology",
+      "reading": "Lawwamah adalah fungsi monitoring-diri yang aktif dan kritis — berbeda dari ammārah (tanpa audit sama sekali) maupun muthmainnah (audit yang telah konvergen/selesai). Kemenag mencatat ia bahkan berosilasi: boros saat senang, menyesal saat susah — pola conscience yang HIDUP tapi belum stabil, terus mengoreksi tanpa pernah benar-benar tenang. Ini justru tanda kesehatan psikologis (nurani yang aktif), bukan cacat yang harus dihilangkan.",
+      "analogy": "self-monitoring aktif namun belum stabil — tanda nurani hidup, bukan cacat",
+      "quranic_term": "an-nafs al-lawwāmah"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Fungsi lawwamah mirip pola reflective self-critique berkelanjutan (bandingkan kajian muhasabah di Al-Hasyr 59:18) — namun secara eksplisit ditandai BELUM KONVERGEN: sebuah sistem yang terus mengevaluasi dirinya tanpa pernah mencapai status diterima (accepting state) tetap berfungsi, tapi belum tuntas. Ini kontras terstruktur dengan muthmainnah (89:27-30) sebagai status akhir yang konvergen — busur taksonomi nafs menyiratkan kritik-diri berkelanjutan adalah tahap PERLU tapi bukan tahap TERAKHIR.",
+      "analogy": "reflective loop belum konvergen — perlu, tapi bukan status akhir",
+      "quranic_term": "lawwāmah (terus menyesali/mengaudit)"
+    },
+    {
+      "lens": "systems",
+      "reading": "Pasangan sumpah (hari Kiamat + nafs lawwamah) membaca dua lapis audit: audit INTERNAL berkelanjutan (lawwamah, berjalan sepanjang hidup) sebagai rehearsal bagi audit EKSTERNAL final (Kiamat, sekali dan menentukan). Sistem yang menjalankan audit internal jujur sepanjang siklus hidupnya secara struktural lebih siap menghadapi audit eksternal yang tak bisa dihindari.",
+      "analogy": "audit internal berkelanjutan sebagai rehearsal bagi audit eksternal final",
+      "quranic_term": "qiyāmah + lawwāmah (sumpah berpasangan)"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "Osilasi yang dicatat Kemenag (boros saat lapang, menyesal saat sempit) membaca sebagai control loop REAKTIF: koreksi terjadi SETELAH kondisi berubah, bukan berdasarkan prinsip yang menstabilkan proaktif. Ini pola yang secara struktural belum matang dibanding kontrol yang principled/proaktif — menjelaskan kenapa lawwamah ditandai sebagai tahap transisi, bukan status stabil.",
+      "analogy": "control loop reaktif (koreksi pasca-fakta) vs kontrol proaktif principled"
+    },
+    {
+      "lens": "pedagogy",
+      "reading": "Dibaca dalam busur taksonomi (ammārah→lawwāmah→muthmainnah), lawwamah adalah TAHAP PERKEMBANGAN, bukan cacat yang harus buru-buru dihilangkan. Pendidikan karakter yang sehat tidak mencoba membungkam suara penyesalan-diri, melainkan membimbingnya matang menuju penyelarasan yang lebih stabil (muthmainnah) — model tahapan, bukan sifat tetap.",
+      "analogy": "model tahapan perkembangan karakter, bukan sifat tetap yang dihakimi"
+    },
+    {
+      "lens": "inference",
+      "reading": "Objek sumpah kedua (nafs lawwamah) baru bermakna penuh jika dibaca berpasangan dengan objek sumpah pertama (hari Kiamat) — Kemenag: jawaban tersirat sumpah ini adalah kepastian kebangkitan & pertanggungjawaban. Struktur retoris ini menautkan proses BERKELANJUTAN (audit-diri kini) dengan peristiwa FINAL (audit kelak) sebagai satu argumen bersambung, bukan dua topik lepas.",
+      "analogy": "sumpah berpasangan = argumen bersambung, bukan dua topik lepas"
+    },
+    {
+      "lens": "amal",
+      "reading": "Penyesalan yang digambarkan bukan tujuan akhir melainkan pendorong: jiwa yang menyesali kejahatan yang tak sanggup dihentikan, dan kebaikan yang tak diperbanyak, sedang dalam proses menuju perbaikan — bukan terjebak dalam rasa bersalah tanpa arah. Ini beresonansi dengan pola muhasabah (Al-Hasyr 59:18): retrospektif untuk memperbaiki langkah esok, bukan meratapi."
+    }
+  ],
+  "inference": "An-nafs al-lawwāmah menempati posisi TRANSISI dalam busur taksonomi nafs: berbeda dari ammārah (12:53, tanpa audit-diri) yang mendorong tanpa koreksi, lawwamah AKTIF menyesali & mengevaluasi — namun Kemenag menegaskan ia 'belum mencapai tingkat lebih sempurna', bahkan berosilasi (boros saat lapang, menyesal saat sempit). Bacaan rekayasa: (1) fungsi kritik-diri berkelanjutan yang belum konvergen tetap berfungsi tapi belum tuntas — perlu, namun bukan status akhir (kontras dengan muthmainnah di 89:27-30); (2) pasangan sumpah hari-Kiamat & nafs-lawwamah membaca audit internal berkelanjutan sebagai rehearsal bagi audit eksternal final yang tak terhindarkan; (3) osilasi reaktifnya (koreksi pasca-fakta, bukan prinsip proaktif) menjelaskan posisinya sebagai tahap perkembangan, bukan tujuan. CATATAN TANZIH: 'uqsimu' (aku/Allah bersumpah) adalah firman Allah yang menegaskan kepastian — perangkat retoris penegasan dalam Al-Qur'an, bukan bahan analogi rekayasa; yang dibaca hanya struktur fungsi audit-diri pada pihak nafs manusia.",
+  "authors": [
+    "Draft AI (LLM draft) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-12",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-12",
+      "note": "Tadabbur perdana — Wave 14 taksonomi nafs (ammarah/lawwamah/muthmainnah).",
+      "authors": [
+        "Draft AI (LLM draft)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

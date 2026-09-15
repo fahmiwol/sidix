@@ -1,0 +1,89 @@
+{
+  "schema": "lab-study-v2",
+  "id": "fussilat-41-20-22",
+  "version": 1,
+  "title": "Syahida ʿalaihim julūduhum — komponen bersaksi atas sistemnya",
+  "subtitle": "Pendengaran, penglihatan, kulit mereka menjadi saksi atas mereka",
+  "ref": {
+    "surah": 41,
+    "from": 20,
+    "to": 22
+  },
+  "surah_name": "Fussilat",
+  "theme": "Self-attestation, tamper-proof telemetry, komponen sebagai saksi, non-repudiation",
+  "sourced_meaning": {
+    "summary": "Hingga apabila sampai ke neraka, pendengaran, penglihatan, dan kulit mereka menjadi saksi atas apa yang mereka kerjakan. Mereka bertanya pada kulit mereka: 'Mengapa kamu bersaksi atas kami?' Kulit menjawab: 'Allah yang menjadikan segala sesuatu berbicara, telah menjadikan kami berbicara.' Kamu tak dapat bersembunyi dari kesaksian pendengaran, penglihatan, dan kulitmu — bahkan kamu mengira Allah tak mengetahui banyak dari yang kamu kerjakan. Tafsir Kemenag: anggota badan menjadi saksi atas perbuatan pemiliknya.",
+    "sources": [
+      "Tafsir Kemenag RI QS 41:20-22",
+      "Tafsir al-Jalalayn QS 41:20-22"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Umpan balik",
+      "note": "komponen sistem (indera, kulit) menyimpan & melaporkan rekaman perbuatan"
+    },
+    {
+      "layer": "Tangga epistemik",
+      "note": "kesaksian dari dalam diri = bukti yang tak bisa disangkal (non-repudiation)"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "amal",
+      "reading": "Anggota tubuh yang dipakai maksiat kelak bersaksi memberatkan; yang dipakai taat bersaksi meringankan. Kesadaran ini menjadikan setiap organ amanah — mata, telinga, tangan sebagai 'saksi' yang sedang merekam.",
+      "quranic_term": "syahādatul-jawāriḥ"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Self-attestation & non-repudiation: komponen sistem sendiri (bukan pengawas eksternal) menyimpan bukti perbuatannya dan melaporkannya — tak bisa disangkal oleh pelaku. Untuk agen autonom: telemetri internal yang tamper-evident, di mana setiap sub-modul mempertahankan jejaknya sendiri, sehingga 'sistem tak bisa berbohong tentang apa yang dilakukannya' — bahkan ketika pelaku mengira jejaknya tak terekam ('mengira Allah tak tahu banyak'). Ini komplemen 50:17 (logger eksternal) dengan attestation dari dalam.",
+      "analogy": "self-attestation; non-repudiation; tamper-evident internal telemetry",
+      "quranic_term": "syahida ʿalaihim"
+    },
+    {
+      "lens": "computational",
+      "reading": "Distributed logging di tiap komponen: pendengaran, penglihatan, kulit masing-masing menyimpan record-nya sendiri, lalu di-replay saat audit. Bukan log terpusat tunggal (yang bisa dikompromikan) melainkan bukti yang tersebar di seluruh komponen — jauh lebih sulit dipalsukan.",
+      "analogy": "per-component distributed provenance"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "Non-repudiation: pelaku menyangkal ('mengapa kamu bersaksi?') tapi bukti berasal dari komponennya sendiri, sehingga sangkalan gagal secara logis — kamu tak bisa menyangkal apa yang direkam bagianmu sendiri. Property: sistem tak bisa membantah trace yang dihasilkan internalnya.",
+      "analogy": "non-repudiation via self-generated evidence"
+    },
+    {
+      "lens": "systems",
+      "reading": "Redundansi bukti lintas-komponen membuat penyembunyian mustahil ('tak dapat bersembunyi'): untuk menutupi satu perbuatan, pelaku harus mengkompromikan SEMUA komponen yang menyaksikannya secara serempak — biaya pemalsuan naik eksponensial dengan jumlah saksi independen. Ini logika yang sama dengan konsensus terdistribusi & tamper-evidence.",
+      "analogy": "tamper-evidence via independent multi-witness"
+    },
+    {
+      "lens": "biology-medicine",
+      "reading": "Tubuh memang menyimpan rekaman: DNA metilasi merekam paparan, cincin & isotop merekam usia/diet, jaringan parut merekam trauma — tubuh adalah 'saksi' biologis atas riwayatnya. Forensik medis membaca kesaksian organ ini. (Resonansi struktural, bukan klaim mukjizat numerik.)",
+      "analogy": "biological record-keeping; forensics"
+    },
+    {
+      "lens": "history-ummah",
+      "reading": "Prinsip 'bukti dari dalam tak bisa disangkal' menumbuhkan forensik & bukti material dalam peradilan — bergerak dari kesaksian lisan yang bisa berbohong menuju bukti yang 'berbicara sendiri'. Arah kemajuan sistem keadilan.",
+      "analogy": "material evidence over fallible testimony"
+    }
+  ],
+  "inference": "Ayat ini menambahkan dimensi yang tak dimiliki logger eksternal (50:17): self-attestation — komponen sistem SENDIRI menyimpan dan melaporkan bukti perbuatannya, membuat penyangkalan mustahil (non-repudiation) dan penyembunyian tak terjangkau ('tak dapat bersembunyi'). Untuk agen autonom, ini blueprint telemetri tamper-evident terdistribusi: setiap sub-modul mempertahankan jejaknya sendiri, sehingga untuk memalsukan riwayat, seluruh komponen harus dikompromikan serempak — biaya yang naik eksponensial dengan jumlah saksi independen (logika yang sama dengan tamper-evidence & konsensus). Yang paling menusuk: sangkalan pelaku gagal bukan karena pengawas luar, tapi karena bagian dirinya sendiri bersaksi. Sistem yang jujur adalah yang komponennya tak bisa dibuat berbohong tentang apa yang mereka lakukan.",
+  "authors": [
+    "Draft AI (LLM draft) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-07",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-07",
+      "note": "Tadabbur perdana — Wave 5 (cluster attestation & kesaksian).",
+      "authors": [
+        "Draft AI (LLM draft)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

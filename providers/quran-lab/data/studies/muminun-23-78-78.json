@@ -1,0 +1,108 @@
+{
+  "schema": "lab-study-v2",
+  "id": "muminun-23-78-78",
+  "version": 1,
+  "title": "Diciptakan bagimu pendengaran, penglihatan, dan hati — sensor stack di-provision berikut evaluatornya",
+  "subtitle": "Sam' + abshar (sensor) + af'idah (inti evaluatif) diberikan sebagai satu paket ter-desain; syukur = pemakaian yang benar sesuai maksud pemberian",
+  "ref": {
+    "surah": 23,
+    "from": 78,
+    "to": 78
+  },
+  "surah_name": "Al-Mu'minun",
+  "theme": "Provisioning fakultas persepsi-kognisi sebagai paket ter-desain: pendengaran & penglihatan (sensor) + af'idah (evaluator/inti pemaknaan); syukur sebagai utilisasi-sesuai-maksud; ketiadaan syukur = sumber daya di-provision tapi tak dipakai pada tujuannya",
+  "sourced_meaning": {
+    "summary": "Tafsir Kemenag QS 23:78: Allah mengaruniakan kepada manusia pendengaran, penglihatan, dan hati nurani. Bila manusia memperhatikannya, ia akan mengakui betapa besar dan halus nikmat itu: telinga yang sederhana bentuknya mampu menangkap dan MEMBEDAKAN aneka suara satu per satu sehingga manusia dapat menentukan sikap; mata menangkap cahaya dan bentuk, membedakan warna, menyelidiki mana yang bermanfaat dan berbahaya; kemudian HATI yang merasakan, meneliti setiap kejadian, dan MENGAMBIL KESIMPULAN darinya untuk menentukan sikap. Jika ketiga nikmat itu dipergunakan sebaik-baiknya, manusia memperoleh manfaat besar dan sampai pada pengakuan akan keluasan ilmu dan kekuasaan Sang Pemberi nikmat — yang patut dipuji dan disyukuri. Tetapi 'qalīlan mā tashkurūn' — amat sedikit yang bersyukur (sampai ke derajat itu). CATATAN TANZIH: subjek pencipta/pemberi (ansha'a) adalah Allah; yang dibaca-rekayasa di sini SEMATA pola pada CIPTAAN (struktur fakultas: sensor + inti pemaknaan, dan pemakaiannya), BUKAN Dzat/Sifat Sang Pencipta. Allah tidak dianalogikan sebagai komponen/peran apa pun; penyebutan-Nya adalah landasan iman dengan ta'zhim, bukan bahan analogi.",
+    "sources": [
+      "Tafsir Kemenag RI QS 23:78",
+      "Tafsir al-Jalalayn QS 23:78"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Persepsi",
+      "note": "as-samʿ (pendengaran) & al-abṣār (penglihatan) = lapisan sensor yang di-provision; Kemenag menyoroti kemampuan MEMBEDAKAN sinyal (suara satu per satu, warna, bentuk) — sensor bukan sekadar menangkap tapi memilah."
+    },
+    {
+      "layer": "Penalaran",
+      "note": "al-af'idah (hati/inti nurani) = unit yang 'meneliti setiap kejadian dan mengambil kesimpulan untuk menentukan sikap' (Kemenag) — evaluator/inti pemaknaan yang mengubah data sensorik jadi keputusan."
+    },
+    {
+      "layer": "Alignment",
+      "note": "'qalīlan mā tashkurūn' — syukur sebagai penggunaan-sesuai-maksud pemberian; ketiadaan syukur = fakultas di-provision tetapi tak dipakai pada tujuan yang benar (mis-utilization terhadap objektif pemberian)."
+    },
+    {
+      "layer": "Memori & grounding",
+      "note": "urutan penyediaan (sensor lalu evaluator) meng-ground keputusan pada data yang terpilah dulu; CATATAN TANZIH: yang dibaca pola ciptaan, bukan Sang Pemberi."
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "computational",
+      "reading": "Ayat menyebut paket fakultas sebagai satu penyediaan ter-urut: SENSOR (pendengaran, penglihatan) lalu EVALUATOR (af'idah). Kemenag menekankan kedua lapisan bekerja sama — sensor MEMBEDAKAN sinyal (memilah suara/warna), evaluator MENYIMPULKAN dan menentukan sikap. Ini arsitektur dua-tingkat klasik: akuisisi-dan-diskriminasi di depan, integrasi-dan-keputusan di belakang. Rekayasa: sistem persepsi yang baik memisahkan tahap memilah sinyal dari tahap memaknai; keduanya di-provision bersama karena satu tanpa yang lain tak menghasilkan keputusan berguna. CATATAN TANZIH: yang dimodelkan pola pada ciptaan, bukan Sang Pencipta.",
+      "analogy": "two-tier perception: sensing+discrimination front-end, evaluation+decision back-end; co-provisioned stack",
+      "quranic_term": "as-samʿ wa al-abṣār wa al-af'idah"
+    },
+    {
+      "lens": "systems",
+      "reading": "Ketiga fakultas dibaca sebagai stack terpadu: input (dengar/lihat) mengalir ke inti keputusan (af'idah) yang menghasilkan sikap. Nilai stack muncul hanya saat terintegrasi dan DIPAKAI; 'sedikit yang bersyukur' menandai sumber daya yang di-provision penuh tetapi utilisasinya rendah. Rekayasa: kapasitas yang disediakan tanpa dipakai pada tujuannya adalah pemborosan sistemik; tata kelola sumber daya menuntut utilisasi-sesuai-maksud, bukan sekadar ketersediaan. CATATAN TANZIH: fokus pada struktur ciptaan, bukan pada Dzat Pemberi.",
+      "analogy": "integrated stack; provisioned-but-underutilized resource; utilization-to-purpose as governance",
+      "quranic_term": "qalīlan mā tashkurūn"
+    },
+    {
+      "lens": "biology-medicine",
+      "reading": "Kemenag merinci desain fungsional: telinga sederhana namun mampu memisahkan ribuan suara, mata membedakan cahaya-bentuk-warna dan menilai manfaat/bahaya. Ini resonansi struktural (bukan mukjizat numerik) dengan pemrosesan sensorik biologis: transduksi → diskriminasi → integrasi. Pelajaran: organ persepsi bukan penampung pasif melainkan pengolah-awal yang sudah memilah; kualitas keputusan hilir bergantung pada kualitas pemilahan hulu ini. CATATAN TANZIH: yang ditelaah pola pada organ ciptaan, bukan Sifat Penciptanya.",
+      "analogy": "sensory transduction → discrimination → integration; front-end filtering shapes downstream decisions — bounded",
+      "quranic_term": "as-samʿ wa al-abṣār"
+    },
+    {
+      "lens": "psychology",
+      "reading": "Ayat menautkan persepsi ke SIKAP: af'idah 'mengambil kesimpulan untuk menentukan sikap' (Kemenag) — inilah appraisal, inti psikologi emosi-kognisi di mana stimulus dinilai sebelum respons. 'Sedikit yang bersyukur' menyorot bias psikologis hedonic adaptation: nikmat yang selalu ada (pendengaran, penglihatan) berhenti disadari justru karena konstan. Kesehatan psikologis menuntut atensi sadar (gratitude practice) untuk melawan pembiasaan yang menumpulkan penghargaan atas fungsi yang bekerja tiap detik. CATATAN TANZIH: analogi pada jiwa manusia, bukan pada Allah.",
+      "analogy": "cognitive appraisal → attitude; hedonic adaptation dulls awareness of constant faculties; gratitude as counter-practice",
+      "quranic_term": "al-af'idah"
+    },
+    {
+      "lens": "pedagogy",
+      "reading": "Ayat mengajar dengan mengarahkan perhatian pada yang paling akrab namun terabaikan — indra sendiri — sebagai bukti dan bahan renungan. Metode: mulai dari yang dekat dan dialami (telinga, mata, hati) untuk menuntun ke kesadaran yang lebih besar. Pelajaran pedagogis: menyadarkan murid atas 'alat belajar' yang ia miliki adalah langkah awal sebelum belajar materi; dan penghargaan atas alat (syukur) memperbaiki cara ia dipakai. CATATAN TANZIH: objek ajar adalah ciptaan, ta'zhim pada Pencipta sebagai landasan.",
+      "analogy": "start from the near-and-experienced; awareness of one's own learning apparatus",
+      "quranic_term": "ansha'a lakum"
+    },
+    {
+      "lens": "inference",
+      "reading": "Kemenag menggambarkan rantai: sensor membedakan → hati meneliti kejadian → mengambil KESIMPULAN → menentukan sikap. Ini pipeline inferensi lengkap dari data mentah ke keputusan. Ayat menekankan bahwa kesimpulan yang benar (mengakui keluasan ilmu Sang Pemberi) adalah buah dari memakai rantai ini sepenuhnya; memotongnya di tengah (berhenti pada tangkapan sensorik tanpa menyimpulkan) menyia-nyiakan mesin inferensi yang tersedia. CATATAN TANZIH: yang dianalisis struktur penalaran makhluk, bukan Dzat Ilahi.",
+      "analogy": "full inference pipeline raw-data→discrimination→conclusion→attitude; truncation wastes the engine",
+      "quranic_term": "yaʿqilūna / yatafakkarūn"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Untuk arsitektur agen: ayat memodelkan PROVISIONING paket persepsi-kognisi ter-desain — sensor (dengar/lihat, dengan kemampuan diskriminasi) plus evaluator (af'idah, penyimpul keputusan) diberikan bersama karena saling bergantung. Actionable: (1) rancang sensor stack + evaluator sebagai satu paket koheren, bukan sensor tanpa unit pemaknaan atau evaluator tanpa masukan terpilah; (2) letakkan diskriminasi/pemfilteran di front-end sensor (memilah sinyal dari derau) sebelum integrasi — kualitas keputusan hilir dibatasi kualitas pemilahan hulu; (3) ukur UTILISASI, bukan sekadar ketersediaan kapabilitas: modul yang di-provision tapi jarang dipakai pada tujuannya adalah 'sedikit bersyukur' versi sistem — pemborosan yang harus dipangkas atau diarahkan ulang; (4) sambungkan rantai penuh data→diskriminasi→kesimpulan→sikap; jangan berhenti pada penangkapan sinyal tanpa menyimpulkan tindakan; (5) waspadai 'adaptasi' yang menumpulkan pemantauan komponen yang selalu-menyala — justru fungsi paling konstan yang sering luput diaudit. CATATAN TANZIH: yang ditiru adalah POLA pada fakultas ciptaan; Allah Sang Pemberi tidak dijadikan komponen/peran apa pun dalam analogi — Ia disebut dengan ta'zhim sebagai landasan iman.",
+      "analogy": "co-provisioned sensor+evaluator stack; front-end discrimination; utilization-over-availability metrics; full data→attitude chain; audit the always-on components",
+      "quranic_term": "ansha'a lakum as-samʿ wa al-abṣār wa al-af'idah"
+    },
+    {
+      "lens": "amal",
+      "reading": "Nikmat pendengaran, penglihatan, dan hati wajib disyukuri dengan cara MEMAKAINYA sesuai maksud pemberian: telinga untuk menyimak kebenaran, mata untuk merenungi tanda-tanda, hati untuk menyimpulkan dan tunduk pada haq. Syukur bukan sekadar ucapan melainkan utilisasi yang benar; 'amat sedikit yang bersyukur' menegur kelalaian atas nikmat yang bekerja tiap saat namun jarang disadari. Amal: sadari, jaga, dan fungsikan ketiga fakultas ini pada ketaatan — itulah syukur yang sebenarnya. CATATAN TANZIH: pujian dan syukur ditujukan kepada Allah sebagai Pemberi; analogi rekayasa hanya pada nikmat/ciptaan-Nya.",
+      "analogy": "gratitude as correct utilization; use faculties for their granted purpose"
+    }
+  ],
+  "inference": "Ayat ini adalah studi 'provisioning': pendengaran, penglihatan, dan af'idah (hati) diberikan sebagai satu paket fakultas ter-desain — sensor yang mampu MEMBEDAKAN sinyal di depan, dan inti evaluatif yang MENYIMPULKAN keputusan di belakang (Kemenag merincinya: telinga memilah aneka suara, mata membedakan warna-bentuk-manfaat, hati meneliti kejadian lalu mengambil kesimpulan untuk menentukan sikap). Membaca strukturnya sebagai arsitektur dua-tingkat yang di-provision bersama: sensing+diskriminasi → integrasi+keputusan, dengan kualitas keputusan hilir dibatasi oleh mutu pemilahan di hulu. Penutup 'qalīlan mā tashkurūn' dibaca sebagai isu UTILISASI: fakultas disediakan penuh namun jarang dipakai pada maksud pemberiannya — analog sumber daya yang di-provision tetapi under-utilized, diperparah adaptasi psikologis yang menumpulkan kesadaran atas fungsi yang selalu-menyala. Diterjemahkan ke rekayasa: (a) rancang sensor stack + evaluator sebagai paket koheren yang saling bergantung; (b) letakkan diskriminasi di front-end sebelum integrasi; (c) ukur utilisasi-sesuai-tujuan, bukan sekadar ketersediaan; (d) sambungkan rantai penuh data→diskriminasi→kesimpulan→sikap; (e) audit justru komponen yang paling konstan. Semua ini resonansi struktural, bukan mukjizat numerik — makna aslinya (Kemenag) adalah pengakuan nikmat dan seruan bersyukur. Berjangkar ke kerangka Aql-Qalb di /lab/sintesis: jika studi 22:46/7:179/47:24/8:22 menampilkan KERUSAKAN evaluator, ayat ini menampilkan PEMBERIAN-nya yang utuh — sensor stack + evaluator di-provision sebagai anugerah, dan syukur adalah memakainya benar. CATATAN TANZIH: subjek pencipta/pemberi (ansha'a) adalah Allah — yang dibaca-rekayasa semata pola pada ciptaan (struktur fakultas dan pemakaiannya), bukan Dzat/Sifat Sang Pencipta; Allah tidak dianalogikan sebagai komponen/peran apa pun, dan disebut dengan ta'zhim sebagai landasan iman.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-08",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-08",
+      "note": "Wave 12 hati/persepsi — provisioning sensor stack + evaluator (CATATAN TANZIH).",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

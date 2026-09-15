@@ -1,0 +1,97 @@
+{
+  "schema": "lab-study-v2",
+  "id": "ahqaf-46-15-15",
+  "version": 1,
+  "title": "Kurhan, kurhan, tiga puluh bulan — investasi yang tak bisa dibayar balik, hanya diteruskan",
+  "subtitle": "Ibunya mengandungnya dengan susah payah, melahirkannya dengan susah payah; mengandung sampai menyapih tiga puluh bulan",
+  "ref": {
+    "surah": 46,
+    "from": 15,
+    "to": 15
+  },
+  "surah_name": "Al-Ahqaf",
+  "theme": "Biaya pengasuhan eksplisit sebagai investasi asimetris lintas generasi; syukur sebagai pengakuan utang yang tak lunas kecuali diteruskan",
+  "sourced_meaning": {
+    "summary": "Kami perintahkan manusia berbuat baik kepada dua orang ibu-bapaknya; ibunya mengandungnya dengan susah payah (kurhan), dan melahirkannya dengan susah payah (kurhan) pula. Mengandung sampai menyapihnya tiga puluh bulan. Sehingga apabila ia telah dewasa dan sampai umur empat puluh tahun, ia berdoa: 'Ya Tuhanku, tunjukilah aku mensyukuri nikmat-Mu yang telah Kau berikan kepadaku dan kepada ibu-bapakku, dan agar aku beramal saleh yang Kau ridai; berilah kebaikan kepadaku dengan (memberi kebaikan) kepada anak-cucuku. Sesungguhnya aku bertaubat kepada-Mu dan aku termasuk orang yang berserah diri.' Tafsir Kemenag: diturunkan berkenaan Abu Bakar. Allah memerintahkan berbuat baik pada orang tua, ibu didahulukan karena pengorbanannya lebih besar (mengandung, melahirkan, menyusui hingga 30 bulan). Usia 40 tahun ditandai sebagai titik kematangan: syukur, amal saleh, dan doa agar keturunan juga saleh (mengalirkan kebaikan, bukan berhenti pada diri sendiri).",
+    "sources": [
+      "Tafsir Kemenag RI QS 46:15",
+      "Tafsir al-Jalalayn QS 46:15"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Aksi & transfer",
+      "note": "'ḥamalathu kurhan wa waḍaʿathu kurhan' — biaya (kurhan/susah payah) disebut EKSPLISIT dua kali, pada dua tahap berbeda (mengandung & melahirkan)"
+    },
+    {
+      "layer": "Tangga epistemik",
+      "note": "milestone eksplisit disebut: 30 bulan (hamil+sapih), 40 tahun (kematangan) — durasi investasi & titik evaluasi diberi angka, bukan 'lama' yang samar"
+    },
+    {
+      "layer": "Alignment",
+      "note": "doa penutup mengarahkan syukur BUKAN ke pembalasan langsung ke orang tua saja, tapi ke kebaikan pada 'dzurriyyati' (keturunan) — investasi diteruskan, bukan ditutup"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "economy",
+      "reading": "Ayat menghitung biaya pengasuhan secara eksplisit dan berat sebelah: ibu menanggung kurhan (susah payah) pada DUA tahap (mengandung, melahirkan) plus durasi panjang (30 bulan mengandung+menyapih), sementara si anak, pada tahap itu, tidak punya kapasitas membalas apa pun. Ini investasi asimetris murni — bukan pertukaran (exchange), melainkan pemberian searah yang secara struktural TAK MUNGKIN dibayar setara oleh penerimanya sendiri.",
+      "analogy": "investasi asimetris tanpa exchange langsung; utang yang secara struktural tak bisa dilunasi setara",
+      "quranic_term": "kurhan (dengan susah payah)"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Pola 'cold-start funded by prior generation': entitas baru (bayi) tidak dapat survive maupun berkontribusi tanpa investasi besar dari proses induk terlebih dahulu — biaya bootstrap ditanggung penuh oleh 'parent', bukan oleh entitas baru itu sendiri. Desain keberlanjutan lintas-generasi yang sehat TIDAK mengharapkan pembayaran balik langsung ke sumber investasi, melainkan meneruskannya ke unit berikutnya (di ayat ini: doa eksplisit 'aṣliḥ lī fī dzurriyyatī' — kebaikan diteruskan ke keturunan). Ini pola pay-it-forward, bukan siklus pembayaran tertutup.",
+      "analogy": "cold-start cost ditanggung parent process; keberlanjutan via pay-it-forward, bukan repayment loop tertutup"
+    },
+    {
+      "lens": "psychology",
+      "reading": "Usia 40 tahun ditandai sebagai titik kematangan kognitif-spiritual: barulah muncul doa reflektif yang mengakui investasi masa lalu (orang tua) DAN memproyeksikan tanggung jawab masa depan (keturunan). Kemenag mencatat riwayat Ibnu 'Abbas: usia 40 adalah titik evaluasi diri yang serius. Ini pola psikologi perkembangan: kesadaran akan 'utang eksistensial' pada generasi sebelumnya biasanya matang di usia pertengahan, bukan di usia muda.",
+      "analogy": "milestone kematangan reflektif di usia pertengahan (mid-life review)",
+      "quranic_term": "arbaʿīna sanah (empat puluh tahun)"
+    },
+    {
+      "lens": "biology-medicine",
+      "reading": "Kemenag mencatat diskusi klasik (riwayat 'Ali–'Utsman): angka 30 bulan (mengandung+menyapih) dibandingkan dengan durasi menyusui sempurna 2 tahun (al-Baqarah 2:233) untuk menyimpulkan batas minimal kehamilan manusia — pembacaan tafsir klasik atas relasi dua ayat, bukan klaim medis independen. Struktur yang dicatat: teks memberi RENTANG dan HUBUNGAN antar-durasi, bukan angka tunggal terisolasi.",
+      "analogy": "durasi biologis sebagai rentang yang bisa dianalisis-silang antar-ayat (catatan tafsir klasik)",
+      "quranic_term": "thalāthūna shahran (tiga puluh bulan)"
+    },
+    {
+      "lens": "systems",
+      "reading": "Sistem yang berkelanjutan lintas-generasi butuh unit yang BERSEDIA menanggung biaya tinggi di awal tanpa jaminan pembalasan setara — dan butuh unit penerima yang, setelah matang, MENERUSKAN pola itu ke unit berikutnya alih-alih memutusnya. Ayat ini menautkan dua sisi: pengakuan biaya (kurhan) dari pemberi, dan komitmen meneruskan (doa untuk dzurriyyah) dari penerima yang telah matang.",
+      "analogy": "rantai investasi lintas-generasi: syarat keberlanjutannya adalah diteruskan, bukan diputus"
+    },
+    {
+      "lens": "pedagogy",
+      "reading": "Pengasuhan dibaca sebagai pendidikan paling awal dan paling costly — dimulai jauh sebelum anak mampu belajar secara sadar. Nilainya baru sepenuhnya disadari si anak di titik kematangan (40 tahun), bukan saat terjadi. Ini pola pembelajaran yang delayed-recognition: investasi pendidikan/pengasuhan awal sering baru dihargai penuh jauh setelah faktanya."
+    },
+    {
+      "lens": "inference",
+      "reading": "Doa di akhir ayat punya dua sasaran eksplisit dan berurutan: syukur atas nikmat (retrospektif: diri & orang tua) DAN kebaikan untuk keturunan (prospektif). Struktur ini menegaskan bahwa kesadaran penuh baru tercapai ketika seseorang berdiri di TENGAH rantai — sebagai penerima sekaligus calon pemberi berikutnya."
+    },
+    {
+      "lens": "amal",
+      "reading": "Perintah 'berbuat baik pada dua orang tua' (iḥsānan) datang SEBELUM perincian beratnya pengorbanan ibu — struktur ayat menempatkan kewajiban terlebih dulu, baru alasannya. Kemenag: berbakti bukan hanya saat orang tua hidup, tapi juga mendoakan setelah wafat — amal yang terus mengalir (bandingkan hadis 'anak saleh yang mendoakan' sebagai salah satu amal yang tak terputus)."
+    }
+  ],
+  "inference": "Al-Ahqaf 46:15 memerinci biaya pengasuhan secara eksplisit — kurhan (susah payah) disebut dua kali pada dua tahap berbeda, dengan durasi terukur (30 bulan) — lalu menautkannya ke titik kematangan (40 tahun) di mana kesadaran penuh baru tercapai. Bacaan rekayasa: (1) ini investasi asimetris murni — penerima awal (bayi) secara struktural tak mampu membalas setara; (2) desain keberlanjutan yang sehat tidak menuntut pembayaran-balik langsung ke sumber, melainkan MENERUSKAN investasi itu ke unit berikutnya — persis pola doa penutup ayat yang bergerak dari syukur (retrospektif) ke permohonan kebaikan bagi keturunan (prospektif); (3) kesadaran akan pola ini matang secara bertahap, bukan instan — usia 40 ditandai sebagai titik evaluasi diri yang serius. CATATAN TANZIH: 'wa waṣṣaynā' (Kami wasiatkan/perintahkan) adalah perintah Allah yang menjadi landasan kewajiban ini — bukan bahan analogi; yang dibaca-rekayasa hanyalah pola pengorbanan & keberlanjutan pada pihak makhluk (ibu-bapak-anak).",
+  "authors": [
+    "Draft AI (LLM draft) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-12",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-12",
+      "note": "Tadabbur perdana — Wave 13 kelahiran/tumbuh-kembang.",
+      "authors": [
+        "Draft AI (LLM draft)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

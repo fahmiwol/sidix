@@ -1,0 +1,114 @@
+{
+  "schema": "lab-study-v2",
+  "id": "yunus-10-57",
+  "version": 1,
+  "title": "Maw'izah, syifā', hudā, rahmah — pipeline empat-tahap perbaikan keadaan internal",
+  "subtitle": "Nasihat → penyembuh isi dada → petunjuk → rahmat: memperbaiki state sebelum mengarahkan perilaku",
+  "ref": {
+    "surah": 10,
+    "from": 57,
+    "to": 57
+  },
+  "surah_name": "Yunus",
+  "theme": "Syifā' fis-sudūr, perbaikan state internal/mental, pipeline restorasi bertahap",
+  "sourced_meaning": {
+    "summary": "'Hai manusia, telah datang kepadamu pelajaran (mau'izah) dari Tuhanmu, penyembuh (syifā') bagi penyakit yang ada dalam dada, serta petunjuk (hudā) dan rahmat bagi orang-orang beriman.' Tafsir Kemenag merinci empat fungsi Al-Qur'an dalam memperbaiki jiwa: (1) Mau'izah — pelajaran agar mencintai yang hak dan menjauhi yang batil, harus terwujud dalam perbuatan; (2) Syifā' — penyembuh penyakit dada seperti syirik, kufur, nifaq, dan penyakit jiwa: putus harapan, lemah pendirian, memperturutkan hawa nafsu, hasad-dengki, takut/pengecut, cinta kebatilan; (3) Hudā — petunjuk ke jalan lurus, membimbing akal & perasaan serta mendorong amal; (4) Rahmah — karunia yang dipetik mereka yang mengamalkannya. Kemenag menyebut keempatnya sesuai fitrah manusia.",
+    "sources": [
+      "Tafsir Kemenag RI QS 10:57",
+      "Tafsir al-Jalalayn QS 10:57"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Persepsi",
+      "note": "mau'izah = input nasihat yang menyeru akal & hati agar mencintai yang hak — tahap masukan/atensi pipeline"
+    },
+    {
+      "layer": "Memori & grounding",
+      "note": "syifā' lima fis-sudūr = membersihkan 'isi dada' (store internal) dari entri korup (syirik/nifaq/putus asa) sebelum tahap lanjut"
+    },
+    {
+      "layer": "Alignment",
+      "note": "hudā = mengarahkan ke jalan lurus setelah state internal dipulihkan — arah baru diberikan pada sistem yang sudah bersih"
+    },
+    {
+      "layer": "Aksi & transfer",
+      "note": "rahmah dipetik lewat pengamalan; Kemenag: mau'izah 'harus terwujud dalam perbuatan' — output pipeline adalah amal"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "psychology",
+      "reading": "Kemenag mendaftar isi 'penyakit dada' yang nyaris merupakan taksonomi kesehatan mental: putus harapan (despair), lemah pendirian (weak resolve), memperturutkan hawa nafsu (disregulasi impuls), hasad-dengki (envy), takut/pengecut (anxiety/avoidance), cinta kebatilan. Syifā' dibaca sebagai proses terapeutik yang membersihkan distorsi internal ini lebih dulu, karena perilaku sehat sulit tumbuh di atas keadaan batin yang korup.",
+      "analogy": "terapi: bersihkan distorsi internal sebelum ubah perilaku",
+      "quranic_term": "syifā' lima fis-sudūr"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Urutan empat fungsi membentuk pipeline perbaikan agen yang berurutan benar: (1) mau'izah = sinyal korektif/atensi ke tujuan yang benar; (2) syifā' = PERBAIKI representasi/state internal — hapus keyakinan korup sebelum apa pun; (3) hudā = baru berikan kebijakan/arah perilaku pada state yang sudah bersih; (4) rahmah = manfaat yang terealisasi lewat eksekusi. Actionable: jangan menambal PERILAKU (output) selagi REPRESENTASI internal masih rusak — perbaiki world-model/nilai dulu, baru arahkan aksi; guardrail perilaku di atas state korup hanya menutupi gejala.",
+      "analogy": "perbaiki internal state/world-model → baru arahkan policy → eksekusi",
+      "quranic_term": "iṣlāḥun-nafs"
+    },
+    {
+      "lens": "systems",
+      "reading": "Pipeline restorasi bertahap: diagnosa & seru (mau'izah) → sembuhkan simpul rusak (syifā') → arahkan ulang aliran (hudā) → pelihara manfaat berkelanjutan (rahmah). Urutan penting: mengarahkan aliran sebelum simpul disembuhkan hanya menyebarkan kerusakan ke hilir.",
+      "analogy": "restorasi bertahap: diagnosa→sembuhkan→arahkan→pelihara"
+    },
+    {
+      "lens": "algorithm",
+      "reading": "Empat tahap pemrosesan berantai: syifā' berperan sebagai denoising/sanitasi buffer internal sebelum tahap hilir (hudā) berjalan. Menjalankan penalaran arah di atas data internal yang tercemar menyebarkan galat; membersihkan lebih dulu menaikkan mutu seluruh keluaran pipeline.",
+      "analogy": "denoise/sanitasi buffer sebelum tahap penalaran hilir"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "Pola precondition-cleanup: sebelum mengeksekusi logika arah (hudā), keadaan internal dibersihkan (syifā') agar invariant 'dada yang sehat' terpenuhi. Melewati langkah pembersihan membuat langkah berikutnya beroperasi atas state ilegal dan menghasilkan perilaku tak-terdefinisi.",
+      "analogy": "precondition-cleanup sebelum eksekusi logika arah"
+    },
+    {
+      "lens": "computational",
+      "reading": "'Isi dada' = store internal; syifā' = operasi perbaikan-state yang menghapus entri korup. Sistem yang benar memisahkan tahap perbaikan-state dari tahap eksekusi, sehingga keputusan (hudā) dibuat di atas store yang konsisten, bukan tercemar.",
+      "analogy": "state-repair pada store internal sebelum decision step"
+    },
+    {
+      "lens": "inference",
+      "reading": "Mau'izah menyeru akal (Kemenag: membimbing akal & perasaan pada keyakinan benar dengan memperhatikan bukti). Rangkaiannya epistemik: nasihat berbasis alasan → koreksi keyakinan keliru → keyakinan lurus → tindakan. Perbaikan kognisi mendahului perbaikan aksi.",
+      "analogy": "koreksi keyakinan berbasis bukti mendahului koreksi aksi"
+    },
+    {
+      "lens": "pedagogy",
+      "reading": "Kurikulum berjenjang: menegur-menasihati (mau'izah) → memulihkan hambatan afektif/motivasi (syifā') → membimbing metode & jalan (hudā) → membina buah pembelajaran (rahmah). Pengajaran yang melompati pemulihan hambatan internal pelajar akan mendorong materi ke wadah yang belum siap menampung.",
+      "analogy": "berjenjang: tegur→pulihkan hambatan→bimbing→bina"
+    },
+    {
+      "lens": "amal",
+      "reading": "Kemenag menegaskan mau'izah 'harus betul-betul terwujud dalam perbuatan' dan rahmah dipetik oleh yang mengamalkan. Pipeline ini tidak berhenti di kognisi: keluarannya adalah amal nyata — pembersihan dada bermakna bila berujung tindakan yang benar.",
+      "analogy": "output pipeline = amal, bukan sekadar pemahaman",
+      "quranic_term": "'amal ṣāliḥ"
+    },
+    {
+      "lens": "economy",
+      "reading": "Rahmah dikhususkan bagi mukmin yang menjadikan tuntunan sebagai pedoman dan mengamalkannya — nilai (return) terealisasi lewat penerapan, bukan sekadar menerima informasi. Manfaat adalah buah dari 'investasi' pengamalan atas keempat tahap.",
+      "analogy": "return terealisasi lewat penerapan, bukan penerimaan"
+    }
+  ],
+  "inference": "Dibaca sebagai analogi rekayasa, empat kata kunci ayat (mau'izah → syifā' → hudā → rahmah) menyusun sebuah PIPELINE perbaikan dengan urutan yang secara desain benar: serukan-koreksi atensi, lalu PERBAIKI keadaan internal ('isi dada'), baru arahkan perilaku, dan panen manfaat lewat pengamalan. Pelajaran rekayasanya (utama untuk agen AI) tegas: memperbaiki perilaku/output sementara representasi internal masih korup hanya menutup gejala — bersihkan world-model/nilai lebih dulu, baru berikan kebijakan arah. Daftar 'penyakit dada' dari Kemenag berfungsi sebagai peta distorsi internal yang harus dipulihkan sebelum sistem diarahkan. Ini salah satu pembacaan di atas makna zahir yang bersumber (Kemenag/Jalalain), bukan maksud tunggal ayat; padanan 'kesehatan mental' dibingkai resonansi struktural yang bounded, bukan mukjizat numerik.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-08",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-08",
+      "note": "Tadabbur perdana — Wave 9 penyembuhan/siklus.",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

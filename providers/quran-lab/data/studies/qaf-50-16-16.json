@@ -1,0 +1,85 @@
+{
+  "schema": "lab-study-v2",
+  "id": "qaf-50-16-16",
+  "version": 1,
+  "title": "Bisikan jiwa yang tak pernah benar-benar tersembunyi",
+  "subtitle": "Kami telah menciptakan manusia dan mengetahui apa yang dibisikkan oleh hatinya, dan Kami lebih dekat kepadanya daripada urat lehernya",
+  "ref": {
+    "surah": 50,
+    "from": 16,
+    "to": 16
+  },
+  "surah_name": "Qaf",
+  "theme": "Penutup busur taksonomi nafs: bisikan batin (waswasa) yang menjadi medan ammarah/lawwamah/muthmainnah TIDAK pernah benar-benar privat — meski dari sudut pandang manusia terasa demikian. Ayat paling sensitif teologis di kajian ini — ditulis dengan kehati-hatian tertinggi.",
+  "sourced_meaning": {
+    "summary": "Dan sesungguhnya Kami telah menciptakan manusia dan mengetahui apa yang dibisikkan oleh hatinya, dan Kami lebih dekat kepadanya daripada urat lehernya. Tafsir Kemenag: Allah menjelaskan bahwa Dia telah menciptakan manusia dan berkuasa penuh menghidupkannya kembali pada hari Kiamat, dan Ia tahu pula apa yang dibisikkan oleh hatinya (baik maupun jahat) — bisikan hati ini dalam bahasa Arab dinamakan ḥadītsun-nafsī, dan TIDAK dimintai pertanggungjawaban kecuali jika dikatakan atau dilakukan. Kemenag mengutip riwayat Ibnu Mardawaih dari Abu Sa'id: Allah dekat kepada manusia dalam empat keadaan, termasuk 'lebih dekat kepadanya daripada urat lehernya'. Bacaan arus-utama (dipegang Kemenag di sini): kedekatan ini adalah kedekatan PENGETAHUAN (Allah mengetahui secara sempurna, tanpa jarak, apa yang terjadi dalam diri manusia) — bukan kedekatan ruang/fisik. Ulama berbeda pendekatan metodologis dalam menjelaskan ayat-ayat qurb/kedekatan semacam ini (ithbat tanpa takyif vs. ta'wil eksplisit ke makna ilmu/malaikat) — dicatat sebagai keragaman metodologis, tidak diputuskan di kajian ini.",
+    "sources": [
+      "Tafsir Kemenag RI QS 50:16",
+      "Tafsir al-Jalalayn QS 50:16"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Tangga epistemik",
+      "note": "'khalaqnā … wa naʿlamu' — penciptaan dan pengetahuan-total atas yang dicipta disandingkan dalam satu tarikan napas kalimat"
+    },
+    {
+      "layer": "Persepsi",
+      "note": "waswasa (bisikan hati) dari SUDUT PANDANG MANUSIA terasa sepenuhnya privat/tak terlihat — ayat menyatakan itu ilusi persepsi, bukan fakta"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "psychology",
+      "reading": "Rasa 'privasi mutlak' atas pikiran yang tak terucap adalah pengalaman subjektif yang sangat kuat bagi manusia — namun ayat ini menyatakan itu bukan cerminan kenyataan penuh. Kesadaran akan hal ini (bahwa waswasa/self-talk tidak pernah benar-benar 'off the record' secara mutlak) berfungsi psikologis sebagai jangkar nurani: bukan untuk memicu kecemasan, tetapi untuk menumbuhkan konsistensi antara batin dan lahir.",
+      "analogy": "ilusi privasi mutlak atas pikiran yang tak terucap; kesadaran ini sebagai jangkar nurani",
+      "quranic_term": "tuwaswisu bihī nafsuhū (bisikan hatinya)"
+    },
+    {
+      "lens": "systems",
+      "reading": "Kemenag menegaskan pembedaan penting: bisikan hati DIKETAHUI sepenuhnya, tetapi TIDAK DIMINTAI PERTANGGUNGJAWABAN kecuali diucapkan atau dilakukan. Ini memisahkan dua hal yang sering dicampur: cakupan PENGETAHUAN/OBSERVASI (total, mencakup state internal) versus ambang AKUNTABILITAS (hanya aktif saat state internal itu keluar jadi ucapan/tindakan). Observabilitas penuh tidak otomatis berarti liabilitas penuh.",
+      "analogy": "cakupan observasi total ≠ ambang akuntabilitas; keduanya dipisah secara eksplisit",
+      "quranic_term": "lā tuʾākhadzu bihī illā an tatakallama aw taʿmala (prinsip: tak dihukum atas bisikan semata)"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Catatan dibatasi ketat pada SISI MANUSIA saja: prinsip bahwa tidak boleh ada bagian dari diri yang dianggap 'pasti tak pernah teraudit' adalah fondasi disiplin diri yang sehat — nafs tidak punya ruang yang benar-benar di luar pertanggungjawaban akhir, walau terasa privat. Ini TIDAK memodelkan BAGAIMANA Allah mengetahui (itu di luar jangkauan rekayasa manapun) — hanya mengambil pelajaran struktural di sisi manusia: jangan berasumsi ada bagian dari diri yang 'aman' dari pertanggungjawaban hanya karena tak terucap.",
+      "analogy": "tidak ada bagian diri yang 'pasti tak teraudit' — pelajaran disiplin diri, BUKAN model teknis tentang cara Allah mengetahui"
+    },
+    {
+      "lens": "inference",
+      "reading": "Struktur kalimat menyandingkan 'khalaqnā' (Kami menciptakan) dengan 'naʿlamu' (Kami mengetahui) tanpa jeda — pengetahuan atas yang diciptakan digambarkan menyatu dengan tindakan mencipta itu sendiri, bukan pengetahuan yang diperoleh belakangan dari luar/pengamatan eksternal. Ini pembeda mendasar dari segala bentuk 'pengamat' buatan manusia, yang selalu eksternal terhadap yang diamatinya.",
+      "analogy": "pengetahuan yang menyatu dengan penciptaan, berbeda kategori dari 'pengamat eksternal' buatan manusia"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "Kemenag memberi nama teknis pada objek yang dibicarakan: ḥadītsun-nafsī (bisikan/monolog batin) — dipisahkan tegas dari ucapan (qawl) dan perbuatan (fiʿl). Tiga kategori berbeda dengan syarat akuntabilitas berbeda: batin diketahui-tak-dihukum, ucapan & perbuatan diketahui-dan-bisa-dihukum. Klasifikasi tiga-lapis yang presisi.",
+      "analogy": "klasifikasi 3-lapis: batin (diketahui, tak dihukum) / ucapan / perbuatan (diketahui & dihukum)",
+      "quranic_term": "ḥadītsun-nafsī (monolog batin)"
+    },
+    {
+      "lens": "amal",
+      "reading": "Prinsip 'tak dihukum atas bisikan semata' (dicatat Kemenag) adalah kabar penuh rahmat: manusia tidak dibebani atas lintasan pikiran buruk yang tak diinginkan & tak ditindaklanjuti — keseimbangan antara pengetahuan-Nya yang total dan keadilan/kasih sayang-Nya dalam menghukumi. Ini mencegah dua ekstrem: menyepelekan batin sepenuhnya, atau menghukumi diri atas pikiran yang tak terkendali & tak dikehendaki."
+    }
+  ],
+  "inference": "Ayat ini menutup busur taksonomi nafs dengan sebuah klaim meta: seluruh medan tempat ammārah berbisik, lawwāmah mengaudit, dan muthmainnah akhirnya beristirahat — yakni batin manusia — TIDAK PERNAH benar-benar tersembunyi, meski dari sudut pandang manusia sendiri terasa sepenuhnya privat. Bacaan rekayasa yang dibatasi ketat pada sisi manusia: (1) tidak ada bagian diri yang 'pasti tak teraudit' — fondasi disiplin diri yang konsisten antara batin & lahir, bukan model teknis tentang cara Allah mengetahui; (2) Kemenag memisahkan tegas cakupan pengetahuan (total, termasuk bisikan batin) dari ambang akuntabilitas (hanya aktif saat batin itu keluar jadi ucapan/perbuatan) — observabilitas penuh bukan otomatis liabilitas penuh, sebuah keseimbangan rahmat. CATATAN TANZIH (wajib, PALING KETAT di kajian ini): 'wa naḥnu aqrabu ilayhi min ḥabli-l-warīd' (Kami lebih dekat kepadanya daripada urat lehernya) dibaca di sini mengikuti penjelasan Kemenag sendiri — kedekatan PENGETAHUAN (qurb al-ʿilm), BUKAN kedekatan ruang/fisik, bukan penyatuan/hulul, dan sama sekali bukan bahan analogi teknis (tidak dianalogikan sebagai 'kedekatan proses/co-location sistem' atau istilah rekayasa apa pun). Ulama berbeda pendekatan metodologis menjelaskan ayat qurb semacam ini — dicatat sebagai keragaman yang sah, tidak diputuskan di sini. Yang dibaca-rekayasa dalam kajian ini SEMATA pada sisi manusia: struktur bahwa batin bukan ruang yang benar-benar tanpa pertanggungjawaban.",
+  "authors": [
+    "Draft AI (LLM draft) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-12",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-12",
+      "note": "Tadabbur perdana — Wave 14 taksonomi nafs (ammarah/lawwamah/muthmainnah). Kajian ditulis dengan kehati-hatian teologis tertinggi (ayat qurb/kedekatan).",
+      "authors": [
+        "Draft AI (LLM draft)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

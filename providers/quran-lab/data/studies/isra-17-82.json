@@ -1,0 +1,111 @@
+{
+  "schema": "lab-study-v2",
+  "id": "isra-17-82",
+  "version": 1,
+  "title": "Syifā' wa rahmah lil-mu'minīn — sinyal pemulih yang efeknya bergantung keadaan penerima",
+  "subtitle": "Input yang sama menjadi penawar bagi yang beriman, tambah rugi bagi yang zalim",
+  "ref": {
+    "surah": 17,
+    "from": 82,
+    "to": 82
+  },
+  "surah_name": "Al-Isra",
+  "theme": "Syifā' fis-sudūr, perbaikan state internal, sinyal koreksi bersyarat keadaan penerima",
+  "sourced_meaning": {
+    "summary": "'Dan Kami turunkan dari Al-Qur'an suatu yang menjadi penawar (syifā') dan rahmat bagi orang-orang beriman, dan ia tidak menambah kepada orang-orang zalim selain kerugian.' Tafsir Kemenag: Al-Qur'an adalah obat bagi penyakit hati — kesyirikan, kekafiran, kemunafikan — sekaligus rahmat karena membimbing kaum mukmin. Namun bagi yang zalim (ingkar, syirik, munafik) ia justru menambah kerugian, sebab setiap ajarannya mereka tolak; padahal bila diterima pasti menguntungkan. Kemenag juga membaca dimensi historis: umat naik saat berpegang pada Al-Qur'an, terpuruk saat mengabaikannya.",
+    "sources": [
+      "Tafsir Kemenag RI QS 17:82",
+      "Tafsir al-Jalalayn QS 17:82"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Alignment",
+      "note": "efek penawar hanya terwujud pada penerima yang selaras (mukmin); pada yang menolak, sinyal sama justru memperburuk — hasil terikat pada keadaan internal penerima"
+    },
+    {
+      "layer": "Persepsi",
+      "note": "input identik (ayat yang diturunkan) diterima dua jenis penerima dengan hasil berlawanan: penawar vs kerugian"
+    },
+    {
+      "layer": "Penalaran",
+      "note": "sebab divergensi dinyatakan: penolakan/penerimaan — bukan sifat acak, melainkan konsekuensi struktural dari sikap penerima"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "psychology",
+      "reading": "Al-Qur'an dibaca sebagai terapi bagi 'penyakit hati' (syirik, kufur, nifaq) — analog kerangka psiko-spiritual di mana intervensi menyehatkan hanya jika pasien reseptif. Prinsip yang menonjol: efikasi sebuah 'penawar' kognitif bukan properti mutlak input, melainkan interaksi antara input dan kesiapan penerima. Resistensi mengubah obat menjadi pemicu penolakan yang memperkuat patologi.",
+      "analogy": "efikasi terapi = f(intervensi, kesiapan/receptivity pasien)",
+      "quranic_term": "syifā' lima fis-sudūr"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Sinyal korektif (patch, umpan-balik perbaikan, dokumen grounding) menyembuhkan agen yang keadaannya reseptif, tetapi bisa MEMPERBURUK sistem yang keadaannya rusak/adversarial — input sama, keluaran berlawanan tergantung state & konfigurasi penerima. Actionable: (1) jangan asumsikan koreksi bersifat idempoten universal; validasi PRA-KONDISI penerima sebelum menerapkan; (2) sediakan mode aman bagi keadaan yang belum siap agar sinyal baik tak dipelintir jadi kerusakan; (3) ukur efek per-segmen penerima, bukan rata-rata global yang menyembunyikan kelompok yang justru dirugikan.",
+      "analogy": "patch menyembuhkan sistem reseptif, merusak sistem misaligned",
+      "quranic_term": "rahmah bersyarat īmān"
+    },
+    {
+      "lens": "systems",
+      "reading": "Sinyal koreksi bersyarat keadaan: umpan-balik yang sama menstabilkan subsistem yang gain-nya benar, tetapi mengguncang subsistem yang fasa/gain-nya terbalik. Sistem yang matang tidak menyiarkan koreksi seragam; ia mempertimbangkan keadaan lokal tiap node agar intervensi tidak beramplifikasi menjadi ketidakstabilan.",
+      "analogy": "umpan-balik yang menstabilkan vs mengosilasi tergantung fasa node"
+    },
+    {
+      "lens": "inference",
+      "reading": "Fenomena posterior yang berlawanan dari likelihood yang sama: bukti identik menaikkan keyakinan pada penerima ber-prior sehat, tetapi memperkuat penyangkalan pada penerima ber-prior menyimpang (belief polarization). Ayat menamai sebabnya — penerimaan vs penolakan — sehingga divergensi bukan keacakan, tapi fungsi keadaan awal penalar.",
+      "analogy": "bukti sama, posterior berlawanan (polarisasi keyakinan)",
+      "quranic_term": "zulm (penyimpangan) vs īmān"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "Efek operasi bergantung precondition: menerapkan 'penawar' pada keadaan yang memenuhi prasyarat (iman) memulihkan invariant; menerapkannya pada keadaan yang melanggar prasyarat memicu jalur error yang menambah kerusakan. Bukan fungsi konstan — keluarannya kondisional atas keadaan masukan.",
+      "analogy": "operasi kondisional: efek = f(precondition penerima)"
+    },
+    {
+      "lens": "algorithm",
+      "reading": "Seperti hotfix pada basis kode: tambalan yang sama menyehatkan modul yang kompatibel dan mematahkan modul yang tak kompatibel. Roll-out bijak melakukan pengecekan kompatibilitas dan penerapan bertahap, bukan penerapan buta yang mengabaikan keadaan target.",
+      "analogy": "hotfix + compatibility check sebelum roll-out"
+    },
+    {
+      "lens": "computational",
+      "reading": "Transformasi yang tandanya ditentukan keadaan masukan: pada state valid ia menaikkan nilai (penawar+rahmat), pada state korup ia menurunkan (kerugian). Sistem harus menyimpan dan memeriksa keadaan penerima, bukan memperlakukan semua masukan seragam.",
+      "analogy": "operator yang tandanya bergantung state masukan"
+    },
+    {
+      "lens": "pedagogy",
+      "reading": "Materi remedial yang sama mengangkat pelajar yang siap dan terbuang pada pelajar yang menolak. Pengajaran efektif mendiagnosis kesiapan lebih dulu; menyodorkan obat yang benar pada waktu/penerima yang belum reseptif bisa menguatkan penolakan, bukan pemahaman.",
+      "analogy": "efek materi remedial bergantung kesiapan pelajar"
+    },
+    {
+      "lens": "history-ummah",
+      "reading": "Pembacaan longitudinal Kemenag: peradaban yang berpegang pada tuntunan naik (masa Umayyah-Abbasiyah sebagai pusat ilmu), yang mengabaikannya terpuruk. Dataset naik-turun ini menegaskan pola: nilai sebuah 'penawar' hanya terealisasi pada komunitas yang benar-benar menerapkannya.",
+      "analogy": "outcome peradaban = f(penerapan tuntunan), longitudinal",
+      "quranic_term": "iʿtibār historis"
+    },
+    {
+      "lens": "economy",
+      "reading": "Aset yang sama menjadi keuntungan bagi yang menanam-mengamalkan dan liabilitas bagi yang menolak — nilai terealisasi hanya lewat penerapan, bukan kepemilikan. Kemenag menegaskan: bila diterima pasti menguntungkan; ditolak justru menambah rugi. Return terikat pada tindakan mengadopsi.",
+      "analogy": "aset vs liabilitas tergantung penerapan, bukan kepemilikan"
+    }
+  ],
+  "inference": "Sebagai analogi rekayasa, ayat ini memadatkan satu prinsip yang sering diabaikan perancang: efek sebuah sinyal korektif/penawar BUKAN properti mutlak sinyal itu, melainkan hasil interaksi dengan keadaan penerima. Masukan identik menyembuhkan penerima yang reseptif (mukmin) dan memperburuk penerima yang menolak (zalim), dan ayat menamai sebabnya — penerimaan vs penolakan — sehingga divergensi bersifat struktural, bukan acak. Untuk rekayasa AI: jangan perlakukan koreksi sebagai idempoten universal; validasi pra-kondisi penerima, sediakan mode aman bagi keadaan yang belum siap, dan ukur efek per-segmen alih-alih rata-rata yang menyembunyikan kelompok yang dirugikan. Ini salah satu pembacaan di atas makna zahir yang bersumber dari Kemenag/Jalalain — bukan maksud tunggal ayat; dimensi 'penyakit hati' dan efeknya dibingkai resonansi struktural, bukan mukjizat numerik.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-08",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-08",
+      "note": "Tadabbur perdana — Wave 9 penyembuhan/siklus.",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

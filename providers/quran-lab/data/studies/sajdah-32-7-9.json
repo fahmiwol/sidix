@@ -1,0 +1,119 @@
+{
+  "schema": "lab-study-v2",
+  "id": "sajdah-32-7-9",
+  "version": 1,
+  "title": "Memulai dari tanah, keturunan dari saripati air hina, lalu disempurnakan dan di-provision-i pendengaran, penglihatan, dan hati",
+  "subtitle": "Bootstrap dari bahan sederhana → penyempurnaan → pemasangan sensor & evaluator saat inisialisasi, meski kapabilitas baru aktif setelah 'lahir'",
+  "ref": {
+    "surah": 32,
+    "from": 7,
+    "to": 9
+  },
+  "surah_name": "As-Sajdah",
+  "theme": "Bootstrap dari bahan minimal; penyempurnaan (taswiyah); provisioning sensor (pendengaran-penglihatan) + evaluator (hati) saat inisialisasi; kapabilitas laten yang aktif belakangan",
+  "sourced_meaning": {
+    "summary": "Tafsir Kemenag: (7) Allah menciptakan segala sesuatu sebaik-baiknya dan memulai penciptaan manusia dari tanah. (8) Menjadikan keturunannya dari saripati air yang hina (sperma yang sedikit dan memancar, bertemu sel telur → nuthfah). (9) Kemudian menyempurnakan bentuknya dan meniupkan roh; lalu 'menjadikan bagi kamu pendengaran, penglihatan, dan hati'. Kemenag menegaskan: meski di dalam rahim mata, telinga, dan otak sudah dianugerahkan, bayi belum dapat melihat, mendengar, dan berpikir — kemampuan itu baru diperoleh dan menyempurna setelah lahir. Ayat ditutup: sedikit sekali manusia yang bersyukur. CATATAN TANZIH: peniupan roh dan penciptaan adalah perbuatan Allah semata (ghaib, tak dimodelkan); yang dibaca-rekayasa hanya POLA pada ciptaan — urutan bahan→penyempurnaan→pengadaan indra, dan fakta kapabilitas yang dipasang lebih dulu namun aktif kemudian.",
+    "sources": [
+      "Tafsir Kemenag RI QS 32:7-9",
+      "Tafsir al-Jalalayn QS 32:7-9"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Persepsi",
+      "note": "pendengaran & penglihatan disebut sebagai kanal masuk data — perangkat persepsi yang secara eksplisit 'dijadikan bagi' manusia, bukan muncul sendiri"
+    },
+    {
+      "layer": "Tangga epistemik",
+      "note": "urutan sensor (sam' & bashar) lalu 'hati' (fu'ād) menyusun tangga: tangkap data → olah/evaluasi; alat dipasang dulu, fungsi kognitif menyusul"
+    },
+    {
+      "layer": "Alignment",
+      "note": "'sedikit yang bersyukur' = tujuan pemasangan indra adalah syukur/orientasi yang benar; kapabilitas yang tak diarahkan ke tujuannya = misalignment terhadap maksud pengadaan"
+    },
+    {
+      "layer": "Aksi & transfer",
+      "note": "bahan 'hina' (saripati air) yang diproses menjadi wujud sempurna → prinsip: nilai produk bukan dari kemewahan bahan mentah, tapi dari proses penyempurnaan"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "computational",
+      "reading": "Provisioning saat inisialisasi: 'menjadikan bagi kamu pendengaran, penglihatan, dan hati' dibaca sebagai pemasangan SENSOR (sam' & bashar = kanal input) dan EVALUATOR (fu'ād = unit penilai/putusan) pada tahap init sistem. Penting: tafsir menegaskan alat sudah terpasang di rahim tapi fungsinya aktif setelah lahir — analog kapabilitas yang di-provision saat build namun baru 'menyala' saat runtime dengan data nyata.",
+      "analogy": "init-time provisioning of sensors + evaluator; capability installed before activation",
+      "quranic_term": "as-sam' wal-abshār wal-af'idah"
+    },
+    {
+      "lens": "systems",
+      "reading": "Bootstrap dari bahan minimal: mulai dari 'tanah' lalu 'saripati air yang hina' — masukan paling sederhana — lalu 'taswiyah' (penyempurnaan/kalibrasi bentuk) sebelum sistem dinyatakan siap. Pola: sistem tangguh dibangun dari primitif sederhana yang di-assemble dan dikalibrasi bertingkat, bukan dari komponen mewah sekaligus.",
+      "analogy": "bootstrap from minimal primitives; calibration/normalization before activation",
+      "quranic_term": "sawwāhu"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "Kapabilitas laten vs aktif: indra dipasang (dideklarasikan) lebih dahulu, aktivasinya lazy — baru berjalan saat kondisi terpenuhi (lahir/ada input). Analog lazy initialization / deferred activation: alokasi sumber daya di-deklarasikan awal, dieksekusi saat pertama dibutuhkan.",
+      "analogy": "lazy initialization; deferred/late binding of capability",
+      "quranic_term": "nafakha fīhi min rūhihi"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Cetak biru inisialisasi agen: saat mem-'bootstrap' agen, PROVISION dulu perangkat persepsinya (kanal input/observasi = sam' & bashar) DAN unit evaluasinya (penilai/reward-model/decision core = fu'ād) sebagai bagian arsitektur inti — bukan tempelan belakangan. Actionable: (1) definisikan antarmuka sensor sejak init walau data nyata belum mengalir; (2) sertakan evaluator/kritik untuk menilai keluaran, bukan hanya generator; (3) terima bahwa kapabilitas bisa 'ada tapi belum matang' — perlu fase pematangan/kalibrasi dengan data lingkungan sebelum diandalkan; (4) ikat tujuan (alignment/'syukur') ke desain: perangkat diberi untuk maksud tertentu, ukur apakah agen memakainya sesuai maksud, bukan sekadar aktif.",
+      "analogy": "provision perception channels + evaluator at init; generator+critic; maturation phase; goal-conditioned design",
+      "quranic_term": "wa ja'ala lakum"
+    },
+    {
+      "lens": "biology-medicine",
+      "reading": "Organ terbentuk in-utero namun fungsi indrawi menyempurna pasca-lahir (per Kemenag) beresonansi dengan pematangan neurosensorik: struktur ada lebih dulu, fungsi berkembang dengan stimulasi lingkungan. Dibaca sebagai resonansi struktural (bukan mukjizat numerik): analogi pemahaman tentang 'wiring lebih dulu, tuning kemudian'.",
+      "analogy": "structure precedes function; postnatal sensory maturation — bounded",
+      "quranic_term": "taswiyah"
+    },
+    {
+      "lens": "chemistry-process",
+      "reading": "'Sulālah min mā'in mahīn' — saripati/ekstrak dari air yang hina — dibaca sebagai pemurnian: dari cairan biasa diambil intisari fungsional. Analog langkah ekstraksi/pemurnian dalam proses: dari bahan melimpah nan sederhana diperoleh esensi yang membawa muatan pembentuk.",
+      "analogy": "extraction/purification of an essence from a common medium",
+      "quranic_term": "sulālah"
+    },
+    {
+      "lens": "psychology",
+      "reading": "Triad sam'-bashar-fu'ād (dengar-lihat-hati) memetakan alur kognitif: persepsi → pengolahan afektif-rasional → putusan. Hati (fu'ād) sebagai simpul integrasi menegaskan bahwa data indrawi butuh pusat evaluasi bermakna, bukan sekadar akumulasi sensasi.",
+      "analogy": "perception→appraisal→decision; central integrative evaluator",
+      "quranic_term": "al-af'idah"
+    },
+    {
+      "lens": "artifact",
+      "reading": "'Ahsana kulla syai'in khalaqah' (menciptakan segala sesuatu sebaik-baiknya) sebagai etos mutu: tiap komponen dibuat pas-guna, disempurnakan (taswiyah) sebelum dirakit ke keseluruhan. Rekayasa yang baik memasang instrumen indera (sensor) dan mengkalibrasinya sebagai bagian tak terpisah dari produk, bukan aksesori.",
+      "analogy": "fit-for-purpose components; calibration as integral to build",
+      "quranic_term": "ahsana kulla syai'"
+    },
+    {
+      "lens": "amal",
+      "reading": "Indra dan hati adalah amanah yang 'dijadikan bagi kamu' untuk suatu maksud — maka syukur bukan sekadar ucapan, melainkan memakai pendengaran, penglihatan, dan hati sesuai fungsi pemberiannya. Teguran 'sedikit yang bersyukur' menyorot kelalaian memakai karunia persepsi untuk mengenali kebenaran.",
+      "analogy": "faculties as entrusted instruments; gratitude = right use"
+    },
+    {
+      "lens": "pedagogy",
+      "reading": "Belajar mengikuti pola ayat: sediakan alat tangkap (dengar-lihat) lebih dulu, lalu latih pusat pemaknaan (hati/nalar) — dan sadari kompetensi tumbuh bertahap setelah 'lahir' ke pengalaman. Kesabaran atas kematangan bertahap adalah bagian desain belajar.",
+      "analogy": "equip input channels first, cultivate sense-making, expect gradual competence"
+    }
+  ],
+  "inference": "Tiga ayat ini adalah cetak biru INISIALISASI sistem hidup: bootstrap dari bahan paling sederhana (tanah, lalu 'saripati air yang hina'), penyempurnaan/kalibrasi bentuk (taswiyah), lalu pemasangan perangkat persepsi (pendengaran, penglihatan = sensor/kanal input) dan pusat evaluasi (hati = evaluator/penilai). Kunci rekayasanya ada pada tafsir Kemenag: perangkat itu sudah dipasang lebih dulu (in-utero) tetapi fungsinya baru aktif dan matang setelah 'lahir' berhadapan dengan data nyata — persis pola kapabilitas yang di-provision saat init namun aktivasinya lazy/deferred dan butuh fase pematangan. Untuk desain agen: provision kanal observasi dan unit evaluator sejak arsitektur inti (bukan tempelan), terima adanya fase kalibrasi sebelum diandalkan, dan ikat semuanya ke tujuan pengadaannya — sebab teguran 'sedikit yang bersyukur' menegaskan kapabilitas diberi untuk maksud tertentu; memakainya di luar maksud = misalignment. Semua resonansi struktural, bukan mukjizat numerik. CATATAN TANZIH: peniupan roh dan penciptaan adalah perbuatan Allah yang ghaib dan tak dimodelkan; kita hanya membaca pola pada ciptaan-Nya dan menirunya di lapisan sebab sebagai khalifah, bukan menyaingi Pencipta.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-08",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-08",
+      "note": "Tadabbur perdana — Wave 9 penciptaan.",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

@@ -1,0 +1,109 @@
+{
+  "schema": "lab-study-v2",
+  "id": "ghafir-40-67-67",
+  "version": 1,
+  "title": "Turāb → nuṭfah → ʿalaqah → ṭifl → asyudd → syaikh — state machine hayat dengan exit terjadwal & objektif taʿqilūn",
+  "subtitle": "Mesin-keadaan lengkap dari tanah sampai tua, dengan titik keluar (wafat) di tiap tahap menuju 'ajal musamma', dan tujuan akhir: kematangan berakal",
+  "ref": {
+    "surah": 40,
+    "from": 67,
+    "to": 67
+  },
+  "surah_name": "Ghafir",
+  "theme": "State machine lifecycle, tahap bernama & berurutan, exit/terminasi terjadwal, objektif kognitif (taʿqilūn)",
+  "sourced_meaning": {
+    "summary": "Tafsir Kemenag QS 40:67: Dialah yang menjadikan manusia dari tanah (turāb), lalu setetes mani (nuṭfah), lalu sesuatu yang melekat (ʿalaqah), lalu segumpal daging, kemudian dilahirkan sebagai anak (ṭifl); lalu dibiarkan hidup supaya sampai masa dewasa/kuat (asyuddakum), kemudian sampai tua (syuyūkh). Manusia mengalami tiga masa: kanak-kanak, dewasa, tua. Di antara manusia ada yang diwafatkan sebelum itu (pada masa kanak, dewasa, atau tua) — ketentuan kapan seseorang meninggal ada di tangan Allah semata. Tujuan penjelasan tahapan ini (per Kemenag) 'agar sampai kepada ajal yang ditentukan (ajal musamma) dan agar kamu memahami/berakal (taʿqilūn)' — menjadi bahan renungan bagi orang berakal agar beriman kepada Allah Pencipta. Jalalain: rangkaian tahap tersebut ditutup dengan tujuan 'litablughū asyuddakum … ajalan musamman … wa laʿallakum taʿqilūn'.",
+    "sources": [
+      "Tafsir Kemenag RI QS 40:67",
+      "Tafsir al-Jalalayn QS 40:67"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Persepsi",
+      "note": "Rangkaian keadaan bernama & berurutan yang dapat diobservasi: turāb → nuṭfah → ʿalaqah → (muḍghah) → ṭifl → asyudd → syaikh; enumerasi state yang eksplisit."
+    },
+    {
+      "layer": "Aksi & transfer",
+      "note": "Transisi antar-keadaan ('tsumma' berulang) = operator lanjut-tahap; tiap transisi memindahkan subjek dari satu state ke state berikut secara terarah."
+    },
+    {
+      "layer": "Alignment",
+      "note": "'ajal musamma' = deadline yang ditetapkan Pencipta, dan exit (wafat) bisa terjadi di tahap mana pun — batas waktu & titik terminasi bukan di tangan subjek; objektif akhir 'taʿqilūn' ditetapkan sebagai tujuan."
+    },
+    {
+      "layer": "Umpan balik",
+      "note": "Setiap state adalah prasyarat state berikut; kegagalan/terminasi di satu tahap menghentikan lintasan hilir — dependensi berurutan dengan titik henti."
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "ai-agentic",
+      "reading": "Peta lifecycle agen yang nyaris kanonik: ayat menamai keadaan berurutan (init dari bahan mentah → tahap-tahap pembentukan → 'lahir' sebagai instans aktif → matang → menua) dengan TITIK EXIT yang mungkin di setiap tahap dan sebuah DEADLINE terjadwal ('ajal musamma'), diarahkan ke satu OBJEKTIF terminal ('taʿqilūn' = kematangan berakal). Actionable: (1) modelkan siklus hidup agen sebagai state machine eksplisit dengan keadaan bernama, bukan alur kabur — tiap state punya prasyarat dan transisi yang jelas; (2) sediakan exit/termination handler di SETIAP tahap, bukan hanya di akhir — kegagalan/penghentian bisa terjadi kapan saja dan sistem harus menutup dengan bersih dari state mana pun; (3) tetapkan deadline/anggaran waktu ('ajal musamma') sebagai batas terjadwal yang bukan tunable sesuka proses — agen tanpa batas waktu berjalan liar; (4) definisikan OBJECTIVE terminal yang jelas (di sini: kematangan kognitif) sebagai arah seluruh lintasan — lifecycle tanpa tujuan hanyalah rangkaian transisi tanpa makna; (5) sadari tahap saat ini: perlakuan yang tepat untuk 'ṭifl' berbeda dari 'asyudd' — kebijakan harus sadar-state. Objektif dan deadline di sini ditetapkan Pencipta (given), bukan ditulis operator.",
+      "analogy": "explicit lifecycle state machine with per-stage exit handlers, a scheduled deadline, and a terminal objective (cognitive maturity)",
+      "quranic_term": "ṭifl → asyudd → syaikh; ajal musamma; taʿqilūn"
+    },
+    {
+      "lens": "computational",
+      "reading": "Definisi mesin-keadaan (finite state machine) yang gamblang: himpunan keadaan bernama {turāb, nuṭfah, ʿalaqah, muḍghah, ṭifl, asyudd, syaikh}, transisi terarah antar-keadaan ('tsumma'), keadaan awal (turāb) dan keadaan penyerap/terminal (wafat pada 'ajal musamma'). Rekayasa: memodelkan proses panjang sebagai FSM eksplisit membuat setiap keadaan, transisi sah, dan titik terminasi menjadi terverifikasi — lebih andal daripada alur implisit tanpa keadaan yang bernama.",
+      "analogy": "finite state machine: named states, directed transitions, initial + absorbing terminal state",
+      "quranic_term": "rangkaian aṭwār (tahapan)"
+    },
+    {
+      "lens": "algorithm",
+      "reading": "Konstruksi bertahap dengan penjadwalan dan titik henti: prosedur berjalan tahap-demi-tahap ('tsumma' sebagai sekuens), tiap tahap stabil sebelum lanjut, dengan sebuah waktu-henti terjadwal ('ajal musamma') yang bisa memutus prosedur di iterasi mana pun. Prinsip: algoritma jangka-panjang membutuhkan (a) urutan tahap yang jelas, (b) kondisi henti/deadline yang ditetapkan, dan (c) penanganan yang benar bila henti tiba lebih awal — bukan hanya jalur 'sukses penuh'.",
+      "analogy": "staged procedure with a scheduled stop-time that may halt at any iteration",
+      "quranic_term": "litablughū asyuddakum (target antara) → ajal (henti)"
+    },
+    {
+      "lens": "biology-medicine",
+      "reading": "Resonansi struktural (bukan mukjizat numerik): ayat menamai tahapan perkembangan manusia — pembentukan pralahir (nuṭfah/ʿalaqah/muḍghah), kelahiran (ṭifl), pematangan (asyudd/puncak fisik), penuaan (syaikh) — sebuah kerangka perawatan sadar-tahap. Tiap fase punya kerentanan & kebutuhan khasnya (nutrisi kehamilan, tumbuh-kembang anak, kesehatan dewasa, geriatri), dan mortalitas mungkin pada tiap fase. Membacanya menegaskan kedokteran yang menyesuaikan intervensi dengan tahap hayat, bukan seragam.",
+      "analogy": "stage-aware developmental medicine; each life phase has distinct needs and mortality risk — bounded",
+      "quranic_term": "ṭifl → asyudd → syaikh (fase hayat)"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "Terbaca sebagai FSM dengan constraint urutan yang kaku dan sebuah terminal absorbing state: transisi hanya sah dalam arah maju (nuṭfah tak kembali ke turāb), dan dari state mana pun terdapat busur menuju terminal ('wafat'). Invariant: tak ada jalan mundur; setiap state punya tepat satu transisi-maju sah plus kemungkinan transisi-terminal. Objektif ('taʿqilūn') berperan sebagai post-condition yang diharapkan pada lintasan yang sampai tahap matang.",
+      "analogy": "monotonic FSM: forward-only transitions + universal terminal edge; expected post-condition",
+      "quranic_term": "constraint urutan + terminal state"
+    },
+    {
+      "lens": "systems",
+      "reading": "Manajemen siklus-hidup pada level sistem: sumber daya & peran dialokasikan sesuai fase (anak dirawat, dewasa produktif/mandiri, tua dihormati & dibantu), dengan kesadaran bahwa entitas dapat keluar dari sistem di fase mana pun. Rekayasa: sistem yang mengelola populasi entitas berumur perlu kebijakan per-fase dan penanganan keluar yang anggun — mengabaikan fase menghasilkan alokasi yang salah sasaran.",
+      "analogy": "population lifecycle management with phase-specific policy and graceful exit",
+      "quranic_term": "tadbir fase hayat"
+    },
+    {
+      "lens": "inference",
+      "reading": "Klausa tujuan 'wa laʿallakum taʿqilūn' menempatkan KEMATANGAN KOGNITIF sebagai objektif yang hendak dicapai lewat perjalanan tahapan — merenungi rangkaian penciptaan diri adalah jalan menuju penalaran yang benar (per Kemenag: 'bahan renungan bagi orang berakal'). Struktur inferensi: dari data yang teramati (tahapan hidup yang teratur & universal) ke kesimpulan (ada Perancang, ada tujuan). Objektif bukan sekadar 'bertahan', melainkan 'berakal' — fungsi tujuan yang mengarahkan makna seluruh lintasan.",
+      "analogy": "the ordered lifecycle is data whose telos is reasoning; objective = cognitive maturity, not mere survival",
+      "quranic_term": "taʿqilūn sebagai objektif"
+    },
+    {
+      "lens": "amal",
+      "reading": "Menyadari diri sebagai rangkaian tahap dari setetes hingga tua, dengan ajal yang bisa datang kapan saja, menumbuhkan kesadaran waktu dan kesegeraan beramal — sebab 'exit' tak menunggu tahap terakhir. Amal: memanfaatkan fase kekuatan (asyudd) untuk kebaikan sebelum lemah, menghormati yang menua, dan menjadikan taʿqilūn (berpikir jernih menuju iman) sebagai tujuan hidup, bukan sekadar melewati tahapan.",
+      "analogy": "lifecycle awareness drives timely action before an exit that may come at any stage",
+      "quranic_term": "iʿtibār atas fase hayat"
+    }
+  ],
+  "inference": "Dibaca sebagai rekayasa, ayat ini adalah spesifikasi state machine hayat yang lengkap: himpunan keadaan bernama & berurutan (turāb → nuṭfah → ʿalaqah → muḍghah → ṭifl → asyudd → syaikh), transisi maju-saja ('tsumma'), titik EXIT yang mungkin di setiap tahap (wafat), sebuah DEADLINE terjadwal ('ajal musamma') yang bukan di tangan subjek, dan satu OBJEKTIF terminal yang eksplisit ('taʿqilūn' — kematangan berakal). Empat pelajaran struktural untuk sistem berumur (termasuk agen): (a) modelkan siklus hidup sebagai FSM eksplisit dengan keadaan bernama, bukan alur implisit; (b) sediakan penanganan exit/terminasi yang anggun di SETIAP tahap, bukan hanya di akhir — henti bisa datang kapan saja; (c) tetapkan deadline/anggaran waktu sebagai batas terjadwal, bukan tunable tak-terbatas; (d) definisikan objektif terminal yang jelas sebagai arah seluruh lintasan — di sini kematangan kognitif, bukan sekadar bertahan. Kebijakan harus sadar-fase: perlakuan yang tepat untuk anak, dewasa, dan tua berbeda. Objektif dan deadline di sini ditetapkan Pencipta (given), bukan ditulis operator. CATATAN GHAIB: 'ajal musamma' dan wafat menyentuh perkara yang waktunya milik Allah semata (per Kemenag) — dibaca DESKRIPTIF & dengan adab sebagai batas terjadwal, disebut deskriptif tanpa mengklaim tahu kapan/detailnya; ini perkara iman, bukan spekulasi. CATATAN TANZIH: subjek 'Dialah yang menjadikan/menciptakan' adalah Allah — Dzat dan perbuatan mencipta serta penetapan ajal-Nya TIDAK dimodelkan atau dianalogikan sebagai 'scheduler/mesin'. Yang menjadi bahan analogi hanyalah STRUKTUR pada sisi makhluk: tahapan hidup, transisi, titik keluar, dan objektif kognitif manusia. Semua ini resonansi struktural, bukan mukjizat numerik, dan salah satu pembacaan — bukan maksud tunggal ayat, yang aslinya menyeru perenungan menuju iman kepada Allah Pencipta.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-12",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-12",
+      "note": "Wave 13 kelahiran/tumbuh-kembang — state machine hayat lengkap dengan exit terjadwal (ajal musamma) & objektif taʿqilūn.",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

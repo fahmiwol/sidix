@@ -1,0 +1,104 @@
+{
+  "schema": "lab-study-v2",
+  "id": "isra-17-9-9",
+  "version": 1,
+  "title": "Aqwam — petunjuk ke konfigurasi paling optimal + sinyal reward",
+  "subtitle": "Bukan sekadar jalan yang benar, melainkan yang paling tegak; disertai kabar gembira sebagai penguat",
+  "ref": {
+    "surah": 17,
+    "from": 9,
+    "to": 9
+  },
+  "surah_name": "Al-Isra",
+  "theme": "Optimalitas (aqwam), objective function, reward shaping, penguatan positif",
+  "sourced_meaning": {
+    "summary": "Allah menyatakan keistimewaan Al-Qur'an melalui fungsi dan faedahnya bagi manusia: (1) ia memberi petunjuk kepada jalan yang lurus bagi orang yang menjadikannya pedoman — yaitu agama Islam yang berpangkal pada tauhid; dan (2) ia memberi kabar gembira kepada orang mukmin yang beramal saleh bahwa bagi mereka ada pahala yang besar.",
+    "sources": [
+      "Tafsir Kemenag RI QS 17:9",
+      "Tafsir al-Jalalayn QS 17:9"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Aksi & transfer",
+      "note": "'yahdī lillatī hiya aqwam' — petunjuk mengarahkan ke keadaan yang paling tegak/optimal; hidayah menuju konfigurasi terbaik, bukan sekadar yang sah"
+    },
+    {
+      "layer": "Tangga epistemik",
+      "note": "Kemenag: jalan lurus 'berpangkal pada tauhid' — satu akar aksiomatik yang darinya cabang lain diturunkan"
+    },
+    {
+      "layer": "Penalaran",
+      "note": "Struktur ganda: petunjuk (arah) + kabar gembira/pahala besar (penguat) — arah dan insentif disandingkan dalam satu ayat"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "computational",
+      "reading": "Kunci ayat adalah 'aqwam' — bentuk superlatif (paling tegak/lurus/kokoh). Petunjuk di sini tidak menunjuk sekadar solusi yang valid, melainkan yang PALING optimal di antara alternatif. Sebagai sistem: guidance sebagai fungsi yang tak hanya memisahkan benar/salah, tapi memberi peringkat menuju keadaan terbaik.",
+      "analogy": "objective points to the optimum, not merely a feasible state",
+      "quranic_term": "aqwam (paling tegak)"
+    },
+    {
+      "lens": "algorithm",
+      "reading": "Dalam optimasi: 'aqwam' = ekstremum/global optimum, dan petunjuk berperan sebagai fungsi objektif yang mengarahkan pencarian ke sana. Bukan berhenti pada minimum lokal (jalan yang 'lumayan'), tapi menunjuk konfigurasi paling stabil-tegak. Guidance = gradient yang konsisten menunjuk ke titik paling upright.",
+      "analogy": "objective function pointing to global optimum",
+      "quranic_term": "istiqāmah"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Ini pola reward shaping yang utuh: policy diarahkan ke keadaan paling optimal ('aqwam'), DAN disertai sinyal penguat ('kabar gembira ... pahala besar') yang dikondisikan pada perilaku benar ('yang beriman & beramal saleh'). Untuk desain agen: arah (objective) saja belum cukup menggerakkan; pasangkan dengan reward yang terikat pada tindakan yang diinginkan agar terbentuk loop penguatan menuju optimum. Guidance + positive reinforcement, bukan sekadar instruksi.",
+      "analogy": "reward shaping: objective toward optimum + conditioned reinforcement",
+      "quranic_term": "bushrā (penguat)"
+    },
+    {
+      "lens": "math-physics",
+      "reading": "'Aqwam' sebagai superlatif beresonansi dengan gagasan ekstremum: keadaan paling tegak = titik keseimbangan paling stabil, deviasi darinya menaikkan 'energi'/biaya. Yang paling upright adalah yang paling kokoh terhadap gangguan. Dicatat sebagai resonansi struktural, bukan mukjizat numerik.",
+      "analogy": "most-upright = most-stable equilibrium (extremum)",
+      "quranic_term": "qawwām"
+    },
+    {
+      "lens": "economy",
+      "reading": "'Pahala yang besar' berperan sebagai payoff bernilai tinggi yang menyelaraskan insentif: penerima diarahkan ke jalan optimal sekaligus diberi ekspektasi imbalan besar atas komitmennya. Struktur insentif yang membuat pilihan optimal juga menjadi pilihan yang paling menguntungkan bagi pelaku.",
+      "analogy": "high-value payoff aligns incentive with the optimum",
+      "quranic_term": "ajr kabīr"
+    },
+    {
+      "lens": "psychology",
+      "reading": "Kabar gembira (bushra) adalah penguat motivasional: sistem petunjuk yang efektif tak hanya menunjuk arah tapi memelihara dorongan untuk menempuhnya. Harapan atas 'pahala besar' menjaga ketekunan pada jalur optimal — motivasi positif melengkapi peringatan, sehingga penempuh bertahan bukan hanya karena takut menyimpang.",
+      "analogy": "positive reinforcement sustains persistence",
+      "quranic_term": "rajā' (harap)"
+    },
+    {
+      "lens": "inference",
+      "reading": "Kemenag menautkan 'jalan lurus' pada tauhid sebagai pangkal — satu akar aksiomatik yang darinya seluruh cabang petunjuk diturunkan. Dibaca secara struktural (bounded, analogi pemahaman), ini serupa satu akar tunggal yang menyederhanakan sistem: banyak aturan turunan bersandar pada satu prinsip dasar, sehingga konsistensi terjaga dari akar.",
+      "analogy": "single axiomatic root simplifies the system",
+      "quranic_term": "tauhīd (akar)"
+    },
+    {
+      "lens": "amal",
+      "reading": "Reward dikondisikan pada laku: 'yang beriman dan beramal saleh'. Petunjuk optimal ('aqwam') diaktualkan lewat amal, dan kabar gembira menjadi milik yang mengerjakannya — arah, tindakan, dan imbalan terangkai menjadi satu siklus praktik yang hidup.",
+      "quranic_term": "ʿamal sālih"
+    }
+  ],
+  "inference": "Dibaca sebagai analogi rekayasa, Al-Isra 9 memusatkan tema pada satu kata: 'aqwam' — superlatif yang berarti PALING tegak/kokoh. Petunjuk Al-Qur'an di sini tidak sekadar memisahkan sah dari batal, melainkan mengarahkan ke keadaan paling optimal di antara alternatif — sebuah fungsi objektif yang menunjuk ekstremum, bukan sekadar solusi layak. Ayat ini juga menyandingkan arah dengan penguat: hidayah (arah/objective) berpasangan dengan 'kabar gembira ... pahala besar' (reward) yang dikondisikan pada iman dan amal saleh — pola reward-shaping yang utuh. Untuk desain sistem petunjuk (manusia atau mesin): menunjuk arah yang benar belum menggerakkan; arah optimal perlu dipasangkan dengan sinyal penguat yang terikat pada tindakan yang diinginkan agar terbentuk loop menuju konfigurasi terbaik. Ini salah satu pembacaan rekayasa di atas makna zahir yang bersumber, BUKAN maksud tunggal ayat, dan bukan penetapan hukum. CATATAN TANZIH: bahwa Al-Qur'an memberi petunjuk dan menetapkan pahala adalah karunia Allah yang disebut dengan ta'zhim sebagai LANDASAN iman — Allah tidak dimodelkan sebagai sistem pemberi-reward dalam analogi. Yang dibaca secara struktural hanyalah sisi makhluk/teks (Al-Qur'an sebagai objektif+penguat) dan respons manusia (amal). Resonansi 'optimum/aqwam' dan 'reward shaping' adalah analogi yang bounded, bukan mukjizat numerik.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-08",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-08",
+      "note": "Tadabbur perdana — Wave 11 pedoman (sistem petunjuk/guidance).",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

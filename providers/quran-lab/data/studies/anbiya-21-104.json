@@ -1,0 +1,106 @@
+{
+  "schema": "lab-study-v2",
+  "id": "anbiya-21-104",
+  "version": 1,
+  "title": "Menggulung langit — teardown, serialisasi keadaan, dan penciptaan-ulang",
+  "subtitle": "Langit digulung seperti gulungan lembaran; sebagaimana awal diciptakan, begitu ia diulang",
+  "ref": {
+    "surah": 21,
+    "from": 104,
+    "to": 104
+  },
+  "surah_name": "Al-Anbya",
+  "theme": "Eskatologi kosmik, teardown terkendali, reversibilitas, penciptaan-ulang, janji yang pasti dieksekusi",
+  "sourced_meaning": {
+    "summary": "Pada hari Kami menggulung langit seperti menggulung lembaran-lembaran kertas/kitab (sijill); sebagaimana Kami memulai penciptaan pertama, begitulah Kami akan mengulanginya — suatu janji yang pasti Kami tepati; sungguh Kamilah yang akan melaksanakannya. Tafsir Kemenag mengaitkannya dengan 39:67 (langit digulung dengan tangan kanan-Nya), menegaskan kebangkitan sebagai pengulangan penciptaan yang lebih mudah bagi Allah daripada penciptaan pertama, dan membacanya berdampingan dengan gambaran alam yang mengembang lalu berkontraksi kembali ke keadaan awal.",
+    "sources": [
+      "Tafsir Kemenag RI QS 21:104",
+      "Tafsir al-Jalalayn QS 21:104"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Aksi & transfer",
+      "note": "'naṭwī' (Kami gulung) = operasi teardown aktif atas keseluruhan sistem langit, bukan peluruhan pasif"
+    },
+    {
+      "layer": "Umpan balik",
+      "note": "'kamā bada'nā… nu'īduhu' — keadaan akhir memetakan balik ke keadaan awal; siklus tertutup awal↔ulang"
+    },
+    {
+      "layer": "Alignment",
+      "note": "'wa'dan 'alainā… fā'ilīn' — komitmen yang dijamin dieksekusi; operasi ini deterministik, bukan mungkin-terjadi"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "computational",
+      "reading": "'Menggulung langit seperti menggulung lembaran' menyerupai serialisasi: struktur besar yang terbentang (memori/tampilan runtime) dilipat rapi menjadi bentuk padat & tersimpan. Gulungan sijill = representasi terkompresi dari sesuatu yang tadinya terbuka lebar. Poin: keadaan sistem yang terbentang bisa dilipat balik ke bentuk ringkas tanpa kehilangan identitasnya.",
+      "analogy": "serialization: struktur terbentang → bentuk terlipat/tersimpan",
+      "quranic_term": "ṭayy as-sijill"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "Ayat memasangkan dua operasi berlawanan-arah: 'sebagaimana Kami memulai (bada'nā) penciptaan, begitu Kami mengulanginya (nu'īduhu)'. Ini invariansi reversibel — teardown adalah kebalikan terkendali dari setup, dan hasil akhirnya identik dengan titik awal. Dalam sistem, kemampuan membongkar persis sebalik dari membangun adalah tanda arsitektur yang bersih.",
+      "analogy": "setup ↔ teardown sebagai operasi invers",
+      "quranic_term": "bada'nā ↔ nu'īd"
+    },
+    {
+      "lens": "systems",
+      "reading": "Menggulung SELURUH langit sekaligus = shutdown global terkoordinasi, bukan matinya komponen satu per satu. Kontras dengan degradasi acak: di sini teardown adalah tindakan tunggal, terjadwal, menyeluruh. Sistem tangguh memerlukan jalur pembongkaran menyeluruh yang terkendali — bukan sekadar berharap ia meluruh sendiri.",
+      "analogy": "coordinated global teardown vs peluruhan acak"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Cetak biru fase akhir siklus-hidup agen: setiap sesi/proses agen butuh operasi 'ṭayy' — teardown eksplisit yang (1) men-serialisasi state penting ke penyimpanan (gulung, jangan buang), (2) melepas semua sumber daya & koneksi tool secara terurut, (3) menjamin sesi berikutnya bisa 'nu'īd' — direkonstruksi dari titik awal yang bersih. Actionable: implementasikan hook shutdown deterministik & checkpoint yang reversibel; jangan biarkan agen 'mati' meninggalkan sumber daya menggantung (resource leak). Pola 'gulung lalu ulangi' = pasangan checkpoint→restore yang wajib ada, bukan opsional.",
+      "analogy": "agent lifecycle: checkpoint (serialize) → terminate → restore"
+    },
+    {
+      "lens": "earth-cosmos",
+      "reading": "Tafsir Kemenag membaca ayat ini berdampingan dengan model alam yang mengembang lalu—bila massa kritis tercapai—berkontraksi kembali ke keadaan awal (singularitas). Dicatat sebagai resonansi struktural yang menarik antara 'menggulung' dan gagasan kontraksi kosmik — BUKAN mukjizat numerik, bukan bukti bahwa ayat menetapkan model kosmologi tertentu (model 'Big Crunch' sendiri masih diperdebatkan sains). Analogi ini bounded: gambaran, bukan penetapan ilmiah.",
+      "analogy": "menggulung ≈ kontraksi kosmik (bounded, spekulatif)",
+      "quranic_term": "āyāt kauniyah"
+    },
+    {
+      "lens": "math-physics",
+      "reading": "Pasangan 'mulai → ulangi' menyiratkan pemetaan yang membawa keadaan-akhir kembali ke keadaan-awal: sebuah involusi/siklus tertutup. Dalam fisika, keterbalikan waktu dan hukum kekekalan adalah tema besar; di sini yang ditonjolkan bukan rumus, melainkan STRUKTUR bahwa akhir memetakan balik ke awal secara terjamin. Dicatat sebagai analogi struktural, bukan klaim atas hukum fisika tertentu.",
+      "analogy": "pemetaan akhir → awal (siklus/involusi)"
+    },
+    {
+      "lens": "inference",
+      "reading": "Bentuk pernyataannya khas: klaim tentang keadaan masa depan alam ('akan digulung') yang mustahil diverifikasi kini, ditegaskan dengan bahasa jaminan eksekusi ('janji atas Kami… Kamilah pelaksananya'). Secara epistemik ini komitmen berkonsekuensi: klaim yang menaruh taruhannya di masa depan hanya menguntungkan pembuatnya bila benar-benar terjadi — pola yang sama dengan janji-janji terverifikasi lain dalam Qur'an.",
+      "analogy": "komitmen ber-taruhan masa depan (guaranteed execution)",
+      "quranic_term": "wa'd → fā'ilīn"
+    },
+    {
+      "lens": "artifact",
+      "reading": "Citra 'menggulung lembaran/kitab (sijill)' berakar pada teknologi gulungan (scroll) — arsip yang dibuka untuk dibaca, digulung untuk disimpan. Peradaban menyimpan pengetahuan dengan melipat yang terbentang jadi ringkas: dari gulungan papirus hingga arsip terkompresi & backup dingin. Membongkar-menyimpan-memulihkan adalah siklus purba pengelolaan informasi.",
+      "analogy": "scroll/arsip: buka (baca) → gulung (simpan) → buka lagi (pulihkan)"
+    },
+    {
+      "lens": "psychology",
+      "reading": "'Sebagaimana Kami memulai, begitu Kami mengulang' bisa dibaca sebagai bingkai harapan: keadaan yang terurai bukan akhir mutlak, ada janji rekonstruksi. Bagi pembelajar dan penyintas, gagasan bahwa yang tergulung dapat dibuka kembali menopang ketahanan — asal ada 'checkpoint' yang tersimpan, pemulihan mungkin.",
+      "analogy": "resiliensi: keadaan terurai → pemulihan dari titik awal tersimpan"
+    }
+  ],
+  "inference": "Dibaca sebagai analogi rekayasa, ayat ini menonjolkan pasangan operasi yang sering diabaikan perancang: bukan hanya membangun (bada'nā), tapi MEMBONGKAR secara terkendali dan reversibel (naṭwī… nu'īduhu). 'Menggulung langit seperti lembaran' menyerupai serialisasi + teardown menyeluruh yang terjadwal, dengan jaminan bahwa keadaan awal dapat direkonstruksi. Pelajaran untuk sistem, terutama agen AI: rancang shutdown dan checkpoint sekelas rancangan startup — gulung state dengan rapi, lepas sumber daya terurut, dan jamin pemulihan dari titik bersih. Semua pembacaan kosmologis (menggulung ≈ kontraksi alam) ditegaskan sebagai resonansi struktural yang bounded dan spekulatif, BUKAN mukjizat numerik atau penetapan model ilmiah; ini salah satu pembacaan rekayasa di atas makna zahir yang bersumber, bukan maksud tunggal ayat.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-08",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-08",
+      "note": "Tadabbur perdana — Wave 8 kosmos.",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

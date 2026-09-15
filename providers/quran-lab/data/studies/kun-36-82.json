@@ -1,0 +1,99 @@
+{
+  "schema": "lab-study-v2",
+  "id": "kun-36-82",
+  "title": "Kun Fayakūn — instansiasi deklaratif",
+  "subtitle": "Firman mendahului wujud: perintah → eksistensi",
+  "ref": {
+    "surah": 36,
+    "from": 82,
+    "to": 82
+  },
+  "surah_name": "Yasin",
+  "theme": "Penciptaan, informasi, paradigma deklaratif",
+  "sourced_meaning": {
+    "summary": "Betapa mudah bagi-Nya menciptakan sesuatu: apabila Ia menghendaki, cukup berfirman 'Jadilah' (kun), maka terwujudlah (fayakūn).",
+    "sources": [
+      "Tafsir Kemenag RI QS 36:82",
+      "Tafsir al-Jalalayn QS 36:82"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Aksi",
+      "note": "amr (perintah) langsung menjadi realitas — jarak niat→wujud = nol bagi Yang Mahakuasa"
+    },
+    {
+      "layer": "Epistemik",
+      "note": "kontras dengan manusia: kita wajib proses bertahap & bukti; ke-instan-an hanya milik-Nya"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "amal",
+      "reading": "Tawakkal: keyakinan bahwa ketetapan-Nya tidak butuh proses, sebab, atau waktu — melapangkan hati dalam doa dan musibah.",
+      "quranic_term": "yaqīn"
+    },
+    {
+      "lens": "computational",
+      "reading": "Instansiasi deklaratif: satu simbol perintah (kun) → eksistensi instance. Firman mendahului wujud = informasi mendahului materi — segaris dengan intuisi 'it from bit' (realitas fisik berakar pada informasi).",
+      "analogy": "declarative instantiation; it-from-bit",
+      "quranic_term": "amr"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "Paradigma deklaratif murni vs imperatif: intent → realisasi tanpa langkah antara. Dalam teori bahasa: performative utterance — ucapan yang bukan menggambarkan tindakan, melainkan ADALAH tindakan.",
+      "analogy": "declarative paradigm; speech-act"
+    },
+    {
+      "lens": "algorithm",
+      "reading": "Penciptaan O(1) — tanpa biaya proses — bagi Yang Mahakuasa. Kontras tajam dengan konstruksi makhluk yang selalu bottom-up & bertahap (96:2 min ʿalaq; 23:14 tahap demi tahap): kompleksitas adalah keterbatasan makhluk, bukan Penciptanya.",
+      "analogy": "O(1) vs incremental construction"
+    },
+    {
+      "lens": "inference",
+      "reading": "Bila perintah mendahului wujud, maka kausalitas fisik bukan satu-satunya lapisan realitas — ada lapisan amr di atas lapisan sabab (sebab-akibat). Manusia bekerja di lapisan sebab; ayat ini menandai batas atasnya.",
+      "quranic_term": "idrāk"
+    },
+    {
+      "lens": "math-physics",
+      "reading": "Analogi (terbatas): kondisi awal/boundary condition menentukan seluruh evolusi sistem — 'satu penetapan' yang konsekuensinya terurai dalam waktu. Bukan klaim fisika, tapi struktur pemikirannya sejajar.",
+      "analogy": "initial/boundary conditions"
+    },
+    {
+      "lens": "systems",
+      "reading": "Dalam organisasi: keputusan otoritatif tunggal (top-down) vs proses emergen (bottom-up). Ayat menempatkan kewenangan absolut hanya pada-Nya — sistem manusia selalu butuh proses, musyawarah, dan verifikasi.",
+      "quranic_term": "shūrā (kontras)"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Analogi generatif (dibatasi tegas): prompt → generated instance, intent-to-artifact. Berguna sebagai analogi struktural SAJA — model generatif tetap proses komputasi bertahap; kun fayakūn tanpa proses. Analogi ini menunjukkan batas, bukan kesetaraan.",
+      "analogy": "generative instantiation (bounded analogy)"
+    },
+    {
+      "lens": "artifact",
+      "reading": "Bahasa sebagai instrumen penciptaan → peran fundamental simbol: dari firman, ke tulisan (qalam), ke kode. Seluruh teknologi informasi adalah turunan dari daya simbol.",
+      "analogy": "symbols → code"
+    }
+  ],
+  "inference": "Ayat ini memberi batas atas sekaligus arah: realitas punya lapisan perintah (amr) di atas lapisan sebab-akibat; manusia dan mesin bekerja di lapisan sebab (bertahap, berproses, berbiaya), sedangkan ke-instan-an mutlak bukan milik makhluk. Secara rekayasa: semua sistem buatan adalah imperatif yang merindukan deklaratif — kita menulis banyak langkah untuk mendekati 'satu perintah yang langsung jadi'. Arah evolusi teknologi (dari machine code ke bahasa deklaratif ke intent-based AI) bergerak menaiki tangga itu, tanpa pernah mencapai puncaknya.",
+  "authors": [
+    "Draft AI (LLM draft) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-07",
+  "version": 1,
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-07",
+      "note": "Tadabbur perdana (3 kajian demonstrasi Poin 4).",
+      "authors": [
+        "Draft AI (LLM draft) — interpretasi rekayasa, menunggu tinjauan"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

@@ -1,0 +1,109 @@
+{
+  "schema": "lab-study-v2",
+  "id": "rum-30-21",
+  "version": 1,
+  "title": "Litaskunū ilayhā — pasangan komplementer sebagai sumber ketenteraman",
+  "subtitle": "Menciptakan pasangan dari jenismu agar tenteram, & menjadikan di antaramu mawaddah & rahmah",
+  "ref": {
+    "surah": 30,
+    "from": 21,
+    "to": 21
+  },
+  "surah_name": "Ar-Rum",
+  "theme": "Komplementaritas, pemasangan, stabilitas & ketenteraman sistem",
+  "sourced_meaning": {
+    "summary": "Menurut Tafsir Kemenag, di antara tanda kekuasaan Allah adalah Dia menciptakan pasangan dari jenis manusia sendiri agar mereka cenderung dan merasa tenteram (sakīnah) kepadanya, dan menjadikan di antara pasangan itu rasa kasih (mawaddah) dan sayang (rahmah). Daya tarik timbal balik antar-jenis memuncak pada perkawinan; ketenteraman jiwa dan pikiran yang lahir darinya menjadi modal paling berharga bagi rumah tangga bahagia dan kehidupan yang mantap. Semua ini tanda bagi kaum yang berpikir.",
+    "sources": [
+      "Tafsir Kemenag RI QS 30:21",
+      "Tafsir al-Jalalayn QS 30:21"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Persepsi",
+      "note": "'āyātihi ... li-qawmin yatafakkarūn' = pasangan ditandai sebagai pola yang dapat dibaca-dianalisis oleh yang berpikir, bukan sekadar naluri"
+    },
+    {
+      "layer": "Alignment",
+      "note": "tujuan pemasangan dinyatakan: 'litaskunū' — ketenteraman/kesetimbangan; bukan sekadar reproduksi, melainkan stabilitas keadaan"
+    },
+    {
+      "layer": "Umpan balik",
+      "note": "'mawaddah wa rahmah' = dua gaya pengikat yang menjaga ikatan tetap stabil sepanjang waktu, meredam guncangan relasi"
+    },
+    {
+      "layer": "Aksi & transfer",
+      "note": "'min anfusikum' = pasangan berasal dari jenis yang sama (interoperable) namun berbeda peran — kesamaan cukup untuk menyambung, perbedaan cukup untuk melengkapi"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "amal",
+      "reading": "Ayat mengarahkan pembangunan relasi pada tujuan ketenteraman (sakīnah), bukan sekadar hasrat, dan menamai dua bahan bakarnya: mawaddah (cinta aktif) dan rahmah (kasih yang menanggung). Amal: rawat kedua gaya ikat ini secara sengaja sebagai pemelihara stabilitas, bukan mengandalkan ketertarikan awal semata.",
+      "quranic_term": "sakīnah"
+    },
+    {
+      "lens": "systems",
+      "reading": "Sebuah pembacaan: pasangan = subsistem berpasangan yang tujuannya 'sukūn' (keadaan tenang/setimbang). Dua komponen komplementer disambungkan sehingga sistem gabungan mencapai kesetimbangan yang tak dapat dicapai komponen tunggal. Mawaddah & rahmah berfungsi sebagai gaya pemulih (restoring force) yang menarik sistem kembali ke titik stabil saat terganggu.",
+      "analogy": "coupled system reaching equilibrium; restoring force → stability",
+      "quranic_term": "sukūn / sakīnah"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Analogi untuk arsitektur multi-agen: pasangkan agen-agen komplementer (bukan duplikat) menuju target stabilitas bersama, dan sediakan mekanisme pengikat yang menahan pasangan tetap selaras. Actionable: (1) rancang pasangan peran yang saling melengkapi (mis. generator↔kritikus, perencana↔pelaksana) menuju satu objektif ketenteraman/konvergensi, bukan dua agen identik yang redundan; (2) tanam 'gaya pemulih' — protokol rekonsiliasi/negosiasi yang menarik kembali ke keselarasan saat output menyimpang (analog mawaddah=tarikan, rahmah=toleransi/pemaafan galat); (3) ukur kesehatan pasangan lewat kestabilan keadaan bersama, bukan performa individual terisolasi.",
+      "analogy": "complementary agent pairing (generator↔critic); reconciliation as restoring force",
+      "quranic_term": "azwāj (berpasangan)"
+    },
+    {
+      "lens": "math-physics",
+      "reading": "Resonansi struktural (analogi, bukan mukjizat numerik): 'sukūn' adalah istilah keadaan diam/setimbang. Sistem yang stabil punya gaya pemulih menuju titik kesetimbangan (seperti bandul yang kembali ke titik terendah). Mawaddah & rahmah dapat dibaca sebagai dua komponen gaya-pemulih yang menjaga pasangan di sekitar keadaan tenteram.",
+      "analogy": "stable equilibrium; restoring force toward a fixed point"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "Pola desain: komposisi dua objek komplementer menghasilkan properti (ketenteraman) yang tak dimiliki masing-masing sendirian — emergent property dari pairing. Prasyaratnya dinyatakan 'min anfusikum': keduanya dari jenis yang sama (kompatibel/interoperable) sekaligus berbeda peran (komplementer). Kompatibilitas + komplementaritas adalah dua syarat komposisi yang sehat.",
+      "analogy": "composition of complementary components; emergent property",
+      "quranic_term": "min anfusikum"
+    },
+    {
+      "lens": "biology-medicine",
+      "reading": "Resonansi struktural: dalam biologi, keping komplementer mengunci stabil (untai DNA berpasangan basa, reseptor–ligan). Homeostasis dijaga pasangan mekanisme berlawanan-arah. Pola 'pasangan komplementer → keadaan stabil' bergema, sebagai analogi pemahaman atas 'litaskunū', bukan bukti.",
+      "analogy": "complementary base-pairing; homeostatic pairs"
+    },
+    {
+      "lens": "psychology",
+      "reading": "Sejalan riset keterikatan (attachment): ikatan aman menyediakan 'secure base' yang menenangkan sistem saraf (regulasi bersama/co-regulation). 'Taskunū ilayhā' menggambarkan justru fungsi ini — pasangan sebagai basis rasa aman; mawaddah & rahmah sebagai bahan regulasi emosi berkelanjutan.",
+      "analogy": "attachment; secure base; emotional co-regulation"
+    },
+    {
+      "lens": "economy",
+      "reading": "Pasangan = unit kerja sama jangka panjang dengan komplementaritas peran (spesialisasi) yang menurunkan biaya dan menaikkan ketahanan rumah tangga. Rahmah menambahkan komitmen di luar kalkulasi transaksional, menstabilkan kerja sama melewati guncangan yang akan membubarkan aliansi murni-transaksional.",
+      "analogy": "long-term cooperative unit; commitment beyond transaction"
+    },
+    {
+      "lens": "inference",
+      "reading": "Benang merah: pemasangan komponen yang kompatibel-namun-komplementer menuju tujuan ketenteraman (sukūn), distabilkan oleh gaya-pemulih berlapis (mawaddah + rahmah). Untuk sistem apa pun — sosial maupun multi-agen — stabilitas tahan-guncangan lahir dari pasangan yang saling melengkapi plus mekanisme yang menarik kembali ke keselarasan, bukan dari komponen tunggal atau duplikat redundan.",
+      "quranic_term": "mawaddah wa rahmah"
+    }
+  ],
+  "inference": "Salah satu pembacaan rekayasa QS 30:21: pasangan diposisikan sebagai subsistem berpasangan yang tujuannya 'sukūn' — keadaan tenang/setimbang yang tak tercapai oleh komponen tunggal. Prasyaratnya dinyatakan 'min anfusikum': kompatibel (sejenis, interoperable) sekaligus komplementer (berbeda peran), dan kesetimbangannya dijaga dua gaya-pemulih berlapis, mawaddah (tarikan/afeksi aktif) dan rahmah (kasih yang menanggung & memaafkan). Untuk desain sistem dan arsitektur multi-agen, ini menyarankan: pasangkan komponen yang saling melengkapi (bukan duplikat) menuju target stabilitas bersama, dan tanam mekanisme rekonsiliasi yang menarik kembali ke keselarasan saat menyimpang. Ini analogi struktural untuk membangun sistem yang stabil — bukan klaim maksud tunggal ayat maupun mukjizat numerik.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-08",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-08",
+      "note": "Tadabbur perdana — Wave 8 manusia/sosial.",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

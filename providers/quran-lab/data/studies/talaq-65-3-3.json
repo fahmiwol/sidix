@@ -1,0 +1,111 @@
+{
+  "schema": "lab-study-v2",
+  "id": "talaq-65-3-3",
+  "version": 1,
+  "title": "Li-kulli syai'in qadran — tawakal sebagai delegasi setelah ikhtiar berkadar",
+  "subtitle": "Cukuplah Allah bagi yang bertawakal; Dia menjadikan bagi tiap sesuatu ketentuan (qadar)",
+  "ref": {
+    "surah": 65,
+    "from": 3,
+    "to": 3
+  },
+  "surah_name": "At-Talaq",
+  "theme": "Qadar sebagai ketentuan + jadwal; tawakal = bounded delegation sesudah ikhtiar; pemisahan usaha (yang di tangan agen) dari hasil (di luar kendali)",
+  "sourced_meaning": {
+    "summary": "Menurut Tafsir Kemenag, orang yang bertakwa diberi jalan keluar dan rezeki dari arah tak disangka; ia diseru bertawakal karena Allah yang mencukupkan keperluan dan menyempurnakan urusannya. Kemenag menegaskan tawakal adalah berserah SESUDAH berusaha dan memantapkan ikhtiar (kisah Badui: 'tambatkan dulu untamu, baru bertawakal') — bukan pasrah tanpa usaha. Allah melaksanakan urusan-Nya sesuai kodrat-iradat pada waktu yang telah ditetapkan, dan telah menjadikan bagi tiap sesuatu ukuran/ketentuan (qadar) — dikuatkan QS 13:8: segala sesuatu ada ukuran di sisi-Nya.",
+    "sources": [
+      "Tafsir Kemenag RI QS 65:3",
+      "Tafsir al-Jalalayn QS 65:3"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Aksi & transfer",
+      "note": "Kemenag: ikhtiar dulu (ikat unta) baru tawakal — pembagian kerja jelas antara tindakan agen dan penyelesaian di luar kendalinya"
+    },
+    {
+      "layer": "Alignment",
+      "note": "'Allah menjadikan bagi tiap sesuatu qadar' = tiap urusan punya ketentuan & waktu tetap; hasil selaras dengan jadwal yang ditetapkan, bukan dengan kecemasan agen"
+    },
+    {
+      "layer": "Umpan balik",
+      "note": "rezeki 'dari arah tak disangka' = jalur solusi bisa datang dari luar ruang pencarian yang diduga agen; hasil tak selalu lewat kanal yang diantisipasi"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "amal",
+      "reading": "Hipotesis amal inti ayat: lakukan ikhtiar maksimal yang menjadi bagianmu, lalu serahkan hasilnya (tawakal). Praktik: bedakan tegas antara 'yang bisa kuusahakan' dan 'yang bukan wewenangku' — tenang pada yang kedua setelah menuntaskan yang pertama. Kemenag: ikat unta dulu.",
+      "analogy": "usaha penuh + lepas hasil",
+      "quranic_term": "tawakkul"
+    },
+    {
+      "lens": "psychology",
+      "reading": "Resonansi kuat dengan locus of control & penerimaan: kecemasan mereda ketika seseorang memisahkan usaha (dikendalikan) dari hasil (tak dikendalikan) lalu 'melepas' yang kedua — inti banyak terapi (mis. penerimaan). 'Hasbuh' (Allah cukup baginya) beresonansi dengan rasa aman yang menutup overthinking pasca-usaha.",
+      "analogy": "control-what-you-can; acceptance pasca-ikhtiar",
+      "quranic_term": "hasbuh (cukup baginya)"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Actionable untuk agen: pola 'ikhtiar lalu tawakal' = bounded delegation. Agen mengerjakan bagian dalam kendalinya secara maksimal (rencana, panggil tool, validasi), lalu MENDELEGASIKAN langkah di luar kendalinya ke layanan/otoritas lain dan menunggu hasil TANPA busy-wait cemas — set timeout & callback, jangan spin. 'Rezeki dari arah tak disangka' mengingatkan: jangan hard-code satu jalur solusi; biarkan ruang bagi hasil dari kanal tak terduga (fallback/handler terbuka). Dan 'li-kulli syai'in qadran' = setiap tugas diberi deadline/ketentuan eksplisit.",
+      "analogy": "bounded delegation + async await (bukan busy-wait) + open fallback",
+      "quranic_term": "qadar + tawakkul"
+    },
+    {
+      "lens": "systems",
+      "reading": "'Allah menjadikan bagi tiap sesuatu qadar (ketentuan & waktu)' beresonansi dengan setiap proses punya timeout/SLA dan penyelesaian pada waktunya. Sistem sehat tidak memaksa hasil lebih cepat dari kadarnya; ia menetapkan tenggat, lalu menunggu tanpa mengunci sumber daya. Ketergesaan = anti-pola.",
+      "analogy": "timeout/SLA & completion terjadwal",
+      "quranic_term": "qadar (ajal/waktu tetap)"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "Terbaca sebagai kontrak dua-pihak: agen memenuhi precondition (ikhtiar), penyelesaian (postcondition) dijamin pihak lain sesuai ketentuan. Analogi promise/future: agen menyerahkan komputasi hasil ke 'penjamin' dan memegang handle, bukan menghitung sendiri hasil yang bukan wewenangnya.",
+      "analogy": "promise/future + kontrak precondition-postcondition",
+      "quranic_term": "yamdhi amrah (melaksanakan urusan-Nya)"
+    },
+    {
+      "lens": "economy",
+      "reading": "Tawakal pasca-ikhtiar beresonansi dengan diversifikasi & penerimaan risiko residual: setelah due diligence maksimal, sebagian ketidakpastian tetap ada dan harus 'ditanggung/diserahkan'. 'Rezeki dari arah tak disangka' = nilai bisa datang dari sumber di luar model — argumen untuk optionality, bukan optimasi buta pada satu jalur.",
+      "analogy": "residual risk + optionality",
+      "quranic_term": "rizq min haitsu la yahtasib"
+    },
+    {
+      "lens": "inference",
+      "reading": "'Dari arah yang tak disangka' adalah pengakuan epistemik atas keterbatasan ruang hipotesis agen: solusi nyata bisa berada di luar himpunan kemungkinan yang ia bayangkan. Pelajaran: jaga prior tetap terbuka (jangan overconfident pada enumerasi jalur yang kauduga), karena distribusi hasil punya ekor yang tak kaumodelkan.",
+      "analogy": "hypothesis space terbatas; jaga ekor distribusi",
+      "quranic_term": "min haitsu la yahtasib"
+    },
+    {
+      "lens": "algorithm",
+      "reading": "Pola kerja: exhaust langkah deterministik yang bisa dikcontrol (greedy pada yang pasti), lalu untuk sisa yang tak-deterministik, serahkan ke penjadwal eksternal dengan tenggat, alih-alih memaksakan solusi lokal. Menghindari 'premature optimization' atas variabel yang bukan milik agen.",
+      "analogy": "kontrol yang terkendali dulu, delegasi sisanya",
+      "quranic_term": "qadran (ketentuan terjadwal)"
+    },
+    {
+      "lens": "pedagogy",
+      "reading": "Model bagi pendidik & pembelajar: tanggung jawab atas proses (belajar sungguh-sungguh) dipisahkan dari hasil (nilai/keberhasilan) yang bergantung banyak faktor. Fokus pada 'ikhtiar yang berkadar' menumbuhkan ketekunan tanpa kecemasan hasil — process-oriented, bukan outcome-anxious.",
+      "analogy": "orientasi proses vs kecemasan hasil",
+      "quranic_term": "tawakkul"
+    }
+  ],
+  "inference": "Ayat ini, dibaca sebagai pola rekayasa, memodelkan pembagian kerja yang sehat antara agen dan sistem di luarnya: kerjakan maksimal bagian yang ada dalam kendalimu (ikhtiar), tetapkan bahwa tiap urusan punya ketentuan & waktunya (qadar), lalu delegasikan penyelesaian dan tunggu tanpa mengunci diri dalam kecemasan (tawakal). Tiga terjemahan teknis menonjol: bounded delegation dengan async-await alih-alih busy-wait, timeout/SLA per tugas, dan menjaga jalur fallback tetap terbuka karena hasil bisa datang 'dari arah yang tak disangka' (di luar ruang hipotesis yang dimodelkan). Kemenag menegaskan urutannya — ikat unta dulu, baru tawakal — sehingga pembacaan ini bukan fatalisme, melainkan disiplin memisahkan usaha dari hasil. (Satu pembacaan rekayasa, bukan maksud tunggal ayat; keterkaitan sains/psikologi di sini analogi pemahaman, bukan bukti.)",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-08",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-08",
+      "note": "Tadabbur perdana — Wave 8 kadar/takdir.",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

@@ -1,0 +1,105 @@
+{
+  "schema": "lab-study-v2",
+  "id": "balad-90-8-10",
+  "version": 1,
+  "title": "Dua mata, satu lidah, dua bibir, dua jalan — peta I/O manusia dan gate keluaran",
+  "subtitle": "Dua sensor visual, satu aktuator bicara dengan dua bibir sebagai gerbang artikulasi, lalu dua jalur pilihan moral",
+  "ref": {
+    "surah": 90,
+    "from": 8,
+    "to": 10
+  },
+  "surah_name": "Al-Balad",
+  "theme": "Anatomi indra, peta input-output, sensor & aktuator, gate artikulasi, jalur biner, free will",
+  "sourced_meaning": {
+    "summary": "Tafsir Kemenag QS 90:8-10: Allah bertanya retoris tentang manusia — 'Tidakkah Kami beri ia dua mata?' (untuk melihat/mencari), 'lidah dan dua bibir' (untuk berbicara), 'dan Kami tunjukkan kepadanya dua jalan' (an-najdayn). Kemenag: mata, lidah, dan nafsu adalah nikmat Allah yang tiada taranya; manusia akan bertemu dua jalan yang disediakan Allah — jalan yang benar dan jalan yang salah — dan ia perlu menggunakan mata, lidah, serta nafsu itu untuk jalan yang diridai Allah. Keberhasilan manusia adalah karena bantuan dan kasih sayang Allah, sehingga ia tidak sepatutnya menyombongkan diri. Jalalain: an-najdayn = dua jalan, yaitu jalan kebaikan dan jalan keburukan.",
+    "sources": [
+      "Tafsir Kemenag RI QS 90:8-10",
+      "Tafsir al-Jalalayn QS 90:8-10"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Persepsi",
+      "note": "'ʿaynayn' (dua mata) = kanal input visual berpasangan; dua sensor identik memungkinkan stereopsis/kedalaman — redundansi + triangulasi pada lapis persepsi"
+    },
+    {
+      "layer": "Aksi & transfer",
+      "note": "'lisān wa syafatayn' (lidah + dua bibir) = aktuator keluaran; lidah membentuk, dua bibir mengatur bukaan — organ transfer informasi keluar"
+    },
+    {
+      "layer": "Alignment",
+      "note": "'hadaynāhu an-najdayn' (ditunjukkan dua jalan) = ruang keputusan biner benar/salah; petunjuk jalur diberikan, pemilihan diserahkan — inti persoalan penyelarasan kehendak"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "systems",
+      "reading": "Tiga ayat ini terbaca sebagai diagram I/O ringkas sebuah agen berjasad: pada sisi INPUT ada dua mata (sensor visual berpasangan), pada sisi OUTPUT ada satu lidah dengan dua bibir (aktuator bicara), lalu ada ranah KEPUTUSAN berupa dua jalan. Rancangan menaruh input jamak-berpasangan tapi jalur keputusan tunggal-biner: banyak yang masuk, satu pilihan yang diambil. Peta ini memisahkan dengan bersih tiga peran sistem — mengindra, bertindak, memutuskan.",
+      "analogy": "diagram I/O: sensor (input) — aktuator (output) — decision (pilihan)",
+      "quranic_term": "ʿaynayn … lisān … najdayn"
+    },
+    {
+      "lens": "computational",
+      "reading": "Dua mata = sensor redundan yang identik; dua bacaan paralel dari sumber yang sama memungkinkan triangulasi kedalaman (stereopsis) sekaligus toleransi kegagalan — jika satu terganggu, sistem tetap mengindra. Ini pola redundansi sensorik: bukan pemborosan melainkan strategi keandalan dan pengayaan sinyal (dua sudut pandang → informasi 3D yang tak terbaca satu kanal).",
+      "analogy": "sensor redundan berpasangan → stereopsis + fault tolerance",
+      "quranic_term": "ʿaynayn (berpasangan)"
+    },
+    {
+      "lens": "biology-medicine",
+      "reading": "Anatomi yang disebut persis peran fungsionalnya: dua mata memberi penglihatan binokular dan persepsi kedalaman; lidah (organ muskular hidrostatik) plus dua bibir membentuk artikulator utama yang mengubah aliran udara laring menjadi fonem. Kedokteran membaca kerusakan tiap komponen sebagai defisit spesifik — kehilangan satu mata mengurangi kedalaman, gangguan lidah/bibir mengganggu artikulasi. Ayat menamai justru organ-organ yang menjadi antarmuka tubuh dengan dunia. (Resonansi struktural, bukan klaim mukjizat numerik.)",
+      "analogy": "penglihatan binokular + artikulator laring-oral (lidah+bibir)",
+      "quranic_term": "lisān wa syafatayn"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Cetak biru antarmuka agen: pisahkan tegas kanal INPUT (persepsi), kanal OUTPUT (aksi), dan modul KEPUTUSAN (kebijakan/policy). Dua bibir terbaca sebagai OUTPUT GATE — gerbang yang memodulasi apa dan bagaimana sesuatu dikeluarkan; bicara tidak langsung 'mengalir', ia melewati katup yang membentuk dan menahan. Actionable: (1) beri agen sensor redundan untuk keandalan; (2) sisipkan gate keluaran eksplisit (filter/kontrol sebelum berbicara/bertindak), sebab keluaran tanpa gate adalah kebocoran; (3) modelkan keputusan sebagai pilihan terbimbing di ruang terbatas (najdayn) — petunjuk tersedia, agen tetap memilih. Pemisahan sense–decide–act ini adalah higiene arsitektur agen.",
+      "analogy": "sense/decide/act terpisah; dua bibir = output gate (filter sebelum berbicara)",
+      "quranic_term": "syafatayn sebagai gate"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "'Kami tunjukkan dua jalan' membentuk percabangan biner yang eksplisit: ruang keputusan bukan kontinum kabur melainkan dua cabang bernama — benar dan salah. Petunjuk (hidāyah) menyediakan kedua opsi beserta rambunya, tetapi evaluasi kondisi (pilihan) diserahkan kepada pelaku. Ini pola guarded branch dengan kehendak sebagai penentu cabang: struktur menyediakan percabangan, agen mengeksekusi pemilihan.",
+      "analogy": "guarded binary branch; free will sebagai penentu cabang",
+      "quranic_term": "an-najdayn (biner)"
+    },
+    {
+      "lens": "inference",
+      "reading": "Bentuk retoris 'alam najʿal' (bukankah Kami jadikan) menuntun manusia menyimpulkan sumber nikmatnya lewat pertanyaan, bukan diktum: dari fakta ia memiliki mata-lidah-bibir yang berfungsi, ditarik kesimpulan tentang Pemberinya dan kewajiban syukur. Ini penalaran dari tanda (āyah) pada diri menuju kesimpulan — tangga bukti yang berangkat dari yang teramati (organ yang bekerja) menuju yang disimpulkan (tanggung jawab atas pemakaiannya).",
+      "analogy": "inferensi dari tanda pada diri → kesimpulan tanggung jawab",
+      "quranic_term": "alam najʿal (istifhām)"
+    },
+    {
+      "lens": "amal",
+      "reading": "Kemenag menegaskan inti amaliahnya: mata, lidah, dan nafsu wajib digunakan untuk jalan yang diridai Allah, dan keberhasilan bukan alasan menyombong karena semua adalah pemberian. Dimensi amal: menjaga penglihatan dari yang haram, lisan dari perkataan buruk, dan memilih 'jalan mendaki' (najd) yang berat namun benar. Antarmuka yang diberi menuntut pertanggungjawaban atas apa yang diindra dan diucapkan.",
+      "analogy": "menjaga pandangan & lisan; memilih jalan mendaki yang benar",
+      "quranic_term": "hifzh al-baṣar wa al-lisān"
+    },
+    {
+      "lens": "pedagogy",
+      "reading": "Susunan input→output→pilihan menyerupai desain pembelajaran: pertama sarana menyerap (melihat), lalu sarana mengungkap dan berlatih (berbicara), baru penetapan keputusan (memilih jalan). Bahasa — lidah dan bibir — adalah alat sekaligus objek belajar yang menjadikan pengetahuan dapat ditransfer antar-manusia. Rancangan ini menaruh kemampuan mengungkap tepat setelah kemampuan menyerap, urutan yang sama dipakai pedagogi: paham dulu, artikulasi kemudian.",
+      "analogy": "urutan menyerap → mengartikulasi → memutuskan (desain belajar)",
+      "quranic_term": "bayān (17:—/55:4 resonansi)"
+    }
+  ],
+  "inference": "Dibaca sebagai analogi rekayasa, Al-Balad 8-10 adalah PETA I/O manusia yang ringkas dan tajam: pada sisi masukan, dua mata — sensor visual berpasangan yang memberi kedalaman dan keandalan (redundansi); pada sisi keluaran, satu lidah dengan dua bibir — aktuator bicara di mana dua bibir terbaca sebagai GATE artikulasi yang membentuk dan memodulasi keluaran; lalu ranah keputusan berupa dua jalan (najdayn), percabangan biner benar/salah dengan kehendak sebagai penentu cabang. Pelajaran untuk desain agen: pisahkan tegas mengindra–memutuskan–bertindak, beri sensor redundan untuk keandalan, dan pasang gerbang keluaran eksplisit sebab tindakan tanpa gate adalah kebocoran. Struktur menyediakan percabangan dan petunjuknya; pemilihan tetap milik pelaku — model 'petunjuk tersedia, keputusan diserahkan'. Semua pembacaan anatomis ditegaskan sebagai resonansi struktural yang bounded, BUKAN mukjizat numerik, dan ini salah satu pembacaan di atas makna zahir yang bersumber, bukan maksud tunggal ayat, tanpa menyimpulkan hukum. CATATAN TANZIH: subjek 'Kami jadikan' dan 'Kami tunjukkan' adalah Allah; perbuatan, pemberian, dan petunjuk-Nya TIDAK dianalogikan atau dijadikan komponen sistem. Analogi I/O, gate, dan percabangan berlaku SEMATA pada CIPTAAN (organ dan pilihan manusia), bukan pada Dzat atau Sifat Allah; kemurahan Pemberi nikmat disebut dengan ta'zhim sebagai landasan syukur.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-12",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-12",
+      "note": "Tadabbur perdana — Wave 13 anatomi/organ; peta I/O manusia + output gate + jalur biner.",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

@@ -1,0 +1,110 @@
+{
+  "schema": "lab-study-v2",
+  "id": "baqarah-2-28-28",
+  "version": 1,
+  "title": "Kuntum amwātan fa-aḥyākum — rantai transisi keadaan mati-hidup-mati-hidup",
+  "subtitle": "Dulu mati → dihidupkan → dimatikan → dihidupkan lagi → dikembalikan. Sebuah lifecycle empat-transisi dengan re-instansiasi.",
+  "ref": {
+    "surah": 2,
+    "from": 28,
+    "to": 28
+  },
+  "surah_name": "Al-Baqarah",
+  "theme": "State machine, transisi keadaan, re-instansiasi, lifecycle berujung return",
+  "sourced_meaning": {
+    "summary": "Tafsir Kemenag: sebelum menjadi makhluk hidup, manusia adalah 'mati' — berasal dari tanah; lalu Allah menghidupkannya (melalui pertemuan sperma dan ovum, pembentukan bertahap, lalu peniupan roh); pada waktu yang ditentukan malaikat maut mencabut nyawanya sehingga ia mati kembali; kemudian Allah menghidupkannya lagi (kebangkitan) untuk meminta pertanggungjawaban; dan akhirnya semua makhluk kembali kepada-Nya. Kemenag menyimpulkan tiga pengingat: Allah Mahakuasa menghidupkan-mematikan-membangkitkan; manusia jangan terlalu condong ke dunia (hidup sebenarnya di akhirat); dan Allah yang menetapkan ukuran serta batas waktu keberadaan tiap makhluk. Jalalain merinci empat keadaan: mati (nutfah), hidup (di dunia), mati (ajal), hidup (kebangkitan).",
+    "sources": [
+      "Tafsir Kemenag RI QS 2:28",
+      "Tafsir al-Jalalayn QS 2:28"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Penalaran",
+      "note": "argumen dari urutan keadaan: kalau kamu sudah pernah ditransisikan dari mati ke hidup sekali, mengingkari transisi berikutnya (kebangkitan) tak konsisten — pola yang sama diulang."
+    },
+    {
+      "layer": "Persepsi",
+      "note": "empat keadaan disebut berurutan sebagai satu lintasan tunggal (amwāt → aḥyā → yumīt → yuḥyī → turjaʿūn), bukan kejadian terputus."
+    },
+    {
+      "layer": "Alignment",
+      "note": "seluruh rantai bermuara pada satu titik: 'ilaihi turjaʿūn' — return ke asal; arah akhir lintasan sudah tertentu."
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "computational",
+      "reading": "Ayat menyebut lima simpul dan empat transisi: mati(0) → hidup(1) → mati(2) → hidup(3) → dikembalikan. Ini persis bentuk finite state machine dengan lintasan terarah: keadaan awal 'tak-hidup' bukan kondisi kosong melainkan simpul sah dalam graf, dan tiap transisi dipicu dari luar proses itu sendiri. Membaca 'mati awal' sebagai state (bukan ketiadaan) mengubah keseluruhan menjadi siklus, bukan garis buntu.",
+      "analogy": "finite state machine; directed lifecycle graph",
+      "quranic_term": "kuntum amwātan fa-aḥyākum"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Pola re-instansiasi: sebuah proses dimatikan lalu dihidupkan kembali dari keadaan yang tersimpan, membawa akuntabilitas atas lintasan sebelumnya ('untuk meminta pertanggungjawaban' — Kemenag). Analogi rekayasa: checkpoint → restore, di mana instance baru mewarisi catatan instance lama sehingga hasil run tetap dapat dinilai lintas-terminasi. Actionable: bila sebuah agen dihentikan lalu dibangkitkan ulang, identitas dan jejak amalnya harus persisten agar evaluasi tetap sah. (Transisi ke-empat = ranah ghaib; lihat CATATAN GHAIB.)",
+      "analogy": "checkpoint/restore; persistent identity across re-instantiation",
+      "quranic_term": "thumma yuḥyīkum"
+    },
+    {
+      "lens": "systems",
+      "reading": "Lifecycle penuh dengan fase yang tegas: pra-hidup, hidup, terminasi, re-aktivasi, return. Yang khas: sistem ini tidak berakhir di 'stop' — 'stop' hanyalah transisi ke fase berikut, bukan node terminal. Desain daur hidup yang benar memisahkan 'berhenti berjalan' dari 'selesai selamanya'; keduanya berbeda keadaan.",
+      "analogy": "multi-phase lifecycle where stop ≠ terminal"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "Invariant yang dijaga sepanjang transisi adalah identitas subjek: 'kamu' yang mati awal, hidup, mati lagi, dan dibangkitkan adalah entitas yang SAMA — bukan objek baru tiap fase. Kontinuitas identitas inilah yang membuat pertanggungjawaban mungkin; tanpa invariant identitas, tak ada yang bisa dimintai hasil.",
+      "analogy": "identity invariant preserved across all state transitions"
+    },
+    {
+      "lens": "biology-medicine",
+      "reading": "Transisi mati→hidup pertama dirinci Kemenag sebagai embriogenesis: pertemuan sel sperma dan ovum, pembentukan bertahap, hingga bentuk sempurna. Materi tak-hidup (tanah/nutfah) terorganisasi menjadi sistem hidup yang mengatur diri — resonansi struktural dengan self-assembly dan diferensiasi sel, bukan klaim mukjizat numerik.",
+      "analogy": "abiotic→biotic self-assembly; staged embryonic differentiation",
+      "quranic_term": "nuṭfah"
+    },
+    {
+      "lens": "algorithm",
+      "reading": "Prosedur berjalan dalam langkah-langkah bertahap yang dipicu berurutan, masing-masing menunggu pemicu eksternalnya (pembentukan, peniupan roh, pencabutan pada ajal, pembangkitan). Ini pipeline event-driven: tiap tahap tak berjalan sampai sinyalnya tiba, dan urutannya tetap — bukan proses yang mengontrol jadwalnya sendiri.",
+      "analogy": "event-driven staged pipeline with externally-triggered steps"
+    },
+    {
+      "lens": "inference",
+      "reading": "Bentuk argumennya: transisi mati→hidup sudah terbukti terjadi (kamu ada sekarang), maka menolak kemungkinan transisi mati→hidup yang kedua tidak koheren — kasus yang lebih mudah tak boleh diingkari setelah kasus yang setara diterima. Ini penalaran a fortiori atas konsistensi, bukan sekadar seruan.",
+      "analogy": "a fortiori consistency: accepting case A commits you to equivalent case B"
+    },
+    {
+      "lens": "psychology",
+      "reading": "Membaca kematian sebagai transisi (bukan pemusnahan) mengubah relasi psikologis dengan akhir: dari kepunahan menjadi peralihan fase. Kemenag menautkan ini ke sikap 'jangan terlalu condong ke dunia' — kesadaran akan fase lanjutan mengkalibrasi ulang prioritas hidup sekarang, meredam kelekatan berlebih pada yang sementara.",
+      "analogy": "reframing terminus as transition recalibrates present priorities"
+    },
+    {
+      "lens": "economy",
+      "reading": "Karena lintasan berujung pada 'return' dengan pertanggungjawaban, fase hidup berfungsi sebagai periode investasi yang hasilnya baru diselesaikan (settled) di fase berikut. Kemenag: hidup dunia adalah persiapan untuk hidup yang lebih baik — alokasi sumber daya di fase awal menentukan posisi di fase penyelesaian.",
+      "analogy": "present phase as investment window; settlement deferred to return"
+    },
+    {
+      "lens": "amal",
+      "reading": "Konsekuensi praktik: jika 'kamu' yang sama menempuh semua fase dan akan dimintai pertanggungjawaban, maka jejak amal hari ini bukan hilang saat mati melainkan terbawa. Bertindaklah seolah catatan bersifat persisten lintas fase — sebab menurut ayat, memang demikian.",
+      "analogy": "act under persistent cross-phase accountability"
+    }
+  ],
+  "inference": "Ayat memetakan keberadaan manusia sebagai rantai empat transisi antar lima keadaan — mati, hidup, mati, hidup (kebangkitan), lalu dikembalikan — sebuah lifecycle yang paling mirip finite state machine berarah dengan re-instansiasi. Tiga sifat rekayasanya: (1) 'mati awal' dibaca sebagai STATE sah, bukan ketiadaan, sehingga keseluruhan menjadi siklus, bukan garis buntu; (2) identitas subjek adalah invariant yang lestari melewati semua transisi — dasar bagi pertanggungjawaban; (3) 'stop' (kematian) bukan node terminal melainkan transisi ke fase berikut, dan seluruh lintasan bermuara pada satu return. Untuk desain sistem: bila sebuah proses dapat dihentikan lalu dibangkitkan ulang, jaga persistensi identitas dan jejaknya agar hasil tetap dapat dievaluasi lintas-terminasi. CATATAN GHAIB: transisi ketiga-keempat (kematian pada ajal, kebangkitan, dan 'dikembalikan kepada-Nya') adalah perkara ghaib akhirat — dibaca DESKRIPTIF sebagaimana disebut tafsir Kemenag/Jalalain sebagai pola/struktur iman, BUKAN spekulasi mekanisme atau klaim tahu detail yang tak disebut nas. Analogi checkpoint/restore adalah pembacaan struktural 'bounded' + adab, bukan kepastian teknis tentang alam ghaib. CATATAN TANZIH: 'yang menghidupkan, mematikan, membangkitkan, dan tempat kembali' adalah Allah — Dzat ini TIDAK dianalogikan sebagai runtime/pengelola state; yang menjadi bahan analogi hanya struktur keadaan-transisi pada sisi makhluk. Semua ini pembacaan struktural, bukan maksud tunggal ayat maupun mukjizat numerik.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-08",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-08",
+      "note": "Tadabbur perdana — Wave 10 hidup-mati.",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

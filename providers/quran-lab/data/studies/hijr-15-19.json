@@ -1,0 +1,110 @@
+{
+  "schema": "lab-study-v2",
+  "id": "hijr-15-19",
+  "version": 1,
+  "title": "Kulla syaiʾin mawzūn — segala sesuatu menurut ukuran",
+  "subtitle": "Bumi dibentangkan, gunung dipancangkan, dan tiap sesuatu ditumbuhkan menurut kadar tertentu",
+  "ref": {
+    "surah": 15,
+    "from": 19,
+    "to": 19
+  },
+  "surah_name": "Al-Hijr",
+  "theme": "Kalibrasi, kadar/proporsi terukur, provisioning berbatas, keseimbangan kuantitatif",
+  "sourced_meaning": {
+    "summary": "Tafsir Kemenag: Setelah tanda kekuasaan di langit, ayat ini menunjuk tanda yang dapat dilihat dan dirasakan di bumi. Bumi dijadikan seakan terhampar sehingga mudah didiami, dipakai bercocok tanam, dan dilalui mencari rezeki; diciptakan jurang, sungai kecil yang menyatu menuju laut, serta gunung-gunung yang menjulang. Dan Allah menumbuhkan padanya segala sesuatu 'menurut ukuran' (mawzūn) — dengan kadar dan timbangan yang tepat, tidak berlebih dan tidak kurang, sesuai keperluan kehidupan.",
+    "sources": [
+      "Tafsir Kemenag RI QS 15:19",
+      "Tafsir al-Jalalayn QS 15:19"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Persepsi",
+      "note": "bumi terhampar & gunung sebagai fitur teramati; 'menurut ukuran' menambahkan dimensi tak kasat mata: kuantitas yang tepat"
+    },
+    {
+      "layer": "Penalaran",
+      "note": "'mawzūn' (tertimbang) mengajak menilai bukan sekadar keberadaan sesuatu, melainkan KADAR-nya — berpikir kuantitatif"
+    },
+    {
+      "layer": "Alignment",
+      "note": "kadar yang pas 'sesuai keperluan hidup' = tujuan yang selaras dengan fungsi, bukan maksimasi buta"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "amal",
+      "reading": "'Segala sesuatu menurut ukuran' mendidik hidup berkadar: makan, bicara, dan konsumsi secukupnya (bandingkan larangan berlebih-lebihan). Keseimbangan bukan kekurangan, melainkan ketepatan takaran yang menjaga keberlanjutan diri dan lingkungan.",
+      "analogy": "moderation as calibrated dosage",
+      "quranic_term": "mawzūn"
+    },
+    {
+      "lens": "computational",
+      "reading": "'Menurut ukuran' = tiap besaran punya satuan dan kadar tertentu — analog sistem tipe dan dimensi (types & units) dalam komputasi. Kesalahan terbesar sering muncul dari kadar/satuan yang tak cocok; kebenaran menuntut nilai yang terukur, bukan sekadar ada. Ini pula dasar analisis dimensional yang menjaga rumus tetap konsisten.",
+      "analogy": "type/unit system; dimensional consistency",
+      "quranic_term": "mawzūn"
+    },
+    {
+      "lens": "systems",
+      "reading": "Alam dibaca sebagai sistem dengan sumber daya ber-KUOTA: air, mineral, tumbuhan disediakan dalam kadar seimbang sehingga siklus tak jebol. Prinsip desain: setiap sumber daya dialokasikan dengan batas (quota/budget) agar sistem tetap dalam kesetimbangan dan tak ada satu komponen yang menguras sisanya.",
+      "analogy": "resource quotas; balanced allocation"
+    },
+    {
+      "lens": "math-physics",
+      "reading": "Resonansi struktural (BUKAN mukjizat numerik): kehidupan bergantung pada besaran yang berada dalam rentang sempit (kadar air, unsur, gradien). Tafsir bersumber menekankan 'kadar yang tepat sesuai keperluan', bukan angka spesifik; kami membacanya sebagai motif keterukuran, bukan klaim konstanta tertentu.",
+      "analogy": "life within narrow parameter ranges — bounded",
+      "quranic_term": "qadar"
+    },
+    {
+      "lens": "economy",
+      "reading": "'Tertimbang' adalah bahasa neraca: pasokan disediakan dalam kadar yang cocok dengan kebutuhan. Ekonomi sehat pun soal penakaran — alokasi sumber daya terbatas secara proporsional. Kelebihan (mubadzir) maupun kekurangan sama-sama merusak keseimbangan.",
+      "analogy": "supply calibrated to demand; balanced allocation",
+      "quranic_term": "mīzān"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Untuk agen: perlakukan tiap sumber daya dan keluaran sebagai BER-KADAR, bukan tak terbatas. Actionable: (1) beri anggaran eksplisit — token/compute/waktu/langkah — dan tegakkan sebagai batas keras agar agen tak 'berlebih-lebihan'; (2) sertakan satuan/dimensi pada besaran yang dipakai alat (unit-aware tool I/O) untuk mencegah galat kadar; (3) kalibrasi kepercayaan diri (confidence calibration) agar 'kadar keyakinan' cocok dengan akurasi nyata; (4) right-sizing model/konteks sesuai keperluan tugas, bukan selalu terbesar. Inti: keputusan yang 'mawzūn' — terukur dan secukupnya.",
+      "analogy": "budget enforcement; unit-aware tools; confidence calibration; right-sizing",
+      "quranic_term": "mawzūn"
+    },
+    {
+      "lens": "biology-medicine",
+      "reading": "Prinsip 'menurut ukuran' adalah inti farmakologi dan fisiologi: dosis yang menyembuhkan bisa meracuni bila kadarnya salah; homeostasis menjaga besaran tubuh dalam rentang sempit. Kesehatan = besaran-besaran yang tertimbang tepat, bukan sekadar keberadaan zatnya.",
+      "analogy": "dose-response; homeostatic set points",
+      "quranic_term": "qadar"
+    },
+    {
+      "lens": "chemistry-process",
+      "reading": "Reaksi dan pertumbuhan menuntut stoikiometri — perbandingan kadar yang tepat antar bahan. 'Ditumbuhkan menurut ukuran' beresonansi dengan proses yang hasilnya benar hanya bila takaran masukannya seimbang; kelebihan satu reaktan hanya jadi limbah.",
+      "analogy": "stoichiometry; balanced feed ratios",
+      "quranic_term": "mawzūn"
+    },
+    {
+      "lens": "earth-cosmos",
+      "reading": "Bumi 'dibentangkan' sebagai permukaan huni yang stabil dan gunung sebagai penyeimbang/pasak — geometri yang menyiapkan panggung kehidupan dengan kadar yang mendukung. Habitabilitas dibaca sebagai hasil parameter lingkungan yang tertata, bukan kebetulan longgar.",
+      "analogy": "habitability as tuned environment",
+      "quranic_term": "madadnāhā"
+    }
+  ],
+  "inference": "Kata kunci ayat ini — 'kulla syaiʾin mawzūn' (segala sesuatu menurut ukuran) — dibaca sebagai rekayasa adalah prinsip KALIBRASI: yang menentukan bukan hanya keberadaan sesuatu, melainkan KADAR-nya yang tepat. Ini beresonansi lintas domain dengan satu benang: kebenaran dan keberlanjutan menuntut besaran yang terukur, bukan tak terbatas. Dalam komputasi ia menjadi sistem tipe/satuan dan konsistensi dimensional; dalam sistem, kuota dan anggaran sumber daya; dalam biologi, dosis dan homeostasis; dalam kimia, stoikiometri. Untuk desain agen AI, pelajarannya sangat konkret: beri anggaran eksplisit dan tegakkan sebagai batas keras, buat alat sadar-satuan, kalibrasi kepercayaan diri agar cocok dengan akurasi, dan pilih ukuran model/konteks secukupnya. Bumi yang 'dibentangkan' dengan segala isinya yang 'tertimbang' menjadi metafora panggung yang parameternya ditata pas — dan keputusan yang baik, seperti ciptaan yang baik, adalah yang mawzūn: terukur dan secukupnya.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-07",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-07",
+      "note": "Tadabbur perdana — Wave 6 batch astronomi.",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

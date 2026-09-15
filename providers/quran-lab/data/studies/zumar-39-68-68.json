@@ -1,0 +1,104 @@
+{
+  "schema": "lab-study-v2",
+  "id": "zumar-39-68-68",
+  "version": 1,
+  "title": "Dua tiupan sangkakala — shutdown massal berpengecualian, lalu bangkit serempak menunggu",
+  "subtitle": "Tiupan pertama mematikan semua kecuali yang dikehendaki Allah; tiupan kedua — tiba-tiba mereka berdiri menunggu",
+  "ref": {
+    "surah": 39,
+    "from": 68,
+    "to": 68
+  },
+  "surah_name": "Az-Zumar",
+  "theme": "Kiamat & kebangkitan: shutdown dua-fase dengan pengecualian eksplisit, re-instantiation massal serempak, state siap-evaluasi",
+  "sourced_meaning": {
+    "summary": "Sangkakala ditiup, maka matilah siapa yang di langit dan di bumi KECUALI siapa yang dikehendaki Allah; kemudian ditiup sekali lagi, maka tiba-tiba mereka berdiri menunggu (putusannya masing-masing). Tafsir Kemenag: pada hari Kiamat terjadi DUA kali tiupan. Tiupan pertama mematikan semua yang hidup di langit dan bumi; ada makhluk yang tidak mati karena Allah tidak menghendaki kematiannya — SIAPA mereka tidak disebutkan dalam Al-Qur'an maupun hadis sahih, maka pengetahuannya diserahkan kepada Allah (sebuah riwayat dari Abu Ya'la menyebut Jibril, Mikail, Izrail — yang kemudian juga wafat satu per satu). Pada tiupan kedua, semua yang telah mati dihidupkan kembali, masing-masing berdiri menunggu apa yang akan terjadi pada dirinya. Kemenag juga menautkan tiupan ini dengan 'az-zajrah' — satu teriakan saja, maka seketika mereka melihatnya (ash-Shaffat 37:19). CATATAN GHAIB: seluruh peristiwa ini perkara ghaib yang diimani; dibaca deskriptif dari tafsir — bukan spekulasi kapan/bagaimana fisisnya, dan identitas yang dikecualikan sengaja tidak dipastikan karena teks tidak memastikannya.",
+    "sources": [
+      "Tafsir Kemenag RI QS 39:68",
+      "Tafsir al-Jalalayn QS 39:68"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Aksi & transfer",
+      "note": "dua operasi global berurutan: tiupan-1 (menghentikan seluruh yang hidup) → tiupan-2 (menghidupkan kembali serempak) — struktur protokol dua-fase"
+    },
+    {
+      "layer": "Tangga epistemik",
+      "note": "'illā man syāʾallāh' — Kemenag menahan diri: siapa yang dikecualikan tidak disebut Qur'an/hadis sahih, pengetahuannya diserahkan kepada Allah; teladan tidak mengisi kekosongan data"
+    },
+    {
+      "layer": "Alignment",
+      "note": "'qiyāmun yanẓurūn' — semua bangkit dalam posisi menunggu putusan; keadaan pasca-restore adalah siap-dievaluasi, bukan bebas beraktivitas"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "computational",
+      "reading": "Struktur peristiwanya (sebagaimana dideskripsikan tafsir) membaca sebagai sinyal broadcast dua-fase: satu sinyal global menghentikan semua proses di seluruh ruang alamat ('di langit dan di bumi'), lalu sinyal kedua menghidupkan kembali SEMUA yang pernah berjalan — termasuk yang berhenti jauh sebelum sinyal pertama. Menariknya, restore tidak parsial dan tidak bergilir: 'fa-idzā hum' (tiba-tiba mereka) menandai kebangkitan yang serempak, bukan boot berurutan.",
+      "analogy": "broadcast signal dua-fase: global stop → global restore serempak",
+      "quranic_term": "nufikha fīṣ-ṣūr (ditiup sangkakala)"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "'Illā man syāʾallāh' menempatkan PENGECUALIAN sebagai klausa kelas-satu di dalam aturan global itu sendiri — bukan pelanggaran aturan, melainkan bagian dari definisinya. Dalam logika program: aturan yang sehat menyatakan cakupannya DAN daftar kekecualiannya secara eksplisit di tempat yang sama; pengecualian yang tak terdeklarasi adalah bug, pengecualian yang terdeklarasi adalah spesifikasi. Kemenag menambah disiplin: isi daftar kecualian itu tidak dirinci — spesifikasi boleh menyatakan ADANYA pengecualian tanpa membocorkan anggotanya.",
+      "analogy": "exemption clause sebagai bagian spesifikasi, bukan pelanggaran aturan",
+      "quranic_term": "illā man syāʾallāh"
+    },
+    {
+      "lens": "algorithm",
+      "reading": "Tiupan kedua menghasilkan keadaan akhir yang seragam: SEMUA berdiri menunggu — analog barrier synchronization, titik temu di mana seluruh proses (kapan pun ia berhenti) tiba pada state yang sama sebelum tahap berikutnya (putusan) dimulai. Tidak ada yang mendahului evaluasi, tidak ada yang tertinggal; barrier memastikan keserempakan sebelum fase penghakiman berjalan.",
+      "analogy": "barrier synchronization: semua proses tiba di titik yang sama sebelum fase evaluasi",
+      "quranic_term": "qiyāmun yanẓurūn"
+    },
+    {
+      "lens": "systems",
+      "reading": "Shutdown massal yang dideskripsikan bukan kegagalan berantai melainkan operasi TERKENDALI dengan daftar pengecualian — mirip disiplin operasional: saat mematikan seluruh armada, proses-proses kritis tertentu di-exempt dari kill signal agar fungsi esensial tetap berjalan sampai gilirannya. Bahkan riwayat yang dikutip Kemenag menyebut yang dikecualikan pun akhirnya wafat satu per satu — pengecualian bersifat sementara dan bertahap, bukan kekebalan permanen; tidak ada komponen yang berada di luar siklus.",
+      "analogy": "fleet-wide kill dengan exempt list; exemption bertahap, bukan permanen",
+      "quranic_term": "faṣaʿiqa man fīs-samāwāt wal-arḍ"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Cetak biru untuk siklus hidup armada agen: (1) sediakan mekanisme shutdown global yang MENDUKUNG daftar pengecualian eksplisit — proses audit/pencatat/pengawas tertentu boleh di-exempt dari kill agar teardown tetap terekam; (2) daftar exempt harus ditetapkan oleh otoritas di atas armada, bukan oleh agen sendiri (agen tidak memilih dirinya kebal); (3) rancang restore massal yang membawa SEMUA agen ke satu state kanonik siap-dievaluasi (bukan melanjutkan aktivitas lama) — pasca-restore, hal pertama adalah evaluasi/audit, baru penugasan. Actionable: state machine agen wajib punya state EVAL_PENDING yang menjadi target restore, terpisah dari RUNNING. CATATAN GHAIB: ini analogi struktural yang bounded atas deskripsi tafsir, bukan klaim tentang mekanisme akhirat.",
+      "analogy": "kill-all dengan exempt list terotorisasi + mass restore ke state EVAL_PENDING"
+    },
+    {
+      "lens": "inference",
+      "reading": "Perlakuan Kemenag terhadap 'siapa yang dikecualikan' adalah teladan epistemik: data tidak disebut Qur'an maupun hadis sahih → pengetahuan diserahkan kepada Allah; riwayat penunjang disebut DENGAN atribusinya (Abu Ya'la) tanpa dinaikkan menjadi kepastian. Pola inferensi: bedakan tegas antara yang dinyatakan teks, yang diriwayatkan dengan sanad, dan yang tidak diketahui — jangan biarkan sistem (atau manusia) mengisi slot kosong dengan tebakan berlabel fakta.",
+      "analogy": "missing data tetap missing: jangan imputasi lalu melabelinya fakta",
+      "quranic_term": "diserahkan kepada Allah (tafwīḍ)"
+    },
+    {
+      "lens": "earth-cosmos",
+      "reading": "Skala peristiwa mencakup 'yang di langit dan di bumi' — seluruh kosmos, bukan bumi saja; kehancuran dan pembaruan bersifat total lintas struktur langit-bumi. Sebagian pembaca menautkan dengan skenario kosmologi tentang akhir alam semesta; dicatat ketat sebagai RESONANSI struktural yang bounded — sains tidak membuktikan ayat dan ayat tidak menetapkan model kosmologi; kapan dan bagaimana fisisnya adalah ghaib.",
+      "analogy": "peristiwa berskala kosmos total (bounded, deskriptif)",
+      "quranic_term": "man fīs-samāwāt wal-arḍ"
+    },
+    {
+      "lens": "psychology",
+      "reading": "'Berdiri menunggu putusan masing-masing' — gambaran kesadaran penuh bahwa setiap diri akan dievaluasi atas rekamannya sendiri. Sebagai pola psikologis: hidup yang sadar-audit (muḥāsabah) menata perilaku hari ini dengan mengingat posisi 'menunggu putusan' itu; bukan kecemasan lumpuh, melainkan akuntabilitas yang menjernihkan prioritas.",
+      "analogy": "audit-awareness: bekerja hari ini dengan sadar akan evaluasi akhir",
+      "quranic_term": "yanẓurūn (menunggu putusan)"
+    }
+  ],
+  "inference": "Dibaca sebagai analogi rekayasa (bounded, di atas makna bersumber), ayat ini mendeskripsikan shutdown-restore paling menyeluruh dalam busur kosmik: SATU sinyal menghentikan semua yang hidup di langit dan bumi — dengan klausa pengecualian eksplisit 'illā man syāʾallāh' yang anggotanya sengaja tidak dirinci teks — lalu sinyal KEDUA membangkitkan semua serempak ke satu keadaan seragam: berdiri menunggu putusan. Tiga pelajaran desain: (1) aturan global yang sehat mendeklarasikan pengecualiannya sebagai bagian spesifikasi (exempt list terotorisasi dari atas, bukan dipilih agen sendiri), dan pengecualian itu pun sementara — tak ada komponen kebal siklus; (2) restore massal yang benar membawa semua proses ke state kanonik siap-dievaluasi (barrier sebelum fase putusan), bukan melanjutkan aktivitas lama; (3) teladan epistemik Kemenag — slot data yang kosong (siapa yang dikecualikan) dibiarkan kosong dengan atribusi riwayat seadanya, bukan diisi tebakan. CATATAN GHAIB: dua tiupan, kematian massal, dan kebangkitan adalah perkara ghaib yang diimani; seluruh bacaan di sini deskriptif dari tafsir dan analogi struktural bounded — bukan spekulasi kapan/bagaimana fisisnya, bukan mukjizat numerik, bukan maksud tunggal ayat. CATATAN TANZIH: Yang memerintahkan tiupan, mematikan, dan menghidupkan adalah Allah — kuasa-Nya landasan iman yang disebut dengan ta'zhim, BUKAN komponen analogi; yang dianalogikan hanya struktur peristiwa pada makhluk sebagaimana dideskripsikan tafsir.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-12",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-12",
+      "note": "Tadabbur perdana — Wave 13 kosmogenesis/kehancuran.",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

@@ -1,0 +1,105 @@
+{
+  "schema": "lab-study-v2",
+  "id": "abasa-80-18-22",
+  "version": 1,
+  "title": "Dari nuṭfah, ditentukan kadarnya, dimudahkan jalannya — lifecycle penuh dari spec",
+  "subtitle": "Nuṭfah → penentuan parameter (qaddarahu) → jalan dimudahkan (yassarahu) → wafat & dikubur → dibangkitkan bila dikehendaki",
+  "ref": {
+    "surah": 80,
+    "from": 18,
+    "to": 22
+  },
+  "surah_name": "'Abasa",
+  "theme": "Anatomi & reproduksi, lifecycle penuh, parameterisasi genetik, birth canal, terminasi & re-instansiasi",
+  "sourced_meaning": {
+    "summary": "Tafsir Kemenag QS 80:18-22: Allah bertanya untuk direnungkan — 'Dari apakah manusia diciptakan?' (18). Jawabnya: 'Dari setetes mani (nuṭfah) Dia menciptakannya lalu menentukannya (fa-qaddarahu)' — Kemenag: Allah menentukan tahap-tahap kejadian, umur, rezeki, dan nasibnya (19). 'Kemudian Dia memudahkan jalannya (as-sabīla yassarahu)' — Kemenag: Allah memudahkan jalan manusia pada masa pertengahan, memberi kesempatan menempuh jalan yang benar atau sesat; manusia tak pantas menyombong bila mengerti asal kejadiannya (20). 'Kemudian Dia mematikannya dan memasukkannya ke dalam kubur (amātahu fa-aqbarahu)' (21). 'Kemudian bila Dia menghendaki, Dia membangkitkannya kembali (idzā syāʾa ansyarahu)' (22) — Kemenag: pada tahap penghabisan Allah mematikan dan menguburkan, lalu pada hari Kiamat membangkitkan kembali dari kubur. Ayat 21-22 adalah perkara ghaib (kematian, kubur, kebangkitan) yang hanya diketahui dari wahyu. Jalalain: qaddarahu = menetapkan fase-fase penciptaan; yassara as-sabīl = memudahkan keluar dari rahim ibu; ansyarahu = menghidupkan kembali.",
+    "sources": [
+      "Tafsir Kemenag RI QS 80:18-22",
+      "Tafsir al-Jalalayn QS 80:18-22"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Aksi & transfer",
+      "note": "Deret khalaqa → qaddara → yassara → amāta → aqbara → ansyara = rantai operasi lifecycle, tiap kata kerja satu fase dari asal hingga akhir dan sesudahnya"
+    },
+    {
+      "layer": "Memori & grounding",
+      "note": "'min ayyi syayʾin khalaqahu … min nuṭfatin' — pengetahuan asal-usul yang konkret (dari nuṭfah) sebagai grounding untuk menalar tentang diri, melawan kesombongan tanpa dasar"
+    },
+    {
+      "layer": "Tangga epistemik",
+      "note": "Pertanyaan 'dari apa ia dicipta' menuntun dari yang teramati (asal material hina) menuju kesimpulan (kerendahan hati) — naik dari fakta ke sikap"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "algorithm",
+      "reading": "Lima kata kerja beruntun membentuk daur-hidup lengkap dari sebuah 'spec': inisiasi dari nuṭfah (khalq), penetapan parameter (qaddara), penyediaan jalur keluar dan jalur hidup (yassara as-sabīl), terminasi (amāta), penyimpanan (aqbara), dan — bersyarat kehendak — pengaktifan ulang (ansyara). Ini bukan potongan, melainkan kurva hidup utuh yang ditetapkan dari titik awal: sistem yang merancang sesuatu memikirkan seluruh siklusnya, bukan hanya kelahirannya.",
+      "analogy": "full lifecycle: init → parameterize → run → terminate → store → (re)activate",
+      "quranic_term": "khalaqahu … ansyarahu"
+    },
+    {
+      "lens": "computational",
+      "reading": "'fa-qaddarahu' (lalu Dia menentukan kadarnya) terbaca sebagai penetapan parameter dari spesifikasi awal: dari satu nuṭfah ditetapkan tahap-tahap, ukuran, dan takaran — sebuah konfigurasi terkode yang mengatur bagaimana instansiasi berjalan. Resonansi dengan gagasan informasi pengembangan tersimpan padat di titik-benih lalu 'dieksekusi' bertahap. Sedikit masukan (setetes) mengandung penentuan yang kaya — kepadatan informasi awal yang mengarahkan seluruh pengembangan.",
+      "analogy": "parameter/konfigurasi terkode padat di titik-benih (spec → run)",
+      "quranic_term": "fa-qaddarahu"
+    },
+    {
+      "lens": "biology-medicine",
+      "reading": "Ayat menamai reproduksi dari nuṭfah lalu 'penentuan kadar' — beresonansi dengan pewarisan informasi pengembangan yang dipelajari sebagai genetika dan biologi perkembangan: satu sel-benih membawa penentuan yang mengarahkan diferensiasi, ukuran, dan tahapan. 'as-sabīla yassarahu' pada satu lapis dibaca Jalalain sebagai dimudahkannya keluar dari rahim — jalan lahir (birth canal) dan mekanisme persalinan yang memungkinkan kelahiran. Kedokteran perinatal justru berdiri di atas pemahaman fase-fase ini. (Resonansi struktural, bukan klaim mukjizat numerik.)",
+      "analogy": "informasi perkembangan di sel-benih + jalan lahir (birth canal)",
+      "quranic_term": "nuṭfah / as-sabīl"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Cetak biru pengelolaan siklus-hidup penuh sebuah agen/instans, bukan hanya penciptaannya. (1) Init dari spesifikasi padat (nuṭfah → qaddara = parameter yang menetapkan perilaku); (2) provisioning jalur — 'yassara as-sabīl' sebagai penyediaan jalan jalannya proses hingga aktif; (3) run sepanjang 'umur'; (4) terminasi tertata (amāta) dan penyimpanan state (aqbara = disimpan, bukan dihapus); (5) kemungkinan re-instansiasi (ansyara) — memuat kembali dari state tersimpan bila dikehendaki. Actionable: rancang terminasi dan persistensi state sebagai bagian spec, sedari awal; instans yang 'mati' dengan state tersimpan dapat dibangkitkan, sedangkan yang state-nya hilang tidak. Perlakukan seluruh lifecycle sebagai satu rancangan.",
+      "analogy": "lifecycle management: spec→provision→run→terminate→persist→re-instantiate",
+      "quranic_term": "qaddarahu → ansyarahu"
+    },
+    {
+      "lens": "systems",
+      "reading": "'as-sabīla yassarahu' — jalannya dimudahkan — terbaca sebagai penyediaan jalur berdaya-hambat-rendah agar proses dapat berjalan tanpa terhalang: sistem yang matang tidak hanya menciptakan komponen tetapi juga memuluskan lintasan operasinya (kanal, saluran, prosedur). Dan penempatan terminasi lalu penyimpanan dalam satu deret menegaskan tata kelola akhir-hayat: sistem tangguh mengatur bagaimana sesuatu berhenti dan disimpan, bukan sekadar bagaimana ia mulai.",
+      "analogy": "provisioning jalur low-friction + tata kelola end-of-life",
+      "quranic_term": "as-sabīla yassarahu"
+    },
+    {
+      "lens": "amal",
+      "reading": "Kemenag menautkan asal-usul dari 'setetes mani yang hina' dengan larangan menyombongkan diri: siapa yang mengerti asalnya tak pantas angkuh. Dimensi amal: mengingat titik-mula yang rapuh menumbuhkan tawadhu, dan mengingat titik-akhir (mati lalu dikubur) menuntun pada kesiapan dan amal, bukan lalai. Ayat memakai daur-hidup sebagai cermin moral — bukan sekadar biologi, tetapi ajakan menakar diri di antara dua ujung yang sama-sama menundukkan.",
+      "analogy": "tawadhu dari asal yang hina + kesiapan dari mengingat ajal",
+      "quranic_term": "tadhakkur al-mabdaʾ wa al-maʿād"
+    },
+    {
+      "lens": "inference",
+      "reading": "Ayat 18 membuka dengan pertanyaan investigatif 'dari apa ia dicipta', memaksa penalaran mundur ke sebab-material — metode bertanya untuk menyingkap asal. Dari jawaban (nuṭfah yang hina) ditarik kesimpulan sikap (jangan sombong). Ini pola inferensi kausal: tetapkan asal dahulu, baru simpulkan konsekuensinya. Menyembunyikan asal-usul melahirkan klaim berlebih; menghadapkannya mengoreksi harga diri ke kadar yang benar.",
+      "analogy": "inferensi kausal mundur ke asal → koreksi sikap",
+      "quranic_term": "min ayyi syayʾin khalaqahu"
+    },
+    {
+      "lens": "chemistry-process",
+      "reading": "Rangkaian dari cairan-benih menuju organisme lalu kembali ke tanah (dikubur) beresonansi dengan siklus materi: unsur-unsur dirakit menjadi struktur hidup yang kompleks, dipelihara selama hayat, lalu terurai kembali ke lingkungan. Membaca lifecycle ini sebagai transformasi materi yang bersiklus — dibentuk, dijalankan, diuraikan — menautkan tubuh pada aliran zat yang lebih besar. Analogi ini bounded pada sisi material; kelanjutan sesudah kubur adalah perkara ghaib (lihat catatan).",
+      "analogy": "siklus materi: rakit → pelihara → urai kembali ke lingkungan (bounded)",
+      "quranic_term": "aqbarahu (kembali ke tanah)"
+    }
+  ],
+  "inference": "Dibaca sebagai analogi rekayasa, 'Abasa 18-22 menyajikan DAUR-HIDUP PENUH DARI SEBUAH SPEC, bukan sekadar momen penciptaan: inisiasi dari nuṭfah, penetapan parameter yang mengarahkan pengembangan (qaddarahu — resonansi dengan informasi perkembangan yang padat di titik-benih), penyediaan jalur agar proses berjalan dan lahir (as-sabīla yassarahu — pada satu lapis dibaca sebagai jalan lahir/birth canal), lalu terminasi (amāta), penyimpanan/pengembalian ke tanah (aqbara), dan kemungkinan pengaktifan ulang bersyarat kehendak (ansyara). Pelajaran desain: pikirkan seluruh siklus-hidup sejak spec — termasuk bagaimana sesuatu berhenti dan state-nya disimpan — bukan hanya kelahirannya. Semua pembacaan biologis/kimiawi ditegaskan sebagai resonansi struktural yang bounded, BUKAN mukjizat numerik, dan ini salah satu pembacaan di atas makna zahir yang bersumber, bukan maksud tunggal ayat, tanpa menyimpulkan hukum. CATATAN GHAIB: ayat 21-22 (mematikan, menguburkan, lalu membangkitkan/ansyara pada hari Kiamat) adalah perkara GHAIB yang hanya diketahui dari wahyu dan termasuk perkara IMAN. Analogi 'terminasi → persistensi state → re-instansiasi' adalah pembacaan STRUKTUR yang deskriptif dari tafsir bersumber (Kemenag/Jalalain) sebagai pola — BUKAN klaim mengetahui bagaimana kematian, alam kubur, atau kebangkitan sesungguhnya terjadi, bukan penetapan mekanisme, dan bukan spekulasi atas detail yang tak disebut nas. Adab terhadap perkara ghaib dijaga: yang ditiru hanya pola keteraturan pada deskripsi, bukan hakikat peristiwanya. CATATAN TANZIH: subjek seluruh kata kerja adalah Allah; perbuatan dan kehendak-Nya (mā syāʾa) TIDAK dianalogikan, tidak dijadikan komponen sistem, dan tidak disamakan dengan proses rekayasa. Yang dibaca polanya semata struktur pada CIPTAAN (daur-hidup manusia), bukan cara kerja Allah.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-12",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-12",
+      "note": "Tadabbur perdana — Wave 13 anatomi/organ; lifecycle penuh dari spec (parameterisasi genetik, birth canal, terminasi→re-instansiasi). CATATAN GHAIB untuk ayat 21-22.",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

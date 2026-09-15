@@ -1,0 +1,117 @@
+{
+  "schema": "lab-study-v2",
+  "id": "hijr-15-21-21",
+  "version": 1,
+  "title": "Khaza'in + qadar ma'lum — gudang tak terbatas, rilis terkendali",
+  "subtitle": "Segala sesuatu berkhazanah di sisi-Nya; diturunkan hanya dengan ukuran yang tertentu",
+  "ref": {
+    "surah": 15,
+    "from": 21,
+    "to": 21
+  },
+  "surah_name": "Al-Hijr",
+  "theme": "Supply terkontrol: sumber terpusat (khazanah) + rilis berkuota (qadar ma'lum); lazy-loading, rate-limit, backpressure, provisioning berbatas",
+  "sourced_meaning": {
+    "summary": "Menurut Tafsir Kemenag, ayat ini menerangkan bahwa sumber segala sesuatu berasal dari khazanah (perbendaharaan) Allah — baik sumber daya alam maupun manusia — dan Dia menurunkannya hanya dengan ukuran tertentu (qadar ma'lum). Kemenag menautkannya dengan tugas manusia mengelola dan memelihara sumber daya (konservasi), keharusan berusaha untuk memperoleh rezeki, serta pemberian rezeki 'dengan ukuran tertentu sesuai kebutuhan, keadaan, kemampuan, dan usaha' sebagai wujud kasih sayang dan keadilan Allah (bandingkan QS 13:8: segala sesuatu ada ukuran di sisi-Nya).",
+    "sources": [
+      "Tafsir Kemenag RI QS 15:21",
+      "Tafsir al-Jalalayn QS 15:21"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Memori & grounding",
+      "note": "khaza'in = penyimpanan sumber terpusat; segala sesuatu punya 'cadangan' di hulu sebelum tampak di hilir — pemisahan antara store dan delivery"
+    },
+    {
+      "layer": "Alignment",
+      "note": "'bi-qadar ma'lum' = rilis diatur pada takaran yang diketahui/ditetapkan; distribusi tunduk pada kebijakan, bukan banjir tak terkendali"
+    },
+    {
+      "layer": "Aksi & transfer",
+      "note": "Kemenag: manusia wajib berusaha & memelihara — konsumsi dari khazanah menuntut ikhtiar + konservasi, bukan pengambilan tanpa batas"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "amal",
+      "reading": "Hipotesis amal: karena pasokan diturunkan berkadar, sikap yang selaras adalah qana'ah + ikhtiar + konservasi — mengambil secukupnya, tidak mubazir (israf), dan memelihara sumber untuk yang datang kemudian. Kemenag menekankan tanggung jawab konservasi ini.",
+      "analogy": "konsumsi hemat & berkelanjutan",
+      "quranic_term": "qadar ma'lum"
+    },
+    {
+      "lens": "computational",
+      "reading": "Pola 'khazanah di hulu, rilis berkadar di hilir' beresonansi dengan lazy-loading & streaming: data/sumber berada di store besar, dimuat ke memori kerja hanya sebanyak yang dibutuhkan saat dibutuhkan. Sistem tak menarik seluruh khazanah sekaligus — ia mem-fetch porsi terukur, mencegah kelebihan muatan.",
+      "analogy": "lazy-loading / streaming dari store terpusat",
+      "quranic_term": "khaza'in + tanzil bi-qadar"
+    },
+    {
+      "lens": "systems",
+      "reading": "'Diturunkan hanya dengan ukuran tertentu' adalah backpressure & rate-limiting: laju keluaran dari sumber dibatasi agar sistem hilir tak kolaps. Air, hujan, rezeki yang datang berkadar menjaga keseimbangan — banjir (rilis tak terkendali) sama merusaknya dengan kekeringan.",
+      "analogy": "backpressure & rate-limiting",
+      "quranic_term": "bi-qadar"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Actionable untuk agen: pisahkan KNOWLEDGE STORE (khazanah — korpus/memori penuh) dari CONTEXT WINDOW (yang diturunkan bi-qadar). Jangan jejalkan seluruh korpus ke prompt; retrieve porsi terukur yang relevan (RAG dengan top-k), terapkan token-budget & rate-limit pada pemanggilan tool, dan gunakan backpressure saat antrean tugas penuh. Prinsipnya: sumber boleh tak terbatas, tapi konsumsi per-langkah HARUS berkuota dan diketahui (ma'lum), bukan tak terhingga.",
+      "analogy": "RAG top-k + token budget + rate-limit + backpressure",
+      "quranic_term": "qadar ma'lum sebagai kuota"
+    },
+    {
+      "lens": "economy",
+      "reading": "Khazanah + rilis berkadar beresonansi dengan supply management & kebijakan moneter: cadangan besar dikelola, tetapi peredaran diatur pada takaran tertentu demi stabilitas (mencegah inflasi kelimpahan atau krisis kelangkaan). Kemenag: rezeki ditakar 'sesuai kebutuhan, kemampuan, usaha' — alokasi yang proporsional.",
+      "analogy": "manajemen cadangan & pengendalian peredaran",
+      "quranic_term": "rizq bi-qadar"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "Terbaca sebagai invariant sumber daya: setiap permintaan dilayani dari store pusat DAN dibatasi oleh kuota yang diketahui. Analogi dengan resource pool + semaphore: akses ke sumber bersama diserialkan dan dibatasi jumlahnya, menjamin tak ada over-allocation.",
+      "analogy": "resource pool + semaphore (kuota)",
+      "quranic_term": "'indana (di sisi Kami)"
+    },
+    {
+      "lens": "earth-cosmos",
+      "reading": "Resonansi struktural (bukan mukjizat numerik) dengan siklus hidrologi & biogeokimia: air 'diturunkan' pada takaran (curah hujan) dari reservoir raksasa (atmosfer/laut); unsur bersirkulasi dalam kuota alami. Bumi berjalan pada anggaran sumber daya yang terukur — analogi pemahaman.",
+      "analogy": "siklus hidrologi & anggaran biogeokimia",
+      "quranic_term": "tanzil bi-qadar"
+    },
+    {
+      "lens": "biology-medicine",
+      "reading": "Analogi homeostasis pasokan: tubuh menyimpan cadangan (glikogen, lemak, kalsium tulang) lalu melepasnya berkadar sesuai kebutuhan lewat regulasi hormonal — rilis massal = patologis. 'Khazanah + qadar' beresonansi dengan pelepasan cadangan yang diatur ketat, bukan sekaligus.",
+      "analogy": "mobilisasi cadangan teregulasi (homeostasis)",
+      "quranic_term": "qadar"
+    },
+    {
+      "lens": "chemistry-process",
+      "reading": "Analogi dosis terkendali dalam proses: reaktan dari tangki penyimpan besar diumpankan (metered feed) pada laju tertentu agar reaksi terkendali, aman, dan efisien. Menuang seluruh khazanah sekaligus = reaksi lepas kendali. 'Bi-qadar' = metered dosing.",
+      "analogy": "metered feed / dosing terkendali",
+      "quranic_term": "bi-qadar ma'lum"
+    },
+    {
+      "lens": "inference",
+      "reading": "'Qadar ma'lum' (ukuran yang DIKETAHUI) menyiratkan kuota yang terdefinisi dan dapat diukur — bukan pembatasan sembarang. Bagi perekayasa: batasan yang baik adalah yang eksplisit dan observable (ma'lum), sehingga bisa dipantau, diprediksi, dan diaudit — bukan limit tersembunyi yang baru ketahuan saat jebol.",
+      "analogy": "explicit, observable quota",
+      "quranic_term": "ma'lum (diketahui)"
+    }
+  ],
+  "inference": "Dibaca sebagai pola rekayasa, ayat ini memisahkan dua hal yang sering dikacaukan: KETERSEDIAAN sumber (khazanah yang melimpah di hulu) dan LAJU KONSUMSI (yang diturunkan hanya bi-qadar ma'lum di hilir). Prinsip desainnya universal: sumber boleh besar, tetapi akses per-langkah harus berkuota, terukur, dan diketahui — inilah lazy-loading, rate-limiting, backpressure, dan metered dosing. Untuk agen AI, terjemahannya langsung: jangan tumpahkan seluruh korpus ke konteks; retrieve berkadar, batasi token & pemanggilan tool, dan terapkan backpressure. Kemenag menambahkan dimensi moral yang selaras: konsumsi dari khazanah menuntut usaha dan konservasi, bukan pengambilan tanpa batas. (Satu pembacaan rekayasa, bukan maksud tunggal ayat; keterkaitan sains di sini analogi, bukan bukti.)",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-08",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-08",
+      "note": "Tadabbur perdana — Wave 8 kadar/takdir.",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}
