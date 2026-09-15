@@ -119,7 +119,7 @@ Everything further down this page is a **snapshot of that build**.
 
 The research continues in **MiganCore** — an own, Indonesian-first language model and the
 measurement discipline built around it. SIDIX's *sanad* (chain-of-transmission) idea lives on
-there as a provenance check on every trained model.
+there: six of its trained models so far carry a provenance chain that is checked link by link.
 
 **ID** — SIDIX adalah pembangunan riset terbuka dari **April sampai Agustus 2026**. Aplikasinya
 sudah tidak dilayani. Cabang utama kini menyimpan dokumen dan provider Quran Lab; kode sumber
@@ -127,8 +127,8 @@ lengkap tersimpan di commit arsip [`c1185b7`](https://github.com/fahmiwol/sidix/
 Semua di bawah bagian ini adalah **potret build tersebut**.
 
 Riset berlanjut di **MiganCore** — model bahasa milik sendiri yang mengutamakan bahasa Indonesia,
-beserta disiplin pengukuran di sekelilingnya. Gagasan *sanad* SIDIX hidup terus di sana sebagai
-pemeriksaan asal-usul setiap model yang dilatih.
+beserta disiplin pengukuran di sekelilingnya. Gagasan *sanad* SIDIX hidup terus di sana: sejauh
+ini enam model yang dilatih membawa rantai asal-usul yang diperiksa mata demi mata.
 
 | Read the continuation · Baca kelanjutannya | English | Bahasa Indonesia |
 |---|---|---|
