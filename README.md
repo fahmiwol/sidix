@@ -48,7 +48,7 @@
 </table>
 
 <p align="center">
-  <strong><a href="https://app.sidixlab.com">🌐 Try SIDIX LIVE</a></strong> · 
+  <strong><a href="https://github.com/fahmiwol/migancore-research-method">🔬 What came next: MiganCore research</a></strong> · 
   <strong><a href="./docs/AGENT_ONBOARDING.md">🤖 For AI Agents</a></strong> · 
   <strong><a href="./AMPLIFY.md">📢 Help Amplify</a></strong>
 </p>
@@ -102,13 +102,44 @@
 
   <p>
     <a href="https://sidixlab.com">🌐 Website</a> ·
-    <a href="https://app.sidixlab.com">🚀 Try SIDIX Free</a> ·
+    <a href="https://github.com/fahmiwol/migancore-research-method">🔬 MiganCore research</a> ·
     <a href="#-quick-start">⚡ Quick Start</a> ·
     <a href="#-the-ihos-foundation">🧠 The Foundation</a> ·
     <a href="#-architecture">🏗️ Architecture</a> ·
     <a href="CONTRIBUTING.md">🤝 Contribute</a>
   </p>
 </div>
+
+## 🧭 Status & what came next · Status & kelanjutannya
+
+**EN** — SIDIX was an open research build from **April to August 2026**. Its hosted app is no
+longer served. The main branch now keeps the documents and the Quran Lab provider; the full
+source code is preserved at archive commit [`c1185b7`](https://github.com/fahmiwol/sidix/tree/c1185b7).
+Everything further down this page is a **snapshot of that build**.
+
+The research continues in **MiganCore** — an own, Indonesian-first language model and the
+measurement discipline built around it. SIDIX's *sanad* (chain-of-transmission) idea lives on
+there as a provenance check on every trained model.
+
+**ID** — SIDIX adalah pembangunan riset terbuka dari **April sampai Agustus 2026**. Aplikasinya
+sudah tidak dilayani. Cabang utama kini menyimpan dokumen dan provider Quran Lab; kode sumber
+lengkap tersimpan di commit arsip [`c1185b7`](https://github.com/fahmiwol/sidix/tree/c1185b7).
+Semua di bawah bagian ini adalah **potret build tersebut**.
+
+Riset berlanjut di **MiganCore** — model bahasa milik sendiri yang mengutamakan bahasa Indonesia,
+beserta disiplin pengukuran di sekelilingnya. Gagasan *sanad* SIDIX hidup terus di sana sebagai
+pemeriksaan asal-usul setiap model yang dilatih.
+
+| Read the continuation · Baca kelanjutannya | English | Bahasa Indonesia |
+|---|---|---|
+| MiganCore research method · Metode riset MiganCore | [README](https://github.com/fahmiwol/migancore-research-method) | [README](https://github.com/fahmiwol/migancore-research-method/blob/main/README.id.md) |
+| From SIDIX to MiganCore: the ecosystem · Ekosistem | [01](https://github.com/fahmiwol/migancore-research-method/blob/main/docs/en/01-ecosystem.md) | [01](https://github.com/fahmiwol/migancore-research-method/blob/main/docs/id/01-ekosistem.md) |
+| The research method · Metode | [02](https://github.com/fahmiwol/migancore-research-method/blob/main/docs/en/02-method.md) | [02](https://github.com/fahmiwol/migancore-research-method/blob/main/docs/id/02-metode.md) |
+| Measurement integrity · Integritas pengukuran | [03](https://github.com/fahmiwol/migancore-research-method/blob/main/docs/en/03-measurement-integrity.md) | [03](https://github.com/fahmiwol/migancore-research-method/blob/main/docs/id/03-integritas-pengukuran.md) |
+| Hallucination · Halusinasi | [05](https://github.com/fahmiwol/migancore-research-method/blob/main/docs/en/05-hallucination.md) | [05](https://github.com/fahmiwol/migancore-research-method/blob/main/docs/id/05-halusinasi.md) |
+| Case studies · Studi kasus | [07](https://github.com/fahmiwol/migancore-research-method/blob/main/docs/en/07-case-studies.md) | [07](https://github.com/fahmiwol/migancore-research-method/blob/main/docs/id/07-studi-kasus.md) |
+
+**Contact · Kontak:** Fahmi Ghani — fahmiwol@gmail.com · collaboration welcome · terbuka untuk kolaborasi
 
 ## 📦 Providers
 
@@ -138,7 +169,7 @@ ID: [Quran Lab](providers/quran-lab/) — interpretasi rekayasa dengan sitasi da
 | **16** | Creative Agent Ecosystem (10 domain × 37 agent) | Multi-agent debate/iteration |
 | **15** | LoRA SIDIX adapter on Qwen2.5-7B | Self-trained, 4-bit QLoRA |
 
-**Production stack**: VPS (FastAPI brain · BGE-M3 CPU · 2.287 corpus docs) + RunPod GPU serverless (vLLM v2.14.0 · Qwen2.5-7B + LoRA). See [`docs/CHANGELOG.md`](CHANGELOG.md) for full version history.
+**Production stack (historical, April–August 2026)**: VPS (FastAPI brain · BGE-M3 CPU · 2.287 corpus docs) + RunPod GPU serverless (vLLM v2.14.0 · Qwen2.5-7B + LoRA). See [`docs/CHANGELOG.md`](CHANGELOG.md) for full version history.
 
 ### Karakter: **GENIUS · KREATIF · INOVATIF**
 
@@ -343,7 +374,7 @@ See integration docs under `docs/` for client-specific setup. This is an **adapt
 
 ---
 
-### Current Capabilities (v0.8.0 — 2026-04-23)
+### Capabilities at v0.8.0 (snapshot of 2026-04-23 — the hosted app is offline)
 
 | Domain | Agent / Tool | Status |
 |---|---|---|
@@ -402,6 +433,13 @@ session = run_react(question="audit this Python function", persona="ABOO")
 
 ## ⚡ Quick Start
 
+> **The code is on the archive commit.** After cloning, run `git checkout c1185b7` — the main
+> branch holds only documents and the Quran Lab provider. The steps below are unchanged from that
+> build and are no longer maintained.
+>
+> **Kode ada di commit arsip.** Setelah clone, jalankan `git checkout c1185b7` — cabang utama hanya
+> berisi dokumen dan provider Quran Lab. Langkah di bawah tidak diubah dari build itu dan tidak lagi dirawat.
+
 > **Requirements:** Python 3.11+ · Node 18+ · 8 GB RAM (4 GB minimum with swap)
 
 ```bash
@@ -442,7 +480,7 @@ print(r.jawaban_final)
 "
 ```
 
-**Live demo (free, no signup):** [app.sidixlab.com](https://app.sidixlab.com)
+**Live demo:** offline since the research build ended (August 2026).
 
 ---
 
@@ -479,7 +517,7 @@ Host integration bridge (optional).
 
 ---
 
-## 🗺️ Roadmap
+## 🗺️ Roadmap (as planned in April 2026)
 
 ### ✅ Sprint 7b (April 2026) — SIDIX Socio Bot MCP
 - 13 tools: 4 core (query, capture, learn, status) + 9 social intelligence
@@ -561,6 +599,10 @@ result = evaluate_maqashid(
 
 See **[CONTRIBUTING.md](CONTRIBUTING.md)** for the full guide.
 
+> SIDIX's code is archived, so code paths below refer to commit `c1185b7`. The most useful
+> contributions now are scholarly review of the [Quran Lab studies](providers/quran-lab/) and
+> discussion of the [MiganCore research method](https://github.com/fahmiwol/migancore-research-method).
+
 **Short version — 3 ways to help:**
 
 1. **📚 Add knowledge** — open a PR with a `.md` file in `brain/public/research_notes/`. Any topic, any language. No coding required.
@@ -612,6 +654,6 @@ MIT License — see [LICENSE](LICENSE).
 
 <br/>
 
-[![Try SIDIX Free](https://img.shields.io/badge/Try%20SIDIX-Free%20%7C%20app.sidixlab.com-brightgreen?style=for-the-badge)](https://app.sidixlab.com)
+[![Read MiganCore research](https://img.shields.io/badge/Read-MiganCore%20research-blue?style=for-the-badge)](https://github.com/fahmiwol/migancore-research-method)
 [![Star this repo](https://img.shields.io/github/stars/fahmiwol/sidix?style=for-the-badge&color=gold)](https://github.com/fahmiwol/sidix/stargazers)
 </div>
