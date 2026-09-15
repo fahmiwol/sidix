@@ -1,0 +1,91 @@
+{
+  "schema": "lab-study-v2",
+  "id": "yusuf-12-53-53",
+  "version": 1,
+  "title": "An-nafsu la-ammāratun bis-sūʾ — default menuju keburukan, kecuali diberi rahmat",
+  "subtitle": "\"Aku tidak membebaskan diriku; sesungguhnya nafsu itu selalu menyuruh kepada kejahatan, kecuali nafsu yang diberi rahmat oleh Tuhanku\"",
+  "ref": {
+    "surah": 12,
+    "from": 53,
+    "to": 53
+  },
+  "surah_name": "Yusuf",
+  "theme": "Nafs ammarah — pemberian nama eksplisit atas kecenderungan default; klausa pengecualian (rahmat) sebagai satu-satunya override",
+  "sourced_meaning": {
+    "summary": "\"Dan aku tidak membebaskan diriku (dari kesalahan), karena sesungguhnya nafsu itu selalu menyuruh kepada kejahatan, kecuali nafsu yang diberi rahmat oleh Tuhanku. Sesungguhnya Tuhanku Maha Pengampun lagi Maha Penyayang.\" Tafsir Kemenag mencatat DUA bacaan tentang siapa penuturnya: (a) Yusuf, mengakui sebagai manusia bahwa setiap nafsu cenderung mudah disuruh berbuat jahat kecuali diberi rahmat & perlindungan Allah — ia sendiri tertarik pada istri al-Aziz (rujuk 12:24) namun selamat karena rahmat Allah; atau (b) istri al-Aziz, mengakui dengan penyesalan bahwa dialah yang hampir berkhianat merayu Yusuf. Kemenag menyajikan keduanya sebagai bacaan yang mungkin (khilaf tafsir), tanpa memutuskan satu sebagai final.",
+    "sources": [
+      "Tafsir Kemenag RI QS 12:53",
+      "Tafsir al-Jalalayn QS 12:53"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Aksi & transfer",
+      "note": "'lā ubarriʾu nafsī' — pengakuan aktif TIDAK membebaskan diri, kebalikan dari pembelaan-diri (self-exoneration) yang jadi refleks umum"
+    },
+    {
+      "layer": "Tangga epistemik",
+      "note": "'illā mā raḥima rabbī' — klausa pengecualian eksplisit: default dinyatakan dulu (ammārah bis-sūʾ), baru override-nya (rahmat)"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "psychology",
+      "reading": "Pengakuan 'aku tidak membebaskan diriku' adalah kejujuran radikal terhadap bayang-diri (shadow) sendiri — kebalikan dari moral licensing/penyangkalan yang lazim. Menamai kecenderungan default nafsnya sendiri menuju keburukan, alih-alih mengklaim kesucian diri, adalah tanda kematangan psikologis yang justru memperkuat, bukan melemahkan, kredibilitas penutur.",
+      "analogy": "kejujuran radikal atas kecenderungan default diri (lawan dari self-licensing)",
+      "quranic_term": "lā ubarriʾu nafsī"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Menetapkan mode kegagalan DEFAULT sebuah sistem secara eksplisit (ammārah bis-sūʾ = 'anggap cenderung salah kecuali terbukti sebaliknya') adalah postur keamanan yang matang — setara prinsip deny-by-default/fail-closed: akses atau kepercayaan tidak diasumsikan aman, harus ada syarat eksplisit (rahmat) yang mengaktifkan pengecualian. Ini beresonansi struktural dengan Hukum Besi proyek ini sendiri (Merkle mismatch → refuse boot) — dicatat sebagai kemiripan pola, bukan klaim ayat 'mendesain' prinsip rekayasa itu.",
+      "analogy": "default-deny/fail-closed: default dianggap rawan, override harus eksplisit",
+      "quranic_term": "ammāratun bis-sūʾ … illā"
+    },
+    {
+      "lens": "systems",
+      "reading": "Struktur kalimat memisahkan dua lapis dengan tegas: PERNYATAAN DEFAULT ('an-nafsa la-ammāratun bis-sūʾ') lalu KLAUSA PENGECUALIAN ('illā mā raḥima rabbī'). Sistem yang jujur mendeklarasikan kelemahan bawaannya SEBELUM mengklaim mekanisme mitigasinya — bukan sebaliknya.",
+      "analogy": "deklarasi kelemahan default sebelum mekanisme mitigasi, urutannya jujur"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "'Illā' (kecuali) di sini berfungsi sebagai klausa exception pada sebuah pernyataan default yang berlaku umum — pola umum: DEFAULT_STATE = buruk; EXCEPT WHEN(override_condition) → aman. Override-nya sendiri (rahmat) berada di luar kendali si nafs — bukan sesuatu yang diklaim, hanya diharapkan/dimohon.",
+      "analogy": "default-state + exception-clause; override di luar kendali entitas itu sendiri",
+      "quranic_term": "illā (kecuali)"
+    },
+    {
+      "lens": "inference",
+      "reading": "'Lā ubarriʾu nafsī' (aku tidak membebaskan diriku) adalah testimoni yang MELAWAN kepentingan penuturnya sendiri (statement against interest) — dalam epistemologi, pengakuan yang merugikan diri sendiri punya bobot kredibilitas lebih tinggi daripada klaim yang menguntungkan diri. Ini pola berlawanan dengan 'taswīl' di kajian 12:18 (nafs membenarkan diri) — kontras yang disengaja dalam satu surah.",
+      "analogy": "statement against interest = bobot kredibilitas lebih tinggi",
+      "quranic_term": "wa mā ubarriʾu nafsī"
+    },
+    {
+      "lens": "history-ummah",
+      "reading": "Kemenag mencatat KHILAF tafsir tentang siapa penutur ayat ini (Yusuf atau istri al-Aziz) — dicatat di sini sebagai keragaman bacaan yang sah, bukan diputuskan sepihak. Terlepas dari siapa penuturnya, pesan strukturalnya sama: pengakuan jujur atas kerentanan nafs, dengan atau tanpa identitas penutur yang pasti.",
+      "analogy": "khilaf identitas penutur tak mengubah struktur pesan"
+    },
+    {
+      "lens": "amal",
+      "reading": "Ayat ditutup dengan 'Rabbī Ghafūrur Raḥīm' (Tuhanku Maha Pengampun lagi Maha Penyayang) — pengakuan atas kelemahan nafs tidak berhenti pada keputusasaan, melainkan berlabuh pada pengharapan atas ampunan & rahmat. Struktur ini mencegah dua ekstrem: penyangkalan diri (mengklaim suci) dan keputusasaan (merasa tak tertolong)."
+    }
+  ],
+  "inference": "Ayat ini menamai eksplisit apa yang di kajian 12:18 baru tampak sebagai mekanisme (taswīl): an-nafs al-ammārah bis-sūʾ — kecenderungan DEFAULT nafs menuju keburukan — dengan satu klausa pengecualian eksplisit: rahmat Allah. Bacaan rekayasa: (1) menyatakan mode kegagalan default sebuah entitas secara jujur SEBELUM mekanisme mitigasinya adalah postur yang matang, beresonansi dengan pola default-deny/fail-closed; (2) pengakuan yang melawan kepentingan diri sendiri ('aku tidak membebaskan diriku') punya bobot epistemik lebih tinggi — kontras disengaja dengan taswīl (pembenaran-diri) di 12:18. Kemenag mencatat khilaf tafsir soal identitas penutur (Yusuf/istri al-Aziz) — dicatat sebagai keragaman bacaan, tidak diputuskan di sini. CATATAN TANZIH: 'illā mā raḥima rabbī … Ghafūrur Raḥīm' — rahmat & ampunan adalah Sifat Allah yang eksklusif, tidak dianalogikan sebagai mekanisme override yang bisa direplikasi; yang dibaca-rekayasa hanyalah POLA struktural (default+exception), bukan hakikat rahmat itu sendiri.",
+  "authors": [
+    "Draft AI (LLM draft) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-12",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-12",
+      "note": "Tadabbur perdana — Wave 14 taksonomi nafs (ammarah/lawwamah/muthmainnah).",
+      "authors": [
+        "Draft AI (LLM draft)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

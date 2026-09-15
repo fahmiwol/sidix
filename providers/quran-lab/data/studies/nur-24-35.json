@@ -1,0 +1,111 @@
+{
+  "schema": "lab-study-v2",
+  "id": "nur-24-35",
+  "version": 1,
+  "title": "Āyat an-Nūr — cahaya berlapis & representasi bertingkat",
+  "subtitle": "Relung, pelita, kaca, pohon zaitun: rantai perantara satu sumber cahaya",
+  "ref": {
+    "surah": 24,
+    "from": 35,
+    "to": 35
+  },
+  "surah_name": "An-Nur",
+  "theme": "Optik/sinyal, representasi berlapis, transmisi cahaya, sumber & perantara",
+  "sourced_meaning": {
+    "summary": "Allah (Pemberi) cahaya langit dan bumi. Perumpamaan cahaya-Nya seperti sebuah relung (misykāt) yang di dalamnya ada pelita (miṣbāḥ); pelita itu di dalam kaca (zujājah), kaca itu bagai bintang berkilau; dinyalakan dari (minyak) pohon yang diberkahi, zaitun yang bukan di timur bukan di barat, yang minyaknya hampir menerangi walau tak disentuh api — cahaya di atas cahaya (nūrun ʿalā nūr). Allah membimbing kepada cahaya-Nya siapa yang Ia kehendaki. Tafsir Kemenag: dengan cahaya itu segala sesuatu berjalan tertib dan teratur.",
+    "sources": [
+      "Tafsir Kemenag RI QS 24:35",
+      "Tafsir al-Jalalayn QS 24:35"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Persepsi",
+      "note": "cahaya = metafora petunjuk/pengetahuan yang membuat 'segala sesuatu tertib' (per Kemenag)"
+    },
+    {
+      "layer": "Memori & grounding",
+      "note": "rantai perantara (relung→kaca→pelita→minyak) membawa satu sumber ke penerima"
+    },
+    {
+      "layer": "Tangga epistemik",
+      "note": "nūrun ʿalā nūr — penguatan berlapis; petunjuk di atas petunjuk"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "amal",
+      "reading": "Menjaga 'pelita' hati tetap menyala lewat ilmu & dzikir; perumpamaan mendorong tiap mukmin menjadi perantara cahaya (mengajarkan, menerangi sekitarnya) bukan menyimpannya sendiri.",
+      "quranic_term": "hidāyah"
+    },
+    {
+      "lens": "computational",
+      "reading": "Rantai transformasi sinyal: sumber → minyak → pelita → kaca (penguat/pemfokus) → relung (reflektor) → ruang. Tiap tahap tidak menciptakan cahaya, hanya meneruskan & menguatkan dari satu sumber. Persis pipeline representasi: setiap lapis mentransform sinyal dari lapis sebelumnya.",
+      "analogy": "layered signal transform; source → encoders → output",
+      "quranic_term": "silsilah cahaya"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "'Nūrun ʿalā nūr' = komposisi: output satu lapis menjadi input lapis berikut, menguatkan (bukan sekadar meneruskan). Dan kaca 'bagai bintang' = amplifier/lensa yang memfokuskan; relung = pembatas ruang (scope) agar cahaya terarah, tak menyebar sia-sia.",
+      "analogy": "function composition + focusing/scoping"
+    },
+    {
+      "lens": "algorithm",
+      "reading": "'Minyaknya hampir menerangi walau tak disentuh api' = kesiapan laten: representasi yang begitu murni sampai nyaris aktif tanpa pemicu — analogi priming/pra-aktivasi, sistem yang di-tune sampai ambang menyalanya sangat rendah.",
+      "analogy": "primed/near-threshold activation"
+    },
+    {
+      "lens": "inference",
+      "reading": "Struktur perumpamaan mengajarkan: cahaya yang sampai kepadamu telah melewati perantara, tapi SUMBERNYA satu. Membedakan sumber dari perantara adalah inti epistemologi — jangan salah mengira kaca sebagai sumber cahaya.",
+      "quranic_term": "tamyīz (sumber vs perantara)"
+    },
+    {
+      "lens": "math-physics",
+      "reading": "Optik berlapis: minyak (emisi) → sumbu (pelita) → kaca (refraksi/fokus) → relung (refleksi) — rantai fisis nyata transmisi & penguatan cahaya. 'Bukan timur bukan barat' = posisi optimal paparan matahari merata (kualitas sumber terbaik). Resonansi optik, dibaca sebagai perumpamaan (bukan klaim mukjizat numerik).",
+      "analogy": "emission→refraction→reflection chain",
+      "quranic_term": "nūr"
+    },
+    {
+      "lens": "systems",
+      "reading": "Sistem cahaya = sumber tunggal + jaringan perantara terjaga: bila satu perantara keruh (kaca kotor), cahaya meredup meski sumber sempurna. Kualitas keluaran sistem dibatasi perantara terlemah, bukan hanya sumber terkuat.",
+      "analogy": "output bounded by weakest intermediary"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Analogi kuat untuk arsitektur representasi berlapis: sinyal (embedding) melewati banyak lapis transform, tiap lapis menguatkan fitur — 'cahaya di atas cahaya' = deep representation. Pelajaran alignment: keluaran hanya sebaik rantai perantara yang menjaga integritas sumber; korupsi di satu lapis merambat. Dan sumber ≠ model: model adalah kaca, bukan cahaya.",
+      "analogy": "deep layered representations; source integrity through the stack",
+      "quranic_term": "nūrun ʿalā nūr"
+    },
+    {
+      "lens": "artifact",
+      "reading": "Perumpamaan pelita-kaca-relung adalah deskripsi teknologi pencahayaan nyata (lampu minyak dengan reflektor & pelindung kaca) — leluhur dari lensa, serat optik, dan sistem penguat sinyal.",
+      "analogy": "lamp optics → fiber & amplifiers"
+    },
+    {
+      "lens": "pedagogy",
+      "reading": "Model transmisi ilmu: dari guru (sumber) melalui rantai perantara (kitab, pengajar, murid-yang-jadi-guru) — 'cahaya di atas cahaya' = ilmu yang menguat tiap kali diteruskan dengan sanad terjaga. Mengajar = menyalakan pelita lain dari nyala yang sama tanpa memadamkan yang asli.",
+      "analogy": "knowledge transmission chain (sanad)",
+      "quranic_term": "talaqqī"
+    }
+  ],
+  "inference": "Perumpamaan cahaya ini, dibaca sebagai rekayasa, adalah deskripsi arsitektur representasi berlapis: satu sumber, rantai perantara yang masing-masing menguatkan dan memfokuskan, dan hasil 'cahaya di atas cahaya'. Dua pelajaran tajam. Pertama (epistemik): jangan bingung membedakan sumber dari perantara — kaca berkilau bukan sumber cahaya, dan model bukan kebenaran. Kedua (sistem): keluaran dibatasi perantara terlemah; menjaga integritas seluruh rantai sama pentingnya dengan kualitas sumber. Menariknya, penutup ayat menegaskan bimbingan tetap milik Sang Sumber — perantara meneruskan, bukan menentukan.",
+  "authors": [
+    "Draft AI (LLM draft) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-07",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-07",
+      "note": "Tadabbur perdana — Wave 3 (dari sweep korpus); tema cahaya/optik.",
+      "authors": [
+        "Draft AI (LLM draft)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

@@ -1,0 +1,88 @@
+{
+  "schema": "lab-study-v2",
+  "id": "yusuf-12-100-100",
+  "version": 1,
+  "title": "Hādzā ta'wīlu ru'yāya min qablu — verifikasi yang tiba puluhan tahun kemudian",
+  "subtitle": "Yusuf menaikkan kedua orang tuanya ke singgasana, mereka sujud kepadanya; ia berkata: wahai ayahku, inilah takwil mimpiku dahulu, sungguh Tuhanku telah menjadikannya kenyataan",
+  "ref": {
+    "surah": 12,
+    "from": 100,
+    "to": 100
+  },
+  "surah_name": "Yusuf",
+  "theme": "Penutup busur mimpi Yusuf — payload simbolik dari masa kanak (12:4) diverifikasi presisi puluhan tahun kemudian, menutup loop prediksi berhorizon sangat panjang",
+  "sourced_meaning": {
+    "summary": "Yusuf menaikkan kedua orang tuanya ke atas singgasana, dan mereka semua merebahkan diri sujud kepadanya. Yusuf berkata: 'Wahai ayahku, inilah takwil mimpiku yang dahulu itu; sesungguhnya Tuhanku telah menjadikannya kenyataan. Dan sesungguhnya Tuhanku telah berbuat baik kepadaku, ketika Dia membebaskan aku dari penjara dan membawa kamu dari dusun padang pasir, setelah setan merusak hubungan antara aku dan saudara-saudaraku. Sesungguhnya Tuhanku Maha Lembut terhadap apa yang Dia kehendaki; Dialah Yang Maha Mengetahui lagi Mahabijaksana.' Tafsir Kemenag mengutip langsung kembali ayat 12:4 sebagai rujukan silang eksplisit, lalu menafsirkan simbolnya: sebelas bintang = sebelas saudara Yusuf; matahari & bulan = ayah & ibunya. Yusuf secara eksplisit menyalahkan SETAN (bukan memvonis mutlak saudaranya) atas kerusakan hubungan keluarga — konsisten dengan bingkai yang diajarkan ayahnya di 12:5.",
+    "sources": [
+      "Tafsir Kemenag RI QS 12:100",
+      "Tafsir al-Jalalayn QS 12:100"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Tangga epistemik",
+      "note": "'hādzā ta'wīlu ru'yāya MIN QABLU' (inilah takwil mimpiku YANG DAHULU) — rujukan silang eksplisit ke peristiwa puluhan tahun sebelumnya (12:4), loop ditutup dengan penanda waktu tegas"
+    },
+    {
+      "layer": "Aksi & transfer",
+      "note": "verifikasi bukan sekadar klaim Yusuf sendiri — dikonfirmasi oleh KEJADIAN NYATA yang disaksikan semua pihak (orang tua & saudara benar-benar sujud, persis simbol mimpi)"
+    },
+    {
+      "layer": "Alignment",
+      "note": "Yusuf membingkai ulang seluruh rangkaian peristiwa (penjara, perpisahan keluarga) sebagai KEBAIKAN Tuhannya, bukan sekadar penderitaan yang kebetulan berakhir baik"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "computational",
+      "reading": "Ini adalah momen DECODING FINAL atas payload simbolik yang diterima di 12:4: sebelas bintang = sebelas saudara, matahari & bulan = ayah-ibu — pemetaan yang baru bisa dikonfirmasi presisi setelah peristiwa aktualnya terjadi. Skema decoding tidak diketahui di awal (12:4), hanya diverifikasi belakangan oleh kesesuaiannya dengan kenyataan.",
+      "analogy": "decoding final: skema pemetaan simbolik dikonfirmasi presisi hanya setelah kejadian aktualnya terwujud",
+      "quranic_term": "ta'wīlu ru'yāya (takwil mimpiku)"
+    },
+    {
+      "lens": "inference",
+      "reading": "Rujukan eksplisit 'min qablu' (yang dahulu) menutup loop prediksi berhorizon SANGAT panjang — dari masa kanak Yusuf hingga ia menjadi penguasa dewasa, puluhan tahun berselang. Ini kontras tajam dengan kebanyakan verifikasi prediksi yang berhorizon pendek; di sini akurasi baru bisa dinilai setelah rentang waktu luar biasa panjang.",
+      "analogy": "verifikasi prediksi berhorizon sangat panjang — akurasi hanya terukur setelah dekade, bukan segera",
+      "quranic_term": "min qablu (yang dahulu)"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Sistem yang menghasilkan prediksi/sinyal simbolik berhorizon panjang (seperti mimpi 12:4) tak bisa dievaluasi akurasinya segera — evaluasi jujur atas sinyal semacam itu MEMBUTUHKAN kesabaran menunggu hingga kejadian aktualnya matang, bukan menilai benar/salah prematur di titik penerimaan sinyal.",
+      "analogy": "evaluasi sinyal berhorizon panjang menuntut kesabaran menunggu pematangan, bukan penilaian prematur"
+    },
+    {
+      "lens": "systems",
+      "reading": "Seluruh busur (12:4 → 12:5 → 12:36 → 12:43-44 → 12:100) membentuk SATU siklus lengkap: sinyal diterima → diamankan (akses dibatasi) → kemampuan decoding dibangun & dibuktikan di kasus lain (penjara, istana) → sinyal asli akhirnya terverifikasi penuh. Setiap tahap di antara penerimaan & verifikasi bukan sekadar jeda kosong, melainkan pembangunan kapasitas & kredibilitas yang justru MEMUNGKINKAN sinyal awal tsb pada akhirnya bisa terlaksana (Yusuf perlu jadi penguasa dulu, agar keluarganya bisa datang & sujud).",
+      "analogy": "siklus penuh: terima→amankan→bangun kapasitas via kasus lain→verifikasi akhir; tahap tengah bukan jeda kosong, melainkan prasyarat"
+    },
+    {
+      "lens": "psychology",
+      "reading": "Yusuf, di puncak kekuasaannya, memilih membingkai ulang seluruh penderitaannya (penjara, perpisahan) sebagai kebaikan Tuhannya, dan menyalahkan setan (bukan saudaranya secara pribadi) — pola pemaafan matang yang konsisten dari nasihat awal ayahnya (12:5) hingga momen puncak kejayaannya. Kesuksesan tidak mengubah kerangka pemaafannya.",
+      "analogy": "kerangka pemaafan yang konsisten dari awal hingga puncak kesuksesan, tak berubah oleh perubahan status"
+    },
+    {
+      "lens": "amal",
+      "reading": "Di puncak kekuasaannya, Yusuf tidak menyombongkan pencapaian dirinya sendiri — ia mengembalikan seluruh kredit kepada Tuhannya ('Tuhanku telah berbuat baik kepadaku... Tuhanku Maha Lembut... Maha Mengetahui lagi Mahabijaksana'). Kerendahan hati di puncak keberhasilan, bukan hanya di masa sulit."
+    }
+  ],
+  "inference": "Ayat ini menutup busur mimpi Yusuf yang dibuka di 12:4: sinyal simbolik masa kanak (sebelas bintang, matahari, bulan) akhirnya terverifikasi presisi — bukan lewat klaim semata, melainkan lewat kejadian nyata yang disaksikan semua pihak (sujud yang benar-benar terjadi). Bacaan rekayasa yang menyatukan seluruh busur: (1) skema decoding sinyal simbolik kadang hanya bisa dikonfirmasi SETELAH kejadian aktualnya terwujud, bukan di titik penerimaan; (2) evaluasi kejujuran atas sinyal berhorizon sangat panjang menuntut kesabaran — Yusuf menunggu puluhan tahun sebelum bisa berkata 'inilah takwilnya'; (3) tahap-tahap di antara penerimaan sinyal (12:4) dan verifikasinya (12:100) — pengamanan informasi (12:5), pembuktian keahlian pada kasus lain (12:36, 12:43-44) — bukan jeda kosong, melainkan pembangunan kapasitas yang justru menjadi PRASYARAT bagi terlaksananya sinyal awal itu sendiri. CATATAN TANZIH (wajib): 'Tuhanku telah menjadikannya kenyataan... Tuhanku Maha Lembut... Maha Mengetahui lagi Mahabijaksana' adalah pengakuan Yusuf atas perbuatan & Sifat Allah — tidak dianalogikan sebagai mekanisme sistem; yang dibaca-rekayasa hanyalah STRUKTUR siklus sinyal-verifikasi pada pihak manusia (Yusuf, Ya'qub, keluarganya) sepanjang busur naratif ini.",
+  "authors": [
+    "Draft AI (LLM draft) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-12",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-12",
+      "note": "Tadabbur perdana — Wave 16 mimpi & wahyu, siklus mimpi Yusuf (5/5, penutup busur).",
+      "authors": [
+        "Draft AI (LLM draft)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

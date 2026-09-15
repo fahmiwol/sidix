@@ -1,0 +1,110 @@
+{
+  "schema": "lab-study-v2",
+  "id": "rahman-55-33",
+  "version": 1,
+  "title": "Illā bi-sulthān — menembus penjuru langit-bumi hanya dengan kekuatan",
+  "subtitle": "Tantangan melintasi batas alam: mungkin, tetapi menuntut sulthan (kuasa/ilmu)",
+  "ref": {
+    "surah": 55,
+    "from": 33,
+    "to": 33
+  },
+  "surah_name": "Ar-Rahman",
+  "theme": "Kapabilitas berbatas otorisasi, sulthan (kuasa/ilmu) sebagai prasyarat melintasi batas",
+  "sourced_meaning": {
+    "summary": "Tafsir Kemenag: Ayat menyeru jin dan manusia — jika mereka sanggup menembus/melintasi penjuru (aqthar) langit dan bumi untuk lolos dari kuasa Allah, silakan mencoba; namun mereka tak akan mampu, sebab tak punya kekuatan sedikit pun menghadapi kuasa Allah. Menurut sebagian ahli tafsir, 'sulthan' di sini bermakna ilmu pengetahuan — menunjukkan bahwa dengan ilmu manusia dapat menembus ruang angkasa. Melintasi batas hanya mungkin 'illā bi-sulthān' (kecuali dengan kekuatan/kuasa/ilmu).",
+    "sources": [
+      "Tafsir Kemenag RI QS 55:33",
+      "Tafsir al-Jalalayn QS 55:33"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Persepsi",
+      "note": "batas (aqthar) langit-bumi disajikan sebagai perimeter nyata yang bisa dibayangkan dan diuji"
+    },
+    {
+      "layer": "Tangga epistemik",
+      "note": "'sulthan' dibaca (menurut sebagian mufassir) sebagai ilmu — naik kemampuan hanya lewat naik pengetahuan/kuasa"
+    },
+    {
+      "layer": "Aksi & transfer",
+      "note": "'maka tembuslah' = izin bersyarat: tindakan diperbolehkan HANYA bila prasyarat kuasa terpenuhi"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "amal",
+      "reading": "Tak ada terobosan tanpa 'sulthan' — bekal yang cukup. Cita-cita besar (menembus batas) menuntut usaha mengumpulkan ilmu dan kekuatan lebih dulu; menantang batas tanpa bekal adalah kesia-siaan. Ayat mendorong ikhtiar berbasis kapasitas, bukan angan kosong.",
+      "analogy": "capability precedes ambition",
+      "quranic_term": "sulthān"
+    },
+    {
+      "lens": "computational",
+      "reading": "'Menembus batas hanya dengan sulthan' dibaca sebagai OTORISASI: melintasi perimeter sistem menuntut token kuasa/izin yang sah. Tanpa kredensial, batas (boundary) menolak. Ini prinsip kontrol akses — aksi lintas-domain hanya dieksekusi bila pemanggil memegang wewenang yang cukup.",
+      "analogy": "authorization; capability token; access boundary",
+      "quranic_term": "sulthān"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "Struktur ayat = precondition ketat: EKSEKUSI('tembus') hanya sah bila GUARD('punya sulthan') benar; jika tidak, operasi ditolak. Setara kontrak bersyarat / capability-based security: kemampuan diberikan lewat token wewenang, bukan diasumsikan default.",
+      "analogy": "guarded precondition; capability-based security",
+      "quranic_term": "illā bi-sulthān"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Untuk agen: perlakukan tiap tindakan berdampak (memanggil alat, mengakses data, keluar sandbox) sebagai lintasan BATAS yang butuh 'sulthan' eksplisit. Actionable: (1) capability gating — agen hanya boleh memakai alat/izin yang secara sah diberikan (least privilege), bukan mengasumsikan akses; (2) prasyarat pengetahuan — sebelum aksi berisiko, wajibkan bukti/verifikasi kecukupan info ('sulthan=ilmu') agar tak bertindak tanpa dasar; (3) tolak-default — perimeter menolak kecuali otorisasi terbukti (deny-by-default). Kemampuan menembus batas adalah hak yang diberikan, bukan bawaan.",
+      "analogy": "least-privilege capability gating; deny-by-default; evidence-gated action",
+      "quranic_term": "sulthān"
+    },
+    {
+      "lens": "math-physics",
+      "reading": "Resonansi struktural (BUKAN mukjizat numerik): melintasi batas gravitasi menuntut ambang energi tertentu (gagasan kecepatan lepas) — 'tak bisa kecuali dengan kekuatan' beresonansi dengan adanya threshold fisis untuk keluar dari suatu kungkungan. Kami membacanya sebagai motif ambang-kuasa, bukan klaim rumus dalam ayat.",
+      "analogy": "threshold energy / escape velocity motif — bounded",
+      "quranic_term": "sulthān"
+    },
+    {
+      "lens": "artifact",
+      "reading": "Sejarah teknologi antariksa membenarkan pembacaan 'sulthan=ilmu+daya': menembus atmosfer menuntut roket, propulsi, dan navigasi — akumulasi pengetahuan dan tenaga. Batas alam tidak dilanggar dengan kehendak, melainkan ditembus dengan perkakas yang lahir dari ilmu.",
+      "analogy": "rocketry; enabling technology as accumulated power",
+      "quranic_term": "sulthān"
+    },
+    {
+      "lens": "systems",
+      "reading": "Sistem aman menegakkan perimeter: sumber daya di balik batas hanya dapat dicapai lewat gerbang berwenang. 'Aqthar' (penjuru) = domain; 'sulthan' = kunci. Desain: pisahkan domain dengan batas jelas, dan izinkan lintas-domain hanya melalui titik kontrol yang memverifikasi kuasa.",
+      "analogy": "perimeter/domain separation; authorized gateways"
+    },
+    {
+      "lens": "pedagogy",
+      "reading": "Ayat memakai bentuk tantangan bersyarat ('jika sanggup... maka lakukan') yang justru mengajar batas kemampuan lewat undangan mencoba. Membaca 'sulthan' sebagai ilmu menjadikan ayat pemantik: naikkan pengetahuan bila ingin menaikkan kemampuan.",
+      "analogy": "conditional challenge as teaching device",
+      "quranic_term": "sulthān"
+    },
+    {
+      "lens": "history-ummah",
+      "reading": "Pembacaan 'sulthan=ilmu' historis memacu semangat penjelajahan berbasis pengetahuan; peradaban maju ketika ilmu (astronomi, matematika, rekayasa) dijadikan alat menembus batas yang dulu mustahil. Kemajuan komunal berbanding lurus dengan 'sulthan' ilmiah yang dikumpulkan.",
+      "analogy": "knowledge-driven civilizational advance",
+      "quranic_term": "sulthān"
+    }
+  ],
+  "inference": "Ayat ini, dibaca sebagai rekayasa, adalah pernyataan tentang KAPABILITAS BERBATAS OTORISASI: melintasi batas (aqthar langit-bumi) itu mungkin, tetapi hanya 'illā bi-sulthān' — dengan kuasa, dan menurut sebagian mufassir, dengan ilmu. Strukturnya persis precondition berpenjaga: tindakan lintas-batas hanya sah bila prasyarat kuasa/pengetahuan terpenuhi. Ini beresonansi dengan keamanan berbasis kapabilitas dalam komputasi (perimeter menolak tanpa token wewenang), dengan ambang energi fisis untuk lepas dari kungkungan (kami tandai sebagai motif, bukan klaim rumus), dan dengan sejarah teknologi antariksa yang membuktikan 'sulthan=ilmu+daya'. Untuk desain agen AI, pelajarannya tegas dan actionable: terapkan least-privilege dan deny-by-default — tiap aksi berdampak adalah lintasan batas yang menuntut otorisasi eksplisit dan bukti kecukupan pengetahuan sebelum dieksekusi. Kemampuan menembus batas bukan bawaan; ia hak yang diberikan lewat 'sulthan' yang sah.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-07",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-07",
+      "note": "Tadabbur perdana — Wave 6 batch astronomi.",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

@@ -1,0 +1,104 @@
+{
+  "schema": "lab-study-v2",
+  "id": "hadid-57-25",
+  "version": 1,
+  "title": "Al-Kitāb wal-Mīzān wal-Ḥadīd — tiga instrumen peradaban",
+  "subtitle": "Rasul membawa bukti, kitab, dan neraca; dan Kami turunkan besi",
+  "ref": {
+    "surah": 57,
+    "from": 25,
+    "to": 25
+  },
+  "surah_name": "Al-Hadid",
+  "theme": "Instrumen peradaban, standar, material & manufaktur, keadilan",
+  "sourced_meaning": {
+    "summary": "Sungguh Kami mengutus rasul-rasul dengan bukti-bukti yang nyata (bayyināt), dan Kami turunkan bersama mereka Al-Kitab dan Al-Mīzān (neraca/keadilan) agar manusia menegakkan keadilan (qisṭ). Dan Kami turunkan (anzalnā) besi (al-ḥadīd) yang padanya terdapat kekuatan yang hebat (baʾsun syadīd) dan berbagai manfaat bagi manusia, dan supaya Allah mengetahui siapa yang menolong (agama)-Nya dan rasul-rasul-Nya secara gaib. Allah Mahakuat, Mahaperkasa.",
+    "sources": [
+      "Tafsir Kemenag RI QS 57:25",
+      "Tafsir al-Jalalayn QS 57:25"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Tangga epistemik",
+      "note": "bayyināt (bukti nyata) sebagai pembuka — misi dimulai dari yang terverifikasi"
+    },
+    {
+      "layer": "Alignment",
+      "note": "tujuan dinyatakan: liyaqūman-nāsu bil-qisṭ (agar manusia menegakkan keadilan)"
+    },
+    {
+      "layer": "Aksi & transfer",
+      "note": "besi = dual-use ('baʾs syadīd' + 'manāfiʿ') — kekuatan yang bisa membangun atau merusak"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "amal",
+      "reading": "Menegakkan keadilan (qisṭ) adalah tujuan diturunkannya kitab dan neraca — iman yang berbuah tatanan adil, bukan ritual pribadi semata. Besi (kekuatan/teknologi) pun diamanahkan untuk menopang keadilan itu, bukan menindas.",
+      "quranic_term": "qisṭ"
+    },
+    {
+      "lens": "computational",
+      "reading": "Tiga instrumen disandingkan: Kitab (spesifikasi/kode nilai), Mīzān (standar ukur/pembanding), Ḥadīd (material eksekutor). Analog: spec + metric + hardware. Sistem lengkap butuh ketiganya — aturan tanpa alat ukur tak terverifikasi; keduanya tanpa material tak terwujud.",
+      "analogy": "spec + metric + hardware",
+      "quranic_term": "kitāb + mīzān + ḥadīd"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "Mīzān disebut bersama Kitab: nilai (kitab) HARUS punya fungsi ukur (mīzān) agar bisa ditegakkan — sebuah aturan tanpa cara mengukur kepatuhannya adalah niat, bukan hukum. Assertion butuh alat evaluasi.",
+      "analogy": "policy + measurable evaluation"
+    },
+    {
+      "lens": "algorithm",
+      "reading": "Besi 'baʾsun syadīd wa manāfiʿ' = properti dual-use dinyatakan berdampingan tanpa dipisah: material yang sama menjadi bajak atau pedang tergantung fungsi tujuan (qisṭ) yang memandunya. Teknologi netral secara nilai; arah ditentukan objective di atasnya.",
+      "analogy": "dual-use capability under an objective function"
+    },
+    {
+      "lens": "inference",
+      "reading": "Susunannya mengajarkan urutan: bukti (bayyināt) → nilai (kitab) → ukuran (mīzān) → baru kekuatan (ḥadīd). Kekuatan diletakkan PALING AKHIR, sesudah nilai dan standar tegak. Memberi kekuatan sebelum menegakkan keadilan = resep kerusakan.",
+      "quranic_term": "tartīb (urutan bermakna)"
+    },
+    {
+      "lens": "math-physics",
+      "reading": "Catatan menarik yang sering dikutip (sebagai resonansi, BUKAN klaim mukjizat numerik — tafsir bersumber tak memuatnya): besi terbentuk di inti bintang masif & tersebar lewat supernova — secara harfiah 'diturunkan' dari langit ke bumi. Kata 'anzalnā' beresonansi dengan asal kosmik besi.",
+      "analogy": "stellar nucleosynthesis (bounded resonance)"
+    },
+    {
+      "lens": "systems",
+      "reading": "Mīzān = sistem standar bersama yang membuat pertukaran adil mungkin (bandingkan 55:7-9). Peradaban butuh standar terbagi: satuan, timbangan, protokol — tanpa standar, kepercayaan antar-pihak runtuh dan sistem terfragmentasi.",
+      "analogy": "shared standards enable trust/interop"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Untuk sistem AI: kapabilitas kuat (ḥadīd — 'baʾs syadīd') aman hanya bila DIDAHULUI oleh nilai (kitab) dan alat ukur kepatuhan (mīzān). Menurunkan kekuatan tanpa standar evaluasi = deploy kapabilitas tanpa eval/alignment. Urutan ayat = urutan pembangunan yang bertanggung jawab: tegakkan ukuran keadilan dulu, baru lepaskan daya.",
+      "analogy": "capability gated by values + evaluation (align before scale)",
+      "quranic_term": "mīzān sebelum ḥadīd"
+    },
+    {
+      "lens": "artifact",
+      "reading": "Ketiga instrumen menjadi tiga pilar teknologi harfiah: tulisan/kode (kitab), metrologi & standar (mīzān), metalurgi & manufaktur (ḥadīd) — Zaman Besi hingga baja modern adalah peradaban yang dibangun di atas trio ini.",
+      "analogy": "writing + metrology + metallurgy"
+    }
+  ],
+  "inference": "Ayat ini mendaftar perkakas peradaban dalam urutan yang bermuatan pelajaran desain: bukti yang terverifikasi, lalu kitab (nilai), lalu neraca (standar ukur), dan baru besi (kekuatan/teknologi) — dengan tujuan yang mengikat semuanya: menegakkan keadilan. Bahwa kekuatan diletakkan terakhir, sesudah nilai dan alat ukurnya tegak, adalah prinsip yang persis dibutuhkan era ini: kapabilitas dahsyat (dan besi memang 'baʾsun syadīd', dual-use) menjadi manfaat hanya di bawah nilai dan evaluasi; dilepas tanpa keduanya, ia jadi alat kerusakan. Align dan ukur dulu, baru skalakan daya.",
+  "authors": [
+    "Draft AI (LLM draft) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-07",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-07",
+      "note": "Tadabbur perdana — Wave 2 (dari sweep korpus 6236 ayat); tema material/dual-use.",
+      "authors": [
+        "Draft AI (LLM draft)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

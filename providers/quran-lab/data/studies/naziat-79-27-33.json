@@ -1,0 +1,104 @@
+{
+  "schema": "lab-study-v2",
+  "id": "naziat-79-27-33",
+  "version": 1,
+  "title": "Membangun lalu memprovisi — langit ditinggikan, bumi disiapkan bagi penghuni",
+  "subtitle": "Langit dibina & disempurnakan; malam-siang diatur; bumi dihamparkan, mata air-tumbuhan-gunung untukmu & ternakmu",
+  "ref": {
+    "surah": 79,
+    "from": 27,
+    "to": 33
+  },
+  "surah_name": "An-Nazi'at",
+  "theme": "Konstruksi kosmos + provisioning sumber daya sebelum penghuni; urutan build→furnish→populate; konteks: dalil kebangkitan",
+  "sourced_meaning": {
+    "summary": "Rangkaian ayat mengajak membandingkan penciptaan manusia (kecil) dengan penciptaan langit (besar-kokoh): (27-28) langit DIBINA, ditinggikan bangunannya, lalu DISEMPURNAKAN — Allah menetapkan ketentuan yang mengatur benda-benda angkasa agar tetap pada tempatnya; (29) malam digelapkan, siang diterangkan; (30) bumi 'sesudah itu' dihamparkan (daḥā) agar mudah dihuni; (31) dipancarkan mata airnya & ditumbuhkan tumbuhannya (untuk manusia & ternak); (32) gunung-gunung dipancangkan kokoh sehingga bumi stabil; (33) 'matāʿan lakum wa li-anʿāmikum' — SEMUA ITU untuk kesenangan/bekal kalian dan ternak kalian. Tafsir Kemenag: menciptakan-mengatur alam raya (makrokosmos) jauh lebih kompleks daripada mencipta manusia (mikrokosmos); urutannya menyiapkan tempat tinggal DULU lalu menyediakan kebutuhan (makan-minum). CATATAN GHAIB: konteks pungkasan ayat-ayat ini adalah DALIL hari kebangkitan (Tuhan yang menyiapkan semua ini berkuasa membangkitkan) — dibaca deskriptif dari tafsir sebagai perkara iman, BUKAN spekulasi detail akhirat. Klaim sains yang muncul di tafsir (ekspansi jagat raya) bersifat pemahaman, bukan kepastian teks.",
+    "sources": [
+      "Tafsir Kemenag RI QS 79:27-33",
+      "Tafsir al-Jalalayn QS 79:27-33"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Persepsi",
+      "note": "'aʾantum asyaddu khalqan amis-samāʾ' — mengajak MENGAMATI & membandingkan skala penciptaan sebagai bukti"
+    },
+    {
+      "layer": "Aksi & transfer",
+      "note": "deret kata kerja: banā→rafaʿa→sawwā→aghṭasya→akhraja→daḥā→arsā — langkah-langkah konstruksi & provisioning yang terurut"
+    },
+    {
+      "layer": "Tangga epistemik",
+      "note": "argumen a-fortiori: yang menyiapkan makrokosmos rumit ini pasti kuasa atas yang lebih kecil (kebangkitan) — CATATAN GHAIB"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "computational",
+      "reading": "Urutannya membaca sebagai pipeline berfase: BANGUN wadah (langit dibina-ditinggikan-disempurnakan) → ATUR siklus (malam-siang) → SIAPKAN platform (bumi dihamparkan) → ISI sumber daya (mata air, tumbuhan) → STABILKAN (gunung dipancangkan) → baru semua itu 'matāʿan lakum' (bagi penghuni). Pola universal: infrastruktur & sumber daya disiapkan LEBIH DULU, penghuni/beban kerja datang belakangan.",
+      "analogy": "pipeline: build container → schedule cycles → provision resources → stabilize → serve tenants",
+      "quranic_term": "banā → sawwā → daḥā → matāʿan"
+    },
+    {
+      "lens": "systems",
+      "reading": "'matāʿan lakum wa li-anʿāmikum' menempatkan seluruh konstruksi sebagai LAYANAN bagi penghuni — bumi sebagai lingkungan berdaya-dukung dengan air, pangan, dan kestabilan (gunung sebagai penstabil). Ini gambaran sistem yang dirancang dengan daya-dukung lebih dulu: kapasitas, sumber daya, dan stabilitas dijamin sebelum beban dijalankan di atasnya.",
+      "analogy": "lingkungan berdaya-dukung (carrying capacity) disiapkan sebelum beban",
+      "quranic_term": "arsā (penstabil)"
+    },
+    {
+      "lens": "algorithm",
+      "reading": "Kata 'baʿda dzālika' (sesudah itu) pada 'wal-arḍa... daḥāhā' menandai URUTAN eksplisit antar-tahap. Tafsir menyusun langkah: siapkan tempat tinggal → sediakan kebutuhan. Analogi: prosedur berurutan dengan ketergantungan — tahap 'menyediakan pangan' bergantung pada selesainya tahap 'menyiapkan bumi'; menukar urutan mematahkan prasyarat.",
+      "analogy": "prosedur berurutan dengan dependency antar-tahap",
+      "quranic_term": "baʿda dzālika (urutan)"
+    },
+    {
+      "lens": "earth-cosmos",
+      "reading": "'rafaʿa samkahā' (meninggikan bangunannya) dibaca sebagian tafsir berdampingan dengan ekspansi jagat raya, dan gunung sebagai penstabil kerak. Dicatat sebagai RESONANSI STRUKTURAL yang bounded — tafsir menyajikannya sebagai pemahaman ilmiah, BUKAN kepastian teks, BUKAN mukjizat numerik; ia alat bantu, bukan bukti.",
+      "analogy": "langit meninggi ≈ ekspansi; gunung ≈ penstabil (bounded)",
+      "quranic_term": "āyāt kauniyah"
+    },
+    {
+      "lens": "biology-medicine",
+      "reading": "'akhraja minhā māʾahā wa marʿāhā' (mata air & padang rumput) menautkan air → tumbuhan → rantai makanan manusia-ternak: satu substrat (air) menopang jenjang kehidupan. Pola ekologis: sumber dasar (air) di pangkal, produsen (tumbuhan) di tengah, konsumen (manusia-ternak) di atas — daya-dukung ekosistem disiapkan berjenjang.",
+      "analogy": "rantai daya-dukung: air → produsen → konsumen",
+      "quranic_term": "māʾahā wa marʿāhā"
+    },
+    {
+      "lens": "economy",
+      "reading": "'matāʿan' (bekal/kesenangan) & penyediaan pangan-air membaca bumi sebagai STOK sumber daya yang disiapkan untuk dikonsumsi penghuni. Pola ekonomi: kapital & persediaan diadakan sebelum aktivitas produksi-konsumsi berjalan; keberlanjutan menuntut sumber (mata air, padang) yang terus mengalir, bukan sekali pakai.",
+      "analogy": "penyediaan stok & kapital sumber daya sebelum konsumsi",
+      "quranic_term": "matāʿ"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Cetak biru fase PROVISIONING sebelum menjalankan agen (analog 'siapkan bumi & rezeki sebelum penghuni'): (1) JANGAN jalankan beban kerja/agen sebelum lingkungannya diprovisi lengkap — konteks, alat, kuota memori, sumber data ('mata air') harus tersedia dan stabil dulu; (2) sediakan penstabil ('gunung') = guardrail/anchor yang menjaga sistem tak goyah saat beban naik; (3) urutkan ketat build→furnish→serve, dengan dependency terjaga (jangan 'melayani tenant' sebelum sumber daya siap). Actionable: readiness/provisioning gate yang memverifikasi seluruh sumber daya & penstabil ADA sebelum status 'siap-melayani'. CATATAN GHAIB: konteks ayat = dalil kebangkitan; analogi rekayasa ini bounded & tak menyentuh detail akhirat.",
+      "analogy": "provisioning gate: sumber daya + penstabil siap → baru 'serve'; jangan jalankan beban di atas lingkungan setengah-siap"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "Deret 'fasawwāhā' (lalu Dia sempurnakan) menandai langkah PENYEMPURNAAN/validasi setelah konstruksi kasar — struktur tak dianggap selesai sampai 'disempurnakan' dan ketentuan pengaturnya ditetapkan. Analog: tahap finalize/verify yang menegakkan invariant ('tetap di tempatnya, tidak berjatuhan') sebelum sistem dinyatakan siap.",
+      "analogy": "langkah finalize/verify menegakkan invariant sebelum 'siap'",
+      "quranic_term": "fasawwāhā"
+    }
+  ],
+  "inference": "Sebagai analogi rekayasa, ayat-ayat ini menampilkan satu pola kuat pada ciptaan: KONSTRUKSI lalu PROVISIONING sebelum PENGHUNI. Deret kata kerjanya (membina-meninggikan-menyempurnakan langit → mengatur malam-siang → menghamparkan bumi → memancarkan air & menumbuhkan pangan → memancangkan gunung sebagai penstabil) bermuara pada 'matāʿan lakum wa li-anʿāmikum' — semuanya disiapkan sebagai layanan bagi penghuni yang datang belakangan. Pelajaran untuk perancang sistem/agen: siapkan lingkungan, sumber daya, dan penstabil (guardrail/anchor) LEBIH DULU dengan urutan-dependency terjaga; jangan menjalankan beban kerja di atas lingkungan yang belum diprovisi & distabilkan; sisipkan langkah 'penyempurnaan/verify' sebelum status siap-melayani. Konteks pungkasan rangkaian ini — sebagaimana ditegaskan tafsir — adalah DALIL hari kebangkitan (CATATAN GHAIB): dibaca deskriptif sebagai perkara iman, bukan spekulasi. Semua pembacaan sains di sini resonansi struktural yang bounded, bukan mukjizat numerik, bukan maksud tunggal ayat, dan tak menggantikan makna zahir bersumber.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-08",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-08",
+      "note": "Tadabbur perdana — Wave 10 penciptaan kosmos.",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

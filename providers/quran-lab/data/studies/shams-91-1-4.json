@@ -1,0 +1,108 @@
+{
+  "schema": "lab-study-v2",
+  "id": "shams-91-1-4",
+  "version": 1,
+  "title": "Matahari, duha, bulan, siang, malam — jam kosmik & sinyal fasa yang menampak-menutupi",
+  "subtitle": "Siang menampakkan, malam menutupi; bulan mengiringi sebagai cahaya turunan — clock signal terstruktur",
+  "ref": {
+    "surah": 91,
+    "from": 1,
+    "to": 4
+  },
+  "surah_name": "Ash-Shams",
+  "theme": "Siklus siang-malam, jam/penjadwal kosmik, sinyal fasa komplementer, entrainment ritme",
+  "sourced_meaning": {
+    "summary": "Sumpah Allah: 'Demi matahari dan cahayanya di waktu duha, demi bulan apabila mengiringinya, demi siang apabila menampakkannya (matahari), dan demi malam apabila menutupinya.' Tafsir Kemenag: Allah bersumpah dengan matahari dan cahaya duha yang sangat terang kontras dengan kegelapan sebelumnya, lalu dengan bulan yang bertolak belakang — bukan sumber cahaya, hanya menerima cahaya matahari. Siang menampakkan matahari, malam menyembunyikannya; ini isyarat sistem perputaran bulan dan bumi terhadap matahari sebagai penanda waktu (syamsiah & qamariyah) yang begitu terstruktur, menunjukkan kuasa Allah. Kemenag juga mencatat kajian ilmiah: cahaya pagi paling lengkap panjang gelombangnya dan berkhasiat bagi tubuh (mis. UV mempercepat pembentukan vitamin D).",
+    "sources": [
+      "Tafsir Kemenag RI QS 91:1-4",
+      "Tafsir al-Jalalayn QS 91:1-4"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Persepsi",
+      "note": "sumpah menstrukturkan pengamatan pada kontras terang-gelap (duha vs malam) — membaca tanda (tawassum) dari pergiliran fasa"
+    },
+    {
+      "layer": "Umpan balik",
+      "note": "siang menampakkan / malam menutupi = toggle keterlihatan periodik; sistem yang stabil karena pergiliran teratur, bukan acak"
+    },
+    {
+      "layer": "Memori & grounding",
+      "note": "keteraturan orbit menjadi acuan waktu bersama (syamsiah/qamariyah) — clock tepercaya yang menjangkarkan penjadwalan"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "earth-cosmos",
+      "reading": "Kemenag membaca ayat sebagai isyarat sistem perputaran terstruktur bulan-bumi-matahari yang menghasilkan penanda waktu syamsiah (matahari) dan qamariyah (bulan). Mekanika langit ini deterministik dan dapat diprediksi ribuan tahun ke depan — infrastruktur waktu berpresisi tinggi yang disediakan alam, bukan diciptakan tiap pengamat. Resonansi struktural dengan jam astronomik, bounded, bukan mukjizat numerik.",
+      "analogy": "orbit deterministik = jam astronomik presisi tinggi",
+      "quranic_term": "āyāt kauniyah"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Sinyal jam/penjadwal eksternal bagi agen: pergantian siang-malam adalah CLOCK SIGNAL tepercaya yang menyelaraskan (entrain) siklus kerja-pulih (bersambung ke duty-cycle QS 78:9-11). Actionable: (1) jangkarkan penjadwalan agen pada jam eksternal yang terpercaya, bukan penghitung internal yang bisa hanyut; (2) gunakan fasa 'siang' (menampakkan) untuk kerja yang butuh observabilitas penuh dan fasa 'malam' untuk tugas latar; (3) perlakukan bulan sebagai sinyal TURUNAN (cache/refleksi), bukan sumber kebenaran — jangan bergantung pada nilai turunan seakan sumber. Sistem yang dientrainmen ke ritme lingkungan lebih stabil daripada yang berayun bebas.",
+      "analogy": "external clock/zeitgeber untuk entrainment penjadwalan",
+      "quranic_term": "mīqāt (penanda waktu)"
+    },
+    {
+      "lens": "systems",
+      "reading": "Osilator komplementer: matahari-bulan dan siang-malam adalah pasangan antifasa yang bersama membentuk jam stabil. Keterlihatan di-toggle periodik (jallā = menampakkan, yaghsyā = menutupi). Kestabilan sistem lahir dari pergiliran dua keadaan yang teratur, bukan dari satu keadaan yang dipertahankan paksa.",
+      "analogy": "osilator antifasa membentuk clock stabil",
+      "quranic_term": "tanāwub (pergiliran)"
+    },
+    {
+      "lens": "computational",
+      "reading": "Malam-siang sebagai bit keterlihatan yang bergantian: jallā (expose/reveal) vs yaghsyā (mask/hide) — toggle visibility periodik. Bulan dibaca sebagai nilai TURUNAN: Kemenag menegaskan ia bukan sumber cahaya, hanya menerima dari matahari — analog cache/refleksi vs source of truth. Sistem harus tahu mana sumber otoritatif dan mana turunan agar tak memperlakukan pantulan sebagai asli.",
+      "analogy": "toggle visibility; bulan = cache/refleksi vs sumber (matahari)",
+      "quranic_term": "qamar (cahaya turunan)"
+    },
+    {
+      "lens": "math-physics",
+      "reading": "Periodisitas & fasa: matahari sumber luminansi, bulan reflektor berfasa (menerima lalu meneruskan), siang-malam gelombang keterlihatan berperiode tetap. Yang ditonjolkan bukan angka melainkan struktur: keteraturan periodik yang membuat waktu terukur dan dapat diprediksi.",
+      "analogy": "sumber vs reflektor; gelombang keterlihatan periodik"
+    },
+    {
+      "lens": "biology-medicine",
+      "reading": "Cahaya sebagai zeitgeber ritme sirkadian: pergantian terang-gelap menyelaraskan jam biologis internal tubuh. Kemenag mencatat cahaya pagi (duha) kaya panjang gelombang dan berkhasiat — mis. UV memicu sintesis vitamin D. Dibaca sebagai resonansi struktural bounded antara isyarat 'duha' dan kronobiologi/fotobiologi, BUKAN mukjizat numerik dan bukan penetapan teori medis oleh ayat.",
+      "analogy": "cahaya = zeitgeber penyelaras jam sirkadian (bounded)",
+      "quranic_term": "ḍuḥā"
+    },
+    {
+      "lens": "inference",
+      "reading": "Struktur sumpah mengajari pembacaan tanda (tawassum): kontras terang-gelap yang teratur adalah bukti keteraturan yang dapat diamati dan disimpulkan. Dari keterulangan yang presisi, penalar menyimpulkan adanya sistem (bukan kebetulan) — observasi periodik menjadi basis inferensi tentang keteraturan.",
+      "analogy": "keterulangan presisi → inferensi adanya sistem teratur",
+      "quranic_term": "tawassum (membaca tanda)"
+    },
+    {
+      "lens": "pedagogy",
+      "reading": "Kontras sebagai alat ajar: terang (duha) dipahami justru karena ada gelap yang mendahului; pasangan berlawanan mempertajam makna keduanya. Pengajaran efektif kerap menyandingkan lawan (contoh-nonkontoh) agar konsep tampak jelas, seperti duha menonjol setelah malam.",
+      "analogy": "pasangan kontras (terang-gelap) mempertajam pemahaman"
+    },
+    {
+      "lens": "artifact",
+      "reading": "Dari siklus ini lahir teknologi waktu manusia: penanggalan syamsiah & qamariyah, jam matahari (sundial), hingga penentu waktu ibadah. Instrumen-instrumen itu MENIRU dan membaca jam kosmik yang sudah teratur — manusia mengukur, bukan menciptakan, keteraturannya.",
+      "analogy": "kalender & sundial meniru jam kosmik yang teratur"
+    }
+  ],
+  "inference": "Sebagai analogi rekayasa, empat ayat sumpah ini menonjolkan JAM KOSMIK: matahari sebagai sumber, bulan sebagai cahaya turunan yang mengiringi, serta siang-malam sebagai pergiliran fasa yang menampakkan lalu menutupi — sistem penanda waktu terstruktur yang deterministik dan dapat diprediksi. Untuk rekayasa (utama: agen AI) pelajarannya konkret: jangkarkan penjadwalan pada clock eksternal tepercaya (entrainment) alih-alih penghitung internal yang hanyut, pisahkan fasa kerja yang butuh observabilitas penuh (siang/menampakkan) dari tugas latar (malam/menutupi), dan bedakan sumber otoritatif (matahari) dari nilai turunan/refleksi (bulan) agar pantulan tak diperlakukan sebagai asli. Padanan sirkadian/fotobiologi (duha, vitamin D) dan pembacaan orbital dibingkai resonansi struktural yang bounded, BUKAN mukjizat numerik. ⚠ CATATAN TANZIH: keteraturan ini oleh Kemenag ditegaskan menunjukkan kuasa Allah — kuasa & kehendak Allah adalah landasan iman yang berada DI LUAR analogi; Allah (Dzat & Sifat-Nya) tidak dimodelkan, tidak dianalogikan, dan tidak dicasting sebagai komponen sistem. Analogi hanya berlaku pada makhluk (matahari, bulan, siang, malam) sebagai objek pengamatan; ini salah satu pembacaan di atas makna zahir yang bersumber, bukan maksud tunggal ayat.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-08",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-08",
+      "note": "Tadabbur perdana — Wave 9 penyembuhan/siklus.",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

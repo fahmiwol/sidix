@@ -1,0 +1,88 @@
+{
+  "schema": "lab-study-v2",
+  "id": "syura-42-51-51",
+  "version": 1,
+  "title": "Wahyan, aw min warā'i ḥijāb, aw yursila rasūlan — taksonomi tiga kanal wahyu",
+  "subtitle": "Tidak mungkin bagi seorang manusia pun bahwa Allah berkata-kata dengannya kecuali dengan wahyu, atau dari belakang tabir, atau dengan mengutus seorang utusan",
+  "ref": {
+    "surah": 42,
+    "from": 51,
+    "to": 51
+  },
+  "surah_name": "Ash-Shura",
+  "theme": "Taksonomi eksplisit & tertutup atas kanal penyampaian wahyu — dibaca SEMATA sebagai struktur penerimaan pada sisi manusia, bukan penggambaran Dzat yang menyampaikan. Ayat ditutup sendiri dengan penegasan transendensi (ʿAliyyun Ḥakīm).",
+  "sourced_meaning": {
+    "summary": "Dan tidak mungkin bagi seorang manusia pun bahwa Allah berkata-kata dengannya kecuali dengan perantaraan wahyu, atau dari belakang tabir, atau dengan mengutus seorang utusan (malaikat) lalu diwahyukan kepadanya dengan seizin-Nya apa yang Dia kehendaki. Sesungguhnya Dia Mahatinggi lagi Mahabijaksana. Tafsir Kemenag merinci tiga cara: (1) WAHYU — Allah menanamkan ke dalam hati nabi suatu pengertian yang tak diragukan berasal dari-Nya (dicontohkan hadis Nabi ttg 'Ruhul Qudus menghembuskan ke dalam lubuk hatiku'); (2) DARI BELAKANG TABIR — mendengar suara tanpa melihat wujud, seperti Musa (dikaitkan 7:143: Musa minta melihat, dijawab 'lan tarani' — engkau tak akan sanggup melihat-Ku); (3) MENGUTUS UTUSAN (Malaikat Jibril) yang menyampaikan wahyu 'dengan seizin-Nya'. Kemenag mengutip riwayat 'Aisyah: Nabi menggambarkan wahyu kadang datang 'seperti bunyi lonceng' (paling berat baginya) atau malaikat mewujud sebagai seorang laki-laki. Kemenag menutup: ayat ini menegaskan Allah Mahatinggi lagi Mahasuci dari sifat-sifat makhluk ciptaan-Nya.",
+    "sources": [
+      "Tafsir Kemenag RI QS 42:51",
+      "Tafsir al-Jalalayn QS 42:51"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Tangga epistemik",
+      "note": "'wa mā kāna li-basyarin an yukallimahullāhu illā...' — enumerasi TERTUTUP & EKSKLUSIF tiga cara, bukan daftar terbuka; struktur 'illā...aw...aw' membatasi kemungkinan pada tiga cabang"
+    },
+    {
+      "layer": "Aksi & transfer",
+      "note": "kanal ketiga berlapis: Allah mengutus (yursila) → utusan itu mewahyukan 'bi-idznihī' (dengan izin-Nya) — rantai otorisasi eksplisit disebut, bukan tersirat"
+    },
+    {
+      "layer": "Persepsi",
+      "note": "pengalaman penerima berbeda tiap kanal: ilham batin tanpa suara/wujud, suara tanpa wujud terlihat, atau pertemuan dengan sosok utusan — tiga MODALITAS PENERIMAAN berbeda"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "systems",
+      "reading": "Ayat memberikan taksonomi tertutup/exhaustive atas MODALITAS PENERIMAAN pesan otoritatif pada sisi manusia — bukan daftar yang bisa ditambah bebas. Klasifikasi diri-sendiri seeksplisit ini (menyebut jumlah & batasannya) jarang ditemukan pada sistem komunikasi kompleks, yang biasanya berkembang tanpa taksonomi eksplisit atas dirinya sendiri. Dibaca semata pada STRUKTUR taksonominya (tiga kanal, tertutup), bukan penjelasan tentang Pemberi pesan.",
+      "analogy": "taksonomi tertutup/exhaustive atas modalitas penerimaan, bukan daftar terbuka",
+      "quranic_term": "wahyan … aw … aw"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Kanal ketiga (utusan → 'bi-idznihī' → wahyu) menunjukkan pola rantai OTORISASI berlapis: utusan tidak menyampaikan atas inisiatif sendiri, melainkan eksplisit 'dengan izin-Nya'. Dibaca terbatas pada struktur INI SAJA: perantara yang membawa pesan berwenang bertindak sebagai penyampai HANYA dengan otorisasi eksplisit dari sumber, bukan berimprovisasi atas kehendaknya sendiri — relevan bagi desain sistem yang melibatkan perantara/delegasi.",
+      "analogy": "delegasi bersyarat: perantara bertindak hanya dengan otorisasi eksplisit, bukan improvisasi",
+      "quranic_term": "yursila rasūlan fa-yūḥiya bi-idznihī"
+    },
+    {
+      "lens": "inference",
+      "reading": "Hadis 'Aisyah yang dikutip Kemenag menggambarkan pengalaman FENOMENOLOGIS dari sisi PENERIMA (rasa berat seperti bunyi lonceng, atau wujud yang bisa dikenali) — ini deskripsi tentang bagaimana rasanya menerima, bukan penjelasan tentang mekanisme dari sisi Pemberi. Pembedaan dua sudut pandang ini (fenomenologi penerima vs mekanisme pengirim) penting agar analogi tidak tergelincir ke arah yang salah.",
+      "analogy": "pembedaan sudut pandang: fenomenologi penerima ≠ mekanisme pengirim"
+    },
+    {
+      "lens": "history-ummah",
+      "reading": "Kemenag mencatat variasi kanal antar-nabi: Musa mengalami kanal 'dari belakang tabir' (mendengar tanpa melihat), sementara Muhammad mengalami variasi termasuk kanal ketiga (Jibril). Variasi modalitas antar-nabi dicatat sebagai keragaman kanal yang sah, bukan hierarki nilai satu dibanding lainnya.",
+      "analogy": "variasi modalitas antar-penerima dicatat sebagai keragaman sah, bukan hierarki nilai"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "Struktur logisnya adalah OR eksklusif tiga cabang tertutup ('illā wahyan AW min warā'i ḥijābin AW yursila rasūlan') — setiap peristiwa wahyu termasuk PERSIS satu dari tiga kategori, bukan campuran bebas atau kategori keempat yang tak disebut.",
+      "analogy": "percabangan OR eksklusif dengan tiga cabang tertutup, tanpa kategori keempat"
+    },
+    {
+      "lens": "pedagogy",
+      "reading": "Penjelasan diberikan dalam bentuk yang bisa diverifikasi dari kesaksian langsung (hadis 'Aisyah mendeskripsikan apa yang ia amati pada Nabi) — taksonomi ini bukan spekulasi abstrak, melainkan disertai kesaksian empiris dari orang yang menyaksikan prosesnya dari luar."
+    }
+  ],
+  "inference": "Ayat ini memberi taksonomi eksplisit & tertutup atas tiga modalitas penerimaan wahyu pada sisi manusia: ilham batin langsung, suara tanpa wujud terlihat ('di belakang tabir'), dan penyampaian lewat utusan (malaikat) yang bertindak dengan otorisasi eksplisit ('bi-idznihī'). Bacaan rekayasa, dibatasi ketat pada STRUKTUR taksonomi (bukan pada Pemberi-nya): (1) klasifikasi tertutup/exhaustive atas modalitas komunikasi adalah pola jarang & bernilai — kebanyakan sistem kompleks tak punya taksonomi eksplisit atas dirinya sendiri; (2) kanal berperantara (rasūl) menunjukkan pola delegasi bersyarat — perantara bertindak hanya dengan izin eksplisit, bukan improvisasi; (3) kesaksian 'Aisyah tentang pengalaman fenomenologis Nabi mengingatkan pembedaan penting: deskripsi dari sisi penerima berbeda kategori dari penjelasan mekanisme dari sisi Pemberi. CATATAN TANZIH (wajib, sangat ketat): ayat ini SENDIRI ditutup dengan 'innahū ʿAliyyun Ḥakīm' (Dia Mahatinggi lagi Mahabijaksana), dan Kemenag menegaskan ini sebagai penegasan bahwa Allah Mahasuci dari sifat-sifat makhluk — taksonomi ini menjelaskan CARA pesan diterima manusia, sama sekali BUKAN penjelasan atau penggambaran Dzat Allah, dan tidak boleh dibaca sebagai 'Allah = pengirim dalam arsitektur komunikasi'. Analogi rekayasa di kajian ini hanya menyentuh struktur taksonomi & pola delegasi pada sisi kanal/penerima, tidak pernah menyentuh Dzat maupun cara-Nya berfirman secara hakiki.",
+  "authors": [
+    "Draft AI (LLM draft) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-12",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-12",
+      "note": "Tadabbur perdana — Wave 16 mimpi & wahyu. Kajian ditulis dengan kehati-hatian teologis tinggi (taksonomi kanal wahyu).",
+      "authors": [
+        "Draft AI (LLM draft)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

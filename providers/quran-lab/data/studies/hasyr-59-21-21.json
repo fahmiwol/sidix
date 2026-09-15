@@ -1,0 +1,111 @@
+{
+  "schema": "lab-study-v2",
+  "id": "hasyr-59-21-21",
+  "version": 1,
+  "title": "Gunung yang Hancur, Manusia yang Diam",
+  "subtitle": "Perumpamaan QS Al-Hasyr 21 sebagai model kapasitas-proses dan pedagogi metafora",
+  "ref": {
+    "surah": 59,
+    "from": 21,
+    "to": 21
+  },
+  "surah_name": "Al-Hasyr",
+  "theme": "Tafakkur & pengenalan pola: perumpamaan sebagai antarmuka agar makna abstrak dapat diproses akal",
+  "sourced_meaning": {
+    "summary": "Menurut Tafsir Kemenag, ayat ini menerangkan seandainya gunung diberi akal, pikiran, dan perasaan seperti manusia lalu diturunkan Al-Qur'an kepadanya, tentu gunung itu tunduk bahkan hancur-lebur karena takut kepada Allah. Namun Al-Qur'an bukan untuk gunung, melainkan untuk manusia. Tafsir menilai metafora ini indah — membandingkan manusia yang kecil dan lemah dengan gunung yang besar, tinggi, dan keras — dan menjadikannya peringatan bagi manusia yang tidak mau menggunakan akal, pikiran, dan perasaannya karena terpengaruh hawa nafsu dan kesenangan dunia. Perumpamaan itu dibuat agar manusia berpikir (yatafakkarun).",
+    "sources": [
+      "Tafsir Kemenag RI QS 59:21",
+      "Tafsir al-Jalalayn QS 59:21"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Persepsi",
+      "note": "Perumpamaan mengubah pesan abstrak (keagungan wahyu) menjadi citra konkret dan teramati (gunung tunduk & hancur) yang mudah masuk ke sistem persepsi."
+    },
+    {
+      "layer": "Penalaran",
+      "note": "Argumen a-fortiori: bila objek terkeras pun akan hancur, betapa lebih pantasnya manusia tergerak — inferensi dari kasus ekstrem ke kesimpulan yang lebih kuat."
+    },
+    {
+      "layer": "Umpan balik",
+      "note": "Ayat menutup dengan alasan eksplisit: 'agar mereka berpikir' — perumpamaan adalah alat yang sengaja dirancang untuk memicu pemrosesan, bukan sekadar hiasan."
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "pedagogy",
+      "reading": "Ayat sendiri menyatakan tujuannya: perumpamaan 'Kami buat untuk manusia supaya mereka berpikir'. Ini pengajaran lewat metafora — memindahkan konsep abstrak (keagungan wahyu) ke citra konkret (gunung) agar biaya kognitif turun dan makna dapat dicerna. Analogi bukan basa-basi, melainkan antarmuka pembelajaran yang disengaja.",
+      "analogy": "Analogical scaffolding: map konsep abstrak ke domain konkret yang sudah dikuasai pembelajar.",
+      "quranic_term": "al-amthal (perumpamaan-perumpamaan)"
+    },
+    {
+      "lens": "psychology",
+      "reading": "Menurut tafsir, kegagalan manusia bukan karena tak punya akal, melainkan akal itu tertutup oleh hawa nafsu dan kesenangan dunia. Kapasitas pemroses ada tetapi ter-blokir — bandingkan gunung yang 'seandainya berakal' akan responsif. Masalahnya gating, bukan hardware.",
+      "analogy": "Processing capacity intact tetapi ter-gate oleh distraksi/motivasi; bottleneck di attention, bukan kapasitas.",
+      "quranic_term": "khasyyatillah (takut kepada Allah)"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Kontras gunung-vs-manusia memisahkan dua hal: memiliki kapasitas memproses versus benar-benar memproses masukan. Manusia diberi akal namun 'diam'; gunung tak diberi namun diandaikan responsif total. Actionable untuk agen: punya model besar (kapasitas) tak menjamin respons yang benar bila input tak benar-benar diproses — pasang mekanisme yang memastikan setiap input penting sungguh dijalankan lewat penalaran, bukan dilewati, dan sesuaikan format input (mis. contoh/analogi) dengan kemampuan cerna agen.",
+      "analogy": "Capacity ≠ execution: model besar tanpa jaminan pemrosesan input = respons null; butuh input framing + processing guarantee.",
+      "quranic_term": "yatafakkarun (agar berpikir)"
+    },
+    {
+      "lens": "artifact",
+      "reading": "Perumpamaan adalah 'alat kognitif' yang dibuat sengaja: sebuah representasi termampatkan dari kebenaran besar ke bentuk yang bisa dipegang akal. Seperti model atau diagram, ia menyederhanakan realitas demi keterpahaman, dengan mengorbankan kelengkapan.",
+      "analogy": "Model/representasi sebagai artifact: kompresi lossy realitas demi tractability kognitif.",
+      "quranic_term": "al-amthal (perumpamaan)"
+    },
+    {
+      "lens": "inference",
+      "reading": "Struktur ayat adalah argumen a-fortiori: jika gunung yang keras pun akan tunduk-hancur, apalagi manusia seharusnya. Dari kasus batas yang ekstrem ditarik kesimpulan yang lebih kuat untuk kasus yang lebih lemah — pola penalaran perbandingan berbasis skala.",
+      "analogy": "A-fortiori / boundary-case reasoning: kesimpulan pada kasus ekstrem meng-cover kasus yang lebih ringan.",
+      "quranic_term": "law anzalna hadzal-qur'ana (sekiranya Kami turunkan)"
+    },
+    {
+      "lens": "systems",
+      "reading": "Gunung dibingkai sebagai sistem paling kokoh dan tegar; namun di hadapan beban wahyu diandaikan runtuh. Membaca ini sebagai uji beban (load test): objek terkuat dipakai untuk menyingkap besarnya gaya yang bekerja, sehingga skala pesan terukur lewat responsnya.",
+      "analogy": "Stress/load test dengan komponen terkuat sebagai probe untuk mengukur magnitudo beban.",
+      "quranic_term": "khasyi'an mutasaddi'an (tunduk terpecah-belah)"
+    },
+    {
+      "lens": "computational",
+      "reading": "Al-Qur'an disebut 'bukan untuk gunung, melainkan untuk manusia' — pesan hanya bermakna bila penerimanya adalah prosesor yang tepat. Data yang sama menghasilkan nol keluaran pada penerima yang tak berkapasitas memproses; makna direalisasi di sisi pemroses, bukan di sinyal.",
+      "analogy": "Signal butuh receiver yang capable; tanpa prosesor yang cocok, informasi = 0 pada output.",
+      "quranic_term": "lin-nas (untuk manusia)"
+    },
+    {
+      "lens": "math-physics",
+      "reading": "Metafora bertumpu pada kontras skala fisik: manusia kecil-lemah versus gunung besar-tinggi-keras. Menempatkan besaran ekstrem berdampingan membuat magnitudo pesan terasa — resonansi struktural dengan cara fisika memakai kasus ekstrem untuk menonjolkan efek, BUKAN klaim mukjizat numerik.",
+      "analogy": "Kontras skala/orde-besaran untuk menonjolkan efek; extreme-case sebagai penguat sinyal.",
+      "quranic_term": "jabal (gunung)"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "Ayat memakai konstruksi kondisional kontrafaktual: 'seandainya (law) diturunkan ke gunung... maka kau lihat ia hancur'. Ini penalaran 'what-if' — menjalankan skenario hipotetis untuk menyingkap konsekuensi tanpa harus mengeksekusinya di dunia nyata.",
+      "analogy": "Counterfactual conditional / dry-run: simulasi cabang hipotetis untuk menyingkap konsekuensi.",
+      "quranic_term": "law (seandainya)"
+    }
+  ],
+  "inference": "QS Al-Hasyr 21 menyatakan tujuannya sendiri — perumpamaan dibuat 'agar manusia berpikir' — dan mengontraskan gunung yang (andai berakal) hancur karena takut dengan manusia yang berakal tetapi diam. Dibaca sebagai rekayasa: metafora adalah antarmuka pedagogis yang memampatkan kebenaran abstrak ke citra konkret agar dapat diproses, dan kontras gunung-manusia memisahkan kapasitas memproses dari tindakan memproses. Untuk desain agen AI: kapasitas besar tak menjamin respons benar bila input tidak benar-benar dijalankan lewat penalaran — sesuaikan framing input dan jamin pemrosesannya. Analogi ini bounded — resonansi struktural, bukan klaim mukjizat numerik.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-07",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-07",
+      "note": "Tadabbur perdana — Wave 7 tafakkur.",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

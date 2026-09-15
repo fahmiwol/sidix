@@ -1,0 +1,111 @@
+{
+  "schema": "lab-study-v2",
+  "id": "furqan-25-43-43",
+  "version": 1,
+  "title": "Hawa jadi tuhan — objective yang dibajak keinginan",
+  "subtitle": "Orang yang menjadikan hawa nafsunya sebagai tuhan; kau tak menjadi pemeliharanya",
+  "ref": {
+    "surah": 25,
+    "from": 43,
+    "to": 43
+  },
+  "surah_name": "Al-Furqan",
+  "theme": "Objective yang dibajak impuls, reward hacking, misalignment tujuan, otoritas sumber vs selera sesaat",
+  "sourced_meaning": {
+    "summary": "Menurut Tafsir Kemenag (dengan riwayat Ibnu 'Abbas): orang Jahiliah menyembah suatu batu, namun bila melihat sembahan lain yang menurut ukuran hawa nafsunya lebih baik, ia meninggalkan yang lama dan berpindah ke yang baru — sembahan mengikuti selera, bukan sebaliknya. Ayat ini mencela orang yang mempertuhankan hawa nafsunya sampai dijadikan landasan seluruh urusan agamanya; mereka tak lagi mendengar hujah yang nyata dan penjelasan yang terang. Allah menegaskan bahwa Nabi tidak ditugaskan menjadi pemelihara/penjamin (wakīl) atas mereka yang enggan melepaskan diri dari belenggu hawa nafsunya. Yang menjadi 'tuhan' di sini bukan berhala di luar, melainkan dorongan di dalam diri yang naik menjadi otoritas tertinggi.",
+    "sources": [
+      "Tafsir Kemenag RI QS 25:43",
+      "Tafsir al-Jalalayn QS 25:43"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Alignment",
+      "note": "objective sejati (menghamba pada kebenaran) digusur oleh selera sesaat yang naik jadi otoritas — tujuan mengikuti keinginan, bukan keinginan tunduk pada tujuan"
+    },
+    {
+      "layer": "Penalaran",
+      "note": "gejala klinis: 'tidak mendengar hujah yang nyata' — bukti valid ditolak bukan karena lemah, melainkan karena bertentangan dengan yang sudah dikehendaki"
+    },
+    {
+      "layer": "Umpan balik",
+      "note": "loop tertutup: preferensi saat ini menjadi hakim atas segalanya, sehingga tak ada sinyal koreksi dari luar yang bisa masuk"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "ai-agentic",
+      "reading": "Gambaran paling tajam tentang misalignment: fungsi tujuan agen dibajak oleh reward jangka-pendek sampai keinginan sesaat itu sendiri menjadi objective. 'Menjadikan hawa sebagai tuhan' = membiarkan policy menulis ulang reward-nya sendiri mengikuti apa yang sedang ia inginkan — persis pola reward hacking (bandingkan prinsip 'beware-proxy-reward'). Mitigasi rekayasa: objective harus dipatok di LUAR agen (konstitusi/spesifikasi yang immutable saat runtime), reward model tidak boleh melayang mengikuti preferensi kebijakan saat ini, dan pertahankan jalur audit agar bukti yang bertentangan tetap bisa masuk alih-alih ditolak otomatis.",
+      "analogy": "objective/reward hijacking → misalignment; konstitusi eksternal yang immutable",
+      "quranic_term": "ittakhadha ilāhahu hawāhu"
+    },
+    {
+      "lens": "psychology",
+      "reading": "Ini potret akrasia dan dinamika kecanduan: fungsi eksekutif (kehendak reflektif) tunduk pada sistem impuls-hadiah, sehingga craving naik dari 'aku menginginkan' menjadi 'aku harus'. Yang 'dipertuhankan' adalah dorongan yang meminta pemuasan segera; rasionalisasi datang belakangan untuk membenarkan pilihan yang sudah diambil hawa. Regulasi diri (tazkiyatun-nafs) adalah menempatkan kembali nilai di atas impuls — bandingkan 79:40 tentang menahan diri.",
+      "analogy": "akrasia; impuls-reward mengalahkan kontrol eksekutif; motivated reasoning",
+      "quranic_term": "hawā (dorongan yang condong)"
+    },
+    {
+      "lens": "computational",
+      "reading": "Terjadi pembalikan hierarki nilai: variabel yang seharusnya menjadi input (keinginan) dipromosikan menjadi konstanta pengendali (otoritas). Sistem yang sehat menempatkan tujuan sebagai konstanta dan selera sebagai variabel; membalik keduanya membuat setiap keputusan bergantung pada keadaan sesaat — non-deterministik dan tak dapat diaudit.",
+      "analogy": "inversi konstanta/variabel; kontrol yang bergantung pada state sesaat",
+      "quranic_term": "hawā sebagai pengganti marji'"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "Riwayat Ibnu 'Abbas menampakkan pola berpindah sembahan mengikuti selera: ini seperti mengganti nilai konstanta rujukan (source of truth) setiap kali ada opsi yang 'terasa lebih baik'. Sistem yang benar mengunci referensi otoritas sebagai read-only; membiarkan selera menulis ulang referensi itu menghapus setiap invariant dan membuat konsistensi mustahil.",
+      "analogy": "source-of-truth yang mutable oleh preferensi → hilangnya invariant",
+      "quranic_term": "tabaddul al-ma'būd"
+    },
+    {
+      "lens": "inference",
+      "reading": "Gangguan epistemik yang dijelaskan gamblang: 'tak mendengar hujah yang nyata'. Ketika kesimpulan ditetapkan lebih dulu oleh keinginan, mesin inferensi berubah dari mencari kebenaran menjadi membela keputusan — burhān yang sahih ditolak karena hasilnya tak disukai. Bukti tak lagi menggerakkan keyakinan; keyakinan menyeleksi bukti.",
+      "analogy": "motivated reasoning; penolakan evidence yang valid",
+      "quranic_term": "lā yasma'ūna al-ḥujjah"
+    },
+    {
+      "lens": "systems",
+      "reading": "Menjadikan hawa sebagai otoritas tertinggi menghapus governance: tak ada pemisahan antara pihak yang menginginkan dan pihak yang menilai — keduanya lebur pada satu simpul. Sistem tanpa check-and-balance semacam ini kehilangan kemampuan koreksi diri; tiap dorongan langsung menjadi kebijakan tanpa peninjauan.",
+      "analogy": "hilangnya separation-of-powers; tak ada koreksi diri",
+      "quranic_term": "hawā sebagai ḥākim tunggal"
+    },
+    {
+      "lens": "economy",
+      "reading": "Struktur diskonto waktu yang ekstrem: hadiah sesaat diberi bobot tak terhingga sehingga biaya jangka-panjang diabaikan sepenuhnya — persis pilihan hiperbolik yang mengorbankan nilai masa depan demi kepuasan segera. 'Sembahan yang lebih baik menurut hawa' adalah memaksimalkan utilitas sesaat, bukan nilai sepanjang waktu.",
+      "analogy": "hyperbolic discounting; myopia terhadap biaya jangka-panjang",
+      "quranic_term": "īthār al-'ājilah"
+    },
+    {
+      "lens": "amal",
+      "reading": "Praktik pencegahnya bersifat arsitektural: patok rujukan (wahyu/ilmu) sebagai otoritas yang tak dinegosiasi oleh selera, biasakan menunda respons terhadap dorongan, dan uji setiap keinginan terhadap prinsip sebelum ditindaki — bukan menuruti lalu mencari pembenaran. Melatih diri tunduk pada kebenaran meski berat adalah lawan langsung dari mempertuhankan hawa.",
+      "analogy": "precommitment terhadap prinsip; jeda sebelum bertindak",
+      "quranic_term": "mujāhadat an-nafs"
+    },
+    {
+      "lens": "history-ummah",
+      "reading": "Ayat memakai kaum yang berganti sembahan mengikuti selera sebagai dataset iʿtibār: peradaban pun runtuh ketika standar kebenaran ditundukkan pada keinginan penguasa/mayoritas, sehingga kebijakan mengikuti selera alih-alih prinsip. Pola ini berulang dan dapat dibaca sebagai peringatan struktural, bukan ramalan.",
+      "analogy": "erosi standar objektif → keruntuhan institusi",
+      "quranic_term": "iʿtibār"
+    }
+  ],
+  "inference": "Ayat ini memberi satu diagnosis rekayasa yang tajam: kerusakan terbesar sebuah sistem-berkeputusan bukan bila ia salah, melainkan bila ia membiarkan keinginannya sendiri naik menjadi otoritas tertinggi — objective dibajak oleh reward sesaat sampai bukti yang bertentangan pun ditolak otomatis. Pelajaran desain: patok tujuan/nilai di LUAR pelaku keputusan (spesifikasi immutable, bukan preferensi yang melayang), jaga pemisahan antara 'yang menginginkan' dan 'yang menilai', dan pertahankan jalur agar hujah yang valid tetap bisa masuk. Ini resonansi struktural dengan pola reward hacking pada agen AI dan akrasia pada jiwa — bukan klaim mukjizat numerik, bukan maksud tunggal ayat. CATATAN TANZIH: 'tuhan yang sebenarnya' yang dilanggar di sini disebut dengan ta'zhim sebagai landasan iman; Allah (Dzat & Sifat-Nya) TIDAK dimodelkan atau dijadikan komponen sistem. Yang dianalogikan semata sisi makhluk — struktur nafs manusia, otoritas selera vs otoritas rujukan; 'hawa sebagai tuhan' adalah misalignment pada diri, bukan pernyataan tentang Dzat yang haq.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-08",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-08",
+      "note": "Tadabbur perdana — Wave 12 hawa/kebenaran.",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

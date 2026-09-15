@@ -1,0 +1,115 @@
+{
+  "schema": "lab-study-v2",
+  "id": "baqarah-2-170",
+  "version": 1,
+  "title": "Al-Baqarah 170 — taklid buta: menyalin warisan tanpa verifikasi",
+  "subtitle": "Mewarisi 'konfigurasi' nenek moyang tanpa cek apakah ia benar atau punya petunjuk",
+  "ref": {
+    "surah": 2,
+    "from": 170,
+    "to": 170
+  },
+  "surah_name": "Al-Baqarah",
+  "theme": "Anti-taklid, verifikasi sumber, provenance, penalaran vs pewarisan buta",
+  "sourced_meaning": {
+    "summary": "Ketika diseru mengikuti apa yang Allah turunkan, mereka menolak dan hanya mau mengikuti kebiasaan nenek moyang. Kemenag menegaskan: mereka tidak memikirkan dan meneliti apakah warisan itu benar-benar berfaedah, padahal nenek moyang itu 'tidak mengetahui suatu apa pun dan tidak mendapat petunjuk'. Kesimpulan tafsir: seorang Muslim tidak boleh bertaklid buta kepada siapa pun — mengikuti tanpa memeriksa dasarnya adalah jalan pengikut hawa nafsu.",
+    "sources": [
+      "Tafsir Kemenag RI QS 2:170",
+      "Tafsir al-Jalalayn QS 2:170"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Memori & grounding",
+      "note": "Otoritas dipinjam dari memori leluhur ('maa alfainaa aabaa'anaa') bukan dari sumber kebenaran — grounding ke cache lama, bukan ke source of truth."
+    },
+    {
+      "layer": "Tangga epistemik",
+      "note": "Premis ditolak justru karena 'laa ya'qiluuna syai'an wa laa yahtaduun' — sumber warisan berada di tingkat nol bukti: tanpa ilmu, tanpa petunjuk."
+    },
+    {
+      "layer": "Penalaran",
+      "note": "Ayat menuntut 'afalaa ta'qiluun' — proses menalar dilangkahi; keputusan diambil dengan meng-copy default, bukan mengevaluasinya."
+    },
+    {
+      "layer": "Alignment",
+      "note": "Konflik spesifikasi: menyelaraskan diri ke spec warisan (adat) alih-alih ke spec yang diturunkan (wahyu) — memilih baseline yang salah."
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "computational",
+      "reading": "Taklid buta = memakai nilai dari cache warisan tanpa cache-invalidation: data lama dipakai ulang meski sumbernya sudah terbukti usang/keliru. Sistem sehat memvalidasi ulang (revalidate) sebelum reuse, bukan menyajikan stale value sebagai kebenaran.",
+      "analogy": "HTTP cache tanpa ETag/TTL — menyajikan konten basi karena tak pernah cek ulang ke origin.",
+      "quranic_term": "maa alfainaa 'alaihi aabaa'anaa (apa yang kami dapati pada nenek moyang)"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "Mewarisi konfigurasi tanpa memvalidasinya = mengambil default config dari parent lalu menjalankannya tanpa satu pun assertion. Kode disiplin menolak input tak-terverifikasi apa pun asalnya, termasuk yang 'sudah selalu begini'.",
+      "analogy": "Inherit config lalu langsung run tanpa schema-validation atau precondition check.",
+      "quranic_term": "bal nattabi'u (tetapi kami hanya mengikuti)"
+    },
+    {
+      "lens": "algorithm",
+      "reading": "Ayat menuntut verify-before-adopt: sebelum sebuah aturan dipakai, jalankan pemeriksaan apakah ia berdasar ('atas apa'). Adopsi tanpa langkah verifikasi adalah bug logika, bukan efisiensi.",
+      "analogy": "Menerima blok pada blockchain tanpa memverifikasi hash/proof pendahulunya.",
+      "quranic_term": "awa law kaana (apakah walaupun...)"
+    },
+    {
+      "lens": "inference",
+      "reading": "Menerima kesimpulan hanya karena diwariskan = menerima konklusi tanpa premis yang sah. 'Nenek moyang melakukannya' bukan bukti bahwa hal itu benar; itu genetic fallacy / appeal to tradition.",
+      "analogy": "Menyimpulkan teorema benar karena guru dulu menuliskannya, tanpa membaca buktinya.",
+      "quranic_term": "laa ya'qiluuna syai'an (tidak mengerti apa pun)"
+    },
+    {
+      "lens": "systems",
+      "reading": "Adat yang di-copy turun-temurun tanpa audit menjadi legacy dependency: utang teknis yang menyusun perilaku sistem padahal asal-usul dan kebenarannya tak lagi diketahui siapa pun. Tanpa review, ia mengunci sistem pada path yang salah.",
+      "analogy": "Dependensi legacy 'jangan disentuh' yang tak seorang pun paham lagi tujuannya, tapi terus dijalankan.",
+      "quranic_term": "wa laa yahtaduun (dan tidak mendapat petunjuk)"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Actionable: agen tak boleh mereuse jawaban/keputusan dari memori atau contoh sebelumnya tanpa re-grounding ke sumber otoritatif saat ini. Terapkan gerbang provenance — setiap keluaran wajib menautkan bukti hidup, dan 'karena run sebelumnya menjawab begini' ditolak sebagai dasar. Bedakan meniru-pola (imitasi) dari memverifikasi-fakta (grounding).",
+      "analogy": "RAG yang mewajibkan sitasi ke dokumen ter-retrieve, menolak jawaban dari parametric memory tanpa dukungan sumber.",
+      "quranic_term": "ittabi'uu maa anzalallaah (ikutilah apa yang Allah turunkan)"
+    },
+    {
+      "lens": "psychology",
+      "reading": "Ini bias konformitas: menyamakan diri ke kelompok/leluhur meski isyarat kebenaran bertentangan. Tekanan sosial menggantikan evaluasi mandiri, sebagaimana subjek Asch mengikuti mayoritas yang keliru.",
+      "analogy": "Eksperimen konformitas Asch — menyebut garis yang jelas salah karena semua orang menyebutnya.",
+      "quranic_term": "aabaa'anaa (nenek moyang kami)"
+    },
+    {
+      "lens": "pedagogy",
+      "reading": "Hafalan-buta vs pemahaman: menyalin praktik tanpa menangkap alasannya membuat pelajar tak bisa mengoreksi saat konteks berubah. Ayat mendorong 'ta'qilun' — belajar sampai paham dasar, bukan meniru bentuk.",
+      "analogy": "Murid menghafal langkah tanpa konsep, gagal begitu soal sedikit divariasikan.",
+      "quranic_term": "afalaa ta'qiluun (tidakkah kalian mengerti)"
+    },
+    {
+      "lens": "history-ummah",
+      "reading": "Transmisi tradisi tanpa isnad kritis melahirkan penyimpangan yang menumpuk lintas generasi. Nilai warisan bukan pada tuanya, melainkan pada kesahihan rantai dan dasarnya — persis semangat verifikasi periwayatan.",
+      "analogy": "Rantai riwayat tanpa penilaian rijal — kesalahan awal ter-propagasi utuh ke hilir.",
+      "quranic_term": "wajadnaa (kami dapati)"
+    }
+  ],
+  "inference": "Taklid buta adalah pola arsitektural: mewarisi sebuah nilai/aturan lalu memakainya tanpa langkah verifikasi ke sumber otoritatif. Sinyal bahayanya eksplisit di ayat — sumber warisan 'tidak berilmu dan tak berpetunjuk', artinya reuse dari sumber yang provenance-nya nol. Prinsip rekayasa: umur atau popularitas sebuah default bukan bukti kebenarannya; setiap reuse (cache, config, memori agen, jawaban lama) harus melewati gerbang re-grounding sebelum dipakai. 'Ikutilah apa yang diturunkan' = utamakan source of truth di atas cache warisan.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-07",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-07",
+      "note": "Tadabbur perdana — Wave 6 batch nalar-kritis.",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

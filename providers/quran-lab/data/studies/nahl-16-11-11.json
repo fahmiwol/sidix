@@ -1,0 +1,103 @@
+{
+  "schema": "lab-study-v2",
+  "id": "nahl-16-11-11",
+  "version": 1,
+  "title": "Bihi az-zarʿa waz-zaitūn — satu air, keluaran yang beragam",
+  "subtitle": "Dia menumbuhkan tanaman, zaitun, kurma, anggur, dan segala buah dengan air itu — tanda bagi kaum yang berpikir",
+  "ref": {
+    "surah": 16,
+    "from": 11,
+    "to": 11
+  },
+  "surah_name": "An-Nahl",
+  "theme": "Same input → diverse output, diversifikasi keluaran dari sumber tunggal, tanda bagi yang berpikir",
+  "sourced_meaning": {
+    "summary": "Dengan air hujan yang sama, Allah menumbuhkan aneka tanaman yang memenuhi kebutuhan manusia: dari rumput manusia memperoleh pakan ternak, dari zaitun minyak yang diperlukan tubuh, dari kurma dan anggur buah penambah gizi, lalu 'segala macam buah-buahan'. Kemenag menegaskan poin kuncinya: 'Dari air yang sama, Allah berkuasa menumbuhkan tanam-tanaman yang beraneka ragam dan mengeluarkan buah-buahan yang beraneka' — agar manusia mengetahui kekuasaan-Nya yang tak terbatas. Ditutup: 'Sesungguhnya pada yang demikian benar-benar terdapat tanda bagi kaum yang berpikir (yatafakkarūn).' (Kemenag & Jalalain QS 16:11).",
+    "sources": [
+      "Tafsir Kemenag RI QS 16:11",
+      "Tafsir al-Jalalayn QS 16:11"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Persepsi",
+      "note": "keragaman buah dari sumber air tunggal = āyah yang teramati langsung di kebun"
+    },
+    {
+      "layer": "Penalaran",
+      "note": "penekanan 'dengan air itu' (bihi) atas keluaran majemuk menyorot satu-input-banyak-output"
+    },
+    {
+      "layer": "Tangga epistemik",
+      "note": "penutup 'li-qawmin yatafakkarūn' menuntut refleksi deliberatif, bukan penglihatan pasif"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "amal",
+      "reading": "Merenungi bahwa dari nikmat yang tampak seragam (air) lahir ragam karunia — menumbuhkan syukur atas keberagaman rezeki dan menolak pandangan sempit bahwa satu sumber hanya bisa memberi satu hasil.",
+      "quranic_term": "tafakkur fī an-niʿam"
+    },
+    {
+      "lens": "computational",
+      "reading": "Pola inti: satu input seragam (mā', air) → banyak keluaran heterogen ter-tipe (zarʿ, zaitūn, nakhīl, aʿnāb, kull ath-thamarāt). Diferensiasi keluaran bukan dari keragaman input melainkan dari fungsi/konteks yang memproses input yang sama. Same source, many typed products.",
+      "analogy": "one uniform input mapped to many differentiated typed outputs",
+      "quranic_term": "yunbitu lakum bihi"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "Ini polimorfisme: operasi 'tumbuh(air)' menghasilkan bentuk berbeda tergantung reseptornya (benih zaitun vs kurma vs anggur). Perilaku ditentukan oleh tipe penerima, bukan oleh argumen — satu antarmuka (air), banyak implementasi (spesies).",
+      "analogy": "polymorphism — same call, output determined by receiver type",
+      "quranic_term": "min kulli ath-thamarāt"
+    },
+    {
+      "lens": "biology-medicine",
+      "reading": "Keragaman produk dari air seragam = ekspresi genetik yang berbeda pada substrat sama: tiap benih membawa program yang menafsirkan air-tanah-cahaya menjadi zaitun (minyak), kurma (gula), anggur (buah) — dengan profil gizi berbeda yang saling melengkapi kebutuhan tubuh (lemak, karbohidrat, mikronutrien).",
+      "analogy": "differential genetic expression yielding complementary nutrient profiles",
+      "quranic_term": "zaitūn wa nakhīl wa aʿnāb"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Pola 'satu air → beragam buah' adalah prinsip foundation-model: satu substrat umum (korpus/representasi/model dasar yang sama) 'ditumbuhkan' menjadi banyak kapabilitas terdiferensiasi lewat kepala/adaptor/konteks berbeda (fine-tune, prompt, tool berbeda) — bukan melatih model terpisah dari nol untuk tiap tugas. Diferensiasi datang dari lapisan penafsir hilir, bukan dari input yang berbeda. Desain: investasikan pada satu 'air' berkualitas (base representation) lalu differensiasikan di tepi. Bandingkan QS 13:4 (kebun bertetangga, disiram air sama, rasa berbeda) — sandaran Qur'ani untuk pola same-input→diverse-output.",
+      "analogy": "shared foundation model differentiated by downstream heads/adapters, not retrained per task",
+      "quranic_term": "bihi (dengan air yang sama)"
+    },
+    {
+      "lens": "systems",
+      "reading": "Diversifikasi keluaran dari sumber tunggal = ketahanan ekologis: satu aliran resource menopang banyak niche yang saling melengkapi (pangan pokok, minyak, pakan ternak). Sistem yang memetakan satu input ke portofolio keluaran beragam lebih tahan guncangan daripada monokultur.",
+      "analogy": "single resource stream supporting a resilient multi-niche portfolio",
+      "quranic_term": "az-zarʿ wa ... kull ath-thamarāt"
+    },
+    {
+      "lens": "inference",
+      "reading": "Penutup 'bagi kaum yang berpikir' (yatafakkarūn) menaikkan tuntutan epistemik: fakta yang sama (air→ragam buah) baru menjadi 'tanda' setelah direfleksikan. Data mentah ≠ pengetahuan; inferensi butuh pemrosesan deliberatif. Keteraturan yang bisa diprediksi (input sama, keluaran ter-pola) adalah basis penalaran atas Sumbernya.",
+      "quranic_term": "la-āyah li-qawmin yatafakkarūn"
+    },
+    {
+      "lens": "economy",
+      "reading": "Membaca strategi nilai: dari komoditas murah-seragam (air) diturunkan lini produk beragam bernilai berbeda (minyak zaitun premium, kurma tahan simpan, anggur segar, pakan). Diversifikasi lini dari satu bahan baku = diversifikasi pendapatan & mitigasi risiko pasar satu-komoditas.",
+      "analogy": "product-line diversification from one commodity input",
+      "quranic_term": "matāʿ mutanawwiʿ"
+    }
+  ],
+  "inference": "QS 16:11 dapat dibaca-rekayasa sebagai prinsip 'satu input, banyak keluaran': air yang seragam menumbuhkan zaitun, kurma, anggur, dan segala buah — diferensiasi keluaran lahir dari penafsir hilir (benih/spesies), bukan dari keragaman input. Untuk rekayasa (terutama AI): ini pola foundation-model — investasikan pada satu substrat berkualitas (base representation/korpus) lalu differensiasikan di tepi lewat adaptor/konteks, alih-alih membangun sistem terpisah dari nol per tugas; secara sistem ia juga resep ketahanan (satu resource menopang portofolio niche yang saling melengkapi, lebih tangguh dari monokultur). Penutup 'bagi kaum yang berpikir' menegaskan bahwa keteraturan ini baru bernilai setelah direfleksikan — data menjadi pengetahuan lewat inferensi deliberatif. Sandaran Qur'ani serumpun: QS 13:4 (tanah bertetangga, satu air, rasa berbeda). CATATAN TANZIH: menumbuhkan aneka tanaman adalah PERBUATAN ALLAH dan kuasa-Nya yang tak terbatas ditegaskan sebagai landasan iman — bukan dimodelkan/dianalogikan; yang dibaca hanyalah POLA pada ciptaan (air, benih, buah). Resonansi struktural, bukan mukjizat numerik; salah satu pembacaan, bukan maksud tunggal ayat.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-08",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-08",
+      "note": "Wave 9 pertumbuhan/rezeki.",
+      "authors": [
+        "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

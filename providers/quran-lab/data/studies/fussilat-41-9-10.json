@@ -1,0 +1,104 @@
+{
+  "schema": "lab-study-v2",
+  "id": "fussilat-41-9-10",
+  "version": 1,
+  "title": "Qaddara aqwātahā — bumi dalam dua masa, takdir kadar rezeki dalam empat masa",
+  "subtitle": "Bumi dicipta 2 masa; gunung, berkah, & penentuan kadar makanan penghuni dalam 4 masa",
+  "ref": {
+    "surah": 41,
+    "from": 9,
+    "to": 10
+  },
+  "surah_name": "Fussilat",
+  "theme": "Pembentukan bumi bertahap, penentuan kadar/kuota sumber daya (qadar rezeki), capacity planning sebelum penghuni",
+  "sourced_meaning": {
+    "summary": "(9) 'Katakanlah: patutkah kamu kafir kepada Yang menciptakan bumi dalam DUA masa, dan kamu adakan sekutu bagi-Nya? Itulah Rabb semesta alam.' (10) 'Dia menjadikan padanya gunung-gunung yang kokoh di atasnya, memberkahinya (bāraka), dan MENENTUKAN KADAR (qaddara) makanan-makanan (penghuni)nya dalam EMPAT masa, sama (sawāʾan) bagi yang bertanya.' Tafsir Kemenag: sebagian mufassir memaknai 'menjadikan bumi' = menciptakan wujudnya, dan 'yaum/masa' = WAKTU/periode (bukan hari 24 jam, sebab siang-malam belum ada saat itu) — khilaf makna 'yaum' ditandai sebagai metadata. Ayat 10 menerangkan hukum-hukum yang berlaku di bumi: gunung sebagai pasak-penstabil & sumber sungai, bumi sebagai tempat penuh berkah, dan Allah 'menentukan ukuran/kadar segala sesuatu' termasuk kadar makanan yang mencukupi penghuninya. CATATAN TANZIH: sifat & perbuatan Allah (mencipta, memberkahi, menakdirkan kadar) adalah landasan iman yang tak digambarkan/dimodelkan; yang dibaca hanyalah POLA pada bumi yang tercipta. Pembacaan ilmiah (pembentukan proto-bumi, peluruhan radioaktif) dalam tafsir bersifat pemahaman, bukan kepastian teks.",
+    "sources": [
+      "Tafsir Kemenag RI QS 41:9-10",
+      "Tafsir al-Jalalayn QS 41:9-10"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Memori & grounding",
+      "note": "pembentukan bumi dinyatakan berperiode ('yaumayn'/'arbaʿati ayyām') — grounding pada proses bertahap; 'yaum=masa' ditandai khilaf (metadata)"
+    },
+    {
+      "layer": "Aksi & transfer",
+      "note": "deret perbuatan pada bumi: jaʿala rawāsiya → bāraka → qaddara aqwātahā — penstabilan, pemberkahan, penentuan kadar (POLA pada ciptaan)"
+    },
+    {
+      "layer": "Tangga epistemik",
+      "note": "'sawāʾan lis-sāʾilīn' — keterangan yang PASTI/setara bagi yang bertanya; jawaban berbasis penetapan, bukan kira-kira"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "computational",
+      "reading": "'qaddara fīhā aqwātahā' (menentukan kadar makanan-makanannya) membaca sebagai penetapan KUOTA/kapasitas sumber daya: tiap kebutuhan diberi ukuran tertentu, bukan tak-terhingga. Sebagai POLA pada ciptaan (bukan pemodelan Allah — CATATAN TANZIH), ini menyerupai alokasi kuota terukur — sistem yang sehat menetapkan kapasitas & jatah sumber daya secara eksplisit, bukan membiarkannya tak-terbatas.",
+      "analogy": "penetapan kuota/kapasitas sumber daya terukur",
+      "quranic_term": "qaddara aqwātahā"
+    },
+    {
+      "lens": "algorithm",
+      "reading": "Pembentukan bumi dinyatakan ber-STEP ('dua masa'), lalu penataannya ('empat masa') — proses berjenjang, bukan atomik. Tafsir bahkan merinci tahapan (pengumpulan materi → proto-bumi meleleh → diferensiasi berat-ringan) sebagai PEMAHAMAN. Analogi: konstruksi bertahap dengan urutan yang tiap fasenya menyiapkan prasyarat fase berikut. Bilangan '2' dan '4' dibaca sebagai penanda keberjenjangan, BUKAN klaim numerik ajaib.",
+      "analogy": "konstruksi berjenjang berperiode (staged)",
+      "quranic_term": "yaumayn / arbaʿati ayyām (khilaf, metadata)"
+    },
+    {
+      "lens": "economy",
+      "reading": "'qaddara aqwātahā' + 'bāraka fīhā' membaca bumi sebagai anggaran sumber daya yang DITENTUKAN kadarnya lalu diberkahi (dilipatkan manfaatnya). Pola ekonomi sumber daya: tetapkan kapasitas/jatah dulu (planning), lalu optimalkan hasil (berkah = daya-guna berlipat dari sumber terbatas). Kelangkaan dikelola lewat penetapan kadar, bukan diabaikan.",
+      "analogy": "resource budgeting: tetapkan kadar → optimalkan daya-guna",
+      "quranic_term": "bāraka / qaddara"
+    },
+    {
+      "lens": "systems",
+      "reading": "Gunung 'rawāsiya' (pasak kokoh) sebagai PENSTABIL kerak & sumber aliran sungai menggambarkan komponen yang menjaga sistem tak goyah sekaligus mengatur distribusi (air mengalir dari tinggi ke rendah). Sistem berdaya-tahan memasang penstabil (anchor) dan jalur distribusi sumber daya sebagai bagian desain, bukan tambahan belakangan.",
+      "analogy": "anchor penstabil + jalur distribusi sumber daya",
+      "quranic_term": "rawāsiya"
+    },
+    {
+      "lens": "earth-cosmos",
+      "reading": "Tafsir menautkan 'dua masa' pembentukan bumi dengan tahapan pembentukan planet (awan debu-gas mengumpul, proto-bumi, diferensiasi materi berat-ringan) dan merujuk 6 masa di 7:54. Dicatat sebagai RESONANSI STRUKTURAL yang bounded — pemahaman, BUKAN mukjizat numerik, bukan bukti teori; hubungan angka '2+4' dengan '6' pun termasuk ranah khilaf tafsir (metadata), tidak dipastikan di sini.",
+      "analogy": "tahapan pembentukan planet (bounded)",
+      "quranic_term": "āyāt kauniyah"
+    },
+    {
+      "lens": "biology-medicine",
+      "reading": "'aqwāt' (makanan/nutrisi) yang ditentukan kadarnya menautkan keberlanjutan hidup pada ketersediaan nutrisi yang TERUKUR — cukup untuk menopang penghuni. Pola: daya-dukung hayati bergantung pada kadar sumber (air, pangan) yang seimbang; kelebihan/kekurangan sama-sama merusak keseimbangan ekosistem.",
+      "analogy": "daya-dukung nutrisi yang terukur & seimbang",
+      "quranic_term": "aqwāt"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Cetak biru CAPACITY PLANNING & kuota untuk sistem/agen (analog 'qaddara aqwātahā... sebelum penghuni'): (1) sebelum menjalankan beban, TETAPKAN kuota sumber daya terukur — token/memori/rate-limit/anggaran alat — jangan biarkan tak-terbatas; (2) pasang penstabil (anchor/guardrail seperti 'rawāsiya') yang menjaga sistem tak goyah saat lonjakan beban; (3) urutkan build→provision→serve dengan kadar sumber daya yang direncanakan lebih dulu ('empat masa' penataan sebelum penghuni). Actionable: quota manager + capacity plan eksplisit per beban kerja, diverifikasi sebelum status siap-melayani; ini menekan kegagalan akibat sumber daya tak-terkelola. CATATAN TANZIH: penentu kadar tertinggi di ayat = takdir Allah (iman), TIDAK dijadikan komponen; yang ditiru hanyalah pola 'kadar terukur sebelum konsumsi' pada ciptaan.",
+      "analogy": "capacity planning + quota manager + anchor guardrail sebelum 'serve'"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "'sawāʾan lis-sāʾilīn' (setara/pasti bagi yang bertanya) membaca keterangan sebagai jawaban DETERMINISTIK — nilai yang tetap, bukan ambigu. Analog: spesifikasi/kontrak yang memberi hasil sama untuk pertanyaan yang sama (idempoten & pasti). Poin rekayasa: penetapan kadar yang eksplisit menghasilkan sistem yang jawabannya dapat diprediksi & diaudit, bukan berubah-ubah.",
+      "analogy": "spesifikasi deterministik (hasil pasti untuk query sama)",
+      "quranic_term": "sawāʾan lis-sāʾilīn"
+    }
+  ],
+  "inference": "Sebagai analogi rekayasa, dua ayat ini menonjolkan POLA pada ciptaan (bukan pada Sang Pencipta — CATATAN TANZIH): pembentukan bumi yang BERTAHAP ('dua masa'), penataannya dengan penstabil (gunung 'rawāsiya') & pemberkahan, dan — yang paling tajam — 'qaddara fīhā aqwātahā': PENENTUAN KADAR sumber daya/rezeki secara terukur bagi penghuninya, dinyatakan 'setara/pasti bagi yang bertanya'. Dibaca untuk perancang sistem/agen, ini cetak biru CAPACITY PLANNING: tetapkan kuota & kapasitas sumber daya secara eksplisit dan terukur, pasang penstabil/guardrail, dan rencanakan penyediaan sebelum beban/penghuni dijalankan — bukan membiarkan sumber daya tak-terbatas atau tak-terkelola. Makna 'yaum=masa', lamanya, dan hubungan '2+4' dengan '6 masa' adalah ranah khilaf tafsir yang ditandai sebagai metadata, tidak dipastikan. Semua pembacaan sains di sini resonansi struktural yang bounded, bukan mukjizat numerik, bukan maksud tunggal ayat, dan tak menggantikan makna zahir bersumber.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-08",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-08",
+      "note": "Tadabbur perdana — Wave 10 penciptaan kosmos.",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

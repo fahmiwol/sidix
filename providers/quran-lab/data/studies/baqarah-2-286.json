@@ -1,0 +1,109 @@
+{
+  "schema": "lab-study-v2",
+  "id": "baqarah-2-286",
+  "version": 1,
+  "title": "Lā yukallifullāhu nafsan illā wusʿahā — beban tak pernah melampaui kapasitas",
+  "subtitle": "Allah tidak membebani seseorang melainkan sesuai kesanggupannya; baginya kebaikan yang diusahakan & dosa yang dikerjakan",
+  "ref": {
+    "surah": 2,
+    "from": 286,
+    "to": 286
+  },
+  "surah_name": "Al-Baqarah",
+  "theme": "Batas kapasitas, rate-limiting, graceful degradation, akuntabilitas seimbang",
+  "sourced_meaning": {
+    "summary": "Menurut Tafsir Kemenag, Allah membebani manusia hanya sesuai kesanggupannya (wusʿ) — Islam adalah agama yang mudah, ringan, dan tidak menyempitkan, tidak membebani dengan yang berat dan sukar. Manusia mendapat pahala dari kebaikan yang diusahakannya dan menanggung siksa dari kejahatan yang dikerjakannya. Ayat ditutup rangkaian doa: mohon tidak dihukum karena lupa/salah, tidak dipikulkan beban berat seperti umat sebelumnya, dan tidak dibebani yang tak sanggup dipikul.",
+    "sources": [
+      "Tafsir Kemenag RI QS 2:286",
+      "Tafsir al-Jalalayn QS 2:286"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Alignment",
+      "note": "'illā wusʿahā' = fungsi pembebanan dibatasi hard-cap pada kapasitas subjek; desain sistem menolak beban di luar kemampuan sebagai prinsip, bukan pengecualian"
+    },
+    {
+      "layer": "Aksi & transfer",
+      "note": "'lahā mā kasabat wa ʿalayhā mak-tasabat' = akuntansi dua-arah simetris: kredit untuk yang diusahakan, debit untuk yang dikerjakan — atribusi per-aktor"
+    },
+    {
+      "layer": "Umpan balik",
+      "note": "doa 'in nasīnā aw akhṭaʾnā' meminta toleransi kesalahan tak-sengaja — pemisahan galat sistemik/lupa dari pelanggaran sengaja"
+    },
+    {
+      "layer": "Tangga epistemik",
+      "note": "beban umat terdahulu (iṣr) vs beban umat ini dibedakan — kapasitas bukan konstanta global, ia dikalibrasi per-konteks penerima"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "amal",
+      "reading": "Ayat membebaskan dari beban di luar kesanggupan sekaligus menuntut penuh dalam batas sanggup. Amal: kenali wusʿ (kapasitas) dirimu — jangan memaksakan di luar batas hingga rusak, jangan pula bermalas di bawah batas. Ditutup doa memohon keringanan, mengajarkan meminta kalibrasi beban kepada Pemberi beban.",
+      "quranic_term": "wusʿ"
+    },
+    {
+      "lens": "computational",
+      "reading": "Sebuah pembacaan: 'lā yukallifu ... illā wusʿahā' adalah rate-limiter / admission-control — sistem menolak membebankan tugas melampaui kapasitas (wusʿ) node penerima. Beban dijamin ≤ kapasitas, sehingga tak pernah terjadi kondisi overload yang menghancurkan node.",
+      "analogy": "admission control / rate limiting; load ≤ capacity invariant",
+      "quranic_term": "wusʿ (kapasitas)"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Analogi langsung untuk agen: tetapkan capacity limit per-agen dan jangan bebani di luarnya — di ambang batas, lakukan GRACEFUL DEGRADATION, bukan crash. Actionable: (1) definisikan 'wusʿ' tiap agen (context window, tool-budget, latency, kompetensi domain) dan tolak/tunda tugas yang melampaui — fail-soft, bukan fail-hard; (2) akunting per-aktor: atribusikan keberhasilan & kesalahan ke agen yang benar-benar melakukannya ('lahā mā kasabat...'); (3) bedakan galat tak-sengaja (retry/maaf) dari pelanggaran sengaja (blokir), meniru 'in nasīnā aw akhṭaʾnā'; (4) beban dikalibrasi per-agen, bukan satu ambang global.",
+      "analogy": "per-agent capacity limit; graceful degradation; per-actor accounting",
+      "quranic_term": "lā yukallifu illā wusʿahā"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "Invariant sistem: ∀ nafs, beban(nafs) ≤ wusʿ(nafs) — dijamin oleh Perancang, bukan diharapkan. Ditambah aturan atribusi ganda yang simetris (kasabat → kredit ke pelaku; iktasabat → debit ke pelaku). Doa penutup menambah klausa penanganan-eksepsi: lupa & salah ditangani berbeda dari niat jahat.",
+      "analogy": "system invariant load≤capacity; symmetric attribution; exception handling",
+      "quranic_term": "lahā mā kasabat"
+    },
+    {
+      "lens": "systems",
+      "reading": "Prinsip reliabilitas: sistem tangguh dirancang agar tak pernah menerima beban melebihi kapasitas (backpressure), dan ketika mendekati batas ia menurunkan layanan secara anggun alih-alih ambruk total. 'Illā wusʿahā' adalah backpressure teologis — jaminan bahwa saluran tak akan dijejali di luar daya-tampungnya.",
+      "analogy": "backpressure; graceful degradation over cascading failure"
+    },
+    {
+      "lens": "biology-medicine",
+      "reading": "Resonansi struktural (analogi, bukan mukjizat numerik): fisiologi punya batas kapasitas (VO2max, ambang nyeri, daya kognitif); pembebanan progresif membangun kapasitas, pembebanan melampaui batas mencederai. Prinsip 'beban ≤ kesanggupan' adalah kaidah dosis-respons dan latihan yang aman.",
+      "analogy": "dose–response; progressive overload within tolerance"
+    },
+    {
+      "lens": "psychology",
+      "reading": "Bergema dengan teori beban kognitif & 'zona perkembangan proksimal': tugas melampaui kapasitas memicu kelumpuhan/burnout, tugas dalam batas-optimal mendorong pertumbuhan. Ayat menolak beban 'iṣr' (yang memberatkan) — sejalan dengan desain tugas yang menantang tapi tak menghancurkan.",
+      "analogy": "cognitive load; zone of proximal development; burnout avoidance"
+    },
+    {
+      "lens": "economy",
+      "reading": "Akuntansi ayat bersifat double-entry per-aktor: kredit (mā kasabat) dan beban (mak-tasabat) tercatat pada pelakunya. Ini fondasi akuntabilitas yang menolak eksternalisasi — tak ada yang memikul dosa aktor lain; insentif & tanggung jawab menempel pada pembuat keputusan.",
+      "analogy": "per-actor double-entry accounting; no externalized liability"
+    },
+    {
+      "lens": "inference",
+      "reading": "Dua kaidah menyatu: batas-beban (load ≤ capacity, dijamin bukan diharapkan) dan atribusi-seimbang (tiap aktor menanggung tepat apa yang ia usahakan). Untuk sistem apa pun — manusia, organisasi, agen — keandalan lahir dari menghormati kapasitas (rate-limit + graceful degradation) sekaligus menegakkan akuntabilitas per-aktor yang adil, dengan toleransi berbeda untuk galat tak-sengaja.",
+      "quranic_term": "wusʿ + kasab"
+    }
+  ],
+  "inference": "Salah satu pembacaan rekayasa QS 2:286: pembebanan diperlakukan sebagai fungsi yang dibatasi keras oleh kapasitas subjek — 'lā yukallifullāhu nafsan illā wusʿahā' berperan seperti admission-control/rate-limiter yang menjamin beban tak pernah melampaui daya-tampung, sehingga sistem tak jatuh ke overload yang menghancurkan. Dilengkapi akuntansi per-aktor yang simetris (kredit untuk yang diusahakan, debit untuk yang dikerjakan) dan penanganan-eksepsi yang membedakan lupa/salah dari pelanggaran sengaja. Untuk desain sistem dan agen, ini menyarankan: tetapkan batas kapasitas eksplisit per-node, terapkan graceful degradation (fail-soft) di ambang batas alih-alih crash, atribusikan hasil & kesalahan ke pelaku sebenarnya, dan kalibrasi beban per-konteks penerima. Ini analogi struktural untuk membangun sistem yang andal dan adil — bukan klaim maksud tunggal ayat maupun mukjizat numerik.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-08",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-08",
+      "note": "Tadabbur perdana — Wave 8 manusia/sosial.",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

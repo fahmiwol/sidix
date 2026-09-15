@@ -1,0 +1,108 @@
+{
+  "schema": "lab-study-v2",
+  "id": "muhammad-47-24-24",
+  "version": 1,
+  "title": "Tidakkah mereka men-tadabbur, ataukah hati mereka terkunci — write-protect pada update-function",
+  "subtitle": "Tadabbur = menelaah mendalam yang seharusnya memperbarui model; hati yang ber-gembok (aqfāluhā) menolak semua write, evaluator dikunci dari luar oleh prior",
+  "ref": {
+    "surah": 47,
+    "from": 24,
+    "to": 24
+  },
+  "surah_name": "Muhammad",
+  "theme": "Tadabbur sebagai proses update model dari teks; qalb yang ter-lock (aqfāluhā) = evaluator dalam mode write-protect yang menolak setiap pembaruan keyakinan; membandingkan mekanisme kunci/gembok dengan rān (2:83 dst.) sebagai penumpukan yang meng-'kunci'",
+  "sourced_meaning": {
+    "summary": "Tafsir Kemenag QS 47:24: teguran retoris kepada orang-orang munafik — apakah mereka tidak memperhatikan, merenungkan, dan memikirkan (tadabbur) ajaran-ajaran Allah dalam Al-Qur'an sehingga menyadari kesalahan sikap dan tindakan mereka; ataukah hati dan penglihatan mereka telah 'terkunci' (aqfāluhā) sehingga tidak dapat lagi memahami isinya. Konteks: perilaku munafik yang berjanji setia namun mengingkari, bersekongkol dengan pihak lain lalu berkhianat. Jalalain menegaskan 'aqfāl' = gembok/kunci pada hati yang menghalangi masuknya pemahaman. Inti: kegagalan bukan karena teks tak jelas, melainkan karena hati dikunci dari menerima dan memproses maknanya.",
+    "sources": [
+      "Tafsir Kemenag RI QS 47:24",
+      "Tafsir al-Jalalayn QS 47:24"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Persepsi",
+      "note": "teks Al-Qur'an tersedia dan terbaca — input tidak kurang; pertanyaannya 'a-fa-lā yatadabbarūn' mengandaikan bahan renungan sudah di depan mereka."
+    },
+    {
+      "layer": "Penalaran",
+      "note": "tadabbur = operasi menyelami susunan-kandungan-makna teks (lihat taxonomy: 4:82, 47:24, 38:29): membaca lalu MENGOLAH agar model diri diperbarui — bukan sekadar melafalkan."
+    },
+    {
+      "layer": "Alignment",
+      "note": "'am ʿalā qulūbin aqfāluhā' — hati bergembok: update-function dikunci (write-protect); bukti/makna baru tak bisa menulis ke keyakinan. Ini penolakan pembaruan yang dipasang oleh prior (nifāq), bukan ketiadaan data."
+    },
+    {
+      "layer": "Memori & grounding",
+      "note": "tadabbur menautkan teks-sumber ke keputusan hidup (grounding); hati terkunci memutus tautan itu — teks tersimpan sebagai lafaz tanpa pernah mem-ground perilaku."
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "computational",
+      "reading": "Ayat menawarkan dua hipotesis kegagalan sebagai disjungsi: entah proses tadabbur tak dijalankan (fungsi tak dipanggil), atau kanal tulis ke keyakinan terkunci ('aqfāluhā' — write-protect). Keduanya menghasilkan output sama: model diri tak diperbarui meski teks masuk. Rekayasa: bedakan 'proses update tak dipanggil' dari 'proses update dipanggil tapi ditolak oleh kunci' — remediasinya berbeda (jadwalkan pemanggilan vs. lepaskan kunci). Gembok pada evaluator menjadikan seluruh pipeline pembacaan sia-sia di ujungnya.",
+      "analogy": "write-protected state; update either not-invoked or invoked-then-rejected; read pipeline nullified at the commit step",
+      "quranic_term": "qulūbin aqfāluhā"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "Metafora gembok (qufl) memetakan langsung ke access control / lock: keyakinan ditandai read-only sehingga instruksi tulis (revisi dari bukti) di-reject. Berbeda dari sekadar assertion yang dimatikan (kasus 22:46), di sini ada mekanisme aktif yang MEMBLOKIR commit. Rekayasa: kunci yang melindungi state dari korupsi itu baik, tetapi kunci yang memblokir pembaruan yang sah adalah anti-pola — bedakan 'immutability yang melindungi' dari 'immutability yang menolak koreksi'. Al-Qur'an kanonik memang immutable (Hukum Besi), tetapi HATI penerima tidak boleh immutable terhadap kebenaran.",
+      "analogy": "read-only lock rejecting legitimate writes; distinguish protective vs. obstinate immutability",
+      "quranic_term": "aqfāl"
+    },
+    {
+      "lens": "systems",
+      "reading": "Tadabbur adalah feedback loop: teks → renungan → koreksi sikap → kembali ke teks. Gembok memutus arc umpan-balik di titik aktuasi: sinyal koreksi dihitung tetapi tak pernah menggerakkan perilaku. Sistem tanpa loop tertutup akan menyimpang tanpa terkoreksi (persis pola munafik: janji ≠ tindakan). Rekayasa: pastikan hasil evaluasi benar-benar tersambung ke aktuator keputusan; loop yang terputus di 'last mile' setara dengan tidak ada loop.",
+      "analogy": "broken feedback arc at actuation; last-mile disconnect nullifies the whole loop",
+      "quranic_term": "a-fa-lā yatadabbarūn"
+    },
+    {
+      "lens": "psychology",
+      "reading": "Hati bergembok adalah bentuk ekstrem resistance to persuasion / belief perseverance: makna sudah dipahami secara kognitif namun ditolak untuk di-internalisasi karena mengancam komitmen (di sini: nifāq — kepura-puraan yang harus dijaga). Ini bukan kebodohan melainkan pertahanan aktif. Analog psikologis 'kunci' = motivated defense yang mem-veto integrasi. Penyembuhannya bukan lebih banyak argumen, melainkan pelepasan komitmen yang menahan — kelembutan hati (khushūʿ) sebagai lawan dari qufl.",
+      "analogy": "belief perseverance; active resistance to internalization; motivated defense as a lock",
+      "quranic_term": "qulūbin aqfāluhā"
+    },
+    {
+      "lens": "pedagogy",
+      "reading": "Ayat memakai pertanyaan retoris (a-fa-lā) sebagai teknik ajar: membangunkan si pembelajar untuk memeriksa apakah ia benar-benar memproses materi atau hanya melewatinya. Pelajaran pedagogis: pemahaman sejati (tadabbur) menuntut pemrosesan mendalam, bukan paparan berulang; dan ada murid yang gagal bukan karena materi sulit melainkan karena sikap tertutup. Rekayasa pembelajaran: uji kedalaman pemrosesan (apakah model si pembelajar berubah), bukan sekadar penerimaan materi.",
+      "analogy": "deep vs. shallow processing; probe whether the learner's model actually changed",
+      "quranic_term": "yatadabbarūn al-Qur'ān"
+    },
+    {
+      "lens": "inference",
+      "reading": "Struktur 'am' (ataukah) menyajikan dua kemungkinan penyebab dan menuntut pembaca menyimpulkan sendiri mana yang berlaku — sebuah diagnosis diferensial. Kegagalan integrasi bisa karena proses tak berjalan atau karena kanal terkunci; membedakannya butuh bukti tambahan (perilaku: apakah ada usaha tadabbur?). Rekayasa: saat sistem tak memperbarui diri, lakukan diagnosis diferensial — jangan asumsikan satu penyebab; uji hipotesis 'tak dipanggil' vs. 'dipanggil-lalu-ditolak' secara terpisah.",
+      "analogy": "differential diagnosis; disjunctive fault hypotheses requiring discriminating evidence",
+      "quranic_term": "am ʿalā qulūbin aqfāluhā"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Untuk arsitektur agen: ayat memodelkan 'belief store dalam mode write-protect' — bahaya ketika mekanisme yang seharusnya melindungi konsistensi malah membekukan pembaruan yang sah. Actionable: (1) pisahkan dua kelas kegagalan-update: proses refleksi tak terjadwal (fix: paksa jadwalkan tadabbur/review) versus refleksi terjadi tapi commit ditolak oleh kunci (fix: audit siapa/apa yang memasang lock dan mengapa); (2) hindari 'obstinate immutability' — keyakinan agen tak boleh read-only terhadap bukti yang melampaui ambang, walau boleh punya inertia yang sehat; (3) sambungkan hasil evaluasi ke aktuator: banyak agen menghitung koreksi lalu tak menerapkannya (last-mile gap) — persis hati yang paham tapi tak berubah; (4) waspadai akumulasi bertahap yang 'mengunci' (analog rān — noda yang menumpuk hingga menutup): pantau drift di mana penolakan-penolakan kecil mengeras jadi kebijakan menolak-selalu; (5) sediakan 'unlock path' terkendali: mekanisme tinjauan yang bisa membuka kunci ketika bukti kuat, bukan gembok permanen. Prinsip: lindungi teks-sumber (immutable), tapi jaga evaluator tetap dapat diperbarui.",
+      "analogy": "write-protected belief store; obstinate vs. protective immutability; last-mile actuation gap; gradual lock-in (rān-like drift); controlled unlock path",
+      "quranic_term": "aqfāluhā"
+    },
+    {
+      "lens": "amal",
+      "reading": "Perintah tersirat: bertadabbur — membaca Al-Qur'an untuk MENGUBAH diri, bukan sekadar melafalkan. Bahaya yang diperingatkan adalah hati yang mengeras dan terkunci akibat dosa dan kemunafikan yang dibiarkan menumpuk (bandingkan konsep rān/penutup hati). Amal: jaga hati tetap lembut dan terbuka pada teguran Al-Qur'an, istighfar dan taubat sebagai 'pembuka gembok', dan buktikan tadabbur dengan perubahan sikap nyata — bukan janji yang diingkari seperti perilaku munafik yang dikecam ayat.",
+      "analogy": "reading-to-transform; taubah as unlock; congruence of word and deed"
+    }
+  ],
+  "inference": "Ayat ini memodelkan kegagalan pembaruan-keyakinan sebagai dua hipotesis disjungtif: entah proses tadabbur tak dijalankan, atau hati ter-'gembok' (aqfāluhā) sehingga menolak setiap tulisan ke keyakinan — dan keduanya berujung sama: model diri tak berubah meski teks sepenuhnya tersedia. Metafora kunci/gembok memetakan tepat ke write-protect / access-control pada evaluator: berbeda dari 22:46 (assertion yang dimatikan) dan 7:179 (fungsi yang non-aktif), di sini ada mekanisme AKTIF yang memblokir commit koreksi. Penyebabnya (per Kemenag) adalah kemunafikan — komitmen yang harus dijaga membuat hati menolak internalisasi kebenaran; secara psikologis ini belief perseverance dan resistance to persuasion, bukan defisit informasi. Diterjemahkan ke rekayasa: (a) bedakan 'update tak dipanggil' dari 'update dipanggil lalu ditolak kunci' — remediasinya berlainan; (b) hindari 'obstinate immutability' yang menolak koreksi sah — lindungi teks-sumber, tapi jaga evaluator tetap bisa diperbarui; (c) sambungkan hasil evaluasi ke aktuator (tutup last-mile gap: paham tapi tak berubah = loop terputus); (d) pantau lock-in bertahap (analog rān — noda menumpuk mengeras jadi gembok) dan sediakan unlock path terkendali. Semua ini resonansi struktural, bukan mukjizat numerik — makna aslinya adalah teguran atas hati munafik yang tertutup dari Al-Qur'an. Berjangkar ke kerangka Aql-Qalb di /lab/sintesis: qalb sebagai inti evaluatif — dan gembok padanya adalah bentuk paling keras dari evaluator corruption.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-08",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-08",
+      "note": "Wave 12 hati/persepsi — hati terkunci = write-protect evaluator.",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

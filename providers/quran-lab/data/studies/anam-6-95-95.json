@@ -1,0 +1,103 @@
+{
+  "schema": "lab-study-v2",
+  "id": "anam-6-95-95",
+  "version": 1,
+  "title": "Fāliqul-ḥabbi wan-nawā — pembelahan benih & pembangkitan hidup-dari-mati sebagai transformasi generatif",
+  "subtitle": "Allah membelah butir & biji; mengeluarkan yang hidup dari yang mati dan yang mati dari yang hidup",
+  "ref": {
+    "surah": 6,
+    "from": 95,
+    "to": 95
+  },
+  "surah_name": "Al-An'am",
+  "theme": "Transformasi generatif, state-change hidup↔mati, pembelahan benih, bootstrapping kehidupan",
+  "sourced_meaning": {
+    "summary": "Allah menegaskan bahwa semua kehidupan terjadi karena Pencipta kehidupan, yaitu Allah: Ia mengembangbiakkan segala tumbuhan dari benih-benih kehidupan, baik berupa butiran maupun biji-bijian. Kemenag mencatat perumpamaan butir/biji dipilih agar mudah dipahami secara umum, sekaligus mencakup kehidupan yang berkembang biak lewat spora atau pembelahan sel yang hanya diketahui kalangan tertentu. Ia 'mengeluarkan yang hidup dari yang mati dan yang mati dari yang hidup'. Penutupnya menegur: '(Yang bersifat) demikian itulah Allah, maka mengapa kamu berpaling?' (Kemenag & Jalalain QS 6:95).",
+    "sources": [
+      "Tafsir Kemenag RI QS 6:95",
+      "Tafsir al-Jalalayn QS 6:95"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Persepsi",
+      "note": "fenomena sehari-hari (biji retak lalu bertunas) diangkat sebagai āyah yang teramati semua orang"
+    },
+    {
+      "layer": "Penalaran",
+      "note": "dua arah transformasi (hidup←mati, mati←hidup) menegaskan proses yang bolak-balik terkendali, bukan acak"
+    },
+    {
+      "layer": "Tangga epistemik",
+      "note": "penutup 'fa-annā tu'fakūn' menuntut inferensi: dari keteraturan transformasi → kesimpulan atas Sumbernya"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "amal",
+      "reading": "Menaruh harap pada titik yang tampak mati: hati yang beku, ilmu yang terhenti, atau usaha yang layu bisa 'bertunas' bila kondisinya dikembalikan — sebagaimana biji kering menyimpan hidup yang menunggu retakan yang tepat.",
+      "quranic_term": "ikhrāj al-ḥayy min al-mayyit"
+    },
+    {
+      "lens": "computational",
+      "reading": "'Membelah biji' (falq) = tindakan yang memecah kapsul tertutup untuk merilis potensi yang terkompresi di dalamnya: satu benih kecil mengandung cetak-biru seluruh pohon yang di-unpack saat kondisi terpenuhi. Informasi padat → ekspansi terstruktur saat di-trigger.",
+      "analogy": "decompress a compact seed-blueprint into a full structure on trigger",
+      "quranic_term": "fāliq al-ḥabb wan-nawā"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "Transisi 'hidup dari mati / mati dari hidup' adalah state machine dua-arah dengan aturan deterministik: transform(mati)→hidup dan transform(hidup)→mati berjalan di bawah invariant yang sama, bukan kekacauan. State bukan label permanen melainkan hasil operasi yang berdefinisi.",
+      "analogy": "bidirectional deterministic state transitions under one invariant",
+      "quranic_term": "yukhrijul-mayyita minal-ḥayy"
+    },
+    {
+      "lens": "biology-medicine",
+      "reading": "Kemenag menautkan ayat ke pembelahan sel & reproduksi spora. Pembelahan (falq) benih memodelkan germinasi: dormansi → imbibisi air → pecahnya kulit biji → radikula keluar. Kehidupan tidak dibuat dari nol tiap kali, melainkan dibangkitkan dari templat tersimpan (benih/sel) melalui pemicu lingkungan.",
+      "analogy": "germination/cell-division as templated revival, not creation-from-nothing",
+      "quranic_term": "nawā (biji)"
+    },
+    {
+      "lens": "chemistry-process",
+      "reading": "'Hidup dari mati' membaca sunnatullah daur materi: unsur tak-hidup (mineral, air, CO2) disusun-ulang menjadi jaringan hidup, lalu terurai kembali menjadi tak-hidup — siklus nutrien tertutup yang menggerakkan biosfer. Transformasi materi berbalik-arah, bukan aliran satu jurusan.",
+      "analogy": "closed nutrient cycle: inert matter ⇄ living tissue",
+      "quranic_term": "yukhrijul-ḥayya minal-mayyit"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Pola falq + 'hidup dari mati' menginspirasi dua prinsip desain generatif. (1) Unpacking laten: simpan pengetahuan dalam representasi padat & 'dorman' (embedding, weights, benih-konfigurasi) lalu 'belah' untuk membangkitkan keluaran penuh saat konteks memicunya — generasi = dekompresi laten yang terarah, bukan mencipta dari kekosongan. (2) Kebangkitan berbasis templat: 'menghidupkan' agen/model yang stale bukan dengan rebuild dari nol melainkan me-restart dari state/checkpoint tersimpan begitu resource (data segar) kembali. Bounded: ini analogi mekanisme; ia tak menyiratkan sistem buatan 'hidup' sungguhan.",
+      "analogy": "generation as directed unpacking of a dormant latent template",
+      "quranic_term": "fāliq al-ḥabb wan-nawā"
+    },
+    {
+      "lens": "inference",
+      "reading": "Argumen ayat: dari keteraturan transformasi yang berulang & teramati (biji→tanaman, hidup↔mati) ditarik inferensi atas Sumber di baliknya — 'maka mengapa berpaling?'. Bentuk penalaran dari āyah kauniyah menuju kesimpulan, bukan sekadar deskripsi. Data yang konsisten menuntut penjelasan, bukan pengabaian.",
+      "quranic_term": "fa-annā tu'fakūn"
+    },
+    {
+      "lens": "systems",
+      "reading": "Dua arah keluaran (hidup↔mati) membentuk umpan-balik penyeimbang: tanpa 'mati dari hidup' biosfer akan tersumbat oleh biomassa mati; tanpa 'hidup dari mati' ia akan habis. Keberlanjutan sistem = keseimbangan produksi & peluruhan, dua operasi berlawanan yang saling menahan.",
+      "analogy": "balancing loop of generation vs decay sustaining a system",
+      "quranic_term": "mīzān ḥayāt-mawt"
+    }
+  ],
+  "inference": "QS 6:95 dapat dibaca-rekayasa sebagai dua motif transformasi. Pertama, 'membelah biji' (falq): potensi besar tersimpan padat dalam kapsul kecil dan 'dibelah' menjadi struktur penuh saat kondisi memicunya — model dekompresi/unpacking laten yang terarah. Kedua, 'hidup dari mati & mati dari hidup': state bukan label permanen melainkan hasil transisi dua-arah yang berdefinisi di bawah invariant tetap, membentuk siklus produksi-peluruhan yang menyeimbangkan sistem. Untuk rekayasa: perlakukan generasi sebagai pembangkitan dari templat/laten tersimpan (bukan mencipta dari nol), rancang kebangkitan berbasis checkpoint alih-alih rebuild, dan jaga keseimbangan antara membangun dan mengurai. CATATAN TANZIH: subjek pembelahan & pembangkitan hidup adalah PERBUATAN ALLAH — tidak dimodelkan, tidak dianalogikan, dan tidak disamakan dengan mekanisme apa pun; yang dibaca hanyalah POLA yang tampak pada benih/sel/materi (ciptaan). Penegasan ayat 'demikian itulah Allah' adalah landasan iman, bukan bahan analogi. Resonansi struktural, bukan mukjizat numerik; salah satu pembacaan, bukan maksud tunggal.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-08",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-08",
+      "note": "Wave 9 pertumbuhan/rezeki.",
+      "authors": [
+        "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

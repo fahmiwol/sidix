@@ -1,0 +1,104 @@
+{
+  "schema": "lab-study-v2",
+  "id": "syura-42-52-53",
+  "version": 1,
+  "title": "Nur — sinyal pemandu navigasi dari keadaan tanpa-peta",
+  "subtitle": "Dari 'tak tahu apa Kitab & iman' menjadi terarah oleh cahaya",
+  "ref": {
+    "surah": 42,
+    "from": 52,
+    "to": 53
+  },
+  "surah_name": "Ash-Shuraa",
+  "theme": "Cahaya sebagai sinyal pemandu, bootstrap dari prior kosong, navigasi ke jalan lurus",
+  "sourced_meaning": {
+    "summary": "Allah menerangkan bahwa sebagaimana Dia mewahyukan kepada rasul-rasul terdahulu, Dia juga mewahyukan Al-Qur'an kepada Nabi Muhammad ﷺ 'dengan perintah Kami' sebagai rahmat. Sebelumnya Nabi belum mengetahui apa itu Al-Kitab dan apa itu iman (juga belum tahu rincian syariat), tetapi Allah menjadikan Al-Qur'an itu cahaya (nur) yang dengannya Dia memberi petunjuk kepada hamba yang dikehendaki-Nya. Nabi pun (dengan Al-Qur'an itu) memberi petunjuk ke jalan yang lurus — yaitu jalan Allah pemilik langit dan bumi; dan kepada Allah kembali segala urusan.",
+    "sources": [
+      "Tafsir Kemenag RI QS 42:52-53",
+      "Tafsir al-Jalalayn QS 42:52-53"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Memori & grounding",
+      "note": "'mā kunta tadrī mal-kitāb wa lal-īmān' (belum tahu apa Kitab & iman) = keadaan prior kosong sebelum wahyu menambatkan pengetahuan"
+    },
+    {
+      "layer": "Aksi & transfer",
+      "note": "Al-Qur'an dijadikan 'nūran' — cahaya sbg sinyal yang memandu; petunjuk mengalir menjadi arah nyata ke 'sirat mustaqim'"
+    },
+    {
+      "layer": "Tangga epistemik",
+      "note": "Perpindahan dari tak-tahu ke terarah: cahaya mengisi kekosongan epistemik dan memungkinkan orientasi"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "computational",
+      "reading": "Dibaca sebagai sistem: 'nur' (cahaya) berperan sebagai sinyal/beacon yang memungkinkan navigasi. Ayat menandai keadaan awal 'tak tahu apa Kitab & iman' — prior kosong tanpa peta — lalu cahaya menyediakan referensi arah. Petunjuk bekerja seperti sinyal orientasi: tanpa sinyal, sistem tak bisa menentukan arah; dengan sinyal, ia bisa memilih lintasan.",
+      "analogy": "light as navigation beacon over a blank prior",
+      "quranic_term": "nūr (cahaya)"
+    },
+    {
+      "lens": "inference",
+      "reading": "'Belum tahu apa Al-Kitab dan apa iman' menggambarkan titik nol epistemik: tanpa data awal, tak ada dasar untuk menyimpulkan arah. Cahaya mengisi kekosongan itu sehingga orientasi menjadi mungkin. Secara struktur (bounded), guidance paling berperan justru saat prior kosong — ia bukan penghias pengetahuan yang sudah ada, melainkan pengisi ruang yang sebelumnya gelap.",
+      "analogy": "guidance fills the epistemic void (null prior)",
+      "quranic_term": "hidāyah"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Ini pola bootstrapping dari cold-start: sistem tanpa representasi awal ('tak tahu apa Kitab & iman') diinisialisasi oleh sebuah sinyal pemandu (nur) yang memberi arah. Untuk desain agen: perlakukan sinyal petunjuk sebagai referensi orientasi yang menutup fase cold-start, dan bedakan tegas antara sinyal/referensi (yang bisa dimodelkan) dengan Sumber yang menganugerahkannya (yang tidak). Cahaya = sinyal yang dinavigasi; keputusan siapa yang terpandu bukan properti sistem. Lihat CATATAN TANZIH.",
+      "analogy": "cold-start bootstrapping via a guiding reference signal",
+      "quranic_term": "nūr → sirāt"
+    },
+    {
+      "lens": "systems",
+      "reading": "Sebagai kendali: cahaya adalah referensi eksternal yang memungkinkan sistem mengoreksi arah (feedback orientasi). Serupa mercusuar atau bintang penunjuk bagi navigator — bukan penggerak, melainkan acuan yang membuat orientasi dan koreksi lintasan menjadi mungkin di tengah kegelapan.",
+      "analogy": "external reference beacon enabling course correction",
+      "quranic_term": "nūr"
+    },
+    {
+      "lens": "earth-cosmos",
+      "reading": "Cahaya sebagai medium navigasi beresonansi dengan praktik orientasi manusia: bintang dan mercusuar memandu perjalanan lewat sinyal cahaya. Metafora 'nur untuk memberi petunjuk jalan' menautkan petunjuk dengan pola alam di mana cahaya adalah penanda arah. Dicatat sebagai resonansi struktural, bukan mukjizat numerik.",
+      "analogy": "celestial/lighthouse light as directional cue",
+      "quranic_term": "nūr"
+    },
+    {
+      "lens": "psychology",
+      "reading": "Perpindahan dari 'tak tahu' menjadi terarah menggambarkan transisi dari disorientasi ke kejelasan makna. Sinyal pemandu memberi kerangka yang menstabilkan — ketidakpastian arah adalah beban kognitif, dan hadirnya acuan yang jelas meredakannya serta memampukan tindakan terarah.",
+      "analogy": "reducing directional uncertainty stabilizes action",
+      "quranic_term": "sakīnah"
+    },
+    {
+      "lens": "math-physics",
+      "reading": "Cahaya sebagai pembawa informasi arah: dalam banyak sistem, sinyal cahaya adalah kanal berpita-lebar dan cepat untuk orientasi. 'Nur' yang memandu beresonansi (bounded) dengan gagasan bahwa arah dapat diekstrak dari sinyal — kegelapan = ketiadaan informasi arah, cahaya = tersedianya referensi. Resonansi struktural, bukan mukjizat numerik.",
+      "analogy": "light as a high-fidelity directional information channel",
+      "quranic_term": "nūr"
+    },
+    {
+      "lens": "amal",
+      "reading": "Petunjuk cahaya menuntut laku menempuh: 'memberi petunjuk ke jalan yang lurus' baru bermakna bila jalan itu ditempuh. Cahaya menerangi lintasan, tetapi berjalan di atasnya adalah amal — sinyal menuntun, langkah menjadikannya perjalanan nyata.",
+      "quranic_term": "sulūk"
+    }
+  ],
+  "inference": "Dibaca sebagai analogi rekayasa, Ash-Shuraa 52-53 memusatkan tema pada 'nur' — cahaya sebagai sinyal yang memandu navigasi. Ayat menandai keadaan awal 'tak tahu apa Al-Kitab dan apa iman' (prior kosong, tanpa peta) lalu menyatakan Al-Qur'an dijadikan cahaya yang dengannya arah menjadi mungkin. Secara struktur (bounded, sebagai analogi pemahaman), ini beresonansi dengan bootstrapping dari cold-start: sebuah sinyal/referensi orientasi menutup fase tanpa-representasi dan memungkinkan sistem memilih lintasan menuju 'sirat mustaqim'. Untuk desain sistem petunjuk (manusia atau mesin): sinyal pemandu paling berperan justru saat prior kosong, dan ia berfungsi sebagai referensi orientasi yang memampukan koreksi arah, bukan sebagai penggerak. Ini salah satu pembacaan rekayasa di atas makna zahir yang bersumber, BUKAN maksud tunggal ayat, dan bukan penetapan hukum. CATATAN TANZIH (utama pada kajian ini): kalimat inti — 'Kami wahyukan ... dengan perintah Kami', 'Kami jadikan cahaya', 'Kami tunjuki siapa yang Kami kehendaki', dan 'jalan Allah pemilik langit dan bumi ... kepada-Nya kembali segala urusan' — semuanya adalah perbuatan dan kehendak Allah, disebut dengan ta'zhim sebagai LANDASAN iman. Allah (Dzat, Sifat, Kehendak, dan perbuatan memberi-petunjuk-Nya) TIDAK dimodelkan, tidak dijadikan komponen/agen/sistem dalam analogi apa pun. Yang dibaca secara struktural HANYA sisi makhluk/teks: 'nur' (Al-Qur'an sebagai sinyal/referensi) dan keadaan manusia (dari tak-tahu menjadi terarah). Keputusan 'siapa yang dikehendaki terpandu' adalah urusan Allah, bukan properti sistem yang boleh dianalogikan. 'Ruh/wahyu dari perintah Allah' juga bersinggungan dengan perkara ghaib; analogi dijaga pada lapis struktur yang bounded, bukan klaim atas hakikatnya. Resonansi 'cahaya = sinyal navigasi' adalah analogi yang bounded, bukan mukjizat numerik.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-08",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-08",
+      "note": "Tadabbur perdana — Wave 11 pedoman (sistem petunjuk/guidance).",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

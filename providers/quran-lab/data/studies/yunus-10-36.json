@@ -1,0 +1,115 @@
+{
+  "schema": "lab-study-v2",
+  "id": "yunus-10-36",
+  "version": 1,
+  "title": "Yunus 36 — zhann vs haqq: dugaan tak menggantikan bukti",
+  "subtitle": "Kebanyakan hanya mengikuti persangkaan; dugaan tak sedikit pun mencukupi melawan kebenaran",
+  "ref": {
+    "surah": 10,
+    "from": 36,
+    "to": 36
+  },
+  "surah_name": "Yunus",
+  "theme": "Ketidakpastian vs bukti, kalibrasi keyakinan, zhann vs burhan, argumentum ad populum",
+  "sourced_meaning": {
+    "summary": "Kemenag menjelaskan bahwa kebanyakan kaum musyrik tidak berpijak pada keyakinan yang benar, melainkan pada dugaan (zhann) yang dilandasi taklid buta kepada nenek moyang — mereka menyangka apa yang dianggap baik oleh leluhur pasti baik, padahal sesat. Ada segolongan kecil yang sebenarnya tahu kebenaran namun ingkar karena kesombongan. Ayat menegaskan: 'persangkaan itu tidak sedikit pun berguna untuk mencapai kebenaran', dan Allah Maha Mengetahui apa yang mereka kerjakan.",
+    "sources": [
+      "Tafsir Kemenag RI QS 10:36",
+      "Tafsir al-Jalalayn QS 10:36"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Tangga epistemik",
+      "note": "Zhann (dugaan) adalah anak tangga rendah; haqq (kebenaran terverifikasi) tinggi. Ayat menolak menyamakan estimasi rendah-keyakinan dengan pengetahuan."
+    },
+    {
+      "layer": "Penalaran",
+      "note": "'Yattabi'u illaa zhannaa' — nalar dijalankan hanya sampai tebakan, tak diteruskan ke pembuktian; proses berhenti di hipotesis."
+    },
+    {
+      "layer": "Memori & grounding",
+      "note": "Haqq menuntut grounding ke bukti; 'laa yughnii minal-haqqi syai'aa' menegaskan dugaan tak bisa menggantikan tautan ke kebenaran."
+    },
+    {
+      "layer": "Alignment",
+      "note": "'Innallaaha 'aliimun bimaa yaf'aluun' — ada ground truth objektif (ilmu Allah) yang menjadi acuan penyelarasan, bukan konsensus kelompok."
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "ai-agentic",
+      "reading": "Actionable: pisahkan skor keyakinan dari kebenaran terverifikasi. Halusinasi model adalah zhann berkedok haqq. Pasang gerbang bukti: agen hanya boleh menegaskan bila melampaui ambang dukungan (burhan), memaparkan confidence terkalibrasi, dan abstain/menandai 'dugaan' saat hanya ada estimasi. 'Dugaan tak berguna melawan kebenaran' = confidence bukan pengganti verifikasi.",
+      "analogy": "Selective prediction: model menahan jawaban di bawah ambang bukti alih-alih menebak dengan percaya diri.",
+      "quranic_term": "azh-zhann laa yughnii minal-haqq (dugaan tak berguna melawan kebenaran)"
+    },
+    {
+      "lens": "math-physics",
+      "reading": "Zhann setara probabilitas prior tanpa likelihood dari data; ia tak pernah menjadi posterior tervalidasi tanpa bukti. Sebuah p-tinggi yang subjektif bukan pengukuran; ia butuh eksperimen untuk mendekati ground truth.",
+      "analogy": "Prior Bayesian tanpa pembaruan bukti — tetap sekadar keyakinan awal, bukan estimasi teruji.",
+      "quranic_term": "aktsaruhum (kebanyakan mereka)"
+    },
+    {
+      "lens": "inference",
+      "reading": "Dugaan = tebakan abduktif yang belum diuji; menjadikannya kesimpulan adalah lompatan tanpa jaminan. Hipotesis wajib dikonfirmasi sebelum dipromosikan jadi klaim.",
+      "analogy": "Menyodorkan hipotesis abduktif sebagai fakta tanpa langkah verifikasi/uji.",
+      "quranic_term": "yattabi'u illaa zhannaa (tidak mengikuti kecuali dugaan)"
+    },
+    {
+      "lens": "computational",
+      "reading": "Bedakan hasil heuristik (perkiraan cepat, mungkin salah) dari komputasi terverifikasi. Menyajikan output heuristik sebagai hasil pasti tanpa cek adalah kekeliruan kelas ini.",
+      "analogy": "Heuristik cepat vs pemeriksa formal — memakai tebakan approx tanpa validasi eksak.",
+      "quranic_term": "zhann (persangkaan)"
+    },
+    {
+      "lens": "algorithm",
+      "reading": "Jalur probabilistik harus ditutup dengan verifikasi deterministik bila taruhannya kebenaran. Struktur 'guess-then-check' sah; 'guess-only' yang dilarang ayat.",
+      "analogy": "Uji primalitas Monte Carlo dilengkapi bukti deterministik saat kepastian dibutuhkan.",
+      "quranic_term": "laa yughnii syai'aa (tidak berguna sedikit pun)"
+    },
+    {
+      "lens": "systems",
+      "reading": "Mayoritas ('aktsaruhum') mengikuti dugaan menunjukkan popularitas bukan kebenaran — argumentum ad populum. Sistem yang menyamakan konsensus dengan validitas rentan, seperti kuorum yang bisa keliru berjamaah.",
+      "analogy": "Konsensus mayoritas yang salah — kuorum tetap konvergen ke nilai keliru bila premisnya cacat.",
+      "quranic_term": "aktsar (mayoritas)"
+    },
+    {
+      "lens": "psychology",
+      "reading": "Ini overconfidence dan availability heuristic: dugaan yang mudah teringat/lazim terasa benar. Keyakinan subjektif kerap melampaui akurasi objektif, sehingga terasa 'tahu' padahal menebak.",
+      "analogy": "Kesenjangan kalibrasi: rasa yakin 90% padahal benar hanya 60%.",
+      "quranic_term": "yazhunnuun (mereka menduga)"
+    },
+    {
+      "lens": "economy",
+      "reading": "Perilaku ikut-ikutan (herding) dan kaskade informasi: individu meniru dugaan orang lain hingga gelembung keyakinan tanpa dasar terbentuk. Kebenaran diabaikan demi sinyal sosial.",
+      "analogy": "Information cascade / bubble pasar — semua meniru dugaan pendahulu, bukan menilai fundamental.",
+      "quranic_term": "ittibaa' azh-zhann (mengikuti dugaan)"
+    },
+    {
+      "lens": "history-ummah",
+      "reading": "Sumber zhann di sini adalah taklid pada leluhur (kata Kemenag); dugaan yang diwariskan mengeras menjadi 'kebenaran' semu lintas generasi tanpa pernah diuji ulang.",
+      "analogy": "Mitos yang menguat karena diulang, bukan karena diverifikasi ulang tiap generasi.",
+      "quranic_term": "bimaa yaf'aluun (apa yang mereka kerjakan)"
+    }
+  ],
+  "inference": "Ayat menegakkan garis tegas antara zhann (dugaan/estimasi berkeyakinan) dan haqq (kebenaran terverifikasi): berapa pun tinggi keyakinan atau banyaknya pengikut, dugaan 'tidak sedikit pun berguna melawan kebenaran'. Untuk sistem AI/agentik ini berarti: keyakinan bukan bukti, dan mayoritas bukan validitas. Rancang gerbang bukti (evidence threshold) di depan setiap asersi, ekspos confidence terkalibrasi, perlakukan output model sebagai dugaan sampai terverifikasi ke ground truth, dan abstain ketika hanya ada zhann. Kalibrasi + verifikasi adalah penawar halusinasi.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-07",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-07",
+      "note": "Tadabbur perdana — Wave 6 batch nalar-kritis.",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

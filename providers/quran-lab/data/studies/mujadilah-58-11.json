@@ -1,0 +1,104 @@
+{
+  "schema": "lab-study-v2",
+  "id": "mujadilah-58-11",
+  "version": 1,
+  "title": "Yarfaʿillāhu... darajāt — ilmu sebagai sumbu elevasi",
+  "subtitle": "Beri ruang dalam majelis; yang beriman dan yang berilmu diangkat berderajat-derajat",
+  "ref": {
+    "surah": 58,
+    "from": 11,
+    "to": 11
+  },
+  "surah_name": "Al-Mujadila",
+  "theme": "Hierarki pengetahuan, alokasi ruang/resource, meritokrasi ilmu",
+  "sourced_meaning": {
+    "summary": "Adab majelis: bila diminta berlapang-lapang dalam majelis, lapangkanlah — Allah akan melapangkan untukmu; bila diminta berdiri (memberi tempat/beranjak), berdirilah. Allah mengangkat orang-orang beriman di antaramu dan orang-orang yang diberi ilmu beberapa derajat. Allah Mahateliti atas apa yang kamu kerjakan.",
+    "sources": [
+      "Tafsir Kemenag RI QS 58:11",
+      "Tafsir al-Jalalayn QS 58:11"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Memori & grounding",
+      "note": "majelis ilmu = infrastruktur fisik sirkulasi pengetahuan; aksesnya diatur adabnya"
+    },
+    {
+      "layer": "Alignment",
+      "note": "elevasi dikaitkan pada iman + ilmu — bukan kekayaan/keturunan; sumbu meritnya dinyatakan"
+    },
+    {
+      "layer": "Umpan balik",
+      "note": "wallāhu bimā taʿmalūna khabīr — perilaku dalam berbagi ruang terobservasi penuh"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "amal",
+      "reading": "Dua amal dalam satu ayat: memberi ruang bagi orang lain di majelis (kerendahan hati spasial) dan menuntut ilmu (elevasi). Yang melapangkan justru dilapangkan — memberi akses tidak mengurangi milikmu.",
+      "quranic_term": "tafaqquh"
+    },
+    {
+      "lens": "computational",
+      "reading": "Ada dua operasi berbeda yang diperintahkan: tafassaḥū (rapatkan/beri ruang — kompaksi agar kapasitas bertambah) dan unsyuzū (berdiri/pindah — preemption untuk prioritas lain). Dua primitif manajemen resource: compaction dan yield.",
+      "analogy": "memory compaction + preemptive yield",
+      "quranic_term": "adab majlis"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "Janji balikannya non-zero-sum: yafsaḥillāhu lakum — yang memberi ruang diberi kelapangan. Aksioma desain: sistem berbagi-resource yang sehat tidak memperlakukan ruang sebagai zero-sum; kooperasi memperbesar kapasitas total.",
+      "analogy": "non-zero-sum resource sharing"
+    },
+    {
+      "lens": "algorithm",
+      "reading": "Elevasi 'darajāt' (berderajat-derajat, jamak) = ranking multi-level kontinu, bukan biner lulus/gagal. Dan fungsi rankingnya eksplisit: iman (alignment) + ilmu (kapabilitas) — dua parameter yang keduanya harus ada.",
+      "analogy": "multi-criteria ranking (alignment × capability)"
+    },
+    {
+      "lens": "inference",
+      "reading": "Ayat menolak dua reduksi: elevasi hanya karena iman tanpa ilmu, atau ilmu tanpa iman. Kapabilitas tanpa alignment berbahaya; alignment tanpa kapabilitas tak berdaya. Derajat diberikan pada konjungsinya.",
+      "quranic_term": "ʿilm + īmān"
+    },
+    {
+      "lens": "math-physics",
+      "reading": "'Darajāt' adalah metafora ordinal: pengetahuan menaikkan posisi pada sumbu vertikal — dan dalam teori informasi memang begitu: agen dengan informasi lebih akurat menempati posisi keputusan yang lebih tinggi nilainya (nilai informasi terukur).",
+      "analogy": "value of information; ordinal elevation"
+    },
+    {
+      "lens": "systems",
+      "reading": "Majelis = node komunitas tempat ilmu bersirkulasi; ayat mengatur protokol aksesnya (beri ruang, beri giliran) supaya sirkulasi tidak dimonopoli yang datang duluan. First-come bukan satu-satunya hak; sistem sehat menyediakan mekanisme yield.",
+      "analogy": "fair access protocol; anti-squatting"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Untuk ekosistem agen: kedudukan (kewenangan, trust level) selayaknya fungsi dari alignment + demonstrasi kapabilitas — bukan senioritas antrian. Dan 'berlapang-lapanglah': agen yang menahan context/resource yang tak lagi ia butuhkan menurunkan throughput seluruh majelis (sistem multi-agen).",
+      "analogy": "trust tiers by alignment×capability; resource yielding",
+      "quranic_term": "darajāt"
+    },
+    {
+      "lens": "artifact",
+      "reading": "Dari adab majelis lahir institusi: halaqah, madrasah, universitas (Al-Qarawiyyin 859 M — kampus tertua yang masih beroperasi, catatan UNESCO/Guinness) — arsitektur fisik yang dibangun mengelilingi sirkulasi ilmu.",
+      "analogy": "institutions around knowledge flow"
+    }
+  ],
+  "inference": "Ayat ini menggabungkan dua hal yang jarang digabungkan: protokol mikro berbagi ruang (kompaksi & yield dalam majelis) dan makro-prinsip elevasi (iman + ilmu → derajat). Benang merahnya: pengetahuan diperlakukan sebagai sumbu vertikal masyarakat, dan akses kepadanya diatur agar non-zero-sum — yang memberi ruang dilapangkan, yang berilmu diangkat. Sistem (manusia atau mesin) yang me-ranking anggotanya pada konjungsi alignment×kapabilitas, sambil menjaga akses ilmunya tetap adil, adalah implementasi struktur ayat ini.",
+  "authors": [
+    "Draft AI (LLM draft) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-07",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-07",
+      "note": "Tadabbur perdana — Wave 2 (dari sweep korpus 6236 ayat).",
+      "authors": [
+        "Draft AI (LLM draft)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

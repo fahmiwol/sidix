@@ -1,0 +1,109 @@
+{
+  "schema": "lab-study-v2",
+  "id": "syuara-26-80",
+  "version": 1,
+  "title": "Wa idzā maridtu fa huwa yasyfīn — pola penyembuhan yang tertanam pada tubuh",
+  "subtitle": "Kesembuhan disandarkan mutlak kepada Allah; Lab hanya membaca POLA pulih yang Ia tanamkan pada ciptaan",
+  "ref": {
+    "surah": 26,
+    "from": 80,
+    "to": 80
+  },
+  "surah_name": "Ash-Shu'ara",
+  "theme": "Penyembuhan, self-healing, koreksi kesalahan, homeostasis, pemulihan ke titik-sehat",
+  "sourced_meaning": {
+    "summary": "Ucapan Nabi Ibrahim: 'dan apabila aku sakit, Dialah yang menyembuhkanku.' Tafsir Kemenag menegaskan bahwa yang berhak dan berkuasa menyembuhkan penyakit apa pun adalah Allah semata; namun manusia tetap diperintah mencari tahu cara memperoleh kesembuhan (ikhtiar). Kemenag (mengutip al-Qasimi) juga menyoroti tata-susila hamba: penyakit kerap timbul akibat perbuatan manusia sendiri — melanggar norma kesehatan atau pola hidup — sehingga adab menisbatkan sebab (sakit) pada diri dan menisbatkan kesembuhan pada Allah.",
+    "sources": [
+      "Tafsir Kemenag RI QS 26:80",
+      "Tafsir al-Jalalayn QS 26:80"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Penalaran",
+      "note": "adab kausal ayat: sebab sakit sering pada perbuatan manusia (melanggar norma), sehingga diagnosis diarahkan ke rantai sebab yang bisa dikoreksi"
+    },
+    {
+      "layer": "Aksi & transfer",
+      "note": "Kemenag: manusia wajib mencari cara sembuh — kesembuhan mutlak dari Allah TIDAK meniadakan ikhtiar di lapisan sebab"
+    },
+    {
+      "layer": "Umpan balik",
+      "note": "sakit → deteksi → koreksi → pulih adalah loop; tubuh dirancang mengembalikan diri ke titik-sehat bila sebab dihentikan"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "biology-medicine",
+      "reading": "Membaca POLA penyembuhan yang Allah tanamkan pada tubuh: sistem imun, penyembuhan luka (hemostasis→inflamasi→proliferasi→remodeling), regenerasi jaringan, dan homeostasis yang mengembalikan suhu/pH/gula ke rentang sehat. Tubuh punya mekanisme pulih bawaan; peran obat/dokter sebagian besar adalah MENDUKUNG mekanisme itu, bukan menggantikannya. Ini resonansi struktural dengan pesan ayat bahwa manusia mencari sebab kesembuhan sementara pemulihan sejatinya berjalan pada rancangan tubuh — bounded, bukan klaim mukjizat numerik.",
+      "analogy": "self-healing tubuh: imun + wound-healing + homeostasis",
+      "quranic_term": "syifā'"
+    },
+    {
+      "lens": "systems",
+      "reading": "Penyembuhan = kontrol umpan-balik negatif yang mengembalikan sistem ke set-point setelah gangguan. Sistem tangguh bukan yang tak pernah rusak, melainkan yang punya jalur pemulihan: deteksi deviasi → aktifkan koreksi → konvergen kembali ke keadaan sehat. Prinsip rekayasa: rancang recovery path sebagai warga kelas satu, bukan renungan belakangan.",
+      "analogy": "negative-feedback control kembali ke set-point sehat"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Cetak biru self-correction untuk agen: sistem yang andal mengasumsikan kegagalan PASTI terjadi dan menanam jalur pulih otomatis — health-check, retry dengan backoff, rollback ke checkpoint sehat, dan sirkuit pemulih yang menghentikan sebab-error sebelum menambal gejala. Selaras adab ayat: diagnosis mengarah ke rantai sebab yang dapat dikoreksi (bukan menyalahkan gejala), dan agen tetap WAJIB berikhtiar (mencari perbaikan) alih-alih pasif. Actionable: (1) instrumentasi deteksi-deviasi; (2) simpan checkpoint keadaan sehat untuk rollback; (3) hentikan akar-sebab, jangan hanya redam simptom; (4) rancang graceful recovery, bukan hard-crash.",
+      "analogy": "fault-tolerance: health-check + rollback + root-cause fix",
+      "quranic_term": "iṣlāḥ (perbaikan)"
+    },
+    {
+      "lens": "algorithm",
+      "reading": "Penyembuhan berperan seperti kode koreksi-kesalahan: keadaan rusak dideteksi terhadap referensi 'sehat', lalu dikembalikan. Analog self-healing systems: proses pengawas mendeteksi deviasi dan me-restart/menyembuhkan komponen tanpa menghentikan seluruh sistem. Kuncinya bukan mencegah semua error, tapi menyediakan prosedur pemulihan yang konvergen.",
+      "analogy": "error-correcting code + supervised restart"
+    },
+    {
+      "lens": "computational",
+      "reading": "Sakit = state korup; sembuh = restorasi ke keadaan valid. Infrastruktur self-healing menyimpan snapshot sehat, mendeteksi drift, lalu memulihkan (checkpoint-restore, redundansi, re-konsiliasi ke keadaan yang dideklarasikan). Pemulihan andal butuh definisi eksplisit tentang 'keadaan sehat' sebagai acuan.",
+      "analogy": "checkpoint-restore ke keadaan valid yang dideklarasikan"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "Sehat = invariant sistem; sakit = pelanggaran invariant. Penanganan pengecualian yang baik tidak sekadar menangkap error, melainkan MEMULIHKAN invariant (restore ke keadaan konsisten) lalu melanjutkan. Ayat menaruh sebab pelanggaran pada tindakan yang bisa diubah — mirip precondition yang bila dijaga mencegah state ilegal.",
+      "analogy": "exception handling yang memulihkan invariant"
+    },
+    {
+      "lens": "psychology",
+      "reading": "Resiliensi psikologis: jiwa punya kapasitas pulih (recovery) setelah luka batin, seperti tubuh menyembuhkan luka fisik. Pemulihan menuntut menghentikan sumber cedera (pola pikir/kebiasaan yang melukai) lebih dulu, lalu memberi ruang bagi mekanisme pulih alami bekerja. Menisbatkan hasil akhir pada Yang Maha Menyembuhkan justru meringankan beban kontrol berlebih pada diri.",
+      "analogy": "resiliensi: hentikan sumber cedera → beri ruang pulih"
+    },
+    {
+      "lens": "inference",
+      "reading": "Struktur atribusi ayat tajam secara epistemik: sebab (sakit) dinisbatkan pada rantai yang dapat diperiksa dan dikoreksi, sementara kesembuhan disandarkan pada Sang Pemberi. Untuk penalaran sebab-akibat, ini mendorong diagnosis akar-sebab (mengapa deviasi terjadi) alih-alih berhenti pada gejala.",
+      "analogy": "atribusi sebab yang dapat dikoreksi vs hasil di luar kendali"
+    },
+    {
+      "lens": "amal",
+      "reading": "Ikhtiar berobat adalah amal yang diperintah: tawakal pada kesembuhan TIDAK meniadakan usaha mencari sebab (mencari obat, memperbaiki pola hidup, menaati norma kesehatan). Adab ini menyatukan kesungguhan bekerja di lapisan sebab dengan penyandaran hasil kepada Allah.",
+      "analogy": "ikhtiar (bekerja di lapisan sebab) + tawakal atas hasil"
+    },
+    {
+      "lens": "artifact",
+      "reading": "Kedokteran dan farmasi adalah teknologi yang MENIRU dan menopang pola pulih bawaan tubuh: antiseptik mendukung imun, bidai menopang penyambungan tulang, rehidrasi memulihkan homeostasis cairan. Instrumen manusia bekerja di lapisan sebab; ia memfasilitasi penyembuhan, bukan menciptakannya.",
+      "analogy": "teknologi medis menopang mekanisme pulih alami"
+    }
+  ],
+  "inference": "Dibaca sebagai analogi rekayasa (BUKAN tafsir, BUKAN dalil), ayat ini menyorot satu pola desain pada ciptaan: tubuh dan sistem hidup dibekali JALUR PEMULIHAN — deteksi deviasi, koreksi ke titik-sehat, regenerasi — sehingga ketahanan berarti kemampuan pulih, bukan kekebalan dari kerusakan. Untuk rekayasa (utama: agen AI), pelajarannya konkret: asumsikan kegagalan pasti terjadi, tanam self-healing (health-check, rollback ke checkpoint sehat, perbaikan akar-sebab), dan definisikan 'keadaan sehat' sebagai acuan pemulihan. ⚠ CATATAN TANZIH: kesembuhan mutlak disandarkan pada Allah — ini landasan tauhid yang berada DI LUAR analogi; Allah (Dzat & Sifat-Nya) tidak dimodelkan, tidak dianalogikan, dan tidak dicasting sebagai 'sistem penyembuh'. Lab HANYA membaca pola pulih yang Ia tanamkan pada makhluk/tubuh sebagai objek rekayasa. Klaim medis di atas dibingkai resonansi struktural yang bounded, bukan mukjizat numerik dan bukan maksud tunggal ayat; makna zahir & bersumber (Kemenag/Jalalain) tetap lapisan utama.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-08",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-08",
+      "note": "Tadabbur perdana — Wave 9 penyembuhan/siklus.",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

@@ -1,0 +1,117 @@
+{
+  "schema": "lab-study-v2",
+  "id": "furqan-25-2-2",
+  "version": 1,
+  "title": "Fa-qaddarahu taqdiran — cipta lalu kalibrasi dengan presisi",
+  "subtitle": "Menciptakan bukan langkah tunggal: ada tahap menetapkan ukuran secara rapi dan tepat",
+  "ref": {
+    "surah": 25,
+    "from": 2,
+    "to": 2
+  },
+  "surah_name": "Al-Furqan",
+  "theme": "Dua fase: create → configure (taqdir); kalibrasi presisi; otoritas tunggal atas parameter sistem",
+  "sourced_meaning": {
+    "summary": "Menurut Tafsir Kemenag, ayat ini menegaskan bahwa Allah pemilik dan penguasa tunggal langit-bumi — tanpa anak, tanpa sekutu dalam kekuasaan — dan Dialah Pencipta segala sesuatu yang mengaturnya menurut hikmah, kehendak, dan ilmu-Nya. Semua makhluk tunduk pada sunnah dan peraturan (ketetapan) yang ditetapkan-Nya. Frasa 'fa-qaddarahu taqdiran' dipahami sebagai penetapan ukuran setiap ciptaan dengan tepat dan seimbang, sesuai kemaslahatan masing-masing.",
+    "sources": [
+      "Tafsir Kemenag RI QS 25:2",
+      "Tafsir al-Jalalayn QS 25:2"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Penalaran",
+      "note": "urutan 'khalaqa ... fa-qaddara' menyiratkan dua langkah berurutan: adakan dulu, lalu tetapkan ukurannya — bukan satu tindakan monolitik"
+    },
+    {
+      "layer": "Alignment",
+      "note": "konteks tauhid: satu otoritas atas seluruh parameter — tak ada 'sekutu' yang menetapkan kadar tandingan; konsistensi sistem butuh sumber ketetapan tunggal"
+    },
+    {
+      "layer": "Umpan balik",
+      "note": "taqdiran (bentuk penegasan) = penetapan yang teliti & final, bukan tebakan kasar; presisi sebagai sifat proses"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "amal",
+      "reading": "Hipotesis amal: kerja yang baik pun berpola 'wujudkan lalu rapikan' — jangan berhenti di 'jadi', lanjutkan ke 'pas'. Ihsan adalah fase taqdir atas amal: menyempurnakan ukuran, bukan sekadar menuntaskan.",
+      "analogy": "finishing pass / penyempurnaan mutu",
+      "quranic_term": "taqdir"
+    },
+    {
+      "lens": "computational",
+      "reading": "Pola 'khalaqa fa-qaddara' beresonansi dengan two-phase construction: alokasi/instansiasi objek dulu (create), lalu set konfigurasi & invariannya (configure). Memisahkan penciptaan dari pengukuran membuat tiap fase dapat divalidasi sendiri — objek belum 'siap pakai' sampai fase taqdir selesai.",
+      "analogy": "two-phase init: construct → configure",
+      "quranic_term": "khalq → taqdir"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "'taqdiran' sebagai penetapan kontrak parameter secara eksplisit: nilai default, batas, dan tipe di-set pada tahap konfigurasi, bukan dibiarkan implisit. Analogi dengan parameterisasi terpisah dari definisi — logika inti dibuat sekali, perilakunya diatur lewat konfigurasi terukur.",
+      "analogy": "separation of policy (config) from mechanism",
+      "quranic_term": "taqdir sebagai config"
+    },
+    {
+      "lens": "algorithm",
+      "reading": "Membaca urutan sebagai pipeline berjenjang dengan tahap kalibrasi wajib: output tahap-1 (raw creation) tak dianggap final sebelum lewat tahap-2 (measurement/tuning). Mirip proses manufaktur: bentuk → kalibrasi → QC, di mana kalibrasi adalah langkah tersendiri yang tak boleh dilewati.",
+      "analogy": "pipeline dengan calibration stage",
+      "quranic_term": "fa- (lalu, berurutan)"
+    },
+    {
+      "lens": "math-physics",
+      "reading": "Resonansi struktural (bukan mukjizat numerik) dengan fine-tuning parameter: nilai-nilai fisis yang bila digeser sedikit meniadakan struktur stabil. 'Menetapkan ukuran dengan tepat' menjadi analogi pemahaman atas alam yang parameternya presisi — sekali lagi, analogi, bukan bukti tekstual.",
+      "analogy": "parameter fine-tuning",
+      "quranic_term": "taqdir"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Actionable untuk desain agen: PISAHKAN instansiasi dari konfigurasi. Jangan hardcode perilaku ke dalam kode agen; buat 'creation' (kerangka reasoning) generik, lalu 'taqdir' lewat config eksternal yang terukur — temperature, batas langkah, prioritas tool, threshold kepercayaan. Keuntungan: perilaku dapat dituning, diaudit, dan di-rollback tanpa menyentuh mesin inti. Satu control-plane (analogi otoritas tunggal) menjaga parameter tetap konsisten lintas agen.",
+      "analogy": "control-plane config; separation of construct vs configure",
+      "quranic_term": "taqdir + tauhid rububiyah"
+    },
+    {
+      "lens": "systems",
+      "reading": "Konteks 'tanpa sekutu' beresonansi dengan single source of truth untuk konfigurasi: bila dua otoritas menetapkan kadar berbeda atas komponen sama, sistem inkonsisten (konflik parameter). Keteraturan menuntut satu sumber ketetapan yang koheren — bandingkan argumen QS 21:22.",
+      "analogy": "single source of truth (config)",
+      "quranic_term": "la syarik"
+    },
+    {
+      "lens": "economy",
+      "reading": "Taqdir sebagai penetapan 'kadar yang pas menurut kemaslahatan' (kata Kemenag) beresonansi dengan alokasi efisien: setiap ciptaan diberi porsi sesuai fungsi — tak mubazir, tak kurang. Analogi dengan right-sizing sumber daya: kapasitas dicocokkan ke kebutuhan aktual.",
+      "analogy": "right-sizing / alokasi sesuai fungsi",
+      "quranic_term": "taqdir"
+    },
+    {
+      "lens": "pedagogy",
+      "reading": "Pola cipta-lalu-kadar menjadi analogi kurikulum: kompetensi 'diciptakan' dulu (pengenalan), lalu 'dikadar' (dilatih pada level & takaran yang tepat per pembelajar). Diferensiasi ukuran beban belajar = taqdir pedagogis, bukan seragam buta.",
+      "analogy": "differensiasi & scaffolding terukur",
+      "quranic_term": "taqdir"
+    },
+    {
+      "lens": "inference",
+      "reading": "Presisi 'taqdiran' menyiratkan bahwa ketetapan itu bukan zhann melainkan penetapan pasti — analogi dengan spesifikasi yang bersifat ground truth. Bagi perekayasa: yakin (yaqin) atas perilaku sistem baru sah bila parameternya ditetapkan eksplisit dan terukur, bukan diasumsikan.",
+      "analogy": "spec sebagai ground truth",
+      "quranic_term": "taqdir (penegasan)"
+    }
+  ],
+  "inference": "Ayat ini, dibaca sebagai pola rekayasa, memecah 'penciptaan' menjadi dua momen: mengadakan (khalq) lalu menetapkan ukuran dengan tepat (taqdir). Pemisahan ini adalah prinsip desain yang kuat — bedakan mekanisme dari konfigurasi, bangun inti generik lalu tuning perilaku lewat parameter terukur yang dapat diaudit dan di-rollback. Konteks tauhid (tanpa sekutu) beresonansi dengan kebutuhan satu sumber ketetapan yang konsisten agar sistem tidak menampung parameter yang saling bertentangan. Untuk agen AI: pisahkan 'membangun agen' dari 'mengonfigurasi agen', dan jaga config di satu control-plane. (Satu pembacaan rekayasa, bukan maksud tunggal ayat; keterkaitan sains di sini analogi, bukan bukti.)",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-08",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-08",
+      "note": "Tadabbur perdana — Wave 8 kadar/takdir.",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

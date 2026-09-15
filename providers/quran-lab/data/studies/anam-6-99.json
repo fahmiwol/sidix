@@ -1,0 +1,107 @@
+{
+  "schema": "lab-study-v2",
+  "id": "anam-6-99",
+  "version": 1,
+  "title": "Ḥabban mutarākiban — pipeline dari air ke biji berlapis",
+  "subtitle": "Air hujan → tumbuh → menghijau → butir bersusun; 'perhatikanlah buahnya saat matang'",
+  "ref": {
+    "surah": 6,
+    "from": 99,
+    "to": 99
+  },
+  "surah_name": "Al-An'am",
+  "theme": "Pipeline bertahap, transformasi berjenjang, output berstruktur, verifikasi hasil",
+  "sourced_meaning": {
+    "summary": "Menurut Tafsir Kemenag: Allah menurunkan hujan dari langit (sama/awan) yang menumbuhkan segala macam tumbuhan beragam bentuk, macam, dan rasa; dari yang menghijau dikeluarkan butir yang bersusun banyak (ḥabban mutarākiban), dari mayang kurma tangkai yang menjulai, serta kebun anggur, zaitun, dan delima yang serupa dan tak serupa. Perintahnya: perhatikanlah buahnya ketika berbuah dan kematangannya — pada semua itu ada tanda bagi orang beriman.",
+    "sources": [
+      "Tafsir Kemenag RI QS 6:99",
+      "Tafsir al-Jalalayn QS 6:99"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Persepsi",
+      "note": "rantai teramati: air → tunas → hijau → butir bersusun → buah matang; tiap tahap adalah keluaran yang bisa diinspeksi"
+    },
+    {
+      "layer": "Aksi & transfer",
+      "note": "perintah eksplisit 'unẓurū ilā thamarihi idhā athmara wa yanʿih' — inspeksi keluaran pada titik matang sebagai tindakan yang dituntut"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "computational",
+      "reading": "Pipeline transformasi berjenjang: satu input (air) melewati tahap-tahap berurutan (tumbuh → menghijau → berbutir → berbuah), tiap tahap mengambil keluaran tahap sebelumnya dan menaikkan strukturnya. Alih fungsi bertahap dari bahan mentah menjadi produk berstruktur tinggi.",
+      "analogy": "staged data/ETL pipeline (raw → refined → structured)",
+      "quranic_term": "fa-akhrajnā minhu"
+    },
+    {
+      "lens": "algorithm",
+      "reading": "Percabangan generatif bertingkat: dari satu 'menghijau' bercabang butir-bersusun, mayang kurma, anggur, zaitun, delima — struktur pohon rekursif di mana satu simpul melahirkan banyak subpohon. 'Serupa dan tak serupa' = variasi terkendali di sekitar template bersama.",
+      "analogy": "recursive branching / generative tree with controlled variance",
+      "quranic_term": "mutashābihan wa ghaira mutashābih"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "Keluaran berstruktur nested: 'ḥabban mutarākiban' — butir yang tersusun berlapis di dalam bulir adalah struktur bersarang (array-of-arrays), pengemasan rapat banyak unit dalam satu wadah. Serialisasi hasil ke bentuk padat, terurut, siap disimpan/disebar.",
+      "analogy": "nested/packed data structure, dense serialization",
+      "quranic_term": "ḥabban mutarākiban"
+    },
+    {
+      "lens": "systems",
+      "reading": "Rantai ketergantungan hulu-hilir: seluruh keluaran hilir (buah, biji) bergantung pada input hulu tunggal (air) yang mengalir lewat tahap-tahap. Kegagalan di hulu menjalar ke seluruh hilir; kualitas tiap tahap membatasi kualitas tahap berikutnya.",
+      "analogy": "upstream→downstream dependency chain",
+      "quranic_term": "anzala min as-samāʾ māʾ"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Blueprint pipeline generatif ber-verifikasi untuk agen: (1) satu sumber → tahapan yang jelas (ingest → transform → generate → package), tiap tahap punya keluaran yang bisa diinspeksi, bukan monolit gelap; (2) keberagaman keluaran ('serupa dan tak serupa') lahir dari template bersama + variasi terkendali — persis sampling generatif; (3) yang paling penting, ayat memerintahkan inspeksi pada titik matang ('unẓurū ilā thamarihi') — bangun gerbang evaluasi di akhir pipeline yang menilai keluaran saat 'matang', bukan saat masih mentah. Agen yang baik menumbuhkan hasil bertahap lalu MEMERIKSA buahnya sebelum menyajikan.",
+      "analogy": "staged generative pipeline + ripeness/eval gate before output",
+      "quranic_term": "unẓurū ilā thamarihi wa yanʿih"
+    },
+    {
+      "lens": "biology-medicine",
+      "reading": "Morfogenesis bertahap: dari air dan benih, program perkembangan mengeksekusi diferensiasi sel menjadi jaringan, lalu organ (daun, bulir, buah). Biji berlapis = pengemasan cadangan + embrio, unit penyebaran mandiri yang tahan simpan.",
+      "analogy": "developmental morphogenesis; seed as packaged unit",
+      "quranic_term": "khaḍiran nukhriju minhu ḥabban"
+    },
+    {
+      "lens": "chemistry-process",
+      "reading": "Sintesis bertahap dengan bahan baku sama, produk beragam: substrat air + CO2 diolah lewat lintasan biokimia berbeda menghasilkan gula, minyak (zaitun), pigmen (delima). 'Disirami air yang sama, rasa berbeda' — jalur proses menentukan produk, bukan bahan bakunya saja.",
+      "analogy": "same feedstock, divergent process routes → varied products",
+      "quranic_term": "yusqā bimāʾ wāḥid"
+    },
+    {
+      "lens": "artifact",
+      "reading": "Manusia meniru pipeline ini: lini produksi bertahap, sistem pengemasan (mengepak banyak unit rapat seperti biji bersusun), hingga kontrol mutu di ujung lini — memeriksa produk 'matang' sebelum dikirim. Pertanian modern adalah orkestrasi eksplisit atas rantai air→panen ini.",
+      "analogy": "assembly line + packaging + end-of-line QC",
+      "quranic_term": "pola akhraja → thamar"
+    },
+    {
+      "lens": "inference",
+      "reading": "Penutup 'la-āyātin li-qawmin yuʾminūn' menjadikan rantai teramati ini basis inferensi: keteraturan pipeline yang berulang dan dapat diperiksa buahnya menunjuk pada penata. Bounded — pembacaan struktural/resonansi, bukan klaim mukjizat numerik.",
+      "analogy": "observable ordered pipeline → inferred design",
+      "quranic_term": "āyāt li-qawmin yuʾminūn"
+    }
+  ],
+  "inference": "QS 6:99 adalah spesifikasi pipeline generatif yang lengkap: satu input (air) → tahapan transformasi yang naik struktur → keluaran padat-berlapis (biji bersusun) yang beragam dari template bersama. Nilai rekayasa terbesarnya ada di perintah penutup — 'perhatikanlah buahnya ketika matang': setiap pipeline generatif (termasuk agen AI) harus punya gerbang inspeksi di titik keluaran matang, bukan sekadar menumbuhkan hasil lalu menyajikannya mentah. Tumbuhkan bertahap, kemas rapat, lalu PERIKSA buahnya sebelum dipanen.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-07",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-07",
+      "note": "Tadabbur perdana — Wave 6 batch air/substrat.",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

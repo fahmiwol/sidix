@@ -1,0 +1,104 @@
+{
+  "schema": "lab-study-v2",
+  "id": "ankabut-29-20",
+  "version": 1,
+  "title": "Sīrū fil-arḍ — riset lapangan atas asal-usul",
+  "subtitle": "Jelajahi bumi, amati bagaimana penciptaan DIMULAI",
+  "ref": {
+    "surah": 29,
+    "from": 20,
+    "to": 20
+  },
+  "surah_name": "Al-'Ankabut",
+  "theme": "Riset empiris, ekspedisi ilmiah, studi asal-usul, re-instansiasi",
+  "sourced_meaning": {
+    "summary": "Katakanlah: berjalanlah di bumi, lalu perhatikanlah bagaimana Allah memulai penciptaan (badaʾal-khalq); kemudian Allah menjadikan kejadian yang akhir (an-nasyʾah al-ākhirah). Sungguh Allah Mahakuasa atas segala sesuatu. (Tafsir: anjuran mengunjungi tempat-tempat lain seraya memperhatikan dan memikirkan ciptaan.)",
+    "sources": [
+      "Tafsir Kemenag RI QS 29:20",
+      "Tafsir al-Jalalayn QS 29:20"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Persepsi",
+      "note": "perintah ganda: sīrū (bergerak/jelajah) + unẓurū (amati) — observasi yang berpindah tempat"
+    },
+    {
+      "layer": "Penalaran",
+      "note": "objek risetnya spesifik: KAIFA badaʾal-khalq — 'bagaimana' penciptaan dimulai (mekanisme, bukan sekadar fakta)"
+    },
+    {
+      "layer": "Aksi & transfer",
+      "note": "dari bukti instansiasi pertama → inferensi kemampuan instansiasi berikutnya (nasyʾah ākhirah)"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "amal",
+      "reading": "Safar ilmiah sebagai ibadah: perjalanan yang diperintahkan bukan wisata kosong melainkan perjalanan yang membawa pertanyaan riset — tradisi riḥlah para ulama (menempuh ribuan kilometer demi satu hadits/ilmu) lahir dari etos ini.",
+      "quranic_term": "riḥlah ʿilmiyyah"
+    },
+    {
+      "lens": "computational",
+      "reading": "Perintahnya adalah sampling di luar dataset lokal: JANGAN simpulkan asal-usul hanya dari data di tempatmu berdiri — bergeraklah, kumpulkan sampel dari distribusi yang lebih luas (fosil, lapisan bumi, ragam hayati antar wilayah). Anti-bias sampling, 14 abad sebelum istilahnya.",
+      "analogy": "out-of-distribution sampling",
+      "quranic_term": "sīrū + unẓurū"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "Struktur argumennya: dari observasi trace instansiasi pertama (bagaimana penciptaan DIMULAI) → inferensi validitas instansiasi kedua (nasyʾah ākhirah). Logika: siapa yang terbukti bisa mengeksekusi konstruktor sekali, mampu mengeksekusinya lagi.",
+      "analogy": "constructor evidence → re-instantiation"
+    },
+    {
+      "lens": "algorithm",
+      "reading": "'Kaifa badaʾa' — pertanyaan riset tentang PROSEDUR awal, bukan hanya hasil akhir: rekonstruksi algoritma dari jejaknya (geologi membaca lapisan, biologi membaca genom, kosmologi membaca radiasi latar). Reverse engineering sebagai metode yang diperintahkan.",
+      "analogy": "reverse-engineering from traces"
+    },
+    {
+      "lens": "inference",
+      "reading": "Ayat menjadikan keyakinan pada kebangkitan sebagai KESIMPULAN dari studi empiris asal-usul — bukan aksioma buta. Arah penalarannya luar biasa: iman pada masa depan dibangun dari riset atas masa lalu.",
+      "quranic_term": "naẓar → yaqīn"
+    },
+    {
+      "lens": "math-physics",
+      "reading": "Studi asal-usul adalah masalah kondisi awal + evolusi: dari state sekarang, ekstrapolasi mundur (retrodiksi) — persis metode kosmologi dan geokronologi. Bahwa retrodiksi MUNGKIN dilakukan mensyaratkan hukum yang stabil lintas waktu (bandingkan 55:5 ḥusbān).",
+      "analogy": "retrodiction under stable laws"
+    },
+    {
+      "lens": "systems",
+      "reading": "Perjalanan lintas wilayah mengekspos pengamat pada keragaman sistem (ekologi, masyarakat, reruntuhan peradaban — tema ayat-ayat sīrū lainnya). Pemahaman sistem yang sehat butuh sampel banyak sistem, bukan satu studi kasus.",
+      "analogy": "multi-system comparative study"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Untuk agen: jangan menyimpulkan dari konteks lokal saja — perintahnya bergerak (kumpulkan observasi baru: tool calls, retrieval, eksperimen) sebelum inferensi. Dan studi 'bagaimana ia dimulai' = analisis training provenance untuk memahami perilaku model sekarang; masa lalu sistem adalah kunci meramal instansiasi berikutnya.",
+      "analogy": "active information gathering; provenance analysis",
+      "quranic_term": "sīrū (bergerak dulu, simpulkan kemudian)"
+    },
+    {
+      "lens": "artifact",
+      "reading": "Etos sīrū fil-arḍ mewujud sebagai artefak: kartografi & rihlah (Ibn Battuta ±120.000 km), observatorium lintas benua, hingga wahana antariksa — instrumen berpindah yang dibangun untuk mengamati asal-usul.",
+      "analogy": "expedition instruments"
+    }
+  ],
+  "inference": "Ayat ini memerintahkan bentuk riset yang paling mahal dan paling jujur: pergi sendiri, lihat sendiri, pelajari bagaimana segala sesuatu DIMULAI — lalu bangun kesimpulan tentang apa yang mungkin terjadi berikutnya. Struktur epistemiknya modern: sampling lintas wilayah (anti-bias), fokus pada mekanisme (kaifa), retrodiksi dari jejak, dan inferensi dari 'pernah terjadi' menuju 'bisa terjadi lagi'. Untuk pembangun sistem cerdas, ini standar: agen yang tidak mau bergerak mengumpulkan bukti baru belum berhak atas kesimpulannya.",
+  "authors": [
+    "Draft AI (LLM draft) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-07",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-07",
+      "note": "Tadabbur perdana — Wave 2 (dari sweep korpus 6236 ayat).",
+      "authors": [
+        "Draft AI (LLM draft)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

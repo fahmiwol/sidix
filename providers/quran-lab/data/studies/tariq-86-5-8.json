@@ -1,0 +1,108 @@
+{
+  "schema": "lab-study-v2",
+  "id": "tariq-86-5-8",
+  "version": 1,
+  "title": "Hendaklah manusia memperhatikan dari apa ia dicipta — dari air yang terpancar, dari sumber yang tertentu, maka Yang memulai kuasa mengulang",
+  "subtitle": "Introspeksi asal-usul sebagai audit provenance; sumber yang teridentifikasi; dan reproducibility — yang bisa dijalankan sekali bisa dijalankan ulang",
+  "ref": {
+    "surah": 86,
+    "from": 5,
+    "to": 8
+  },
+  "surah_name": "At-Tariq",
+  "theme": "Perintah introspeksi asal (audit provenance); air terpancar dari sumber tertentu; reproducibility/idempotence — kemampuan mengulang proses yang sudah pernah berjalan",
+  "sourced_meaning": {
+    "summary": "Tafsir Kemenag: (5) Allah memerintahkan manusia berpikir dan memperhatikan dengan sungguh-sungguh dari apa ia diciptakan, agar mengenali kekuasaan Penciptanya; jika Ia mampu mencipta dari bahan tak bernyawa, tentu lebih mudah menghidupkannya kembali. (6-7) Manusia dijadikan dari air yang terpancar (mani), yang keluar dari antara tulang punggung (as-sulb) dan tulang dada. (8) Sesungguhnya Allah benar-benar berkuasa mengembalikannya hidup sesudah mati — dikuatkan ayat lain (Yasin 79, ar-Rum 27): Yang memulai penciptaan pasti kuasa mengulanginya, dan itu lebih mudah bagi-Nya. CATATAN TANZIH: kuasa mencipta dan menghidupkan kembali adalah Sifat Allah (landasan iman, bukan bahan analogi); yang dibaca-rekayasa hanya POLA pada ciptaan — perintah introspeksi asal, sumber yang tertentu, dan sifat 'dapat diulang' pada sebuah proses.",
+    "sources": [
+      "Tafsir Kemenag RI QS 86:5-8",
+      "Tafsir al-Jalalayn QS 86:5-8"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Memori & grounding",
+      "note": "perintah 'perhatikan dari apa engkau dicipta' = telusuri asal-usul/provenance sebelum menyimpulkan; grounding pada sumber, bukan asumsi"
+    },
+    {
+      "layer": "Penalaran",
+      "note": "argumen a fortiori eksplisit: Yang mampu memulai lebih mampu mengulang — inferensi dari kapasitas terbukti ke kapasitas ulang"
+    },
+    {
+      "layer": "Tangga epistemik",
+      "note": "naik dari mengamati asal fisik (air terpancar) ke kesimpulan tentang kuasa & kebangkitan — observasi konkret menuju keyakinan"
+    },
+    {
+      "layer": "Aksi & transfer",
+      "note": "prinsip 'yang sudah berjalan bisa dijalankan lagi' dipindahkan dari penciptaan awal ke kebangkitan — transfer pola ke konteks baru"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "ai-agentic",
+      "reading": "Dua prinsip agen dari ayat ini. (1) AUDIT PROVENANCE: 'perhatikan dari apa engkau dicipta' = perintah menelusuri asal-usul. Untuk agen: lacak provenance setiap keluaran/keyakinan sampai ke sumbernya sebelum mengklaim; rancang jejak asal (data lineage) agar tiap kesimpulan bisa ditanya 'dari mana ini'. (2) REPRODUCIBILITY: 'Yang memulai kuasa mengulang' dibaca sebagai prinsip proses yang deterministik/terreplikasi — proses yang tercatat lengkap (sumber + langkah) dapat dijalankan ulang dengan hasil setara. Actionable: simpan resep proses (seed, langkah, sumber) agar sebuah hasil bisa direproduksi, bukan sekali-pakai yang tak bisa diulang; jadikan pipeline idempoten sehingga 'mengulang lebih mudah daripada memulai'.",
+      "analogy": "data provenance/lineage audit; reproducible & idempotent pipeline; replay from recorded recipe",
+      "quranic_term": "falyanzuril insān"
+    },
+    {
+      "lens": "computational",
+      "reading": "'Yang memulai penciptaan kuasa mengulang, dan itu lebih mudah' beresonansi dengan REPRODUCIBILITY: bila keadaan awal dan langkah proses tercatat, menjalankan ulang lebih murah daripada penciptaan pertama (yang harus menemukan jalannya). Analog: build pertama mahal (menyusun resep); build ulang dari resep tersimpan jauh lebih murah — caching, memoization, replay.",
+      "analogy": "recompute-from-recipe cheaper than first derivation; caching/replay",
+      "quranic_term": "la-qādirun 'alā raj'ih"
+    },
+    {
+      "lens": "systems",
+      "reading": "'Air terpancar yang keluar dari antara sulb dan tarā'ib' dibaca sebagai sumber yang TERIDENTIFIKASI dan terlokalisasi — proses punya titik asal yang jelas, bukan kabur. Rekayasa: sistem yang dapat diaudit mensyaratkan sumber yang teridentifikasi; asal yang jelas memungkinkan penelusuran, verifikasi, dan pengulangan.",
+      "analogy": "identified/localized source; traceable origin enabling audit",
+      "quranic_term": "as-sulb wat-tarā'ib"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "Struktur 'khuliqa min mā'in dāfiq' → 'innahu 'alā raj'ihi la-qādir' adalah prakondisi→postkondisi: karena penciptaan pertama valid dan tercatat, operasi 'raj' (pengembalian) terjamin dapat dijalankan. Analog kontrak fungsi: bila state awal terpenuhi, pemanggilan ulang dijamin sahih.",
+      "analogy": "precondition→guaranteed re-invocation; function contract",
+      "quranic_term": "raj'"
+    },
+    {
+      "lens": "biology-medicine",
+      "reading": "Deskripsi 'air terpancar' dari daerah tertentu beresonansi dengan asal sel reproduksi, sebagaimana Kemenag mengaitkannya (bandingkan 76:2). Resonansi struktural (bukan mukjizat numerik): analogi pemahaman tentang sumber reproduktif yang tertentu, bukan klaim anatomi presisi dari teks; tafsir sendiri menekankan makna kuasa dan kebangkitan.",
+      "analogy": "specific reproductive source — bounded",
+      "quranic_term": "mā'in dāfiq"
+    },
+    {
+      "lens": "math-physics",
+      "reading": "'Dāfiq' (terpancar) menggambarkan gerak berdorongan/impuls dari sumber ke tujuan — motif proses berarah yang dipicu tekanan. Dibaca sebagai gambaran proses yang punya arah dan pemicu, bounded; bukan klaim persamaan fisika tertentu.",
+      "analogy": "directed, impulse-driven flow from source — bounded",
+      "quranic_term": "dāfiq"
+    },
+    {
+      "lens": "amal",
+      "reading": "Perintah 'falyanzur' (hendaklah ia memperhatikan) adalah panggilan muhasabah: renungkan asal yang hina agar tumbuh tawadhu dan yakin akan kebangkitan. Menyadari 'Yang memulai kuasa mengulang' menuntun pada kesiapan menghadapi hari kembali — bukan sekadar informasi, tapi pemantik amal.",
+      "analogy": "self-reflection on origin; readiness born of certainty"
+    },
+    {
+      "lens": "pedagogy",
+      "reading": "Ayat mengajar lewat pertanyaan reflektif ('dari apa ia dicipta?') lalu memberi jawaban bertahap — metode inquiry: picu keingintahuan dengan pertanyaan tentang diri, baru sodorkan bukti. Pertanyaan yang menyentuh diri murid lebih menancap daripada pernyataan datar.",
+      "analogy": "inquiry-based teaching; self-referential question then evidence",
+      "quranic_term": "mimma khuliq"
+    }
+  ],
+  "inference": "Empat ayat ini menuntun dari INTROSPEKSI ASAL ke prinsip PENGULANGAN. Perintahnya lugas: 'hendaklah manusia memperhatikan dari apa ia dicipta' — sebuah audit provenance, telusuri asal-usul sampai ke sumbernya sebelum menyimpulkan. Sumbernya pun ditunjuk dengan tertentu: air yang terpancar dari tempat yang teridentifikasi — bukan asal yang kabur, sehingga proses dapat ditelusuri. Dari sana ayat menarik kesimpulan a fortiori: Yang memulai penciptaan pasti kuasa mengulangnya, dan (per ayat penguat ar-Rum 27) 'itu lebih mudah'. Dibaca sebagai pola rekayasa: proses yang asal dan langkahnya tercatat lengkap bersifat REPRODUCIBLE — menjalankannya ulang lebih murah daripada penciptaan pertama yang harus menemukan jalannya (bandingkan build-from-recipe vs first-derivation; caching/replay/idempotence). Untuk agen: lacak lineage tiap keluaran, dan simpan 'resep' proses agar hasil dapat direproduksi, bukan sekali-pakai. Penting ditegaskan: makna asli (Kemenag) adalah bukti kuasa Allah atas kebangkitan; kesejajaran teknis ini resonansi struktural, bukan mukjizat numerik. CATATAN TANZIH: kuasa mencipta dan menghidupkan kembali adalah Sifat Allah — landasan iman yang disebut dengan ta'zhim, BUKAN bahan analogi; yang kita tiru hanyalah pola 'dapat diulang' pada proses ciptaan, di lapisan sebab.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-08",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-08",
+      "note": "Tadabbur perdana — Wave 9 penciptaan.",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

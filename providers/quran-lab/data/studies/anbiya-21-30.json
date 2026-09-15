@@ -1,0 +1,104 @@
+{
+  "schema": "lab-study-v2",
+  "id": "anbiya-21-30",
+  "version": 1,
+  "title": "Ratq wa fatq — keadaan padu awal, pemisahan, dan air kehidupan",
+  "subtitle": "Langit-bumi dahulu padu lalu dipisahkan; segala yang hidup dari air",
+  "ref": {
+    "surah": 21,
+    "from": 30,
+    "to": 30
+  },
+  "surah_name": "Al-Anbya",
+  "theme": "Kosmologi, kondisi awal, substrat kehidupan, klaim observasional",
+  "sourced_meaning": {
+    "summary": "Apakah orang-orang kafir tidak mengetahui (memperhatikan) bahwa langit dan bumi dahulunya sesuatu yang padu (ratqan), kemudian Kami pisahkan (fataqnā) keduanya; dan Kami jadikan dari air segala sesuatu yang hidup. Maka mengapa mereka tidak beriman? (Tafsir menegaskan ini ajakan memperhatikan alam dan peristiwa-peristiwanya.)",
+    "sources": [
+      "Tafsir Kemenag RI QS 21:30",
+      "Tafsir al-Jalalayn QS 21:30"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Persepsi",
+      "note": "dibuka dengan 'awalam yara' (tidakkah mereka melihat/mengetahui) — klaim ditujukan pada observasi"
+    },
+    {
+      "layer": "Tangga epistemik",
+      "note": "struktur: fakta alam → kesimpulan; bukan dogma → tuntutan; arah penalarannya dari bukti"
+    },
+    {
+      "layer": "Penalaran",
+      "note": "dua klaim makro (asal padu; air-kehidupan) yang keduanya kelak menjadi objek riset besar sains"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "amal",
+      "reading": "Air sebagai asal segala yang hidup menuntut adab terhadap air: larangan mencemari, anjuran hemat bahkan saat berwudhu — sumber kehidupan diperlakukan sebagai amanah, bukan komoditas tak terbatas.",
+      "quranic_term": "iʿtibār"
+    },
+    {
+      "lens": "computational",
+      "reading": "Struktur naratifnya: satu state awal termampatkan (ratq — padu) → operasi pemisahan (fatq) → diferensiasi menjadi struktur majemuk. Pola universal sistem: dari singularitas/seed tunggal, kompleksitas lahir lewat pemisahan dan diferensiasi bertahap.",
+      "analogy": "single initial state → differentiation",
+      "quranic_term": "ratq → fatq"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "'Kami jadikan DARI AIR segala yang hidup' = deklarasi dependensi universal: hidup(x) → butuh(x, air). Satu prasyarat bersama untuk seluruh kelas 'hidup' — dependency root yang dipakai sains hingga kini (cari air = cari kehidupan).",
+      "analogy": "universal dependency declaration"
+    },
+    {
+      "lens": "algorithm",
+      "reading": "Pemisahan dari kepaduan adalah pola konstruksi: mulai dari blob tunggal, pisahkan bertahap menjadi subsistem (langit/bumi; kemudian di ayat lain: tujuh lapis). Dekomposisi top-down sebagai metode penciptaan struktur — kebalikan sekaligus pasangan dari konstruksi bottom-up (min ʿalaq).",
+      "analogy": "top-down decomposition"
+    },
+    {
+      "lens": "inference",
+      "reading": "Bentuknya berani: klaim tentang keadaan masa lalu alam semesta yang saat diturunkan TIDAK bisa diverifikasi siapa pun — baru bisa diuji ribuan tahun kemudian. Klaim yang menunda verifikasinya ke masa depan hanya menguntungkan pembuatnya bila benar (bandingkan 41:53 'sanurīhim').",
+      "quranic_term": "naẓar → tabayyun"
+    },
+    {
+      "lens": "math-physics",
+      "reading": "Dibaca berdampingan dengan kosmologi modern (keadaan awal panas-padat yang mengembang) dan biologi (kehidupan berbasis air, sel ~60-70% air), resonansinya kuat — dicatat sebagai resonansi struktural, BUKAN klaim bahwa ayat 'mendahului menemukan' teori tertentu; tafsir bersumber tidak memuat klaim itu.",
+      "analogy": "structural resonance (bounded)",
+      "quranic_term": "āyāt kauniyah"
+    },
+    {
+      "lens": "systems",
+      "reading": "Air = shared substrate seluruh subsistem hayati: satu medium yang dilalui energi, nutrisi, dan informasi kimiawi semua organisme. Sistem apa pun punya substrat bersamanya (energi bagi mesin, data bagi AI) — dan kesehatan substrat menentukan kesehatan seluruh sistem di atasnya.",
+      "analogy": "shared substrate layer"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Analogi arsitektur: model foundation = 'keadaan padu' yang kemudian di-fatq (dipisah/di-fine-tune) menjadi varian terspesialisasi; dan 'air' = data — substrat tunggal yang darinya semua kapabilitas hidup. Kualitas substrat data menentukan hidup-matinya seluruh sistem di atasnya.",
+      "analogy": "foundation → specialization; data as substrate"
+    },
+    {
+      "lens": "artifact",
+      "reading": "Peradaban air: irigasi, qanat, bendungan, jam air — dan kini instrumen pencari air di planet lain (rover Mars mencari jejak air = mencari jejak hidup, mengikuti logika persis ayat ini).",
+      "analogy": "water infrastructure → astrobiology"
+    }
+  ],
+  "inference": "Ayat ini mengajukan dua klaim makro tentang alam — asal yang padu lalu dipisah, dan air sebagai prasyarat semua yang hidup — dalam bentuk pertanyaan kepada pengamat ('tidakkah mereka melihat?'). Secara epistemik ini genre yang langka: pernyataan kuno yang bentuknya justru MENGUNDANG verifikasi empiris masa depan, dan yang hingga kini dipakai sains sebagai heuristik kerjanya sendiri (ikuti air, temukan kehidupan). Pelajaran rekayasanya: kenali substrat sistemmu — segala yang 'hidup' di sistem apa pun bergantung pada satu lapisan bersama yang harus dijaga kemurniannya.",
+  "authors": [
+    "Draft AI (LLM draft) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-07",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-07",
+      "note": "Tadabbur perdana — Wave 2 (dari sweep korpus 6236 ayat).",
+      "authors": [
+        "Draft AI (LLM draft)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

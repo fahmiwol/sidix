@@ -1,0 +1,107 @@
+{
+  "schema": "lab-study-v2",
+  "id": "mulk-67-30",
+  "version": 1,
+  "title": "Ghawran — jika sumber airmu meresap, siapa gantinya?",
+  "subtitle": "Seandainya air surut meresap ke tanah, siapa mendatangkan air mengalir (maʿīn)?",
+  "ref": {
+    "surah": 67,
+    "from": 30,
+    "to": 30
+  },
+  "surah_name": "Al-Mulk",
+  "theme": "Dependency tunggal, single point of failure, sumber tak tergantikan, ketahanan",
+  "sourced_meaning": {
+    "summary": "Menurut Tafsir Kemenag: setelah memerintahkan tawakal, Allah menyuruh Nabi berkata kepada orang kafir — cobalah terangkan, seandainya atas kehendak Allah seluruh air yang mengalir di permukaan bumi meresap ke dalam tanah (ghawran) sehingga sumber-sumber dan sumur mengering, timba tak lagi dapat menimba: adakah tuhan selain Allah yang dapat mendatangkan air mengalir (maʿīn) sehingga bisa diminum, kebun subur kembali, ternak berkembang? Tidak ada yang mampu kecuali Allah Yang Maha Pemurah — maka mengapa masih menyekutukan-Nya?",
+    "sources": [
+      "Tafsir Kemenag RI QS 67:30",
+      "Tafsir al-Jalalayn QS 67:30"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Persepsi",
+      "note": "skenario ekstrem dihadirkan: air permukaan lenyap meresap — kondisi kegagalan total yang membuka mata pada dependency tersembunyi"
+    },
+    {
+      "layer": "Penalaran",
+      "note": "pertanyaan 'man yaʾtīkum bimāʾin maʿīn' menuntut audiens menyebut penyedia pengganti — dan menemukan tak ada"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "computational",
+      "reading": "Uji single-point-of-failure: buang satu sumber daya fondasi (air) dan tanyakan siapa penggantinya. Ayat menjalankan chaos test — matikan dependency inti, amati apakah ada fallback. Jawabannya menyingkap bahwa sistem bergantung pada satu penyedia tak tergantikan.",
+      "analogy": "SPOF / chaos test: kill the core dependency, look for fallback",
+      "quranic_term": "in aṣbaḥa māʾukum ghawran"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "Prakondisi keras yang tak punya cabang alternatif: seluruh keluaran hidup (minum, kebun, ternak) bergantung pada guard 'tersedia(air)'. Ayat menunjukkan tak ada else-branch yang valid bila prasyarat itu gugur — dependency wajib tanpa substitusi.",
+      "analogy": "hard precondition with no valid fallback branch",
+      "quranic_term": "man yaʾtīkum bimāʾin maʿīn"
+    },
+    {
+      "lens": "systems",
+      "reading": "Ketergantungan kritis tunggal menembus seluruh lapisan: air bukan salah satu input melainkan akar yang seluruh subsistem (pangan, ternak, ekonomi) bergantung padanya. Menghapusnya bukan degradasi sebagian, melainkan kegagalan berkaskade menyeluruh.",
+      "analogy": "load-bearing single dependency → total cascade failure",
+      "quranic_term": "aṣl lā badīl lah"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Perencanaan ketahanan dependency untuk agen: setiap agen punya 'air' tersembunyi yang jika 'meresap' membuatnya lumpuh — sumber data hidup, API/tool eksternal, endpoint komputasi, umpan pengetahuan segar. Ayat memaksa pertanyaan operasional: 'jika sumber ini kering, siapa/apa yang mendatangkan gantinya?'. Implikasi desain: petakan dependency kritis secara eksplisit, bedakan yang punya pengganti dari yang tak tergantikan, sediakan fallback/degradasi anggun untuk yang bisa diganti, dan untuk yang benar-benar tunggal — akui keterbatasannya dan pantau kesehatannya alih-alih berasumsi ia selalu ada. Ketahanan dimulai dari menamai apa yang akan menghancurkanmu bila hilang.",
+      "analogy": "dependency-failure planning: name the SPOF, add fallbacks or monitor",
+      "quranic_term": "in aṣbaḥa māʾukum ghawran"
+    },
+    {
+      "lens": "economy",
+      "reading": "Kelangkaan absolut vs relatif: air murah selama melimpah, tetapi nilai sejatinya terungkap pada skenario ketiadaan total — tak ada harga yang bisa memanggilnya kembali bila tak ada penyedia. Menghargai sumber fondasi sebelum surut adalah manajemen risiko, bukan sekadar etika.",
+      "analogy": "true value revealed at total scarcity; no supply at any price",
+      "quranic_term": "māʾ maʿīn"
+    },
+    {
+      "lens": "earth-cosmos",
+      "reading": "Muka air tanah yang turun: 'ghawran' menggambarkan air meresap ke bawah jangkauan — persis penurunan water table saat akuifer terkuras melebihi isi ulang. Sumur kering bukan kiasan; ia hidrogeologi yang teramati dan terukur.",
+      "analogy": "water-table drawdown / aquifer depletion",
+      "quranic_term": "ghawran"
+    },
+    {
+      "lens": "inference",
+      "reading": "Argumen kontrafaktual menuju penyedia sejati: dengan mengandaikan air lenyap dan menantang menyebut pengganti, audiens digiring menyimpulkan sumber yang tak tergantikan. Ketiadaan fallback dalam skenario ekstrem = bukti kebergantungan pada satu penata. Bounded — resonansi struktural, bukan klaim mukjizat numerik.",
+      "analogy": "counterfactual removal to expose the irreplaceable provider",
+      "quranic_term": "man yaʾtīkum"
+    },
+    {
+      "lens": "math-physics",
+      "reading": "Sumber daya mengalir yang butuh pasokan kontinu: 'maʿīn' (air mengalir) bukan stok statis melainkan fluks yang harus terus diisi ulang. Bila laju isi ulang jatuh ke nol, cadangan terkuras habis — sistem aliran runtuh saat sumbernya berhenti, berbeda dari sekadar berkurang.",
+      "analogy": "flux-dependent resource: zero recharge → collapse, not decline",
+      "quranic_term": "māʾ maʿīn"
+    },
+    {
+      "lens": "artifact",
+      "reading": "Peradaban merespons ancaman 'ghawran' dengan teknologi ketahanan: waduk & cadangan (buffer), sumur dalam & pipa jarak jauh (jalur pasok redundan), daur ulang air (mengurangi ketergantungan sumber tunggal). Semua adalah upaya menyediakan 'maʿīn' pengganti yang ayat ini nyatakan hanya milik Sang Pemberi.",
+      "analogy": "reservoirs, redundancy, recycling as resilience engineering",
+      "quranic_term": "iʾtiyān al-māʾ al-maʿīn"
+    }
+  ],
+  "inference": "QS 67:30 menjalankan sebuah chaos test teologis: hapus satu sumber daya fondasi (air), lalu tantang audiens menyebut penggantinya — dan tak ada. Nilai rekayasanya adalah disiplin ketahanan dependency: sistem apa pun, termasuk agen AI, punya 'air tersembunyi' (data hidup, API, komputasi) yang bila 'meresap' melumpuhkannya total. Pelajarannya bertingkat — namai dependency kritismu secara eksplisit, bedakan yang tergantikan (beri fallback/degradasi anggun) dari yang benar-benar tunggal (akui, pantau, jangan asumsikan abadi). Ketahanan tidak dimulai dari menambah fitur, melainkan dari jujur menamai apa yang akan menghancurkanmu bila ia hilang.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-07",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-07",
+      "note": "Tadabbur perdana — Wave 6 batch air/substrat.",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

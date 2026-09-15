@@ -1,0 +1,104 @@
+{
+  "schema": "lab-study-v2",
+  "id": "haqqah-69-13-16",
+  "version": 1,
+  "title": "Satu tiupan, satu benturan — struktur terkokoh dilebur, langit pun rapuh",
+  "subtitle": "Bumi & gunung diangkat lalu dibenturkan sekali bentur; langit terbelah karena hari itu ia lemah (wāhiyah)",
+  "ref": {
+    "surah": 69,
+    "from": 13,
+    "to": 16
+  },
+  "surah_name": "Al-Haqqah",
+  "theme": "Teardown kosmik: struktur paling stabil dilebur dalam satu operasi; tidak ada infrastruktur abadi; wahiyah = masa rapuh yang tampak permanen",
+  "sourced_meaning": {
+    "summary": "Apabila sangkakala ditiup sekali tiup, bumi dan gunung-gunung diangkat lalu dibenturkan keduanya sekali bentur — maka pada hari itu terjadilah hari Kiamat, dan langit terbelah karena pada hari itu langit menjadi lemah. Tafsir Kemenag: bila Allah berkehendak mendatangkan Kiamat, Ia memerintahkan Malaikat Israfil meniup sangkakala pertama; seluruh bumi berguncang, gunung-gunung terangkat dari tempatnya lalu saling berbenturan — gempa dahsyat yang menghancurkan seluruh yang ada di permukaan bumi (ditautkan dengan al-Kahf 18:47: gunung diperjalankan dan bumi terlihat rata). Pada saat itu langit dalam keadaan LEMAH sehingga terbelah; Kemenag menelaah: keteraturan benda langit ditopang keseimbangan tarik-menarik — seandainya satu saja bergeser dari falaknya, keseimbangan hilang dan terjadilah kehancuran menyeluruh (telaah ilmiah Kemenag; disajikan sebagai pemahaman, bukan kepastian teks). CATATAN GHAIB: kiamat perkara ghaib yang diimani; deskripsi ini dibaca dari tafsir apa adanya — bukan spekulasi kapan/bagaimana mekanisme fisisnya.",
+    "sources": [
+      "Tafsir Kemenag RI QS 69:13-16",
+      "Tafsir al-Jalalayn QS 69:13-16"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Aksi & transfer",
+      "note": "'nafkhatun wāḥidah… dakkatan wāḥidah' — SATU tiupan, SATU benturan: teardown total dieksekusi dalam operasi tunggal, bukan degradasi bertahap"
+    },
+    {
+      "layer": "Persepsi",
+      "note": "objek yang dihancurkan justru simbol kestabilan dalam persepsi manusia (gunung, langit) — pengamat diajak menakar ulang apa yang ia anggap permanen"
+    },
+    {
+      "layer": "Tangga epistemik",
+      "note": "'fa-yaumaidzin waqaʿatil-wāqiʿah' — al-wāqiʿah (yang pasti terjadi): kepastian peristiwa ditegaskan, detail mekanisme tidak; iman pada kepastian, tawaqquf pada rincian"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "systems",
+      "reading": "Yang dilebur pertama justru komponen penstabil: gunung — yang di ayat penciptaan (an-Nazi'at 79:32) dipancangkan sebagai pengokoh bumi — kini diangkat dan dibenturkan sekali bentur. Bacaan sistem: TIDAK ADA infrastruktur abadi; komponen yang dirancang sebagai anchor/penstabil pun punya akhir siklus, dan justru pembongkarannya menandai berakhirnya seluruh rezim operasi. Perancang yang jujur menganggarkan akhir hidup untuk SEMUA komponen — termasuk yang hari ini terasa mustahil tergantikan.",
+      "analogy": "no permanent infrastructure: bahkan anchor/stabilizer punya end-of-life",
+      "quranic_term": "ḥumilatil-arḍu wal-jibāl (bumi & gunung diangkat)"
+    },
+    {
+      "lens": "computational",
+      "reading": "'Dakkatan wāḥidah' (sekali bentur) membaca sebagai teardown atomik: seluruh struktur diruntuhkan dalam SATU operasi, bukan dekomposisi inkremental komponen demi komponen. Ada kelas pembongkaran yang memang dirancang atomik — drop seluruh namespace, bukan delete per baris — karena pembongkaran bertahap menyisakan keadaan-antara yang tak konsisten. Struktur peristiwanya: angkat (ḥumilat) lalu benturkan sekali — muat, lalu satu operasi final.",
+      "analogy": "atomic teardown: satu operasi final, tanpa keadaan-antara yang menggantung",
+      "quranic_term": "dakkatan wāḥidah"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "'Wāhiyah' (lemah/rapuh) menempel pada langit — struktur yang selama ini menjadi lambang kekokohan ('binaan yang ditinggikan') dideklarasikan RAPUH 'pada hari itu'. Bacaan logika: invariant punya masa berlaku; properti 'kokoh' bukan atribut abadi melainkan berlaku selama rezim tertentu ('yauma-idzin' — pada hari itu — menandai pergantian rezim). Sistem yang menganggap invariannya berlaku selamanya akan gagal justru di titik yang paling ia percayai.",
+      "analogy": "invariant berbatas-rezim: properti 'kokoh' punya tanggal kedaluwarsa",
+      "quranic_term": "yauma-idzin wāhiyah"
+    },
+    {
+      "lens": "math-physics",
+      "reading": "Telaah Kemenag menautkan terbelahnya langit dengan keseimbangan gravitasi: keteraturan orbit ditopang tarik-menarik yang saling mengimbangi, dan bergesernya SATU benda dari falaknya cukup untuk meruntuhkan keseimbangan keseluruhan. Struktur ini dikenal dalam fisika sistem: kestabilan global bisa bergantung pada konfigurasi rapuh (metastabil) — tampak kokoh selama parameter terjaga, runtuh menyeluruh saat satu parameter lepas. Dicatat sebagai RESONANSI struktural bounded dari telaah Kemenag sendiri — pemahaman, bukan bukti, bukan mukjizat numerik.",
+      "analogy": "metastabilitas: keseimbangan global runtuh oleh pergeseran satu parameter (bounded)",
+      "quranic_term": "āyāt kauniyah"
+    },
+    {
+      "lens": "earth-cosmos",
+      "reading": "Deskripsi tafsir menyusun kronologi geo-kosmik: guncangan seluruh bumi → gunung terangkat & berbenturan → permukaan rata (ditautkan al-Kahf 18:47) → langit kehilangan kohesi & terbelah. Skala kehancuran naik dari kerak planet ke struktur langit. Padanan kosmologi modern tentang akhir alam semesta ADA sebagai wacana, namun di sini cukup dicatat deskriptif: teks & tafsir menegaskan totalitas kehancuran, bukan model fisisnya — kapan/bagaimana adalah ghaib.",
+      "analogy": "kehancuran berskala naik: kerak → orografi → struktur langit (deskriptif, bounded)",
+      "quranic_term": "wansyaqqatis-samāʾ (langit terbelah)"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Cetak biru fase decommission total: (1) rancang 'benturan tunggal' — jalur teardown atomik yang bisa meruntuhkan seluruh deployment dalam satu operasi terkendali (bukan berharap komponen mati satu-satu), karena teardown parsial meninggalkan zombie state; (2) JANGAN mengecualikan penstabil dari rencana akhir: guardrail, anchor memory, verifier — semua harus punya prosedur pembongkarannya sendiri; sistem yang tak bisa membongkar guardrail-nya sendiri akan terkunci padanya; (3) audit berkala asumsi 'kokoh': komponen yang paling lama tak tersentuh justru paling mungkin wāhiyah (rapuh) saat rezim berubah. Actionable: latihan teardown penuh (game-day) yang mencakup komponen 'mustahil mati'. CATATAN GHAIB: analogi bounded atas struktur deskripsi tafsir, bukan klaim tentang mekanisme kiamat.",
+      "analogy": "full-decommission drill: teardown atomik termasuk guardrail; audit komponen 'terlalu kokoh untuk gagal'"
+    },
+    {
+      "lens": "inference",
+      "reading": "Nama peristiwanya sendiri epistemik: al-wāqiʿah (yang pasti terjadi) dan al-ḥāqqah (yang benar-benar terjadi, nama surah ini) — kepastian TERJADINYA ditegaskan berlapis, sementara rincian mekanisme tidak diberikan. Pola inferensi yang sehat: pisahkan keyakinan pada KEPASTIAN suatu peristiwa dari klaim pengetahuan atas DETAILNYA; tingkat keyakinan boleh maksimal pada yang pertama sambil tetap tawaqquf (menahan diri) pada yang kedua.",
+      "analogy": "certainty of event ≠ knowledge of mechanism: dua tingkat keyakinan terpisah",
+      "quranic_term": "al-wāqiʿah / al-ḥāqqah"
+    },
+    {
+      "lens": "psychology",
+      "reading": "Gunung dan langit adalah jangkar rasa aman manusia — yang 'tak mungkin berubah'. Ayat melatih jiwa melepas kemelekatan pada kekokohan makhluk: semua penopang lahiriah punya hari rapuhnya. Secara psikologis ini bukan ajakan cemas, melainkan kalibrasi: sandaran mutlak tidak diletakkan pada struktur yang bisa runtuh — sehingga saat perubahan besar datang, jiwa tidak ikut runtuh bersama strukturnya.",
+      "analogy": "melepas single point of attachment pada struktur yang fana",
+      "quranic_term": "nafkhatun wāḥidah"
+    }
+  ],
+  "inference": "Dibaca sebagai analogi rekayasa (bounded, di atas makna bersumber), rangkaian ini adalah babak teardown dalam busur kosmik: SATU tiupan → bumi & gunung diangkat dan dibenturkan SEKALI bentur → kiamat terjadi → langit terbelah karena hari itu ia wāhiyah (rapuh). Tiga temuan struktural: (1) teardown final bersifat atomik — satu operasi menyeluruh, bukan degradasi bertahap yang menyisakan keadaan-antara; (2) yang dibongkar justru para penstabil — gunung yang di ayat penciptaan dipancangkan sebagai pengokoh kini dilebur lebih dulu: TIDAK ADA infrastruktur abadi, dan rencana akhir-hidup harus mencakup komponen yang hari ini terasa mustahil mati (termasuk guardrail sistem itu sendiri); (3) 'kokoh' adalah properti berbatas-rezim — langit yang selama ini lambang kekokohan dideklarasikan rapuh 'pada hari itu'; invariant punya masa berlaku, dan audit harus paling curiga pada komponen yang paling lama dipercaya. Telaah keseimbangan gravitasi Kemenag dicatat sebagai resonansi struktural bounded — pemahaman, bukan bukti, bukan mukjizat numerik; ini salah satu pembacaan, bukan maksud tunggal ayat. CATATAN GHAIB: kiamat perkara ghaib yang diimani — kepastian terjadinya ditegaskan teks (al-ḥāqqah, al-wāqiʿah), rincian kapan/bagaimana fisisnya tidak kita klaim. CATATAN TANZIH: Yang memerintahkan tiupan dan menghancurkan adalah Allah — disebut dengan ta'zhim sebagai landasan iman, bukan bahan analogi; yang dianalogikan hanya struktur peristiwa pada makhluk sebagaimana dideskripsikan tafsir.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-12",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-12",
+      "note": "Tadabbur perdana — Wave 13 kosmogenesis/kehancuran.",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

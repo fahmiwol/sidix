@@ -1,0 +1,116 @@
+{
+  "schema": "lab-study-v2",
+  "id": "naba-78-9-11",
+  "version": 1,
+  "title": "Tidur=istirahat, malam=pakaian, siang=penghidupan — duty-cycle rest-recovery",
+  "subtitle": "Fase pulih terjadwal (malam) memulihkan daya bagi fase kerja (siang); tidur sebagai maintenance window",
+  "ref": {
+    "surah": 78,
+    "from": 9,
+    "to": 11
+  },
+  "surah_name": "An-Naba",
+  "theme": "Siklus siang-malam, duty-cycle, rest-recovery scheduling, tidur=maintenance/consolidation",
+  "sourced_meaning": {
+    "summary": "'Kami jadikan tidurmu untuk istirahat (subātā), malam sebagai pakaian (libās), dan siang untuk mencari penghidupan (ma'āsy).' Tafsir Kemenag: tidur di malam hari untuk beristirahat dari kesibukan siang — dengan istirahat itu manusia mengembalikan daya dan kekuatan untuk pekerjaan keesokan harinya; tanpa selingan tidur kekuatan siapa pun akan merosot. Malam sebagai pakaian: gelapnya menutupi permukaan bumi seperti pakaian menutup tubuh — menutup aurat saat tidur dan melindungi/menyembunyikan dari bahaya. Siang dijadikan waktu berusaha dan mencari rezeki serta hidup bermasyarakat.",
+    "sources": [
+      "Tafsir Kemenag RI QS 78:9-11",
+      "Tafsir al-Jalalayn QS 78:9-11"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Umpan balik",
+      "note": "tanpa fase istirahat, Kemenag: kekuatan merosot — rest adalah loop pemulihan yang mencegah degradasi kinerja lintas-hari"
+    },
+    {
+      "layer": "Memori & grounding",
+      "note": "tidur (subāt) dibaca sebagai jendela konsolidasi: keadaan hari ini dimantapkan sebelum siklus berikutnya"
+    },
+    {
+      "layer": "Aksi & transfer",
+      "note": "siang (ma'āsy) = fase throughput/produksi; hasil kerja bergantung pada daya yang dipulihkan di fase malam"
+    },
+    {
+      "layer": "Pelatihan",
+      "note": "pemulihan terjadwal bukan waktu terbuang melainkan bagian dari siklus yang menjaga kapasitas tetap tinggi"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "biology-medicine",
+      "reading": "Tidur dibaca sebagai proses restoratif yang Allah tanamkan pada tubuh: konsolidasi memori, pembersihan metabolik (sistem glymphatic membilas produk sisa otak), pemulihan hormonal & perbaikan jaringan. Kemenag menegaskan fungsi mengembalikan daya-kekuatan; tanpa tidur, kinerja merosot. Ini resonansi struktural dengan biologi sirkadian — bounded, bukan mukjizat numerik: pemulihan bukan jeda pasif melainkan kerja pemeliharaan aktif.",
+      "analogy": "tidur = konsolidasi + pembersihan metabolik + perbaikan jaringan",
+      "quranic_term": "subāt (istirahat)"
+    },
+    {
+      "lens": "systems",
+      "reading": "Rancangan duty-cycle: sistem hidup dibagi fase AKTIF (siang, throughput) dan fase PULIH (malam, recovery). Tak ada sistem berbeban yang bertahan pada 100% utilisasi tanpa downtime terjadwal; keandalan jangka panjang menuntut fase pemulihan yang direncanakan, bukan dipaksakan saat sudah gagal. Kemenag: tanpa istirahat kekuatan merosot — persis degradasi sistem tanpa jendela pemeliharaan.",
+      "analogy": "duty-cycle: fase aktif + fase pulih terjadwal",
+      "quranic_term": "sunnah tanāwub (pergiliran)"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Cetak biru penjadwalan kerja-pulih untuk agen jangka panjang: alih-alih melayani tanpa henti, jadwalkan MAINTENANCE WINDOW pada jendela sepi ('malam') untuk konsolidasi memori, kompaksi/ringkasan log, kalibrasi ulang, dan pembuangan sampah keadaan; layani beban ('siang') pada jendela sibuk. Actionable: (1) pisahkan fase serving (online) dari fase konsolidasi (offline/batch); (2) jadwalkan pemulihan proaktif sebelum degradasi, bukan sesudah crash; (3) perlakukan 'malam' sebagai lapisan isolasi/pengaman (libās) — bekukan perubahan berisiko ke jendela terkendali. Tanpa siklus ini, agen mengalami drift, memori membengkak, dan kinerja meluruh.",
+      "analogy": "maintenance window: serving (siang) vs konsolidasi/GC (malam)",
+      "quranic_term": "ma'āsy (fase penghidupan/throughput)"
+    },
+    {
+      "lens": "algorithm",
+      "reading": "Pemisahan pemrosesan online vs batch: siang = pekerjaan interaktif real-time; malam = tugas batch (konsolidasi, kompaksi, defragmentasi, garbage collection) yang mahal dijalankan saat sibuk. Menjadwalkan tugas berat ke jendela idle menaikkan throughput keseluruhan tanpa mengganggu layanan puncak.",
+      "analogy": "online (siang) vs batch GC/kompaksi (malam)"
+    },
+    {
+      "lens": "psychology",
+      "reading": "Istirahat sebagai prasyarat fungsi kognitif-emosional: kurang tidur menurunkan regulasi emosi, atensi, dan pengambilan keputusan. Pemulihan bukan kemewahan melainkan komponen kinerja; ritme kerja-istirahat yang sehat menjaga kapasitas mental tetap tinggi, sejalan penegasan Kemenag bahwa daya dipulihkan lewat tidur.",
+      "analogy": "rest sebagai komponen kinerja kognitif, bukan kemewahan"
+    },
+    {
+      "lens": "economy",
+      "reading": "Waktu dipartisi sebagai sumber daya: siang untuk produksi/pencarian rezeki (ma'āsy), malam untuk pemulihan yang menopang produktivitas berikutnya. Produktivitas berkelanjutan = keluaran fase kerja dikurangi biaya keausan bila pemulihan diabaikan; membakar fase pulih untuk kerja ekstra menurunkan output jangka panjang (kelelahan sebagai utang yang berbunga).",
+      "analogy": "partisi waktu produksi vs pemulihan; anti burn-out",
+      "quranic_term": "ma'āsy"
+    },
+    {
+      "lens": "math-physics",
+      "reading": "Osilasi terpaksa antara dua keadaan dengan rasio duty-cycle: sistem berayun ritmis antara mode-kerja dan mode-pulih. Stabilitas jangka panjang muncul dari periodisitas yang terjaga; mengubah rasio secara ekstrem (kerja terlalu lama) mendorong sistem keluar dari rezim stabilnya.",
+      "analogy": "osilasi dua-keadaan dengan rasio duty-cycle stabil"
+    },
+    {
+      "lens": "computational",
+      "reading": "Malam sebagai libās dibaca sebagai lapisan isolasi/keamanan: gelap menutup dan melindungi (Kemenag: menutup aurat, menyembunyikan dari bahaya) — analog boundary yang mengisolasi keadaan sensitif saat sistem 'beristirahat', plus mode hemat-daya. Fase tidur = checkpoint aman + defrag sebelum siklus berikut.",
+      "analogy": "libās = isolation boundary + low-power/checkpoint",
+      "quranic_term": "libās (pakaian/penutup)"
+    },
+    {
+      "lens": "earth-cosmos",
+      "reading": "Rotasi Bumi menyediakan penjadwal alami: pergantian siang-malam adalah sinyal jam eksternal yang menyelaraskan aktivitas makhluk. Ritme kerja-pulih tidak perlu ditemukan tiap organisme; ia dientrainmen ke penanda kosmik yang teratur — infrastruktur waktu yang disediakan lingkungan.",
+      "analogy": "rotasi Bumi = penjadwal/clock eksternal untuk siklus"
+    },
+    {
+      "lens": "pedagogy",
+      "reading": "Konsolidasi bergantung-tidur: pembelajaran dimantapkan selama istirahat, sehingga jeda terjadwal (spaced practice + tidur) meningkatkan retensi dibanding belajar tanpa henti. 'Malam' berperan sebagai fase di mana perolehan siang diendapkan menjadi ingatan yang tahan lama.",
+      "analogy": "konsolidasi memori bergantung-tidur; spaced practice"
+    }
+  ],
+  "inference": "Sebagai analogi rekayasa, tiga potongan ayat ini menggambarkan satu prinsip penjadwalan yang dalam: kehidupan dirancang sebagai DUTY-CYCLE — fase kerja (siang, ma'āsy) yang menghasilkan, dan fase pulih terjadwal (malam/tidur, subāt) yang mengembalikan daya dan mengonsolidasi keadaan, dengan 'malam' juga berfungsi sebagai lapisan pelindung/isolasi (libās). Kemenag menegaskan inti mekanismenya: tanpa istirahat, kekuatan merosot. Untuk rekayasa (utama: agen AI jangka panjang) pelajarannya konkret: pisahkan fase serving dari fase konsolidasi, jadwalkan maintenance window pada jendela sepi untuk pembersihan memori/kompaksi/kalibrasi, dan lakukan pemulihan proaktif SEBELUM degradasi, bukan sesudah gagal. Padanan biologis (glymphatic, konsolidasi memori) dibingkai resonansi struktural yang bounded, bukan mukjizat numerik; ini salah satu pembacaan di atas makna zahir yang bersumber, bukan maksud tunggal ayat.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-08",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-08",
+      "note": "Tadabbur perdana — Wave 9 penyembuhan/siklus.",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

@@ -1,0 +1,104 @@
+{
+  "schema": "lab-study-v2",
+  "id": "asr-103-1-3",
+  "version": 1,
+  "title": "Wal-ʿAṣr — trajektori default kerugian & syarat pengecualian",
+  "subtitle": "Demi masa: manusia dalam kerugian, KECUALI empat syarat",
+  "ref": {
+    "surah": 103,
+    "from": 1,
+    "to": 3
+  },
+  "surah_name": "Al-'Asr",
+  "theme": "Waktu sebagai sumber daya, default trajectory, kondisi pengecualian, entropi",
+  "sourced_meaning": {
+    "summary": "Demi masa (al-ʿaṣr). Sesungguhnya manusia benar-benar dalam kerugian (khusr). Kecuali orang-orang yang: (1) beriman, (2) mengerjakan amal saleh, (3) saling menasihati dalam kebenaran (al-ḥaqq), dan (4) saling menasihati dalam kesabaran (aṣ-ṣabr).",
+    "sources": [
+      "Tafsir Kemenag RI QS 103:1-3",
+      "Tafsir al-Jalalayn QS 103:1-3"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Tangga epistemik",
+      "note": "sumpah dengan waktu = waktu sebagai saksi/ukuran; hasil hidup terukur terhadapnya"
+    },
+    {
+      "layer": "Alignment",
+      "note": "default = rugi; hanya 4 kondisi yang membalik — arah baik harus ditegakkan, bukan otomatis"
+    },
+    {
+      "layer": "Aksi & transfer",
+      "note": "dua syarat sosial (saling menasihati) = koreksi tidak bisa sendirian; butuh peer"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "amal",
+      "reading": "Surah terpadat maknanya: seluruh resep keselamatan dalam tiga ayat. Iman (fondasi) + amal saleh (output) + tawāṣaw bil-ḥaqq & biṣ-ṣabr (menjaga sesama tetap di jalur). Waktu terus berjalan; yang tak mengisinya dengan empat ini, merugi.",
+      "quranic_term": "tawāṣī"
+    },
+    {
+      "lens": "economy",
+      "reading": "Waktu sebagai satu-satunya modal yang non-recoverable & terus terpakai (sumpah 'wal-ʿaṣr'). Default-nya adalah KERUGIAN — biaya peluang berjalan otomatis. Return positif hanya dari investasi spesifik (4 syarat). Ini model kapital-waktu: diam = rugi majemuk, karena aset menyusut tanpa menghasilkan.",
+      "analogy": "time as depreciating non-recoverable capital; opportunity cost",
+      "quranic_term": "khusr (kerugian)"
+    },
+    {
+      "lens": "computational",
+      "reading": "Struktur: default state = LOSS untuk semua; guard clause dengan 4 kondisi AND yang harus semua terpenuhi untuk keluar dari default. 'illā' = satu-satunya exit path, dan syaratnya konjungtif (bukan disjungtif).",
+      "analogy": "default-loss + conjunctive exit guard"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "Bukan 3 dari 4, tapi keempatnya: iman ∧ amal ∧ tawāṣaw-ḥaqq ∧ tawāṣaw-ṣabr. Dua yang terakhir bersifat resiprokal (saling) — tak bisa dipenuhi solo; membutuhkan node lain dalam jaringan. Constraint yang secara desain memaksa kolaborasi.",
+      "analogy": "conjunctive + reciprocal constraints"
+    },
+    {
+      "lens": "algorithm",
+      "reading": "Entropi sosial-moral: tanpa kerja aktif, sistem meluruh ke kerugian (arrow of time). Empat syarat = kerja anti-entropi berulang. Dua syarat sosial menambahkan error-correction terdistribusi: peer saling mengoreksi drift (ḥaqq) dan menahan agar tak menyerah (ṣabr).",
+      "analogy": "anti-entropy work + distributed error correction"
+    },
+    {
+      "lens": "inference",
+      "reading": "Ayat menetapkan prior yang keras: asumsikan rugi kecuali terbukti sebaliknya lewat 4 syarat. Ini bukan pesimisme melainkan kalibrasi — memaksa evaluasi jujur atas bagaimana waktu benar-benar dibelanjakan, bukan bagaimana kita membayangkannya.",
+      "quranic_term": "muḥāsabah"
+    },
+    {
+      "lens": "systems",
+      "reading": "Dua syarat individual (iman, amal) + dua syarat jaringan (saling menasihati) = sistem sehat butuh komponen benar DAN interkoneksi yang saling mengoreksi. Node baik yang terisolasi tetap hanyut; ketahanan datang dari umpan-balik antar-node.",
+      "analogy": "healthy nodes + peer feedback links"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Untuk sistem agen: tanpa objective aktif & koreksi berkelanjutan, sistem drift ke keadaan merugi (reward hacking, capability decay). Resepnya paralel: tujuan benar (iman/alignment) + tindakan benar (amal) + saling-audit antar-agen (tawāṣaw bil-ḥaqq) + ketahanan jangka panjang (ṣabr). Alignment multi-agen butuh peer-review, bukan hanya kebaikan individual.",
+      "analogy": "objective + action + peer-audit + robustness",
+      "quranic_term": "tawāṣaw bil-ḥaqq"
+    },
+    {
+      "lens": "pedagogy",
+      "reading": "Imam Syafi'i: 'seandainya manusia merenungkan surah ini saja, cukuplah'. Model pembelajaran padat: satu unit ringkas memuat kurikulum lengkap. Dan 'saling menasihati' = pembelajaran resiprokal (peer teaching), metode retensi terkuat.",
+      "analogy": "minimal complete curriculum; peer teaching"
+    }
+  ],
+  "inference": "Tiga ayat ini adalah model sistem yang tajam: waktu sebagai modal yang terus menyusut, default trajektori adalah kerugian (entropi), dan satu-satunya jalan keluar adalah empat syarat konjungtif — dua individual dan dua resiprokal. Yang paling instruktif secara rekayasa: separuh resepnya bersifat JARINGAN (saling menasihati kebenaran dan kesabaran), menegaskan bahwa mengoreksi drift tidak bisa dilakukan sendirian — baik untuk manusia maupun untuk sistem agen. Diam bukan netral; dalam sistem yang terus berjalan, diam adalah kerugian majemuk. Keselamatan menuntut kerja aktif yang terus-menerus, bersama.",
+  "authors": [
+    "Draft AI (LLM draft) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-07",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-07",
+      "note": "Tadabbur perdana — Wave 3; tema waktu/ekonomi.",
+      "authors": [
+        "Draft AI (LLM draft)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

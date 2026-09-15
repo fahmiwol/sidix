@@ -1,0 +1,110 @@
+{
+  "schema": "lab-study-v2",
+  "id": "yasin-36-36-36",
+  "version": 1,
+  "title": "Pasangan-pasangan semuanya — pola desain universal & taksonomi yang terbuka",
+  "subtitle": "Dari yang ditumbuhkan bumi, dari diri mereka, dan dari apa yang tidak mereka ketahui",
+  "ref": {
+    "surah": 36,
+    "from": 36,
+    "to": 36
+  },
+  "surah_name": "Ya-Sin",
+  "theme": "Pairing sebagai pola universal ciptaan; tiga domain pasangan termasuk yang belum diketahui; open taxonomy & unknown unknowns",
+  "sourced_meaning": {
+    "summary": "'Maha Suci Tuhan yang telah menciptakan pasangan-pasangan semuanya' — dari apa yang ditumbuhkan bumi, dari diri mereka (manusia), dan dari apa yang TIDAK mereka ketahui. Tafsir Kemenag: ini bukti kekuasaan Allah — makhluk diciptakan berpasang-pasangan, baik pasangan jenis (lelaki-perempuan) maupun pasangan sifat (besar-kecil, kuat-lemah, tinggi-rendah, kaya-miskin); bahkan perpasangan terjadi pada arus listrik (positif-negatif) yang membangkitkan tenaga dan cahaya. Kemenag menegaskan: perpasangan yang BELUM dapat dijangkau pengetahuan dan penemuan manusia masih banyak; boleh jadi kemajuan ilmu pengetahuan di masa datang menyingkapkan sebagian rahasia perpasangan di bidang-bidang yang belum diketahui sekarang. Ayat dibuka dengan tasbih (subḥāna) — penyucian Allah dari segala kekurangan. CATATAN TANZIH: yang ditadabburi di sini adalah POLA PADA CIPTAAN (perpasangan); Dzat & Sifat Allah Yang Maha Suci tidak dianalogikan, tidak digambarkan — tasbih pembuka ayat justru menegaskan batas itu.",
+    "sources": [
+      "Tafsir Kemenag RI QS 36:36",
+      "Tafsir al-Jalalayn QS 36:36"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Persepsi",
+      "note": "tiga domain pasangan disebut berjenjang: flora (teramati), diri manusia (dialami), dan yang tak diketahui (di luar jangkauan persepsi) — peta cakupan pengamatan sekaligus batasnya"
+    },
+    {
+      "layer": "Tangga epistemik",
+      "note": "'mimmā lā yaʿlamūn' — teks sendiri mendeklarasikan adanya kelas pengetahuan yang belum tersingkap; zhann manusia tidak menutup taksonomi ciptaan"
+    },
+    {
+      "layer": "Penalaran",
+      "note": "dari sampel yang teramati (tumbuhan, diri) dinaikkan ke pola umum 'kullahā' (semuanya) — generalisasi pola desain lintas domain"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "computational",
+      "reading": "'Azwāj' (pasangan-pasangan) membaca sebagai tipe data komplementer: setiap entitas hadir bersama padanannya — kunci-nilai, permintaan-tanggapan, tulis-baca, enkode-dekode. Pola komputasi fundamental memang berpasangan: operasi punya invers, produsen punya konsumen, alokasi punya dealokasi. Ayat menyebut pola ini berlaku 'kullahā' — menyeluruh, bukan kasus khusus; desain yang meninggalkan salah satu sisi pasangan (malloc tanpa free, open tanpa close) adalah sumber cacat klasik.",
+      "analogy": "complementary pairs: alokasi-dealokasi, encode-decode, request-response",
+      "quranic_term": "azwāj kullahā"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "Perpasangan sifat yang disebut Kemenag (besar-kecil, kuat-lemah) membaca sebagai definisi-oleh-kontras: sebuah properti terdefinisi tegas justru karena ada komplemennya. Dalam logika program: tipe dan negasinya, predikat dan komplemennya, kontrak caller-callee. Antarmuka yang sehat selalu dwi-pihak — setiap kewajiban di satu sisi memunculkan jaminan di sisi pasangannya; spesifikasi satu-sisi tidak lengkap.",
+      "analogy": "kontrak dwi-pihak: obligation di satu sisi = guarantee di sisi pasangan",
+      "quranic_term": "min anfusihim (pasangan pada diri)"
+    },
+    {
+      "lens": "systems",
+      "reading": "Sistem yang lestari tersusun dari pasangan yang saling mengimbangi: pasokan-permintaan, gaya-gaya berlawanan yang menstabilkan, umpan maju-umpan balik. Ayat memotret perpasangan sebagai arsitektur menyeluruh ciptaan — komplementaritas bukan ornamen melainkan syarat keseimbangan. Bacaan rekayasa: saat merancang komponen, tanyakan 'apa pasangan pengimbangnya?' — komponen tanpa pengimbang (pemantau tanpa yang dipantau, penulis tanpa pembaca kuota) cenderung lepas kendali.",
+      "analogy": "balancing pairs: setiap gaya butuh pengimbang agar sistem stabil",
+      "quranic_term": "khalaqa al-azwāj"
+    },
+    {
+      "lens": "math-physics",
+      "reading": "Kemenag sendiri menunjuk arus listrik positif-negatif sebagai contoh perpasangan. Fisika modern kaya akan struktur berpasangan: muatan +/-, materi-antimateri, spin up/down, partikel-gelombang sebagai dualitas. Dicatat tegas sebagai RESONANSI STRUKTURAL yang bounded — sains di sini analogi pemahaman, BUKAN bukti kebenaran teks, bukan mukjizat numerik; taksonomi fisika bisa berubah, teks tidak menetapkan model partikel tertentu.",
+      "analogy": "dualitas & paritas fisika (muatan, spin) — resonansi bounded",
+      "quranic_term": "āyāt kauniyah"
+    },
+    {
+      "lens": "biology-medicine",
+      "reading": "'Mimmā tunbitul-arḍ' (dari yang ditumbuhkan bumi) — perpasangan hayati: benang sari-putik, jantan-betina, kromosom berpasangan, basa DNA yang saling melengkapi (A-T, G-C). Reproduksi dan pewarisan informasi hayati berjalan di atas mekanisme perpasangan; satu untai menjadi cetakan bagi pasangannya. Pola pada ciptaan: penggandaan yang andal memerlukan struktur komplementer, bukan salinan searah.",
+      "analogy": "komplementaritas basa DNA: satu untai = cetakan pasangannya",
+      "quranic_term": "mimmā tunbitul-arḍ"
+    },
+    {
+      "lens": "earth-cosmos",
+      "reading": "Perpasangan skala kosmos: bintang lahir berpasangan/bergugus, planet-satelit saling mengunci pasang-surut, galaksi berinteraksi berpasangan. Sebagian pembaca modern menautkan 'yang tidak mereka ketahui' dengan entitas yang baru tersingkap belakangan (mis. materi yang tak teramati langsung). Semua ini dicatat sebagai resonansi struktural yang bounded dan spekulatif — bukan klaim bahwa ayat menunjuk objek astronomi tertentu; Kemenag hanya menegaskan MASIH BANYAK perpasangan yang belum dijangkau ilmu.",
+      "analogy": "sistem biner & interaksi berpasangan di kosmos (bounded)",
+      "quranic_term": "wa mimmā lā yaʿlamūn"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Dua cetak biru. (1) PASANGAN sebagai pola arsitektur: komponen AI yang teruji sering berpasangan adversarial/komplementer — generator-diskriminator, actor-critic, proposer-verifier, agen-kritikus. Rancang kemampuan baru selalu bersama pasangan pengujinya. (2) TAKSONOMI TERBUKA: ayat mengakui kelas ciptaan 'yang tidak mereka ketahui' — desain yang jujur harus memperlakukan unknown unknowns sebagai kelas-satu: sediakan kategori 'tak dikenal' pada klasifier (open-set recognition, deteksi out-of-distribution), jangan paksa setiap input masuk taksonomi yang ada; skema data harus bisa menampung kelas entitas yang belum terdefinisi saat desain. Actionable: setiap enum/ontologi agen wajib punya varian OTHER/UNKNOWN yang ditangani eksplisit, bukan error path.",
+      "analogy": "adversarial pairs (actor-critic) + open-set recognition: kelas UNKNOWN sebagai warga kelas-satu"
+    },
+    {
+      "lens": "inference",
+      "reading": "Secara epistemik ayat ini luar biasa jujur terhadap batas pengetahuan audiensnya: ia menyebut dua domain yang bisa diverifikasi pendengar (tumbuhan, diri) lalu SATU domain yang secara eksplisit di luar pengetahuan mereka. Klaim 'ada yang tidak kalian ketahui' adalah pernyataan yang terus terbuka untuk pengujian: setiap penemuan perpasangan baru (yang dulu tak diketahui) konsisten dengannya. Pola inferensi: teori yang baik memetakan wilayah yang diketahui DAN mendeklarasikan wilayah tak diketahuinya.",
+      "analogy": "known-unknown map: model yang baik mendeklarasikan wilayah ketidaktahuannya",
+      "quranic_term": "lā yaʿlamūn"
+    },
+    {
+      "lens": "pedagogy",
+      "reading": "Urutan tiga domain berjalan dari yang paling mudah diamati (tumbuhan di sekitar), ke yang paling intim (diri sendiri), ke yang abstrak (yang tak diketahui) — tangga didaktik dari konkret ke abstrak. Sekaligus menanamkan kerendahan hati epistemik pada pembelajar: kurikulum yang benar tidak menutup buku pada 'semua sudah diketahui', melainkan menunjuk cakrawala yang belum terjamah sebagai undangan meneliti.",
+      "analogy": "kurikulum konkret→intim→abstrak + horizon riset terbuka",
+      "quranic_term": "subḥāna (pembuka ta'zhim)"
+    }
+  ],
+  "inference": "Dibaca sebagai analogi rekayasa, ayat ini memuat dua temuan struktural sekaligus. Pertama, PERPASANGAN sebagai pola desain universal pada ciptaan: dari flora, diri manusia, hingga muatan listrik (contoh Kemenag) — entitas hadir bersama komplemennya, dan banyak mekanisme andal (reproduksi, replikasi DNA, keseimbangan sistem) berjalan di atas struktur komplementer. Pelajaran desain: bangun kemampuan selalu bersama pasangannya (alokasi-dealokasi, generator-verifier, aktor-kritikus). Kedua — dan ini yang jarang dimiliki taksonomi buatan manusia — teks MENDEKLARASIKAN kelas ciptaan 'yang tidak mereka ketahui': taksonomi terbuka yang mengakui unknown unknowns sebagai warga kelas-satu. Untuk perancang sistem/AI: sediakan kategori UNKNOWN yang ditangani eksplisit (open-set recognition, skema yang bisa menampung kelas baru), dan tirulah kejujuran epistemiknya — model yang baik memetakan yang diketahui sekaligus mendeklarasikan batas ketidaktahuannya. Semua padanan sains (listrik, DNA, fisika partikel) adalah resonansi struktural yang bounded, bukan mukjizat numerik, bukan maksud tunggal ayat. CATATAN TANZIH: ayat dibuka dengan tasbih — Allah Yang Maha Suci disebut dengan ta'zhim sebagai landasan iman; yang dianalogikan hanyalah pola pada makhluk, bukan Dzat maupun Sifat-Nya.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-12",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-12",
+      "note": "Tadabbur perdana — Wave 13 kosmogenesis/kehancuran.",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

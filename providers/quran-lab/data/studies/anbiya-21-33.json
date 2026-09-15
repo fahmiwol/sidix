@@ -1,0 +1,108 @@
+{
+  "schema": "lab-study-v2",
+  "id": "anbiya-21-33",
+  "version": 1,
+  "title": "Kullun fī falak — tiap benda beredar di orbitnya",
+  "subtitle": "Malam, siang, matahari, dan bulan — masing-masing pada garis edar (falak)",
+  "ref": {
+    "surah": 21,
+    "from": 33,
+    "to": 33
+  },
+  "surah_name": "Al-Anbya",
+  "theme": "Determinisme kosmik, orbit/lintasan tetap, keteraturan yang bisa diprediksi",
+  "sourced_meaning": {
+    "summary": "Tafsir Kemenag: Allah mengarahkan perhatian pada kekuasaan-Nya menciptakan malam dan siang, matahari yang bersinar di siang, dan bulan bercahaya di malam — masing-masing beredar pada garis edarnya (falak) dalam cakrawala luas yang batasnya hanya Dia yang tahu. Silih bergantinya siang-malam karena rotasi bumi pada sumbunya sekaligus revolusinya mengelilingi matahari; cahaya bulan adalah pantulan sinar matahari. Setiap benda bergerak menurut ketetapan yang tertib, bukan acak.",
+    "sources": [
+      "Tafsir Kemenag RI QS 21:33",
+      "Tafsir al-Jalalayn QS 21:33"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Persepsi",
+      "note": "empat objek yang selalu teramati (malam, siang, matahari, bulan) dijadikan āyah yang bisa diobservasi siapa saja"
+    },
+    {
+      "layer": "Memori & grounding",
+      "note": "keteraturan periodik menjadi jangkar penanda waktu — sistem referensi bersama yang stabil lintas generasi"
+    },
+    {
+      "layer": "Penalaran",
+      "note": "kata 'falak' (lintasan tertentu) mengundang inferensi: gerak yang berpola → dapat dimodelkan dan diprediksi"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "amal",
+      "reading": "Keteraturan orbit yang tak pernah menyimpang menumbuhkan sikap istiqamah: amal yang kecil tetapi tetap 'pada garis edarnya' (rutin, terjadwal) lebih kuat daripada lonjakan besar yang tak berpola. Ibadah berbasis waktu (shalat, puasa) meniru kalibrasi kosmik ini.",
+      "analogy": "cadence/istiqamah scheduling",
+      "quranic_term": "falak"
+    },
+    {
+      "lens": "computational",
+      "reading": "Gerak yang deterministik dan periodik adalah syarat kompresi: keadaan masa depan dihitung dari fungsi waktu, bukan disimpan satu per satu. 'Tiap beredar di falak' = state = f(t), sehingga seluruh sejarah posisi bisa diringkas jadi beberapa parameter orbit — inti pemodelan efisien.",
+      "analogy": "closed-form state = f(t); compressibility",
+      "quranic_term": "kullun fī falak"
+    },
+    {
+      "lens": "algorithm",
+      "reading": "Empat proses berjalan konkuren pada lintasan masing-masing tanpa saling merusak — analog penjadwal (scheduler) deterministik dengan orbit sebagai 'thread' terpisah berperiode tetap. Prediktabilitas periode memungkinkan penjadwalan tanpa bentrok, dasar sistem real-time.",
+      "analogy": "deterministic scheduler; periodic tasks",
+      "quranic_term": "falak"
+    },
+    {
+      "lens": "math-physics",
+      "reading": "Resonansi struktural (BUKAN klaim mukjizat numerik): lintasan tertutup periodik adalah solusi sistem dinamik terikat; keteraturannya membuat gerak benda langit menjadi contoh baku sistem yang dapat diprediksi jauh ke depan. Tafsir bersumber menyebut 'garis edar tertentu', tanpa mengklaim rumus tertentu.",
+      "analogy": "bounded periodic orbits; predictable dynamics — bounded",
+      "quranic_term": "falak"
+    },
+    {
+      "lens": "systems",
+      "reading": "Empat komponen dengan periode berbeda membentuk sistem stabil karena tiap-tiap punya jalur terpisah dan invarian (tak menabrak). Pemisahan lintasan = decoupling; invarian gerak = jaminan sistem tak runtuh. Prinsip desain: isolasi jalur + invarian yang dijaga = stabilitas jangka panjang.",
+      "analogy": "decoupled subsystems; preserved invariants"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Untuk agen: bedakan dinamika DETERMINISTIK-PERIODIK dari yang stokastik. Bila lingkungan punya 'falak' (pola berulang), agen sebaiknya membangun world-model prediktif berbasis fase/periode, bukan bereaksi per-tick. Actionable: (1) deteksi periodisitas sinyal → forecast bukan poll; (2) jadwalkan aksi pada fase optimal (ephemeris-style planning); (3) gunakan invarian sebagai sanity-check/guardrail untuk mendeteksi anomali (jika 'orbit' menyimpang → alarm).",
+      "analogy": "predictive world-model; phase-aware planning; invariant-based anomaly guard",
+      "quranic_term": "falak"
+    },
+    {
+      "lens": "artifact",
+      "reading": "Keteraturan langit adalah jam dan kalender pertama umat manusia: dari gnomon, astrolabe, hingga jam atom dan efemeris satelit — seluruh teknologi penunjuk waktu meminjam prediktabilitas orbit. GPS bekerja justru karena posisi benda pengorbit bisa dihitung presisi.",
+      "analogy": "clocks, ephemerides, GPS timing"
+    },
+    {
+      "lens": "earth-cosmos",
+      "reading": "Rotasi (siang-malam) dan revolusi (bulan-tahun) memberi manusia dua jam bersarang berperiode berbeda — sistem penanda waktu berlapis. Bulan sebagai pemantul, bukan sumber, menjadikannya penanda fase yang bisa dibaca sebagai 'indikator turunan' dari matahari.",
+      "analogy": "nested periodic clocks; derived indicator",
+      "quranic_term": "al-lail wa an-nahar"
+    },
+    {
+      "lens": "pedagogy",
+      "reading": "Ayat mengajar lewat objek yang setiap orang sudah kenal, lalu menaikkan ke konsep abstrak 'lintasan tertentu' — dari konkret teramati ke model. Ini pola kurikulum yang baik: mulai dari fenomena harian, tarik ke hukum yang mendasarinya.",
+      "analogy": "concrete-to-abstract scaffolding"
+    }
+  ],
+  "inference": "Dibaca sebagai rekayasa, ayat ini adalah pernyataan tentang PREDIKTABILITAS: benda-benda langit bergerak pada 'falak' — lintasan tertentu yang berulang — sehingga keadaannya menjadi fungsi waktu, bukan kejadian acak. Konsekuensi tekniknya berlapis: gerak yang deterministik-periodik dapat dikompresi (state = f(t)), dijadwalkan tanpa bentrok (scheduler real-time), dan dipakai sebagai jam/kalender/ephemeris yang menjadi fondasi mulai dari astrolabe sampai GPS. Untuk desain agen AI, pelajaran utamanya: kenali kapan lingkungan punya 'falak'. Bila ada periodisitas, bangun world-model prediktif berbasis fase dan pakai invarian gerak sebagai guardrail deteksi anomali — jauh lebih murah dan kuat daripada bereaksi mentah. Keteraturan bukan kekakuan tanpa makna; ia justru yang membuat dunia bisa dimodelkan.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-07",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-07",
+      "note": "Tadabbur perdana — Wave 6 batch astronomi.",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

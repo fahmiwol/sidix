@@ -1,0 +1,96 @@
+{
+  "schema": "lab-study-v2",
+  "id": "furqan-25-59",
+  "version": 1,
+  "title": "Enam masa lalu 'istiwāʾ — urutan init kemudian fase kendali",
+  "subtitle": "Mencipta langit-bumi & antaranya dalam enam masa, lalu bersemayam di atas 'Arsy",
+  "ref": {
+    "surah": 25,
+    "from": 59,
+    "to": 59
+  },
+  "surah_name": "Al-Furqan",
+  "theme": "Kosmogoni bertahap, urutan naratif init→kendali, khilaf makna 'yaum/masa' (metadata), rujuk-ke-ahli",
+  "sourced_meaning": {
+    "summary": "Allah menciptakan langit, bumi, dan apa yang ada di antara keduanya dalam ENAM masa, kemudian ber-istiwāʾ (bersemayam) di atas 'Arsy; Dialah Ar-Raḥmān (Maha Pemurah), maka tanyakanlah tentang-Nya kepada yang benar-benar mengetahui. Tafsir Kemenag menandai bahwa 'yaum' di sini BUKAN hari 24 jam melainkan 'masa' (khilaf makna — ditandai sebagai metadata, bukan kepastian), dan merujuk QS 7:54 untuk makna 'istiwāʾ'. Ayat juga mengajarkan: yang belum mengenal sifat-sifat-Nya hendaklah BERTANYA kepada yang berilmu (bandingkan 16:43). CATATAN TANZIH: 'istiwāʾ 'alal-'Arsy', sifat Ar-Raḥmān, dan kata 'khabīr' adalah perkara iman yang WAJIB ditetapkan tanpa digambarkan/dibayangkan/dimodelkan; ulama Ahlus-Sunnah menetapkan maknanya tanpa takyīf (tanpa membagaimanakan). CATATAN GHAIB: ''Arsy' termasuk perkara ghaib — dibaca deskriptif dari tafsir, bukan spekulasi bentuk/mekanisme.",
+    "sources": [
+      "Tafsir Kemenag RI QS 25:59",
+      "Tafsir al-Jalalayn QS 25:59"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Memori & grounding",
+      "note": "penciptaan dinyatakan sebagai urutan berjenjang ('sittati ayyām') — grounding pada proses bertahap, bukan sekali-jadi"
+    },
+    {
+      "layer": "Tangga epistemik",
+      "note": "'fas'al bihī khabīran' — bila tak tahu, RUJUK ke yang berilmu; adab epistemik: klaim dikembalikan ke sumber otoritatif"
+    },
+    {
+      "layer": "Alignment",
+      "note": "urutan naratif 'tsumma istawā' menandai fase SESUDAH init; dibaca sebagai urutan teks, BUKAN pemodelan perbuatan Allah (CATATAN TANZIH)"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "computational",
+      "reading": "Struktur 'enam masa KEMUDIAN (tsumma) istiwāʾ' membedakan dua fase berurutan: fase KONSTRUKSI (membangun state: langit, bumi, antaranya) lalu fase yang teks tempatkan SESUDAHnya. Sebagai pembacaan POLA-pada-teks (bukan pemodelan Allah — CATATAN TANZIH), ini menyerupai pemisahan 'fase provisioning/build' dari 'fase operasi/kendali': sistem tak langsung dioperasikan sampai konstruksinya rampung. Yang dibaca = urutan naratif, bukan Dzat.",
+      "analogy": "fase build (init) mendahului fase operasi (urutan naratif)",
+      "quranic_term": "sittati ayyām → tsumma"
+    },
+    {
+      "lens": "algorithm",
+      "reading": "'Enam masa' membaca penciptaan sebagai proses ber-STEP, bukan atomik. Analogi rekayasa: konstruksi berjenjang di mana keadaan akhir dicapai lewat sejumlah tahap terbatas dan terurut, tiap tahap menaruh prasyarat bagi tahap berikut. Jumlah spesifik 'enam' dibaca sebagai penanda keberjenjangan, BUKAN klaim bilangan ajaib (bukan mukjizat numerik).",
+      "analogy": "konstruksi multi-tahap terurut (staged)",
+      "quranic_term": "yaum = masa (khilaf, metadata)"
+    },
+    {
+      "lens": "systems",
+      "reading": "Cakupan 'langit, bumi, DAN apa yang di antara keduanya' menegaskan sistem yang lengkap: bukan hanya batas-batas (atas-bawah) tapi juga isi/medium penghubung. Perancang sistem meniru kelengkapan ini — mendefinisikan tak sekadar komponen tepi, tapi juga lapisan-antara (interkoneksi, medium, protokol) tempat interaksi sesungguhnya terjadi.",
+      "analogy": "definisi sistem mencakup komponen + lapisan-antara/interkoneksi"
+    },
+    {
+      "lens": "inference",
+      "reading": "Penutup ayat 'fas'al bihī khabīran' (tanyalah kepada yang mengetahui) memasang DISIPLIN SUMBER: pengetahuan tentang hal di luar jangkauan dikembalikan ke otoritas yang kompeten, bukan dikira-kira. Pola bil-maʾtsur ini = rujuk-ke-sumber sebelum menyimpulkan; analog dengan prinsip 'grounding ke referensi tepercaya' sebelum menghasilkan klaim.",
+      "quranic_term": "fas'al bihī khabīran (rujuk-ke-ahli)"
+    },
+    {
+      "lens": "earth-cosmos",
+      "reading": "Gambaran penciptaan berjenjang langit-bumi beresonansi dengan narasi pembentukan kosmos yang bertahap (dari keadaan awal ke struktur berlapis). Dicatat sebagai RESONANSI STRUKTURAL yang bounded — dan tafsir sendiri menandai 'yaum=masa' sebagai pemaknaan, dengan khilaf lamanya 'masa' — BUKAN mukjizat numerik, bukan bukti teori tertentu.",
+      "analogy": "pembentukan kosmos berjenjang (bounded)",
+      "quranic_term": "āyāt kauniyah"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Cetak biru urutan siklus-hidup agen: PISAHKAN fase 'build/provisioning' dari fase 'operate/govern'. Baca 'enam masa lalu (tsumma) fase-sesudah' sebagai disiplin urutan: (1) selesaikan konstruksi state & dependency secara bertahap terurut; (2) baru transisikan sistem ke mode operasi — jangan operasikan agen di atas konstruksi setengah jadi. Tambahan actionable dari penutup ayat: pasang 'ask-the-expert / escalation gate' — saat agen menghadapi hal di luar pengetahuannya, ia MERUJUK ke sumber/otoritas ('fas'al... khabīran') alih-alih berhalusinasi. CATATAN TANZIH: 'istiwāʾ' TIDAK dijadikan komponen/peran sistem; ia landasan iman, di luar analogi.",
+      "analogy": "pisah build↔operate; pasang escalation/ask-expert gate anti-halusinasi"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "'tsumma' (kemudian) berfungsi sebagai penanda URUTAN yang ketat pada teks: peristiwa B dinyatakan sesudah rangkaian A. Membaca strukturnya (bukan Dzat pelaku), ini seperti sequencing constraint — satu blok dinyatakan mendahului blok lain. Poin rekayasa: urutan yang benar itu bermakna; menukar urutan fase (operasi sebelum konstruksi selesai) merusak invariant sistem.",
+      "analogy": "sequencing constraint antar-fase (urutan bermakna)",
+      "quranic_term": "tsumma (penanda urutan)"
+    }
+  ],
+  "inference": "Sebagai analogi rekayasa, ayat ini menekankan POLA pada ciptaan (bukan pada Sang Pencipta — CATATAN TANZIH): penciptaan dibingkai sebagai proses BERTAHAP ('enam masa') yang terurut, dan struktur teks 'tsumma istawā' menandai adanya fase SESUDAH rampungnya konstruksi. Dibaca murni sebagai urutan naratif, ini beresonansi dengan disiplin memisahkan fase build/provisioning dari fase operasi/kendali — jangan operasikan sistem di atas konstruksi yang belum selesai. Penutup 'fas'al bihī khabīran' menambah disiplin epistemik: rujuk ke sumber yang mengetahui alih-alih mengira-ngira — pola grounding yang, bagi agen AI, berarti pasang escalation/ask-expert gate untuk menahan halusinasi. Makna 'yaum=masa' beserta lamanya adalah khilaf yang ditandai sebagai metadata; resonansi kosmologis di sini bounded, bukan mukjizat numerik, bukan maksud tunggal, dan 'istiwāʾ/Ar-Raḥmān/khabīr' tetap perkara iman yang tak dimodelkan.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-08",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-08",
+      "note": "Tadabbur perdana — Wave 10 penciptaan kosmos.",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

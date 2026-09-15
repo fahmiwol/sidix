@@ -1,0 +1,109 @@
+{
+  "schema": "lab-study-v2",
+  "id": "al-infitar-82-1-5",
+  "version": 1,
+  "title": "Langit terbelah, kubur dibongkar — teardown dan pengungkapan amal yang didahulukan & ditinggalkan",
+  "subtitle": "Empat 'apabila' menuju satu kepastian: tiap jiwa tahu apa yang diperbuat (qaddamat) dan yang dilalaikan (akhkharat)",
+  "ref": {
+    "surah": 82,
+    "from": 1,
+    "to": 5
+  },
+  "surah_name": "Al-Infitar",
+  "theme": "Eskatologi kosmik, dekomposisi struktur, penggalian keadaan tersimpan, audit amal aktif dan yang terlewat",
+  "sourced_meaning": {
+    "summary": "Tafsir Kemenag: ayat-ayat ini menggambarkan kekacauan dan kehancuran alam menjelang Kiamat — langit terbelah sehingga formasi alam berubah kacau (ayat 1), bintang jatuh berserakan tak lagi pada posisinya (ayat 2), lautan dijadikan meluap (ayat 3), dan kuburan dibongkar sehingga mayat keluar setelah dibangkitkan dan dihidupkan kembali untuk mempertanggungjawabkan amalnya di hadapan Allah (ayat 4). Puncaknya ayat 5: tiap jiwa mengetahui amal-amalnya, yang baik maupun buruk, yang dikerjakan (maa qaddamat) maupun yang dilalaikan/ditinggalkan (maa akhkharat), yang diketahui dari kitab yang diserahkan kepadanya. Kemenag menautkan kebangkitan ini dengan bukti kuasa Allah menghidupkan bumi yang mati (ar-Rum/30). Ini perkara Kiamat dan kebangkitan — perkara ghaib yang hanya diketahui dari wahyu.",
+    "sources": [
+      "Tafsir Kemenag RI QS 82:1-5",
+      "Tafsir al-Jalalayn QS 82:1-5"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Aksi & transfer",
+      "note": "'infaṭarat / intatsarat / fujjirat / buʿṡirat' — empat kata kerja pasif: membelah, menyerak, meluapkan, membongkar — setiap satu operasi dekomposisi atas satu subsistem"
+    },
+    {
+      "layer": "Memori & grounding",
+      "note": "'buʿṡirat al-qubūr' (kubur dibongkar) — keadaan yang tersimpan/terkubur digali kembali; retrieval dari penyimpanan dingin menuju keadaan hidup"
+    },
+    {
+      "layer": "Umpan balik",
+      "note": "'mā qaddamat wa akhkharat' — bukan hanya amal yang dikerjakan, tetapi juga yang DITINGGALKAN ikut dihitung; umpan balik mencakup aksi dan omisi"
+    },
+    {
+      "layer": "Alignment",
+      "note": "Puncaknya penyelarasan pertanggungjawaban: setiap jiwa dihadapkan pada rekaman lengkap perbuatan-dan-kelalaiannya"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "systems",
+      "reading": "Empat klausa 'apabila' adalah dekomposisi terstruktur: batas terluar dibuka lebih dulu (langit terbelah), lalu elemen di dalamnya kehilangan posisi (bintang menyerak), lalu wadah meluap (laut), lalu simpanan terdalam dibongkar (kubur). Kemenag menekankan 'formasi alam berubah kacau' dan bintang 'tidak lagi pada posisinya' — hilangnya invariant tata-letak. Pelajaran rekayasa: keruntuhan sistem sering bermula dari terbukanya batas (boundary) yang menjaga keteraturan, lalu merambat ke hilangnya posisi/urutan komponen di dalamnya.",
+      "analogy": "boundary breach → hilangnya invariant tata-letak komponen",
+      "quranic_term": "iżā as-samā' infaṭarat"
+    },
+    {
+      "lens": "computational",
+      "reading": "'Buʿṡirat al-qubūr' (kubur dibongkar) menyerupai retrieval dari cold storage: keadaan yang telah diserialisasi dan disimpan pasif digali kembali dan di-instantiate menjadi keadaan aktif untuk diproses. Kemenag: mayat 'keluar setelah dibangkitkan dan dihidupkan kembali' — yang tersimpan tidak hilang, ia dipulihkan. Poin desain: penyimpanan yang benar menjamin bahwa keadaan lama bisa dibangkitkan utuh; 'terkubur' bukan berarti 'terhapus'.",
+      "analogy": "retrieval dari cold storage → re-instantiate keadaan tersimpan",
+      "quranic_term": "buʿṡirat al-qubūr"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "Ayat 5 memasangkan dua kategori yang jarang dihitung bersama: 'maa qaddamat' (apa yang didahulukan/dikerjakan) DAN 'maa akhkharat' (apa yang ditinggalkan/dilalaikan). Ini menegaskan bahwa audit yang benar mencakup commission (aksi yang dilakukan) sekaligus omission (aksi yang seharusnya ada tapi absen). Dalam logika sistem: cacat bukan hanya operasi salah yang dieksekusi, tetapi juga operasi wajib yang tak pernah dipanggil. Kelengkapan verifikasi menuntut memeriksa keduanya.",
+      "analogy": "audit commission (aksi) + omission (kelalaian) sekaligus",
+      "quranic_term": "qaddamat wa akhkharat"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Cetak biru audit agen yang lengkap. (1) Retrieval terjamin: keadaan agen yang di-checkpoint ke penyimpanan (dikubur) harus dapat dibangkitkan (buʿṡirat) utuh saat dibutuhkan — uji restore, jangan hanya uji save. (2) Audit dua-sisi: log tidak cukup mencatat tindakan yang DILAKUKAN; ia harus mengungkap tindakan wajib yang DILALAIKAN (mā akhkharat) — mis. langkah keselamatan yang dilewati, tool yang seharusnya dipanggil tapi tidak. Actionable: rancang evaluasi yang mendeteksi ketiadaan langkah yang diharapkan (omission detection), bukan cuma menilai langkah yang muncul. Agen yang hanya dinilai dari apa yang ia lakukan, tanpa memeriksa apa yang ia lewatkan, punya titik-buta audit yang berbahaya.",
+      "analogy": "restore-tested checkpoints + omission detection dalam eval agen",
+      "quranic_term": "mā qaddamat wa mā akhkharat"
+    },
+    {
+      "lens": "earth-cosmos",
+      "reading": "Kemenag mencatat bintang yang 'jatuh berserakan, tidak lagi pada posisinya', padahal matahari dan bulan punya posisi/rotasi tertentu. Sebagai resonansi struktural (BUKAN mukjizat numerik, bukan penetapan model): keteraturan orbit adalah keseimbangan gaya yang, bila batas penjaganya terbuka, digantikan oleh sebaran tak-berorde. Kontras 'posisi tertentu' vs 'berserakan' beresonansi dengan transisi dari keadaan berketeraturan-rendah-entropi ke sebaran-entropi-tinggi. Analogi ini bounded — gambaran struktur, bukan klaim ayat menetapkan kosmologi.",
+      "analogy": "transisi keteraturan berposisi → sebaran tak-berorde (bounded)",
+      "quranic_term": "al-kawākib intatsarat"
+    },
+    {
+      "lens": "inference",
+      "reading": "Kemenag menautkan kebangkitan dengan analogi yang dapat diamati: 'Allah menghidupkan bumi setelah mati (kering)… Dia pasti berkuasa menghidupkan yang telah mati' (ar-Rum/30:50). Struktur argumennya adalah inferensi dari yang tersaksikan ke yang belum tersaksikan (qiyās aulā): jika pemulihan yang lebih kecil terbukti berulang di depan mata, pemulihan yang lebih besar bukan hal mustahil. Pola penalaran: klaim tentang yang ghaib disandarkan pada pola yang terverifikasi berulang di alam.",
+      "analogy": "inferensi dari pemulihan tersaksikan ke pemulihan yang dijanjikan",
+      "quranic_term": "qiyās aulā"
+    },
+    {
+      "lens": "psychology",
+      "reading": "Ayat 5 menempatkan 'yang dilalaikan' setara pentingnya dengan 'yang dikerjakan'. Dibaca sebagai cermin jiwa: manusia cenderung menilai diri dari apa yang ia lakukan dan lupa menimbang apa yang ia tunda/abaikan. Beban kelalaian (omission) sering luput dari citra-diri padahal sama nyatanya. Pelajaran regulasi diri: kesadaran penuh mencakup 'apa yang belum kukerjakan', bukan hanya bangga atas 'apa yang sudah'.",
+      "analogy": "kesadaran atas kelalaian (omission), bukan hanya prestasi aksi",
+      "quranic_term": "mā akhkharat"
+    },
+    {
+      "lens": "amal",
+      "reading": "Karena yang kelak disingkap adalah amal yang didahulukan dan yang ditinggalkan, tindakan yang lahir adalah mendahulukan (taqdīm) kebaikan mumpung ada waktu, dan tidak menunda-nunda kewajiban (ta'khīr) yang kelak jadi beban. Kemenag menautkan ke 'setiap manusia telah Kami kalungkan catatan amalnya' — dorongan bertindak sadar-rekam sekarang, sebab yang dilalaikan pun tercatat.",
+      "analogy": "taqdīm kebaikan & hindari ta'khīr kewajiban",
+      "quranic_term": "qaddama li-nafsihi"
+    }
+  ],
+  "inference": "Dibaca sebagai analogi rekayasa, Al-Infitar 1-5 menambah dua penekanan penting di atas pola teardown kosmik. Pertama, KERUNTUHAN BERMULA DARI BATAS: langit yang terbelah (boundary breach) mendahului bintang yang kehilangan posisi — keteraturan runtuh ketika penjaga-batasnya terbuka. Kedua, 'buʿṡirat al-qubūr' menyerupai RETRIEVAL dari penyimpanan pasif: yang terkubur bukan terhapus melainkan dapat dibangkitkan utuh (Kemenag: 'dihidupkan kembali'). Puncaknya ayat 5 menegaskan AUDIT DUA-SISI — tiap jiwa tahu 'mā qaddamat wa akhkharat', apa yang dikerjakan DAN apa yang dilalaikan: kelengkapan pertanggungjawaban mencakup aksi sekaligus omisi. Untuk sistem, terutama agen AI: uji restore bukan cuma save, dan rancang evaluasi yang mendeteksi langkah wajib yang absen (omission detection), bukan hanya menilai langkah yang muncul. Semua pembacaan kosmologis (bintang menyerak ≈ hilangnya keseimbangan orbit) ditegaskan sebagai resonansi struktural yang bounded, BUKAN mukjizat numerik atau penetapan model ilmiah; ini salah satu pembacaan rekayasa di atas makna zahir yang bersumber, bukan maksud tunggal ayat. CATATAN GHAIB: kebangkitan mayat dari kubur adalah perkara ghaib yang hanya diketahui dari wahyu dan termasuk perkara IMAN. Analogi 'retrieval/restore' dan 'audit omission' di sini adalah pembacaan STRUKTUR yang deskriptif dari tafsir bersumber (Kemenag) sebagai pola — BUKAN klaim mengetahui hakikat kebangkitan, bukan penetapan mekanisme, bukan spekulasi atas detail yang tidak disebut nas. Adab terhadap perkara ghaib dijaga: yang ditiru hanyalah keteraturan pada deskripsi, bukan peristiwanya.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-08",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-08",
+      "note": "Tadabbur perdana — Wave 10 kiamat-kebangkitan.",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

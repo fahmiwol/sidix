@@ -1,0 +1,93 @@
+{
+  "schema": "lab-study-v2",
+  "id": "nisa-4-56-56",
+  "version": 1,
+  "title": "Kulit yang diganti — sinyal yang dijaga agar tak padam",
+  "subtitle": "Setiap kali kulit mereka hangus, diganti dengan kulit yang lain, agar mereka merasakan azab",
+  "ref": {
+    "surah": 4,
+    "from": 56,
+    "to": 56
+  },
+  "surah_name": "An-Nisa",
+  "theme": "Ayat peringatan (indhar) yang berat — dibaca dengan penuh kehati-hatian; catatan struktural dibatasi sempit, tidak mengalihkan bobot moral/teologisnya",
+  "sourced_meaning": {
+    "summary": "Sesungguhnya orang-orang yang kafir kepada ayat-ayat Kami, kelak akan Kami masukkan ke dalam neraka. Setiap kali kulit mereka hangus, Kami ganti dengan kulit yang lain, supaya mereka merasakan azab. Sesungguhnya Allah Maha Perkasa lagi Maha Bijaksana. Tafsir Kemenag: Allah tidak membiarkan orang yang mengingkari ayat-ayat-Nya; neraka disediakan bagi mereka. Setiap kali kulit hangus sampai tidak merasakan sesuatu lagi, kulit diganti dengan yang baru agar dapat merasakan pedihnya api — demikian berlaku seterusnya agar mereka senantiasa menderita dan merasakan kepedihan.",
+    "sources": [
+      "Tafsir Kemenag RI QS 4:56",
+      "Tafsir al-Jalalayn QS 4:56"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Aksi & transfer",
+      "note": "'kullamā naḍijat … baddalnāhum' — pola pengulangan bersyarat: setiap kali kondisi X (hangus) tercapai, aksi Y (ganti) dieksekusi, berulang"
+    },
+    {
+      "layer": "Tangga epistemik",
+      "note": "'liyadzūqul-ʿadzāb' (agar merasakan azab) = tujuan eksplisit disebutkan: keberlangsungan rasa, bukan sekadar kejadian tunggal"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "inference",
+      "reading": "Struktur kalimatnya adalah klausa bersyarat berulang: 'kullamā' (setiap kali) menandakan iterasi, bukan peristiwa sekali terjadi. Ini dibaca sebagai penegasan keberlanjutan (dawām) — bukan detail mekanisme fisik yang kita klaim pahami. CATATAN GHAIB ditegaskan: azab akhirat adalah perkara ghaib yang diimani dari kabar wahyu, bukan sesuatu yang dapat diverifikasi empiris atau dijadikan bahan spekulasi mekanistik.",
+      "analogy": "conditional loop (while-condition) sebagai struktur bahasa, bukan klaim mekanisme",
+      "quranic_term": "kullamā (setiap kali)"
+    },
+    {
+      "lens": "biology-medicine",
+      "reading": "Tafsir menyebut tujuan pergantian kulit adalah agar rasa (pedihnya siksa) tetap dapat dirasakan — bukan agar hangus tak berkesudahan tanpa makna. Dicatat sebagai RESONANSI struktural bounded (bukan bukti, bukan mukjizat numerik): dalam anatomi, reseptor nyeri terpadat justru di kulit (epidermis-dermis), bukan di jaringan yang lebih dalam — sehingga secara struktural, tempat 'yang merasakan' memang kulit. Ini dicatat sebagai pengamatan yang pernah diangkat sejumlah penceramah, disajikan di sini dengan batas ketat: bukan klaim ilmiah yang menjadi dalil, hanya catatan struktural.",
+      "analogy": "reseptor nyeri terkonsentrasi di kulit (bounded, bukan dalil)",
+      "quranic_term": "julūd (kulit-kulit)"
+    },
+    {
+      "lens": "systems",
+      "reading": "Dibaca sebagai prinsip desain sempit dan hati-hati: tujuan sebuah sinyal peringatan/konsekuensi hanya tercapai selama kanal yang merasakannya tetap berfungsi. Kalau kanal itu sendiri rusak permanen, sinyalnya hilang bersamanya. Bacaan ini SEMATA soal integritas sinyal secara struktural — bukan pengalihan dari kengerian dan keseriusan azab yang diperingatkan ayat, yang tetap harus dibaca sebagai ancaman sungguh-sungguh (indhar), bukan sekadar 'mekanisme menarik'.",
+      "analogy": "integritas kanal sinyal (dibaca sempit, bukan pengganti bobot moralnya)",
+      "quranic_term": "julūdan ghayrahā (kulit yang lain)"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "Pola linguistiknya: predikat berulang dengan syarat pemicu (naḍijat → baddalnā) — struktur if/while sederhana pada tataran bahasa. Dicatat murni sebagai observasi tata-bahasa Al-Qur'an yang presisi (setiap klausa punya syarat & konsekuensi jelas), bukan cetak biru teknis apa pun.",
+      "analogy": "predikat if/while pada struktur kalimat",
+      "quranic_term": "kullamā … baddalnāhum"
+    },
+    {
+      "lens": "psychology",
+      "reading": "Ayat ini bagian dari ancaman keras (waʿīd) yang berfungsi sebagai peringatan moral, bukan bahan renungan netral. Efek psikologis yang dituju teks adalah rasa takut yang mendorong perubahan (taubat, iman) — bukan objek studi yang didekati dengan jarak emosional. Pembacaan apa pun atas ayat ini harus menjaga bobot itu.",
+      "analogy": "fungsi ancaman (waʿīd) sebagai pendorong perubahan perilaku, bukan objek netral",
+      "quranic_term": "waʿīd (ancaman)"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Catatan SANGAT dibatasi: dalam desain sistem konsekuensi/reward-punishment, ada prinsip bahwa sinyal umpan balik harus tetap 'legible' (dapat dirasakan/diproses) selama diperlukan — sinyal yang mati karena kanal rusak kehilangan fungsinya. Analogi ini HANYA menyentuh soal integritas sinyal secara struktural pada sistem buatan, TIDAK menyentuh atau mereduksi kenyataan azab yang diperingatkan, yang berada di luar domain rekayasa sepenuhnya.",
+      "analogy": "integritas sinyal umpan-balik (dibatasi ketat pada ranah rekayasa)"
+    },
+    {
+      "lens": "amal",
+      "reading": "Ayat ini seharusnya menggerakkan rasa takut yang produktif (khawf): mendorong menjauhi kekafiran & mendekat pada iman, bukan dijadikan bahan spekulasi teknis. Ia ditutup dengan 'Allah Maha Perkasa lagi Maha Bijaksana' — penegasan bahwa balasan ini bukan kesewenangan, melainkan bagian dari hikmah dan keadilan-Nya.",
+      "analogy": "peringatan sebagai pendorong taubat, bukan bahan spekulasi"
+    }
+  ],
+  "inference": "Ayat ini adalah ancaman keras (waʿīd) bagi yang mengingkari ayat-ayat Allah, dan dibaca di sini dengan kehati-hatian penuh — bobot moral & teologisnya tidak boleh direduksi oleh catatan struktural apa pun. Satu-satunya pengamatan yang dicatat: struktur kalimatnya menegaskan KEBERLANJUTAN (kullamā = setiap kali) dan TUJUAN eksplisit (liyadzūqul-ʿadzāb = agar tetap merasakan) — bukan kejadian sekali lalu selesai. CATATAN GHAIB (wajib, ketat): azab akhirat adalah perkara ghaib yang diimani dari kabar wahyu; kajian ini TIDAK berspekulasi tentang mekanisme fisiknya, hanya membaca struktur kalimat & makna yang disampaikan tafsir bersumber. CATATAN TANZIH: 'Allah kāna ʿAzīzan Ḥakīmā' (Allah Maha Perkasa, Maha Bijaksana) adalah penegasan sifat-Nya yang menjadi landasan akidah, bukan bahan analogi rekayasa; kekuasaan & hikmah-Nya tidak diperbandingkan dengan sistem apa pun buatan manusia. Catatan biologi tentang reseptor nyeri di kulit disajikan sebagai resonansi struktural yang sangat dibatasi (bukan bukti, bukan mukjizat numerik) — bukan tujuan utama kajian ini, yang tetap adalah ayat peringatan yang harus direnungkan dengan serius.",
+  "authors": [
+    "Draft AI (LLM draft) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-12",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-12",
+      "note": "Tadabbur perdana — Wave 13 anatomi/organ (kajian ditulis dengan kehati-hatian ekstra karena konteks azab).",
+      "authors": [
+        "Draft AI (LLM draft)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

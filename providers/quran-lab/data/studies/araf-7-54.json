@@ -1,0 +1,101 @@
+{
+  "schema": "lab-study-v2",
+  "id": "araf-7-54",
+  "version": 1,
+  "title": "al-Khalq wal-Amr — konstruksi lalu tata kelola subsistem terjadwal",
+  "subtitle": "Mencipta langit-bumi 6 masa; malam-siang saling mengejar; matahari-bulan-bintang tunduk pada perintah",
+  "ref": {
+    "surah": 7,
+    "from": 54,
+    "to": 54
+  },
+  "surah_name": "Al-A'raf",
+  "theme": "Kosmogoni bertahap, benda langit sebagai subsistem terjadwal deterministik, pemisahan cipta (khalq) & perintah (amr)",
+  "sourced_meaning": {
+    "summary": "Sesungguhnya Tuhanmu Allah yang menciptakan langit dan bumi dalam ENAM masa, lalu ber-istiwāʾ di atas 'Arsy. Dia menutupkan malam kepada siang yang mengejarnya dengan CEPAT (ḥatsītsan); dan matahari, bulan, serta bintang-bintang (semuanya) MUSAKHKHARĀT — tunduk/ditundukkan — kepada perintah-Nya (bi-amrihi). Ingatlah, milik-Nyalah al-khalq (penciptaan) dan al-amr (perintah/urusan). Mahasuci Allah Tuhan semesta alam. Tafsir Kemenag: 'langit-bumi' mewakili SELURUH alam (atas, bawah, dan yang di antaranya, lih. 25:59); 'enam hari' = enam MASA yang ditentukan Allah, BUKAN hari 24 jam yang kita kenal (khilaf makna 'yaum' ditandai sebagai metadata) — tafsir bahkan memuat pembacaan ilmiah bertahap (dari singularity/Big Bang) sebagai pemahaman, bukan kepastian teks. CATATAN TANZIH: 'istiwāʾ 'alal-'Arsy' & sifat-sifat Allah adalah landasan iman yang tak digambarkan/dimodelkan (Ahlus-Sunnah menetapkan tanpa takyīf). CATATAN GHAIB: ''Arsy' perkara ghaib — deskriptif dari tafsir, bukan spekulasi.",
+    "sources": [
+      "Tafsir Kemenag RI QS 7:54",
+      "Tafsir al-Jalalayn QS 7:54"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Memori & grounding",
+      "note": "penciptaan berjenjang 'sittati ayyām' — grounding pada proses bertahap; tafsir menandai 'yaum=masa' (khilaf, metadata)"
+    },
+    {
+      "layer": "Alignment",
+      "note": "'musakhkharāt bi-amrihi' — benda langit tunduk penuh pada perintah; keteraturan sebagai kepatuhan pada aturan (POLA pada ciptaan)"
+    },
+    {
+      "layer": "Tangga epistemik",
+      "note": "'alā lahul-khalqu wal-amr' — membedakan ranah penciptaan & ranah perintah; struktur konsep yang jelas, bukan campur-aduk"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "computational",
+      "reading": "Ayat memisahkan dua ranah eksplisit: al-KHALQ (mencipta/membangun keberadaan) dan al-AMR (perintah/urusan yang menjalankannya). Dibaca sebagai POLA pada ciptaan (bukan pemodelan Allah — CATATAN TANZIH), ini menyerupai pemisahan mendasar antara 'membangun struktur' (provisioning) dan 'mengendalikan perilakunya' (control plane). Sistem yang jernih memisahkan APA yang dibangun dari BAGAIMANA ia dikendalikan saat berjalan.",
+      "analogy": "pemisahan build/khalq vs control-plane/amr",
+      "quranic_term": "al-khalq wal-amr"
+    },
+    {
+      "lens": "systems",
+      "reading": "Matahari-bulan-bintang 'musakhkharāt bi-amrihi' = subsistem yang berjalan tunduk pada satu sumber aturan. Malam yang menutup siang 'dengan cepat' menggambarkan proses siklik yang terus berulang tanpa jeda. Bersama, ini gambaran sistem dengan banyak komponen periodik yang tersinkron di bawah aturan bersama — keteraturan makro lahir dari kepatuhan tiap komponen pada perintah yang sama.",
+      "analogy": "banyak subsistem periodik tersinkron di bawah satu aturan"
+    },
+    {
+      "lens": "algorithm",
+      "reading": "'Yughsyil-layla an-nahāra yathlubuhū ḥatsītsan' (malam mengejar siang dengan cepat) membaca pergantian sebagai LOOP terjadwal yang deterministik: fase-fase saling menggantikan menurut jadwal ketat, bukan acak. Analogi: penjadwal (scheduler) yang menggilir keadaan pada interval tertentu — keluaran yang dapat diprediksi karena tunduk pada aturan waktu yang tetap.",
+      "analogy": "scheduler siklik deterministik (malam↔siang)",
+      "quranic_term": "yughsyī... ḥatsītsan"
+    },
+    {
+      "lens": "math-physics",
+      "reading": "'Musakhkharāt' (ditundukkan pada aturan) beresonansi dengan gagasan benda langit yang tunduk pada hukum keteraturan (orbit, periodisitas). Dicatat sebagai RESONANSI STRUKTURAL yang bounded; tafsir Kemenag memang memuat pembacaan ilmiah (Big Bang, tahap-tahap) namun sebagai PEMAHAMAN, bukan kepastian teks — jadi ini BUKAN mukjizat numerik dan bukan bukti teori tertentu.",
+      "analogy": "benda langit tunduk hukum keteraturan (bounded)",
+      "quranic_term": "āyāt kauniyah"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "'bi-amrihi' menjadikan perilaku tiap benda langit terikat pada PERINTAH bersama — analog dengan constraint/invariant global yang harus dipenuhi setiap komponen. Tidak ada komponen yang 'liar'; semua konsisten dengan aturan pusat. Poin rekayasa: keteraturan sistem besar dijaga oleh invariant yang mengikat seluruh bagian, bukan oleh koordinasi ad-hoc antar bagian.",
+      "analogy": "invariant/constraint global mengikat semua komponen",
+      "quranic_term": "musakhkharāt bi-amrihi"
+    },
+    {
+      "lens": "earth-cosmos",
+      "reading": "Ayat menyusun objek astronomis (matahari, bulan, bintang) dan siklus siang-malam sebagai satu tatanan tunduk-aturan. Sebagai āyāt kauniyah, ia mengundang pengamatan pola langit; pembacaan sainsnya (peredaran, orbit, pergantian akibat rotasi) dicatat bounded — resonansi struktural, bukan klaim mukjizat.",
+      "analogy": "tatanan astronomis tunduk-aturan yang teramati (bounded)"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Cetak biru arsitektur agen dari pola 'khalq/amr' + 'musakhkharāt bi-amrihi': (1) PISAHKAN control-plane (kebijakan/perintah) dari data/execution-plane (subsistem yang menjalankan) — jangan campur logika kendali dengan komponen pelaksana; (2) jadikan sub-tool/sub-agen sebagai subsistem DETERMINISTIK terjadwal yang tunduk pada satu sumber aturan (bukan berperilaku otonom liar) — mudah diprediksi & diaudit; (3) tegakkan invariant global ('bi-amrihi') yang mengikat semua komponen, sehingga keteraturan sistem tak bergantung pada koordinasi ad-hoc. CATATAN TANZIH: sumber-aturan tertinggi di ayat ini adalah perintah Allah = landasan iman, TIDAK dijadikan komponen sistem; yang ditiru hanyalah pola 'komponen tunduk aturan bersama' pada ciptaan.",
+      "analogy": "control-plane/amr terpisah dari execution-plane/khalq; subsistem terjadwal deterministik di bawah invariant global"
+    },
+    {
+      "lens": "pedagogy",
+      "reading": "Ayat memulai dari yang teramati (langit-bumi, siang-malam, benda langit) menuju kesimpulan (milik-Nya cipta & perintah) — metode induktif dari tanda konkret ke prinsip. Perancang kurikulum meniru pola ini: bangun pemahaman dari fenomena yang bisa diamati murid sebelum menaik ke prinsip abstrak, bukan sebaliknya.",
+      "analogy": "induksi pedagogis: fenomena teramati → prinsip"
+    }
+  ],
+  "inference": "Sebagai analogi rekayasa, ayat ini menonjolkan POLA pada ciptaan (bukan pada Sang Pencipta — CATATAN TANZIH): (a) pemisahan tegas al-KHALQ (membangun keberadaan) dari al-AMR (perintah yang menjalankan) — mirip pemisahan provisioning/build dari control-plane; (b) benda-benda langit sebagai subsistem DETERMINISTIK yang 'musakhkharāt bi-amrihi', tunduk pada satu sumber aturan sehingga keteraturan makro lahir dari kepatuhan mikro; dan (c) pergantian malam-siang 'dengan cepat' sebagai loop terjadwal yang dapat diprediksi. Pelajaran untuk perancang sistem/agen: pisahkan bidang kendali dari bidang eksekusi, jadikan sub-komponen terjadwal & tunduk pada invariant global alih-alih otonom liar, dan bangun keteraturan lewat aturan bersama — bukan koordinasi ad-hoc. Makna 'enam masa/yaum' adalah khilaf yang ditandai metadata; semua pembacaan sains di sini resonansi struktural yang bounded, bukan mukjizat numerik, bukan maksud tunggal ayat, dan 'istiwāʾ'/'Arsy tetap perkara iman-ghaib yang tak dimodelkan.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-08",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-08",
+      "note": "Tadabbur perdana — Wave 10 penciptaan kosmos.",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

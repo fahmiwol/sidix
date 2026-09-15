@@ -1,0 +1,119 @@
+{
+  "schema": "lab-study-v2",
+  "id": "isra-17-36",
+  "version": 1,
+  "title": "Al-Isra 36 — jangan ikuti tanpa ilmu; setiap fakultas akan diaudit",
+  "subtitle": "Pendengaran, penglihatan, dan hati dimintai pertanggungjawaban — akuntabilitas & jejak audit",
+  "ref": {
+    "surah": 17,
+    "from": 36,
+    "to": 36
+  },
+  "surah_name": "Al-Isra",
+  "theme": "Akuntabilitas fakultas, atribusi sumber, logging, verifikasi sebelum bertindak",
+  "sourced_meaning": {
+    "summary": "Allah melarang mengikuti sesuatu yang tidak diketahui kebenarannya, mencakup seluruh perkataan dan perbuatan. Kemenag mengutip Ibnu 'Abbas: jangan bersaksi kecuali atas yang engkau lihat dengan matamu, dengar dengan telingamu, dan diketahui hatimu dengan sadar; serta Qatadah: jangan berkata 'aku mendengar/melihat/mengetahui' padahal belum. Sebab pendengaran (sam'), penglihatan (bashar), dan hati (fu'ad) semuanya akan dimintai pertanggungjawaban atas apa yang dilewatkannya.",
+    "sources": [
+      "Tafsir Kemenag RI QS 17:36",
+      "Tafsir al-Jalalayn QS 17:36"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Persepsi",
+      "note": "Sam' (pendengaran) dan bashar (penglihatan) adalah kanal input; ayat menuntut integritas kanal — jangan mengaku menerima sinyal yang tak benar-benar masuk."
+    },
+    {
+      "layer": "Memori & grounding",
+      "note": "Fu'ad (hati) mengintegrasikan input jadi keyakinan; ia pun diaudit, jadi grounding harus jujur pada apa yang sungguh diserap, bukan yang diasumsikan."
+    },
+    {
+      "layer": "Tangga epistemik",
+      "note": "'Maa laisa laka bihi 'ilm' — dilarang menaiki tangga tindakan dari anak tangga tanpa-ilmu; butuh 'ilm sebagai prasyarat mengikuti."
+    },
+    {
+      "layer": "Aksi & transfer",
+      "note": "'Laa taqfu' (jangan ikuti/langkahi) — tindakan ditahan sampai ada pengetahuan; verifikasi mendahului eksekusi."
+    },
+    {
+      "layer": "Umpan balik",
+      "note": "'Kaana 'anhu mas'uulaa' — setiap fakultas menghasilkan catatan yang kelak ditanya-jawab: umpan balik akuntabilitas yang tak terhapus."
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "ai-agentic",
+      "reading": "Actionable: setiap fakultas agen (retriever, tool, reasoner) wajib memancarkan audit log yang menautkan tiap klaim ke sumber sebenarnya — 'akan ditanya' = observabilitas by design. Larang agen menegaskan 'aku melihat/tahu X' tanpa bukti tertaut; setiap keluaran harus punya atribusi terlacak sehingga bisa diaudit balik ke input yang nyata diterima.",
+      "analogy": "Trace terdistribusi + attribution log: tiap span menyimpan sumber & keputusan, dapat direkonstruksi saat post-mortem.",
+      "quranic_term": "kaana 'anhu mas'uulaa (akan dimintai pertanggungjawaban)"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "'Jangan ikuti yang tak kau ketahui' = jangan konsumsi input tak-tervalidasi. Terapkan precondition/assert: sebuah nilai baru boleh dipakai setelah lolos cek pengetahuan (tipe, sumber, kebenaran), bukan diteruskan mentah.",
+      "analogy": "Guard clause: `assert known(x)` sebelum `act(x)`; tanpa itu, lempar error alih-alih menebak.",
+      "quranic_term": "laa taqfu (janganlah kamu mengikuti)"
+    },
+    {
+      "lens": "inference",
+      "reading": "Melarang menyimpulkan/menegaskan tanpa warrant. Klaim harus punya premis yang benar-benar teramati; 'aku tahu' tanpa dasar adalah inferensi tak berdasar yang dilarang untuk ditindaklanjuti.",
+      "analogy": "Menolak menegaskan proposisi yang tak punya bukti pendukung dalam basis pengetahuan.",
+      "quranic_term": "'ilm (pengetahuan)"
+    },
+    {
+      "lens": "systems",
+      "reading": "Tiga fakultas yang 'ditanya' = kewajiban telemetri: setiap komponen menyimpan jejak yang immutable dan dapat diperiksa. Sistem tanpa audit trail tak bisa dipertanggungjawabkan saat gagal.",
+      "analogy": "Immutable audit trail / append-only log untuk forensik dan kepatuhan.",
+      "quranic_term": "as-sam'a wal-bashara wal-fu'aad (pendengaran, penglihatan, hati)"
+    },
+    {
+      "lens": "computational",
+      "reading": "Atribusi sumber = metadata provenance yang menyertai tiap datum; taint-tracking menandai data tak-terverifikasi agar tak mencemari keputusan. Fakultas 'ditanya' berarti tiap byte harus bisa dilacak asalnya.",
+      "analogy": "Data lineage / taint analysis: menandai sumber & memblok data ternoda menuju sink kritis.",
+      "quranic_term": "maa laisa laka bihi 'ilm (yang tak kau ketahui)"
+    },
+    {
+      "lens": "psychology",
+      "reading": "Source monitoring — kemampuan membedakan apa yang benar-benar dipersepsi dari apa yang diduga/diimajinasikan. Kegagalannya (false memory) persis yang dilarang: mengklaim 'aku dengar/lihat' padahal rekonstruksi.",
+      "analogy": "Riset false memory: otak menyisipkan detail yang tak pernah terjadi lalu meyakininya.",
+      "quranic_term": "fu'aad (hati/kesadaran)"
+    },
+    {
+      "lens": "artifact",
+      "reading": "Standar kesaksian = chain of custody bukti: hanya yang perolehannya terdokumentasi dan tak terputus yang boleh dijadikan dasar putusan. Bukti tanpa rantai jelas ditolak.",
+      "analogy": "Rantai penjagaan barang bukti forensik — putus satu simpul, bukti gugur.",
+      "quranic_term": "syahaadah (kesaksian, konteks Ibnu 'Abbas)"
+    },
+    {
+      "lens": "pedagogy",
+      "reading": "Menanamkan kerendahan epistemik: latih membedakan 'aku tahu', 'aku menduga', dan 'aku tak tahu', serta membiasakan menyebut sumber. Ini fondasi literasi berpikir kritis.",
+      "analogy": "Rubrik sitasi: klaim tanpa rujukan diberi tanda, bukan diberi nilai.",
+      "quranic_term": "'ilm (ilmu sebagai syarat)"
+    },
+    {
+      "lens": "amal",
+      "reading": "Bertindak hanya atas pengetahuan terverifikasi: menunda eksekusi hingga dasarnya jelas adalah amal itu sendiri, bukan kelambanan. Menahan diri dari klaim palsu adalah tindakan tanggung jawab.",
+      "analogy": "Change-gate produksi: rilis ditahan sampai bukti kelayakan lengkap.",
+      "quranic_term": "kullu ulaa'ika (semuanya itu)"
+    }
+  ],
+  "inference": "Ayat ini adalah spesifikasi akuntabilitas end-to-end: karena setiap kanal (input persepsi) dan integrator (hati) 'akan ditanya', maka setiap tindakan wajib berdasar pengetahuan terverifikasi dan setiap klaim wajib tertaut ke apa yang benar-benar diterima. Untuk sistem agen: bangun observabilitas dan atribusi sebagai kewajiban, bukan fitur tambahan — larang konsumsi input tak-tervalidasi, wajibkan audit log yang bisa direkonstruksi, dan tolak asersi 'aku tahu' tanpa provenance. 'Jangan ikuti yang tak berilmu' + 'semua akan ditanya' = verify-before-act digandeng dengan log-everything-for-audit.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-07",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-07",
+      "note": "Tadabbur perdana — Wave 6 batch nalar-kritis.",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

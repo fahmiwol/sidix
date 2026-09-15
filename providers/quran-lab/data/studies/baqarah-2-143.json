@@ -1,0 +1,105 @@
+{
+  "schema": "lab-study-v2",
+  "id": "baqarah-2-143",
+  "version": 1,
+  "title": "Ummatan wasaṭan — nilai tengah sebagai posisi saksi",
+  "subtitle": "Umat pertengahan agar menjadi saksi atas manusia",
+  "ref": {
+    "surah": 2,
+    "from": 143,
+    "to": 143
+  },
+  "surah_name": "Al-Baqarah",
+  "theme": "Tata kelola, nilai tengah/median, posisi saksi, keseimbangan sosial",
+  "sourced_meaning": {
+    "summary": "Demikianlah Kami jadikan kamu umat pertengahan (ummatan wasaṭan — adil dan pilihan) agar kamu menjadi saksi atas (perbuatan) manusia dan agar Rasul menjadi saksi atas kamu. Perpindahan kiblat dijadikan ujian untuk membedakan siapa yang mengikuti Rasul. Allah tidak menyia-nyiakan imanmu; sungguh Allah Maha Pengasih kepada manusia.",
+    "sources": [
+      "Tafsir Kemenag RI QS 2:143",
+      "Tafsir al-Jalalayn QS 2:143"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Alignment",
+      "note": "wasaṭan = posisi tengah/seimbang; bukan ekstrem — pusat gravitasi moral"
+    },
+    {
+      "layer": "Tangga epistemik",
+      "note": "syahādah (menjadi saksi) menuntut posisi yang adil & teramati"
+    },
+    {
+      "layer": "Umpan balik",
+      "note": "ujian kiblat = mekanisme pembeda (test) siapa yang benar-benar mengikuti"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "amal",
+      "reading": "Menjadi umat pertengahan: adil, tidak berlebih tidak kurang dalam agama & muamalah — teladan yang bisa disaksikan. Posisi tengah adalah tanggung jawab (jadi rujukan), bukan kenyamanan.",
+      "quranic_term": "wasaṭiyyah"
+    },
+    {
+      "lens": "economy",
+      "reading": "Wasaṭ sebagai prinsip distribusi: menolak dua ekstrem (boros/kikir — bandingkan 25:67, 17:29). Ekonomi pertengahan = keseimbangan antara konsumsi dan penahanan, pasar dan keadilan. Titik tengah yang stabil, bukan kutub yang rapuh.",
+      "analogy": "median/balanced allocation; avoid extremes",
+      "quranic_term": "qawāman (2 sisi)"
+    },
+    {
+      "lens": "computational",
+      "reading": "Wasaṭ ≈ median/pusat: titik yang meminimalkan jarak ke semua titik lain, karenanya paling stabil terhadap outlier. Posisi 'saksi' menuntut vantage point yang tak bias ke satu ekstrem — pengukur harus berada di tengah untuk menilai adil.",
+      "analogy": "median as robust central estimator"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "Ayat memuat sebuah TEST eksplisit (perpindahan kiblat) 'linaʿlama' (agar Kami ketahui/bedakan) siapa mengikuti Rasul dari siapa berbalik. Perubahan konfigurasi dipakai sebagai discriminator — test case yang memisahkan dua kelas perilaku.",
+      "analogy": "discriminating test case"
+    },
+    {
+      "lens": "inference",
+      "reading": "Menjadi 'saksi' butuh dua hal: keadilan (tak memihak ekstrem) dan keterpaparan (mengamati). Wasaṭiyyah bukan sekadar moderat rasa, melainkan posisi epistemik yang memungkinkan penilaian adil — di tengah, seseorang melihat kedua sisi.",
+      "quranic_term": "syahādah bil-ʿadl"
+    },
+    {
+      "lens": "math-physics",
+      "reading": "Titik tengah = pusat massa/kesetimbangan sistem: posisi dengan energi potensial minimum, paling tahan gangguan. Sistem yang terdorong ke ekstrem menyimpan tegangan; yang di tengah stabil. Wasaṭ sebagai atraktor stabil.",
+      "analogy": "center of mass; stable equilibrium"
+    },
+    {
+      "lens": "systems",
+      "reading": "Tata kelola pertengahan: komunitas yang menempati posisi tengah dapat menjadi arbiter/saksi bagi yang lain — fungsi yang butuh kredibilitas dari tidak condong ke faksi mana pun. Governance yang sehat butuh node netral tepercaya untuk menyaksikan & menengahi.",
+      "analogy": "trusted neutral arbiter node",
+      "quranic_term": "wasaṭ"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Untuk sistem penilai (LLM-judge, moderator, arbiter): posisi 'tengah' & tak bias adalah prasyarat menjadi saksi/evaluator yang adil — evaluator yang condong ke satu ekstrem menghasilkan penilaian rusak. Dan 'ujian kiblat' = eval berbasis perubahan konfigurasi untuk memisahkan yang selaras dari yang sekadar mengikuti kebiasaan.",
+      "analogy": "unbiased judge position; config-change eval",
+      "quranic_term": "wasaṭ + test"
+    },
+    {
+      "lens": "pedagogy",
+      "reading": "Metode pembentukan karakter komunitas: identitas 'pertengahan' ditanamkan sebagai standar rujukan — murid/umat belajar mengukur diri terhadap keseimbangan, bukan ekstrem. Keteladanan di tengah lebih mudah ditiru daripada kutub.",
+      "analogy": "reference standard for calibration"
+    }
+  ],
+  "inference": "Konsep 'ummatan wasaṭan' dibaca sebagai rekayasa adalah pilihan posisi yang cerdik: nilai tengah (median) adalah estimator paling robust terhadap outlier dan titik paling stabil terhadap gangguan — dan justru posisi itulah yang memenuhi syarat menjadi 'saksi' yang adil. Untuk tata kelola dan untuk sistem penilai (termasuk AI-judge): kredibilitas sebagai arbiter datang dari tidak condong ke ekstrem mana pun. Ayat juga menyisipkan mekanisme uji (perpindahan kiblat sebagai discriminator) — pengingat bahwa keselarasan sejati dibedakan dari kebiasaan hanya ketika konfigurasi berubah. Keseimbangan di sini bukan sikap lembek, melainkan posisi struktural yang memberi hak menilai.",
+  "authors": [
+    "Draft AI (LLM draft) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-07",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-07",
+      "note": "Tadabbur perdana — Wave 3; tema tata kelola/nilai tengah.",
+      "authors": [
+        "Draft AI (LLM draft)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

@@ -1,0 +1,101 @@
+{
+  "schema": "lab-study-v2",
+  "id": "nahl-16-65",
+  "version": 1,
+  "title": "Aḥyā bihil-arḍa baʿda mautihā — kebangkitan sistem lewat substrat",
+  "subtitle": "Air diturunkan, bumi mati dihidupkan kembali",
+  "ref": {
+    "surah": 16,
+    "from": 65,
+    "to": 65
+  },
+  "surah_name": "An-Nahl",
+  "theme": "Substrat, revival sistem mati, injeksi resource, siklus",
+  "sourced_meaning": {
+    "summary": "Allah menurunkan air (hujan) dari langit, dan dengan air itu Ia hidupkan bumi sesudah matinya. Sungguh pada yang demikian benar-benar terdapat tanda (āyah) bagi kaum yang mendengarkan (yasmaʿūn). Tafsir Kemenag: ajakan memperhatikan dalil/bukti melalui fenomena ini.",
+    "sources": [
+      "Tafsir Kemenag RI QS 16:65",
+      "Tafsir al-Jalalayn QS 16:65"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Persepsi",
+      "note": "siklus mati→hidup bumi = āyah yang berulang & teramati tiap musim"
+    },
+    {
+      "layer": "Penalaran",
+      "note": "penutup 'li-qawmin yasmaʿūn' — bagi yang mau mendengarkan (menerima bukti)"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "amal",
+      "reading": "Harapan yang berdisiplin: tanah yang tampak mati bisa hidup lagi bila substratnya dikembalikan — demikian pula hati yang kering; jangan memvonis mati apa yang baru kekurangan siraman (ilmu, dzikir, lingkungan baik).",
+      "quranic_term": "iḥyāʾ"
+    },
+    {
+      "lens": "computational",
+      "reading": "Revival pattern: sistem yang 'mati' (bumi kering) tidak dihapus lalu dibuat ulang — ia dihidupkan kembali dengan MENGINJEKSI substratnya (air). State lama + resource yang tepat = hidup lagi. Restorasi lewat dependency, bukan rebuild dari nol.",
+      "analogy": "revive by re-injecting the substrate (not rebuild)",
+      "quranic_term": "aḥyā baʿda maut"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "Kondisi 'mati' didefinisikan relatif terhadap substrat: dead(x) ⇔ deprived(x, water). Maka kebalikannya deterministik: supply(water) → alive. Diagnosis yang benar mencari dependency yang hilang sebelum memvonis kerusakan permanen.",
+      "analogy": "diagnose missing dependency before declaring dead"
+    },
+    {
+      "lens": "algorithm",
+      "reading": "Siklus musiman mati→hidup yang berulang = proses periodik yang bisa diandalkan: sistem dirancang untuk dorman (bukan rusak) saat substrat absen, lalu bangkit penuh saat substrat kembali — benih menunggu hujan. Dormansi sebagai strategi bertahan yang disengaja.",
+      "analogy": "dormancy + periodic revival",
+      "quranic_term": "iḥyāʾul-arḍ musiman"
+    },
+    {
+      "lens": "inference",
+      "reading": "Argumen ayat (diperjelas ayat-ayat sejenis: 'demikianlah kebangkitan'): dari fenomena berulang yang teramati (bumi hidup lagi) → inferensi atas klaim yang belum teramati (kebangkitan). Precedent empiris dipakai sebagai basis ekstrapolasi — bentuk qiyās atas data.",
+      "quranic_term": "qiyās dari āyah kauniyah"
+    },
+    {
+      "lens": "math-physics",
+      "reading": "Siklus hidrologi: evaporasi → presipitasi → kehidupan — loop materi tertutup yang menggerakkan biosfer. Satu variabel input (air) mengaktifkan kaskade nonlinier (mikroba→tumbuhan→rantai makanan): leverage point kecil, efek sistemik besar.",
+      "analogy": "closed water cycle; small input, cascading activation"
+    },
+    {
+      "lens": "systems",
+      "reading": "Memperkuat 21:30: kesehatan sistem = fungsi dari substrat bersamanya. Di sini ditambah dinamikanya — substrat bukan hanya prasyarat statis melainkan SIKLUS yang datang & pergi; sistem tangguh dirancang selaras siklus substratnya (menyimpan saat melimpah, dorman saat kering).",
+      "analogy": "design around substrate cycles (buffering + dormancy)"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Model/agen yang 'mati' (stale, drift, kehilangan relevansi) sering bukan rusak arsitekturnya melainkan kering substratnya — data segar. Re-injeksi data (continual learning, RAG atas korpus hidup) menghidupkan kembali tanpa rebuild. Dan pola dormansi: agen yang idle harus hibernate dengan state utuh, siap bangkit penuh saat resource kembali — bukan mati permanen.",
+      "analogy": "revive stale models with fresh data; hibernate don't die",
+      "quranic_term": "aḥyā bihil-arḍ"
+    },
+    {
+      "lens": "artifact",
+      "reading": "Peradaban membaca siklus ini menjadi teknologi: irigasi & bendungan (memindahkan substrat ke tempat mati), bank benih (menyimpan dormansi), hingga kini rekayasa pemulihan lahan — semuanya varian dari 'menghidupkan bumi sesudah matinya'.",
+      "analogy": "irrigation, seed banks, land restoration"
+    }
+  ],
+  "inference": "Ayat ini menambahkan dinamika pada prinsip substrat (21:30): substrat bukan hanya prasyarat statis kehidupan, melainkan siklus — dan sistem yang tampak MATI karena substratnya absen tidak rusak permanen; ia dorman, dan hidup kembali saat substrat diinjeksikan. Pelajaran rekayasanya luas: diagnosis dependency yang hilang sebelum memvonis kerusakan; rancang dormansi (bukan kematian) untuk masa kering; hidupkan kembali model yang stale dengan data segar alih-alih membangun ulang. Dan pelajaran manusiawinya sama: jangan memvonis mati apa yang baru kekurangan siraman.",
+  "authors": [
+    "Draft AI (LLM draft) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-07",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-07",
+      "note": "Tadabbur perdana — Wave 4 (memperkuat prinsip shared-substrate).",
+      "authors": [
+        "Draft AI (LLM draft)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

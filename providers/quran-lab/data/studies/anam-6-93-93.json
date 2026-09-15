@@ -1,0 +1,92 @@
+{
+  "schema": "lab-study-v2",
+  "id": "anam-6-93-93",
+  "version": 1,
+  "title": "Man qāla ūḥiya ilayya wa lam yūḥa ilayhi syai' — klaim otoritas palsu dan konsekuensinya",
+  "subtitle": "Siapakah yang lebih zalim daripada orang yang membuat kedustaan terhadap Allah, atau berkata \"telah diwahyukan kepadaku\" padahal tidak diwahyukan sesuatu pun kepadanya?",
+  "ref": {
+    "surah": 6,
+    "from": 93,
+    "to": 93
+  },
+  "surah_name": "Al-An'am",
+  "theme": "Dua jenis fraud atas otoritas wahyu: klaim-menerima-palsu dan klaim-mampu-membuat-tara — ditempatkan pada tingkat kezaliman tertinggi",
+  "sourced_meaning": {
+    "summary": "Dan siapakah yang lebih zalim daripada orang yang membuat kedustaan terhadap Allah, atau yang berkata: 'Telah diwahyukan kepada saya,' padahal tidak ada diwahyukan sesuatu pun kepadanya, dan orang yang berkata: 'Saya akan menurunkan seperti apa yang diturunkan Allah'? Alangkah dahsyatnya sekiranya kamu melihat ketika orang-orang zalim berada dalam tekanan sakratul maut, sedang para malaikat mengulurkan tangannya (berkata): 'Keluarkanlah nyawamu!' Hari ini kamu dibalas siksa yang menghinakan, karena kamu selalu berkata dusta atas nama Allah dan menyombongkan diri terhadap ayat-ayat-Nya. Tafsir Kemenag mencontohkan tokoh historis konkret: Musailamah al-Kadzdzab, al-Aswad al-'Ansi, Thulaihah al-Asadi — semua mengaku menerima wahyu; juga sindiran pada pendeta yang dipuja pengikutnya karena diklaim menerima wahyu, dan sastrawan Arab yang merasa mampu menyusun tandingan Al-Qur'an (dikaitkan 8:31: 'jika kami menghendaki niscaya kami dapat membacakan yang seperti ini' — klaim yang tak pernah dibuktikan nyata). Kemenag: ayat menggambarkan momen sakaratul maut sebagai kontras — mereka yang mengklaim kemampuan luar biasa tak mampu sekadar mengeluarkan nyawa mereka sendiri saat diminta.",
+    "sources": [
+      "Tafsir Kemenag RI QS 6:93",
+      "Tafsir al-Jalalayn QS 6:93"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Tangga epistemik",
+      "note": "dua kategori fraud disandingkan dalam satu ayat: (a) mengaku MENERIMA wahyu padahal tidak, (b) mengaku MAMPU MEMBUAT tandingan wahyu — dua bentuk klaim palsu yang berbeda strukturnya"
+    },
+    {
+      "layer": "Aksi & transfer",
+      "note": "konsekuensi digambarkan pada momen sakaratul maut: kontras eksplisit antara klaim kemampuan besar (menandingi wahyu) dengan ketidakmampuan nyata (mengeluarkan nyawa sendiri saat diminta)"
+    },
+    {
+      "layer": "Alignment",
+      "note": "ayat menutup dengan sebab eksplisit: 'bimā kuntum taqūlūna ʿalallāhi ghayral-ḥaqq' (karena kalian selalu berkata atas nama Allah yang tidak benar) — akibat dikaitkan tegas pada sebabnya"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "systems",
+      "reading": "Ayat memisahkan DUA MODE serangan berbeda atas integritas sumber otoritatif: (a) memalsukan PENERIMAAN pesan ('telah diwahyukan kepadaku' padahal tidak) — identity/provenance spoofing; (b) mengklaim MAMPU MEMPRODUKSI hal setara ('saya akan menurunkan seperti yang diturunkan Allah') — capability spoofing. Dua jenis fraud yang berbeda mekanismenya, disandingkan sebagai satu kategori kezaliman.",
+      "analogy": "taksonomi dua-mode fraud otoritas: klaim-menerima-palsu vs klaim-mampu-produksi-palsu",
+      "quranic_term": "qāla ūḥiya ilayya wa lam yūḥa (klaim menerima palsu)"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Kemenag mencatat contoh historis BERULANG (Musailamah, al-Aswad al-'Ansi, Thulaihah) — pola klaim-otoritas-palsu bukan kasus tepi hipotetis, melainkan ancaman yang muncul kembali lintas periode. Untuk sistem verifikasi otoritas/sumber apa pun: klaim sepihak ('saya berwenang/menerima X') tidak bisa diterima tanpa mekanisme verifikasi independen — pola serangan ini terlalu sering berulang untuk diabaikan sebagai anomali.",
+      "analogy": "pola serangan berulang lintas periode menuntut verifikasi independen, bukan kepercayaan pada klaim sepihak",
+      "quranic_term": "iftarā ʿalallāhi kadziban (membuat dusta atas nama Allah)"
+    },
+    {
+      "lens": "inference",
+      "reading": "Struktur retoris 'wa man aẓlamu' (siapa lagi yang lebih zalim) menempatkan fraud-otoritas pada TINGKAT KEZALIMAN TERTINGGI yang bisa ditanyakan sebagai pertanyaan retoris — menunjukkan bobot moralnya dalam kerangka nilai Al-Qur'an, bukan pelanggaran biasa yang setara pelanggaran lain.",
+      "analogy": "pertanyaan retoris superlatif menandai kelas pelanggaran tertinggi"
+    },
+    {
+      "lens": "psychology",
+      "reading": "Kemenag mencatat motivasi di balik klaim palsu: kekuasaan & pengaruh sosial (pendeta 'yang dipuja-puja pengikutnya'). Fraud otoritas sering berakar pada insentif sosial/kekuasaan yang nyata, bukan sekadar kesalahpahaman jujur — pembeda penting antara kekeliruan dan penipuan yang disengaja demi keuntungan."
+    },
+    {
+      "lens": "history-ummah",
+      "reading": "Kasus-kasus konkret yang disebut Kemenag (Musailamah al-Kadzdzab dan lainnya) menunjukkan pola ini terjadi berulang di berbagai periode sejarah — bukan insiden tunggal yang terisolasi, melainkan mode kegagalan yang berulang setiap kali otoritas keagamaan tak diverifikasi.",
+      "analogy": "mode kegagalan yang berulang lintas sejarah, bukan insiden terisolasi"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "Klaim tipe (b) — 'akan menurunkan seperti yang diturunkan Allah' — dikontraskan dengan fakta bahwa klaim itu TAK PERNAH terealisasi (Kemenag mengaitkan 8:31: klaim mampu, tanpa delivery nyata). Ini pola verifikasi sederhana: klaim kemampuan yang tak pernah diikuti hasil terverifikasi bertahun-tahun adalah klaim kosong.",
+      "analogy": "klaim kemampuan tanpa delivery terverifikasi = klaim kosong"
+    },
+    {
+      "lens": "amal",
+      "reading": "Ayat mengingatkan bahwa berkata dusta atas nama otoritas tertinggi memiliki bobot akhirat yang berat — bukan sekadar pelanggaran sosial, melainkan kezaliman yang disandingkan langsung dengan gambaran sakaratul maut. Ini peringatan keras yang mendorong kejujuran radikal dalam mengklaim otoritas keagamaan apa pun."
+    }
+  ],
+  "inference": "Ayat ini menempatkan fraud atas otoritas wahyu pada tingkat kezaliman tertinggi, membedakan dua modenya: klaim-menerima-palsu (mengaku menerima wahyu padahal tidak) dan klaim-mampu-produksi-palsu (mengaku sanggup membuat tandingan Al-Qur'an). Bacaan rekayasa: (1) dua mode fraud ini adalah taksonomi berbeda atas serangan terhadap integritas sumber otoritatif — identity spoofing vs capability spoofing; (2) contoh historis berulang (Musailamah dkk.) menunjukkan pola ini bukan kasus tepi, melainkan ancaman berkelanjutan yang menuntut verifikasi independen, bukan kepercayaan pada klaim sepihak; (3) klaim kemampuan tanpa delivery nyata bertahun-tahun (dikaitkan 8:31) adalah pola verifikasi sederhana: klaim kosong terungkap dari ketiadaan buktinya sendiri. CATATAN TANZIH: penegasan Kemenag bahwa Al-Qur'an 'datang dari Allah... tidak dapat ditandingi siapa pun' menunjuk keunikan & kekhususan wahyu sejati sebagai hak prerogatif Allah semata — bukan bahan analogi rekayasa; yang dibaca-rekayasa hanyalah pola deteksi-fraud pada sisi klaim manusia yang memalsukan otoritas.",
+  "authors": [
+    "Draft AI (LLM draft) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-12",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-12",
+      "note": "Tadabbur perdana — Wave 16 mimpi & wahyu.",
+      "authors": [
+        "Draft AI (LLM draft)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

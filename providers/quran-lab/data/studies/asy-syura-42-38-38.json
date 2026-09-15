@@ -1,0 +1,105 @@
+{
+  "schema": "lab-study-v2",
+  "id": "asy-syura-42-38-38",
+  "version": 1,
+  "title": "Amruhum syura — konsensus sebagai properti tetap komunitas",
+  "subtitle": "Bukan musyawarah sesekali, tapi keputusan-antar-pihak sebagai sifat bawaan sistem",
+  "ref": {
+    "surah": 42,
+    "from": 38,
+    "to": 38
+  },
+  "surah_name": "Ash-Shuraa",
+  "theme": "Syura sebagai invariant/protokol default komunitas; keputusan antar-peer ('baynahum'); desentralisasi keputusan berdampingan dengan desentralisasi sumber daya (infak)",
+  "sourced_meaning": {
+    "summary": "Kemenag: ayat ini menyebut sifat orang-orang yang menyambut seruan Tuhannya — mengesakan dan menyucikan-Nya, mendirikan salat fardu pada waktunya dengan sempurna, dan senantiasa bermusyawarah untuk menentukan sikap dalam menghadapi hal-hal yang pelik dan penting; urusan mereka diputuskan dengan musyawarah di antara mereka. Kemenag mengaitkannya dengan QS 3:159 ('bermusyawarahlah dengan mereka dalam urusan'). Ditambah, mereka menginfakkan sebagian rezeki di jalan yang bermanfaat. Semua sifat ini membuahkan kesenangan yang kekal di akhirat.",
+    "sources": [
+      "Tafsir Kemenag RI QS 42:38",
+      "Tafsir al-Jalalayn QS 42:38"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Alignment",
+      "note": "syura ditempatkan di antara sifat inti mukmin (menyambut seruan, salat, infak) — jadi properti konstitutif, bukan opsi tambahan"
+    },
+    {
+      "layer": "Penalaran",
+      "note": "keputusan atas 'urusan mereka' dihasilkan lewat deliberasi antar-pihak, bukan titah tunggal"
+    },
+    {
+      "layer": "Umpan balik",
+      "note": "'baynahum' (di antara mereka) — putaran masukan-antar-peer sebagai mekanisme yang berjalan terus"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "systems",
+      "reading": "Frasa 'amruhum shūrā baynahum' menempatkan konsultasi sebagai invariant tata kelola yang tetap — bukan kejadian sekali pakai. Pengambilan keputusan terdesentralisasi menjadi budaya/properti sistem komunitas, bukan prosedur darurat yang sesekali diaktifkan.",
+      "analogy": "konsensus sebagai system-invariant / protokol default",
+      "quranic_term": "shūrā"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Ini analogi protokol keputusan kolektif yang persisten by design: keputusan sistem muncul dari konsultasi antar-pihak sebagai properti arsitektural, bukan dari satu otoritas sentral. 'Baynahum' menegaskan keputusan antar-peer — resonansi dengan protokol konsensus terdesentralisasi.",
+      "analogy": "peer consensus protocol / decentralized decision by design",
+      "quranic_term": "baynahum"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "Syura di sini disajikan deklaratif — sebagai sifat/atribut kelas komunitas mukmin ('urusan mereka [adalah] musyawarah'), bukan panggilan imperatif sekali jalan seperti perintah di 3:159. Ini invariant yang menempel pada identitas sistem, bukan satu instruksi.",
+      "analogy": "properti deklaratif / trait invariant"
+    },
+    {
+      "lens": "algorithm",
+      "reading": "Mekanismenya adalah putaran kesepakatan antar-peer sebelum 'urusan' difinalkan: masukan dikumpulkan dan dikonvergensikan di antara para pihak sebagai ronde konsensus. Keputusan tidak sah sebelum melewati ronde deliberasi ini.",
+      "analogy": "consensus round / quorum antar-peer"
+    },
+    {
+      "lens": "economy",
+      "reading": "Ayat memasangkan syura (keputusan bersama) dengan infak (rezeki dibelanjakan di jalan manfaat) — dua desentralisasi berdampingan: distribusi keputusan dan distribusi sumber daya. Tata kelola yang membagi wewenang sekaligus membagi harta ke arah yang bermanfaat.",
+      "analogy": "distribusi keputusan + distribusi sumber daya",
+      "quranic_term": "infāq"
+    },
+    {
+      "lens": "inference",
+      "reading": "Penempatan syura di antara sifat-sifat pokok (menyambut seruan Tuhan, salat, infak) menyiratkan konsultasi diperlakukan sebagai konstitutif dan struktural — bukan pelengkap. Dari susunannya dapat disimpulkan: keputusan kolektif adalah bagian dari identitas komunitas, bukan add-on.",
+      "analogy": "properti konstitutif (bukan opsional)"
+    },
+    {
+      "lens": "systems",
+      "reading": "Syura berdiri di antara salat (dimensi vertikal, hubungan hamba–Rabb sebagai landasan iman) dan infak (dimensi horizontal, relasi sosial) — tata kelola keputusan diletakkan di dalam himpunan kewajiban yang seimbang, tidak berdiri sendiri lepas dari fondasi ibadah dan kepedulian sosial.",
+      "analogy": "governance di dalam himpunan kewajiban seimbang"
+    },
+    {
+      "lens": "history-ummah",
+      "reading": "Ayat ini Makkiyah — turun sebelum terbentuknya struktur negara di Madinah. Maka syura ditampilkan sebagai sifat komunitas yang tidak bergantung pada aparatur kekuasaan formal; konsultasi adalah karakter umat, bukan sekadar instrumen negara.",
+      "analogy": "konsultasi sebagai trait komunitas, independen dari aparatur formal"
+    },
+    {
+      "lens": "amal",
+      "reading": "Praktik yang dianjurkan: menjadikan musyawarah kebiasaan dalam urusan bersama, bukan pengecualian — membudayakan mendengar dan memutus bersama sebagai bagian dari karakter beriman.",
+      "quranic_term": "shūrā"
+    }
+  ],
+  "inference": "Jika 3:159 memerintahkan musyawarah sebagai tindakan (imperatif), 42:38 menyatakannya sebagai sifat yang melekat (deklaratif): 'urusan mereka [adalah] musyawarah di antara mereka'. Dibaca sebagai arsitektur tata kelola, syura di sini bukan prosedur sekali pakai melainkan invariant/protokol default yang menjadi properti sistem komunitas — keputusan lahir antar-peer ('baynahum') sebagai desain, bukan dari satu titik sentral. Penempatannya di antara sifat inti (menyambut seruan Rabb, salat, infak) menandakan ia konstitutif; dan pemasangannya dengan infak menautkan desentralisasi keputusan dengan desentralisasi sumber daya. Bahwa ayat ini Makkiyah memperkuat bacaan bahwa konsultasi adalah karakter umat, tak bergantung pada aparatur kekuasaan. CATATAN TANZIH: 'menyambut seruan Tuhannya' (istajābū li-Rabbihim) — Allah sebagai Rabb yang diseru dan disambut adalah LANDASAN iman dan tauhid, disebut dengan ta'zhim; Ia TIDAK dianalogikan sebagai sistem/otoritas. Yang dianalogikan hanyalah STRUKTUR pada sisi komunitas manusia: protokol konsultasi antar-peer. Netralitas: para ulama berbeda pandangan tentang sifat mengikat vs anjuran hasil syura dan bentuk kelembagaannya (khilaf) — Lab TIDAK menetapkan bentuk pemerintahan atau fatwa politik, hanya membaca pola konsensusnya. Resonansi struktural, bukan mukjizat numerik, bukan maksud tunggal ayat.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-08",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-08",
+      "note": "Wave 11 aturan/tata-kelola — syura sebagai properti tetap komunitas (distributed consensus by design).",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

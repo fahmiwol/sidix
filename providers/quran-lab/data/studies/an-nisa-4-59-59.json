@@ -1,0 +1,106 @@
+{
+  "schema": "lab-study-v2",
+  "id": "an-nisa-4-59-59",
+  "version": 1,
+  "title": "Hierarki otoritas & resolusi konflik — kembalikan ke sumber saat berselisih",
+  "subtitle": "Wewenang berjenjang, tapi saat terjadi sengketa, arbiternya adalah rujukan otoritatif — bukan kekuasaan",
+  "ref": {
+    "surah": 4,
+    "from": 59,
+    "to": 59
+  },
+  "surah_name": "An-Nisa",
+  "theme": "Arsitektur otoritas berjenjang; delegasi bertingkat; aturan resolusi konflik dengan eskalasi ke sumber kanonik (Al-Qur'an & Sunnah)",
+  "sourced_meaning": {
+    "summary": "Perintah kepada orang beriman: taatilah Allah, taatilah Rasul, dan ulil amri (pemegang urusan/kekuasaan) di antara kalian — agar tercipta kemaslahatan umum dan amanat serta hukum terlaksana seadil-adilnya (Kemenag). Kemudian jika kalian berselisih pendapat tentang sesuatu, kembalikanlah ia kepada Allah (Al-Qur'an) dan Rasul (Sunnah), jika kalian benar-benar beriman kepada Allah dan hari akhir. Yang demikian itu lebih utama dan lebih baik akibatnya. Kemenag menekankan ketaatan kepada Allah dan Rasul bersifat pokok, sementara penyelesaian sengketa dikembalikan pada rujukan wahyu.",
+    "sources": [
+      "Tafsir Kemenag RI QS 4:59",
+      "Tafsir al-Jalalayn QS 4:59"
+    ]
+  },
+  "khilaf": "Ruang lingkup dan syarat ketaatan kepada 'ulil amri' (siapa yang termasuk, batas ketaatan hanya dalam ma'ruf, sifat mengikat vs anjuran) adalah pokok perbedaan pandangan di kalangan ulama. Lab membaca hanya STRUKTUR tata kelolanya (hierarki + resolusi konflik), TIDAK menetapkan pandangan fiqih/politik apa pun.",
+  "qca": [
+    {
+      "layer": "Alignment",
+      "note": "ada rujukan kanonik (Al-Qur'an & Sunnah) yang mengungkung dan mengatasi keputusan lapisan di bawahnya — spec yang lebih tinggi menang saat konflik"
+    },
+    {
+      "layer": "Penalaran",
+      "note": "sengketa diselesaikan dengan menalar-balik ke sumber otoritatif, bukan diputus oleh yang paling berkuasa atau paling lantang"
+    },
+    {
+      "layer": "Tangga epistemik",
+      "note": "'jika berselisih → kembalikan ke Allah & Rasul' — tie-break deterministik lewat rujukan tetap, bukan opini yang berubah-ubah"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "systems",
+      "reading": "Struktur ayat adalah hierarki wewenang berjenjang: ketaatan mengalir Allah → Rasul → ulil amri, dengan ulil amri sebagai otoritas terdelegasi yang cakupannya dibatasi oleh lapisan di atasnya. Delegasi menurunkan biaya koordinasi, tetapi terikat pada spesifikasi yang lebih tinggi.",
+      "analogy": "delegation hierarchy / rantai wewenang berbatas",
+      "quranic_term": "ulū al-amr"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "Bagian kedua ayat adalah aturan resolusi konflik yang eksplisit: 'kemudian jika kamu berselisih → kembalikan kepada Allah dan Rasul'. Konflik tidak diselesaikan oleh siapa yang lebih kuat, melainkan direkonsiliasi terhadap sumber kebenaran yang tetap — persis pola menyelesaikan konflik dengan mengacu ke base reference.",
+      "analogy": "conflict resolution → source of truth",
+      "quranic_term": "tanāzuʿ"
+    },
+    {
+      "lens": "computational",
+      "reading": "Al-Qur'an & Sunnah difungsikan sebagai single source of truth: rujukan imutabel yang lapisan otoritas di bawahnya tak boleh mengontradiksi. Ada urutan presedensi yang jelas — ketika lapisan bawah berbenturan, yang berlaku adalah lapisan rujukan tertinggi.",
+      "analogy": "single source of truth / precedence ordering"
+    },
+    {
+      "lens": "algorithm",
+      "reading": "Prosedurnya berupa tangga eskalasi: coba selesaikan pada tingkat wewenang yang ada (ulil amri); bila sengketa tak tuntas, eskalasikan ke rujukan otoritatif (nas). Ini pola escalation ladder dengan fallback ke otoritas tertinggi yang terdefinisi.",
+      "analogy": "escalation ladder / fallback ke authority"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Ini analogi konstitusi bagi sistem multi-agen: ada dokumen-spesifikasi tertinggi yang mengalahkan kebijakan yang didelegasikan. Saat sub-agen atau kebijakan lokal berkonflik, arbitrasenya dilakukan terhadap dokumen konstitusional — bukan oleh agen yang paling dominan. Kepatuhan berjenjang dengan mekanisme override yang jelas.",
+      "analogy": "constitutional AI / spec-as-arbiter; hierarchical policy dengan override",
+      "quranic_term": "radd ilā Allāh wa al-Rasūl"
+    },
+    {
+      "lens": "inference",
+      "reading": "Pemutus sengketa adalah rujukan eksternal yang tetap, bukan suara mayoritas atau kekuasaan sesaat. Ini memberi objektivitas: hasil arbitrase dapat diaudit terhadap teks kanonik, sehingga keputusan tak bergantung pada siapa yang memegang kuasa saat itu.",
+      "analogy": "tie-break deterministik via rujukan kanonik"
+    },
+    {
+      "lens": "systems",
+      "reading": "Otoritas terdelegasi (ulil amri) mengurangi beban koordinasi terpusat, tetapi ketaatannya kondisional pada keselarasan dengan spec di atasnya — sebuah pola bounded delegation, di mana wewenang sah hanya selama tidak menabrak rujukan tertinggi (para ulama menandai batas ini sebagai khilaf; lihat metadata).",
+      "analogy": "bounded delegation / scoped authority"
+    },
+    {
+      "lens": "history-ummah",
+      "reading": "Ayat ini melembagakan metodologi 'kembali ke Al-Qur'an dan Sunnah' saat sengketa — akar ushul yang menjadikan penyelesaian perselisihan berbasis rujukan terdokumentasi, bukan berbasis dominasi. Sebuah protokol arbitrase yang diwariskan lintas generasi.",
+      "analogy": "protokol arbitrase berbasis rujukan terdokumentasi"
+    },
+    {
+      "lens": "amal",
+      "reading": "Sikap praktik: taat dalam kerangka yang benar, dan ketika berbeda pendapat, tidak memaksakan ego melainkan merujuk pada sumber bersama. Adab menyelesaikan perselisihan dengan mengembalikan pada dasar, bukan memenangkan diri.",
+      "quranic_term": "ṭāʿah"
+    }
+  ],
+  "inference": "Dibaca sebagai arsitektur tata kelola, ayat ini memuat dua komponen sistem otoritas yang matang: (1) hierarki wewenang berjenjang dengan delegasi berbatas (Allah → Rasul → ulil amri), dan (2) aturan resolusi konflik yang eksplisit — saat terjadi sengketa, eskalasikan dan rekonsiliasikan terhadap rujukan kanonik yang tetap (Al-Qur'an & Sunnah), bukan terhadap kekuasaan. Pola inti: otoritas boleh terdistribusi, tetapi tie-break selalu dikembalikan ke source of truth yang imutabel dan dapat diaudit. Ini resonansi kuat dengan desain constitutional AI dan sistem yang menjadikan spesifikasi tertinggi sebagai arbiter atas kebijakan-kebijakan lokal. CATATAN TANZIH: 'taatilah Allah' menempatkan Allah pada puncak sebagai LANDASAN tauhid dan iman — Allah TIDAK dianalogikan sebagai 'node akar/komponen sistem'. Yang dioperasionalkan dalam analogi rekayasa adalah sisi TEKS/makhluk: rujukan 'Allah dan Rasul' dibaca sebagai Al-Qur'an & Sunnah (dokumen kanonik) — dan itulah yang disentuh analogi source-of-truth. Netralitas: Lab TIDAK menetapkan pandangan fiqih/politik tentang siapa ulil amri atau batas ketaatannya (ditandai sebagai khilaf); hanya membaca STRUKTUR hierarki-dan-eskalasinya. Resonansi struktural, bukan mukjizat numerik, bukan maksud tunggal ayat.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-08",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-08",
+      "note": "Wave 11 aturan/tata-kelola — hierarki otoritas + resolusi konflik (eskalasi ke sumber kanonik).",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

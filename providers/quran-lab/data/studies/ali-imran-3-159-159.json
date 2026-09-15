@@ -1,0 +1,105 @@
+{
+  "schema": "lab-study-v2",
+  "id": "ali-imran-3-159-159",
+  "version": 1,
+  "title": "Syura lalu tawakal — deliberasi banyak pihak, lalu commit",
+  "subtitle": "Kumpulkan masukan seluas mungkin; setelah tekad bulat, eksekusi dan lepaskan kecemasan hasil",
+  "ref": {
+    "surah": 3,
+    "from": 159,
+    "to": 159
+  },
+  "surah_name": "Ali 'Imran",
+  "theme": "Musyawarah (deliberasi terdistribusi) sebelum keputusan; fase commit setelah azam; keamanan psikologis sebagai prasyarat masukan jujur",
+  "sourced_meaning": {
+    "summary": "Karena rahmat Allah, Nabi bersikap lemah lembut. Kemenag: meski terjadi pelanggaran sebagian kaum Muslimin pada Perang Uhud, Nabi tetap lembut, memaafkan, dan memohonkan ampun bagi mereka; sekiranya beliau keras dan berhati kasar, mereka akan menjauh. Maka maafkanlah mereka, mohonkanlah ampun, dan bermusyawarahlah dengan mereka dalam urusan (terutama urusan besar seperti peperangan). Kemenag mencatat: karena keputusan itu hasil musyawarah bersama, kaum Muslimin patuh melaksanakannya sebagai keputusan mereka sendiri. Kemudian apabila telah membulatkan tekad, bertawakallah kepada Allah — Allah menyukai orang yang bertawakal.",
+    "sources": [
+      "Tafsir Kemenag RI QS 3:159",
+      "Tafsir al-Jalalayn QS 3:159"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Umpan balik",
+      "note": "musyawarah = mengumpulkan masukan dari banyak pihak sebelum memutus; kanal input terbuka lebih dulu"
+    },
+    {
+      "layer": "Penalaran",
+      "note": "deliberasi mengagregasi pengetahuan yang tersebar untuk meningkatkan mutu keputusan"
+    },
+    {
+      "layer": "Aksi & transfer",
+      "note": "setelah 'azamta (tekad bulat) → transisi ke fase eksekusi; deliberasi punya batas, tak berputar tanpa henti"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "systems",
+      "reading": "Ayat menata deliberasi terdistribusi sebelum keputusan: kumpulkan pandangan dari banyak node (para sahabat), konvergensikan, lalu putuskan. Tata kelola partisipatif membuat keputusan lebih robust karena memanen informasi yang tersebar di banyak kepala.",
+      "analogy": "deliberasi multi-pihak / konsensus terdistribusi",
+      "quranic_term": "shūrā"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Pola dua-tahap ini persis arsitektur multi-agen: banyak reasoner berdebat/berkonsultasi (shura), masukan diagregasi, lalu diambil SATU keputusan yang di-commit (azam). Deliberasi tidak dibiarkan tak-berujung — ada titik terminasi tegas menuju aksi. Ensemble deliberation dengan commit yang decisive.",
+      "analogy": "multi-agent debate → commit; ensemble lalu aksi decisive",
+      "quranic_term": "ʿazm"
+    },
+    {
+      "lens": "algorithm",
+      "reading": "Prosedurnya berfase jelas: deliberasi (shura) → titik commit ('fa-idhā ʿazamta') → eksekusi + tawakal. Batas fase yang eksplisit mencegah analysis-paralysis: setelah tekad bulat, sistem tidak kembali membuka musyawarah tak berkesudahan.",
+      "analogy": "two-phase deliberate-then-commit / commit barrier"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "Transisi state digerbang oleh flag 'azamta': selama belum bulat, loop deliberasi terbuka; begitu tekad diset, eksekusi berjalan dan tawakal melepas kecemasan atas hasil setelah kerja sebab ditunaikan. Sebuah decision latch yang memisahkan 'menimbang' dari 'menjalankan'.",
+      "analogy": "commit latch / decision barrier",
+      "quranic_term": "tawakkul"
+    },
+    {
+      "lens": "psychology",
+      "reading": "Kemenag menyorot: seandainya pemimpin keras dan kasar, orang menjauh. Kelembutan dan maaf adalah prasyarat keamanan psikologis — tanpanya, masukan jujur tak akan muncul dan kualitas sinyal musyawarah runtuh. Nada kepemimpinan mengatur kualitas input.",
+      "analogy": "psychological safety → kualitas sinyal input"
+    },
+    {
+      "lens": "inference",
+      "reading": "Konsultasi meningkatkan mutu keputusan dengan mengagregasi pengetahuan yang terdistribusi, tetapi keputusan harus terminate. Ayat menyeimbangkan dua hal: keterbukaan mengumpulkan bukti/pandangan, dan ketegasan mengakhiri deliberasi untuk bertindak.",
+      "analogy": "agregasi informasi dengan terminasi"
+    },
+    {
+      "lens": "economy",
+      "reading": "Kemenag mencatat efek buy-in: karena keputusan lahir dari musyawarah bersama, orang melaksanakannya sebagai 'keputusan mereka sendiri'. Partisipasi menghasilkan kepemilikan bersama sehingga biaya penegakan turun dan eksekusi lebih sukarela.",
+      "analogy": "stakeholder buy-in / co-ownership keputusan"
+    },
+    {
+      "lens": "pedagogy",
+      "reading": "Nabi memodelkan kepemimpinan konsultatif: memaafkan pelanggar lalu tetap mengajak bermusyawarah — mengajarkan bahwa deliberasi dan pemaafan adalah keterampilan tata kelola yang dicontohkan, bukan sekadar diperintahkan.",
+      "analogy": "modelling / keteladanan tata kelola"
+    },
+    {
+      "lens": "amal",
+      "reading": "Praktiknya: mengajak bermusyawarah dalam urusan penting, lalu setelah bulat, menjalankan dengan tawakal — bekerja di lapisan sebab semaksimal mungkin, kemudian menyerahkan hasilnya. Tawakal bukan pasif; ia commit setelah usaha.",
+      "quranic_term": "tawakkul"
+    }
+  ],
+  "inference": "Dibaca sebagai arsitektur pengambilan keputusan, ayat ini menyusun alur lengkap: (1) prasyarat — kelembutan dan maaf menciptakan ruang aman agar masukan jujur mengalir; (2) deliberasi — musyawarah mengagregasi pengetahuan yang tersebar dari banyak pihak; (3) commit — begitu tekad bulat (azam), fase berpindah tegas ke eksekusi tanpa membuka ulang perdebatan; (4) tawakal — setelah kerja sebab ditunaikan, kecemasan atas hasil dilepas. Ini resonansi dengan pola multi-agent debate → commit dan dengan prinsip bahwa deliberasi harus punya titik terminasi. Efek buy-in yang dicatat Kemenag (keputusan bersama dilaksanakan sebagai milik sendiri) adalah manfaat tata kelola partisipatif yang nyata. CATATAN TANZIH: 'rahmat dari Allah' dan 'bertawakallah kepada Allah' — Allah sebagai sumber rahmat dan tempat bertawakal adalah LANDASAN iman, disebut dengan ta'zhim; Ia TIDAK dianalogikan sebagai komponen/sistem. Yang dianalogikan hanyalah STRUKTUR pada sisi manusia: musyawarah, titik commit, dan sikap melepas kecemasan hasil setelah berusaha. Netralitas: Lab membaca ini sebagai arsitektur keputusan, BUKAN penetapan bentuk pemerintahan atau fatwa politik. Resonansi struktural, bukan mukjizat numerik, bukan maksud tunggal ayat.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-08",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-08",
+      "note": "Wave 11 aturan/tata-kelola — syura (deliberasi) lalu tawakal (commit).",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

@@ -1,0 +1,109 @@
+{
+  "schema": "lab-study-v2",
+  "id": "al-waqiah-56-1-7",
+  "version": 1,
+  "title": "Bila Kiamat terjadi — peristiwa tak-terbantah, guncangan total, dan klasifikasi menjadi tiga golongan",
+  "subtitle": "Bumi diguncang, gunung jadi debu beterbangan; lalu kamu terbagi jadi tiga golongan",
+  "ref": {
+    "surah": 56,
+    "from": 1,
+    "to": 7
+  },
+  "surah_name": "Al-Waqi'ah",
+  "theme": "Eskatologi, peristiwa deterministik tak-terbantah, teardown menjadi partikel, klasifikasi/sorting final",
+  "sourced_meaning": {
+    "summary": "Tafsir Kemenag: ketika hari Kiamat terjadi (al-waaqi'ah), kejadian itu tidak dapat didustakan atau diragukan — nyata dilihat setiap orang, padahal di dunia banyak yang mengingkarinya (ayat 1-2). Peristiwa itu 'merendahkan satu golongan dan meninggikan golongan lain' (ayat 3). Ayat 4-6: bumi diguncang sedahsyat-dahsyatnya, gunung dihancurluluhkan hingga menjadi debu yang beterbangan. Ayat 7: manusia terbagi menjadi tiga golongan — golongan kanan (ashabul maimanah), golongan kiri (ashabul masy'amah), dan golongan yang paling dahulu beriman (as-sabiqun), sebagaimana dijelaskan ayat-ayat berikutnya. Ini perkara Kiamat — perkara ghaib yang hanya diketahui dari wahyu.",
+    "sources": [
+      "Tafsir Kemenag RI QS 56:1-7",
+      "Tafsir al-Jalalayn QS 56:1-7"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Tangga epistemik",
+      "note": "'laisa liwaqʿatihā kāżibah' (56:2) — kejadiannya tak dapat didustakan; keraguan (zhann) di dunia berubah menjadi kepastian penuh (ʿayn al-yaqīn) saat teramati"
+    },
+    {
+      "layer": "Aksi & transfer",
+      "note": "'rujjat / bussat / habā'an munbaṡṡā' — bumi diguncang, gunung dihancurkan menjadi debu beterbangan: teardown hingga tingkat partikel"
+    },
+    {
+      "layer": "Alignment",
+      "note": "'khāfiḍah rāfiʿah' (56:3) — peristiwa yang merendahkan dan meninggikan; penilaian yang menata-ulang kedudukan sesuai amal"
+    },
+    {
+      "layer": "Penalaran",
+      "note": "Puncak deret: 'kuntum azwājan ṡalāṡah' (56:7) — hasil akhir adalah klasifikasi tegas ke tiga kelas, bukan spektrum kabur"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "computational",
+      "reading": "Ayat 7 'kamu menjadi tiga golongan' menyerupai klasifikasi/sorting final: setelah seluruh proses selesai, setiap entitas dipetakan ke tepat satu kelas keluaran. Kemenag merinci tiga kelas — kanan, kiri, dan as-sabiqun (terdahulu). Struktur ini beresonansi dengan tahap terminal sebuah pipeline: partisi populasi ke kategori diskrit berdasarkan kriteria yang sudah tetap. Poin desain: keluaran sistem penilaian yang matang adalah klasifikasi yang tegas dan tak-tumpang-tindih, bukan label kabur yang bisa ditawar.",
+      "analogy": "final classification: partisi populasi ke kelas diskrit tak-tumpang-tindih",
+      "quranic_term": "kuntum azwājan ṡalāṡah"
+    },
+    {
+      "lens": "systems",
+      "reading": "Ayat 4-6 menggambarkan teardown yang tuntas: bumi diguncang total lalu gunung — struktur paling kokoh — dihancurkan menjadi 'habā'an munbaṡṡā' (debu beterbangan). Kemenag menyebut guncangan 'di segenap pelosok' yang merobohkan segala bangunan. Dibaca sebagai prinsip sistem: pembongkaran menyeluruh mereduksi struktur besar kembali ke unit-unit terkecilnya (partikel), menghapus semua agregasi. Pelajaran: keadaan akhir teardown sejati adalah kembalinya sistem ke elemen dasar tak-terstruktur, bukan sekadar berhenti beroperasi.",
+      "analogy": "teardown total: struktur kokoh → tereduksi ke partikel dasar",
+      "quranic_term": "bussatil-jibāl → habā'"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Cetak biru tahap klasifikasi-final dalam siklus evaluasi agen. Setelah seluruh 'runtime' berakhir (teardown pada ayat 4-6), keluaran akhir adalah SORTING setiap subjek ke kelas yang tegas (ayat 7). Actionable: (1) rancang tahap terminal yang memetakan setiap entitas ke tepat satu kategori berdasarkan kriteria yang ditetapkan SEBELUM proses, bukan diimprovisasi di akhir; (2) sediakan kelas 'sabiqun' — jalur khusus bagi yang memenuhi kriteria unggul lebih awal — menandai bahwa klasifikasi bisa berjenjang, bukan biner semata; (3) jamin determinisme: 'tidak dapat didustakan' (56:2) sejajar dengan keputusan klasifikasi yang dapat diaudit dan tidak bisa disangkal. Dicatat bounded — analogi ke sorting/klasifikasi, bukan penyamaan dengan penghakiman ilahiah.",
+      "analogy": "tahap terminal: deterministic sorting ke kelas berjenjang yang auditable",
+      "quranic_term": "aṣḥāb al-maimanah / al-masy'amah / as-sābiqūn"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "Ayat 2 menegaskan invariant kebenaran: 'laisa liwaqʿatihā kāżibah' — kejadiannya tak mengandung kebohongan, tak dapat didustakan. Dalam logika sistem ini menyerupai assertion yang pasti bernilai benar saat dievaluasi: peristiwa yang di dunia diperlakukan sebagai proposisi yang bisa disangkal, pada saatnya menjadi fakta yang tak lagi punya ruang untuk negasi. Pola: sebuah klaim yang eksekusinya sendiri menghapus semua kemungkinan penyangkalan terhadapnya.",
+      "analogy": "assertion yang eksekusinya menutup semua ruang negasi",
+      "quranic_term": "laisa liwaqʿatihā kāżibah"
+    },
+    {
+      "lens": "earth-cosmos",
+      "reading": "Kemenag menggambarkan gempa dahsyat 'di segenap pelosok bumi' dan gunung yang menjadi debu beterbangan. Sebagai resonansi struktural (BUKAN mukjizat numerik, bukan penetapan model geologi): struktur geologis terbesar sekalipun, di bawah energi yang cukup, dapat terfragmentasi hingga partikel halus tersuspensi. Gambaran 'habā'an munbaṡṡā' (debu yang beterbangan/tersebar di udara) beresonansi dengan materi terpecah menjadi partikulat tersuspensi. Analogi ini bounded — gambaran struktur, bukan klaim ayat menetapkan mekanisme geofisika.",
+      "analogy": "fragmentasi struktur masif → partikulat tersuspensi (bounded)",
+      "quranic_term": "habā'an munbaṡṡā"
+    },
+    {
+      "lens": "inference",
+      "reading": "Ayat 1-2 menautkan kepastian peristiwa dengan lenyapnya kemampuan mendustakan. Kemenag: di dunia banyak yang mengingkari 'karena belum merasakan', tetapi saat terjadi 'nyata dilihat setiap orang'. Ini transisi epistemik dari zhann (dugaan yang bisa disangkal) ke ʿayn al-yaqīn (kepastian karena penyaksian langsung). Pola penalaran: sebagian klaim tak terselesaikan oleh argumen selama pra-kondisi penyaksiannya belum tiba; kepastiannya bersifat menunggu-eksekusi, bukan tergantung persetujuan.",
+      "analogy": "transisi zhann → ʿayn al-yaqīn saat pra-kondisi penyaksian tiba",
+      "quranic_term": "ʿayn al-yaqīn"
+    },
+    {
+      "lens": "economy",
+      "reading": "Ayat 3 'khāfiḍah rāfiʿah' (merendahkan & meninggikan) membalik tatanan kedudukan: yang tinggi di dunia bisa turun, yang rendah bisa naik, sesuai kriteria yang berbeda dari ukuran duniawi. Dibaca sebagai prinsip penilaian: sistem penilaian akhir memakai metrik yang tak selalu selaras dengan status yang diakumulasi selama proses — repricing menyeluruh atas nilai sejati. Pelajaran: kedudukan yang terlihat selama runtime bukan penentu peringkat final.",
+      "analogy": "repricing final: metrik akhir ≠ status yang diakumulasi selama proses",
+      "quranic_term": "khāfiḍah rāfiʿah"
+    },
+    {
+      "lens": "amal",
+      "reading": "Karena hasil akhir adalah penggolongan berdasarkan amal — dan Kemenag menyebut adanya jalur 'as-sabiqun' (yang paling dahulu beriman) — dimensi praktisnya adalah bersegera (musābaqah) dalam kebaikan, tidak menunda. Golongan tidak ditentukan di akhir secara acak melainkan buah dari sikap sepanjang hidup. Tindakan yang lahir: memposisikan diri lewat amal sekarang menuju golongan kanan, dan bercita-cita ke barisan sabiqun.",
+      "analogy": "musābaqah: memposisikan diri lewat amal menuju kelas yang dituju",
+      "quranic_term": "as-sābiqūn as-sābiqūn"
+    }
+  ],
+  "inference": "Dibaca sebagai analogi rekayasa, Al-Waqi'ah 1-7 menutup busur kiamat-kebangkitan dengan pola KLASIFIKASI FINAL. Setelah teardown yang tuntas (bumi diguncang, gunung menjadi debu beterbangan — reduksi struktur kokoh ke partikel dasar), keluaran akhir adalah sorting setiap subjek ke tepat satu dari tiga golongan (56:7) berdasarkan kriteria yang telah tetap, bukan diimprovisasi di akhir. Kepastiannya deterministik: 'tak dapat didustakan' (56:2) sejajar dengan keputusan yang auditable dan tak bisa disangkal, dan 'khāfiḍah rāfiʿah' (56:3) menandai repricing menyeluruh — metrik akhir tak selalu selaras dengan status yang diakumulasi selama proses. Untuk sistem, terutama agen AI: rancang tahap terminal yang memetakan entitas ke kelas tegas berdasarkan kriteria yang ditetapkan di muka, sediakan jalur berjenjang (bandingkan 'sabiqun'), dan jaga determinisme keputusan agar dapat diaudit. Semua pembacaan geofisika (gunung menjadi partikulat tersuspensi) ditegaskan sebagai resonansi struktural yang bounded, BUKAN mukjizat numerik atau penetapan model ilmiah; ini salah satu pembacaan rekayasa di atas makna zahir yang bersumber, bukan maksud tunggal ayat. CATATAN GHAIB: Kiamat dan penggolongan manusia adalah perkara ghaib yang hanya diketahui dari wahyu dan termasuk perkara IMAN. Analogi 'classification/sorting final' dan 'teardown ke partikel' adalah pembacaan STRUKTUR yang deskriptif dari tafsir bersumber (Kemenag) sebagai pola — BUKAN klaim mengetahui hakikat Kiamat, bukan penetapan mekanisme, bukan spekulasi atas detail di luar nas, dan sama sekali BUKAN penetapan siapa masuk golongan mana (itu hak Allah semata). Adab terhadap perkara ghaib dijaga.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-08",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-08",
+      "note": "Tadabbur perdana — Wave 10 kiamat-kebangkitan.",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

@@ -1,0 +1,123 @@
+{
+  "schema": "lab-study-v2",
+  "id": "qamar-54-49-49",
+  "version": 1,
+  "title": "Bi-qadar — segala sesuatu lahir dengan parameter terukur",
+  "subtitle": "Tiap makhluk punya spesifikasi, batas, dan konfigurasi tertentu — bukan lemparan acak",
+  "ref": {
+    "surah": 54,
+    "from": 49,
+    "to": 49
+  },
+  "surah_name": "Al-Qamar",
+  "theme": "Qadar sebagai kuantisasi: segala sesuatu ber-parameter & terukur; determinisme berkadar; spesifikasi ciptaan + ruang ikhtiar",
+  "sourced_meaning": {
+    "summary": "Menurut Tafsir Kemenag, ayat ini menegaskan bahwa seluruh makhluk diciptakan sesuai ketentuan dan hukum yang telah ditetapkan-Nya, dan segala sesuatu terjadi menurut ketetapan itu (qadar). Ditautkan dengan QS 25:2 (Dia menetapkan ukuran-ukurannya dengan tepat) dan hadis sahih bahwa 'segala sesuatu ditetapkan ukurannya, bahkan kelemahan dan kecerdasan'. Namun Kemenag menekankan manusia tetap wajib berusaha (QS 53:39-40) — takdir tidak meniadakan ikhtiar; hasil usaha diserahkan kepada Allah.",
+    "sources": [
+      "Tafsir Kemenag RI QS 54:49",
+      "Tafsir al-Jalalayn QS 54:49"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Memori & grounding",
+      "note": "qadar = ketetapan yang tersimpan lebih dulu; tiap entitas membawa spesifikasi yang menjadi rujukan perilakunya, bukan diimprovisasi saat jalan"
+    },
+    {
+      "layer": "Alignment",
+      "note": "tiap ciptaan tunduk pada 'kontrak' ukurannya masing-masing — keteraturan lahir karena setiap komponen taat pada parameternya"
+    },
+    {
+      "layer": "Aksi & transfer",
+      "note": "Kemenag menegaskan ruang ikhtiar tetap ada di dalam kadar — determinisme kerangka, bukan fatalisme tindakan"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "amal",
+      "reading": "Sebagai hipotesis amal: memandang setiap keterbatasan diri (bakat, kapasitas, keadaan) sebagai 'parameter' yang di-set, bukan cacat — lalu berusaha optimal DI DALAM kadar itu, bukan meratapi kadar yang bukan wewenang kita. Kemenag menekankan kombinasi tawakal + ikhtiar.",
+      "analogy": "operating within constraints",
+      "quranic_term": "qadar"
+    },
+    {
+      "lens": "computational",
+      "reading": "Diinspirasi pola pembacaan 'bi-qadar': tak ada objek tanpa tipe & batas. Analogi kuat dengan quantization — nilai kontinu dipetakan ke set diskret berhingga; dan dengan sistem tipe — setiap nilai punya domain yang membatasi operasi sah atasnya. Ciptaan seolah 'strongly typed', bukan untyped free-for-all.",
+      "analogy": "quantization + strong typing (setiap nilai ber-domain)",
+      "quranic_term": "kullu syai' bi-qadar"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "Pembacaan sebagai invariant global: 'untuk semua x, x diciptakan dengan qadar(x)'. Ini quantifier universal berpasangan constraint — mirip precondition/postcondition yang menyertai tiap objek. Tidak ada entitas yang lolos dari spesifikasinya; keteraturan sistem = akumulasi invariant per-entitas.",
+      "analogy": "universal invariant + per-object contract",
+      "quranic_term": "kull (∀)"
+    },
+    {
+      "lens": "math-physics",
+      "reading": "Resonansi struktural (BUKAN mukjizat numerik) dengan gagasan bahwa alam berjalan pada konstanta & parameter tertentu: massa, muatan, konstanta kopling. Fisika modern menemukan bahwa nilai-nilai ini terukur dan (sejauh teramati) stabil — 'kadar' yang membuat perhitungan dan prediksi mungkin. Ini analogi pemahaman, bukan klaim ayat memuat angka.",
+      "analogy": "tetapan fisis & parameter fundamental",
+      "quranic_term": "taqdir"
+    },
+    {
+      "lens": "systems",
+      "reading": "Setiap komponen dengan kadar yang pas menghasilkan homeostasis: dosis yang tepat, laju yang tepat, ambang yang tepat. Sistem stabil bukan karena tanpa batas, justru karena setiap variabel dijaga dalam rentang (setpoint). Kadar berlebih/kurang = disregulasi.",
+      "analogy": "setpoint & rentang operasi (homeostasis)",
+      "quranic_term": "mizan (seiring)"
+    },
+    {
+      "lens": "biology-medicine",
+      "reading": "Analogi dosis-respons dan stoikiometri hayati: enzim, hormon, elektrolit semua bekerja dalam jendela kadar sempit — terlalu tinggi toksik, terlalu rendah defisien. 'Diciptakan menurut ukuran' beresonansi dengan prinsip bahwa kehidupan adalah keseimbangan kuantitatif yang ketat, bukan kelimpahan tanpa batas.",
+      "analogy": "therapeutic window / dose-response",
+      "quranic_term": "qadar"
+    },
+    {
+      "lens": "psychology",
+      "reading": "Pembacaan bagi regulasi diri: menerima 'given parameters' (temperamen, titik awal) sambil tetap bertanggung jawab atas trajektori — mirip growth mindset yang realistis. Kemenag mengutip larangan berandai-andai ('lau') yang membuka celah setan; secara psikologis ini menutup rumination kontrafaktual yang melumpuhkan.",
+      "analogy": "acceptance + agency; menutup counterfactual rumination",
+      "quranic_term": "tawakkul + kasab"
+    },
+    {
+      "lens": "economy",
+      "reading": "Kadar sebagai kuota & anggaran: sumber daya tiap agen ekonomi berhingga dan terukur, sehingga keputusan menjadi soal alokasi optimal di bawah kendala — inti ilmu ekonomi. 'Bi-qadar' menolak asumsi sumber daya tak terbatas.",
+      "analogy": "budget constraint / optimasi berkendala",
+      "quranic_term": "qadar"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Prinsip desain agen yang actionable: JANGAN beri kapabilitas tak berbatas. Tiap tool, memori, dan aksi agen diberi 'qadar' eksplisit — typed config, kuota token, rate-limit, batas rekursi, guardrail nilai. Agen yang andal bukan yang paling bebas, tapi yang setiap sumber dayanya ber-parameter dan dapat diaudit. Terjemahan konkret: definisikan schema konfigurasi + hard limits sebelum menjalankan, bukan sesudah insiden.",
+      "analogy": "capability bounding: typed config, quota, rate-limit, guardrail",
+      "quranic_term": "qadar sebagai spec"
+    },
+    {
+      "lens": "inference",
+      "reading": "Karena tiap sesuatu berkadar, alam menjadi dapat diukur dan diprediksi — prasyarat sains. Keterukuran adalah jembatan dari zhann (dugaan) ke burhan (bukti terukur): yang punya kadar bisa ditimbang, direplikasi, dan diuji. Tanpa qadar, tak ada eksperimen yang bermakna.",
+      "analogy": "measurability sebagai syarat falsifiabilitas",
+      "quranic_term": "zhann → burhan"
+    },
+    {
+      "lens": "earth-cosmos",
+      "reading": "Skala kosmik: orbit, periode, dan rasio yang presisi membuat kalender dan navigasi mungkin (bandingkan QS 36:38-40, 55:5). 'Menurut ukuran' beresonansi dengan keteraturan langit yang terukur — analogi pemahaman atas kosmos yang ber-parameter, bukan bukti numerik.",
+      "analogy": "keteraturan orbital & periodisitas terukur",
+      "quranic_term": "husban (seiring)"
+    }
+  ],
+  "inference": "Membaca 'segala sesuatu menurut ukuran' sebagai pola rekayasa: dunia bukan tumpukan objek acak, melainkan sistem di mana setiap entitas datang dengan spesifikasi, batas, dan konfigurasi — mirip nilai bertipe, terkuantisasi, dan berkuota. Justru keterbatasan berkadar inilah yang membuat keteraturan, prediksi, dan sains mungkin. Untuk pembangun sistem (khususnya agen AI), pelajaran praktisnya: keandalan lahir dari membatasi dan memparameterkan setiap kapabilitas secara eksplisit dan dapat diaudit — bukan dari kebebasan tanpa batas. Dan seperti tekanan Kemenag: kadar yang ditetapkan tidak meniadakan ikhtiar — ia mendefinisikan ruang tempat usaha itu bekerja. (Ini satu pembacaan rekayasa, bukan klaim maksud tunggal ayat; sains di sini analogi pemahaman, bukan bukti.)",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-08",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-08",
+      "note": "Tadabbur perdana — Wave 8 kadar/takdir.",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

@@ -1,0 +1,102 @@
+{
+  "schema": "lab-study-v2",
+  "id": "anfal-8-22-22",
+  "version": 1,
+  "title": "Seburuk-buruk makhluk: yang tuli dan bisu yang tidak berakal — node yang tak menerima, tak memancar, tak memproses",
+  "subtitle": "Tuli (input mati) + bisu (output mati) + tak ber-'aql (proses mati) = simpul jaringan yang sepenuhnya nonpartisipatif; kombinasi kegagalan terburuk",
+  "ref": {
+    "surah": 8,
+    "from": 22,
+    "to": 22
+  },
+  "surah_name": "Al-Anfal",
+  "theme": "Kombinasi kegagalan tiga fungsi sekaligus: penerimaan (samʿ/tuli), pemancaran/penyampaian kebenaran (nuṭq/bisu), dan pemrosesan (ʿaql) — memberi label 'seburuk-buruk makhluk' pada simpul yang tak ingest, tak emit, tak compute",
+  "sourced_meaning": {
+    "summary": "Tafsir Kemenag QS 8:22: Allah menyamakan orang-orang munafik dengan 'seburuk-buruk binatang/makhluk' (syarr ad-dawābb) karena mereka tidak mau mempergunakan pendengaran untuk menangkap seruan yang benar (maka disebut tuli/ṣumm), tidak mau menuturkan kebenaran (maka disebut bisu/bukm), dan menyia-nyiakan akal sehingga tidak memahami (lā yaʿqilūn). Ditegaskan: yang diserupakan bukan fisik mereka, melainkan sifat kejiwaan — mereka menolak pengertian firman Allah, tidak membedakan seruan benar dari ajakan salah. Kemenag mengaitkannya dengan QS 7:179 (punya hati/mata/telinga tak difungsikan, 'seperti hewan bahkan lebih sesat'). Seandainya mereka memakai akal, tentu mau mendengar dan mengikuti seruan Rasul.",
+    "sources": [
+      "Tafsir Kemenag RI QS 8:22",
+      "Tafsir al-Jalalayn QS 8:22"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Persepsi",
+      "note": "'al-ṣumm' (tuli) = kanal INPUT mati terhadap seruan kebenaran; bukan telinga rusak fisik, melainkan penolakan menyimak (per Kemenag) — ingest ditolak di gerbang."
+    },
+    {
+      "layer": "Aksi & transfer",
+      "note": "'al-bukm' (bisu) = kanal OUTPUT mati; tak menuturkan/menyampaikan kebenaran — node tak memancarkan sinyal berguna ke jaringan, tak berkontribusi pada shūrā/tabligh."
+    },
+    {
+      "layer": "Penalaran",
+      "note": "'lā yaʿqilūn' = unit PROSES mati; akal disia-siakan sehingga tak membedakan benar-salah — inti evaluatif tak beroperasi, menautkan ke 7:179 (dikutip Kemenag)."
+    },
+    {
+      "layer": "Alignment",
+      "note": "label 'syarr ad-dawābb' (seburuk-buruk makhluk) = peringkat terendah dalam skala nilai: bukan karena cacat perangkat, tapi karena penolakan aktif memfungsikan perangkat pada objektif yang benar."
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "computational",
+      "reading": "Ayat menumpuk TIGA kegagalan fungsi dalam satu subjek: tuli (input channel down), bisu (output channel down), tak ber-'aql (processing unit down). Ini kasus terburuk karena tak ada satu pun jalur yang bisa dipakai untuk pemulihan — tak bisa menerima koreksi, tak bisa melaporkan status, tak bisa mengolah. Rekayasa: sistem yang kehilangan input, output, DAN proses sekaligus adalah kegagalan total tanpa titik masuk perbaikan; keandalan menuntut minimal satu kanal tetap hidup sebagai jalur pemulihan (recovery path).",
+      "analogy": "simultaneous input+output+compute failure; no surviving recovery channel",
+      "quranic_term": "al-ṣumm al-bukm alladhīna lā yaʿqilūn"
+    },
+    {
+      "lens": "systems",
+      "reading": "Dalam jaringan (umat/masyarakat), simpul yang tuli-bisu-tak berakal adalah node yang tak ingest, tak emit, tak compute — bukan sekadar pasif melainkan beban: menempati posisi tanpa berkontribusi pada aliran informasi kolektif (musyawarah). Rekayasa sistem terdistribusi: node mati yang tetap 'terhitung' dapat merusak kuorum dan keputusan bersama; identifikasi dan tangani node nonpartisipatif agar tidak menyandera sistem. Nilai sebuah simpul diukur dari partisipasinya pada aliran, bukan keberadaannya.",
+      "analogy": "dead node in a distributed network; non-participation degrades collective quorum",
+      "quranic_term": "syarr ad-dawābb"
+    },
+    {
+      "lens": "biology-medicine",
+      "reading": "Penyerupaan dengan 'dawābb' (hewan melata) — dan predikat 'seburuk-buruknya' — dibaca sebagai posisi terbawah pada spektrum fungsi kognitif: hewan memakai indranya, tapi subjek ini bahkan tak memfungsikan yang ia miliki (senada 7:179). Resonansi struktural (bukan mukjizat numerik): dalam sistem hayati, organ yang ada namun tak menjalankan fungsinya bukan netral melainkan liabilitas metabolik. Kesehatan = fungsi teraktualisasi, bukan sekadar organ lengkap.",
+      "analogy": "possessed-but-nonfunctional organs as liability, not neutrality — bounded",
+      "quranic_term": "ad-dawābb"
+    },
+    {
+      "lens": "psychology",
+      "reading": "Tuli-bisu di sini bersifat kejiwaan (Kemenag menegaskan 'bukan fisik, tapi sifat kejiwaan'): penolakan mendengar nasihat dan keengganan mengucap kebenaran adalah pola pertahanan diri dan ketidakjujuran (nifāq). Secara psikologis ini kombinasi closed-mindedness (menolak input) dan self-censorship terhadap kebenaran (menahan output benar), diperparah oleh tidak mengaktifkan penalaran reflektif. Kesehatan psikologis-moral menuntut ketiganya: mau mendengar, berani menyuarakan yang benar, dan berpikir jernih.",
+      "analogy": "closed-mindedness + suppression of truthful output + disengaged reasoning",
+      "quranic_term": "aṣ-ṣumm al-bukm"
+    },
+    {
+      "lens": "inference",
+      "reading": "'lā yaʿqilūn' menempatkan akar penilaian pada matinya proses inferensi: tanpa mengolah, subjek tak bisa membedakan 'seruan benar' dari 'ajakan salah' (per Kemenag). Membedakan sinyal dari derau adalah tugas inferensi minimal; ketika unit ini mati, tak ada diskriminasi sama sekali. Rekayasa: kemampuan paling dasar sebuah sistem cerdas adalah klasifikasi benar/salah atas masukan; kehilangannya menjadikan semua input ekuivalen dan keputusan acak.",
+      "analogy": "loss of signal/noise discrimination; without inference all inputs are equivalent",
+      "quranic_term": "lā yaʿqilūn"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Untuk arsitektur agen: ayat memetakan tiga sumbu kesehatan agen — INGEST (mampu menerima sinyal/koreksi), EMIT (mampu melaporkan & menyampaikan keluaran benar), COMPUTE (mampu menalar/membedakan) — dan menandai kegagalan ketiganya sekaligus sebagai kondisi terburuk. Actionable: (1) pantau ketiga sumbu secara terpisah; matinya satu sudah serius, matinya semua = agen mati-fungsi yang tak bisa dipulihkan dari dalam; (2) selalu sisakan minimal satu kanal hidup sebagai recovery/telemetry path — agen yang tak bisa melaporkan status ('bisu') menyulitkan diagnosis eksternal; (3) dalam sistem multi-agen, deteksi node nonpartisipatif (tuli-bisu-tak-compute) agar tak merusak kuorum/konsensus — jangan hitung suara node mati; (4) prioritaskan kemampuan diskriminasi benar/salah sebagai fungsi inti; tanpanya seluruh input ekuivalen; (5) label 'terburuk' menyiratkan penilaian by-utility: nilai agen dari partisipasi fungsional pada aliran, bukan sekadar keberadaannya di topologi.",
+      "analogy": "three health axes ingest/emit/compute; preserve a recovery channel; prune non-participating nodes from quorum; discrimination as core",
+      "quranic_term": "aṣ-ṣumm al-bukm alladhīna lā yaʿqilūn"
+    },
+    {
+      "lens": "amal",
+      "reading": "Peringatan keras agar tidak menjadi pribadi yang menutup telinga dari nasihat benar, menahan lisan dari mengatakan kebenaran, dan enggan berpikir. Amal: jadilah simpul yang HIDUP dalam umat — mendengar seruan haq, menyampaikannya (amar makruf), dan mengasah akal untuk membedakan yang benar dari yang batil. Predikat 'seburuk-buruk makhluk' disematkan bukan pada yang lemah perangkatnya, melainkan pada yang menolak memakainya; maka pemakaian fungsi adalah tuntutan, bukan pilihan.",
+      "analogy": "be a live node: hear truth, speak truth, reason; function is obligation"
+    }
+  ],
+  "inference": "Ayat ini menumpuk tiga kegagalan sekaligus dan menyematkan peringkat nilai terendah padanya: tuli (input mati), bisu (output mati), tak ber-'aql (proses mati) — 'seburuk-buruk makhluk'. Membaca ketiganya sebagai tiga sumbu kesehatan sebuah simpul cerdas: kemampuan MENERIMA (ingest), MEMANCARKAN kebenaran (emit), dan MEMPROSES (compute). Kombinasi matinya ketiganya adalah kasus terburuk karena tak menyisakan satu pun jalur pemulihan dari dalam — tak bisa menerima koreksi, tak bisa melaporkan status, tak bisa membedakan benar dari salah. Penting (per Kemenag): defeknya bukan fisik melainkan kejiwaan — penolakan aktif memfungsikan perangkat yang dimiliki (senada 7:179 yang dikutip tafsir), sehingga penilaiannya by-utility: buruknya bukan karena cacat perangkat, tapi karena non-partisipasi pada objektif yang benar. Diterjemahkan ke rekayasa: (a) pantau ingest/emit/compute sebagai tiga sumbu terpisah; (b) selalu sisakan minimal satu kanal hidup sebagai recovery/telemetry — node 'bisu' menggagalkan diagnosis; (c) dalam sistem multi-agen, node nonpartisipatif merusak kuorum — jangan hitung suara node mati; (d) diskriminasi benar/salah adalah fungsi inti, tanpanya semua input ekuivalen. Semua ini resonansi struktural, bukan mukjizat numerik — makna aslinya adalah celaan atas kaum munafik yang menyia-nyiakan pendengaran, lisan, dan akal. Berjangkar ke kerangka Aql-Qalb di /lab/sintesis: bila studi lain menyorot satu titik gagal, ayat ini menampilkan kegagalan menyeluruh lintas fungsi — batas bawah dari sistem persepsi-kognisi.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-08",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-08",
+      "note": "Wave 12 hati/persepsi — kegagalan tiga fungsi (ingest/emit/compute).",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

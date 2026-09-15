@@ -1,0 +1,101 @@
+{
+  "schema": "lab-study-v2",
+  "id": "baqarah-2-117",
+  "version": 1,
+  "title": "Badīʿ + kun fa-yakūn — mencipta tanpa contoh, dari spesifikasi ke perwujudan",
+  "subtitle": "Pencipta langit-bumi tanpa purwarupa sebelumnya; menetapkan perkara cukup dengan 'jadilah'",
+  "ref": {
+    "surah": 2,
+    "from": 117,
+    "to": 117
+  },
+  "surah_name": "Al-Baqarah",
+  "theme": "Kosmogoni, penciptaan tanpa preseden, deklarasi vs eksekusi, proses bertahap (sunnatullah), fase init busur kosmik",
+  "sourced_meaning": {
+    "summary": "Allah adalah Badīʿ (Mahapencipta) langit dan bumi: Dia mencipta TANPA mencontoh sesuatu yang telah ada, tanpa bahan atau alat yang telah ada — dari tiada menjadi ada. Bila Dia menetapkan suatu perkara, cukup berkata 'Kun' (jadilah) lalu jadilah ia. Tafsir Kemenag menegaskan 'kun fa-yakūn' adalah PENYEDERHANAAN untuk memudahkan pemahaman hamba tentang mudahnya kekuasaan Allah; cara dan proses terjadinya hanya Allah yang tahu. Penting: 'fa yakūn' TIDAK mesti berarti terjadi seketika — melainkan bisa melalui tahapan proses yang memerlukan waktu, dan tiap tahap berlaku hukum alam (sunnatullah). CATATAN TANZIH: Allah (Dzat & Sifat, termasuk 'Badīʿ' dan perbuatan mencipta-Nya) adalah landasan iman yang transenden — bukan objek/komponen/peran dalam analogi rekayasa; yang dianalogikan hanyalah POLA pada ciptaan (bagaimana struktur muncul dari ketetapan), bukan Sang Pencipta.",
+    "sources": [
+      "Tafsir Kemenag RI QS 2:117",
+      "Tafsir al-Jalalayn QS 2:117"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Persepsi",
+      "note": "objek yang dirujuk = langit & bumi (āyāt kauniyah terbesar) sebagai bukti kekuasaan yang teramati"
+    },
+    {
+      "layer": "Tangga epistemik",
+      "note": "tafsir menahan diri: 'cara & proses hanya Allah yang tahu' — batas pengetahuan ditandai jujur, bukan diklaim tuntas (CATATAN TANZIH)"
+    },
+    {
+      "layer": "Aksi & transfer",
+      "note": "'qadhā amran → kun → fayakūn': dari ketetapan (spesifikasi) menuju perwujudan; dibaca sebagai POLA pada ciptaan, bukan pemodelan perbuatan Allah"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "computational",
+      "reading": "Badīʿ menandai penciptaan TANPA purwarupa: bukan menyalin template yang sudah ada, melainkan merancang arsitektur baru dari nol. Dalam rekayasa ini kelas masalah tersulit — greenfield design tanpa reference implementation, di mana tak ada contoh untuk ditiru dan setiap keputusan struktural harus orisinal. Membaca POLA pada ciptaan (bukan Sang Pencipta): sistem yang benar-benar baru lahir dari spesifikasi, bukan dari peniruan.",
+      "analogy": "greenfield architecture tanpa reference implementation",
+      "quranic_term": "badīʿ"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "'Kun fa-yakūn' berpola deklaratif: nyatakan APA yang harus jadi (perkara yang ditetapkan), bukan urutan langkah-langkah rinci bagaimana. Ini kontras deklaratif-vs-imperatif yang mendasar — mirip menyatakan invariant/hasil-akhir yang dituju dan membiarkan lapisan pelaksana (di sini: sunnatullah) merealisasikannya. Analogi bounded: pemisahan antara 'penetapan hasil' dan 'mekanisme eksekusi'.",
+      "analogy": "spesifikasi deklaratif (WHAT) terpisah dari eksekusi (HOW)",
+      "quranic_term": "qadhā amran → kun"
+    },
+    {
+      "lens": "algorithm",
+      "reading": "Justru tafsir Kemenag menutup pintu salah paham 'instan': 'fa yakūn' bisa menempuh TAHAPAN yang memerlukan waktu, tunduk hukum alam. Maka pembacaan rekayasanya bukan 'output tanpa proses', melainkan 'ketetapan → proses berjenjang deterministik menuju hasil'. Analog: sebuah deklarasi tujuan yang dieksekusi lewat pipeline bertahap, tiap tahap mematuhi aturan (sunnatullah) — bukan sulap tanpa langkah.",
+      "analogy": "declared goal → staged deterministic pipeline",
+      "quranic_term": "sunnatullah (tahapan)"
+    },
+    {
+      "lens": "systems",
+      "reading": "Ada pemisahan bersih antara LAPISAN PENETAPAN dan LAPISAN PELAKSANAAN: perkara ditetapkan di satu tingkat, hukum alam menjalankannya di tingkat lain. Sistem tangguh umumnya memisahkan 'kebijakan/tujuan' dari 'mekanisme' — sehingga tujuan bisa dinyatakan ringkas sementara pelaksanaan tetap patuh pada aturan yang konsisten. (Peran manusia = sub-creator di lapisan sebab: meniru pola, bukan mencipta dari ketiadaan.)",
+      "analogy": "policy/mechanism separation"
+    },
+    {
+      "lens": "inference",
+      "reading": "Tafsir secara eksplisit menandai batas: 'tentang cara Allah mengadakan sesuatu... hanya Allah Yang Mahatahu'. Ini pelajaran epistemik penting — sebuah sistem penjelasan yang JUJUR menandai apa yang tak diketahui alih-alih mengarang mekanisme. Bagi perancang: bedakan tegas antara yang teramati (ada langit-bumi) dan yang tak-terjangkau (proses persisnya); jangan menambal ketidaktahuan dengan spekulasi.",
+      "quranic_term": "zhann → yaqīn"
+    },
+    {
+      "lens": "math-physics",
+      "reading": "Frasa 'tanpa mencontoh yang telah ada' beresonansi dengan gagasan kondisi awal yang tak punya keadaan-sebelum untuk dirujuk (tepi bawah rentang waktu-materi). Dicatat sebagai RESONANSI STRUKTURAL yang bounded — alat bantu pemahaman — BUKAN mukjizat numerik dan BUKAN klaim bahwa ayat 'membuktikan' teori kosmologi tertentu; tafsir sendiri menegaskan hakikat prosesnya di luar jangkauan.",
+      "analogy": "kondisi awal tanpa keadaan-rujukan (bounded)",
+      "quranic_term": "āyāt kauniyah"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Cetak biru fase INIT sistem agen dari 'greenfield': (1) mulai dari SPESIFIKASI hasil (goal/kontrak) yang deklaratif, bukan menyalin agen lain apa adanya; (2) sadari tak ada reference implementation — validasi tiap keputusan arsitektur secara mandiri; (3) JANGAN samakan 'deklarasi tujuan' dengan 'output instan' — sisipkan pipeline eksekusi bertahap yang tunduk aturan (invariants), sebagaimana 'fa yakūn' menempuh tahapan. Actionable: pisahkan lapisan 'goal spec' dari 'executor', dan tandai secara eksplisit bagian mekanisme yang belum dipahami/diuji alih-alih mengarangnya (meniru adab 'hanya Allah yang tahu' → tandai unknown, jangan halusinasi).",
+      "analogy": "declarative goal-spec → staged executor; tandai unknown, larang halusinasi mekanisme"
+    },
+    {
+      "lens": "pedagogy",
+      "reading": "Tafsir menyebut 'kun fa-yakūn' sebagai penyederhanaan agar mudah dipahami hamba — ini prinsip pedagogis: konsep yang kekuasaannya tak terhingga disajikan lewat metafora ringkas yang dapat dicerna, tanpa mereduksi hakikatnya. Perancang materi ajar meniru pola ini: abstraksi yang benar menyembunyikan kerumitan pelaksanaan sambil tetap jujur menandai bahwa 'ini penyederhanaan'.",
+      "analogy": "abstraksi ramah-pemula yang jujur menandai dirinya sebagai penyederhanaan"
+    }
+  ],
+  "inference": "Dibaca sebagai analogi rekayasa, ayat ini menyorot dua pola pada ciptaan (BUKAN pada Sang Pencipta — lihat CATATAN TANZIH): (a) penciptaan Badīʿ = merancang dari nol tanpa preseden, kelas 'greenfield' tersulit yang tak punya template untuk ditiru; dan (b) 'kun fa-yakūn' = pemisahan antara PENETAPAN hasil yang ringkas-deklaratif dan PELAKSANAAN yang, menurut tafsir Kemenag sendiri, dapat menempuh tahapan berproses tunduk sunnatullah — bukan output tanpa proses. Pelajaran untuk perancang sistem/agen: nyatakan tujuan secara deklaratif namun jangan bayangkan realisasinya instan; sisipkan eksekutor bertahap yang patuh aturan, dan — meniru adab tafsir 'hanya Allah yang tahu prosesnya' — tandai secara jujur bagian mekanisme yang belum diketahui alih-alih menambalnya dengan spekulasi. Semua pembacaan sains di sini bersifat resonansi struktural yang bounded, bukan mukjizat numerik, bukan maksud tunggal ayat, dan tak menggantikan makna zahir bersumber.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-08",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-08",
+      "note": "Tadabbur perdana — Wave 10 penciptaan kosmos.",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

@@ -1,0 +1,111 @@
+{
+  "schema": "lab-study-v2",
+  "id": "mulk-67-2-2",
+  "version": 1,
+  "title": "Liyabluwakum ayyukum aḥsanu ʿamalā — hidup-mati sebagai run ber-objective",
+  "subtitle": "Mati & hidup dicipta dengan satu tujuan yang diumumkan di depan: menguji siapa TERBAIK amalnya. Metrik = kualitas (aḥsan), bukan kuantitas.",
+  "ref": {
+    "surah": 67,
+    "from": 2,
+    "to": 2
+  },
+  "surah_name": "Al-Mulk",
+  "theme": "Lifecycle ber-tujuan, objective function, metrik kualitas vs kuantitas, evaluation window",
+  "sourced_meaning": {
+    "summary": "Tafsir Kemenag: Allah yang memegang kekuasaan itu adalah yang menciptakan kematian dan kehidupan; hanya Dia yang menentukan ajal setiap makhluk, dan bila ajal tiba tak ada yang bisa mempercepat atau menundanya sekejap pun. Kematian dan kehidupan diciptakan dengan tujuan yang tegas: agar Dia menguji manusia — siapa yang paling BAIK amalnya, bukan yang paling banyak. Jalalain menegaskan 'aḥsanu ʿamalā' = paling ikhlas dan paling benar (bukan sekadar terbanyak). Penutup ayat 'al-ʿAzīz al-Ghafūr' (Mahaperkasa lagi Maha Pengampun) disebut sebagai landasan iman: kuasa yang menetapkan ujian sekaligus membuka pintu ampunan.",
+    "sources": [
+      "Tafsir Kemenag RI QS 67:2",
+      "Tafsir al-Jalalayn QS 67:2"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Alignment",
+      "note": "kriteria keberhasilan diumumkan DI DEPAN sebelum run berjalan: 'aḥsanu ʿamalā' (kualitas amal). Objektif eksplisit, bukan tersembunyi."
+    },
+    {
+      "layer": "Penalaran",
+      "note": "pasangan mati-hidup disebut sebagai satu unit yang SENGAJA dicipta ('khalaqa') untuk sebuah tujuan ('liyabluwakum') — desain berorientasi-tujuan, bukan kebetulan."
+    },
+    {
+      "layer": "Aksi & transfer",
+      "note": "objek yang dinilai adalah 'ʿamal' (perbuatan) — output nyata di dunia, bukan niat yang tak terwujud; namun mutunya (ikhlas+benar), bukan volumenya."
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "ai-agentic",
+      "reading": "Pola desain paling inti sebuah sistem agen: objective function diumumkan sebelum run dimulai, dan metriknya kualitas ('aḥsan') bukan throughput ('akthar'). Analogi rekayasa: sebuah agen yang dilatih pada 'jumlah tindakan' akan spam aksi; yang dievaluasi pada 'mutu tindakan' belajar selektif dan presisi. Actionable: definisikan reward pada kebaikan/kebenaran hasil (correctness+intent), bukan pada banyaknya langkah — kalau tidak, agen mengejar aktivitas kosong.",
+      "analogy": "declared objective function; quality-metric over volume-metric",
+      "quranic_term": "liyabluwakum ayyukum aḥsanu ʿamalā"
+    },
+    {
+      "lens": "systems",
+      "reading": "Hidup adalah fase 'run' berdurasi tetap yang dibingkai dua boundary: kelahiran (start) dan kematian (stop). Kematian bukan bug melainkan kondisi terminasi yang MEMBUAT eval bermakna — tanpa batas akhir, tak ada skor final yang bisa dikunci. Sistem yang berjalan tanpa henti tak pernah bisa dinilai; justru penutupan window-lah yang mengubah aktivitas menjadi hasil terukur.",
+      "analogy": "bounded run window; termination enables final scoring",
+      "quranic_term": "khalaqa al-mawta wal-ḥayāta"
+    },
+    {
+      "lens": "computational",
+      "reading": "Setiap kehidupan = satu episode dengan horizon berhingga. 'Ajal' adalah deadline yang deterministik dan tak-dapat-dinegosiasi (tafsir: tak bisa dimajukan/dimundurkan sekejap pun) — sebuah timeout keras yang ditetapkan di luar kontrol proses itu sendiri. Karena horizon berhingga dan tak diketahui panjangnya, strategi optimal adalah bertindak baik SEKARANG, bukan menunda ke langkah berikutnya yang mungkin tak pernah datang.",
+      "analogy": "fixed unknown-length horizon; hard immovable deadline",
+      "quranic_term": "ajal"
+    },
+    {
+      "lens": "inference",
+      "reading": "Ayat memilih 'aḥsan' (terbaik/mutu) bukan 'akthar' (terbanyak/kuantitas) — sebuah keputusan desain metrik yang bisa dibaca sebagai peringatan terhadap Goodhart's law: bila yang diukur adalah volume, orang mengoptimasi volume dan mutu runtuh. Menilai pada kualitas menutup celah gaming itu. Ini pembacaan struktural, resonansi dengan teori pengukuran — bukan klaim mukjizat numerik.",
+      "analogy": "Goodhart-resistant metric: score quality not count"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "'liyabluwakum' berperan sebagai invariant tujuan yang memayungi seluruh eksekusi: apa pun cabang yang diambil hidup ini, ia diukur terhadap satu spesifikasi tetap (mutu amal). Objektif yang stabil sepanjang run mencegah drift kriteria — beda dengan sistem yang mengubah definisi sukses di tengah jalan sehingga tak ada yang bisa dinilai secara adil.",
+      "analogy": "stable goal-invariant across all branches"
+    },
+    {
+      "lens": "algorithm",
+      "reading": "Struktur 'cipta → jalankan → nilai di akhir' adalah pola evaluasi terminal (deferred scoring): reward tidak diberikan tiap langkah melainkan diakumulasi dan diputuskan pada penutupan. Ini menuntut konsistensi jangka panjang, bukan sprint sesaat — mirip penilaian yang menahan hadiah sampai keseluruhan lintasan terlihat, sehingga tak bisa dicurangi di satu titik.",
+      "analogy": "deferred terminal evaluation over full trajectory"
+    },
+    {
+      "lens": "economy",
+      "reading": "Umur adalah modal berjumlah tetap tapi tak-diketahui besarnya, yang tak bisa ditambah dengan harga berapa pun (ajal tak dapat ditunda). Karena stok waktu terkunci dan pengembaliannya dinilai pada mutu, alokasi rasional adalah menaruh setiap satuan waktu pada amal ber-mutu tertinggi — bukan menimbun aktivitas bernilai rendah.",
+      "analogy": "fixed non-extendable time-capital; quality-weighted return"
+    },
+    {
+      "lens": "psychology",
+      "reading": "Mengetahui bahwa hidup diberi objektif yang jelas mengubah motivasi dari difus menjadi terarah: sebuah tujuan terdefinisi (mutu amal) memberi makna dan struktur pada tindakan sehari-hari. Dalam psikologi, tujuan yang spesifik dan bernilai tinggi meningkatkan ketekunan — kesadaran akan batas (kematian) mempertajam prioritas, bukan melumpuhkan.",
+      "analogy": "goal-clarity → directed motivation; salience of finitude sharpens priorities"
+    },
+    {
+      "lens": "pedagogy",
+      "reading": "Ini asesmen yang kriterianya diumumkan sebelum ujian (criterion-referenced, transparan): peserta tahu persis apa yang dinilai — 'yang terbaik amalnya'. Pengajaran yang menyingkap rubrik di awal itu adil dan memberdayakan; ia mengundang perbaikan mutu, bukan tebak-tebakan. Metrik mutu juga menolak 'teaching to volume'.",
+      "analogy": "criterion-referenced assessment with rubric disclosed upfront"
+    },
+    {
+      "lens": "amal",
+      "reading": "Konsekuensi praktik: karena yang dinilai mutu bukan jumlah, perbaiki keikhlasan dan kebenaran satu amal sebelum menambah kuantitas. Sedikit yang benar dan tulus lebih tinggi dari banyak yang lalai — orientasikan hari pada 'apakah ini amal terbaik yang bisa kulakukan', bukan sekadar 'apakah aku sibuk'.",
+      "analogy": "optimize per-action quality before scaling count",
+      "quranic_term": "aḥsanu ʿamalā"
+    }
+  ],
+  "inference": "Ayat ini membingkai hidup-dan-mati sebagai satu 'run' yang sengaja dicipta dengan objektif yang diumumkan di depan: menguji siapa yang paling BAIK — bukan paling banyak — amalnya. Empat sifat rekayasanya menonjol: (1) objektif eksplisit dan stabil sepanjang eksekusi (liyabluwakum sebagai goal-invariant); (2) metrik kualitas (aḥsan) yang tahan-gaming, resonan dengan peringatan Goodhart's law terhadap metrik volume; (3) horizon berhingga dengan deadline keras (ajal) yang justru memungkinkan skor final dikunci; (4) evaluasi terminal yang menuntut konsistensi lintasan, bukan lonjakan sesaat. Untuk desain sistem agen: umumkan objektif sebelum run, beri reward pada mutu/kebenaran hasil bukan pada banyaknya aksi, dan hormati batas horizon. CATATAN TANZIH: 'yang menguji' dalam ayat adalah Allah — Dzat yang menetapkan ujian ini TIDAK dianalogikan sebagai sistem/evaluator/objective-owner; yang menjadi bahan analogi rekayasa hanyalah STRUKTUR ujian pada sisi makhluk (adanya kriteria, batas waktu, penilaian mutu amal manusia). Sifat al-ʿAzīz al-Ghafūr disebut sebagai landasan iman dengan ta'zhim, bukan properti teknis. Semua ini pembacaan struktural (resonansi), bukan klaim maksud tunggal ayat maupun mukjizat numerik.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-08",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-08",
+      "note": "Tadabbur perdana — Wave 10 hidup-mati.",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

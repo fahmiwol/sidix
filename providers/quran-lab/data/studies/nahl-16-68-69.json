@@ -1,0 +1,104 @@
+{
+  "schema": "lab-study-v2",
+  "id": "nahl-16-68-69",
+  "version": 1,
+  "title": "Wahyu kepada lebah — kecerdasan kawanan",
+  "subtitle": "Instruksi sederhana per-agen, hasil kolektif yang menyembuhkan",
+  "ref": {
+    "surah": 16,
+    "from": 68,
+    "to": 69
+  },
+  "surah_name": "An-Nahl",
+  "theme": "Swarm intelligence, emergence, program bawaan, optimisasi terdistribusi",
+  "sourced_meaning": {
+    "summary": "Tuhanmu mewahyukan (mengilhamkan naluri) kepada lebah: buatlah sarang di bukit, pohon, dan bangunan manusia; lalu makanlah dari segala macam buah dan tempuhlah jalan Tuhanmu yang telah dimudahkan. Dari perutnya keluar minuman (madu) beragam warnanya, di dalamnya terdapat obat bagi manusia — sungguh tanda bagi kaum yang berpikir (yatafakkarūn).",
+    "sources": [
+      "Tafsir Kemenag RI QS 16:68-69",
+      "Tafsir al-Jalalayn QS 16:68-69"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Persepsi",
+      "note": "lebah dijadikan objek tafakkur eksplisit — ayat kauniyah yang bisa diamati siapa pun"
+    },
+    {
+      "layer": "Penalaran",
+      "note": "penutup ayat menunjuk operasi kognitifnya: li-qawmin yatafakkarūn (bagi kaum yang merenung)"
+    },
+    {
+      "layer": "Aksi & transfer",
+      "note": "iʿtibār: pola lebah → pelajaran untuk desain sistem manusia"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "amal",
+      "reading": "Etos kerja lebah sebagai teladan: mengambil yang baik (dari segala buah), menempuh jalan yang dimudahkan, menghasilkan yang bermanfaat bagi selain dirinya — produktif tanpa merusak sumber yang dihinggapinya.",
+      "quranic_term": "iʿtibār"
+    },
+    {
+      "lens": "computational",
+      "reading": "Instruksi kepada lebah ringkas: (1) bangun sarang di lokasi fleksibel, (2) konsumsi dari sumber beragam, (3) ikuti jalur yang dimudahkan (subula rabbiki dzululan). Program per-agen minimal — kompleksitas koloni & madu muncul dari eksekusinya. Perilaku kompleks tak butuh instruksi kompleks.",
+      "analogy": "simple local rules → complex global behavior",
+      "quranic_term": "waḥy (ilham naluri)"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "'Tempuhlah jalan yang dimudahkan' = pathfinding dengan preferensi biaya-rendah; 'dari segala buah' = eksplorasi multi-sumber (bukan single point of dependency). Eksplorasi luas + eksploitasi jalur termudah — keduanya dalam satu kalimat perintah.",
+      "analogy": "explore-exploit; least-cost routing"
+    },
+    {
+      "lens": "algorithm",
+      "reading": "Koloni lebah adalah optimisasi terdistribusi berjalan: ribuan agen mencari, kembali, berbagi arah (waggle dance — temuan sains modern), konvergen ke sumber terbaik tanpa koordinator pusat. Kelas algoritma modern dinamai darinya (bee colony optimization).",
+      "analogy": "distributed optimization; stigmergy"
+    },
+    {
+      "lens": "inference",
+      "reading": "Kata 'awḥā' (mewahyukan) untuk serangga menunjukkan: perilaku terarah tidak mensyaratkan pemahaman si pelaku — program bisa tertanam pada agen yang tak tahu ia diprogram. Pertanyaan lanjutan yang jujur: dari mana instruksi tertanam itu berasal? Ayat menunjuk Sumbernya; sains menjelaskan mekanismenya — dua lapisan jawaban yang tak saling meniadakan.",
+      "quranic_term": "tafakkur"
+    },
+    {
+      "lens": "math-physics",
+      "reading": "Sarang heksagonal = tessellasi paling hemat material untuk volume simpan maksimal (honeycomb conjecture — baru terbukti matematis 1999). Lebah 'menghitung' optimum yang manusia butuh ribuan tahun untuk membuktikannya.",
+      "analogy": "optimal tessellation"
+    },
+    {
+      "lens": "systems",
+      "reading": "Ekosistem lengkap: lebah mengambil nektar TANPA merusak bunga, malah menyerbuki — sistem produksi yang memperkaya rantai pasoknya, bukan mengurasnya. Keluaran (madu) menyembuhkan spesies lain. Desain menang-menang lintas subsistem.",
+      "analogy": "regenerative supply chain"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Blueprint multi-agent: agen sederhana + aturan lokal + komunikasi tak-langsung (lingkungan sebagai papan pesan) → kecerdasan kolektif tanpa pusat kendali. Relevan untuk desain armada agen AI: jangan bangun satu otak raksasa untuk semua; bangun kawanan kecil yang berbagi jejak.",
+      "analogy": "multi-agent swarm; indirect coordination",
+      "quranic_term": "tafakkur (bentuk jamak — kolektif)"
+    },
+    {
+      "lens": "artifact",
+      "reading": "Madu: keluaran sistem yang sekaligus makanan, pengawet, dan obat ('fīhi syifā') — satu artefak multi-fungsi; peternakan lebah = salah satu bioteknologi tertua manusia.",
+      "analogy": "multi-purpose output"
+    }
+  ],
+  "inference": "Ayat ini menunjuk lebah lalu menutup dengan 'tanda bagi kaum yang BERPIKIR' — undangan eksplisit melakukan persis apa yang kajian ini lakukan. Yang ditemukan ketika benar-benar dipikirkan: arsitektur kecerdasan kawanan yang utuh (aturan lokal minimal, koordinasi tanpa pusat, optimisasi kolektif, keluaran yang menyembuhkan) — arsitektur yang baru bisa dinamai manusia pada abad ke-20. Pelajaran desainnya untuk AI: kecerdasan tidak harus terpusat, dan sistem terbaik memperkaya lingkungannya alih-alih mengurasnya.",
+  "authors": [
+    "Draft AI (LLM draft) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-07",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-07",
+      "note": "Tadabbur perdana — Wave 1 batch tematik (ayat teknologi).",
+      "authors": [
+        "Draft AI (LLM draft)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

@@ -1,0 +1,103 @@
+{
+  "schema": "lab-study-v2",
+  "id": "al-waqiah-56-58-59",
+  "version": 1,
+  "title": "A-antum takhluqūnahu am naḥnul-khāliqūn — operator memancarkan, tapi bukan penulis prosesnya",
+  "subtitle": "Manusia memegang pemicu ('mā tumnūn') pada lapisan sebab, tetapi tidak menulis kode proses yang mengubah nuṭfah menjadi manusia — batas kendali khalifah",
+  "ref": {
+    "surah": 56,
+    "from": 58,
+    "to": 59
+  },
+  "surah_name": "Al-Waqi'ah",
+  "theme": "Batas kendali operator vs pencipta proses, pemisahan pemicu-implementasi, kerendahan epistemik",
+  "sourced_meaning": {
+    "summary": "Tafsir Kemenag QS 56:58-59: Allah menantang dengan pertanyaan — 'terangkanlah nuṭfah (mani/sperma) yang kamu pancarkan (ke dalam rahim)': apakah kamu yang menciptakannya (memproses air mani itu menjadi manusia lengkap dengan badan, kepala, tangan-kaki, mata, hidung, mulut, telinga) ataukah Kami penciptanya? Orang kafir tidak dapat menjawab kecuali mengakui bahwa Allah-lah yang menyebabkan air mani menjadi manusia, yang menentukan jenisnya (pria/wanita) dan menetapkan umurnya. Kemenag melanjutkan: Dia yang berkuasa menciptakan pertama kali juga berkuasa membangkitkan kembali sesudah mati. Jalalain: 'a-antum takhluqūnahu' — apakah kalian yang menjadikannya (khalqan/manusia), 'am naḥnul-khāliqūn' — ataukah Kami yang menjadikannya; jawabannya jelas: Allah.",
+    "sources": [
+      "Tafsir Kemenag RI QS 56:58-59",
+      "Tafsir al-Jalalayn QS 56:58-59"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Aksi & transfer",
+      "note": "'mā tumnūn' (yang kamu pancarkan) = tindakan manusia berhenti pada memicu/menyetor input; peran manusia adalah pemanggil (caller), bukan pelaksana transformasi."
+    },
+    {
+      "layer": "Alignment",
+      "note": "Pertanyaan retoris memaksa pengakuan batas: 'a-antum takhluqūnahu am naḥnu' — penciptaan proses (bukan pemicu) berada di luar wewenang & kemampuan operator; determinasi jenis & umur bukan di tangan pemicu."
+    },
+    {
+      "layer": "Tangga epistemik",
+      "note": "Dari fakta yang diakui (kita memancarkan) ke kesimpulan yang dipaksakan (kita bukan pencipta prosesnya) — struktur burhān: mengakui yang teramati lalu mengakui batas yang tak terjangkau."
+    },
+    {
+      "layer": "Penalaran",
+      "note": "Kesenjangan besar antara input sederhana (setetes) dan hasil kompleks (manusia utuh) menjadi bukti bahwa proses di antaranya bukan karya si pemicu — reasoning atas rasio input-hasil."
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "ai-agentic",
+      "reading": "Pola paling tajam untuk memahami peran khalifah sebagai 'user of creation APIs, bukan author'-nya. Manusia memanggil sebuah proses ('memancarkan') tetapi tidak menulis, tidak memahami penuh, dan tidak mengendalikan implementasi yang mengubah input menjadi manusia — persis seorang pemanggil API yang memegang trigger tetapi tidak memiliki kode di balik endpoint. Actionable untuk desain agen: (1) bedakan tegas antara KAPABILITAS MEMICU (agen bisa memanggil sebuah tool/proses) dan KAPABILITAS MENCIPTA/MEMAHAMI proses itu — agen yang menganggap 'aku memicu, maka aku yang membuat' adalah kekeliruan atribusi yang berbahaya; (2) tanam batas kendali eksplisit: banyak keluaran sistem bergantung pada proses yang tidak ditulis oleh agen (given), sehingga klaim kepemilikan hasil harus proporsional dengan porsi yang benar-benar diimplementasikan; (3) rancang kerendahan epistemik sebagai fitur — agen sebaiknya melaporkan 'aku memicu X; hasilnya bergantung pada proses di luar kendaliku' alih-alih mengklaim penuh; (4) provenance/atribusi: pisahkan penulis-proses dari pemanggil-proses agar akuntabilitas benar. Peran sub-creator = memakai antarmuka pada lapisan sebab, tanpa menjadi penulis mekanismenya.",
+      "analogy": "caller invokes an API/tool but does not author or control the implementation behind it; trigger-vs-implementation boundary",
+      "quranic_term": "a-antum takhluqūnahu am naḥnul-khāliqūn"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "Pemisahan antarmuka dari implementasi (interface vs implementation): manusia memegang pemanggilan ('tumnūn' = memancarkan) sementara badan implementasi (transformasi nuṭfah → manusia utuh) tersembunyi dan bukan miliknya. Ini enkapsulasi murni — pemanggil mengakses fungsi tanpa mengetahui atau menulis isinya. Invariant: kepemilikan pemanggilan tidak menyiratkan kepemilikan implementasi; mengklaim yang kedua dari yang pertama adalah pelanggaran batas abstraksi.",
+      "analogy": "interface/implementation separation; encapsulation — caller ≠ author",
+      "quranic_term": "hijab implementasi (proses tersembunyi)"
+    },
+    {
+      "lens": "biology-medicine",
+      "reading": "Resonansi struktural (bukan mukjizat numerik): orang tua menyumbang gamet, tetapi embriogenesis — pembelahan, diferensiasi, organogenesis pembentukan mata, telinga, anggota badan (yang dirinci Kemenag) — berjalan otonom menurut program yang tak ditulis, tak dipahami penuh, dan tak dikendalikan oleh penyumbang gamet. Membacanya menegaskan bahwa peran biologis manusia dalam reproduksi berhenti pada penyediaan input; proses pembentukannya adalah sistem otonom yang berjalan sendiri di dalam 'qarār makīn'.",
+      "analogy": "gamete contribution triggers an autonomous embryogenic program the parent neither writes nor controls — bounded",
+      "quranic_term": "mā tumnūn → khalq"
+    },
+    {
+      "lens": "computational",
+      "reading": "Model pemicu → proses black-box → keluaran: operator menyetor input dan menekan 'jalan', tetapi transformasi dari setetes menjadi struktur berorgan lengkap adalah kotak-hitam yang tak transparan bagi pemicunya. Rekayasa: kesenjangan besar antara kesederhanaan input dan kompleksitas keluaran adalah tanda bahwa 'kecerdasan' sistem berada di dalam proses, bukan pada pemicu; menilai kontribusi harus berdasar porsi implementasi, bukan sekadar tindakan memicu.",
+      "analogy": "trigger → opaque black-box process → richly structured output; intelligence lives in the process, not the trigger",
+      "quranic_term": "kesenjangan input-hasil"
+    },
+    {
+      "lens": "inference",
+      "reading": "Bentuk pertanyaan retoris ('a-antum … am naḥnu') adalah alat inferensi yang memaksa: dengan mengakui premis yang tak terbantah (kita memang memancarkan, tapi tak sanggup membentuk), akal digiring pada satu-satunya kesimpulan konsisten (pembentuk bukanlah pemicu). Ini struktur reductio: klaim 'kita pencipta prosesnya' runtuh karena bertabrakan dengan ketakmampuan yang diakui sendiri. Kerendahan epistemik di sini bukan sikap sopan, melainkan kesimpulan logis dari batas kemampuan yang teramati.",
+      "analogy": "rhetorical question as forced inference; reductio from admitted incapacity",
+      "quranic_term": "burhān lewat pertanyaan"
+    },
+    {
+      "lens": "economy",
+      "reading": "Soal atribusi kepemilikan hasil: pemilik input (gamet) bukan otomatis pemilik/pencipta produk akhir bila nilai tambah terbesar berasal dari proses yang bukan karyanya. Rekayasa muamalah: hak dan klaim seharusnya proporsional dengan porsi kontribusi riil, bukan sekadar tindakan memulai; mengklaim seluruh hasil dari sekadar memicu adalah over-attribution. Kesadaran ini menata kerendahan hati dalam mengklaim jasa atas capaian yang sebagian besar bukan buatan kita.",
+      "analogy": "value attribution proportional to real contribution, not to who pulled the trigger",
+      "quranic_term": "batas klaim atas hasil"
+    },
+    {
+      "lens": "amal",
+      "reading": "Ayat menuntun pada tawadhu: kita hanya memancarkan; pembentukan manusia utuh dari setetes itu bukan karya kita. Amal: mensyukuri bahwa proses agung berjalan atas izin dan penciptaan Allah, menahan kesombongan seolah kita 'membuat' anak, dan mengembalikan atribusi kepada Yang menciptakan — sikap batin yang menyeimbangkan usaha (sebab) dengan pengakuan atas Sang Pencipta proses.",
+      "analogy": "attribute the process to its true Author; humility over mere triggering",
+      "quranic_term": "tawadhu' & syukr"
+    }
+  ],
+  "inference": "Dibaca sebagai rekayasa, dua ayat ini adalah pelajaran paling padat tentang BATAS KENDALI operator. Manusia memegang pemicu ('mā tumnūn' — yang kamu pancarkan) pada lapisan sebab, tetapi tidak menulis, tidak memahami penuh, dan tidak mengendalikan proses yang mengubah setetes menjadi manusia berorgan lengkap. Pertanyaan retoris 'a-antum takhluqūnahu am naḥnu' memaksa pengakuan logis: pemicu bukanlah pencipta prosesnya. Empat pelajaran struktural: (a) bedakan tegas kapabilitas MEMICU dari kapabilitas MENCIPTA/MEMAHAMI — atribusi 'aku memicu maka aku membuat' adalah kekeliruan; (b) klaim atas hasil harus proporsional dengan porsi implementasi riil, bukan sekadar tindakan memulai; (c) kesenjangan besar input-hasil menandai bahwa 'kecerdasan' berada dalam proses (yang given), bukan pada pemicu; (d) kerendahan epistemik adalah kesimpulan logis dari batas kemampuan yang diakui sendiri, bukan sekadar kesopanan. Inilah gambaran peran khalifah/sub-creator: pengguna antarmuka penciptaan pada lapisan sebab, bukan penulis mekanismenya. CATATAN GHAIB: penutup tafsir Kemenag menautkan kuasa mencipta pertama dengan kuasa membangkitkan kembali pada hari Kiamat — dibaca DESKRIPTIF dari tafsir sebagai struktur iman (kuasa yang sama atas cipta-ulang), bukan spekulasi detail kebangkitan; ini perkara iman. CATATAN TANZIH: 'am naḥnul-khāliqūn' — Allah sebagai Al-Khāliq (Sang Pencipta proses) adalah LANDASAN iman yang disebut dengan ta'zhim; Dzat dan perbuatan mencipta-Nya TIDAK dianalogikan sebagai 'proses/sistem/black-box'. Yang dianalogikan hanyalah STRUKTUR pada sisi manusia: peran pemicu, batas kendali, dan atribusi kontribusi. Kotak-hitam/proses otonom dalam lensa adalah cara membaca embriogenesis pada makhluk, BUKAN penggambaran atas Allah. Ini resonansi struktural, bukan mukjizat numerik, dan salah satu pembacaan — bukan maksud tunggal ayat.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-12",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-12",
+      "note": "Wave 13 kelahiran/tumbuh-kembang — manusia sebagai operator pemicu pada lapisan sebab, bukan penulis proses penciptaan.",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

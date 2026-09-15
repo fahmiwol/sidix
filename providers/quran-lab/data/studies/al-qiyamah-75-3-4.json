@@ -1,0 +1,103 @@
+{
+  "schema": "lab-study-v2",
+  "id": "al-qiyamah-75-3-4",
+  "version": 1,
+  "title": "Menyusun kembali ujung jari — pemulihan sampai ke presisi identitas yang paling halus",
+  "subtitle": "Bukan sekadar mengumpulkan tulang; Kami kuasa menyusun kembali bahkan ujung jari-jarinya dengan sempurna",
+  "ref": {
+    "surah": 75,
+    "from": 3,
+    "to": 4
+  },
+  "surah_name": "Al-Qiyamah",
+  "theme": "Kebangkitan, presisi rekonstruksi, identitas unik (sidik jari), pemulihan hingga detail terhalus",
+  "sourced_meaning": {
+    "summary": "Tafsir Kemenag: ayat 3 mengecam anggapan manusia bahwa Allah tidak akan mengumpulkan kembali tulang-belulangnya yang telah hancur dan berserakan terpisah-pisah di dalam kubur; ungkapan bernada pertanyaan ini mengajak manusia memikirkan kematian dan kebangkitan secara serius. Ayat 4: bukan sekadar mengumpulkan tulang, bahkan Allah kuasa menyusun kembali (menyempurnakan) ujung jari-jemarinya dengan sempurna. Kemenag mencatat asbabun nuzul: ayat ini turun berkait 'Adiyy bin Abi Rabi'ah dan Akhnas bin Syuraiq yang mengingkari kebangkitan dan mempertanyakan apakah Allah sanggup mengumpulkan kembali tulang-belulang manusia. Ini perkara kebangkitan — perkara ghaib yang hanya diketahui dari wahyu.",
+    "sources": [
+      "Tafsir Kemenag RI QS 75:3-4",
+      "Tafsir al-Jalalayn QS 75:3-4"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Penalaran",
+      "note": "Struktur 'bal' (bahkan/justru) di 75:4 = eskalasi argumen: bukan hanya X (mengumpulkan tulang) melainkan lebih dari itu Y (menyempurnakan ujung jari)"
+    },
+    {
+      "layer": "Aksi & transfer",
+      "note": "'nusawwiya banānah' — menyusun/menyempurnakan sampai ke ujung jari; operasi rekonstruksi hingga granularitas terhalus, bukan sekadar rakitan kasar"
+    },
+    {
+      "layer": "Tangga epistemik",
+      "note": "Ayat 3 memindahkan keraguan 'ayaḥsabu' (apakah ia mengira) ke ajakan berpikir serius; keraguan diangkat ke tingkat pembuktian"
+    },
+    {
+      "layer": "Memori & grounding",
+      "note": "Asbabun nuzul ('Adiyy & Akhnas) menambatkan ayat pada konteks penyangkalan konkret, bukan pernyataan melayang"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "computational",
+      "reading": "Kontras ayat 3→4 menaikkan taraf pemulihan: dari 'mengumpulkan tulang' (rekonstruksi kasar) ke 'menyempurnakan ujung jari' (rekonstruksi presisi-tinggi). Ini beresonansi dengan restore yang bukan sekadar mengembalikan bentuk umum, melainkan memulihkan keadaan sampai bit terhalus. 'Banān' (ujung jari) sebagai penanda detail terkecil yang tetap terjaga menegaskan: pemulihan yang benar adalah fidelity penuh (lossless), bukan aproksimasi. Poin desain: standar restore sejati diukur dari detail terhalus yang berhasil dikembalikan, bukan dari kerangka besar yang tampak benar.",
+      "analogy": "lossless restore hingga granularitas terhalus, bukan aproksimasi kasar",
+      "quranic_term": "nusawwiya banānah"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Cetak biru fidelity pemulihan untuk sistem agen. Ayat menaikkan bar dari 'state kembali kira-kira' ke 'state kembali sampai detail identitas terhalus'. Actionable: (1) definisikan restore sukses bukan saat struktur besar pulih, tetapi saat properti-properti halus yang membedakan satu keadaan dari yang lain ikut pulih; (2) jadikan 'ujung jari' — penanda identitas paling spesifik — sebagai checksum keberhasilan restore. Dalam praktik: verifikasi pemulihan pada level field terhalus (bukan hanya agregat), sebab dua keadaan bisa tampak identik di tingkat kasar namun berbeda di detail yang justru menentukan identitas. Dicatat bounded — analogi ke fidelity/identitas, bukan penyamaan dengan kuasa membangkitkan.",
+      "analogy": "restore-fidelity diverifikasi pada penanda identitas terhalus",
+      "quranic_term": "banān sebagai penanda identitas"
+    },
+    {
+      "lens": "biology-medicine",
+      "reading": "Penyebutan 'banān' (ujung jari) sering dibaca beresonansi dengan sidik jari — pola guratan yang unik pada tiap individu. Sebagai resonansi struktural (BUKAN mukjizat numerik, bukan klaim bahwa ayat menetapkan biometrika): tubuh menyimpan penanda identitas pada detail terhalus, dan justru di ujung jarilah keunikan itu paling menonjol. Bahwa pemulihan disebut mencapai 'ujung jari' beresonansi dengan gagasan bahwa identitas biologis termeterai hingga ke struktur mikro. Analogi ini bounded — pola pemahaman, bukan penetapan sains oleh teks; ilmu sidik jari sebagai penanda unik sendiri berkembang jauh setelahnya.",
+      "analogy": "identitas biologis termeterai di detail mikro (sidik jari, bounded)",
+      "quranic_term": "banān"
+    },
+    {
+      "lens": "artifact",
+      "reading": "'Banān' menautkan kebangkitan ke teknologi identitas yang kelak dikenal manusia: sidik jari sebagai kunci pengenal unik dalam sistem biometrik modern — dari cap jempol pada dokumen hingga sensor fingerprint. Peradaban menemukan bahwa ujung jari adalah penanda diri yang sulit dipalsukan; gambaran pemulihan yang menyentuh justru bagian itu beresonansi dengan intuisi bahwa identitas sejati tersimpan pada detail yang paling personal. Dicatat sebagai resonansi, bukan klaim ayat merancang biometrika.",
+      "analogy": "ujung jari → kunci biometrik unik dalam sistem identitas",
+      "quranic_term": "banān"
+    },
+    {
+      "lens": "inference",
+      "reading": "Ayat 3 memakai bentuk pertanyaan retoris ('ayaḥsabul-insān') untuk memancing pembuktian, dan Kemenag menyebut asbabun nuzul-nya: sanggahan konkret 'Adiyy dan Akhnas atas kebangkitan. Struktur argumennya adalah 'bal' (justru/bahkan): jawaban tidak hanya menampik keraguan minimal (mengumpulkan tulang) tetapi melampaui tuntutan penyangkal dengan klaim yang lebih besar (menyempurnakan ujung jari). Pola penalaran: membalas keraguan bukan dengan pembuktian minimal, melainkan dengan demonstrasi kapasitas yang jauh melampaui apa yang disangsikan.",
+      "analogy": "membalas keraguan dengan kapasitas jauh melampaui yang disangsikan",
+      "quranic_term": "bal qādirīn"
+    },
+    {
+      "lens": "systems",
+      "reading": "Kemenag menekankan tulang yang 'berserakan di tempat yang terpisah-pisah'. Menyusun kembali dari serpihan yang tersebar menuntut kemampuan menempatkan tiap bagian pada posisi tepatnya hingga ujung jari — sebuah rekonstruksi yang menjaga relasi antar-komponen secara menyeluruh. Dibaca sebagai prinsip sistem: memulihkan sistem terdistribusi yang serpihannya tersebar bukan soal mengumpulkan bagian saja, melainkan merakit ulang dengan tata-hubung dan presisi posisi yang benar sampai detail terkecil.",
+      "analogy": "rekonstruksi terdistribusi yang menjaga presisi posisi tiap komponen",
+      "quranic_term": "jamʿ al-ʿiẓām"
+    },
+    {
+      "lens": "psychology",
+      "reading": "Ayat 3 mengajak 'memikirkan mati dan kebangkitan secara serius' (Kemenag), menegur peremehan ('mengira Kami tak mengumpulkan'). Dibaca sebagai pola kognitif: manusia meremehkan apa yang tampak mustahil dengan menaksir-rendah kapasitas di baliknya. Detail 'ujung jari' bekerja sebagai koreksi mental — memindahkan perhatian dari 'mustahil secara umum' ke 'bahkan detail terhalus pun terjangkau', membongkar peremehan itu. Pelajaran: melawan sikap meremehkan dengan menghadirkan bukti presisi, bukan sekadar klaim besar.",
+      "analogy": "koreksi peremehan dengan bukti presisi pada detail terhalus",
+      "quranic_term": "ayaḥsabu al-insān"
+    }
+  ],
+  "inference": "Dibaca sebagai analogi rekayasa, Al-Qiyamah 3-4 menajamkan tema pemulihan pada satu dimensi: FIDELITY. Kontras 'mengumpulkan tulang' (75:3) → 'menyempurnakan ujung jari' (75:4) menaikkan standar dari rekonstruksi kasar ke pemulihan presisi-tinggi yang menyentuh penanda identitas terhalus ('banān'). Sebagai pembacaan sistem (bounded): restore sejati diukur dari detail terhalus yang berhasil dikembalikan, bukan dari kerangka besar yang tampak benar — jadikan penanda identitas paling spesifik sebagai checksum keberhasilan. Struktur argumennya 'bal' (justru): keraguan dibalas bukan dengan pembuktian minimal melainkan dengan kapasitas yang jauh melampaui yang disangsikan; dan Kemenag menautkannya ke asbabun nuzul konkret ('Adiyy & Akhnas) sehingga pembacaan tak boleh melantur dari konteks penyangkalan kebangkitan itu. Resonansi 'ujung jari ≈ sidik jari/biometrik identitas unik' dicatat sebagai resonansi struktural yang bounded, BUKAN mukjizat numerik atau klaim ayat menetapkan biometrika; ini salah satu pembacaan rekayasa di atas makna zahir yang bersumber, bukan maksud tunggal ayat. CATATAN GHAIB: kebangkitan dan penyusunan-kembali tubuh adalah perkara ghaib yang hanya diketahui dari wahyu dan termasuk perkara IMAN. Analogi 'lossless restore / verifikasi identitas' adalah pembacaan STRUKTUR yang deskriptif dari tafsir bersumber (Kemenag) sebagai pola — BUKAN klaim mengetahui bagaimana kebangkitan terjadi, bukan penetapan mekanisme, bukan spekulasi atas detail di luar nas. Kuasa Allah disebut sebagai LANDASAN iman dengan ta'zhim, bukan objek analogi teknis. Adab terhadap perkara ghaib dijaga.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-08",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-08",
+      "note": "Tadabbur perdana — Wave 10 kiamat-kebangkitan.",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

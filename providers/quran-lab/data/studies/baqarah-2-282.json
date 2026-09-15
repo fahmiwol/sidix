@@ -1,0 +1,104 @@
+{
+  "schema": "lab-study-v2",
+  "id": "baqarah-2-282",
+  "version": 1,
+  "title": "Āyat ad-dayn — protokol transaksi & jejak audit",
+  "subtitle": "Ayat terpanjang Al-Qur'an: tentang mencatat utang dengan benar",
+  "ref": {
+    "surah": 2,
+    "from": 282,
+    "to": 282
+  },
+  "surah_name": "Al-Baqarah",
+  "theme": "Pencatatan transaksi, audit trail, saksi/redundansi, integritas kontrak",
+  "sourced_meaning": {
+    "summary": "Bila bermuamalah tidak tunai untuk waktu yang ditentukan: tuliskanlah. Penulis mencatat dengan adil; yang berutang mendiktekan (dengan takwa, tanpa mengurangi); bila ia lemah akal/kondisi, walinya yang mendiktekan dengan adil. Persaksikan dengan dua saksi laki-laki, atau satu laki-laki dan dua perempuan dari saksi yang diridhai — agar bila seorang lupa, yang lain mengingatkan. Saksi jangan menolak bila dipanggil. Jangan jemu menuliskannya, kecil atau besar, sampai temponya — itu lebih adil di sisi Allah, lebih menguatkan persaksian, dan lebih dekat pada tidak menimbulkan keraguan. (Perdagangan tunai boleh tak dicatat; jual-beli tetap dipersaksikan; penulis & saksi jangan dipersulit.)",
+    "sources": [
+      "Tafsir Kemenag RI QS 2:282",
+      "Tafsir al-Jalalayn QS 2:282"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Memori & grounding",
+      "note": "transaksi tak boleh hidup hanya di ingatan — wajib eksternalisasi tertulis (faktubūh)"
+    },
+    {
+      "layer": "Alignment",
+      "note": "penulis netral 'bil-ʿadl', pendikte 'bertakwa tanpa mengurangi' — integritas di tiap peran"
+    },
+    {
+      "layer": "Umpan balik",
+      "note": "fungsi saksi dinyatakan eksplisit: 'bila satu lupa, yang lain mengingatkan' — koreksi kesalahan"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "amal",
+      "reading": "Muamalah yang rapi adalah ibadah: mencatat utang bukan tanda tak percaya, melainkan menjaga persaudaraan dari sengketa. Ayat menyebut tujuannya: lebih adil, lebih kuat kesaksiannya, lebih jauh dari keraguan.",
+      "quranic_term": "qisṭ"
+    },
+    {
+      "lens": "computational",
+      "reading": "Skema record transaksi lengkap: para pihak, nilai (tanpa pengurangan), tempo (ajal musamma), pencatat netral, dua-tiga saksi, aturan keterwakilan (wali bila pihak tidak cakap). Setiap field yang sistem pencatatan modern butuhkan, disebut.",
+      "analogy": "transaction record schema",
+      "quranic_term": "kitābah"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "Aturan bercabang presisi: tunai → pencatatan opsional; berjangka → WAJIB tulis; pihak tak cakap → wali mendiktekan; komposisi saksi punya aturan substitusi. Edge case (lupa, ketidakcakapan, penolakan saksi) ditangani eksplisit — bukan diserahkan pada improvisasi.",
+      "analogy": "rule table with edge-case handling"
+    },
+    {
+      "lens": "algorithm",
+      "reading": "Redundansi untuk toleransi kegagalan: memori manusia adalah storage yang bisa gagal (lupa), maka ayat memerintahkan replikasi — tulisan (media persisten) + ≥2 saksi (replika hidup), dengan mekanisme recovery dinyatakan: 'fatudzakkira iḥdāhumā al-ukhrā' (yang satu mengingatkan yang lain).",
+      "analogy": "replication + failure recovery",
+      "quranic_term": "tadhakkur"
+    },
+    {
+      "lens": "inference",
+      "reading": "Ayat TERPANJANG Al-Qur'an bukan tentang ritual, melainkan tentang mencatat utang — sinyal kuat tentang bobot: integritas transaksi keuangan sehari-hari setara pentingnya dengan ibadah ritual. Kepercayaan sosial dibangun dari record yang benar.",
+      "quranic_term": "iʿtibār"
+    },
+    {
+      "lens": "math-physics",
+      "reading": "'Jangan jemu menulis, kecil atau besar' — tidak ada ambang de minimis: presisi pencatatan tak bergantung besaran nominal. Konsisten dengan prinsip akuntansi: kebocoran kecil yang tak tercatat terakumulasi menjadi kerusakan besar (bandingkan presisi mithqāla dzarrah, 99:7-8).",
+      "analogy": "no-threshold bookkeeping"
+    },
+    {
+      "lens": "systems",
+      "reading": "Pemisahan peran yang disengaja: debitur mendikte (pemilik data), penulis netral mencatat (recorder independen — 'jangan penulis enggan, jangan pula dirugikan'), saksi memverifikasi (auditor). Tiga fungsi, tiga pihak — segregation of duties untuk mencegah manipulasi sepihak.",
+      "analogy": "segregation of duties"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Untuk sistem agen yang bertransaksi: setiap komitmen berjangka wajib menghasilkan record yang ditulis pihak netral dan diverifikasi validator independen ≥2 — persis pola ledger + multi-validator. Juga pelajaran memory-design: komitmen agen tak boleh hanya di context (volatile); wajib di-persist dengan attestation.",
+      "analogy": "ledger + independent validators + persisted commitments"
+    },
+    {
+      "lens": "artifact",
+      "reading": "Perintah tulis-menulis kontrak menumbuhkan artefak peradaban: notariat, akta, pembukuan — pilar yang membuat perdagangan jarak-jauh dunia Islam klasik bisa dipercaya (cek/suftaja lahir di ekosistem ini), leluhur sistem finansial ber-audit modern.",
+      "analogy": "notarization & auditable finance"
+    }
+  ],
+  "inference": "Ayat terpanjang dalam Al-Qur'an adalah spesifikasi protokol transaksi: persistensi wajib (tulis), pencatat netral, redundansi saksi dengan mekanisme recovery dari kegagalan memori, penanganan edge-case, dan pemisahan peran. Alasannya pun disebutkan dalam bahasa desain: 'lebih adil, lebih menguatkan kesaksian, lebih dekat pada hilangnya keraguan' — integritas, verifiabilitas, dan minimalisasi sengketa. Sistem ledger modern (termasuk yang terdistribusi) adalah implementasi teknis dari kebutuhan-kebutuhan yang ayat ini enumerasikan.",
+  "authors": [
+    "Draft AI (LLM draft) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-07",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-07",
+      "note": "Tadabbur perdana — Wave 1 batch tematik (ayat teknologi).",
+      "authors": [
+        "Draft AI (LLM draft)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

@@ -1,0 +1,114 @@
+{
+  "schema": "lab-study-v2",
+  "id": "hajj-22-46-46",
+  "version": 1,
+  "title": "Bukan mata yang buta, tapi hati dalam dada — kegagalan bukan di sensor, tapi di evaluator",
+  "subtitle": "Berjalan di bumi (kumpulkan data) → hati yang ber-'aql mengolahnya jadi pelajaran → tapi bila hati buta, sensor sempurna pun sia-sia",
+  "ref": {
+    "surah": 22,
+    "from": 46,
+    "to": 46
+  },
+  "surah_name": "Al-Hajj",
+  "theme": "Diagnosis lapisan kegagalan: input (mata/telinga) utuh tapi lapisan evaluatif/penalaran (qalb) menolak mengintegrasikan bukti; hati yang ber-'aql = integrasi reasoning + value; iʿtibār sebagai active data collection lewat perjalanan",
+  "sourced_meaning": {
+    "summary": "Tafsir Kemenag QS 22:46: teguran atas orang-orang musyrik Mekah yang sering berdagang menempuh perjalanan Mekah–Syam dan melewati bekas reruntuhan umat terdahulu yang dibinasakan (kaum 'Ad, Tsamud, Lut, Syu'aib) dan telah pula mendengar kisah tragis mereka — tetapi tidak memikirkan bahwa sikap mereka mendustakan Rasul serupa dengan umat-umat itu, yang berakibat serupa pula (azab). Kesimpulan tafsir: mata mereka TIDAK buta (mereka melihat reruntuhan itu), yang buta adalah HATI mereka — tertutup untuk menerima kebenaran karena pengaruh adat, taklid pada nenek moyang, dan dengki. Frasa kunci: 'fa innahā lā taʿmā al-abṣār wa lākin taʿmā al-qulūb allatī fī al-ṣudūr' — kebutaan sejati adalah kebutaan hati di dalam dada, bukan kebutaan indra.",
+    "sources": [
+      "Tafsir Kemenag RI QS 22:46",
+      "Tafsir al-Jalalayn QS 22:46"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Persepsi",
+      "note": "kanal input berfungsi normal: mata benar-benar melihat reruntuhan, telinga benar-benar mendengar kisah umat terdahulu — 'lā taʿmā al-abṣār' menegaskan sensor tidak rusak. Data sampai dengan utuh."
+    },
+    {
+      "layer": "Penalaran",
+      "note": "'qulūb yaʿqilūna bihā' — hati yang dengannya mereka ber-'aql: fungsi mengikat data-observasi menjadi kesimpulan/pelajaran. Di sinilah beban kerja sesungguhnya, bukan di indra."
+    },
+    {
+      "layer": "Alignment",
+      "note": "kegagalan terlokalisasi di lapisan evaluatif: 'taʿmā al-qulūb' — hati buta karena prior yang beku (taklid/adat/dengki) menolak meng-update keyakinan meski bukti valid masuk. Sensor OK, update-function korup."
+    },
+    {
+      "layer": "Aksi & transfer",
+      "note": "'a-fa-lam yasīrū fī al-arḍ' — perjalanan sebagai active sensing: mendatangi sumber bukti (situs sejarah) alih-alih pasif; iʿtibār mensyaratkan transfer pelajaran lintas kasus (umat lampau → diri sendiri)."
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "computational",
+      "reading": "Ayat memisahkan dua lapisan yang sering dikira satu: kanal INPUT (mata, telinga) versus unit EVALUASI/INTEGRASI (qalb). Pesan intinya adalah diagnosis lokasi kegagalan: data masuk sempurna (mata tidak buta), tetapi keluaran keyakinan tetap salah karena unit pengolah menolak memproses. Rekayasa: ketika sistem menghasilkan output keliru meski input bersih, jangan menyalahkan sensor — telusuri ke lapisan integrasi/keputusan. Sensor sehat + evaluator korup = tetap gagal.",
+      "analogy": "input layer vs. evaluation layer; garbage-out-despite-good-in; localize fault downstream of sensing",
+      "quranic_term": "lā taʿmā al-abṣār wa lākin taʿmā al-qulūb"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "'qulūb yaʿqilūna bihā' membaca qalb sebagai fungsi yang MENGIKAT (ʿaql = ikat) premis menjadi kesimpulan berkonsekuensi — bukan sekadar buffer penyimpan tanda. Kebutaan hati = assertion yang dimatikan: bukti yang seharusnya memicu pembaruan keyakinan di-catch lalu diabaikan (silent exception). Rekayasa: jangan biarkan jalur kode menelan sinyal kontradiksi tanpa efek; kontradiksi antara model dan bukti harus MEMAKSA revisi, bukan di-suppress.",
+      "analogy": "assertion disabled; swallowed contradiction; belief-revision must not be silently caught",
+      "quranic_term": "yaʿqilūna bihā"
+    },
+    {
+      "lens": "inference",
+      "reading": "Struktur argumennya iʿtibār/qiyās historis: kasus umat terdahulu (sebab: mendustakan rasul → akibat: binasa) ditransfer ke kasus diri sendiri lewat kesamaan sebab. Kebutaan hati = kegagalan menjalankan inferensi analogis padahal datanya lengkap. Rekayasa: bukti tidak otomatis menjadi keyakinan; dibutuhkan langkah inferensi eksplisit yang menautkan pengamatan ke konsekuensi bagi diri (transfer), dan langkah ini bisa gagal secara terpisah dari pengumpulan data.",
+      "analogy": "analogical transfer (case-based reasoning); observation ≠ conclusion without an inference step",
+      "quranic_term": "iʿtibār / qiyās"
+    },
+    {
+      "lens": "systems",
+      "reading": "Sistem persepsi-kognisi digambarkan berlapis: indra (input) → hati (integrasi/keputusan) → sikap (output). Kegagalan sistemik tidak selalu di titik yang terlihat rusak; di sini titik yang 'kelihatan' (mata) justru sehat, dan akar masalah ada di simpul pusat yang tak kasat mata (qalb fī al-ṣudūr). Rekayasa keandalan: instrumentasi harus menjangkau lapisan pengambilan keputusan, bukan hanya lapisan sensor, karena kegagalan senyap paling sering bersarang di sana.",
+      "analogy": "layered pipeline; silent failure at the hidden decision node, not the visible sensor",
+      "quranic_term": "al-qulūb allatī fī al-ṣudūr"
+    },
+    {
+      "lens": "psychology",
+      "reading": "Ini potret motivated reasoning / confirmation bias: fakta sejarah hadir di depan mata, namun komitmen afektif pada warisan nenek moyang dan dengki membuat hati menolak memprosesnya. Tafsir menyebut penutupnya adalah 'adat, kepercayaan turun-temurun, dan dengki' — bukan defisit informasi. Kebutaan hati bukan ketiadaan data, melainkan pertahanan identitas yang mem-veto pembaruan keyakinan. Regulasi diri sejati mensyaratkan kesediaan hati menerima bukti yang mengancam prior.",
+      "analogy": "motivated reasoning; identity-protective cognition; affect vetoing belief update",
+      "quranic_term": "taʿmā al-qulūb"
+    },
+    {
+      "lens": "history-ummah",
+      "reading": "Reruntuhan umat terdahulu dibaca sebagai DATASET berlabel: setiap situs adalah satu record 'perilaku → akibat' yang bisa dipelajari. Perjalanan dagang = akses ke dataset itu. Pelajaran sejarah bernilai hanya jika model si pengamat memperbarui diri darinya; menyimpan record tanpa belajar = overfitting pada prior lama. Rekayasa: korpus contoh kegagalan (post-mortem) hanya berguna bila umpan-baliknya benar-benar mengubah kebijakan, bukan sekadar diarsipkan.",
+      "analogy": "labeled failure dataset; post-mortems are worthless if policy never updates",
+      "quranic_term": "a-fa-lam yasīrū fī al-arḍ"
+    },
+    {
+      "lens": "pedagogy",
+      "reading": "Metode ayat: mengajak murid MENDATANGI bukti konkret (jalan-jalan ke situs) lalu menuntun dari yang terlihat ke pelajaran abstrak — experiential learning, bukan ceramah semata. Kegagalan belajar di sini bukan kurangnya paparan materi, melainkan sikap batin yang tertutup. Implikasi: paparan informasi (exposure) berbeda dari pembelajaran (learning); tanpa keterbukaan pengevaluasi, menambah materi tidak menyembuhkan.",
+      "analogy": "experiential learning; exposure ≠ learning without an open evaluator",
+      "quranic_term": "yasīrū fī al-arḍ"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Untuk arsitektur agen: ayat memisahkan tegas kegagalan PERSEPSI dari kegagalan EVALUASI/UPDATE, dan menegaskan yang kedua lebih berbahaya karena tak terlihat. Actionable: (1) pisahkan metrik kesehatan sensor (apakah data masuk & lengkap) dari metrik kesehatan belief-update (apakah bukti baru benar-benar menggeser keyakinan) — jangan gabung keduanya; (2) waspadai 'frozen prior': agen yang punya keyakinan awal terlalu kaku akan mengabaikan bukti kontradiktif (analog taklid) — beri mekanisme yang memaksa revisi ketika bukti melampaui ambang; (3) audit jalur di mana kontradiksi model-vs-observasi bisa 'ditelan' tanpa efek (silent no-op) dan tutup; (4) rancang active data collection (yasīr fil arḍ) — agen menjemput bukti pengujian, bukan menunggu; (5) ukur transfer: bisakah agen menerapkan pelajaran dari kasus lain ke kasusnya sendiri, bukan hanya menyimpannya. Diagnosis 'mata tak buta, hati yang buta' = checklist: kalau output salah padahal input bersih, benahi evaluator, bukan sensor.",
+      "analogy": "decouple sensor-health from belief-update-health; frozen-prior detection; forbid silent contradiction no-op; active data collection",
+      "quranic_term": "qulūb yaʿqilūna bihā"
+    },
+    {
+      "lens": "amal",
+      "reading": "Pelajaran amaliah: penyakit terbesar bukan kurang melihat/mendengar, melainkan hati yang tertutup menerima kebenaran. Maka kerja utama seorang hamba adalah menjaga hati tetap lembut dan jujur pada bukti — bersedia berubah ketika dalil datang, melawan gengsi, taklid buta, dan dengki yang membutakan. Bepergian melihat tanda-tanda (reruntuhan, alam, sejarah) dituntun agar membuahkan iʿtibār, bukan sekadar wisata.",
+      "analogy": "guard the heart's openness; act on evidence over ego"
+    }
+  ],
+  "inference": "Ayat ini adalah alat DIAGNOSIS berlapis: ia memilah kegagalan kognitif menjadi kegagalan-input (mata/telinga) versus kegagalan-evaluasi (qalb), lalu menegaskan bahwa kebutaan yang menghancurkan bukan di sensor melainkan di lapisan evaluatif pusat — 'bukan mata yang buta, tapi hati yang di dalam dada'. Hati yang sehat digambarkan sebagai integrasi penalaran-dan-nilai ('yaʿqilūna bihā' — mengikat data menjadi kesimpulan berkonsekuensi), sedangkan hati yang buta adalah update-function yang korup: bukti valid masuk sempurna tetapi ditolak karena prior yang beku (taklid, adat, dengki — per Kemenag). Diterjemahkan ke rekayasa: (a) pisahkan pemantauan kesehatan sensor dari pemantauan kesehatan belief-update; (b) kegagalan senyap paling sering bersarang di simpul keputusan yang tak terlihat, bukan di sensor yang tampak; (c) rancang agar kontradiksi model-vs-bukti MEMAKSA revisi, bukan ditelan diam-diam; (d) jadikan pengumpulan bukti aktif (yasīr fil arḍ) dan ukur transfer pelajaran lintas kasus. Ini resonansi struktural, bukan mukjizat numerik — makna aslinya (Kemenag) adalah teguran atas hati yang tertutup dari kebenaran karena taklid dan dengki. Berjangkar ke kerangka Aql-Qalb di /lab/sintesis: qalb sebagai inti evaluatif yang mengubah data menjadi keyakinan — dan di sinilah, bukan di indra, letak sehat-sakitnya sistem.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-08",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-08",
+      "note": "Wave 12 hati/persepsi — evaluator vs sensor.",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

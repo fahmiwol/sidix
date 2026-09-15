@@ -1,0 +1,110 @@
+{
+  "schema": "lab-study-v2",
+  "id": "kahf-18-66-66",
+  "version": 1,
+  "title": "Musa & Khidr — MAGANG: transfer ilmu dari guru terbimbing",
+  "subtitle": "Bolehkah aku mengikutimu agar kau ajarkan ilmu yang diajarkan kepadamu?",
+  "ref": {
+    "surah": 18,
+    "from": 66,
+    "to": 66
+  },
+  "surah_name": "Al-Kahf",
+  "theme": "Pemagangan, transfer ilmu berpandu, adab murid, rantai pengajaran",
+  "sourced_meaning": {
+    "summary": "Nabi Musa datang menemui Khidr untuk berguru, memperkenalkan diri dengan santun, lalu memohon izin mengikutinya agar Khidr mengajarkan kepadanya sebagian ilmu yang telah Allah ajarkan kepada Khidr — yaitu ilmu yang bermanfaat dan amal saleh. Ayat menggambarkan sikap Musa sebagai calon murid yang rendah hati terhadap calon gurunya.",
+    "sources": [
+      "Tafsir Kemenag RI QS 18:66",
+      "Tafsir al-Jalalayn QS 18:66"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Aksi & transfer",
+      "note": "'attabi'uka' (aku mengikutimu) = transfer ilmu lewat pendampingan, bukan sekadar membaca teks"
+    },
+    {
+      "layer": "Alignment",
+      "note": "adab murid: minta IZIN dulu ('hal attabi'uka') = alignment dengan otoritas sumber sebelum menyerap"
+    },
+    {
+      "layer": "Tangga epistemik",
+      "note": "Musa (nabi, ulul-azmi) tetap butuh guru untuk domain ilmu lain — otoritas di satu bidang tidak universal"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "ai-agentic",
+      "reading": "Musa meminta akses supervised ke kebijakan (policy) Khidr: 'ajarkan ilmu yang diajarkan kepadamu' = transfer bobot dari model-guru ke model-murid melalui demonstrasi berpandu (bukan self-play buta). Actionable: bangun pipeline apprenticeship — agen-murid mengikuti trajektori agen-ahli, belajar dari demonstrasi + koreksi, dengan izin/otorisasi eksplisit terhadap sumber. Kesabaran menahan penilaian dini (bab lanjutan surah) adalah syarat transfer berhasil.",
+      "analogy": "apprenticeship / imitation learning; teacher-student distillation with consent",
+      "quranic_term": "hal attabi'uka 'ala an tu'allimani"
+    },
+    {
+      "lens": "pedagogy",
+      "reading": "Model magang murni: belajar dengan MENGIKUTI (ittiba') seorang ahli dalam konteks nyata, bukan dari buku. Tafsir menonjolkan adab pendekatan — perkenalan, izin, kerendahan hati — sebagai prasyarat pedagogis. Ilmu tacit (yang tak terbukukan) hanya berpindah lewat pendampingan.",
+      "analogy": "situated learning; tacit knowledge transfer via mentorship",
+      "quranic_term": "rushda"
+    },
+    {
+      "lens": "algorithm",
+      "reading": "Distilasi guru-ke-murid: alih-alih murid mencari kebijakan dari nol (mahal, berisiko), ia menyalin dari kebijakan guru yang sudah teruji, lalu digeneralisasi. 'Sebagian ilmu' = subset kurikulum yang ditransfer bertahap, bukan seluruh state guru sekaligus.",
+      "analogy": "knowledge distillation; behavioral cloning of expert policy",
+      "quranic_term": "mimma 'ullimta"
+    },
+    {
+      "lens": "systems",
+      "reading": "Transfer ilmu = protokol handshake: murid mengajukan permintaan ('hal attabi'uka'), guru memberi syarat (ayat berikut: 'kau tak akan sabar'), lalu koneksi terbentuk. Otorisasi eksplisit mencegah akses ilmu tanpa kesiapan — kontrak sebelum aliran data.",
+      "analogy": "handshake protocol; authorized access with preconditions",
+      "quranic_term": "hal attabi'uka"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "Musa memanggil 'fungsi ajar' pada instance Khidr dengan argumen izin. Pola inheritance: murid mewarisi metode dari guru, tetapi hanya subset yang diizinkan ('mimma 'ullimta' = dari apa yang diajarkan kepadamu) — enkapsulasi ilmu, akses terkontrol.",
+      "analogy": "delegated method call; controlled inheritance/encapsulation",
+      "quranic_term": "tu'allimani"
+    },
+    {
+      "lens": "psychology",
+      "reading": "Seorang nabi besar menempatkan diri sebagai murid = pemodelan kerendahan epistemik. Kesediaan mengaku 'tidak tahu di bidang ini' dan tunduk pada otoritas yang tepat adalah prasyarat psikologis belajar; ego adalah penghalang transfer.",
+      "analogy": "epistemic humility; role flexibility (expert-as-novice)",
+      "quranic_term": "attabi'uka"
+    },
+    {
+      "lens": "history-ummah",
+      "reading": "Kisah ini menjadi akar tradisi talaqqi/isnad: ilmu berpindah lewat rihlah mencari guru, mulazamah (mendampingi), dan ijazah (izin meriwayatkan). Peradaban ilmu Islam dibangun di atas rantai murid-guru yang tercatat, bukan otodidak tanpa sanad.",
+      "analogy": "chain-of-transmission (isnad) as institution",
+      "quranic_term": "mulazamah"
+    },
+    {
+      "lens": "inference",
+      "reading": "Ayat menegakkan bahwa keahlian bersifat domain-spesifik: kenabian Musa tidak otomatis mencakup ilmu ladunni Khidr. Inferensi: tidak ada agen mahatahu; sumber pengetahuan harus dicocokkan dengan domainnya, dan pengakuan batas adalah rasional.",
+      "analogy": "domain-specific expertise; source-domain matching",
+      "quranic_term": "'ilman"
+    },
+    {
+      "lens": "amal",
+      "reading": "Menuntut ilmu digambarkan sebagai perjalanan penuh adab: mendatangi ahli, meminta izin, sabar dalam bimbingan. Amal mencari ilmu bermanfaat ('rushda') menjadi ibadah yang menuntut kerendahan hati dan kesungguhan, bukan sekadar keingintahuan.",
+      "quranic_term": "rushda"
+    }
+  ],
+  "inference": "Permintaan Musa kepada Khidr adalah model pemagangan (apprenticeship) paling jernih: ilmu berpindah bukan dengan menyalin teks, melainkan dengan MENGIKUTI seorang ahli di bawah izin dan bimbingan. Secara rekayasa ini adalah imitation learning / distilasi guru-murid dengan otorisasi eksplisit dan prasyarat kesiapan. Bahwa seorang nabi besar rela jadi murid menegaskan dua prinsip: keahlian itu domain-spesifik (tak ada yang mahatahu), dan kerendahan epistemik adalah gerbang transfer ilmu.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-07",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-07",
+      "note": "Tadabbur perdana — Wave 7 ilmu/ajar.",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

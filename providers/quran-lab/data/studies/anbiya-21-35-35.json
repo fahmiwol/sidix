@@ -1,0 +1,104 @@
+{
+  "schema": "lab-study-v2",
+  "id": "anbiya-21-35-35",
+  "version": 1,
+  "title": "Nablūkum bisy-syarri wal-khayri fitnah — uji dua-sisi: keburukan DAN kebaikan",
+  "subtitle": "Tiap jiwa merasakan mati; Kami uji dengan keburukan dan kebaikan. Test suite yang meng-cover kedua cabang, bukan hanya kasus buruk.",
+  "ref": {
+    "surah": 21,
+    "from": 35,
+    "to": 35
+  },
+  "surah_name": "Al-Anbiya",
+  "theme": "Uji dua-sisi, test coverage, robustness, keberhasilan sebagai failure-mode",
+  "sourced_meaning": {
+    "summary": "Tafsir Kemenag: Allah menegaskan setiap makhluk yang bernyawa pasti merasakan mati — tidak ada yang kekal kecuali Dia. Lalu Allah menjelaskan bahwa cobaan (fitnah) yang ditimpakan kepada manusia TIDAK hanya berupa hal buruk atau musibah, melainkan JUGA berupa kebaikan atau keberuntungan. Bila cobaan berupa musibah, tujuannya menguji apakah manusia sabar dan tawakal. Bila cobaan berupa kebaikan, tujuannya menguji apakah ia bersyukur atas nikmat. Keduanya sama-sama ujian. Penutup: 'dan hanya kepada Kami-lah kamu dikembalikan'. Jalalain: 'nablūkum ... fitnatan' = Kami menguji kalian sebagai cobaan, dengan kesulitan dan kesenangan.",
+    "sources": [
+      "Tafsir Kemenag RI QS 21:35",
+      "Tafsir al-Jalalayn QS 21:35"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Alignment",
+      "note": "yang dinilai bukan hanya respons terhadap kesulitan (sabar) tapi juga respons terhadap kemudahan (syukur) — dua kriteria untuk dua kondisi."
+    },
+    {
+      "layer": "Umpan balik",
+      "note": "input ujian sengaja dibuat bervariasi (buruk & baik) untuk memancing respons yang berbeda dan mengungkap perilaku sebenarnya di kedua ekstrem."
+    },
+    {
+      "layer": "Penalaran",
+      "note": "kematian universal ('kullu nafsin') jadi premis; lalu ujian dua-sisi jadi isi run sebelum 'return' — struktur premis→proses→muara."
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "ai-agentic",
+      "reading": "Prinsip evaluasi yang sering terlewat: uji agen bukan hanya pada kondisi buruk (stress/adversarial) tapi juga pada kondisi baik (reward melimpah). Ayat menyebut keduanya sebagai 'fitnah' — keberhasilan pun adalah test case. Sebab success bisa jadi failure-mode: agen yang diberi kemudahan bisa menjadi lengah, serakah, atau overfit ke kondisi menguntungkan. Actionable: instrumentasikan KEDUA cabang — bagaimana sistem berperilaku saat resource langka DAN saat resource berlebih; jangan hanya red-team skenario buruk.",
+      "analogy": "two-sided test suite; success as a failure-mode; test prosperity not just adversity",
+      "quranic_term": "nablūkum bisy-syarri wal-khayri fitnah"
+    },
+    {
+      "lens": "systems",
+      "reading": "Ini perturbation testing dua-arah: sistem diguncang ke bawah (musibah) dan ke atas (keberuntungan) untuk memetakan responsnya di seluruh rentang, bukan hanya di satu ekstrem. Sistem yang hanya diuji pada beban berat tapi tak pernah pada kelimpahan punya blind spot — perilakunya saat 'segalanya lancar' tak pernah terverifikasi.",
+      "analogy": "bidirectional perturbation testing across the full range"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "'Fitnah' berfungsi seperti assertion yang dipasang di dua kondisi berbeda: assert(sabar) saat input buruk, assert(syukur) saat input baik. Menguji satu invariant hanya di satu kondisi meninggalkan separuh ruang perilaku tak-terperiksa. Ayat menuntut cakupan kedua cabang branch.",
+      "analogy": "assertions under both input conditions; full branch coverage"
+    },
+    {
+      "lens": "algorithm",
+      "reading": "Desain test coverage: minimal harus meng-cover jalur 'nilai negatif' dan jalur 'nilai positif' agar tuntas. Menguji hanya path kegagalan meninggalkan path keberhasilan tak-teruji — dan justru di sanalah banyak bug halus (kepuasan diri, penurunan kewaspadaan) bersembunyi. Coverage dua cabang = syarat evaluasi yang jujur.",
+      "analogy": "branch coverage over both failure and success paths"
+    },
+    {
+      "lens": "psychology",
+      "reading": "Dua mekanisme regulasi diri diuji: sabar (regulasi saat tekanan/kehilangan) dan syukur (regulasi saat perolehan/nikmat). Psikologi mengenali keduanya sulit dengan cara berbeda — kesulitan menguji ketahanan, kelimpahan menguji kerendahan hati dan menahan hedonic adaptation. Karakter sejati terungkap di kedua kutub, bukan satu.",
+      "analogy": "self-regulation tested at both poles: adversity (patience) & abundance (gratitude)",
+      "quranic_term": "ṣabr wa syukr"
+    },
+    {
+      "lens": "inference",
+      "reading": "Kesimpulan yang bisa ditarik: performa pada kondisi menguntungkan BUKAN bukti kualitas sejati, sebab kondisi itu sendiri adalah bagian dari ujian. Menyimpulkan 'baik' hanya dari keberhasilan saat mudah adalah inferensi lemah; data dari kedua kondisi diperlukan untuk kesimpulan yang sahih. Pembacaan struktural, bukan mukjizat numerik.",
+      "analogy": "performance under favorable conditions is not sufficient evidence of quality"
+    },
+    {
+      "lens": "computational",
+      "reading": "Input ujian mencakup dua kelas nilai (positif & negatif) yang keduanya sengaja dimasukkan ke dalam run; keluaran yang diamati (respons manusia) menjadi observabel yang dinilai. Ini mendekati desain eksperimen dengan variasi kondisi terkontrol untuk memaksimalkan informasi tentang perilaku subjek.",
+      "analogy": "controlled condition variation to maximize behavioral information"
+    },
+    {
+      "lens": "economy",
+      "reading": "Baik kelangkaan maupun kelimpahan adalah kondisi yang menguji alokasi: saat sempit, apakah tetap amanah; saat lapang, apakah tetap adil dan tak boros/tamak. Ujian ekonomi sejati bukan cuma bertahan di krisis tapi juga tak rusak oleh surplus — banyak keruntuhan justru lahir dari kelimpahan yang tak terkelola.",
+      "analogy": "stewardship tested under both scarcity and surplus"
+    },
+    {
+      "lens": "amal",
+      "reading": "Konsekuensi praktik: kenali kondisimu saat ini sebagai bagian ujian — jika sedang susah, respons yang dinilai adalah sabar; jika sedang senang, yang dinilai adalah syukur. Jangan lengah saat lapang; itu justru cabang ujian yang sering dilupakan. Siapkan respons benar untuk KEDUA keadaan.",
+      "analogy": "prepare correct response for both hardship and ease"
+    }
+  ],
+  "inference": "Ayat menautkan kepastian kematian universal dengan sifat ujian hidup: 'Kami uji kamu dengan keburukan DAN kebaikan sebagai fitnah'. Wawasan rekayasanya adalah desain evaluasi dua-sisi — bukan hanya kondisi buruk (adversarial/stress) yang menguji, tetapi juga kondisi baik (kelimpahan), sebab keberhasilan pun bisa menjadi failure-mode (kelengahan, overfit ke kondisi menguntungkan). Tafsir Kemenag memberi kriteria untuk tiap cabang: musibah menguji sabar, nikmat menguji syukur. Untuk desain sistem agen: uji dan instrumentasikan KEDUA cabang — perilaku saat resource langka dan saat resource berlebih; cakupan satu cabang saja (biasanya hanya red-team skenario buruk) meninggalkan separuh ruang perilaku tak-terverifikasi, dan performa saat kondisi mudah bukan bukti kualitas sejati. CATATAN GHAIB: 'hanya kepada Kami-lah kamu dikembalikan' merujuk return akhirat — dibaca DESKRIPTIF dari tafsir sebagai struktur iman, bukan spekulasi. CATATAN TANZIH: 'yang menguji' adalah Allah — Dzat ini TIDAK dianalogikan sebagai penguji/sistem evaluasi; yang menjadi bahan analogi hanya STRUKTUR ujian dua-sisi pada sisi makhluk (variasi kondisi, kriteria respons, cakupan cabang). Semua ini resonansi struktural, bukan maksud tunggal ayat maupun mukjizat numerik.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-08",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-08",
+      "note": "Tadabbur perdana — Wave 10 hidup-mati.",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

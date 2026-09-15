@@ -1,0 +1,110 @@
+{
+  "schema": "lab-study-v2",
+  "id": "yusuf-12-76-76",
+  "version": 1,
+  "title": "Fauqa kulli dzi 'ilmin 'alim — di atas yang berilmu ada yang lebih",
+  "subtitle": "Kami tinggikan derajat siapa yang Kami kehendaki; di atas tiap yang berilmu ada Yang Maha Mengetahui",
+  "ref": {
+    "surah": 12,
+    "from": 76,
+    "to": 76
+  },
+  "surah_name": "Yusuf",
+  "theme": "Hierarki ilmu, anti-kesombongan, batas pengetahuan, taktik cerdas",
+  "sourced_meaning": {
+    "summary": "Yusuf memeriksa karung-karung saudaranya, mendahulukan yang lain sebelum karung Bunyamin untuk menutupi taktik, lalu menemukan piala raja di karung Bunyamin. Demikian Allah mengatur siasat Yusuf; ia tak dapat menghukum menurut undang-undang raja kecuali dengan kehendak Allah. Allah meninggikan derajat siapa yang dikehendaki-Nya, dan di atas setiap orang berilmu ada Yang lebih berilmu.",
+    "sources": [
+      "Tafsir Kemenag RI QS 12:76",
+      "Tafsir al-Jalalayn QS 12:76"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Tangga epistemik",
+      "note": "'fauqa kulli dzi 'ilmin 'alim' = tangga pengetahuan tak berpuncak pada makhluk; selalu ada tingkat di atas"
+    },
+    {
+      "layer": "Alignment",
+      "note": "pengetahuan yang lebih tinggi membatasi klaim yang lebih rendah = anti-overconfidence sebagai prinsip"
+    },
+    {
+      "layer": "Penalaran",
+      "note": "taktik Yusuf = perencanaan berlapis (mendahulukan karung lain) untuk mencapai tujuan tanpa mengungkap strategi"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "ai-agentic",
+      "reading": "'Di atas tiap yang berilmu ada yang lebih berilmu' = tidak ada model paling-tahu; setiap agen adalah simpul dalam hierarki, bukan puncaknya. Actionable: kalibrasi kepercayaan agen agar selalu menyisakan ruang bahwa ada sumber/model lebih superior — pasang mekanisme deferral (eskalasi ke ahli/verifier lebih tinggi) alih-alih memutuskan penuh-percaya-diri. Overconfidence adalah risiko keselamatan; 'di atasku ada yang lebih tahu' adalah pengaman bawaan.",
+      "analogy": "no top model; confidence calibration + escalation/deferral to a higher verifier",
+      "quranic_term": "fauqa kulli dzi 'ilmin 'alim"
+    },
+    {
+      "lens": "inference",
+      "reading": "Ayat menetapkan urutan-parsial pengetahuan tanpa elemen-maksimum di kalangan makhluk: untuk setiap yang tahu, ada yang lebih tahu; batas atasnya hanya Allah (Al-'Alim). Konsekuensi inferensial: klaim apa pun bersifat tentatif, dapat dikoreksi oleh tingkat pengetahuan lebih tinggi — falibilisme yang tertata.",
+      "analogy": "partial order with a single supremum; fallibilism",
+      "quranic_term": "wa fauqa kulli dzi 'ilmin 'alim"
+    },
+    {
+      "lens": "psychology",
+      "reading": "Formula paling ringkas melawan efek Dunning-Kruger: kesadaran bahwa selalu ada yang lebih tahu meredam ilusi superioritas. Kerendahan hati epistemik bukan kelemahan melainkan akurasi diri — memetakan batas kompetensi sendiri.",
+      "analogy": "antidote to Dunning-Kruger; calibrated self-assessment",
+      "quranic_term": "'alim"
+    },
+    {
+      "lens": "systems",
+      "reading": "Struktur ilmu sebagai hierarki berlapis: tiap simpul divalidasi oleh simpul di atasnya, hingga otoritas puncak. Sistem yang sehat tidak menaruh keputusan final pada satu simpul, melainkan menyediakan jalur banding — redundansi otoritas mencegah kesalahan tunggal.",
+      "analogy": "layered authority hierarchy; escalation path; no single point of decision",
+      "quranic_term": "narfa'u darajatin"
+    },
+    {
+      "lens": "algorithm",
+      "reading": "Taktik Yusuf memeriksa karung lain lebih dulu = strategi menyembunyikan sinyal (obfuscation): menyisipkan langkah pengalih agar hasil yang dituju tidak terbaca sebagai sengaja. Pencarian terarah yang dikamuflase sebagai pencarian netral — perencanaan dengan penyembunyian maksud.",
+      "analogy": "planning with obfuscation; decoy steps to mask intent",
+      "quranic_term": "kadalika kidna li-Yusuf"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "Otoritas berjenjang: Yusuf tak bisa menerapkan 'undang-undang raja' kecuali diizinkan lapisan lebih tinggi (kehendak Allah). Pola privilege/permission — sebuah aksi hanya sah bila diotorisasi oleh tingkat wewenang di atasnya; tak ada eksekusi tanpa izin berlapis.",
+      "analogy": "privilege escalation gated by higher authority; permission model",
+      "quranic_term": "illa an yasya'allah"
+    },
+    {
+      "lens": "economy",
+      "reading": "Ilmu sebagai keunggulan kompetitif yang selalu relatif: seunggul apa pun posisi pengetahuan seseorang, ada pesaing/otoritas yang lebih tinggi. Implikasi: jangan mengunci strategi pada asumsi 'kita paling tahu pasar' — selalu ada informasi superior di tempat lain.",
+      "analogy": "informational advantage is always relative; no permanent monopoly on knowledge",
+      "quranic_term": "narfa'u darajatin"
+    },
+    {
+      "lens": "history-ummah",
+      "reading": "Adab ulama klasik meng-akhiri fatwa dengan 'wallahu a'lam' (Allah lebih tahu) — pelembagaan langsung ayat ini. Tradisi ilmu yang sehat menandai batas otoritasnya sendiri, mewariskan kerendahan hati sebagai norma keilmuan lintas generasi.",
+      "analogy": "'wallahu a'lam' as institutionalized epistemic humility",
+      "quranic_term": "wallahu a'lam"
+    },
+    {
+      "lens": "amal",
+      "reading": "Menyandarkan setiap pencapaian ilmu kepada Yang Maha Mengetahui menjaga hati dari ujub. Amal seorang berilmu adalah terus belajar sambil mengakui ada yang lebih tinggi — ilmu yang membuat tunduk, bukan sombong.",
+      "quranic_term": "'alim"
+    }
+  ],
+  "inference": "Penutup ayat — 'di atas setiap yang berilmu ada Yang lebih berilmu' — menetapkan bahwa pengetahuan makhluk membentuk hierarki tanpa puncak, dengan satu-satunya batas atas adalah Allah. Secara rekayasa ini adalah prinsip anti-overconfidence: tidak ada model/agen paling-tahu, sehingga setiap klaim bersifat tentatif dan setiap keputusan sebaiknya menyediakan jalur eskalasi ke otoritas lebih tinggi. Dipadu taktik Yusuf (perencanaan berlapis yang menyembunyikan maksud), ayat mengajarkan kecerdasan yang tetap tunduk pada kalibrasi: cerdik dalam bertindak, rendah hati dalam mengklaim tahu.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-07",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-07",
+      "note": "Tadabbur perdana — Wave 7 ilmu/ajar.",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

@@ -1,0 +1,103 @@
+{
+  "schema": "lab-study-v2",
+  "id": "sad-38-29",
+  "version": 1,
+  "title": "Liyaddabbaru — tujuan turunnya teks adalah ditelaah, bukan sekadar dibaca",
+  "subtitle": "Kitab penuh berkah diturunkan AGAR ayatnya di-tadabbur dan ulul albab mengambil pelajaran",
+  "ref": {
+    "surah": 38,
+    "from": 29,
+    "to": 29
+  },
+  "surah_name": "Sad",
+  "theme": "Tadabbur sebagai tujuan (purpose), pemrosesan mendalam, iʿtibār, ulul albab, transfer ilmu ke amal",
+  "sourced_meaning": {
+    "summary": "Allah menurunkan Al-Qur'an sebagai kitab yang penuh berkah (mubārak) dan sempurna, mengandung bimbingan yang sangat bermanfaat. Menurut Kemenag, ia diturunkan dengan maksud agar direnungkan (tadabbur) kandungan isinya, kemudian dipahami dengan pengertian yang benar, lalu diamalkan sebagaimana mestinya — pengertian yang benar diperoleh dengan mengikuti petunjuk rasul dibantu ilmu pengetahuan. Al-Hasan al-Bashri mengingatkan: banyak yang hafal hurufnya di luar kepala namun tidak mengerti maknanya; maka tujuan turunnya bukan sekadar tilawah, melainkan pemahaman dan pengamalan oleh ulul albab (yang berakal).",
+    "sources": [
+      "Tafsir Kemenag RI QS 38:29",
+      "Tafsir al-Jalalayn QS 38:29"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Penalaran",
+      "note": "'liyaddabbaru āyātihi' — kata tujuan (li-) menegaskan tadabbur adalah PURPOSE turunnya teks, bukan efek samping"
+    },
+    {
+      "layer": "Aksi & transfer",
+      "note": "alur Kemenag: renungkan → pahami benar → amalkan; iʿtibār ulul albab = transfer pelajaran ke tindakan"
+    },
+    {
+      "layer": "Memori & grounding",
+      "note": "peringatan al-Hasan al-Bashri: hafal huruf ≠ paham makna; penyimpanan tanpa pemahaman = data mati"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "computational",
+      "reading": "Dibaca sebagai sistem: teks di sini diberi tujuan pemrosesan eksplisit ('li-yaddabbaru' = agar diproses-mendalam), bukan sekadar disimpan/dilafalkan. Analog dengan membedakan data-at-rest (tersimpan) dari data yang harus di-parse, di-interpret, dan dijalankan. Peringatan 'hafal huruf tapi tak paham makna' = menyimpan byte tanpa menjalankan interpreter-nya.",
+      "analogy": "purpose is to parse/interpret, not merely store",
+      "quranic_term": "tadabbur"
+    },
+    {
+      "lens": "algorithm",
+      "reading": "Kemenag menuturkan pipeline tiga tahap yang berurutan: renungkan (tadabbur) → pahami benar (idrāk) → amalkan (ʿamal). Ini alur pemrosesan bertahap dengan dependensi: tahap hilir (amal yang benar) mensyaratkan keberhasilan tahap hulu (pemahaman yang benar), dan pemahaman benar mensyaratkan penelaahan mendalam. Melewati tahap tadabbur menghasilkan amal tanpa pemahaman.",
+      "analogy": "staged pipeline with upstream dependency",
+      "quranic_term": "tadabbur → iʿtibār"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Spesifikasi objektif yang tegas: nilai sebuah korpus pengetahuan bukan pada retensi verbatim melainkan pada pemahaman yang dapat ditindaklanjuti. Untuk desain agen — jangan optimalkan sekadar recall/memorisasi konteks; optimalkan reasoning atas konteks lalu grounding ke tindakan. 'Hafal huruf tanpa paham' = model yang meng-copy token tanpa membangun model dunia. Sasarannya reasoning-then-act, bukan parrot.",
+      "analogy": "objective = deep reasoning over context, not verbatim recall",
+      "quranic_term": "tadabbur → tafaqquh"
+    },
+    {
+      "lens": "pedagogy",
+      "reading": "Prinsip deep processing vs rote memorization: menghafal huruf tanpa makna (yang dikritik al-Hasan al-Bashri) tidak menghasilkan transformasi. Kurikulum yang benar menuntun dari perenungan ke pemahaman ke pengamalan, dan menuntut prasyarat — mengikuti petunjuk guru (rasul) plus ilmu bantu (bahasa, konteks masyarakat). Pemahaman dibangun bertahap dengan bantuan alat, bukan sekali cerna.",
+      "analogy": "deep processing + scaffolding over rote recall",
+      "quranic_term": "iʿtibār"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "'Liyaddabbaru' berperan sebagai deklarasi maksud/kontrak: fungsi utama teks adalah menghasilkan telaah dan pelajaran, sehingga membaca-tanpa-menelaah adalah pemakaian yang tak memenuhi kontrak. Guard-nya jelas: hanya 'ulul albab' (yang berakal-aktif) yang di-precondition-kan mengambil iʿtibār — output 'pelajaran' digerbang oleh keaktifan akal penerima.",
+      "analogy": "declared purpose/contract + receiver precondition",
+      "quranic_term": "ulul albab"
+    },
+    {
+      "lens": "inference",
+      "reading": "Kata sambung tujuan 'li-' menunjukkan struktur teleologis: X diadakan AGAR Y. Membaca fungsi dari maksud (purpose-driven) berbeda dari sekadar deskripsi. Dalam kerangka rekayasa (bounded) ini mengingatkan bahwa memahami sebuah artefak menuntut menangkap intent-nya, bukan hanya bentuk permukaannya — pelajaran diambil oleh yang menalar, bukan yang melafalkan.",
+      "analogy": "teleological reading — grasp intent, not surface form",
+      "quranic_term": "iʿtibār"
+    },
+    {
+      "lens": "systems",
+      "reading": "'Mubārak' (penuh berkah) dibaca sbg sifat sumber yang generatif — kandungan yang manfaatnya terus bertambah saat ditelaah, bukan habis sekali pakai. Sistem pengetahuan yang sehat dirancang agar nilainya tumbuh melalui interaksi mendalam (tadabbur berulang) alih-alih konsumsi pasif. Berkah struktural = keluaran yang berlipat pada pengguna yang menyelaminya.",
+      "analogy": "generative resource — value compounds with deep engagement"
+    },
+    {
+      "lens": "amal",
+      "reading": "Puncak alurnya adalah amal: Kemenag menutup dengan 'lalu diamalkan sebagaimana mestinya'. Tadabbur yang tidak berujung tindakan belum menuntaskan tujuan turunnya. Praktik keilmuan yang benar mengikat pemahaman kepada pengamalan — ilmu yang tak diamalkan seperti hasil komputasi yang tak pernah dieksekusi.",
+      "quranic_term": "ʿamal"
+    }
+  ],
+  "inference": "Dibaca sebagai analogi rekayasa, Sad 29 menetapkan tujuan pemrosesan bagi sebuah korpus: ia diturunkan 'li-yaddabbaru' — AGAR ditelaah mendalam — bukan sekadar disimpan atau dilafalkan. Kemenag menuturkan pipeline yang jelas: renungkan → pahami dengan benar → amalkan, dengan peringatan al-Hasan al-Bashri bahwa menghafal huruf tanpa memahami makna adalah menyimpan data tanpa menjalankan interpreternya. Untuk desain sistem pengetahuan (manusia atau mesin), pelajarannya: optimalkan pemahaman yang dapat ditindaklanjuti, bukan retensi verbatim; hormati dependensi bertahap (amal benar menuntut pemahaman benar, yang menuntut penelaahan mendalam); dan sediakan scaffolding (petunjuk guru + ilmu bantu) karena pemahaman dibangun bertahap. 'Ulul albab' membaca sebagai precondition: hanya akal yang aktif yang memanen pelajaran. Ini salah satu pembacaan rekayasa di atas makna zahir yang bersumber, BUKAN maksud tunggal ayat, dan resonansi 'purpose/pipeline' dicatat sebagai analogi pemahaman yang bounded, bukan mukjizat numerik.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-08",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-08",
+      "note": "Tadabbur perdana — Wave 12 tadabbur/ilmu (tadabbur sbg tujuan/deep parsing; alur renung→paham→amal).",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

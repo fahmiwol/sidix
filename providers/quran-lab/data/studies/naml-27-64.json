@@ -1,0 +1,104 @@
+{
+  "schema": "lab-study-v2",
+  "id": "naml-27-64",
+  "version": 1,
+  "title": "Qul hātū burhānakum — bukti untuk hipotesis tandingan",
+  "subtitle": "Setelah bukti penciptaan & rizq menunjuk satu, klaim sekutu dituntut buktinya",
+  "ref": {
+    "surah": 27,
+    "from": 64,
+    "to": 64
+  },
+  "surah_name": "An-Naml",
+  "theme": "Beban bukti, uji hipotesis, klaim terverifikasi",
+  "sourced_meaning": {
+    "summary": "Rangkaian pertanyaan penutup: Siapa yang memulai penciptaan lalu mengulanginya, dan siapa yang memberi rezeki dari langit dan bumi? Adakah tuhan lain bersama Allah? Lalu perintah: 'Katakanlah: unjukkanlah bukti kebenaranmu (hātū burhānakum) jika kamu memang benar.' Tafsir Kemenag menempatkannya sebagai pertanyaan untuk memperlihatkan keesaan: bukti fungsi mencipta dan memberi rizq menunjuk satu Pengatur, sehingga klaim adanya sekutu dituntut pembuktiannya.",
+    "sources": [
+      "Tafsir Kemenag RI QS 27:64",
+      "Tafsir al-Jalalayn QS 27:64"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Penalaran",
+      "note": "argumen dua tahap: data (mencipta+rizq menunjuk satu) → tantangan bukti untuk hipotesis tandingan (sekutu)"
+    },
+    {
+      "layer": "Tangga epistemik",
+      "note": "klaim 'ada tuhan lain' tak boleh naik ke yaqīn tanpa burhan; tetap zhann tanpa bukti"
+    },
+    {
+      "layer": "Aksi & transfer",
+      "note": "beban dipindahkan ke pengklaim sekutu: bukan penanya yang membuktikan negatif, pengklaim yang membuktikan positif"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "inference",
+      "reading": "Hipotesis nol sudah didukung data (yang mencipta dan memberi rizq itu Esa); hipotesis tandingan (ada sekutu) diajukan tanpa bukti. Beban pembuktian jatuh pada pengklaim hipotesis baru — 'hātū burhānakum'. Tak ada kewajiban membuktikan ketiadaan sekutu; ada kewajiban membuktikan keberadaannya.",
+      "analogy": "burden of proof on the positive claim",
+      "quranic_term": "burhān"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "Default-deny terhadap entitas baru: klaim 'ada tuhan lain' ditolak kecuali disertai burhan yang lolos cek. Menambah entity ke model dunia butuh justifikasi eksplisit — bukan diterima diam-diam karena disebut.",
+      "analogy": "default deny; new entity requires justification"
+    },
+    {
+      "lens": "computational",
+      "reading": "Uji falsifiabilitas: klaim yang penganjurnya sendiri tak mampu menyodorkan buktinya bukanlah klaim berbobot. 'Datangkan burhan' menuntut klaim itu verifiable — punya konsekuensi yang bisa dicek — bukan sekadar kemungkinan kosong.",
+      "analogy": "verifiable / falsifiable claim"
+    },
+    {
+      "lens": "algorithm",
+      "reading": "Kerangka uji hipotesis: H0 = tauhid (didukung bukti mencipta+rizq), H1 = ada sekutu (tanpa bukti). Tanpa evidence yang mengangkat H1 di atas ambang, sistem tidak menolak H0. Bukti observasional terkonsentrasi pada satu penjelasan.",
+      "analogy": "hypothesis test; reject H1 without evidence"
+    },
+    {
+      "lens": "systems",
+      "reading": "Provenance wajib: tiap entitas dalam model harus punya atribusi bukti. Fungsi 'mencipta' dan 'memberi rizq' punya jejak bukti yang menunjuk satu sumber; entitas 'sekutu' adalah data yatim tanpa provenance — ditolak gerbang.",
+      "analogy": "provenance-required; reject orphan entity"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Pola grounding/RAG: sebelum menerima proposisi ('X ada / X benar'), agen menuntut bukti terambil yang mendukungnya; proposisi tanpa dokumen pendukung ditandai unsupported. 'Unjukkan burhan' = require-grounding-before-accept. Actionable: setiap penambahan fakta ke world-model harus punya retrieved-evidence, kalau tidak → tolak/tandai.",
+      "analogy": "require grounding evidence before accepting a proposition",
+      "quranic_term": "burhān"
+    },
+    {
+      "lens": "math-physics",
+      "reading": "Bukti penciptaan dan aliran rizq (hujan → kesuburan → pangan) adalah data observasional yang konsisten dengan satu penjelasan. Dalam istilah likelihood, data itu jauh lebih mungkin di bawah model 'satu pengatur' daripada model 'banyak', sehingga posterior menajam ke satu.",
+      "analogy": "likelihood concentrates on a single model"
+    },
+    {
+      "lens": "economy",
+      "reading": "Rizq 'dari langit dan bumi' adalah sistem provisi berskala planet: sumber daya yang mengalir teratur dan tepat waktu. Argumennya dari fungsi ke agen — sistem provisi yang andal menyiratkan satu pengatur, bukan komite yang bersaing.",
+      "quranic_term": "rizq"
+    },
+    {
+      "lens": "pedagogy",
+      "reading": "Metodenya Socratic: rentetan pertanyaan menuntun pikiran menemukan sendiri jawaban ('siapa yang mencipta? siapa yang memberi rizq?'), baru kemudian menantang klaim tandingan dengan bukti. Menuntun ke kesimpulan lebih kuat daripada mendiktekannya.",
+      "analogy": "Socratic questioning → evidence challenge"
+    }
+  ],
+  "inference": "Struktur ayat = pembuktian dua langkah. Pertama, data disodorkan: fungsi mencipta-mengulang dan memberi rizq menunjuk satu Pengatur (likelihood menajam). Kedua, beban bukti dipindahkan ke pengklaim hipotesis tandingan: 'hātū burhānakum'. Ini disiplin klaim-terverifikasi yang sama seperti QS 2:111, tapi dibingkai sebagai uji hipotesis dengan bukti kausal — dan menjadi landasan aturan agen: tak ada entitas atau proposisi yang masuk world-model tanpa bukti terambil (grounding); yang tanpa provenance ditolak.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-07",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-07",
+      "note": "Tadabbur perdana — Wave 7 bukti/hujjah.",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

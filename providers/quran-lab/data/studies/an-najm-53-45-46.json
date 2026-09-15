@@ -1,0 +1,109 @@
+{
+  "schema": "lab-study-v2",
+  "id": "an-najm-53-45-46",
+  "version": 1,
+  "title": "Az-zawjayn adz-dzakara wal-untsa — dua varian terdiferensiasi dari satu sumber benih",
+  "subtitle": "Laki-laki & perempuan bercabang dari nuṭfah tunggal yang dipancarkan: branching dari satu seed, dengan determinasi yang ditetapkan dini",
+  "ref": {
+    "surah": 53,
+    "from": 45,
+    "to": 46
+  },
+  "surah_name": "An-Najm",
+  "theme": "Diferensiasi/keberpasangan dari sumber tunggal, percabangan terdeterminasi, konstruksi dua varian dari satu benih",
+  "sourced_meaning": {
+    "summary": "Tafsir Kemenag QS 53:45-46: Allah yang menciptakan sepasang — laki-laki (adz-dzakar) dan perempuan (al-untsa) — dari air mani (nuṭfah) yang dipancarkan ke dalam rahim, lalu dihembuskan ruh sehingga hidup dan bergerak. Ayat 45 menegaskan tema keberpasangan ciptaan (dirujuk-silang ke Yasin/36:36, ar-Ra'd/13:3, asy-Syu'ara'/26:7, adz-Dzariyat/51:49), sedangkan ayat 46 menjelaskan bahwa penciptaan manusia berlangsung dari pasangan itu, dengan air mani sebagai salah satu komponen pembentuk kehidupan (dirinci di al-Hajj/22:5, al-Mu'minun/23:13-14, Fathir/35:11, as-Sajdah/32:7-9). Jalalain: 'khalaqa az-zawjayni' — yakni jenis (an-nau'ayn) laki-laki dan perempuan, 'min nuṭfatin idzā tumnā' — dari setetes mani ketika dipancarkan/dituangkan ke rahim.",
+    "sources": [
+      "Tafsir Kemenag RI QS 53:45-46",
+      "Tafsir al-Jalalayn QS 53:45-46"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Persepsi",
+      "note": "Dua kategori keluaran bernama & dapat diobservasi — 'adz-dzakar' dan 'al-untsa'; klasifikasi biner yang tegas pada tingkat jenis (an-nau'), bukan gradasi kabur."
+    },
+    {
+      "layer": "Aksi & transfer",
+      "note": "Satu sumber input ('nuṭfah idzā tumnā' — mani ketika dipancarkan) bercabang menjadi dua varian keluaran — percabangan dari seed tunggal, bukan dua jalur bahan-baku terpisah."
+    },
+    {
+      "layer": "Alignment",
+      "note": "Penentuan varian (laki-laki/perempuan) adalah keputusan Pencipta, bukan pilihan diri makhluk — parameter yang ditetapkan pada titik awal, di luar kendali operator (bertaut ke 56:58-59)."
+    },
+    {
+      "layer": "Penalaran",
+      "note": "Dari satu bahan yang sama muncul dua struktur yang saling melengkapi — sinyal desain: keberagaman fungsional tidak menuntut keberagaman sumber, melainkan aturan diferensiasi yang diterapkan pada awal."
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "biology-medicine",
+      "reading": "Resonansi struktural (bukan mukjizat numerik): kedua jenis kelamin berangkat dari struktur embrionik yang awalnya bipotensial/setara, lalu terdiferensiasi menjadi dua jalur perkembangan yang saling melengkapi — determinasi yang dipicu dini pada perjalanan dari satu sel terbuahi. Ayat menamai hasilnya (dzakar/untsa) dari satu sumber (nuṭfah); embriologi memodelkan dinamika percabangannya. Membacanya menumbuhkan pemahaman bahwa perbedaan besar di hilir dapat berpangkal pada satu titik determinasi kecil di hulu.",
+      "analogy": "sexual differentiation from a bipotential embryonic origin; early determination switch — bounded",
+      "quranic_term": "adz-dzakar wal-untsa min nuṭfah"
+    },
+    {
+      "lens": "computational",
+      "reading": "Pola percabangan dari benih tunggal: satu input ('nuṭfah') → operasi determinasi → dua varian keluaran yang terenumerasi (laki-laki | perempuan). Ini bukan dua pipeline dengan sumber berbeda, melainkan satu sumber yang di-fork menurut aturan penentu. Rekayasa: banyak keragaman keluaran sistem sebenarnya berasal dari satu basis yang sama plus sebuah parameter/flag diskriminatif yang di-set pada tahap awal; menelusuri keragaman ke titik determinasinya sering lebih menjelaskan daripada mengasumsikan sumber yang berbeda-beda.",
+      "analogy": "branching from a single seed via a determination parameter set early",
+      "quranic_term": "khalaqa az-zawjayn"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "Struktur ini terbaca sebagai tipe-jumlah (sum type): satu konstruktor dasar ('Insan dari nuṭfah') menghasilkan tepat dua kasus varian — dzakar atau untsa — yang eksklusif dan lengkap pada tingkat jenis. Polimorfisme dari satu basis: perilaku/peran berbeda diekspresikan lewat varian, bukan lewat kelas bahan yang berlainan. Invariant: kedua varian berbagi asal yang sama, sehingga kesetaraan asal adalah properti yang terjaga meski peran berbeda.",
+      "analogy": "sum type / polymorphic variants from one base constructor",
+      "quranic_term": "az-zawjayn"
+    },
+    {
+      "lens": "systems",
+      "reading": "'Zawj' (pasangan) = pola dua komponen komplementer yang bersama-sama membentuk sistem reproduktif fungsional; nilainya muncul dari kesalingtergantungan, bukan dari kesamaan. Rekayasa sistem: keberpasangan komplementer adalah cara membangun kemampuan (di sini: reproduksi/kontinuitas) yang tak bisa dicapai satu komponen sendirian — dua peran berbeda, satu tujuan kolektif. Redundansi berbeda dari komplementaritas: yang pertama menduplikasi, yang kedua menyatukan yang berlainan menjadi fungsi baru.",
+      "analogy": "complementary pair forming an emergent joint function",
+      "quranic_term": "zawj (keberpasangan komplementer)"
+    },
+    {
+      "lens": "algorithm",
+      "reading": "Determinasi sebagai keputusan cabang dini pada satu titik: sebelum struktur besar terbentuk, satu 'switch' menentukan lintasan perkembangan, dan seluruh konstruksi hilir mengikuti cabang yang terpilih. Prinsip: keputusan yang di-commit di awal alur memiliki pengaruh yang membesar (amplifying) di hilir — maka titik determinasi awal adalah tempat paling sensitif dan paling hemat untuk menetapkan arah, bukan menunda ke akhir.",
+      "analogy": "early branch decision amplified downstream",
+      "quranic_term": "idzā tumnā (penetapan pada titik awal)"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Untuk arsitektur agen: pola 'satu basis → banyak varian terspesialisasi' adalah paradigma yang sangat produktif. Actionable: (1) bangun satu base/foundation yang kuat, lalu turunkan varian-varian terspesialisasi lewat sebuah sinyal determinasi (adapter/flag/role), alih-alih melatih setiap varian dari sumber yang berbeda — hemat dan menjaga invariant kesamaan-asal; (2) tetapkan parameter penentu-peran SEDINI mungkin dalam alur karena efeknya membesar di hilir; menunda determinasi memaksa jalur yang mahal untuk dikoreksi; (3) rancang varian sebagai komplementer (mengisi peran berbeda dalam satu sistem), bukan sekadar duplikat — kapabilitas kolektif lahir dari komplementaritas peran; (4) catat provenance: kedua varian berbagi asal, sehingga 'kesetaraan basis' adalah invariant yang harus dijaga meski peran/keluaran berbeda. Determinasi varian di sini ditetapkan oleh Pencipta (bukan dipilih makhluk) — mengingatkan bahwa sebagian parameter sistem adalah given, bukan tunable oleh operator.",
+      "analogy": "one base model → complementary specialized variants via an early determination signal; role-parameter set upstream",
+      "quranic_term": "az-zawjayn min nuṭfah wāḥidah"
+    },
+    {
+      "lens": "inference",
+      "reading": "Dari satu bahan yang sederhana dan sama ('nuṭfah') muncul dua struktur kompleks yang berbeda dan saling melengkapi — pengamatan yang, dibaca sebagai penalaran, menandai bahwa keragaman hasil tidak menuntut keragaman sumber, melainkan aturan diferensiasi. Ini melemahkan asumsi 'sumber berbeda untuk hasil berbeda' dan menguatkan pencarian titik determinasi bersama. Tangga bukti: keteraturan pemetaan satu-sumber→dua-varian yang konsisten pada seluruh spesies adalah pola, bukan kebetulan.",
+      "analogy": "diversity of output from a shared source implies a differentiation rule, not multiple sources",
+      "quranic_term": "tafakkur atas asal tunggal"
+    },
+    {
+      "lens": "amal",
+      "reading": "Kesadaran bahwa laki-laki dan perempuan sama-sama berasal dari satu jenis sumber yang rapuh (setetes mani) menumbuhkan tawadhu dan menolak kesombongan berbasis jenis; keduanya komplementer, bukan hierarki asal. Amal: memuliakan keberpasangan sebagai desain, mensyukuri kelangsungan hidup lewatnya, dan tidak menjadikan perbedaan varian sebagai dasar merendahkan — karena asalnya satu dan penetapannya bukan di tangan makhluk.",
+      "analogy": "shared humble origin grounds humility and complementarity, not hierarchy",
+      "quranic_term": "syukr atas keberpasangan"
+    }
+  ],
+  "inference": "Dibaca sebagai rekayasa, dua ayat ini memetakan sebuah pola konstruksi yang khas: satu sumber benih ('nuṭfah idzā tumnā') bercabang menjadi dua varian terspesialisasi dan komplementer (adz-dzakar wal-untsa). Bukan dua bahan-baku terpisah untuk dua hasil, melainkan satu basis yang di-fork oleh sebuah determinasi yang ditetapkan dini. Empat pelajaran struktural: (a) keragaman keluaran sering berpangkal pada satu basis + parameter penentu, bukan pada sumber yang berbeda-beda — telusuri titik determinasinya; (b) keputusan cabang yang di-commit di hulu efeknya membesar di hilir, maka determinasi awal adalah titik paling sensitif dan hemat; (c) varian yang komplementer (mengisi peran berbeda dalam satu sistem) melahirkan kapabilitas kolektif yang tak dicapai satu komponen — beda dari sekadar redundansi; (d) kesamaan-asal adalah invariant yang layak dijaga meski peran berbeda. Untuk sistem cerdas: paradigma 'satu foundation → banyak varian terspesialisasi lewat sinyal determinasi' persis pola ini, dengan pengingat bahwa sebagian parameter penentu adalah given (ditetapkan Pencipta), bukan tunable operator. Semua ini resonansi struktural, bukan mukjizat numerik, dan bukan maksud tunggal ayat — makna aslinya adalah penegasan bahwa Allah-lah yang menciptakan keberpasangan manusia dari setetes mani. CATATAN TANZIH: subjek 'Dialah yang menciptakan' adalah Allah — Dzat dan perbuatan mencipta-Nya TIDAK dimodelkan, dianalogikan, atau dijadikan komponen sistem. Yang menjadi bahan analogi hanyalah STRUKTUR pada sisi makhluk (percabangan benih, keberpasangan komplementer, titik determinasi pada embrio). Penetapan varian sebagai keputusan Pencipta disebut sebagai LANDASAN iman dengan ta'zhim, bukan sebagai 'mekanisme' yang dimodelkan. Ini salah satu pembacaan, bukan klaim maksud Ilahi.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-12",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-12",
+      "note": "Wave 13 kelahiran/tumbuh-kembang — diferensiasi seksual sebagai branching dari seed tunggal dengan determinasi dini.",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

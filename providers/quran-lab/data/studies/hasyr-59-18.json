@@ -1,0 +1,105 @@
+{
+  "schema": "lab-study-v2",
+  "id": "hasyr-59-18",
+  "version": 1,
+  "title": "Waltanẓur mā qaddamat li-ghad — audit diri & perencanaan ke depan",
+  "subtitle": "Hendaklah tiap diri memperhatikan apa yang telah diperbuat untuk hari esok",
+  "ref": {
+    "surah": 59,
+    "from": 18,
+    "to": 18
+  },
+  "surah_name": "Al-Hashr",
+  "theme": "Self-audit, perencanaan, forecasting, akuntabilitas, observabilitas diri",
+  "sourced_meaning": {
+    "summary": "Hai orang-orang beriman, bertakwalah kepada Allah, dan hendaklah setiap diri memperhatikan (waltanẓur) apa yang telah diperbuatnya untuk hari esok (li-ghad); dan bertakwalah kepada Allah — sungguh Allah Mahateliti (khabīr) terhadap apa yang kamu kerjakan.",
+    "sources": [
+      "Tafsir Kemenag RI QS 59:18",
+      "Tafsir al-Jalalayn QS 59:18"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Umpan balik",
+      "note": "waltanẓur mā qaddamat = tinjauan atas apa yang telah dikerjakan (backward audit)"
+    },
+    {
+      "layer": "Aksi & transfer",
+      "note": "li-ghad = orientasi ke depan; audit bertujuan memperbaiki keputusan berikutnya"
+    },
+    {
+      "layer": "Alignment",
+      "note": "dibingkai dua takwa (sebelum & sesudah) + iman bahwa Allah Maha Mengetahui — landasan kejujuran muhasabah (sifat Allah tidak dianalogikan)"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "amal",
+      "reading": "Muhasabah: rutin mengevaluasi amal — 'hisablah dirimu sebelum dihisab' (atsar Umar). Bukan menyesali masa lalu, tapi membaca jejak untuk memperbaiki langkah esok. Takwa membingkai audit agar jujur, bukan pembelaan diri.",
+      "quranic_term": "muḥāsabatun-nafs"
+    },
+    {
+      "lens": "psychology",
+      "reading": "Refleksi terstruktur berorientasi masa depan: meninjau perbuatan lampau bukan untuk ruminasi (yang merusak), melainkan prospektif ('untuk hari esok'). Ini pola sehat metakognisi — belajar dari jejak tanpa terjebak menyesalinya. Dua bingkai takwa menjaga keseimbangan antara evaluasi & harapan.",
+      "analogy": "prospective reflection (not rumination)",
+      "quranic_term": "muḥāsabah"
+    },
+    {
+      "lens": "computational",
+      "reading": "Loop muhasabah (audit-diri): inspeksi jejak lampau (mā qaddamat) → orientasi ke tujuan (li-ghad) → sesuaikan. Secara rekayasa ini pola control loop dengan logging & tujuan — analogi berlaku pada DISIPLIN MANUSIA. Ayat menutup dgn iman bahwa Allah Maha Mengetahui; itu landasan kejujuran audit, bukan analog teknis.",
+      "analogy": "audit loop: inspect → evaluate → adjust",
+      "quranic_term": "naẓar retrospektif"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "Muhasabah wajib: tiap 'diri' memeriksa keluarannya terhadap tujuan masa depan. Yang mendorong kejujurannya adalah keyakinan (iman) bahwa Allah Maha Mengetahui apa yang dikerjakan. CATATAN TANZIH: pengetahuan Allah TIDAK dimodelkan sebagai 'observabilitas sistem'; sifat Allah tak dianalogikan — yang dibaca-rekayasa hanyalah disiplin audit-diri manusia.",
+      "analogy": "mandatory self-check under full observability"
+    },
+    {
+      "lens": "algorithm",
+      "reading": "Forward-looking credit assignment: menilai perbuatan lampau berdasarkan kontribusinya ke tujuan esok — persis masalah penugasan kredit dalam pembelajaran berurutan. 'Li-ghad' menjadikan reward berorientasi masa depan, bukan kepuasan sesaat.",
+      "analogy": "credit assignment toward future reward"
+    },
+    {
+      "lens": "economy",
+      "reading": "Prinsip investasi: nilai perbuatan diukur dari return masa depannya ('untuk hari esok'), bukan konsumsi sekarang. Mendorong deferred gratification & akuntansi forward-looking — modal (amal) ditanam hari ini untuk hasil kemudian.",
+      "analogy": "investment accounting; deferred gratification"
+    },
+    {
+      "lens": "systems",
+      "reading": "Audit-diri jujur: pribadi/sistem sehat menyimpan jejak (audit trail) & meninjaunya berkala terhadap tujuan. Di sini dorongan kejujuran bersumber dari iman (kesadaran bahwa Allah mengetahui), bukan sekadar mekanisme teknis — dan sifat Allah itu sendiri tidak dijadikan analog.",
+      "analogy": "audit trail + full observability"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Ini spesifikasi self-reflection agen: tinjau tindakan lampau (trace/memory), evaluasi terhadap tujuan ke depan, sesuaikan kebijakan — di bawah asumsi logging penuh. Pola refleksi ini (ReAct/Reflexion) terbukti menaikkan keandalan agen. 'Li-ghad' mencegah myopia: optimalkan untuk hasil jangka panjang, bukan langkah berikutnya saja.",
+      "analogy": "agent self-reflection (Reflexion) + long-horizon objective",
+      "quranic_term": "muḥāsabah + li-ghad"
+    },
+    {
+      "lens": "pedagogy",
+      "reading": "Refleksi sebagai pilar belajar: meninjau apa yang telah dikerjakan untuk memperbaiki yang akan datang = inti pembelajaran reflektif (learning journal, after-action review). Evaluasi bukan vonis, melainkan bahan bakar perbaikan berikutnya.",
+      "analogy": "reflective learning; after-action review"
+    }
+  ],
+  "inference": "Ayat ini, dibaca sebagai disiplin diri, adalah loop muhasabah berorientasi masa depan: periksa jejak lampau, ukur terhadap tujuan 'hari esok', sesuaikan — dengan arah pandang prospektif (memperbaiki, bukan meratapi). Yang menjaga kejujurannya adalah iman bahwa Allah Maha Mengetahui. CATATAN TANZIH: sifat Allah (khabīr) tidak dianalogikan sebagai properti sistem; yang dibaca-rekayasa hanyalah disiplin audit-diri manusia. Untuk sistem buatan: refleksi atas jejak + orientasi tujuan menaikkan keandalan.",
+  "authors": [
+    "Draft AI (LLM draft) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-07",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-07",
+      "note": "Tadabbur perdana — Wave 3; tema muhasabah/refleksi.",
+      "authors": [
+        "Draft AI (LLM draft)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

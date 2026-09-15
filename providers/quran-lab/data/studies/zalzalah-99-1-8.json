@@ -1,0 +1,89 @@
+{
+  "schema": "lab-study-v2",
+  "id": "zalzalah-99-1-8",
+  "version": 1,
+  "title": "Mithqāla dzarratin — audit imutabel sampai butir terkecil",
+  "subtitle": "Bumi menceritakan beritanya; sebesar zarrah kebaikan/keburukan pun terlihat",
+  "ref": {
+    "surah": 99,
+    "from": 1,
+    "to": 8
+  },
+  "surah_name": "Az-Zalzalah",
+  "theme": "Audit imutabel, granularitas terkecil, replay lengkap, integritas rekaman",
+  "sourced_meaning": {
+    "summary": "Apabila bumi diguncang dahsyat, mengeluarkan beban-bebannya, dan manusia bertanya 'mengapa?' — pada hari itu bumi menceritakan beritanya (tuḥaddits akhbārahā), karena Tuhanmu memerintahkannya. Pada hari itu manusia keluar (dari kubur) bermacam-macam untuk diperlihatkan (balasan) amalnya. Barangsiapa berbuat kebaikan sebesar dzarrah, ia melihatnya; dan barangsiapa berbuat keburukan sebesar dzarrah, ia melihatnya pula.",
+    "sources": [
+      "Tafsir Kemenag RI QS 99:1-8",
+      "Tafsir al-Jalalayn QS 99:1-8"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Umpan balik",
+      "note": "replay lengkap amal saat hisab — tiap butir diperlihatkan (yarah = melihat sendiri)"
+    },
+    {
+      "layer": "Tangga epistemik",
+      "note": "bumi 'menceritakan' = medium fisik menyimpan rekaman yang bisa dibaca ulang"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "amal",
+      "reading": "Tak ada kebaikan yang terlalu kecil untuk diperhitungkan, tak ada keburukan yang terlalu remeh untuk lolos. 'Sebesar dzarrah' menghapus alasan meremehkan amal kecil — konsistensi butir demi butir yang membentuk timbangan akhir.",
+      "quranic_term": "mithqāl dzarrah"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Audit dengan granularitas terkecil & TANPA ambang de-minimis: setiap tindakan sekecil apa pun tercatat & di-replay ('yarah' = pelaku melihat sendiri = transparansi penuh ke subjek). Untuk sistem AI: audit trail yang lengkap sampai event terkecil, dapat di-replay deterministik, dan diperlihatkan ke pihak yang diaudit. Tak ada 'terlalu kecil untuk dicatat' — karena akumulasi butir kecil (bias mikro, drift bertahap) justru yang membentuk kegagalan besar. Dan 'bumi menceritakan' = lingkungan/substrat sendiri menyimpan rekaman yang bisa dibaca ulang (ledger imutabel).",
+      "analogy": "no-threshold audit; deterministic replay; immutable ledger",
+      "quranic_term": "mithqāla dzarratin yarah"
+    },
+    {
+      "lens": "computational",
+      "reading": "Complete event sourcing: state akhir (balasan) direkonstruksi dari replay SELURUH event terkecil, bukan dari ringkasan. 'Tuḥaddits akhbārahā' (bumi menuturkan beritanya) = medium menyimpan log lengkap yang di-emit saat audit. Rekaman imutabel: pelaku tak bisa mengubah apa yang sudah tersimpan di substrat.",
+      "analogy": "event sourcing; immutable append-only ledger"
+    },
+    {
+      "lens": "math-physics",
+      "reading": "'Dzarrah' (partikel terkecil) = presisi audit tak terbatas oleh besaran. Sama seperti pengukuran fisika yang bermakna hingga kuantum terkecil; kebocoran/kesalahan pada skala mikro yang diabaikan terakumulasi jadi galat makro. Konservasi: tak ada yang hilang dari catatan (bandingkan 'jangan jemu menulis kecil/besar' 2:282).",
+      "analogy": "precision to smallest quantum; conservation of record"
+    },
+    {
+      "lens": "systems",
+      "reading": "Lingkungan sebagai perekam: bumi (substrat) menyimpan jejak perbuatan dan melaporkannya — sistem terdistribusi di mana bahkan medium pasif menjadi bagian dari audit. Kombinasi dengan 41:20 (komponen bersaksi) & 50:17 (logger): audit berlapis dari diri, komponen, DAN lingkungan.",
+      "analogy": "environment as recorder; layered audit (self+component+substrate)"
+    },
+    {
+      "lens": "economy",
+      "reading": "Akuntansi tanpa ambang materialitas: tiap transaksi sekecil apa pun masuk buku. Sistem keuangan yang mengabaikan 'yang kecil' membuka celah kebocoran akumulatif (fraud dari banyak transaksi mikro). Presisi butir = integritas neraca.",
+      "analogy": "no materiality threshold; micro-transaction integrity"
+    },
+    {
+      "lens": "earth-cosmos",
+      "reading": "Bumi memang perekam: lapisan sedimen, inti es, cincin pohon, isotop — arsip yang 'menceritakan beritanya' saat dibaca ilmuwan (paleoklimatologi, geokronologi). Planet menyimpan riwayatnya dalam materinya. (Resonansi struktural; tafsir tak mengklaim teori tertentu.)",
+      "analogy": "geological record; proxies read the past"
+    }
+  ],
+  "inference": "Surah ini menutup cluster attestation dengan gambaran audit paling menyeluruh: rekaman lengkap tanpa ambang de-minimis ('sebesar dzarrah pun terlihat'), replay yang diperlihatkan langsung ke subjek ('yarah' — ia melihatnya sendiri), tersimpan di medium yang imutabel ('bumi menuturkan beritanya' atas perintah, bukan atas kehendak pelaku). Untuk sistem AI, tiga prinsip mengunci: (1) audit sampai event terkecil — karena kegagalan besar tumbuh dari akumulasi butir kecil yang diremehkan; (2) replay deterministik yang transparan ke pihak yang diaudit; (3) ledger imutabel yang subjek tak bisa ubah. Digabung dengan 50:17 (logger eksternal) dan 41:20 (komponen bersaksi), korpus melukis audit berlapis: diri, komponen, dan lingkungan semua menyimpan bukti — arsitektur akuntabilitas yang tak punya titik buta.",
+  "authors": [
+    "Draft AI (LLM draft) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-07",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-07",
+      "note": "Tadabbur perdana — Wave 5 (cluster attestation & kesaksian).",
+      "authors": [
+        "Draft AI (LLM draft)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

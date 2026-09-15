@@ -1,0 +1,1351 @@
+{
+  "schema": "lab-index-v1",
+  "title": "Lab Tadabbur",
+  "note": "Kajian interpretasi rekayasa (engineering reading) atas ayat — BUKAN tafsir, BUKAN dalil. Teks ayat selalu ditarik dari mushaf kanonik ber-Merkle; makna religius dirujuk ke tafsir bersumber. Kajian baru = 1 file JSON + 1 entri di sini.",
+  "studies": [
+    {
+      "id": "fatihah-1-1-7",
+      "title": "Al-Fatihah — protokol pembuka & loop kalibrasi harian",
+      "ref": "QS 1:1-7",
+      "theme": "Protokol interaksi, alignment, spesifikasi via contoh, sinkronisasi global",
+      "lenses": 9,
+      "created": "2026-07-07"
+    },
+    {
+      "id": "iqra-96-1-5",
+      "title": "Iqra' — READ → ENCODE → LEARN",
+      "ref": "QS 96:1-5",
+      "theme": "Akuisisi pengetahuan, pembelajaran, eksternalisasi ilmu",
+      "lenses": 9,
+      "created": "2026-07-07"
+    },
+    {
+      "id": "mizan-55-5-9",
+      "title": "Ḥusbān & Mīzān — komputasi kosmik dan constraint keseimbangan",
+      "ref": "QS 55:5-9",
+      "theme": "Determinisme, keteraturan alam, invariant, alignment",
+      "lenses": 9,
+      "created": "2026-07-07"
+    },
+    {
+      "id": "kun-36-82",
+      "title": "Kun Fayakūn — instansiasi deklaratif",
+      "ref": "QS 36:82",
+      "theme": "Penciptaan, informasi, paradigma deklaratif",
+      "lenses": 9,
+      "created": "2026-07-07"
+    },
+    {
+      "id": "hujurat-49-6",
+      "title": "Fatabayyanū — gerbang verifikasi input",
+      "ref": "QS 49:6",
+      "theme": "Verifikasi informasi, anti-misinformation, integritas data",
+      "lenses": 9,
+      "created": "2026-07-07"
+    },
+    {
+      "id": "nahl-16-43",
+      "title": "Ahl adz-dzikr — routing kueri ke pemegang pengetahuan",
+      "ref": "QS 16:43",
+      "theme": "Expert routing, retrieval, epistemic humility, pembagian kerja pengetahuan",
+      "lenses": 9,
+      "created": "2026-07-07"
+    },
+    {
+      "id": "nahl-16-68-69",
+      "title": "Wahyu kepada lebah — kecerdasan kawanan",
+      "ref": "QS 16:68-69",
+      "theme": "Swarm intelligence, emergence, program bawaan, optimisasi terdistribusi",
+      "lenses": 9,
+      "created": "2026-07-07"
+    },
+    {
+      "id": "fussilat-41-53",
+      "title": "Āfāq wa anfus — konvergensi bukti dari dua kanal sensor",
+      "ref": "QS 41:53",
+      "theme": "Observabilitas, verifikasi konvergen, dua kanal bukti, batas kejelasan",
+      "lenses": 9,
+      "created": "2026-07-07"
+    },
+    {
+      "id": "baqarah-2-282",
+      "title": "Āyat ad-dayn — protokol transaksi & jejak audit",
+      "ref": "QS 2:282",
+      "theme": "Pencatatan transaksi, audit trail, saksi/redundansi, integritas kontrak",
+      "lenses": 9,
+      "created": "2026-07-07"
+    },
+    {
+      "id": "mulk-67-3-4",
+      "title": "Farjiʿil-baṣar — loop pengujian mencari cacat",
+      "ref": "QS 67:3-4",
+      "theme": "QA/pengujian iteratif, konsistensi sistem, falsifikasi, batas observasi",
+      "lenses": 9,
+      "created": "2026-07-07"
+    },
+    {
+      "id": "mujadilah-58-11",
+      "title": "Yarfaʿillāhu... darajāt — ilmu sebagai sumbu elevasi",
+      "ref": "QS 58:11",
+      "theme": "Hierarki pengetahuan, alokasi ruang/resource, meritokrasi ilmu",
+      "lenses": 9,
+      "created": "2026-07-07"
+    },
+    {
+      "id": "zumar-39-9",
+      "title": "Hal yastawī — asimetri antara yang tahu dan yang tidak tahu",
+      "ref": "QS 39:9",
+      "theme": "Asimetri informasi, nilai pengetahuan, kelas ekuivalensi, ulū l-albāb",
+      "lenses": 9,
+      "created": "2026-07-07"
+    },
+    {
+      "id": "anbiya-21-30",
+      "title": "Ratq wa fatq — keadaan padu awal, pemisahan, dan air kehidupan",
+      "ref": "QS 21:30",
+      "theme": "Kosmologi, kondisi awal, substrat kehidupan, klaim observasional",
+      "lenses": 9,
+      "created": "2026-07-07"
+    },
+    {
+      "id": "ankabut-29-20",
+      "title": "Sīrū fil-arḍ — riset lapangan atas asal-usul",
+      "ref": "QS 29:20",
+      "theme": "Riset empiris, ekspedisi ilmiah, studi asal-usul, re-instansiasi",
+      "lenses": 9,
+      "created": "2026-07-07"
+    },
+    {
+      "id": "rum-30-41",
+      "title": "Ẓaharal-fasād — umpan balik kerusakan agar sistem kembali",
+      "ref": "QS 30:41",
+      "theme": "Feedback loop, ekologi, atribusi kausal, koreksi sistem",
+      "lenses": 9,
+      "created": "2026-07-07"
+    },
+    {
+      "id": "muminun-23-12-14",
+      "title": "Nuṭfah → ʿalaqah → khalq ākhar — pipeline pembentukan manusia",
+      "ref": "QS 23:12-14",
+      "theme": "Kesehatan/embriologi, konstruksi bertahap, pipeline, emergensi",
+      "lenses": 9,
+      "created": "2026-07-07"
+    },
+    {
+      "id": "hadid-57-25",
+      "title": "Al-Kitāb wal-Mīzān wal-Ḥadīd — tiga instrumen peradaban",
+      "ref": "QS 57:25",
+      "theme": "Instrumen peradaban, standar, material & manufaktur, keadilan",
+      "lenses": 9,
+      "created": "2026-07-07"
+    },
+    {
+      "id": "nur-24-35",
+      "title": "Āyat an-Nūr — cahaya berlapis & representasi bertingkat",
+      "ref": "QS 24:35",
+      "theme": "Optik/sinyal, representasi berlapis, transmisi cahaya, sumber & perantara",
+      "lenses": 10,
+      "created": "2026-07-07"
+    },
+    {
+      "id": "shams-91-7-10",
+      "title": "Nafs & tazkiyah — regulasi diri dua-potensi",
+      "ref": "QS 91:7-10",
+      "theme": "Psikologi/regulasi diri, dua potensi, kontrol, kesehatan mental",
+      "lenses": 9,
+      "created": "2026-07-07"
+    },
+    {
+      "id": "asr-103-1-3",
+      "title": "Wal-ʿAṣr — trajektori default kerugian & syarat pengecualian",
+      "ref": "QS 103:1-3",
+      "theme": "Waktu sebagai sumber daya, default trajectory, kondisi pengecualian, entropi",
+      "lenses": 9,
+      "created": "2026-07-07"
+    },
+    {
+      "id": "baqarah-2-143",
+      "title": "Ummatan wasaṭan — nilai tengah sebagai posisi saksi",
+      "ref": "QS 2:143",
+      "theme": "Tata kelola, nilai tengah/median, posisi saksi, keseimbangan sosial",
+      "lenses": 9,
+      "created": "2026-07-07"
+    },
+    {
+      "id": "dzariyat-51-49",
+      "title": "Min kulli syaiʾin zawjayn — segala sesuatu berpasangan",
+      "ref": "QS 51:49",
+      "theme": "Dualitas, komplementaritas, biner, keterhubungan berpasangan",
+      "lenses": 9,
+      "created": "2026-07-07"
+    },
+    {
+      "id": "hasyr-59-18",
+      "title": "Waltanẓur mā qaddamat li-ghad — audit diri & perencanaan ke depan",
+      "ref": "QS 59:18",
+      "theme": "Self-audit, perencanaan, forecasting, akuntabilitas, observabilitas diri",
+      "lenses": 9,
+      "created": "2026-07-07"
+    },
+    {
+      "id": "furqan-25-67",
+      "title": "Qawāman — alokasi di titik tengah",
+      "ref": "QS 25:67",
+      "theme": "Ekonomi/alokasi, nilai tengah, kontrol pengeluaran, stabilitas",
+      "lenses": 9,
+      "created": "2026-07-07"
+    },
+    {
+      "id": "maidah-5-1",
+      "title": "Awfū bil-ʿuqūd — kontrak sebagai fondasi sistem",
+      "ref": "QS 5:1",
+      "theme": "Kontrak/komitmen, integritas janji, protokol, kepercayaan antar-pihak",
+      "lenses": 8,
+      "created": "2026-07-07"
+    },
+    {
+      "id": "munafiqun-63-9-10",
+      "title": "Lau lā akhkhartanī — deadline yang tak bisa dinegosiasi",
+      "ref": "QS 63:9-10",
+      "theme": "Waktu/deadline, biaya penundaan, distraksi, irreversibilitas",
+      "lenses": 8,
+      "created": "2026-07-07"
+    },
+    {
+      "id": "nahl-16-65",
+      "title": "Aḥyā bihil-arḍa baʿda mautihā — kebangkitan sistem lewat substrat",
+      "ref": "QS 16:65",
+      "theme": "Substrat, revival sistem mati, injeksi resource, siklus",
+      "lenses": 9,
+      "created": "2026-07-07"
+    },
+    {
+      "id": "zumar-39-6",
+      "title": "Khalqan min baʿdi khalqin fī ẓulumātin tsalāts — konstruksi berlapis dalam tiga kegelapan",
+      "ref": "QS 39:6",
+      "theme": "Kesehatan/perkembangan, isolasi berlapis, konstruksi bertahap, proteksi proses",
+      "lenses": 9,
+      "created": "2026-07-07"
+    },
+    {
+      "id": "nisa-4-135",
+      "title": "Syuhadāʾ lillāh — kesaksian tak-bias bahkan melawan diri sendiri",
+      "ref": "QS 4:135",
+      "theme": "Kesaksian tak-bias, integritas evaluator, konflik kepentingan, keadilan",
+      "lenses": 8,
+      "created": "2026-07-07"
+    },
+    {
+      "id": "nur-24-4",
+      "title": "Arbaʿati syuhadāʾ — ambang bukti berskala dengan besar tuduhan",
+      "ref": "QS 24:4",
+      "theme": "Ambang bukti, biaya klaim palsu, proporsionalitas evidence, anti-fitnah",
+      "lenses": 7,
+      "created": "2026-07-07"
+    },
+    {
+      "id": "qaf-50-17-18",
+      "title": "Raqīb ʿatīd — logging berkelanjutan oleh dua pencatat",
+      "ref": "QS 50:17-18",
+      "theme": "Logging berkelanjutan, audit trail, redundansi pencatat, observabilitas total",
+      "lenses": 7,
+      "created": "2026-07-07"
+    },
+    {
+      "id": "fussilat-41-20-22",
+      "title": "Syahida ʿalaihim julūduhum — komponen bersaksi atas sistemnya",
+      "ref": "QS 41:20-22",
+      "theme": "Self-attestation, tamper-proof telemetry, komponen sebagai saksi, non-repudiation",
+      "lenses": 7,
+      "created": "2026-07-07"
+    },
+    {
+      "id": "zalzalah-99-1-8",
+      "title": "Mithqāla dzarratin — audit imutabel sampai butir terkecil",
+      "ref": "QS 99:1-8",
+      "theme": "Audit imutabel, granularitas terkecil, replay lengkap, integritas rekaman",
+      "lenses": 7,
+      "created": "2026-07-07"
+    },
+    {
+      "id": "ali-imran-3-190-191",
+      "title": "Ali 'Imran 190-191 — ulul albab: integrasi dzikir + pikir",
+      "ref": "QS 3:190-191",
+      "theme": "Integrasi naqli-aqli, dzikir sebagai anchor + fikr sebagai inferensi, alam sebagai data bertujuan",
+      "lenses": 9,
+      "created": "2026-07-07"
+    },
+    {
+      "id": "anam-6-99",
+      "title": "Ḥabban mutarākiban — pipeline dari air ke biji berlapis",
+      "ref": "QS 6:99",
+      "theme": "Pipeline bertahap, transformasi berjenjang, output berstruktur, verifikasi hasil",
+      "lenses": 9,
+      "created": "2026-07-07"
+    },
+    {
+      "id": "anbiya-21-33",
+      "title": "Kullun fī falak — tiap benda beredar di orbitnya",
+      "ref": "QS 21:33",
+      "theme": "Determinisme kosmik, orbit/lintasan tetap, keteraturan yang bisa diprediksi",
+      "lenses": 9,
+      "created": "2026-07-07"
+    },
+    {
+      "id": "baqarah-2-170",
+      "title": "Al-Baqarah 170 — taklid buta: menyalin warisan tanpa verifikasi",
+      "ref": "QS 2:170",
+      "theme": "Anti-taklid, verifikasi sumber, provenance, penalaran vs pewarisan buta",
+      "lenses": 9,
+      "created": "2026-07-07"
+    },
+    {
+      "id": "dzariyat-51-47",
+      "title": "Wa innā la-mūsiʿūn — langit dibangun dengan kekuatan, dan Kami meluaskannya",
+      "ref": "QS 51:47",
+      "theme": "Kapasitas, skalabilitas, ruang tumbuh (headroom), konstruksi kuat tanpa lelah",
+      "lenses": 9,
+      "created": "2026-07-07"
+    },
+    {
+      "id": "furqan-25-53",
+      "title": "Barzakh — dua aliran berdampingan tanpa bercampur",
+      "ref": "QS 25:53",
+      "theme": "Isolasi, batas antar-domain, barzakh, pemisahan aliran data",
+      "lenses": 9,
+      "created": "2026-07-07"
+    },
+    {
+      "id": "hijr-15-19",
+      "title": "Kulla syaiʾin mawzūn — segala sesuatu menurut ukuran",
+      "ref": "QS 15:19",
+      "theme": "Kalibrasi, kadar/proporsi terukur, provisioning berbatas, keseimbangan kuantitatif",
+      "lenses": 9,
+      "created": "2026-07-07"
+    },
+    {
+      "id": "hujurat-49-12",
+      "title": "Al-Hujurat 12 — higiene prasangka: jauhi zhann, jangan tajassus",
+      "ref": "QS 49:12",
+      "theme": "Higiene prior/prasangka, minimalisasi data, privasi, husnuzhan sebagai default",
+      "lenses": 9,
+      "created": "2026-07-07"
+    },
+    {
+      "id": "isra-17-36",
+      "title": "Al-Isra 36 — jangan ikuti tanpa ilmu; setiap fakultas akan diaudit",
+      "ref": "QS 17:36",
+      "theme": "Akuntabilitas fakultas, atribusi sumber, logging, verifikasi sebelum bertindak",
+      "lenses": 9,
+      "created": "2026-07-07"
+    },
+    {
+      "id": "mulk-67-30",
+      "title": "Ghawran — jika sumber airmu meresap, siapa gantinya?",
+      "ref": "QS 67:30",
+      "theme": "Dependency tunggal, single point of failure, sumber tak tergantikan, ketahanan",
+      "lenses": 9,
+      "created": "2026-07-07"
+    },
+    {
+      "id": "nur-24-45",
+      "title": "Min māʾ — semua makhluk hidup dari satu substrat",
+      "ref": "QS 24:45",
+      "theme": "Substrat bersama, satu primitif → keberagaman, base-class, foundation",
+      "lenses": 9,
+      "created": "2026-07-07"
+    },
+    {
+      "id": "rahman-55-33",
+      "title": "Illā bi-sulthān — menembus penjuru langit-bumi hanya dengan kekuatan",
+      "ref": "QS 55:33",
+      "theme": "Kapabilitas berbatas otorisasi, sulthan (kuasa/ilmu) sebagai prasyarat melintasi batas",
+      "lenses": 9,
+      "created": "2026-07-07"
+    },
+    {
+      "id": "waqiah-56-68-70",
+      "title": "Al-māʾ alladhī tashrabūn — provenance sumber daya yang bukan buatanmu",
+      "ref": "QS 56:68-70",
+      "theme": "Provenance sumber daya, atribusi infrastruktur, counterfactual, kalibrasi syukur",
+      "lenses": 9,
+      "created": "2026-07-07"
+    },
+    {
+      "id": "yasin-36-38-40",
+      "title": "Li-mustaqarr — matahari menuju tempat menetap, bulan berfase, tak saling mendahului",
+      "ref": "QS 36:38-40",
+      "theme": "Ketetapan (taqdir) sebagai kontrak invarian; fase periodik; konkurensi tanpa bentrok",
+      "lenses": 9,
+      "created": "2026-07-07"
+    },
+    {
+      "id": "yunus-10-36",
+      "title": "Yunus 36 — zhann vs haqq: dugaan tak menggantikan bukti",
+      "ref": "QS 10:36",
+      "theme": "Ketidakpastian vs bukti, kalibrasi keyakinan, zhann vs burhan, argumentum ad populum",
+      "lenses": 9,
+      "created": "2026-07-07"
+    },
+    {
+      "id": "anbiya-21-22",
+      "title": "Law kāna fīhimā ālihatun — bukti keesaan lewat kontradiksi",
+      "ref": "QS 21:22",
+      "theme": "Reductio ad absurdum, konsistensi sistem, otoritas tunggal",
+      "lenses": 9,
+      "created": "2026-07-07"
+    },
+    {
+      "id": "ar-rahman-55-1-4",
+      "title": "Al-Bayan — dari MENGAJAR Al-Qur'an ke kemampuan MENGUNGKAP",
+      "ref": "QS 55:1-4",
+      "theme": "Bahasa, kemampuan mengungkap (generation), pengajaran ilahi, ekspresi",
+      "lenses": 9,
+      "created": "2026-07-07"
+    },
+    {
+      "id": "baqarah-2-111",
+      "title": "Hātū burhānakum — beban bukti ada pada pengklaim",
+      "ref": "QS 2:111",
+      "theme": "Beban pembuktian, klaim terverifikasi, epistemologi hujjah",
+      "lenses": 9,
+      "created": "2026-07-07"
+    },
+    {
+      "id": "baqarah-2-164-164",
+      "title": "Delapan Sinyal, Satu Kesimpulan",
+      "ref": "QS 2:164",
+      "theme": "Tafakkur & pengenalan pola: banyak fenomena beragam menuju satu inferensi",
+      "lenses": 9,
+      "created": "2026-07-07"
+    },
+    {
+      "id": "baqarah-2-31-32",
+      "title": "Al-Asma' — MEMBERI NAMA sebagai fondasi pengetahuan",
+      "ref": "QS 2:31-32",
+      "theme": "Ilmu, representasi simbol, penamaan, batas pengetahuan makhluk",
+      "lenses": 9,
+      "created": "2026-07-07"
+    },
+    {
+      "id": "hasyr-59-21-21",
+      "title": "Gunung yang Hancur, Manusia yang Diam",
+      "ref": "QS 59:21",
+      "theme": "Tafakkur & pengenalan pola: perumpamaan sebagai antarmuka agar makna abstrak dapat diproses akal",
+      "lenses": 9,
+      "created": "2026-07-07"
+    },
+    {
+      "id": "isra-17-81",
+      "title": "Jāʾa al-ḥaqqu wa zahaqa al-bāṭil — kebenaran menggeser kebatilan",
+      "ref": "QS 17:81",
+      "theme": "Ground truth, robustness, konvergensi, koreksi kesalahan",
+      "lenses": 9,
+      "created": "2026-07-07"
+    },
+    {
+      "id": "jatsiyah-45-13-13",
+      "title": "Alam yang Ditundukkan sebagai Antarmuka",
+      "ref": "QS 45:13",
+      "theme": "Tafakkur & pengenalan pola: alam yang teratur dijadikan dapat dimanfaatkan bagi kaum berpikir",
+      "lenses": 9,
+      "created": "2026-07-07"
+    },
+    {
+      "id": "kahf-18-66-66",
+      "title": "Musa & Khidr — MAGANG: transfer ilmu dari guru terbimbing",
+      "ref": "QS 18:66",
+      "theme": "Pemagangan, transfer ilmu berpandu, adab murid, rantai pengajaran",
+      "lenses": 9,
+      "created": "2026-07-07"
+    },
+    {
+      "id": "nahl-16-12-12",
+      "title": "Sinyal Periodik Langit sebagai Jam & Kompas",
+      "ref": "QS 16:12",
+      "theme": "Tafakkur & pengenalan pola: benda langit yang periodik menjadi tanda bagi kaum berakal",
+      "lenses": 9,
+      "created": "2026-07-07"
+    },
+    {
+      "id": "naml-27-64",
+      "title": "Qul hātū burhānakum — bukti untuk hipotesis tandingan",
+      "ref": "QS 27:64",
+      "theme": "Beban bukti, uji hipotesis, klaim terverifikasi",
+      "lenses": 9,
+      "created": "2026-07-07"
+    },
+    {
+      "id": "rum-30-8-8",
+      "title": "Introspeksi Dulu, Baru Dunia",
+      "ref": "QS 30:8",
+      "theme": "Tafakkur & pengenalan pola: dari refleksi diri ke inferensi tentang keteraturan bertujuan",
+      "lenses": 9,
+      "created": "2026-07-07"
+    },
+    {
+      "id": "taha-20-114-114",
+      "title": "Rabbi zidni 'ilma — permintaan TAMBAH ILMU tanpa henti",
+      "ref": "QS 20:114",
+      "theme": "Pembelajaran berkelanjutan, kesabaran akuisisi, growth mindset",
+      "lenses": 9,
+      "created": "2026-07-07"
+    },
+    {
+      "id": "tur-52-35-36",
+      "title": "Am khuliqū min ghayri syayʾ — argumen kausal & disjungsi tuntas",
+      "ref": "QS 52:35-36",
+      "theme": "Prinsip kausalitas, disjungsi ekshaustif, pembuktian per-kasus",
+      "lenses": 9,
+      "created": "2026-07-07"
+    },
+    {
+      "id": "yusuf-12-76-76",
+      "title": "Fauqa kulli dzi 'ilmin 'alim — di atas yang berilmu ada yang lebih",
+      "ref": "QS 12:76",
+      "theme": "Hierarki ilmu, anti-kesombongan, batas pengetahuan, taktik cerdas",
+      "lenses": 9,
+      "created": "2026-07-07"
+    },
+    {
+      "id": "ala-87-1-5",
+      "title": "Khalaqa–sawwa–qaddara–hada — pipeline lifecycle penciptaan",
+      "ref": "QS 87:1-5",
+      "theme": "Pipeline init→configure→guide→lifecycle; tahap berurutan penciptaan; petunjuk (hidayah) sebagai runtime setelah konfigurasi kadar",
+      "lenses": 11,
+      "created": "2026-07-08"
+    },
+    {
+      "id": "anbiya-21-104",
+      "title": "Menggulung langit — teardown, serialisasi keadaan, dan penciptaan-ulang",
+      "ref": "QS 21:104",
+      "theme": "Eskatologi kosmik, teardown terkendali, reversibilitas, penciptaan-ulang, janji yang pasti dieksekusi",
+      "lenses": 9,
+      "created": "2026-07-08"
+    },
+    {
+      "id": "baqarah-2-286",
+      "title": "Lā yukallifullāhu nafsan illā wusʿahā — beban tak pernah melampaui kapasitas",
+      "ref": "QS 2:286",
+      "theme": "Batas kapasitas, rate-limiting, graceful degradation, akuntabilitas seimbang",
+      "lenses": 9,
+      "created": "2026-07-08"
+    },
+    {
+      "id": "dzariyat-51-20-21",
+      "title": "Tanda di bumi dan di dirimu — observabilitas, introspeksi, dan sinyal bagi yang yakin",
+      "ref": "QS 51:20-21",
+      "theme": "Observabilitas, dua sumber bukti (eksternal & internal), introspeksi, kesiapan pengamat, sinyal",
+      "lenses": 9,
+      "created": "2026-07-08"
+    },
+    {
+      "id": "furqan-25-2-2",
+      "title": "Fa-qaddarahu taqdiran — cipta lalu kalibrasi dengan presisi",
+      "ref": "QS 25:2",
+      "theme": "Dua fase: create → configure (taqdir); kalibrasi presisi; otoritas tunggal atas parameter sistem",
+      "lenses": 10,
+      "created": "2026-07-08"
+    },
+    {
+      "id": "fussilat-41-11",
+      "title": "Dukhan → struktur — dari keadaan tak-terbentuk menuju kosmos yang teratur",
+      "ref": "QS 41:11",
+      "theme": "Kosmogoni, keadaan awal tak-terbentuk, bootstrapping, perintah pembentukan, ketaatan struktural",
+      "lenses": 9,
+      "created": "2026-07-08"
+    },
+    {
+      "id": "hijr-15-21-21",
+      "title": "Khaza'in + qadar ma'lum — gudang tak terbatas, rilis terkendali",
+      "ref": "QS 15:21",
+      "theme": "Supply terkontrol: sumber terpusat (khazanah) + rilis berkuota (qadar ma'lum); lazy-loading, rate-limit, backpressure, provisioning berbatas",
+      "lenses": 10,
+      "created": "2026-07-08"
+    },
+    {
+      "id": "hujurat-49-13",
+      "title": "Li-taʿārafū — keragaman sebagai protokol saling-kenal",
+      "ref": "QS 49:13",
+      "theme": "Keragaman, jaringan sosial, interoperabilitas, meritokrasi takwa",
+      "lenses": 10,
+      "created": "2026-07-08"
+    },
+    {
+      "id": "naba-78-6-7",
+      "title": "Bumi hamparan, gunung pasak — stabilizer, anchor, dan peredam osilasi",
+      "ref": "QS 78:6-7",
+      "theme": "Kestabilan sistem, ground/landasan, anchor, peredam guncangan, prasyarat kelayakhunian",
+      "lenses": 9,
+      "created": "2026-07-08"
+    },
+    {
+      "id": "nahl-16-15",
+      "title": "Rawasi, sungai, dan jalan — stabilizer, aliran, dan routing menuju petunjuk",
+      "ref": "QS 16:15",
+      "theme": "Kestabilan, jaringan aliran, jalur navigasi, keterhubungan, orientasi (tidak tersesat)",
+      "lenses": 9,
+      "created": "2026-07-08"
+    },
+    {
+      "id": "nisa-4-1",
+      "title": "Min nafsin wāhidah — satu asal, keragaman terurai, silaturahim terjaga",
+      "ref": "QS 4:1",
+      "theme": "Asal-tunggal, penyebaran populasi, jejaring kekerabatan, akuntabilitas",
+      "lenses": 9,
+      "created": "2026-07-08"
+    },
+    {
+      "id": "qamar-54-49-49",
+      "title": "Bi-qadar — segala sesuatu lahir dengan parameter terukur",
+      "ref": "QS 54:49",
+      "theme": "Qadar sebagai kuantisasi: segala sesuatu ber-parameter & terukur; determinisme berkadar; spesifikasi ciptaan + ruang ikhtiar",
+      "lenses": 11,
+      "created": "2026-07-08"
+    },
+    {
+      "id": "rad-13-11",
+      "title": "Hattā yughayyirū mā bi-anfusihim — perubahan sistem dimulai dari state internal",
+      "ref": "QS 13:11",
+      "theme": "Perubahan bottom-up, self-modification, kausalitas internal→eksternal",
+      "lenses": 10,
+      "created": "2026-07-08"
+    },
+    {
+      "id": "rum-30-21",
+      "title": "Litaskunū ilayhā — pasangan komplementer sebagai sumber ketenteraman",
+      "ref": "QS 30:21",
+      "theme": "Komplementaritas, pemasangan, stabilitas & ketenteraman sistem",
+      "lenses": 9,
+      "created": "2026-07-08"
+    },
+    {
+      "id": "talaq-65-3-3",
+      "title": "Li-kulli syai'in qadran — tawakal sebagai delegasi setelah ikhtiar berkadar",
+      "ref": "QS 65:3",
+      "theme": "Qadar sebagai ketentuan + jadwal; tawakal = bounded delegation sesudah ikhtiar; pemisahan usaha (yang di tangan agen) dari hasil (di luar kendali)",
+      "lenses": 9,
+      "created": "2026-07-08"
+    },
+    {
+      "id": "abasa-80-24-32",
+      "title": "Falyanẓuril-insānu ilā ṭaʿāmih — rantai pasok pangan sebagai pipeline dari satu input",
+      "ref": "QS 80:24-32",
+      "theme": "Rantai pasok pangan, pipeline input→output beragam, sustainability, provisioning downstream",
+      "lenses": 9,
+      "created": "2026-07-08"
+    },
+    {
+      "id": "anam-6-95-95",
+      "title": "Fāliqul-ḥabbi wan-nawā — pembelahan benih & pembangkitan hidup-dari-mati sebagai transformasi generatif",
+      "ref": "QS 6:95",
+      "theme": "Transformasi generatif, state-change hidup↔mati, pembelahan benih, bootstrapping kehidupan",
+      "lenses": 8,
+      "created": "2026-07-08"
+    },
+    {
+      "id": "hajj-22-5-5",
+      "title": "Dari tanah, nutfah, 'alaqah, mudghah — penciptaan bertahap yang tuntas sampai lahir, dewasa, dan pikun",
+      "ref": "QS 22:5",
+      "theme": "Penciptaan bertahap (staged pipeline/incremental build) dengan checkpoint per tahap; siklus mati→hidup pada bumi sebagai daur ulang; degradasi pengetahuan pada usia pikun",
+      "lenses": 10,
+      "created": "2026-07-08"
+    },
+    {
+      "id": "insan-76-2-2",
+      "title": "Nutfah amsyaj — setetes campuran dua sumber, dicipta untuk diuji, lalu diberi pendengaran dan penglihatan",
+      "ref": "QS 76:2",
+      "theme": "Nutfah amsyaj = kombinasi/merge dua sumber menjadi satu titik-awal; penciptaan yang goal-conditioned (untuk diuji: taklif); provisioning sensor (dengar-lihat) untuk menjalani uji",
+      "lenses": 8,
+      "created": "2026-07-08"
+    },
+    {
+      "id": "isra-17-82",
+      "title": "Syifā' wa rahmah lil-mu'minīn — sinyal pemulih yang efeknya bergantung keadaan penerima",
+      "ref": "QS 17:82",
+      "theme": "Syifā' fis-sudūr, perbaikan state internal, sinyal koreksi bersyarat keadaan penerima",
+      "lenses": 10,
+      "created": "2026-07-08"
+    },
+    {
+      "id": "naba-78-9-11",
+      "title": "Tidur=istirahat, malam=pakaian, siang=penghidupan — duty-cycle rest-recovery",
+      "ref": "QS 78:9-11",
+      "theme": "Siklus siang-malam, duty-cycle, rest-recovery scheduling, tidur=maintenance/consolidation",
+      "lenses": 10,
+      "created": "2026-07-08"
+    },
+    {
+      "id": "nahl-16-11-11",
+      "title": "Bihi az-zarʿa waz-zaitūn — satu air, keluaran yang beragam",
+      "ref": "QS 16:11",
+      "theme": "Same input → diverse output, diversifikasi keluaran dari sumber tunggal, tanda bagi yang berpikir",
+      "lenses": 8,
+      "created": "2026-07-08"
+    },
+    {
+      "id": "nahl-16-78-78",
+      "title": "Dikeluarkan dari perut ibu tak tahu apa-apa, lalu diberi pendengaran, penglihatan, dan hati agar bersyukur",
+      "ref": "QS 16:78",
+      "theme": "State awal kosong (blank slate/tabula rasa) → provisioning kanal input (dengar-lihat) + evaluator (hati) → pembelajaran inkremental dari lingkungan; syukur sebagai objective",
+      "lenses": 8,
+      "created": "2026-07-08"
+    },
+    {
+      "id": "nuh-71-14-17",
+      "title": "Khalaqakum aṭwārā — penciptaan bertahap & tumbuh dari bumi bak tumbuhan",
+      "ref": "QS 71:14-17",
+      "theme": "Pertumbuhan bertahap (aṭwār), organic bottom-up growth, staged development bukan instan, nutrisi dari substrat",
+      "lenses": 8,
+      "created": "2026-07-08"
+    },
+    {
+      "id": "qaf-50-9-11",
+      "title": "Mā'an mubārakā — air berkah, panen berlipat, dan pemulihan negeri mati",
+      "ref": "QS 50:9-11",
+      "theme": "Injeksi resource, scaling panen, disaster recovery, revival negeri mati, inferensi dari teramati ke belum-teramati",
+      "lenses": 8,
+      "created": "2026-07-08"
+    },
+    {
+      "id": "sajdah-32-7-9",
+      "title": "Memulai dari tanah, keturunan dari saripati air hina, lalu disempurnakan dan di-provision-i pendengaran, penglihatan, dan hati",
+      "ref": "QS 32:7-9",
+      "theme": "Bootstrap dari bahan minimal; penyempurnaan (taswiyah); provisioning sensor (pendengaran-penglihatan) + evaluator (hati) saat inisialisasi; kapabilitas laten yang aktif belakangan",
+      "lenses": 10,
+      "created": "2026-07-08"
+    },
+    {
+      "id": "shams-91-1-4",
+      "title": "Matahari, duha, bulan, siang, malam — jam kosmik & sinyal fasa yang menampak-menutupi",
+      "ref": "QS 91:1-4",
+      "theme": "Siklus siang-malam, jam/penjadwal kosmik, sinyal fasa komplementer, entrainment ritme",
+      "lenses": 9,
+      "created": "2026-07-08"
+    },
+    {
+      "id": "syuara-26-80",
+      "title": "Wa idzā maridtu fa huwa yasyfīn — pola penyembuhan yang tertanam pada tubuh",
+      "ref": "QS 26:80",
+      "theme": "Penyembuhan, self-healing, koreksi kesalahan, homeostasis, pemulihan ke titik-sehat",
+      "lenses": 10,
+      "created": "2026-07-08"
+    },
+    {
+      "id": "tariq-86-5-8",
+      "title": "Hendaklah manusia memperhatikan dari apa ia dicipta — dari air yang terpancar, dari sumber yang tertentu, maka Yang memulai kuasa mengulang",
+      "ref": "QS 86:5-8",
+      "theme": "Perintah introspeksi asal (audit provenance); air terpancar dari sumber tertentu; reproducibility/idempotence — kemampuan mengulang proses yang sudah pernah berjalan",
+      "lenses": 8,
+      "created": "2026-07-08"
+    },
+    {
+      "id": "yunus-10-57",
+      "title": "Maw'izah, syifā', hudā, rahmah — pipeline empat-tahap perbaikan keadaan internal",
+      "ref": "QS 10:57",
+      "theme": "Syifā' fis-sudūr, perbaikan state internal/mental, pipeline restorasi bertahap",
+      "lenses": 10,
+      "created": "2026-07-08"
+    },
+    {
+      "id": "al-infitar-82-1-5",
+      "title": "Langit terbelah, kubur dibongkar — teardown dan pengungkapan amal yang didahulukan & ditinggalkan",
+      "ref": "QS 82:1-5",
+      "theme": "Eskatologi kosmik, dekomposisi struktur, penggalian keadaan tersimpan, audit amal aktif dan yang terlewat",
+      "lenses": 8,
+      "created": "2026-07-08"
+    },
+    {
+      "id": "al-qiyamah-75-3-4",
+      "title": "Menyusun kembali ujung jari — pemulihan sampai ke presisi identitas yang paling halus",
+      "ref": "QS 75:3-4",
+      "theme": "Kebangkitan, presisi rekonstruksi, identitas unik (sidik jari), pemulihan hingga detail terhalus",
+      "lenses": 7,
+      "created": "2026-07-08"
+    },
+    {
+      "id": "al-waqiah-56-1-7",
+      "title": "Bila Kiamat terjadi — peristiwa tak-terbantah, guncangan total, dan klasifikasi menjadi tiga golongan",
+      "ref": "QS 56:1-7",
+      "theme": "Eskatologi, peristiwa deterministik tak-terbantah, teardown menjadi partikel, klasifikasi/sorting final",
+      "lenses": 8,
+      "created": "2026-07-08"
+    },
+    {
+      "id": "ali-imran-3-185-185",
+      "title": "Matāʿ al-ghurūr — kesenangan dunia sebagai reward yang memperdaya",
+      "ref": "QS 3:185",
+      "theme": "Terminasi universal, settlement tertunda, reward hacking, proxy-goal yang menyesatkan",
+      "lenses": 9,
+      "created": "2026-07-08"
+    },
+    {
+      "id": "anbiya-21-35-35",
+      "title": "Nablūkum bisy-syarri wal-khayri fitnah — uji dua-sisi: keburukan DAN kebaikan",
+      "ref": "QS 21:35",
+      "theme": "Uji dua-sisi, test coverage, robustness, keberhasilan sebagai failure-mode",
+      "lenses": 9,
+      "created": "2026-07-08"
+    },
+    {
+      "id": "araf-7-54",
+      "title": "al-Khalq wal-Amr — konstruksi lalu tata kelola subsistem terjadwal",
+      "ref": "QS 7:54",
+      "theme": "Kosmogoni bertahap, benda langit sebagai subsistem terjadwal deterministik, pemisahan cipta (khalq) & perintah (amr)",
+      "lenses": 8,
+      "created": "2026-07-08"
+    },
+    {
+      "id": "at-takwir-81-1-14",
+      "title": "Matahari digulung — shutdown terurut subsistem kosmik dan flush log yang lengkap",
+      "ref": "QS 81:1-14",
+      "theme": "Eskatologi kosmik, teardown berurutan, penonaktifan subsistem, audit final, penyingkapan catatan amal",
+      "lenses": 9,
+      "created": "2026-07-08"
+    },
+    {
+      "id": "baqarah-2-117",
+      "title": "Badīʿ + kun fa-yakūn — mencipta tanpa contoh, dari spesifikasi ke perwujudan",
+      "ref": "QS 2:117",
+      "theme": "Kosmogoni, penciptaan tanpa preseden, deklarasi vs eksekusi, proses bertahap (sunnatullah), fase init busur kosmik",
+      "lenses": 8,
+      "created": "2026-07-08"
+    },
+    {
+      "id": "baqarah-2-28-28",
+      "title": "Kuntum amwātan fa-aḥyākum — rantai transisi keadaan mati-hidup-mati-hidup",
+      "ref": "QS 2:28",
+      "theme": "State machine, transisi keadaan, re-instansiasi, lifecycle berujung return",
+      "lenses": 10,
+      "created": "2026-07-08"
+    },
+    {
+      "id": "furqan-25-59",
+      "title": "Enam masa lalu 'istiwāʾ — urutan init kemudian fase kendali",
+      "ref": "QS 25:59",
+      "theme": "Kosmogoni bertahap, urutan naratif init→kendali, khilaf makna 'yaum/masa' (metadata), rujuk-ke-ahli",
+      "lenses": 7,
+      "created": "2026-07-08"
+    },
+    {
+      "id": "fussilat-41-9-10",
+      "title": "Qaddara aqwātahā — bumi dalam dua masa, takdir kadar rezeki dalam empat masa",
+      "ref": "QS 41:9-10",
+      "theme": "Pembentukan bumi bertahap, penentuan kadar/kuota sumber daya (qadar rezeki), capacity planning sebelum penghuni",
+      "lenses": 8,
+      "created": "2026-07-08"
+    },
+    {
+      "id": "kahf-18-7-7",
+      "title": "Zīnatan lahā liyabluwahum ayyuhum aḥsanu ʿamalā — bumi-perhiasan sebagai test environment",
+      "ref": "QS 18:7",
+      "theme": "Test environment, sandbox, distractor reward, objektif sejati vs perhiasan permukaan",
+      "lenses": 10,
+      "created": "2026-07-08"
+    },
+    {
+      "id": "mulk-67-2-2",
+      "title": "Liyabluwakum ayyukum aḥsanu ʿamalā — hidup-mati sebagai run ber-objective",
+      "ref": "QS 67:2",
+      "theme": "Lifecycle ber-tujuan, objective function, metrik kualitas vs kuantitas, evaluation window",
+      "lenses": 10,
+      "created": "2026-07-08"
+    },
+    {
+      "id": "naziat-79-27-33",
+      "title": "Membangun lalu memprovisi — langit ditinggikan, bumi disiapkan bagi penghuni",
+      "ref": "QS 79:27-33",
+      "theme": "Konstruksi kosmos + provisioning sumber daya sebelum penghuni; urutan build→furnish→populate; konteks: dalil kebangkitan",
+      "lenses": 8,
+      "created": "2026-07-08"
+    },
+    {
+      "id": "yasin-36-78-79",
+      "title": "Siapa menghidupkan tulang yang hancur — Yang mencipta pertama kuasa menciptakan-ulang",
+      "ref": "QS 36:78-79",
+      "theme": "Kebangkitan, reproducibility dari record, prinsip pencipta-awal-mampu-mengulang, kelengkapan pengetahuan atas ciptaan",
+      "lenses": 7,
+      "created": "2026-07-08"
+    },
+    {
+      "id": "ali-imran-3-104-104",
+      "title": "Waltakun minkum ummah — golongan khusus penyeru kebajikan sebagai layanan terdedikasi",
+      "ref": "QS 3:104",
+      "theme": "Fungsi terdedikasi, layanan monitoring & koreksi, amar makruf nahi mungkar, spesialisasi peran",
+      "lenses": 8,
+      "created": "2026-07-08"
+    },
+    {
+      "id": "ali-imran-3-159-159",
+      "title": "Syura lalu tawakal — deliberasi banyak pihak, lalu commit",
+      "ref": "QS 3:159",
+      "theme": "Musyawarah (deliberasi terdistribusi) sebelum keputusan; fase commit setelah azam; keamanan psikologis sebagai prasyarat masukan jujur",
+      "lenses": 9,
+      "created": "2026-07-08"
+    },
+    {
+      "id": "an-nisa-4-59-59",
+      "title": "Hierarki otoritas & resolusi konflik — kembalikan ke sumber saat berselisih",
+      "ref": "QS 4:59",
+      "theme": "Arsitektur otoritas berjenjang; delegasi bertingkat; aturan resolusi konflik dengan eskalasi ke sumber kanonik (Al-Qur'an & Sunnah)",
+      "lenses": 9,
+      "created": "2026-07-08"
+    },
+    {
+      "id": "anam-6-153-153",
+      "title": "Sirat mustaqim vs subul — satu jalur kanonik lawan fragmentasi",
+      "ref": "QS 6:153",
+      "theme": "Single canonical path, konvergensi vs divergensi, fragmentasi, standar tunggal",
+      "lenses": 8,
+      "created": "2026-07-08"
+    },
+    {
+      "id": "asy-syura-42-38-38",
+      "title": "Amruhum syura — konsensus sebagai properti tetap komunitas",
+      "ref": "QS 42:38",
+      "theme": "Syura sebagai invariant/protokol default komunitas; keputusan antar-peer ('baynahum'); desentralisasi keputusan berdampingan dengan desentralisasi sumber daya (infak)",
+      "lenses": 9,
+      "created": "2026-07-08"
+    },
+    {
+      "id": "at-talaq-65-1-1",
+      "title": "Melanggar batas = merusak diri sendiri",
+      "ref": "QS 65:1",
+      "theme": "Batas Allah dengan penalti terinternalisasi (pelanggar menzalimi dirinya); precondition & waktu sah operasi; menjaga optionality masa depan",
+      "lenses": 9,
+      "created": "2026-07-08"
+    },
+    {
+      "id": "baqarah-2-2-2",
+      "title": "Hudan lil-muttaqin — spesifikasi petunjuk yang teraktif bagi yang siap",
+      "ref": "QS 2:2",
+      "theme": "Guidance spec, integritas sumber, precondition/opt-in, kesiapan penerima",
+      "lenses": 8,
+      "created": "2026-07-08"
+    },
+    {
+      "id": "baqarah-2-229-229",
+      "title": "Hududullah — batas keras yang tak boleh dilanggar",
+      "ref": "QS 2:229",
+      "theme": "Batas mutlak (hududullah) sebagai hard constraint/invariant; koridor tindakan yang sah; pelanggaran batas = state zalim",
+      "lenses": 10,
+      "created": "2026-07-08"
+    },
+    {
+      "id": "fussilat-41-34-34",
+      "title": "Idfaʿ billatī hiya ahsan — menolak keburukan dengan yang lebih baik",
+      "ref": "QS 41:34",
+      "theme": "Konversi lawan jadi kawan, de-eskalasi, repel-with-better, memutus loop balas-dendam",
+      "lenses": 8,
+      "created": "2026-07-08"
+    },
+    {
+      "id": "isra-17-9-9",
+      "title": "Aqwam — petunjuk ke konfigurasi paling optimal + sinyal reward",
+      "ref": "QS 17:9",
+      "theme": "Optimalitas (aqwam), objective function, reward shaping, penguatan positif",
+      "lenses": 8,
+      "created": "2026-07-08"
+    },
+    {
+      "id": "maidah-5-35-35",
+      "title": "Ittaqū wabtaghū ilayhil-wasīlah — takwa, wasilah, jihad sebagai jalan mendekat",
+      "ref": "QS 5:35",
+      "theme": "Wasilah sebagai pathway/means menuju tujuan, routing ke objective, usaha berkelanjutan, guardrail",
+      "lenses": 8,
+      "created": "2026-07-08"
+    },
+    {
+      "id": "nahl-16-125-125",
+      "title": "Hikmah, mauʿizhah, jidāl-ahsan — strategi komunikasi tiga-tingkat",
+      "ref": "QS 16:125",
+      "theme": "Strategi komunikasi, adaptasi pesan ke audiens, register penyampaian, dakwah sebagai protokol",
+      "lenses": 8,
+      "created": "2026-07-08"
+    },
+    {
+      "id": "nahl-16-89-89",
+      "title": "Tibyan li kulli syai' — spesifikasi rujukan yang komprehensif",
+      "ref": "QS 16:89",
+      "theme": "Reference spec komprehensif, dokumentasi lengkap, multi-fungsi satu artefak, audit/kesaksian",
+      "lenses": 8,
+      "created": "2026-07-08"
+    },
+    {
+      "id": "syura-42-52-53",
+      "title": "Nur — sinyal pemandu navigasi dari keadaan tanpa-peta",
+      "ref": "QS 42:52-53",
+      "theme": "Cahaya sebagai sinyal pemandu, bootstrap dari prior kosong, navigasi ke jalan lurus",
+      "lenses": 8,
+      "created": "2026-07-08"
+    },
+    {
+      "id": "taha-20-44-44",
+      "title": "Qaulan layyinan — kata-kata lembut bahkan kepada pihak yang paling keras",
+      "ref": "QS 20:44",
+      "theme": "Nada & framing lembut, persuasi rendah-friksi, membuka penerimaan, antarmuka yang tak memicu resistensi",
+      "lenses": 8,
+      "created": "2026-07-08"
+    },
+    {
+      "id": "hajj-22-46-46",
+      "title": "Bukan mata yang buta, tapi hati dalam dada — kegagalan bukan di sensor, tapi di evaluator",
+      "ref": "QS 22:46",
+      "theme": "Diagnosis lapisan kegagalan: input (mata/telinga) utuh tapi lapisan evaluatif/penalaran (qalb) menolak mengintegrasikan bukti; hati yang ber-'aql = integrasi reasoning + value; iʿtibār sebagai active data collection lewat perjalanan",
+      "lenses": 9,
+      "created": "2026-07-08"
+    },
+    {
+      "id": "araf-7-179-179",
+      "title": "Punya hati, mata, telinga — tapi tak dipakai memahami: sensor stack utuh, evaluator dinonaktifkan",
+      "ref": "QS 7:179",
+      "theme": "Perangkat persepsi lengkap (qulub, a'yun, adhan) tapi non-fungsional di lapisan semantik (lā yafqahūn, lā yubṣirūn, lā yasmaʿūn) = evaluator corruption; ghaflah sebagai state agen yang berhenti mengevaluasi; ambang 'lebih sesat dari hewan' karena kapasitas ada tapi disia-siakan",
+      "lenses": 8,
+      "created": "2026-07-08"
+    },
+    {
+      "id": "muhammad-47-24-24",
+      "title": "Tidakkah mereka men-tadabbur, ataukah hati mereka terkunci — write-protect pada update-function",
+      "ref": "QS 47:24",
+      "theme": "Tadabbur sebagai proses update model dari teks; qalb yang ter-lock (aqfāluhā) = evaluator dalam mode write-protect yang menolak setiap pembaruan keyakinan; membandingkan mekanisme kunci/gembok dengan rān (2:83 dst.) sebagai penumpukan yang meng-'kunci'",
+      "lenses": 8,
+      "created": "2026-07-08"
+    },
+    {
+      "id": "anfal-8-22-22",
+      "title": "Seburuk-buruk makhluk: yang tuli dan bisu yang tidak berakal — node yang tak menerima, tak memancar, tak memproses",
+      "ref": "QS 8:22",
+      "theme": "Kombinasi kegagalan tiga fungsi sekaligus: penerimaan (samʿ/tuli), pemancaran/penyampaian kebenaran (nuṭq/bisu), dan pemrosesan (ʿaql) — memberi label 'seburuk-buruk makhluk' pada simpul yang tak ingest, tak emit, tak compute",
+      "lenses": 7,
+      "created": "2026-07-08"
+    },
+    {
+      "id": "muminun-23-78-78",
+      "title": "Diciptakan bagimu pendengaran, penglihatan, dan hati — sensor stack di-provision berikut evaluatornya",
+      "ref": "QS 23:78",
+      "theme": "Provisioning fakultas persepsi-kognisi sebagai paket ter-desain: pendengaran & penglihatan (sensor) + af'idah (evaluator/inti pemaknaan); syukur sebagai utilisasi-sesuai-maksud; ketiadaan syukur = sumber daya di-provision tapi tak dipakai pada tujuannya",
+      "lenses": 8,
+      "created": "2026-07-08"
+    },
+    {
+      "id": "nisa-4-82",
+      "title": "Tadabbur & uji-konsistensi — nirkontradiksi sebagai tes integritas",
+      "ref": "QS 4:82",
+      "theme": "Tadabbur (deep parsing), uji konsistensi, integritas sumber, nirkontradiksi, sumber-tunggal",
+      "lenses": 9,
+      "created": "2026-07-08"
+    },
+    {
+      "id": "sad-38-29",
+      "title": "Liyaddabbaru — tujuan turunnya teks adalah ditelaah, bukan sekadar dibaca",
+      "ref": "QS 38:29",
+      "theme": "Tadabbur sebagai tujuan (purpose), pemrosesan mendalam, iʿtibār, ulul albab, transfer ilmu ke amal",
+      "lenses": 8,
+      "created": "2026-07-08"
+    },
+    {
+      "id": "fatir-35-28",
+      "title": "Innamā yakhsyā — pengetahuan sebagai prasyarat kesadaran mendalam",
+      "ref": "QS 35:28",
+      "theme": "Ilmu sebagai precondition, khasy-yah (sadar-taruhan), membaca tanda, kalibrasi berbasis pemahaman",
+      "lenses": 8,
+      "created": "2026-07-08"
+    },
+    {
+      "id": "ankabut-29-43",
+      "title": "Wa mā yaʿqiluhā illa-l-ʿālimūn — decoding perumpamaan menuntut ilmu",
+      "ref": "QS 29:43",
+      "theme": "Abstraksi/perumpamaan (matsal), ilmu sebagai kunci decode, prasyarat pemahaman, kompresi makna",
+      "lenses": 8,
+      "created": "2026-07-08"
+    },
+    {
+      "id": "baqarah-2-269",
+      "title": "Hikmah — puncak sintesis: penilaian bijak di atas sekadar data",
+      "ref": "QS 2:269",
+      "theme": "Hikmah (judgment/wisdom), sintesis ilmu+amal, kemampuan membedakan, keputusan bijak, puncak epistemik",
+      "lenses": 8,
+      "created": "2026-07-08"
+    },
+    {
+      "id": "furqan-25-43-43",
+      "title": "Hawa jadi tuhan — objective yang dibajak keinginan",
+      "ref": "QS 25:43",
+      "theme": "Objective yang dibajak impuls, reward hacking, misalignment tujuan, otoritas sumber vs selera sesaat",
+      "lenses": 9,
+      "created": "2026-07-08"
+    },
+    {
+      "id": "naziat-79-40-41",
+      "title": "Menahan hawa — self-regulation sebagai gerbang menuju hasil",
+      "ref": "QS 79:40-41",
+      "theme": "Regulasi diri, impulse-control, menahan dorongan, mempersiapkan hasil jangka-panjang",
+      "lenses": 8,
+      "created": "2026-07-08"
+    },
+    {
+      "id": "jatsiyah-45-23-23",
+      "title": "Hawa jadi tuhan (lanjutan) — kanal input yang terkunci",
+      "ref": "QS 45:23",
+      "theme": "Objective dibajak hawa, kanal input yang tertutup, terhentinya pembelajaran, siapa yang beri petunjuk",
+      "lenses": 8,
+      "created": "2026-07-08"
+    },
+    {
+      "id": "yunus-10-32-32",
+      "title": "Setelah haqq hanya dhalal — klasifikasi biner tanpa antara",
+      "ref": "QS 10:32",
+      "theme": "Ground truth vs noise, klasifikasi biner, tak ada nilai antara, konsekuensi berpaling dari referensi",
+      "lenses": 8,
+      "created": "2026-07-08"
+    },
+    {
+      "id": "baqarah-2-147-147",
+      "title": "Haqq dari Tuhanmu — commit setelah bukti, bukan ragu lumpuh",
+      "ref": "QS 2:147",
+      "theme": "Sumber kebenaran, commit setelah bukti, keraguan yang melumpuhkan, disiplin memutus",
+      "lenses": 8,
+      "created": "2026-07-08"
+    },
+    {
+      "id": "tin-95-4-4",
+      "title": "Aḥsani taqwīm — arsitektur optimal by design, lalu entropi vs pemeliharaan",
+      "ref": "QS 95:4",
+      "theme": "Anatomi optimal, baseline terbaik, entropi vs pemeliharaan, potensi vs aktualisasi, homeostasis",
+      "lenses": 8,
+      "created": "2026-07-12"
+    },
+    {
+      "id": "al-infitar-82-6-8",
+      "title": "Khalq → taswiyah → taʿdīl → tarkīb — pipeline manufaktur tubuh yang berurutan",
+      "ref": "QS 82:6-8",
+      "theme": "Anatomi, pipeline manufaktur bertahap, kalibrasi & keseimbangan, simetri tubuh, load balancing, variasi parameter",
+      "lenses": 8,
+      "created": "2026-07-12"
+    },
+    {
+      "id": "balad-90-8-10",
+      "title": "Dua mata, satu lidah, dua bibir, dua jalan — peta I/O manusia dan gate keluaran",
+      "ref": "QS 90:8-10",
+      "theme": "Anatomi indra, peta input-output, sensor & aktuator, gate artikulasi, jalur biner, free will",
+      "lenses": 8,
+      "created": "2026-07-12"
+    },
+    {
+      "id": "abasa-80-18-22",
+      "title": "Dari nuṭfah, ditentukan kadarnya, dimudahkan jalannya — lifecycle penuh dari spec",
+      "ref": "QS 80:18-22",
+      "theme": "Anatomi & reproduksi, lifecycle penuh, parameterisasi genetik, birth canal, terminasi & re-instansiasi",
+      "lenses": 8,
+      "created": "2026-07-12"
+    },
+    {
+      "id": "nisa-4-56-56",
+      "title": "Kulit yang diganti — sinyal yang dijaga agar tak padam",
+      "ref": "QS 4:56",
+      "theme": "Ayat peringatan (indhar) yang berat — dibaca dengan penuh kehati-hatian; catatan struktural dibatasi sempit, tidak mengalihkan bobot moral/teologisnya",
+      "lenses": 7,
+      "created": "2026-07-12"
+    },
+    {
+      "id": "an-najm-53-45-46",
+      "title": "Az-zawjayn adz-dzakara wal-untsa — dua varian terdiferensiasi dari satu sumber benih",
+      "ref": "QS 53:45-46",
+      "theme": "Diferensiasi/keberpasangan dari sumber tunggal, percabangan terdeterminasi, konstruksi dua varian dari satu benih",
+      "lenses": 8,
+      "created": "2026-07-12"
+    },
+    {
+      "id": "al-waqiah-56-58-59",
+      "title": "A-antum takhluqūnahu am naḥnul-khāliqūn — operator memancarkan, tapi bukan penulis prosesnya",
+      "ref": "QS 56:58-59",
+      "theme": "Batas kendali operator vs pencipta proses, pemisahan pemicu-implementasi, kerendahan epistemik",
+      "lenses": 7,
+      "created": "2026-07-12"
+    },
+    {
+      "id": "ghafir-40-67-67",
+      "title": "Turāb → nuṭfah → ʿalaqah → ṭifl → asyudd → syaikh — state machine hayat dengan exit terjadwal & objektif taʿqilūn",
+      "ref": "QS 40:67",
+      "theme": "State machine lifecycle, tahap bernama & berurutan, exit/terminasi terjadwal, objektif kognitif (taʿqilūn)",
+      "lenses": 8,
+      "created": "2026-07-12"
+    },
+    {
+      "id": "rum-30-54-54",
+      "title": "Lemah — kuat — lemah: kurva kapasitas yang tak konstan",
+      "ref": "QS 30:54",
+      "theme": "Kurva kapasitas sepanjang siklus hidup (ramp-up, puncak, penurunan) + jalur pengecualian dari lintasan default",
+      "lenses": 8,
+      "created": "2026-07-12"
+    },
+    {
+      "id": "ahqaf-46-15-15",
+      "title": "Kurhan, kurhan, tiga puluh bulan — investasi yang tak bisa dibayar balik, hanya diteruskan",
+      "ref": "QS 46:15",
+      "theme": "Biaya pengasuhan eksplisit sebagai investasi asimetris lintas generasi; syukur sebagai pengakuan utang yang tak lunas kecuali diteruskan",
+      "lenses": 8,
+      "created": "2026-07-12"
+    },
+    {
+      "id": "yasin-36-36-36",
+      "title": "Pasangan-pasangan semuanya — pola desain universal & taksonomi yang terbuka",
+      "ref": "QS 36:36",
+      "theme": "Pairing sebagai pola universal ciptaan; tiga domain pasangan termasuk yang belum diketahui; open taxonomy & unknown unknowns",
+      "lenses": 9,
+      "created": "2026-07-12"
+    },
+    {
+      "id": "zumar-39-68-68",
+      "title": "Dua tiupan sangkakala — shutdown massal berpengecualian, lalu bangkit serempak menunggu",
+      "ref": "QS 39:68",
+      "theme": "Kiamat & kebangkitan: shutdown dua-fase dengan pengecualian eksplisit, re-instantiation massal serempak, state siap-evaluasi",
+      "lenses": 8,
+      "created": "2026-07-12"
+    },
+    {
+      "id": "haqqah-69-13-16",
+      "title": "Satu tiupan, satu benturan — struktur terkokoh dilebur, langit pun rapuh",
+      "ref": "QS 69:13-16",
+      "theme": "Teardown kosmik: struktur paling stabil dilebur dalam satu operasi; tidak ada infrastruktur abadi; wahiyah = masa rapuh yang tampak permanen",
+      "lenses": 8,
+      "created": "2026-07-12"
+    },
+    {
+      "id": "insyiqaq-84-1-5",
+      "title": "Patuh sejak semula — langit & bumi taat pada perintah pembongkaran",
+      "ref": "QS 84:1-5",
+      "theme": "Teardown kosmik sebagai ketaatan yang built-in sejak penciptaan (bukan resistensi); flush total tanpa sisa tersembunyi",
+      "lenses": 8,
+      "created": "2026-07-12"
+    },
+    {
+      "id": "yusuf-12-18-18",
+      "title": "Sawwalat lakum anfusukum amran — jiwa sebagai penutur kisah pembenar diri",
+      "ref": "QS 12:18",
+      "theme": "Mekanisme nafs sebelum diberi nama (ammarah) — jiwa sebagai penutur yang membenarkan tindakannya sendiri; awal busur taksonomi nafs",
+      "lenses": 7,
+      "created": "2026-07-12"
+    },
+    {
+      "id": "yusuf-12-53-53",
+      "title": "An-nafsu la-ammāratun bis-sūʾ — default menuju keburukan, kecuali diberi rahmat",
+      "ref": "QS 12:53",
+      "theme": "Nafs ammarah — pemberian nama eksplisit atas kecenderungan default; klausa pengecualian (rahmat) sebagai satu-satunya override",
+      "lenses": 7,
+      "created": "2026-07-12"
+    },
+    {
+      "id": "qiyamah-75-1-2",
+      "title": "An-Nafs al-Lawwāmah — jiwa yang terus mengaudit dirinya sendiri",
+      "ref": "QS 75:1-2",
+      "theme": "Nafs lawwamah — fungsi audit-diri yang terus-menerus, belum konvergen; tahap transisi dalam busur taksonomi nafs",
+      "lenses": 7,
+      "created": "2026-07-12"
+    },
+    {
+      "id": "fajr-89-27-30",
+      "title": "An-Nafs al-Muthmaʾinnah — jiwa yang tenang, kembali dengan ridha yang berbalas ridha",
+      "ref": "QS 89:27-30",
+      "theme": "Nafs muthmainnah — status akhir/konvergen busur taksonomi nafs: ketenangan sebagai kepuasan DUA ARAH, bukan sekadar tenang sepihak",
+      "lenses": 6,
+      "created": "2026-07-12"
+    },
+    {
+      "id": "qaf-50-16-16",
+      "title": "Bisikan jiwa yang tak pernah benar-benar tersembunyi",
+      "ref": "QS 50:16",
+      "theme": "Penutup busur taksonomi nafs: bisikan batin (waswasa) yang menjadi medan ammarah/lawwamah/muthmainnah TIDAK pernah benar-benar privat — meski dari sudut pandang manusia terasa demikian. Ayat paling sensitif teologis di kajian ini — ditulis dengan kehati-hatian tertinggi.",
+      "lenses": 6,
+      "created": "2026-07-12"
+    },
+    {
+      "id": "anbiya-21-83-84",
+      "title": "Anta arḥamur-rāḥimīn — seruan, tanggap, dan pemulihan berlipat",
+      "ref": "QS 21:83-84",
+      "theme": "Busur insiden penyembuhan: penderitaan berkepanjangan → seruan berbasis nilai → respons eksplisit → pemulihan yang melampaui kondisi semula, didokumentasikan sebagai preseden",
+      "lenses": 7,
+      "created": "2026-07-12"
+    },
+    {
+      "id": "sad-38-41-44",
+      "title": "Irkuḍ bi-rijlik — protokol preskriptif, dan dispensasi yang menepati sumpah tanpa mematahkannya",
+      "ref": "QS 38:41-44",
+      "theme": "Dua pola berbeda dalam satu narasi: (1) remedi preskriptif yang menuntut tindakan penerima, bukan penyembuhan pasif; (2) akomodasi kesulitan yang menepati kendala/sumpah persis-hurufnya, bukan melanggarnya",
+      "lenses": 7,
+      "created": "2026-07-12"
+    },
+    {
+      "id": "saffat-37-102-102",
+      "title": "Ibrahim & putranya — mimpi sebagai perintah, dan kesediaan yang teruji",
+      "ref": "QS 37:102",
+      "theme": "Salah satu ujian paling berat dalam Al-Qur'an — mimpi sebagai kanal perintah tertinggi, dan kesediaan tulus seorang anak. Kajian ini menempatkan bobot teologis & moral di atas segala catatan struktural; dibaca dengan penuh penghormatan, bukan sebagai studi kasus dingin.",
+      "lenses": 6,
+      "created": "2026-07-12"
+    },
+    {
+      "id": "syura-42-51-51",
+      "title": "Wahyan, aw min warā'i ḥijāb, aw yursila rasūlan — taksonomi tiga kanal wahyu",
+      "ref": "QS 42:51",
+      "theme": "Taksonomi eksplisit & tertutup atas kanal penyampaian wahyu — dibaca SEMATA sebagai struktur penerimaan pada sisi manusia, bukan penggambaran Dzat yang menyampaikan. Ayat ditutup sendiri dengan penegasan transendensi (ʿAliyyun Ḥakīm).",
+      "lenses": 6,
+      "created": "2026-07-12"
+    },
+    {
+      "id": "anam-6-93-93",
+      "title": "Man qāla ūḥiya ilayya wa lam yūḥa ilayhi syai' — klaim otoritas palsu dan konsekuensinya",
+      "ref": "QS 6:93",
+      "theme": "Dua jenis fraud atas otoritas wahyu: klaim-menerima-palsu dan klaim-mampu-membuat-tara — ditempatkan pada tingkat kezaliman tertinggi",
+      "lenses": 7,
+      "created": "2026-07-12"
+    },
+    {
+      "id": "najm-53-10-11",
+      "title": "Mā kadzabal-fu'ādu mā ra'ā — hati tidak mendustakan apa yang dilihatnya",
+      "ref": "QS 53:10-11",
+      "theme": "Fidelitas persepsi & keyakinan pada pengalaman wahyu — penyangkalan eksplisit atas kemungkinan kekeliruan. PENTING: konteks ayat ini adalah penglihatan Nabi atas MALAIKAT JIBRIL, bukan penglihatan atas Allah — dibedakan tegas mengikuti tafsir sumber sendiri.",
+      "lenses": 6,
+      "created": "2026-07-12"
+    },
+    {
+      "id": "yusuf-12-4-4",
+      "title": "Innī ra'aytu aḥada 'asyara kaukaban — sinyal simbolik yang belum bisa dibaca literal",
+      "ref": "QS 12:4",
+      "theme": "Pembuka busur mimpi Yusuf — mimpi sebagai payload simbolik yang butuh decoding, bukan pesan literal",
+      "lenses": 6,
+      "created": "2026-07-12"
+    },
+    {
+      "id": "yusuf-12-5-5",
+      "title": "Lā taqṣuṣ ru'yāka 'alā ikhwatik — informasi sensitif yang sengaja tak disebar",
+      "ref": "QS 12:5",
+      "theme": "Ya'qub mengajarkan pembatasan akses informasi prediktif-sensitif berbasis analisis insentif pihak lain — need-to-know, bukan kerahasiaan tanpa alasan",
+      "lenses": 6,
+      "created": "2026-07-12"
+    },
+    {
+      "id": "yusuf-12-36-36",
+      "title": "Innā narāka minal-muḥsinīn — kepercayaan yang dibangun sebelum keahlian diminta",
+      "ref": "QS 12:36",
+      "theme": "Dua sinyal mentah dari sumber sama diminta didekode bersamaan; permintaan didahului pengakuan kredibilitas — kepercayaan mendahului delegasi keahlian",
+      "lenses": 6,
+      "created": "2026-07-12"
+    },
+    {
+      "id": "yusuf-12-43-44",
+      "title": "Aḍghātsu aḥlām — mengaku tak tahu, alih-alih berpura-pura tahu",
+      "ref": "QS 12:43-44",
+      "theme": "Kontras kompetensi: pemegang kekuasaan tertinggi kerajaan mengakui GAP KEAHLIAN secara terbuka, alih-alih memberi jawaban asal demi menjaga wibawa",
+      "lenses": 6,
+      "created": "2026-07-12"
+    },
+    {
+      "id": "yusuf-12-100-100",
+      "title": "Hādzā ta'wīlu ru'yāya min qablu — verifikasi yang tiba puluhan tahun kemudian",
+      "ref": "QS 12:100",
+      "theme": "Penutup busur mimpi Yusuf — payload simbolik dari masa kanak (12:4) diverifikasi presisi puluhan tahun kemudian, menutup loop prediksi berhorizon sangat panjang",
+      "lenses": 6,
+      "created": "2026-07-12"
+    }
+  ]
+}

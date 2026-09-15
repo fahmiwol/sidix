@@ -110,6 +110,12 @@
   </p>
 </div>
 
+## 📦 Providers
+
+EN: [Quran Lab](providers/quran-lab/) — engineering interpretations with citations and explicit unreviewed status.
+
+ID: [Quran Lab](providers/quran-lab/) — interpretasi rekayasa dengan sitasi dan status belum ditinjau yang dinyatakan jelas.
+
 ---
 
 ## 🌱 Autonomous AI Agent — Thinks, Learns & Creates

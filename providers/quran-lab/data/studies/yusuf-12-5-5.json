@@ -1,0 +1,84 @@
+{
+  "schema": "lab-study-v2",
+  "id": "yusuf-12-5-5",
+  "version": 1,
+  "title": "Lā taqṣuṣ ru'yāka 'alā ikhwatik — informasi sensitif yang sengaja tak disebar",
+  "subtitle": "Ayahnya berkata: anakku, janganlah kau ceritakan mimpimu itu kepada saudara-saudaramu, nanti mereka membuat tipu daya untuk membinasakanmu",
+  "ref": {
+    "surah": 12,
+    "from": 5,
+    "to": 5
+  },
+  "surah_name": "Yusuf",
+  "theme": "Ya'qub mengajarkan pembatasan akses informasi prediktif-sensitif berbasis analisis insentif pihak lain — need-to-know, bukan kerahasiaan tanpa alasan",
+  "sourced_meaning": {
+    "summary": "Ayahnya berkata: 'Anakku, janganlah kau ceritakan mimpimu itu kepada saudara-saudaramu, maka mereka akan membuat tipu daya (makar) untuk membinasakanmu. Sesungguhnya setan itu musuh yang nyata bagi manusia.' Tafsir Kemenag: Ya'qub menjelaskan alasannya — bila saudara-saudara Yusuf mengetahui takwil mimpi itu (bahwa Yusuf kelak akan menjadi orang besar yang ditunduki, termasuk oleh mereka), mereka akan iri dan dengki lalu bertindak buruk. Ya'qub sendiri mengaku 'tidak dapat menjamin' saudara-saudara Yusuf tak akan bertindak jahat. Nasihat ini diingat betul oleh Yusuf — di akhir kisah (12:100) ia menegaskan bahwa SETANLAH yang memperdaya saudara-saudaranya, bukan menyalahkan mereka secara mutlak.",
+    "sources": [
+      "Tafsir Kemenag RI QS 12:5",
+      "Tafsir al-Jalalayn QS 12:5"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Aksi & transfer",
+      "note": "larangan berbagi informasi diberikan DENGAN ALASAN eksplisit ('fa yakīdū laka kaidan' — sebab-akibat dinyatakan, bukan larangan tanpa penjelasan)"
+    },
+    {
+      "layer": "Tangga epistemik",
+      "note": "Ya'qub secara jujur mengaku KETIDAKPASTIAN ('aku tidak dapat menjamin') — bukan klaim tahu pasti apa yang akan terjadi, melainkan penilaian risiko berbasis pengenalan karakter"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "systems",
+      "reading": "Ya'qub menerapkan prinsip NEED-TO-KNOW atas informasi prediktif yang bernilai tinggi: konten yang sama (jika diketahui pihak dengan insentif merugikan) bisa memicu tindakan berbahaya. Pembatasan bukan karena informasinya buruk, melainkan karena PENERIMA yang salah, dengan insentif yang salah, bisa menyalahgunakannya.",
+      "analogy": "need-to-know: pembatasan akses berbasis analisis insentif penerima, bukan sifat informasinya sendiri",
+      "quranic_term": "lā taqṣuṣ (jangan kau ceritakan)"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Ini adalah kasus dini ancaman-model (threat modeling) yang eksplisit: Ya'qub mengidentifikasi PIHAK (saudara-saudara), MOTIF (iri, karena kasih sayang ayah tak merata), dan TINDAKAN BERBAHAYA POTENSIAL (makar/kaid) sebelum memutuskan kebijakan akses informasi. Untuk sistem yang menangani output prediktif sensitif: kebijakan pembatasan yang baik didasarkan pada analisis siapa-bisa-berbuat-apa, bukan aturan generik.",
+      "analogy": "threat modeling eksplisit (pihak, motif, potensi bahaya) mendasari kebijakan akses",
+      "quranic_term": "kaidan (tipu daya/skema jahat)"
+    },
+    {
+      "lens": "inference",
+      "reading": "Ya'qub membedakan dua hal secara jujur: KEYAKINAN pada makna mimpi (tinggi — ia yakin ini ilham) versus KEPASTIAN pada perilaku manusia lain (rendah — 'aku tidak dapat menjamin'). Dua jenis ketidakpastian yang berbeda ditangani dengan cara berbeda: satu diyakini, satu diwaspadai.",
+      "analogy": "pembedaan keyakinan-pada-fakta vs ketidakpastian-pada-perilaku-pihak-lain"
+    },
+    {
+      "lens": "psychology",
+      "reading": "Larangan ini juga pengakuan jujur atas dinamika keluarga yang rentan (kasih sayang ayah yang tak merata, disebut Kemenag sebagai salah satu pemicu). Ya'qub tidak menyangkal realitas kecemburuan yang mungkin muncul, melainkan mengambil langkah preventif berdasarkan pengenalan dinamika itu apa adanya.",
+      "analogy": "langkah preventif berbasis pengakuan jujur atas dinamika relasi yang rentan"
+    },
+    {
+      "lens": "history-ummah",
+      "reading": "Nasihat ini terbukti relevan hingga akhir kisah — di 12:100, puluhan tahun kemudian, Yusuf mengingat & menerapkan bingkai yang sama (menyalahkan setan, bukan sepenuhnya saudaranya) yang diajarkan ayahnya di sini. Satu nasihat singkat membentuk sikap Yusuf selama puluhan tahun berikutnya.",
+      "analogy": "satu keputusan kebijakan awal membentuk sikap jangka sangat panjang"
+    },
+    {
+      "lens": "amal",
+      "reading": "Ya'qub menutup nasihatnya dengan menunjuk 'setan' sebagai musuh nyata manusia — membingkai potensi kejahatan saudara-saudara Yusuf bukan sebagai sifat dasar mereka yang tak termaafkan, melainkan sebagai godaan yang bisa mereka menangkan atau kalahkan. Bingkai ini terbukti membentuk sikap pemaaf Yusuf di akhir kisah."
+    }
+  ],
+  "inference": "Ya'qub memberi Yusuf pelajaran pertama tentang mengelola informasi prediktif bernilai tinggi: larangan berbagi disertai alasan eksplisit berbasis analisis pihak, motif, dan potensi bahaya — bukan kerahasiaan sembarangan. Bacaan rekayasa: (1) ini kasus dini threat-modeling eksplisit sebelum kebijakan akses ditetapkan — pembatasan berbasis siapa-bisa-berbuat-apa, bukan aturan generik 'semua rahasia'; (2) Ya'qub membedakan jujur antara keyakinannya pada makna mimpi (tinggi) dan ketidakpastiannya pada perilaku pihak lain (diakui rendah, 'aku tidak dapat menjamin') — dua jenis ketidakpastian ditangani berbeda. Nasihat ini terbukti membentuk sikap Yusuf puluhan tahun kemudian (bandingkan 12:100): ia tetap membingkai kejadian lewat godaan setan, bukan vonis mutlak pada saudaranya — pola pemaafan yang berakar dari nasihat awal ini. CATATAN TANZIH: 'ilham dari Allah' (sumber mimpi) adalah karunia kenabian yang tidak dianalogikan; yang dibaca-rekayasa hanyalah kebijakan pengelolaan informasi pada pihak Ya'qub & Yusuf sebagai manusia.",
+  "authors": [
+    "Draft AI (LLM draft) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-12",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-12",
+      "note": "Tadabbur perdana — Wave 16 mimpi & wahyu, siklus mimpi Yusuf (2/5).",
+      "authors": [
+        "Draft AI (LLM draft)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

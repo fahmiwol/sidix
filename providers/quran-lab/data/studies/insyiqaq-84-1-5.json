@@ -1,0 +1,100 @@
+{
+  "schema": "lab-study-v2",
+  "id": "insyiqaq-84-1-5",
+  "version": 1,
+  "title": "Patuh sejak semula — langit & bumi taat pada perintah pembongkaran",
+  "subtitle": "Apabila langit terbelah dan patuh kepada Tuhannya — dan sudah semestinya patuh; apabila bumi diratakan dan memuntahkan isinya hingga kosong, dan patuh kepada Tuhannya",
+  "ref": {
+    "surah": 84,
+    "from": 1,
+    "to": 5
+  },
+  "surah_name": "Al-Inshiqaq",
+  "theme": "Teardown kosmik sebagai ketaatan yang built-in sejak penciptaan (bukan resistensi); flush total tanpa sisa tersembunyi",
+  "sourced_meaning": {
+    "summary": "Apabila langit terbelah, dan patuh kepada Tuhannya, dan sudah semestinya patuh. Dan apabila bumi diratakan, dan dilemparkan/dimuntahkan apa yang ada di dalamnya sehingga menjadi kosong, dan patuh kepada Tuhannya, dan sudah semestinya patuh. Tafsir Kemenag: langit terbelah karena rusaknya hubungan bagian-bagiannya dan peraturan alam semesta pada hari Kiamat (disebabkan benturan antar benda langit akibat gaya tarik masing-masing) — dan langit itu PATUH pada apa yang diperintahkan Allah; ia pantas patuh karena ia makhluk Tuhan yang senantiasa berada dalam kekuasaan-Nya. Bumi & gunung-gunung hancur berkeping menjadi rata dan mengeluarkan isi 'perut'-nya (ditautkan az-Zalzalah 99:1-2, al-Infithar 82:4) — itu pun karena ketundukan pada perintah Allah. Kemenag menegaskan: kejadian ini berlangsung menurut sunatullah, hukum-hukum Allah di alam semesta.",
+    "sources": [
+      "Tafsir Kemenag RI QS 84:1-5",
+      "Tafsir al-Jalalayn QS 84:1-5"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Aksi & transfer",
+      "note": "'wa adzinat li-rabbihā wa ḥuqqat' diulang IDENTIK pada ayat 2 & 5 — refrain yang sama persis untuk langit (2) dan bumi (5): ketaatan bukan kasus khusus satu objek, melainkan pola berlaku umum"
+    },
+    {
+      "layer": "Tangga epistemik",
+      "note": "'wa ḥuqqat' (dan sudah semestinya/berhak demikian) — kepatuhan dinyatakan sebagai hal yang MEMANG SEHARUSNYA terjadi, bukan kejutan atau anomali"
+    },
+    {
+      "layer": "Persepsi",
+      "note": "dua objek yang selama ini simbol kestabilan tertinggi (langit di atas, bumi di bawah) sama-sama berubah menjadi objek yang patuh dibongkar — simetri pembacaan atas dua kutub alam semesta"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "systems",
+      "reading": "Refrain 'wa adzinat li-rabbihā wa ḥuqqat' berulang identik untuk langit dan bumi — dibaca sebagai KETAATAN YANG BUILT-IN sejak rancangan awal, bukan sesuatu yang perlu 'dipaksakan' saat teardown tiba. Komponen yang dirancang dengan benar tidak melawan perintah pembongkarannya sendiri; ketundukan pada siklus akhir sudah menjadi bagian dari kontraknya sejak penciptaan, bukan ditambahkan belakangan.",
+      "analogy": "graceful-shutdown-by-design: kepatuhan pada teardown adalah bagian dari kontrak sejak init, bukan add-on",
+      "quranic_term": "wa adzinat li-rabbihā wa ḥuqqat"
+    },
+    {
+      "lens": "computational",
+      "reading": "Kontras dua mode terminasi: paksa (forced kill, resistensi sampai crash) versus patuh (graceful shutdown, comply lalu berhenti bersih). Ayat memilih menggambarkan kepatuhan (adzinat = mendengar & taat) untuk KEDUA objek — bukan penggambaran perlawanan. Bacaan struktural: sistem yang 'benar' menerima sinyal terminasi dan comply, bukan menahan diri dari proses shutdown.",
+      "analogy": "graceful shutdown vs forced termination — ayat menggambarkan mode patuh untuk keduanya",
+      "quranic_term": "wansyaqqat / muddat (terbelah / diratakan)"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "'Wa ḥuqqat' (dan sudah semestinya/berhak) menandai kepatuhan bukan sebagai OPSIONAL melainkan sebagai KEBENARAN LOGIS dari statusnya sebagai makhluk — persis seperti sebuah invariant yang benar by construction, bukan dicek belakangan. Kemenag: 'ia pantas menjadi patuh karena dialah makhluk Tuhan yang senantiasa berada dalam kekuasaan-Nya' — kepatuhan mengikuti langsung dari status ontologisnya.",
+      "analogy": "invariant true-by-construction, bukan constraint yang divalidasi belakangan",
+      "quranic_term": "wa ḥuqqat (dan sudah semestinya)"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Prinsip desain: bangun komponen — termasuk yang paling fundamental/infrastruktural — agar PATUH pada perintah pembongkaran/reset sejak awal perancangan, bukan menambahkan mekanisme paksa belakangan. Bumi 'memuntahkan apa yang ada di dalamnya hingga kosong' (ayat 4) dibaca sebagai flush total saat decommission: tidak ada state tersembunyi yang tertinggal setelah proses berakhir — audit penuh terjadi di titik akhir siklus, bukan sebagian.",
+      "analogy": "flush-on-terminate: tidak ada hidden state tersisa saat decommission; kepatuhan graceful dirancang sejak awal, bukan dipaksakan"
+    },
+    {
+      "lens": "earth-cosmos",
+      "reading": "Dua objek diberi perlakuan berbeda namun simetris: langit TERBELAH (fragmentasi struktur), bumi DIRATAKAN & MEMUNTAHKAN ISI (deformasi + evakuasi total isi). Kemenag menautkan ini dengan az-Zalzalah 99:1-2 & al-Infithar 82:4 — pola yang konsisten lintas-surah: objek paling kokoh (gunung, bandingkan Al-Haqqah 69:13-16) dan paling luas (langit, bumi) sama-sama masuk dalam satu babak teardown menyeluruh, bukan sebagian bertahan.",
+      "analogy": "teardown menyeluruh lintas-skala: dari struktur langit sampai isi bumi, dibaca deskriptif dari tafsir",
+      "quranic_term": "insyiqaq (terbelah) / madd (diratakan)"
+    },
+    {
+      "lens": "inference",
+      "reading": "Pengulangan persis refrain 'wa adzinat li-rabbihā wa ḥuqqat' pada ayat 2 dan 5 — untuk dua objek berbeda (langit, bumi) — adalah struktur retoris yang menegaskan UNIVERSALITAS: bukan hanya satu elemen yang patuh, melainkan pola yang berlaku menyeluruh. Pembacaan yang hati-hati memisahkan KEPASTIAN pola (patuh, dari teks) dari MEKANISME fisiknya (dari mana, bagaimana persisnya — di luar teks, karenanya di luar klaim kajian ini).",
+      "analogy": "refrain identik = penanda universalitas pola, bukan kebetulan retoris",
+      "quranic_term": "wa ḥuqqat (diulang 2×)"
+    },
+    {
+      "lens": "psychology",
+      "reading": "Bila langit dan bumi — dua entitas paling agung dalam persepsi manusia — digambarkan taat tanpa perlawanan pada perintah pembongkarannya, ini melatih jiwa merenungkan skala kepatuhan yang jauh lebih tinggi daripada resistensi manusia sehari-hari terhadap perubahan besar. Bukan ajakan pasrah tanpa ikhtiar, melainkan kalibrasi: penolakan terhadap kepastian yang telah ditetapkan hanya menambah gesekan, bukan mengubah hasil."
+    },
+    {
+      "lens": "amal",
+      "reading": "Surah ini (ayat-ayat berikutnya, di luar cakupan kajian ini) menyambung ke pertanggungjawaban manusia yang akan 'menemui Tuhannya'. Pembacaan pada ayat 1-5 semata: jika unsur alam yang tak berakal saja digambarkan taat penuh pada perintah-Nya, ayat ini menjadi pengantar untuk merenungkan kepatuhan manusia yang BERAKAL — direnungkan, tidak dipaksakan sebagai kesimpulan tunggal di sini."
+    }
+  ],
+  "inference": "Al-Insyiqaq 1-5 menggambarkan dua babak teardown kosmik — langit terbelah, bumi diratakan & memuntahkan isinya — dengan refrain identik yang diulang untuk keduanya: 'wa adzinat li-rabbihā wa ḥuqqat' (dan patuh kepada Tuhannya, dan sudah semestinya patuh). Tiga temuan struktural: (1) kepatuhan pada pembongkaran digambarkan BUILT-IN sejak status makhluk, bukan resistensi yang harus dipaksa — cetak biru untuk merancang komponen (termasuk yang paling fundamental) agar comply secara graceful pada teardown, bukan menahan diri dari sinyal terminasi; (2) 'bumi memuntahkan isinya hingga kosong' dibaca sebagai flush total — tak ada state tersembunyi tersisa pasca-decommission; (3) refrain yang diulang identik untuk dua objek berbeda menegaskan pola ini universal, bukan kasus tunggal — konsisten dengan temuan 'tidak ada infrastruktur abadi' di kajian Al-Haqqah 69:13-16. CATATAN GHAIB (wajib, ketat): kiamat adalah perkara ghaib yang diimani dari kabar wahyu; kajian ini membaca STRUKTUR peristiwa sebagaimana dideskripsikan tafsir bersumber (termasuk telaah ilmiah Kemenag tentang benturan benda langit & hilangnya gravitasi, yang disajikan sebagai pemahaman bukan kepastian mekanisme) — bukan spekulasi independen atas kapan/bagaimana fisisnya. CATATAN TANZIH: 'li-rabbihā' (kepada Tuhannya) dan seluruh perintah yang ditaati adalah wewenang Allah semata; Dzat dan perbuatan-Nya memerintah tidak dianalogikan — yang dibaca-rekayasa hanyalah PERILAKU KETAATAN pada pihak makhluk (langit, bumi) sebagaimana digambarkan teks & tafsir.",
+  "authors": [
+    "Draft AI (LLM draft) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-12",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-12",
+      "note": "Tadabbur perdana — Wave 13 kosmogenesis/kehancuran.",
+      "authors": [
+        "Draft AI (LLM draft)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

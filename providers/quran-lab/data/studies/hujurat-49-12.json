@@ -1,0 +1,115 @@
+{
+  "schema": "lab-study-v2",
+  "id": "hujurat-49-12",
+  "version": 1,
+  "title": "Al-Hujurat 12 — higiene prasangka: jauhi zhann, jangan tajassus",
+  "subtitle": "Sebagian prasangka adalah dosa; larangan mencari-cari (tajassus) dan menggunjing (ghibah)",
+  "ref": {
+    "surah": 49,
+    "from": 12,
+    "to": 12
+  },
+  "surah_name": "Al-Hujurat",
+  "theme": "Higiene prior/prasangka, minimalisasi data, privasi, husnuzhan sebagai default",
+  "sourced_meaning": {
+    "summary": "Terjemah Kemenag: orang beriman diperintahkan menjauhi kebanyakan prasangka karena sebagian prasangka itu dosa, dilarang mencari-cari keburukan orang lain (tajassus) dan saling menggunjing (ghibah) — diumpamakan seperti memakan daging saudara sendiri yang sudah mati, lalu diperintahkan bertakwa. Jalalain menegaskan zhann yang dijauhi adalah persangkaan buruk kepada sesama Mukmin tanpa bukti, tajassus adalah menyelidiki aib yang tersembunyi, dan ghibah adalah menyebut aib yang tak disukai bila didengar. (Catatan provenance jujur: entri Tafsir Kemenag untuk ayat ini di dataset app sedang tidak selaras/keliru-tempel, sehingga ringkasan ini digrounding ke terjemah kanonik Kemenag + Jalalain.)",
+    "sources": [
+      "Terjemah Kemenag RI QS 49:12",
+      "Tafsir al-Jalalayn QS 49:12"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Tangga epistemik",
+      "note": "Zhann (prasangka) bukan bukti; ayat menempatkannya sebagai anak tangga rendah yang tak boleh dinaikkan jadi vonis."
+    },
+    {
+      "layer": "Penalaran",
+      "note": "'Ijtanibuu katsiiran minazh-zhann' — jaga proses nalar dari prior buruk yang mencemari kesimpulan sebelum data masuk."
+    },
+    {
+      "layer": "Aksi & transfer",
+      "note": "'Laa tajassasuu wa laa yaghtab' — dilarang bertindak (menyelidik) dan menyebarkan (menggunjing) atas dasar dugaan."
+    },
+    {
+      "layer": "Umpan balik",
+      "note": "'Wattaqullaah, innallaaha tawwaabun rahiim' — disediakan loop koreksi (taubat) untuk memperbaiki prasangka yang telanjur."
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "ai-agentic",
+      "reading": "Actionable: setel prior default ke husnuzhan (interpretasi paling murah-hati) dan larang agen bertindak/menyebarkan atribut negatif hasil inferensi tanpa bukti. Blokir 'tajassus' — perayapan/probing data privat tanpa otorisasi — dan 'ghibah' — propagasi kesimpulan sensitif ke pihak lain. Prasangka = hipotesis, bukan vonis; wajib diverifikasi sebelum memengaruhi keputusan.",
+      "analogy": "Guardrail privasi + kebijakan default-charitable: agen tak boleh menyimpulkan lalu menyiarkan atribut privat pengguna tanpa consent/bukti.",
+      "quranic_term": "ijtanibuu katsiiran minazh-zhann (jauhi kebanyakan prasangka)"
+    },
+    {
+      "lens": "computational",
+      "reading": "Minimalisasi data & need-to-know: hanya kumpulkan/olah yang benar-benar diperlukan. Tajassus = mengakses data di luar keperluan; higiene data menuntut pengumpulan seminimal mungkin.",
+      "analogy": "Prinsip data minimization GDPR — jangan simpan/olah PII melebihi tujuan sah.",
+      "quranic_term": "laa tajassasuu (janganlah mencari-cari)"
+    },
+    {
+      "lens": "systems",
+      "reading": "Least privilege & kontrol akses: jangan menyelidiki internal yang bukan wewenangmu. Tajassus setara probing endpoint/berkas privat tanpa hak; sistem sehat menolak akses di luar peran.",
+      "analogy": "Least-privilege / default-deny — proses hanya menyentuh resource yang izinnya eksplisit.",
+      "quranic_term": "laa tajassasuu (jangan mengintai)"
+    },
+    {
+      "lens": "inference",
+      "reading": "Prasangka adalah inferensi yang didorong prior, bukan bukti; ayat menjaga agar suspicion diperlakukan sebagai hipotesis untuk diuji, bukan konklusi. Sebagian prior bahkan berdosa untuk diikuti.",
+      "analogy": "Menahan diri menyimpulkan dari base-rate/stereotype tanpa data individual yang mendukung.",
+      "quranic_term": "ba'dhazh-zhanni itsm (sebagian prasangka itu dosa)"
+    },
+    {
+      "lens": "psychology",
+      "reading": "Melawan bias atribusi & bias negativitas: kecenderungan menafsir tindakan orang lain secara buruk. Perintahnya adalah interpretasi paling murah-hati (charitable) sebagai sikap baku.",
+      "analogy": "Principle of charity / fundamental attribution error — pilih penjelasan situasional yang baik lebih dulu.",
+      "quranic_term": "zhann (persangkaan)"
+    },
+    {
+      "lens": "economy",
+      "reading": "Kepercayaan adalah modal sosial; ghibah dan tajassus menguras trust dan menaikkan biaya transaksi komunitas. Perumpamaan 'memakan daging saudara' menandai kerusakan bernilai tinggi dan menjijikkan.",
+      "analogy": "Reputasi sebagai aset — kebocoran info privat menghancurkan trust capital yang mahal dibangun.",
+      "quranic_term": "ayuhibbu ahadukum an ya'kula lahma akhiihi maitaa (sukakah memakan daging saudaranya yang mati)"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "Validasi asumsi sebelum dipakai; default-deny untuk asumsi negatif yang tak terverifikasi. Sebuah prasangka buruk tak boleh lolos jadi kondisi yang menggerakkan cabang keputusan tanpa bukti.",
+      "analogy": "Menolak nilai asumsi tak-tervalidasi masuk ke conditional yang menentukan aksi.",
+      "quranic_term": "laa yaghtab ba'dhukum ba'dhaa (jangan sebagian menggunjing sebagian)"
+    },
+    {
+      "lens": "amal",
+      "reading": "Verifikasi sebelum bertindak atas kecurigaan, dan tahan diri dari menyebarkannya. Menahan lisan/aksi atas dugaan adalah amal disiplin, bukan kepasifan.",
+      "analogy": "Prosedur eskalasi: kecurigaan diverifikasi lewat kanal sah sebelum tindakan, bukan main hakim sendiri.",
+      "quranic_term": "wattaqullaah (bertakwalah kepada Allah)"
+    },
+    {
+      "lens": "pedagogy",
+      "reading": "Menanam husnuzhan sebagai kebiasaan berpikir: latih menunda vonis, mencari klarifikasi, dan memisahkan fakta dari dugaan sebelum menilai orang.",
+      "analogy": "Latihan berpikir kritis: pisahkan observasi dari interpretasi sebelum menyimpulkan.",
+      "quranic_term": "tawwaabun rahiim (Maha Penerima taubat, Penyayang)"
+    }
+  ],
+  "inference": "Ayat ini adalah protokol higiene prior sekaligus privasi: prasangka buruk = prior tak-terverifikasi yang berbahaya bila menggerakkan keputusan; tajassus = akuisisi data di luar keperluan/izin; ghibah = propagasi atribut sensitif hasil dugaan. Untuk sistem agen: default ke prior murah-hati (husnuzhan), larang aksi/penyebaran atas inferensi negatif tanpa bukti, terapkan minimalisasi data dan least-privilege agar tak 'mengintai', dan sediakan loop koreksi (taubat) untuk membatalkan prasangka yang telanjur. Suspicion adalah hipotesis untuk diuji, bukan vonis untuk dieksekusi.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-07",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-07",
+      "note": "Tadabbur perdana — Wave 6 batch nalar-kritis. Grounding via terjemah Kemenag + Jalalain (entri tafsir Kemenag ayat ini di dataset sedang misaligned).",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

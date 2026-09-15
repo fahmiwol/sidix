@@ -1,0 +1,104 @@
+{
+  "schema": "lab-study-v2",
+  "id": "nahl-16-15",
+  "version": 1,
+  "title": "Rawasi, sungai, dan jalan — stabilizer, aliran, dan routing menuju petunjuk",
+  "subtitle": "Gunung ditancapkan agar bumi tak goncang; sungai & jalan agar kalian mendapat petunjuk",
+  "ref": {
+    "surah": 16,
+    "from": 15,
+    "to": 15
+  },
+  "surah_name": "An-Nahl",
+  "theme": "Kestabilan, jaringan aliran, jalur navigasi, keterhubungan, orientasi (tidak tersesat)",
+  "sourced_meaning": {
+    "summary": "Dia menancapkan gunung-gunung kokoh (rawāsī) di bumi supaya bumi tidak berguncang bersama kalian, serta menjadikan sungai-sungai dan jalan-jalan agar kalian mendapat petunjuk (tidak tersesat). Tafsir Kemenag: gunung menjaga keseimbangan bumi (diumpamakan beban penyeimbang perahu), sungai berfungsi sebagai pengairan dan sarana lalu lintas, dan jalan sebagai sarana perhubungan antarwilayah agar manusia sampai ke tujuan tanpa tersesat; ayat juga menyiratkan siklus geologi & keseimbangan isostatik (akar gunung yang menunjam proporsional dengan bebannya).",
+    "sources": [
+      "Tafsir Kemenag RI QS 16:15",
+      "Tafsir al-Jalalayn QS 16:15"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Memori & grounding",
+      "note": "rawāsī = jangkar stabil sebagai fondasi; landasan tetap sebelum jaringan dibangun di atasnya"
+    },
+    {
+      "layer": "Aksi & transfer",
+      "note": "anhār (sungai) & subul (jalan) = kanal transfer materi, energi, dan pergerakan antar-titik"
+    },
+    {
+      "layer": "Tangga epistemik",
+      "note": "'la'allakum tahtadūn' — jalan sebagai infrastruktur yang mengantar dari sesat menuju petunjuk/orientasi"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "systems",
+      "reading": "Ayat menyusun tiga elemen sistem yang saling melengkapi: STABILIZER (gunung/rawāsī menjaga tak goncang), KANAL ALIRAN (sungai membawa air, nutrisi, muatan), dan JARINGAN JALUR (jalan menghubungkan titik). Sistem sehat butuh ketiganya — fondasi stabil, saluran distribusi, dan topologi keterhubungan. Kestabilan tanpa aliran = mati; aliran tanpa fondasi = kacau.",
+      "analogy": "stabilizer + kanal distribusi + jaringan keterhubungan"
+    },
+    {
+      "lens": "algorithm",
+      "reading": "'Jalan-jalan agar kalian mendapat petunjuk (tak tersesat)' adalah masalah routing/pathfinding: dari banyak kemungkinan lintasan, temukan jalur yang membawa ke tujuan tanpa tersasar. Jalan = struktur graf yang sudah dibangun agar pencarian jalur menjadi mungkin & efisien; tanpa jaringan jalur, navigasi mustahil.",
+      "analogy": "routing/pathfinding pada graf jalur",
+      "quranic_term": "subul → tahtadūn"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "Sungai sebagai kanal aliran menyerupai pipeline/stream: sumber di hulu → mengalir terarah → dikonsumsi di hilir (irigasi, transportasi — kata tafsir). Jalan sebagai edge menghubungkan node wilayah. Bacaan rekayasanya: rancang aliran satu-arah yang jelas dari sumber ke pemakai, dan sambungkan simpul dengan tepi yang bisa dilalui.",
+      "analogy": "stream/pipeline hulu→hilir + edge antar-node"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Cetak biru navigasi & aliran untuk agen: agen yang menjelajah ruang tugas butuh (1) rawāsī — invariant stabil sebagai titik jangkar agar tak 'goncang'; (2) anhār — aliran informasi terarah (pipeline data/konteks dari sumber tepercaya ke titik keputusan); (3) subul — peta jalur/tool-graph yang eksplisit sehingga agen bisa merutekan langkah menuju tujuan tanpa 'tersesat' (loop, jalan buntu). Actionable: bangun tool/skill sebagai graf jalur terhubung dengan tujuan jelas, sediakan sinyal orientasi (progress/heuristik) di tiap simpul agar agen tahu apakah ia mendekat ke tujuan — meniru fungsi 'jalan agar mendapat petunjuk'.",
+      "analogy": "agent: anchor stabil + pipeline konteks + tool-graph ber-orientasi tujuan"
+    },
+    {
+      "lens": "earth-cosmos",
+      "reading": "Tafsir Kemenag menjelaskan keseimbangan isostatik: akar gunung menunjam proporsional dengan bebannya, dan siklus geologi (erosi → pengendapan → pengangkatan) menjaga keseimbangan bumi. Dicatat sebagai resonansi struktural antara 'rawāsī penjaga agar tak goncang' dan konsep isostasi — BUKAN mukjizat numerik dan bukan bukti bahwa ayat menetapkan teori tektonik; ia analogi bounded, alat pemahaman.",
+      "analogy": "rawāsī ≈ keseimbangan isostatik (bounded)",
+      "quranic_term": "āyāt kauniyah"
+    },
+    {
+      "lens": "economy",
+      "reading": "Tafsir menyebut sungai & jalan sebagai sarana pengairan, perdagangan, dan pengangkutan. Ini infrastruktur logistik: kanal & jaringan jalan menurunkan biaya perpindahan barang, menyambungkan pasar, dan memungkinkan spesialisasi wilayah. Kemakmuran tumbuh dari konektivitas — jaringan aliran yang efisien, bukan sekadar sumber daya yang melimpah di satu titik.",
+      "analogy": "infrastruktur logistik: kanal + jaringan jalan menurunkan biaya transaksi"
+    },
+    {
+      "lens": "biology-medicine",
+      "reading": "Pola 'kanal aliran + jaringan jalur' menggema pada tubuh: pembuluh darah mengalirkan nutrisi/oksigen (seperti sungai), saraf & jalur limfa menghubungkan organ. Kesehatan bergantung pada aliran yang lancar dan jaringan yang tersambung; sumbatan pada kanal atau putusnya jalur menimbulkan penyakit. Sistem hidup pun dibangun atas stabilizer, aliran, dan konektivitas.",
+      "analogy": "sistem vaskular/saraf: aliran + jaringan penghubung"
+    },
+    {
+      "lens": "artifact",
+      "reading": "Peradaban meniru ayat ini secara harfiah: kanal irigasi & sungai buatan, jaringan jalan (dari jalan Romawi hingga jalan tol), dan penstabil tanah pada konstruksi besar. Infrastruktur = stabilizer + kanal + jaringan; kemajuan diukur dari seberapa baik ketiganya dirancang bersama.",
+      "analogy": "infrastruktur sipil: irigasi + jaringan jalan + penstabil tanah"
+    },
+    {
+      "lens": "pedagogy",
+      "reading": "Belajar butuh tiga hal serupa: fondasi konsep yang mantap (rawāsī), aliran materi yang terarah dari dasar ke lanjut (anhār), dan 'jalan' pembelajaran yang jelas—urutan langkah yang menuntun tanpa tersesat (subul → tahtadūn). Kurikulum tanpa jalur yang jelas membuat pembelajar tersasar meski materinya kaya.",
+      "analogy": "learning path: fondasi + aliran materi + urutan langkah ber-orientasi"
+    }
+  ],
+  "inference": "Ayat ini, dibaca sebagai analogi rekayasa, menyandingkan tiga pilar arsitektur sistem dalam satu kalimat: STABILIZER (rawāsī agar tak goncang), KANAL ALIRAN (sungai membawa materi & energi), dan JARINGAN JALUR ber-orientasi tujuan (jalan 'agar mendapat petunjuk'). Untuk perancang sistem — khususnya agen AI — pelajarannya: sebuah agen yang andal butuh jangkar stabil, aliran konteks/informasi yang terarah, dan tool-graph eksplisit dengan sinyal orientasi agar tak tersesat dalam loop atau jalan buntu. Pembacaan geologis (rawāsī ≈ isostasi) ditegaskan sebagai resonansi struktural yang bounded, BUKAN mukjizat numerik atau penetapan teori ilmiah; ini salah satu pembacaan rekayasa di atas makna zahir yang bersumber, bukan maksud tunggal ayat, dan tetap selaras konteks tafsir tentang keseimbangan bumi serta manfaat sungai & jalan.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-08",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-08",
+      "note": "Tadabbur perdana — Wave 8 kosmos.",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

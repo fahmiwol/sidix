@@ -1,0 +1,111 @@
+{
+  "schema": "lab-study-v2",
+  "id": "ali-imran-3-104-104",
+  "version": 1,
+  "title": "Waltakun minkum ummah — golongan khusus penyeru kebajikan sebagai layanan terdedikasi",
+  "subtitle": "Hendaklah ada segolongan yang menyeru kebajikan, menyuruh yang makruf, dan mencegah yang mungkar — fungsi terlatih yang memonitor dan mengoreksi",
+  "ref": {
+    "surah": 3,
+    "from": 104,
+    "to": 104
+  },
+  "surah_name": "Ali 'Imran",
+  "theme": "Fungsi terdedikasi, layanan monitoring & koreksi, amar makruf nahi mungkar, spesialisasi peran",
+  "sourced_meaning": {
+    "summary": "Menurut Tafsir Kemenag, perlu adanya SEGOLONGAN umat Islam yang bergerak khusus di bidang dakwah — terlatih — yang memberi peringatan bila tampak gejala perpecahan atau penyelewengan, dengan tegas menyerukan kebajikan, menyuruh yang makruf (baik), dan mencegah yang mungkar (maksiat). Dengan adanya golongan ini, umat terpelihara dari perpecahan dan infiltrasi. Menganjurkan kebaikan saja tidak cukup; harus dibarengi menghilangkan keburukan. Tafsir menautkan rantai: kemenangan butuh kekuatan, kekuatan butuh persatuan, persatuan butuh keutamaan, keutamaan butuh terpeliharanya agama, dan agama terpelihara dengan dakwah — maka kewajiban pertama umat adalah menggiatkan dakwah. Mereka yang memenuhi syarat perjuangan inilah orang-orang yang beruntung.",
+    "sources": [
+      "Tafsir Kemenag RI QS 3:104",
+      "Tafsir al-Jalalayn QS 3:104"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Alignment",
+      "note": "'yadʿūna ilal-khayr' = fungsi ini dipatok ke tujuan kolektif (kebajikan/keutamaan yang menjaga kesatuan) — perannya menjaga sistem tetap selaras dengan nilai, bukan kepentingan sempit"
+    },
+    {
+      "layer": "Persepsi",
+      "note": "tafsir: golongan ini 'memberi peringatan bila tampak gejala-gejala perpecahan dan penyelewengan' — fungsi pemantauan yang mendeteksi penyimpangan dari keadaan sehat (deteksi anomali dini)"
+    },
+    {
+      "layer": "Aksi & transfer",
+      "note": "dua aksi berpasangan: 'yaʾmurūna bil-maʿrūf' (dorong yang benar) & 'yanhawna ʿanil-munkar' (cegah yang salah) — kontrol dua-arah: promosikan yang baik, hentikan yang buruk, bukan hanya satu sisi"
+    },
+    {
+      "layer": "Umpan balik",
+      "note": "amar-makruf-nahi-mungkar = mekanisme koreksi/umpan-balik yang menjaga umat 'terpelihara dari perpecahan' — loop yang menahan sistem pada keadaan sehat"
+    },
+    {
+      "layer": "Pelatihan",
+      "note": "'ummah' penyeru dideskripsikan tafsir sebagai 'terlatih di bidang dakwah' — fungsi terspesialisasi yang dibekali kompetensi, bukan tugas acak semua orang tanpa kesiapan"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "ai-agentic",
+      "reading": "Analogi untuk arsitektur multi-agen: ayat menyerukan adanya SUBUNIT TERDEDIKASI ('minkum ummah' — segolongan, bukan semua) yang fungsinya khusus memantau-dan-mengoreksi: mempromosikan tindakan benar (amar makruf) dan mencegah tindakan salah (nahi mungkar). Actionable: (1) sediakan agen/layanan pengawas terpisah dari agen pelaksana (separation of duties) yang terlatih untuk peran itu; (2) rancang kontrol dua-arah — bukan hanya memblokir yang buruk (guardrail negatif) tapi juga mendorong yang baik (nudge positif); (3) jalankan deteksi dini penyimpangan ('gejala perpecahan') sebelum menjadi kegagalan sistemik. Ini pola monitor/critic service yang menjaga alignment kolektif.",
+      "analogy": "dedicated monitor/critic service; separation of duties; two-sided control (promote-good + block-bad)",
+      "quranic_term": "waltakun minkum ummah"
+    },
+    {
+      "lens": "systems",
+      "reading": "Sebuah pembacaan: kesehatan sistem kolektif tidak terjaga otomatis; ayat menetapkan fungsi umpan-balik terdedikasi yang mengoreksi penyimpangan. Rantai sebab dalam tafsir (dakwah→agama→keutamaan→persatuan→kekuatan→kemenangan) adalah kaskade ketergantungan; fungsi amar-makruf-nahi-mungkar adalah kontrol yang menjaga simpul-hulu (nilai/agama) agar seluruh kaskada tak runtuh.",
+      "analogy": "dedicated feedback/governance function stabilizing a dependency cascade",
+      "quranic_term": "amar makruf nahi mungkar"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "Fungsi ini berperan seperti sepasang assertion runtime: 'yaʾmurūna bil-maʿrūf' menegaskan kondisi yang HARUS benar, 'yanhawna ʿanil-munkar' menolak kondisi yang HARUS salah. Keduanya berjalan sebagai penjaga invariant komunitas — mendeteksi pelanggaran dan memicu koreksi sebelum keadaan buruk menyebar.",
+      "analogy": "runtime assertions / invariant guards (must-hold + must-not-hold)",
+      "quranic_term": "bil-maʿrūf ... ʿanil-munkar"
+    },
+    {
+      "lens": "systems",
+      "reading": "Frasa 'minkum ummah' (SEBAGIAN dari kalian) menyiratkan spesialisasi & redundansi terukur, bukan setiap simpul menjalankan fungsi kontrol. Ini efisiensi organisasi: fungsi pengawasan dijalankan oleh unit yang kompeten & terlatih, sementara sistem tetap punya cukup cakupan agar penyimpangan tak lolos — keseimbangan antara spesialisasi dan cakupan.",
+      "analogy": "specialized watchdog unit vs full-mesh monitoring; coverage vs efficiency",
+      "quranic_term": "minkum ummah (sebagian)"
+    },
+    {
+      "lens": "pedagogy",
+      "reading": "Tafsir menekankan golongan ini 'terlatih di bidang dakwah'. Resonansi dengan kebutuhan kompetensi peran: fungsi koreksi sosial menuntut keahlian (cara menyeru, memilih waktu, menjaga adab), bukan sekadar niat. Melatih kader khusus lebih efektif daripada membebankan koreksi pada semua tanpa bekal metode.",
+      "analogy": "role competence; trained specialists over untrained generalists",
+      "quranic_term": "ummah terlatih"
+    },
+    {
+      "lens": "economy",
+      "reading": "Menyediakan fungsi pengawasan terdedikasi adalah investasi dalam 'barang publik' pemeliharaan komunitas: mencegah penyimpangan dini jauh lebih murah daripada memperbaiki perpecahan yang sudah meluas. Tafsir menyusun ini sebagai prasyarat 'kemenangan' — biaya kecil kontrol hulu menjaga nilai besar kesatuan hilir.",
+      "analogy": "public-good provisioning; cheap upstream control preserves downstream value",
+      "quranic_term": "menjaga dari perpecahan"
+    },
+    {
+      "lens": "amal",
+      "reading": "Amal praktisnya: komunitas mesti sengaja memunculkan dan membekali orang-orang yang mengambil peran menyeru kebaikan dan mencegah keburukan — bukan mengandaikan semua orang otomatis melakukannya. Fungsi ini aktif (menyuruh & mencegah), dua-arah, dan dijalankan dengan ilmu serta adab, demi menjaga keutuhan bersama.",
+      "quranic_term": "yadʿūna ilal-khayr"
+    },
+    {
+      "lens": "inference",
+      "reading": "Benang merahnya: menjaga kesehatan sistem kolektif menuntut fungsi terdedikasi & terlatih yang bekerja dua-arah — mempromosikan yang benar dan mencegah yang salah — sebagai loop koreksi. Mengandalkan kebaikan spontan tanpa fungsi pemantau membuat penyimpangan lolos; fungsi ini adalah 'sistem imun' komunitas.",
+      "quranic_term": "minkum ummah"
+    }
+  ],
+  "inference": "Salah satu pembacaan rekayasa QS 3:104: menjaga kesehatan sebuah kolektif dimodelkan lewat FUNGSI TERDEDIKASI — 'minkum ummah' (segolongan, bukan semua) yang terlatih menjalankan kontrol dua-arah: 'yaʾmurūna bil-maʿrūf' (mempromosikan yang benar) dan 'yanhawna ʿanil-munkar' (mencegah yang salah), sekaligus memantau gejala penyimpangan dini agar umat terpelihara dari perpecahan. Ini pola layanan monitor-dan-koreksi: bukan hanya memblokir yang buruk (guardrail negatif) tapi juga mendorong yang baik (nudge positif), dijalankan oleh unit kompeten yang terpisah dari pelaksana (separation of duties). Untuk desain sistem — multi-agen, tata kelola, atau keandalan — ini menyarankan: sediakan fungsi pengawas/critic terdedikasi & terlatih, rancang kontrol dua-sisi, dan deteksi penyimpangan sebelum menjadi kegagalan sistemik. CATATAN TANZIH: standar 'makruf' dan 'mungkar' bersumber dari syariat/wahyu — penetapan mana yang benar/salah adalah wilayah agama, bukan hasil analogi teknis; Lab membaca STRUKTUR fungsinya, tidak menetapkan fatwa apa pun. Analogi hanya pada sisi makhluk (organisasi peran manusia). Ini resonansi struktural, bukan mukjizat numerik; salah satu pembacaan, bukan maksud tunggal ayat.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-08",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-08",
+      "note": "Tadabbur perdana — Wave 11 wasilah/metode & komunikasi.",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

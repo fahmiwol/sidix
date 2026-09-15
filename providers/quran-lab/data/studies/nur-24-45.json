@@ -1,0 +1,107 @@
+{
+  "schema": "lab-study-v2",
+  "id": "nur-24-45",
+  "version": 1,
+  "title": "Min māʾ — semua makhluk hidup dari satu substrat",
+  "subtitle": "Segala jenis hewan diciptakan dari air, lalu bercabang jadi beragam bentuk gerak",
+  "ref": {
+    "surah": 24,
+    "from": 45,
+    "to": 45
+  },
+  "surah_name": "An-Nur",
+  "theme": "Substrat bersama, satu primitif → keberagaman, base-class, foundation",
+  "sourced_meaning": {
+    "summary": "Menurut Tafsir Kemenag: Allah mengarahkan manusia memperhatikan hewan yang bermacam jenis dan bentuk, yang semuanya Dia ciptakan dari air — air itulah pokok kehidupan hewan, sebab sebagian besar unsur tubuhnya adalah air dan tak ada hewan yang bertahan hidup tanpanya. Dari satu asal itu lahir ragam pola gerak: ada yang melata dengan perutnya (ular), ada yang berjalan dengan dua kaki, dan ada yang berkaki empat (bahkan lebih), sesuai kehendak-Nya.",
+    "sources": [
+      "Tafsir Kemenag RI QS 24:45",
+      "Tafsir al-Jalalayn QS 24:45"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Persepsi",
+      "note": "keberagaman morfologi gerak (melata, bipedal, kuadruped, banyak kaki) teramati langsung sebagai variasi permukaan"
+    },
+    {
+      "layer": "Penalaran",
+      "note": "di balik ragam itu satu asal disebut eksplisit: 'min māʾ' — mengundang inferensi dari keberagaman kembali ke primitif tunggal"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "computational",
+      "reading": "Satu primitif, banyak realisasi: dari tipe dasar tunggal (air) diturunkan keberagaman perilaku (mode gerak). Ini polimorfisme — antarmuka/asal yang sama, implementasi yang berbeda-beda, sehingga variasi besar tetap punya common base yang dapat dirujuk.",
+      "analogy": "shared base type → polymorphic subclasses",
+      "quranic_term": "min māʾ"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "Definisi berbasis komposisi: alive(x) ⇒ contains(x, water). Air jadi prasyarat yang mendasari seluruh cabang, sehingga sifat bersama bisa dijamin di level dasar, sedangkan diferensiasi (jumlah kaki, cara bergerak) di-override per spesies.",
+      "analogy": "invariant at base, override at leaf",
+      "quranic_term": "kulla dābbatin min māʾ"
+    },
+    {
+      "lens": "algorithm",
+      "reading": "Generative branching dari satu benih: proses yang sama mengambil parameter berbeda dan menumbuhkan topologi tubuh berbeda. Satu generator + ruang parameter luas = keluaran yang tampak sangat beragam namun berbagi silsilah komputasi.",
+      "analogy": "one generator, parameterized outputs",
+      "quranic_term": "yakhluqu mā yashāʾ"
+    },
+    {
+      "lens": "systems",
+      "reading": "Fondasi bersama menyatukan subsistem yang tampak tak berhubungan: karena semua bergantung pada substrat yang sama, intervensi pada substrat (kelangkaan air) berdampak lintas seluruh keberagaman sekaligus. Titik ungkit tunggal di bawah keragaman permukaan.",
+      "analogy": "shared foundation = shared leverage point",
+      "quranic_term": "asl al-ḥayāh"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Peta langsung ke era foundation model: satu substrat terlatih (model dasar / representasi embedding bersama) menurunkan keberagaman agen hilir — chatbot, penerjemah, perencana — yang perilakunya berbeda namun berbagi 'air' representasional yang sama. Implikasi desain: rawat substrat bersama itu sebagai aset kritis (kualitas data, bias, keamanan) karena cacat di dasar mengalir ke semua turunan; dan manfaatkan common base untuk transfer/berbagi kapabilitas antar-agen alih-alih membangun tiap agen dari nol.",
+      "analogy": "one foundation model → many downstream agents; guard the shared substrate",
+      "quranic_term": "min māʾ (asl bersama)"
+    },
+    {
+      "lens": "biology-medicine",
+      "reading": "Air sebagai medium biokimia universal: pelarut tempat metabolisme, transpor, dan pelipatan protein berlangsung; sebagian besar massa organisme adalah air. Keberagaman bentuk hidup dibangun di atas kimia berbasis-air yang sama.",
+      "analogy": "water as universal biochemical solvent",
+      "quranic_term": "al-māʾ asas al-ḥayāh"
+    },
+    {
+      "lens": "math-physics",
+      "reading": "Ruang keadaan besar dari sedikit aturan dasar: sifat pelarut air (polaritas, ikatan hidrogen) membuka kombinatorika molekuler yang sangat luas. Sedikit kendala fisika di dasar → keragaman struktur yang eksplosif di atasnya.",
+      "analogy": "few base constraints, combinatorial diversity",
+      "quranic_term": "tanawwuʿ min asl wāḥid"
+    },
+    {
+      "lens": "artifact",
+      "reading": "Rekayasa meniru pola 'satu bahan dasar, banyak produk': platform/SDK bersama yang di atasnya dibangun aplikasi beragam, atau material dasar (silikon, polimer) yang menurunkan ribuan komponen. Standardisasi substrat = leverage untuk keberagaman terkendali.",
+      "analogy": "shared platform/material → diverse products",
+      "quranic_term": "asl mushtarak"
+    },
+    {
+      "lens": "inference",
+      "reading": "Ayat mengajak inferensi balik: dari keberagaman gerak yang mencolok, tarik kesimpulan adanya asal & penata tunggal ('yakhluqu mā yashāʾ'). Pola pikirnya — keberagaman permukaan yang berbagi satu substrat menunjuk pada desain, bukan kebetulan tercerai. Bounded: resonansi struktural, bukan klaim mukjizat numerik.",
+      "analogy": "surface diversity + shared root → inferred designer",
+      "quranic_term": "āyah min al-khalq"
+    }
+  ],
+  "inference": "Ayat ini adalah pernyataan arsitektural: keberagaman hidup yang tak terhingga dibangun di atas SATU substrat bersama (air). Pelajaran rekayasanya persis logika foundation model dan platform — bangun sekali sebuah dasar berkualitas tinggi, lalu turunkan keberagaman besar di atasnya, alih-alih membangun tiap cabang dari nol. Konsekuensinya dua arah: substrat bersama memberi leverage transfer antar-turunan, tetapi juga menjadikan kualitas/keamanan dasar sebagai titik kritis karena cacatnya mengalir ke seluruh keberagaman. Rawat 'air'-nya, dan keragaman akan mengikuti.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-07",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-07",
+      "note": "Tadabbur perdana — Wave 6 batch air/substrat.",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}

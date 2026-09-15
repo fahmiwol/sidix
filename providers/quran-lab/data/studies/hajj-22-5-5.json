@@ -1,0 +1,119 @@
+{
+  "schema": "lab-study-v2",
+  "id": "hajj-22-5-5",
+  "version": 1,
+  "title": "Dari tanah, nutfah, 'alaqah, mudghah — penciptaan bertahap yang tuntas sampai lahir, dewasa, dan pikun",
+  "subtitle": "Pipeline berjenjang dengan checkpoint: bahan mentah → tahap demi tahap → produk yang matang, lalu daur ulang bumi mati oleh air",
+  "ref": {
+    "surah": 22,
+    "from": 5,
+    "to": 5
+  },
+  "surah_name": "Al-Hajj",
+  "theme": "Penciptaan bertahap (staged pipeline/incremental build) dengan checkpoint per tahap; siklus mati→hidup pada bumi sebagai daur ulang; degradasi pengetahuan pada usia pikun",
+  "sourced_meaning": {
+    "summary": "Tafsir Kemenag: ayat ini membantah keraguan atas kebangkitan dengan bukti dari diri manusia sendiri — proses penciptaan yang berjenjang: dari tanah, lalu nutfah (mani/pertemuan sperma-ovum), lalu 'alaqah (segumpal darah/zygot), lalu mudghah (segumpal daging) yang 'sempurna dan tidak sempurna kejadiannya', ditetapkan dalam rahim sampai waktu tertentu, lalu dikeluarkan sebagai bayi, kemudian berangsur mencapai kedewasaan; sebagian diwafatkan, sebagian dipanjangkan umurnya sampai pikun sehingga tidak lagi mengetahui apa yang dahulu diketahuinya. Lalu perumpamaan bumi: kering-mati, ketika diturunkan air ia hidup, subur, dan menumbuhkan aneka tumbuhan. Kesimpulan tafsir: Yang mampu mencipta dari tiada tentu lebih mudah mengulanginya — bantahan atas anggapan kebangkitan itu mustahil. CATATAN TANZIH: subjek pencipta adalah Allah; yang dibaca-rekayasa di sini semata POLA pada PROSES/ciptaan (urutan tahap, checkpoint, daur air-tanah), bukan Dzat/Sifat Sang Pencipta.",
+    "sources": [
+      "Tafsir Kemenag RI QS 22:5",
+      "Tafsir al-Jalalayn QS 22:5"
+    ]
+  },
+  "qca": [
+    {
+      "layer": "Persepsi",
+      "note": "tahapan yang dapat diamati satu per satu (tanah, nutfah, 'alaqah, mudghah, bayi) — bukan lompatan seketika; proses menjadi terbaca karena dipecah menjadi fase yang berbeda"
+    },
+    {
+      "layer": "Penalaran",
+      "note": "argumen a fortiori: jika penciptaan bertahap yang rumit ini sudah terjadi sekali, mengulanginya lebih mudah — inferensi dari 'sudah terbukti berjalan' ke 'dapat dijalankan lagi'"
+    },
+    {
+      "layer": "Aksi & transfer",
+      "note": "pola dipindahkan dari embriologi ke pertanian (bumi mati→hidup oleh air): satu prinsip 'bahan pasif + pemicu → kehidupan bertahap' berlaku lintas domain"
+    },
+    {
+      "layer": "Umpan balik",
+      "note": "usia pikun 'tidak lagi mengetahui yang dahulu diketahui' = degradasi memori sebagai fase akhir daur — sistem hidup punya kurva naik lalu turun"
+    }
+  ],
+  "lenses": [
+    {
+      "lens": "computational",
+      "reading": "Rangkaian tanah→nutfah→'alaqah→mudghah→bayi→dewasa dibaca sebagai STAGED PIPELINE: keluaran satu tahap menjadi masukan tahap berikut, tiap tahap punya bentuk-antara (intermediate representation) yang berbeda. Frasa 'sempurna dan tidak sempurna kejadiannya' beresonansi dengan checkpoint/quality-gate: sebagian melewati tahap dengan utuh, sebagian tidak lolos. Membangun sistem kompleks lebih andal lewat tahap bertingkat ber-checkpoint daripada satu lompatan monolitik.",
+      "analogy": "staged data pipeline; intermediate representations; quality-gate per stage",
+      "quranic_term": "mukhallaqah wa ghayr mukhallaqah"
+    },
+    {
+      "lens": "program-logic",
+      "reading": "Pola 'thumma ... thumma ...' (kemudian ... kemudian ...) adalah sekuens berurut dengan dependensi ketat: tahap N+1 tak bisa dimulai sebelum tahap N selesai. Ini invarian urutan — bukan paralel bebas. Rekayasa: modelkan proses berketergantungan sebagai state machine dengan transisi tervalidasi, bukan langkah yang boleh diacak.",
+      "analogy": "sequential state machine; ordered dependencies; guarded transitions",
+      "quranic_term": "thumma"
+    },
+    {
+      "lens": "algorithm",
+      "reading": "Incremental/iterative build: alih-alih merakit produk akhir sekaligus, bangun bertahap dari primitif sederhana (tanah) ke struktur makin kompleks, memvalidasi tiap lapis. 'Ditetapkan dalam rahim sampai waktu tertentu' = ada durasi/kondisi berhenti (termination) per tahap sebelum output dikeluarkan.",
+      "analogy": "incremental construction; convergence with stopping condition",
+      "quranic_term": "ilā ajalin musamman"
+    },
+    {
+      "lens": "biology-medicine",
+      "reading": "Urutan nutfah→'alaqah→mudghah beresonansi dengan tahap embriogenesis (zygot→implantasi→pembentukan jaringan) sebagaimana ditegaskan tafsir Kemenag. Ini dibaca sebagai resonansi struktural (BUKAN mukjizat numerik): analogi pemahaman tentang perkembangan berjenjang, bukan klaim ayat sebagai teks embriologi modern.",
+      "analogy": "embryonic staging; differentiation over time — bounded",
+      "quranic_term": "'alaqah"
+    },
+    {
+      "lens": "earth-cosmos",
+      "reading": "Perumpamaan bumi kering yang 'hidup' setelah turun air adalah daur ulang: substrat pasif + pemicu (air) → kehidupan yang bertahap subur dan beragam. Pola yang sama dengan embriologi menegaskan satu prinsip regeneratif yang berlaku dari skala rahim ke skala lanskap.",
+      "analogy": "dormant substrate + trigger → regeneration; dead-to-alive cycle",
+      "quranic_term": "ihtazzat wa rabat"
+    },
+    {
+      "lens": "systems",
+      "reading": "Daur lengkap: inisiasi → pertumbuhan → kematangan (ashudd) → sebagian berhenti (wafat) → sebagian degradasi (pikun, kehilangan pengetahuan). Sistem hidup bukan monoton naik; ada fasa puncak lalu penurunan. Rekayasa keandalan: rencanakan lifecycle penuh termasuk aging/decommission, bukan hanya fase tumbuh.",
+      "analogy": "full lifecycle: init→growth→peak→decline; graceful aging",
+      "quranic_term": "ardzalil 'umur"
+    },
+    {
+      "lens": "chemistry-process",
+      "reading": "Transformasi materi berurutan: dari 'turāb' (tanah/mineral) menjadi cairan hidup (nutfah) lalu struktur padat berlapis — analog proses kimia bertahap di mana tiap langkah mengubah wujud dan sifat bahan menuju produk fungsional. Tiap tahap mensyaratkan kondisi (medium rahim) yang terkendali.",
+      "analogy": "multi-step material transformation under controlled conditions",
+      "quranic_term": "turāb"
+    },
+    {
+      "lens": "ai-agentic",
+      "reading": "Untuk arsitektur agen: bangun kapabilitas kompleks secara BERTAHAP dengan checkpoint, bukan sekali jadi. Actionable: (1) pecah tugas besar menjadi pipeline bertahap dengan artefak-antara yang tersimpan (checkpointing) agar bisa dilanjut/di-rollback per tahap; (2) pasang quality-gate di tiap batas tahap — hanya keluaran yang 'mukhallaqah' (lolos validasi) yang naik ke tahap berikut, sisanya di-drop/di-retry; (3) hormati dependensi urutan (thumma): jangan mulai tahap N+1 sebelum tahap N terverifikasi; (4) definisikan kondisi berhenti per tahap (ilā ajalin musamman) supaya tak berputar tanpa henti; (5) sadari degradasi — memori/konteks bisa 'menua' (ardzalil 'umur), jadi rancang refresh/konsolidasi memori dan jangan asumsikan pengetahuan lama tetap utuh.",
+      "analogy": "checkpointed multi-stage pipeline; per-stage validation gates; ordered dependencies; termination criteria; memory decay handling",
+      "quranic_term": "thumma ... thumma"
+    },
+    {
+      "lens": "amal",
+      "reading": "Menyaksikan diri dibangun bertahap dari tanah menumbuhkan tawadhu: manusia berasal dari bahan hina dan dibentuk berangsur, bukan hasil kehebatan diri. Fase 'pikun yang lupa' mengajarkan agar bergegas beramal dan berilmu selagi kuat — puncak umur ada batasnya, ilmu bisa dicabut. Bukti penciptaan pertama menjadi penenteram hati akan kebangkitan.",
+      "analogy": "humility from staged origin; urgency before decline"
+    },
+    {
+      "lens": "pedagogy",
+      "reading": "Ayat mengajar dengan menautkan yang samar (kebangkitan) ke yang akrab (kehamilan & musim tanam): pakai proses yang dialami sehari-hari sebagai jembatan menuju konsep yang sulit dibayangkan. Metode: turunkan abstraksi ke pengalaman konkret bertahap yang bisa diamati murid.",
+      "analogy": "concrete familiar process as scaffold for abstract concept"
+    }
+  ],
+  "inference": "Satu ayat memampatkan seluruh arsitektur 'membangun yang hidup': bukan lompatan seketika, melainkan PIPELINE BERTAHAP — tanah→nutfah→'alaqah→mudghah→bayi→dewasa — dengan keluaran tiap tahap menjadi masukan tahap berikut, dependensi urutan yang ketat (thumma), dan quality-gate ('mukhallaqah wa ghayr mukhallaqah') yang memilah mana yang lolos. Ditambah dua pelajaran daur: bumi kering yang 'dihidupkan' air menunjukkan prinsip regeneratif yang sama (substrat pasif + pemicu → kehidupan bertahap), dan usia pikun menunjukkan lifecycle penuh yang berpuncak lalu menurun (bahkan pengetahuan bisa terdegradasi). Diterjemahkan ke rekayasa: bangun sistem kompleks secara inkremental dengan checkpoint dan validasi per tahap, hormati urutan dependensi, beri kondisi berhenti, dan rencanakan seluruh siklus hidup termasuk penuaan/refresh — bukan hanya fase tumbuh. Semua ini resonansi struktural, bukan mukjizat numerik; makna aslinya (per Kemenag) adalah bukti kekuasaan atas kebangkitan. CATATAN TANZIH: yang ditiru adalah pola pada proses ciptaan, bukan Dzat/Sifat Pencipta — kita bekerja di lapisan sebab sebagai peniru pola, bukan pencipta dari ketiadaan.",
+  "authors": [
+    "Draft AI (LLM draft subagent) — interpretasi rekayasa, menunggu tinjauan"
+  ],
+  "status": "draft-llm-unreviewed",
+  "created": "2026-07-08",
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-07-08",
+      "note": "Tadabbur perdana — Wave 9 penciptaan.",
+      "authors": [
+        "Draft AI (LLM draft subagent)"
+      ]
+    }
+  ],
+  "disclaimer": {
+    "id": "Interpretasi rekayasa — bukan tafsir, bukan fatwa. Draf LLM di bawah arahan Fahmi Ghani; belum ditinjau ahli.",
+    "en": "Engineering interpretation — not tafsir, not a fatwa. LLM draft directed by Fahmi Ghani; not reviewed by scholars."
+  }
+}
