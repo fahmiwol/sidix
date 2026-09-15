@@ -185,3 +185,9 @@ hasil. Lihat [metode riset MiganCore](https://github.com/fahmiwol/migancore-rese
 dan [Ilham berpagar](https://github.com/fahmiwol/migancore-research-method/blob/main/docs/id/06-ilham-berpagar.md).
 Kebijakan kutipan paket ini dijelaskan di sini: kutipan dipertahankan dengan
 atribusi dan dilaporkan.
+
+## Kontak
+
+**Fahmi Ghani** — fahmiwol@gmail.com · GitHub [@fahmiwol](https://github.com/fahmiwol)
+
+Terbuka untuk tinjauan ahli, koreksi, kolaborasi, dan pertanyaan riset.

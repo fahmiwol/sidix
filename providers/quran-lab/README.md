@@ -179,3 +179,9 @@ an analogy does not validate performance or establish a result. See
 and [Ilham berpagar](https://github.com/fahmiwol/migancore-research-method/blob/main/docs/id/06-ilham-berpagar.md).
 This package's quotation policy is documented here: quotations are retained
 with attribution and reported.
+
+## Contact
+
+**Fahmi Ghani** — fahmiwol@gmail.com · GitHub [@fahmiwol](https://github.com/fahmiwol)
+
+Scholarly review, corrections, collaboration and research questions are welcome.
