@@ -6,125 +6,50 @@
   <p><em>Self-Hosted · Self-Learning · Self-Evolving · Own Stack · No Vendor API</em></p>
 
   <p>
-    <img src="https://img.shields.io/badge/version-v2.7.0-blue?style=flat-square" alt="Version" />
-    <img src="https://img.shields.io/badge/Free-100%25-brightgreen?style=flat-square" alt="Free" />
-    <img src="https://img.shields.io/badge/Open%20Source-MIT-gold?style=flat-square" alt="Open Source MIT" />
-    <img src="https://img.shields.io/badge/Self--Hosted-Own%20Stack-blue?style=flat-square" alt="Self-Hosted" />
-    <img src="https://img.shields.io/badge/Own%20Auth-Google%20GIS-brightgreen?style=flat-square" alt="Own Auth" />
-    <img src="https://img.shields.io/badge/Self--Learning-Active-purple?style=flat-square" alt="Self-Learning" />
-    <img src="https://img.shields.io/badge/No%20Vendor%20API-Local%20Inference-success?style=flat-square" alt="No Vendor API" />
+    <img src="https://img.shields.io/badge/status-research%20build%20ended%20Aug%202026-lightgrey?style=flat-square" alt="Status: research build ended in August 2026" />
+    <img src="https://img.shields.io/badge/hosted%20app-discontinued-lightgrey?style=flat-square" alt="Hosted app: discontinued" />
+    <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-gold?style=flat-square" alt="MIT License" /></a>
+    <a href="https://github.com/fahmiwol/migancore-research-method"><img src="https://img.shields.io/badge/continues%20in-MiganCore%20research-blue?style=flat-square" alt="Continues in MiganCore research" /></a>
   </p>
 
-  <p>
-    <a href="https://github.com/fahmiwol/sidix/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-MIT-gold.svg" alt="MIT License" /></a>
-    <a href="https://sidixlab.com"><img src="https://img.shields.io/badge/Live-sidixlab.com-brightgreen" alt="Live" /></a>
-    <a href="https://github.com/fahmiwol/sidix/stargazers"><img src="https://img.shields.io/github/stars/fahmiwol/sidix?color=gold" alt="Stars" /></a>
-    <a href="https://github.com/fahmiwol/sidix/issues"><img src="https://img.shields.io/github/issues/fahmiwol/sidix" alt="Issues" /></a>
-    <img src="https://img.shields.io/badge/Model-Local%20LLM-blue" alt="Model" />
-    <img src="https://img.shields.io/badge/Tools-48 active-orange" alt="Tools" />
-    <a href="./docs/sidix-hafidz-ledger-whitepaper.pdf"><img src="https://img.shields.io/badge/Whitepaper-Proof--of--Hifdz-darkblue" alt="Whitepaper" /></a>
   <hr/>
 
-<h2>📖 New Here? Start Reading</h2>
+  <h2>📖 Start here · Mulai dari sini</h2>
 
-<table>
-<tr>
-<td width="33%" align="center">
-  <a href="./MANIFESTO.md"><strong>📜 MANIFESTO</strong></a><br/>
-  <em>Why this exists</em><br/>
-  <sub>AI for the Underdogs.</sub>
-</td>
-<td width="33%" align="center">
-  <a href="./STORY.md"><strong>📖 STORY</strong></a><br/>
-  <em>Solo founder journey from Indonesia</em><br/>
-  <sub>2 months. 0 team. 0 VC. 309 research notes.</sub>
-</td>
-<td width="33%" align="center">
-  <a href="./ANTI_MENGUAP_PROTOCOL.md"><strong>🛡️ ANTI-MENGUAP PROTOCOL</strong></a><br/>
-  <em>Universal pattern for AI agent context persistence</em><br/>
-  <sub>Free to adopt. Cite optional.</sub>
-</td>
-</tr>
-</table>
-
-<p align="center">
-  <strong><a href="https://github.com/fahmiwol/migancore-research-method">🔬 What came next: MiganCore research</a></strong> · 
-  <strong><a href="./docs/AGENT_ONBOARDING.md">🤖 For AI Agents</a></strong> · 
-  <strong><a href="./AMPLIFY.md">📢 Help Amplify</a></strong>
-</p>
-
-<hr/>
-
-<h2>📄 Whitepaper — Proof-of-Hifdz</h2>
-
-<p>
-  <a href="./docs/sidix-hafidz-ledger-whitepaper.pdf"><strong>Proof-of-Hifdz: A Knowledge-Integrity Consensus Mechanism for Self-Evolving Distributed AI Systems</strong></a><br/>
-  <em>Fahmi Ghani · Tiranyx Lab / SIDIX Project · Bogor, Indonesia · April 2026 · MIT License</em>
-</p>
-
-<blockquote>
-  <strong>The Single Point of Failure Problem.</strong> Every major AI system deployed as of 2026 — Anthropic, OpenAI, Google, Meta — shares one structural vulnerability: <em>centralization</em>. Their knowledge, weights, and continuity depend entirely on a single organization's infrastructure. This is not an engineering problem. It is architectural.<br/><br/>
-  <strong>The AI systems most likely to survive are not the most powerful — they are the most distributed.</strong>
-</blockquote>
-
-<p>
-  <strong>Core Thesis.</strong> The optimal architecture for a censorship-resistant, failure-proof AI system <em>already exists</em> — and has been empirically validated for <strong>1,400 years</strong>. It is called the <strong>Hafidz system</strong>: the distributed oral preservation network used to memorize and transmit the Quran with <strong>zero textual corruption</strong> across ~10 million human nodes worldwide.
-</p>
-
-<p>
-  We propose <strong>Hafidz Ledger</strong> — a distributed knowledge-preservation architecture for self-evolving AI — and <strong>Proof-of-Hifdz</strong>, a novel consensus mechanism where nodes earn participation rights by <em>proving knowledge integrity</em>, not by burning compute (PoW), locking capital (PoS), or chasing benchmarks (Bittensor).
-</p>
-
-<table>
-  <thead><tr><th align="left">Hafidz Mechanism (1,400 years)</th><th align="left">Technical Equivalent</th></tr></thead>
-  <tbody>
-    <tr><td>Talaqqi (teacher-to-student transmission)</td><td>Peer-verified node onboarding</td></tr>
-    <tr><td>Berjamaah cross-verification</td><td>Gossip protocol + consensus voting</td></tr>
-    <tr><td>Ijazah chain (certified lineage)</td><td>Cryptographic sanad certificate chain</td></tr>
-    <tr><td>Uthmani canonical exemplar</td><td>Content-addressed hash (IPFS CID)</td></tr>
-    <tr><td>Group recitation deviation detection</td><td>Byzantine fault detection via Merkle proofs</td></tr>
-  </tbody>
-</table>
-
-<p>
-  This is <strong>Byzantine Fault Tolerance</strong> — implemented by human civilization <strong>1,200 years before the formal computer science theorem</strong>. We translate it into code.
-</p>
-
-<blockquote>
-  <em>To our knowledge, this is the first distributed AI consensus mechanism based on knowledge preservation rather than compute or stake — and the first AI architecture grounded in a preservation system with empirical validation at civilizational scale.</em>
-</blockquote>
-
-<p align="center">
-  <a href="./docs/sidix-hafidz-ledger-whitepaper.pdf"><strong>📖 Read the full whitepaper (PDF, 7 pages)</strong></a>
-</p>
-    
+  <p>
+    <strong><a href="https://github.com/fahmiwol/migancore-research-method">🔬 MiganCore research method</a></strong> ·
+    <strong><a href="https://github.com/fahmiwol/migancore-research-method/blob/main/README.id.md">Metode riset MiganCore</a></strong> ·
+    <strong><a href="providers/quran-lab/">📖 Quran Lab</a></strong> ·
+    <strong><a href="AUTHORSHIP.md">🧾 Authorship · Kepenemuan</a></strong>
   </p>
 
   <p>
     <a href="https://sidixlab.com">🌐 Website</a> ·
-    <a href="https://github.com/fahmiwol/migancore-research-method">🔬 MiganCore research</a> ·
-    <a href="#-quick-start">⚡ Quick Start</a> ·
     <a href="#-the-ihos-foundation">🧠 The Foundation</a> ·
     <a href="#-architecture">🏗️ Architecture</a> ·
-    <a href="CONTRIBUTING.md">🤝 Contribute</a>
+    <a href="#-contribute">🤝 Contribute</a>
   </p>
 </div>
 
 ## 🧭 Status & what came next · Status & kelanjutannya
 
-**EN** — SIDIX was an open research build from **April to August 2026**. Its hosted app is no
-longer served. The main branch now keeps the documents and the Quran Lab provider; the full
-source code is preserved at archive commit [`c1185b7`](https://github.com/fahmiwol/sidix/tree/c1185b7).
-Everything further down this page is a **snapshot of that build**.
+**EN** — SIDIX was an open research build from **April to August 2026**. The hosted app was
+discontinued on purpose and will not return. Anyone who wants to use SIDIX will download the code
+and run it on their own machine; the useful parts of the code are being repackaged in a readable,
+documented form. Until that package is published, this repository holds this description, the
+license and authorship statement, and the Quran Lab provider. Everything further down this page
+is a **snapshot of that build**.
 
 The research continues in **MiganCore** — an own, Indonesian-first language model and the
 measurement discipline built around it. SIDIX's *sanad* (chain-of-transmission) idea lives on
 there: six of its trained models so far carry a provenance chain that is checked link by link.
 
-**ID** — SIDIX adalah pembangunan riset terbuka dari **April sampai Agustus 2026**. Aplikasinya
-sudah tidak dilayani. Cabang utama kini menyimpan dokumen dan provider Quran Lab; kode sumber
-lengkap tersimpan di commit arsip [`c1185b7`](https://github.com/fahmiwol/sidix/tree/c1185b7).
-Semua di bawah bagian ini adalah **potret build tersebut**.
+**ID** — SIDIX adalah pembangunan riset terbuka dari **April sampai Agustus 2026**. Aplikasi yang
+di-hosting sengaja dihentikan dan tidak akan dihidupkan lagi. Yang ingin memakai SIDIX cukup
+mengunduh kodenya dan menjalankannya di mesin sendiri; bagian kode yang berguna sedang dikemas ulang
+agar mudah dibaca dan terdokumentasi. Sampai paket itu terbit, repositori ini memuat deskripsi ini,
+lisensi dan pernyataan kepenemuan, serta provider Quran Lab. Semua di bawah bagian ini adalah
+**potret build tersebut**.
 
 Riset berlanjut di **MiganCore** — model bahasa milik sendiri yang mengutamakan bahasa Indonesia,
 beserta disiplin pengukuran di sekelilingnya. Gagasan *sanad* SIDIX hidup terus di sana: sejauh
@@ -169,7 +94,7 @@ ID: [Quran Lab](providers/quran-lab/) — interpretasi rekayasa dengan sitasi da
 | **16** | Creative Agent Ecosystem (10 domain × 37 agent) | Multi-agent debate/iteration |
 | **15** | LoRA SIDIX adapter on Qwen2.5-7B | Self-trained, 4-bit QLoRA |
 
-**Production stack (historical, April–August 2026)**: VPS (FastAPI brain · BGE-M3 CPU · 2.287 corpus docs) + RunPod GPU serverless (vLLM v2.14.0 · Qwen2.5-7B + LoRA). See [`docs/CHANGELOG.md`](CHANGELOG.md) for full version history.
+**Production stack (historical, April–August 2026)**: VPS (FastAPI brain · BGE-M3 CPU · 2.287 corpus docs) + RunPod GPU serverless (vLLM v2.14.0 · Qwen2.5-7B + LoRA).
 
 ### Karakter: **GENIUS · KREATIF · INOVATIF**
 
@@ -199,11 +124,6 @@ UTZ (creative/visual) · ABOO (engineer/technical) · OOMAR (strategist/business
 ### Multitasking — Semua Indera Aktif (Q3 2026 → Q1 2027)
 
 👁 melihat · 👂 mendengar · 🗣 berbicara · ✋ merasakan · 🤲 1000 tangan paralel (design + code + riset + posting bersamaan)
-
-### 📜 Source of Truth
-
-- **[`docs/SIDIX_DEFINITION_20260426.md`](docs/SIDIX_DEFINITION_20260426.md)** ← Formal definition (immutable)
-- [`docs/DIRECTION_LOCK_20260426.md`](docs/DIRECTION_LOCK_20260426.md) ← Tactical lock (Q3 roadmap)
 
 > *"The measure of intelligence is not how much you know,*
 > *but how precisely you know what you don't know — and how honestly you say so."*
@@ -433,54 +353,13 @@ session = run_react(question="audit this Python function", persona="ABOO")
 
 ## ⚡ Quick Start
 
-> **The code is on the archive commit.** After cloning, run `git checkout c1185b7` — the main
-> branch holds only documents and the Quran Lab provider. The steps below are unchanged from that
-> build and are no longer maintained.
+> **EN** — The hosted app is discontinued and the source code is not on this branch. A clean,
+> documented package for running SIDIX on your own machine is being prepared; this section will
+> point to it once it is published.
 >
-> **Kode ada di commit arsip.** Setelah clone, jalankan `git checkout c1185b7` — cabang utama hanya
-> berisi dokumen dan provider Quran Lab. Langkah di bawah tidak diubah dari build itu dan tidak lagi dirawat.
-
-> **Requirements:** Python 3.11+ · Node 18+ · 8 GB RAM (4 GB minimum with swap)
-
-```bash
-# 1. Clone
-git clone https://github.com/fahmiwol/sidix.git
-cd sidix
-
-# 2. Install Python deps
-pip install -r apps/brain_qa/requirements.txt
-
-# 3. Prepare your local model runtime
-# See `docs/` for supported runtimes and model setup.
-
-# 4. Build knowledge index
-python -m brain_qa index
-
-# 5. Start backend (port 8765)
-python -m brain_qa serve
-
-# 6. Start UI (new terminal, port 3000)
-cd SIDIX_USER_UI && npm install && npm run dev
-```
-
-**Try it from CLI:**
-```bash
-# Quick answer
-python -m brain_qa ask "What is the IHOS framework?"
-
-# Specify persona
-python -m brain_qa ask "Buatkan copy iklan kopi lokal" --persona UTZ
-
-# Run Raudah multi-agent
-python -c "
-import asyncio
-from brain.raudah.core import run_raudah
-r = asyncio.run(run_raudah('Research 3 fintech models for Islamic microfinance'))
-print(r.jawaban_final)
-"
-```
-
-**Live demo:** offline since the research build ended (August 2026).
+> **ID** — Aplikasi yang di-hosting sudah dihentikan dan kode sumbernya tidak ada di cabang ini.
+> Paket yang rapi dan terdokumentasi untuk menjalankan SIDIX di mesin sendiri sedang disiapkan;
+> bagian ini akan menautkannya begitu terbit.
 
 ---
 
@@ -597,17 +476,15 @@ result = evaluate_maqashid(
 
 ## 🤝 Contribute
 
-See **[CONTRIBUTING.md](CONTRIBUTING.md)** for the full guide.
+**EN** — The most useful contributions now are scholarly review of the
+[Quran Lab studies](providers/quran-lab/) and discussion of the
+[MiganCore research method](https://github.com/fahmiwol/migancore-research-method). Open an issue
+in either repository.
 
-> SIDIX's code is archived, so code paths below refer to commit `c1185b7`. The most useful
-> contributions now are scholarly review of the [Quran Lab studies](providers/quran-lab/) and
-> discussion of the [MiganCore research method](https://github.com/fahmiwol/migancore-research-method).
-
-**Short version — 3 ways to help:**
-
-1. **📚 Add knowledge** — open a PR with a `.md` file in `brain/public/research_notes/`. Any topic, any language. No coding required.
-2. **🔧 Build tools** — add new tools/agents to `apps/brain_qa/brain_qa/`. See [CONTRIBUTING.md](CONTRIBUTING.md#code-contribution).
-3. **🧠 Contribute input** — share notes, examples, or corrections through the project's contribution channels (see `CONTRIBUTING.md`).
+**ID** — Kontribusi yang paling berguna sekarang adalah tinjauan ilmiah atas
+[kajian Quran Lab](providers/quran-lab/) dan diskusi
+[metode riset MiganCore](https://github.com/fahmiwol/migancore-research-method). Buka issue di
+salah satu repositori.
 
 ---
 
@@ -639,7 +516,11 @@ All of them: [fahmiwolf.gumroad.com](https://fahmiwolf.gumroad.com)
 
 ## 📜 License
 
-MIT License — see [LICENSE](LICENSE).
+MIT License — see [LICENSE](LICENSE). The list of original methods and the authorship statement
+are in [AUTHORSHIP.md](AUTHORSHIP.md).
+
+Lisensi MIT — lihat [LICENSE](LICENSE). Daftar metode orisinal dan pernyataan kepenemuan ada di
+[AUTHORSHIP.md](AUTHORSHIP.md).
 
 **Use it. Fork it. Teach it. Build on it.**
 
