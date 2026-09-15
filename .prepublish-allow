@@ -1,5 +1,2 @@
 # Identifiers that are public ON PURPOSE. Scan: node <prepublish-scan.mjs> . --allow .prepublish-allow
 public email fahmiwol@gmail.com  # author's chosen contact for collaboration (decision 2026-09-16)
-CHANGELOG.md:343:email  # project address @sidixlab.com, historical record
-CONTRIBUTING.md:381:email  # project address @sidixlab.com, historical record
-STORY.md:107:email  # project address @sidixlab.com, historical record
