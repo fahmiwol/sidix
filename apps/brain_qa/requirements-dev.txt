@@ -1,0 +1,9 @@
+# Dev / QA — pasang setelah requirements.txt:
+#   pip install -r requirements.txt -r requirements-dev.txt
+pytest>=8.0.0
+
+# Opsional — unduh dataset dari Kaggle (set KAGGLE_USERNAME + KAGGLE_KEY atau ~/.kaggle/kaggle.json)
+kagglehub>=0.3.0
+
+# Opsional — CLI `kaggle kernels pull ...` (butuh ~/.kaggle/kaggle.json)
+kaggle>=1.6.0

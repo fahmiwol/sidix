@@ -1,0 +1,3 @@
+# Piper TTS — install via: pip install piper-tts
+# Or download binary: https://github.com/rhasspy/piper/releases
+piper-tts>=1.2.0

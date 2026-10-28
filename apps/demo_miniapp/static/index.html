@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SIDIX demo_miniapp</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      background: #0f1117;
+      color: #e2e8f0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    h1 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+      color: #7dd3fc;
+    }
+
+    .subtitle {
+      color: #94a3b8;
+      font-size: 0.875rem;
+      margin-bottom: 2rem;
+    }
+
+    .card {
+      background: #1e2535;
+      border: 1px solid #2d3748;
+      border-radius: 12px;
+      padding: 1.5rem 2rem;
+      width: 100%;
+      max-width: 520px;
+    }
+
+    .card h2 {
+      font-size: 1rem;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 1rem;
+    }
+
+    button {
+      background: #2563eb;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 0.6rem 1.4rem;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: background 0.2s;
+      margin-right: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    button:hover { background: #1d4ed8; }
+    button:disabled { background: #374151; cursor: not-allowed; }
+
+    .result-box {
+      margin-top: 1rem;
+      background: #111827;
+      border-radius: 8px;
+      padding: 1rem;
+      font-size: 0.85rem;
+      font-family: "Cascadia Code", "Fira Code", monospace;
+      white-space: pre-wrap;
+      word-break: break-word;
+      min-height: 60px;
+      color: #a3e635;
+      border: 1px solid #1f2937;
+    }
+
+    .status-ok  { color: #4ade80; }
+    .status-err { color: #f87171; }
+
+    .echo-section { margin-top: 1.5rem; }
+
+    textarea {
+      width: 100%;
+      background: #111827;
+      border: 1px solid #374151;
+      border-radius: 8px;
+      padding: 0.75rem;
+      font-family: monospace;
+      font-size: 0.85rem;
+      color: #e2e8f0;
+      resize: vertical;
+      min-height: 80px;
+      margin-bottom: 0.5rem;
+    }
+
+    textarea:focus { outline: 2px solid #2563eb; }
+
+    footer {
+      margin-top: 2rem;
+      color: #4b5563;
+      font-size: 0.75rem;
+    }
+  </style>
+</head>
+<body>
+
+<h1>SIDIX demo_miniapp</h1>
+<p class="subtitle">Template mini-app · port 8900</p>
+
+<div class="card">
+  <h2>Health Check</h2>
+  <button id="btn-health">Cek /health</button>
+  <button id="btn-info">Cek /</button>
+  <div class="result-box" id="health-result">Klik tombol untuk memulai ...</div>
+</div>
+
+<div class="card echo-section">
+  <h2>Echo Test</h2>
+  <textarea id="echo-input" placeholder='{"pesan": "halo SIDIX"}'>{&quot;pesan&quot;: &quot;halo SIDIX&quot;, &quot;dari&quot;: &quot;browser&quot;}</textarea>
+  <button id="btn-echo">POST /echo</button>
+  <div class="result-box" id="echo-result">Hasil echo akan muncul di sini ...</div>
+</div>
+
+<footer>SIDIX / Mighan — own-stack inference &mdash; no vendor API</footer>
+
+<script>
+  const BASE = "";  // relatif ke origin yang sama (port 8900)
+
+  async function apiFetch(path, options = {}) {
+    try {
+      const res = await fetch(BASE + path, options);
+      const json = await res.json();
+      return { ok: res.ok, status: res.status, data: json };
+    } catch (err) {
+      return { ok: false, status: 0, data: { error: err.message } };
+    }
+  }
+
+  function display(elementId, result) {
+    const el = document.getElementById(elementId);
+    el.textContent = JSON.stringify(result.data, null, 2);
+    el.className = "result-box " + (result.ok ? "status-ok" : "status-err");
+  }
+
+  document.getElementById("btn-health").addEventListener("click", async () => {
+    const btn = document.getElementById("btn-health");
+    btn.disabled = true;
+    btn.textContent = "Memuat ...";
+    const result = await apiFetch("/health");
+    display("health-result", result);
+    btn.disabled = false;
+    btn.textContent = "Cek /health";
+  });
+
+  document.getElementById("btn-info").addEventListener("click", async () => {
+    const btn = document.getElementById("btn-info");
+    btn.disabled = true;
+    const result = await apiFetch("/");
+    display("health-result", result);
+    btn.disabled = false;
+  });
+
+  document.getElementById("btn-echo").addEventListener("click", async () => {
+    const btn = document.getElementById("btn-echo");
+    const raw = document.getElementById("echo-input").value.trim();
+    let body;
+    try {
+      body = JSON.parse(raw);
+    } catch {
+      display("echo-result", { ok: false, data: { error: "JSON tidak valid di textarea" } });
+      return;
+    }
+    btn.disabled = true;
+    const result = await apiFetch("/echo", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+    display("echo-result", result);
+    btn.disabled = false;
+  });
+</script>
+
+</body>
+</html>

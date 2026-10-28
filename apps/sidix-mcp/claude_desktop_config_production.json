@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "sidix": {
+      "command": "node",
+      "args": ["C:\\SIDIX-AI\\apps\\sidix-mcp\\src\\index.js"],
+      "env": {
+        "SIDIX_URL": "https://ctrl.sidixlab.com",
+        "SIDIX_CORPUS": "C:\\SIDIX-AI\\brain\\public",
+        "SIDIX_IG_EXTENSION_BRIDGE_URL": "http://localhost:7788",
+        "SIDIX_WA_BRIDGE_URL": "http://localhost:7789"
+      }
+    }
+  }
+}

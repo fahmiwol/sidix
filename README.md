@@ -36,8 +36,11 @@
 **EN** — SIDIX was an open research build from **April to August 2026**. The hosted app was
 discontinued on purpose and will not return. Anyone who wants to use SIDIX will download the code
 and run it on their own machine; the useful parts of the code are being repackaged in a readable,
-documented form. Until that package is published, this repository holds this description, the
-license and authorship statement, and the Quran Lab provider. Everything further down this page
+documented form. The source recovered from the private archive is now in this repository as an
+**unmaintained research archive**: `apps/` (brain_qa agent loop, MCP server, gateways, image/audio/vision), `extension/`, `api/`
+and a few synthesized docs under `docs/`. It is a cleaned snapshot, not the full history; datasets, model weights, deployment
+scripts and working notes are intentionally not included. To run it: `cd apps/brain_qa && python -m venv .venv && pip install -r requirements.txt && pytest tests`
+(some tests fail or hang without optional dependencies; as of the recovery 678 pass, 4 fail, 4 files time out). Also here: the license, authorship statement and the Quran Lab provider. Everything further down this page
 is a **snapshot of that build**.
 
 The research continues in **MiganCore** — an own, Indonesian-first language model and the
@@ -47,8 +50,11 @@ there: six of its trained models so far carry a provenance chain that is checked
 **ID** — SIDIX adalah pembangunan riset terbuka dari **April sampai Agustus 2026**. Aplikasi yang
 di-hosting sengaja dihentikan dan tidak akan dihidupkan lagi. Yang ingin memakai SIDIX cukup
 mengunduh kodenya dan menjalankannya di mesin sendiri; bagian kode yang berguna sedang dikemas ulang
-agar mudah dibaca dan terdokumentasi. Sampai paket itu terbit, repositori ini memuat deskripsi ini,
-lisensi dan pernyataan kepenemuan, serta provider Quran Lab. Semua di bawah bagian ini adalah
+agar mudah dibaca dan terdokumentasi. Kode yang dipulihkan dari arsip privat kini ada di repositori ini sebagai
+**arsip riset tanpa perawatan**: `apps/` (loop agent brain_qa, server MCP, gateway, gambar/audio/visi), `extension/`, `api/`
+dan beberapa dokumen sintesis di `docs/`. Ini potret yang sudah dibersihkan, bukan riwayat lengkap; dataset, bobot model, skrip
+penyebaran, dan catatan kerja sengaja tidak disertakan. Cara menjalankan: `cd apps/brain_qa && python -m venv .venv && pip install -r requirements.txt && pytest tests`
+(sebagian tes gagal atau menggantung tanpa dependensi opsional; saat pemulihan 678 lulus, 4 gagal, 4 berkas kehabisan waktu). Juga ada: lisensi, pernyataan kepenemuan, dan provider Quran Lab. Semua di bawah bagian ini adalah
 **potret build tersebut**.
 
 Riset berlanjut di **MiganCore** — model bahasa milik sendiri yang mengutamakan bahasa Indonesia,
